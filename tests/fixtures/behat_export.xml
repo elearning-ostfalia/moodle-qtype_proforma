@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 0  -->
+  <question type="category">
+    <category>
+        <text>$course$/Test questions</text>
+
+    </category>
+  </question>
+
+<!-- question: 368000  -->
+  <question type="proforma">
+    <name>
+      <text>proforma-001</text>
+    </name>
+    <questiontext format="html">
+      <text>Please code the reverse string function not using a library function.(äöüß)</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text><![CDATA[<p>You must not use a library function.</p>]]></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.2000000</penalty>
+    <hidden>0</hidden>
+    <uuid>UUID 1</uuid>
+    <proformaversion>2.0</proformaversion>
+    <taskrepository>https://repository.ostfalia.de</taskrepository>
+    <taskpath>/path/to/reversestring.zip</taskpath>
+    <taskfilename>testtask.zip</taskfilename>
+    <responsefilename>MyString.java</responsefilename>
+    <programminglanguage>java</programminglanguage>
+    <responsetemplate>//text in responsetemplate</responsetemplate>
+    <responseformat>editor</responseformat>
+    <responsefieldlines>10</responsefieldlines>
+    <attachments>0</attachments>
+    <maxbytes>10240</maxbytes>
+    <filetypes>.java, .jar</filetypes>
+    <taskstorage>1</taskstorage>
+    <aggregationstrategy>1</aggregationstrategy>
+    <gradinghints><![CDATA[<grading-hints><root function="sum"><test-ref ref="1" weight="2"></test-ref><test-ref ref="2" weight="3"/></root></grading-hints>]]></gradinghints>
+    <templates>temp.txt</templates>
+    <downloads>lib.txt,instruction.txt</downloads>
+    <modelsolfiles>ms1.txt, ms2.txt</modelsolfiles>
+    <comment format="html">
+      <text><![CDATA[<p>Check if the code uses a library function.</p>]]></text>
+    </comment>
+<templatefiles><file name="temp.txt" path="/" encoding="base64">Ly90ZXh0IGluIHJlc3BvbnNldGVtcGxhdGU=</file>
+</templatefiles>
+<downloadfiles><file name="instruction.txt" path="/" encoding="base64">SU5TVFJVQ1RJT04tRHVtbXk=</file>
+<file name="lib.txt" path="/" encoding="base64">TElCLUR1bW15</file>
+</downloadfiles>
+<modelsolutionfiles><file name="ms1.txt" path="/" encoding="base64">TVMxLUR1bW15</file>
+<file name="ms2.txt" path="/" encoding="base64">TVMyLUR1bW15</file>
+</modelsolutionfiles>
+<task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
+</task>
+<commentfiles></commentfiles>
+    <hint format="html">
+      <text><![CDATA[hint 1<br>]]></text>
+    </hint>
+    <hint format="html">
+      <text><![CDATA[hint 2<br>]]></text>
+    </hint>
+  </question>
+
+<!-- question: 368001  -->
+  <question type="proforma">
+    <name>
+      <text>proforma-003</text>
+    </name>
+    <questiontext format="html">
+      <text>Please code the reverse string function not using a library function.(äöüß)</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text><![CDATA[<p>You must not use a library function.</p>]]></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.2000000</penalty>
+    <hidden>0</hidden>
+    <uuid>UUID 2</uuid>
+    <proformaversion>2.0</proformaversion>
+    <taskrepository>https://repository.ostfalia.de</taskrepository>
+    <taskpath>/path/to/reversestring.zip</taskpath>
+    <taskfilename>testtask.zip</taskfilename>
+    <responsefilename>MyString.java</responsefilename>
+    <programminglanguage>python</programminglanguage>
+    <responsetemplate>//text in responsetemplate</responsetemplate>
+    <responseformat>filepicker</responseformat>
+    <responsefieldlines>10</responsefieldlines>
+    <attachments>3</attachments>
+    <maxbytes>10240</maxbytes>
+    <filetypes>.java, .jar</filetypes>
+    <taskstorage>1</taskstorage>
+    <aggregationstrategy>1</aggregationstrategy>
+    <gradinghints><![CDATA[<grading-hints><root function="sum"><test-ref ref="1" weight="2"></test-ref><test-ref ref="2" weight="3"/></root></grading-hints>]]></gradinghints>
+    <templates>codesnippet.py</templates>
+    <downloads>lib.txt,instruction.txt</downloads>
+    <modelsolfiles>ms1.txt, ms2.txt</modelsolfiles>
+    <comment format="html">
+      <text><![CDATA[<p>Check if the code uses a library function.</p>]]></text>
+    </comment>
+<templatefiles><file name="codesnippet.py" path="/" encoding="base64">Ly90ZXh0IGluIHJlc3BvbnNldGVtcGxhdGU=</file>
+</templatefiles>
+<downloadfiles><file name="instruction.txt" path="/" encoding="base64">SU5TVFJVQ1RJT04tRHVtbXk=</file>
+<file name="lib.txt" path="/" encoding="base64">TElCLUR1bW15</file>
+</downloadfiles>
+<modelsolutionfiles><file name="ms1.txt" path="/" encoding="base64">TVMxLUR1bW15</file>
+<file name="ms2.txt" path="/" encoding="base64">TVMyLUR1bW15</file>
+</modelsolutionfiles>
+<task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
+</task>
+<commentfiles></commentfiles>
+    <hint format="html">
+      <text><![CDATA[hint 1<br>]]></text>
+    </hint>
+    <hint format="html">
+      <text><![CDATA[hint 2<br>]]></text>
+    </hint>
+  </question>
+
+</quiz>

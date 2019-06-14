@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 0  -->
+  <question type="category">
+    <category>
+        <text>$course$/Default for C1</text>
+
+    </category>
+  </question>
+
+<!-- question: 1  -->
+  <question type="proforma">
+    <name>
+      <text>test question with German Umlauts (äöüß)</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>This is the Description of the task (äöüß).<br></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text><![CDATA[This is general feedback. (äöüß)<br>]]></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.2000000</penalty>
+    <hidden>0</hidden>
+    <uuid>UUID 1</uuid>
+    <proformaversion>2.0</proformaversion>
+    <taskrepository>https://repository.ostfalia.de</taskrepository>
+    <taskpath>tasks/zip/task.zip</taskpath>
+    <taskfilename>testtask.zip</taskfilename>
+    <responsefilename>testquestion.java</responsefilename>
+    <programminglanguage>java</programminglanguage>
+    <responsetemplate>This is a Response Template (äöüß)</responsetemplate>
+    <responseformat>editor</responseformat>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <taskstorage>1</taskstorage>
+    <aggregationstrategy>1</aggregationstrategy>
+    <gradinghints><![CDATA[<grading-hints><root function="sum"><test-ref weight="0" ref="1"><title>Compiler Test</title><test-type>java-compilation</test-type></test-ref><test-ref weight="1" ref="2"><title>Junit Test 1</title><test-type>unittest</test-type></test-ref></root></grading-hints>]]></gradinghints>
+    <templates>temp.txt</templates>
+    <downloads>lib.txt,instruction.txt</downloads>
+    <modelsolfiles>ms1.txt, ms2.txt</modelsolfiles>
+    <comment format="html">
+      <text><![CDATA[<p>This is an information for the grader (with äöüß)<br></p>]]></text>
+    </comment>
+<templatefiles><file name="temp.txt" path="/" encoding="base64">Ly90ZXh0IGluIHJlc3BvbnNldGVtcGxhdGUgKMOkw7bDvMOfKQ==</file>
+</templatefiles>
+<downloadfiles><file name="instruction.txt" path="/" encoding="base64">SU5TVFJVQ1RJT04tRHVtbXk=</file>
+<file name="lib.txt" path="/" encoding="base64">TElCLUR1bW15</file>
+</downloadfiles>
+<modelsolutionfiles><file name="ms1.txt" path="/" encoding="base64">TVMxLUR1bW15</file>
+<file name="ms2.txt" path="/" encoding="base64">TVMyLUR1bW15</file>
+</modelsolutionfiles>
+<task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
+</task>
+<commentfiles></commentfiles>
+    <hint format="html">
+      <text><![CDATA[<p>hint1<br></p>]]></text>
+    </hint>
+    <hint format="html">
+      <text><![CDATA[<p>hint2 (öäüß)<br></p>]]></text>
+    </hint>
+  </question>
+
+<!-- question: 368001  -->
+  <question type="proforma">
+    <name>
+      <text>second ProFormA question</text>
+    </name>
+    <questiontext format="html">
+      <text>Please code the reverse string function not using a library function.(äöüß)</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text><![CDATA[<p>You must not use a library function.(äöüß)</p>]]></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.2000000</penalty>
+    <hidden>0</hidden>
+    <uuid>UUID 1</uuid>
+    <proformaversion>2.0</proformaversion>
+    <taskrepository>https://repository.ostfalia.de</taskrepository>
+    <taskpath>/path/to/reversestring.zip</taskpath>
+    <taskfilename>testtask.zip</taskfilename>
+    <responsefilename>MyString.java</responsefilename>
+    <programminglanguage>python</programminglanguage>
+    <responsetemplate>//text in responsetemplate (äöüß)</responsetemplate>
+    <responseformat>filepicker</responseformat>
+    <responsefieldlines>10</responsefieldlines>
+    <attachments>3</attachments>
+    <maxbytes>10240</maxbytes>
+    <filetypes>.java, .jar</filetypes>
+    <taskstorage>1</taskstorage>
+    <aggregationstrategy>1</aggregationstrategy>
+    <gradinghints><![CDATA[<grading-hints><root function="sum"><test-ref weight="0" ref="1"><title>Compiler Test</title><test-type>java-compilation</test-type></test-ref><test-ref weight="1" ref="2"><title>Junit Test 1</title><test-type>unittest</test-type></test-ref></root></grading-hints>]]></gradinghints>
+    <templates>templ1.txt, templ2.txt</templates>
+    <downloads>lib.txt,instruction.txt</downloads>
+    <modelsolfiles>ms1.txt, ms2.txt</modelsolfiles>
+    <comment format="html">
+      <text><![CDATA[<p>Check if the code uses a library function.(äöüß)</p>]]></text>
+    </comment>
+<templatefiles><file name="templ1.txt" path="/" encoding="base64">Ly90ZXh0IGluIHJlc3BvbnNldGVtcGxhdGUgKMOkw7bDvMOfKQ==</file>
+<file name="templ2.txt" path="/" encoding="base64">VEVNUEwyLUR1bW15</file>
+</templatefiles>
+<downloadfiles><file name="instruction.txt" path="/" encoding="base64">SU5TVFJVQ1RJT04tRHVtbXk=</file>
+  <file name="lib.txt" path="/" encoding="base64">TElCLUR1bW15</file>
+</downloadfiles>
+<modelsolutionfiles><file name="ms1.txt" path="/" encoding="base64">TVMxLUR1bW15</file>
+<file name="ms2.txt" path="/" encoding="base64">TVMyLUR1bW15</file>
+</modelsolutionfiles>
+<task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
+</task>
+<commentfiles></commentfiles>
+    <hint format="html">
+      <text><![CDATA[hint 1<br>]]></text>
+    </hint>
+    <hint format="html">
+      <text><![CDATA[hint 2<br>]]></text>
+    </hint>
+  </question>
+
+</quiz>

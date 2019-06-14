@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="question/type/proforma/db" VERSION="20140113" COMMENT="XMLDB file for Moodle question/type/proforma"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="qtype_proforma_options" COMMENT="Extra options for proforma questions.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key linking to the question table."/>
+        <FIELD NAME="responseformat" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="editor" SEQUENCE="false" COMMENT="The type of input area students should be given for their response."/>
+        <FIELD NAME="responsefieldlines" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="15" SEQUENCE="false" COMMENT="Approximate height, in lines, of the input box the students should be given for their response."/>
+        <FIELD NAME="attachments" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether, and how many, attachments a student is allowed to include with their response. -1 means unlimited."/>
+        <FIELD NAME="maxbytes" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="100000" SEQUENCE="false" COMMENT="The maximum number of bytes for file upload"/>
+        <FIELD NAME="filetypes" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The allowed filetypes for file upload."/>
+        <FIELD NAME="comment" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Information shown to people with permission to manually grade the question, when they are grading."/>
+        <FIELD NAME="commentformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The text format for comment."/>
+        <FIELD NAME="uuid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The UUID of a task."/>
+        <!-- <FIELD NAME="modelsolution" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="An examplary solution to the question."/> -->
+        <FIELD NAME="responsetemplate" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The template to pre-populate student's response field during attempt."/>
+        <FIELD NAME="taskrepository" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="URI of repository."/>
+        <FIELD NAME="taskpath" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Location of task zip file in repository including filename."/>
+        <FIELD NAME="responsefilename" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Filename for user source code (if file upload is not used)."/>
+        <FIELD NAME="programminglanguage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Programming language"/>
+        <FIELD NAME="taskfilename" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Name of task file if stored in Moodle."/>
+        <FIELD NAME="taskstorage" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="task Location, 0=undefined, 1=internal, 2=external "/>
+        <!-- <FIELD NAME="downloads" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="List of filenames that can be downloaded by student for help"/> -->
+        <!-- filenames of files to be downloaded by student are stored in list
+        which is not so nice! -->
+        <FIELD NAME="downloads" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of names for downloadable files"/>
+        <FIELD NAME="displayfiles" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of names for display files"/>
+
+        <FIELD NAME="templates" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of further template filenames (to be be downloaded by student)"/>
+        <!--<FIELD NAME="instructions" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of further instruction filenames (to be be downloaded by student)"/>
+        <FIELD NAME="libraries" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of library filenames (to be be downloaded by student)"/> -->
+
+        <FIELD NAME="modelsolfiles" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of model solution files (to be be downloaded by student, for future use)"/>
+        <FIELD NAME="aggregationstrategy" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="aggregation strategy, 1=all or nothing, 2=weighted mean"/>
+        <FIELD NAME="gradinghints" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="editable grading hints"/>
+        <FIELD NAME="proformaversion" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="version of ProFormA task"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="questionid" TYPE="foreign-unique" FIELDS="questionid" REFTABLE="question" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+<!--
+    <TABLE NAME="qtype_proforma_feedback" COMMENT="Grader Output for ProFormA questions WIRD DIE WIRKLICH BENUTZT???">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" UNSIGNED="true" NOTNULL="true" SEQUENCE="true" NEXT="questionattemptid"/>
+        <FIELD NAME="questionattemptid" TYPE="int" LENGTH="10" UNSIGNED="true" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key linking to the question_attempts table." PREVIOUS="id" NEXT="feedback" />
+        <FIELD NAME="feedback" TYPE="text" LENGTH="medium" NOTNULL="true" SEQUENCE="false" COMMENT="The specific feedback generated by ProFormA grader." PREVIOUS="questionattemptid" />
+        <FIELD NAME="feedbackformat" TYPE="int" LENGTH="4" DEFAULT="0" NOTNULL="true" SEQUENCE="false" COMMENT="The format of the feedback." PREVIOUS="feedback" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="questionattemptid" />
+        <KEY NAME="questionattemptid" TYPE="foreign-unique" FIELDS="questionattemptid" REFTABLE="question_attempts" REFFIELDS="id" PREVIOUS="primary" />
+      </KEYS>
+    </TABLE>
+-->
+  </TABLES>
+</XMLDB>
