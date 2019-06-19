@@ -29,7 +29,8 @@ $string['pluginname_help'] = 'Programmieraufgabe basierend auf einer ProFormA-Au
 $string['pluginnameadding'] = 'ProFormA-Aufgabe hinzufügen';
 $string['pluginnameediting'] = 'ProFormA-Aufgabe ändern';
 $string['pluginnamesummary'] = 'Automatisch bewertete Programmieraufgabe: <br> 
-ACHTUNG: Neue Aufgaben müssen in die Moodle-Fragedatenbank <b>importiert</b> werden und können nur darüber eingebunden werden.';
+ACHTUNG: Neue Aufgaben müssen in die Moodle-Fragedatenbank <b>importiert</b> werden und können nur darüber eingebunden werden.<br>
+Einen Editor zum Erstellen von Aufgaben gibt es unter https://media.elan-ev.de/proforma/editor/releases.html.';
 $string['allowattachments'] = 'Max. Anzahl Dateien';
 $string['comment'] = 'Kommentar';
 $string['commentheader'] = 'Kommentar';
@@ -138,7 +139,8 @@ $string['weighted_mean'] = 'gewichtete Summe';
 $string['aggregationstrategy'] = 'Aggregationsstrategie';
 $string['aggregationstrategy_help'] = 'Aggregationsstrategie, die zum Ermitteln der Bewertung genutzt werden soll';
 
-$string['nocreate'] = 'Neue Fragen müssen extern (z.B. https://media.elan-ev.de/proforma/editor/releases.html) erzeugt und anschließend in die Fragensammlung importiert werden.';
+$string['nocreate'] = 'Neue Fragen müssen extern erzeugt und anschließend in die Fragensammlung importiert werden.<br>
+Einen Editor zum Erzeugen von ProFormA-Fragen gibt es hier: https://media.elan-ev.de/proforma/editor/releases.html.';
 
 
 

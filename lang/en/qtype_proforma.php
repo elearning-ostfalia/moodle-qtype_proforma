@@ -30,8 +30,8 @@ $string['pluginname_link'] = 'question/type/proforma';
 $string['pluginnameadding'] = 'Adding a ProFormA question';
 $string['pluginnameediting'] = 'Editing a ProFormA question';
 $string['pluginnamesummary'] = 'Programming question that will be graded automatically.<br>
-Note! New questions must be <b>imported</b> into the question bank and cannot be created this way!';
-
+Note! New questions must be <b>imported</b> into the question bank and cannot be created this way!<br>
+An editor for generating questions is here: https://media.elan-ev.de/proforma/editor/releases.html';
 $string['allowattachments'] = 'Max. number of uploaded files';
 $string['formateditor'] = 'Editor';
 $string['formatfilepicker'] = 'File picker';
