@@ -89,7 +89,7 @@ define(['jquery',
             // (means it is not visible if created) it must be refreshed
             // when the header is clicked to show the Codemirror window.
             // Otherwise the CodeMirror is not visible.
-            init_codemirror: function(textarea_id, readonly, mode, header_id) {
+            init_codemirror: function(textarea_id, readonly, mode, header_id, enlarge_width) {
                 //alert("init_codemirror called for " + textarea_id); //  + " Mimemodes " + cm.mimeModes);
                 // console.log("init_codemirror called for " + classname );
                 try {
@@ -108,22 +108,14 @@ define(['jquery',
                     // mode is not set when fromTextArea is used (why???)
                     // So mode is set later
                     var newMode =  map_proglang_to_codemirror_mode(mode);
-/*                    if (newMode == 'text/x-python') {
-                        editor.setOption("mode", "{name:'" + mode + "',version: 2,singleLineStringErrors: false}");
-                    } else {
-*/
-                        editor.setOption("mode", newMode);
-//                    }
-                    //editor.setOption("theme", "eclipse"); // needs additional css file
-                    //$(".CodeMirror").addClass("form-control");
+
+                    editor.setOption("mode", newMode);
+                    if (enlarge_width)
+                        editor.setSize("100%", null);
+
                     editor.refresh();
                     // refresh codemirror editors  -
                     // otherwise content is visible only after first click in window
-                    // setTimeout(function () {
-                    //     Object.keys(codemirror).forEach(function(item) {codemirror[item].refresh();});
-                    // }, 5);
-                    //setTimeout(function () {editor.refresh();}, 5);
-
                     if (header_id) {
                         $('#' + header_id).click(function (e) {
                             // refresh codemirror editor  -

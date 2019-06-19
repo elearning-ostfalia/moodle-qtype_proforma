@@ -223,11 +223,22 @@ class qtype_proforma_edit_form extends question_edit_form {
         // for this problem (I do not actually want to show a name!)
         $mform->addElement('textarea', 'responsetemplate', get_string('responsetemplate', 'qtype_proforma'), 'rows="20" cols="80"');
         if (get_config('qtype_proforma', 'usecodemirror')) {
+            global $PAGE;
+            require_once($CFG->dirroot . '/config.php');
             // TODO: move READONLY and WRITABLE to common class
             // TODO: where does textarea identifier come from?
-            global $PAGE;
-            $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                    array('id_responsetemplate', self::WRITABLE, 'java', 'id_responsetemplateheader'));
+            $moodleversion = $CFG->version;
+            //debugging('Moodle Version is ' . $moodleversion);
+            if ($moodleversion > 2018051700) {
+                // starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
+                // so this must be explicitly be done in Javascript.
+                $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
+                        array('id_responsetemplate', self::WRITABLE, 'java', 'id_responsetemplateheader', 1));
+            } else {
+                // In 3.4 resizing must be prohinited because the window is too small
+                $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
+                        array('id_responsetemplate', self::WRITABLE, 'java', 'id_responsetemplateheader'));
+            }
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
                     array('id_programminglanguage', 'id_responsetemplate'));
         }
