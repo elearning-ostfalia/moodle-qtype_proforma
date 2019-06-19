@@ -30,7 +30,8 @@ defined('MOODLE_INTERNAL') || die();
 
 // copy SimpleXmlWriter class into this file because other plugin code is
 // not available during update!
-class SimpleXmlWriter extends XMLWriter {
+// rename to UpgradeSimpleXmlWriter in order to avoid name clashes
+class UpgradeSimpleXmlWriter extends XMLWriter {
 
     function createAttribute($name, $value) {
         $this->startAttribute($name);
@@ -89,7 +90,7 @@ function extract_proformatask($category, $questionid, $taskfilename) {
     $task = new SimpleXMLElement($contents);
     unset($contents); // No need to keep this in memory.
 
-    $xw = new SimpleXmlWriter();
+    $xw = new UpgradeSimpleXmlWriter();
     $xw->openMemory();
 
     $xw->setIndent(1);
