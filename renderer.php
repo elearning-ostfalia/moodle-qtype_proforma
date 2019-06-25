@@ -506,7 +506,10 @@ class qtype_proforma_renderer extends qtype_renderer {
                 break;
         }
 
-        $result .= html_writer::tag('div', $content, $csscontent);
+        if ($format == 'plaintext')
+            $result .= html_writer::tag('pre', $content, $csscontent);
+        else
+            $result .= html_writer::tag('div', $content, $csscontent);
         return $result;
 
         //$result .= html_writer::end_tag('div');
