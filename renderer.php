@@ -365,7 +365,7 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         $response = $message;
         try {
-            $response = new SimpleXMLElement($message);
+            $response = new SimpleXMLElement($message, LIBXML_PARSEHUGE);
             if (!isset($response->{'separate-test-feedback'})) {
                 return $result .'UNSUPPORTED FEEDBACK FORMAT: ' . html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
             }
@@ -464,6 +464,7 @@ class qtype_proforma_renderer extends qtype_renderer {
         $level = (string) $feedback['level'];
         $title = (string) $feedback->title;
         $content = (string) $feedback->content;
+        $content_xml = $feedback->content->asXML();
         $format = (string) $feedback->content['format'];
         $result = '';
 
@@ -490,6 +491,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             $csscontent = array('class' => 'proforma_subtest_testlog');
         }
 
+
         //$result .= html_writer::start_tag('div');
         switch ($level) {
             case 'error':
@@ -507,9 +509,12 @@ class qtype_proforma_renderer extends qtype_renderer {
         }
 
         if ($format == 'plaintext')
-            $result .= html_writer::tag('pre', $content, $csscontent);
+            //$result .= html_writer::tag('div',
+            //        html_writer::tag('pre', $content_xml, $csscontent));
+            $result .= html_writer::tag('pre', $content_xml, $csscontent);
+            //$result .= html_writer::tag('div', $content_xml, $csscontent);
         else
-            $result .= html_writer::tag('div', $content, $csscontent);
+            $result .= html_writer::tag('pre', $content, $csscontent);
         return $result;
 
         //$result .= html_writer::end_tag('div');
@@ -666,7 +671,10 @@ class qtype_proforma_renderer extends qtype_renderer {
             // Access rules for Downloads must ensure that the student cannot see the
             // model solution before he or she should see it!!! This can be difficult.
 
-            $output .= html_writer::tag('div', 'File '. $ms . '<pre>'.
+            $output .= html_writer::tag('div', 'File '. $ms,
+                    array('class' => 'proforma_testlog_title'));
+
+            $output .= html_writer::tag('div', '<pre>'.
                     qtype_proforma::read_file_content($question->contextid,
                             qtype_proforma::FILEAREA_MODELSOL, $ms, $question->id) .
                     '</pre>', array('class' => 'proforma_testlog'));
