@@ -36,11 +36,12 @@
     font-weight: bold;
 }
 .proforma_testlog_title {
-    padding-left: 1cm;
+    padding-left: 0.5cm;
 }
 .proforma_testlog {
     padding-left: 0.5cm;
     font-family: Andale Mono, Monaco, Courier New, DejaVu Sans Mono, monospace;
+    white-space: pre-wrap;
 }
 .proforma_subtest_title {
     padding-left: 1cm;
@@ -54,7 +55,9 @@
     /*font-size: 0.73em;*/
     padding-left: 1.6cm;
     font-family: Andale Mono, Monaco, Courier New, DejaVu Sans Mono, monospace;
+    white-space: pre-wrap;
 }
+
 
 
 /*
