@@ -458,13 +458,14 @@ class qtype_proforma_renderer extends qtype_renderer {
     private function print_proforma_single_feedback($feedback, $teacher = false, $subtest = false,
             $printpassedinfo = false, $passed = false, $general = false) {
 
-        if ($teacher && !$this->is_teacher())
+        if ($teacher && !$this->is_teacher()) {
             return '';
+        }
 
         $level = (string) $feedback['level'];
         $title = (string) $feedback->title;
         $content = (string) $feedback->content;
-        $content_xml = $feedback->content->asXML();
+        //$content_xml = $feedback->content->asXML();
         $format = (string) $feedback->content['format'];
         $result = '';
 
@@ -480,17 +481,15 @@ class qtype_proforma_renderer extends qtype_renderer {
                 $falsefeedbackimg = $this->feedback_image((int) 0);
                 //$cssicon = array('class' => 'proforma_subtest_title', 'style' => 'font-size: 10%; background-size:10px');
                 //$result .= html_writer::tag('div', ($passed?$truefeedbackimg:$falsefeedbackimg), $cssicon);
-                $title = ($passed?$truefeedbackimg:$falsefeedbackimg) . $title;
+                $title = ($passed ? $truefeedbackimg : $falsefeedbackimg) . $title;
             } else {
                 // adjust left space
                 $csstitle = array('class' => 'proforma_subtest_title_2');
             }
-        }
-        else {
+        } else {
             $csstitle = array('class' => 'proforma_testlog_title');
-            $csscontent = array('class' => 'proforma_subtest_testlog');
+            $csscontent = array('class' => 'proforma_testlog');
         }
-
 
         //$result .= html_writer::start_tag('div');
         switch ($level) {
@@ -508,16 +507,24 @@ class qtype_proforma_renderer extends qtype_renderer {
                 break;
         }
 
-        if ($format == 'plaintext')
-            //$result .= html_writer::tag('div',
-            //        html_writer::tag('pre', $content_xml, $csscontent));
-            $result .= html_writer::tag('pre', $content_xml, $csscontent);
-            //$result .= html_writer::tag('div', $content_xml, $csscontent);
-        else
-            $result .= html_writer::tag('pre', $content, $csscontent);
-        return $result;
-
+        if (strlen($content) > 0) {
+            switch ($format) {
+                case 'plaintext':
+                    //$result .= html_writer::tag('div',
+                    //        html_writer::tag('pre', $content_xml, $csscontent));
+                    $result .= html_writer::tag('pre', htmlspecialchars($content), $csscontent);
+                    break;
+                //$result .= html_writer::tag('div', $content_xml, $csscontent);
+                case 'html':
+                    $result .= html_writer::tag('pre', $content, $csscontent);
+                    break;
+                default:
+                    debugging('missing or invalid format for feedback (student/teacher):' . $format);
+                    break;
+            }
+        }
         //$result .= html_writer::end_tag('div');
+        return $result;
     }
 
 
@@ -730,8 +737,8 @@ class qtype_proforma_renderer extends qtype_renderer {
                     '', true, true);
         }
 
-        if (isset($ghtest->description)) {
-            $result .= $ghtest->description;
+        if (isset($ghtest->description) and strlen($ghtest->description) > 0) {
+            $result .= html_writer::tag('span', $ghtest->description, array('class' => 'proforma_testlog_description'));
         }
 
         if ($internalError) {
