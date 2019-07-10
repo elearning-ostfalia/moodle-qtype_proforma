@@ -3,12 +3,14 @@
 <!-- question: 0  -->
   <question type="category">
     <category>
-        <text>$course$/Test questions</text>
-
+      <text>$course$/top/Test questions</text>
     </category>
+    <info format="html">
+      <text></text>
+    </info>
   </question>
 
-<!-- question: 368000  -->
+<!-- question: 382000  -->
   <question type="proforma">
     <name>
       <text>proforma-001</text>
@@ -22,6 +24,7 @@
     <defaultgrade>1.0000000</defaultgrade>
     <penalty>0.2000000</penalty>
     <hidden>0</hidden>
+    <idnumber></idnumber>
     <uuid>UUID 1</uuid>
     <proformaversion>2.0</proformaversion>
     <taskrepository>https://repository.ostfalia.de</taskrepository>
@@ -63,7 +66,7 @@
     </hint>
   </question>
 
-<!-- question: 368001  -->
+<!-- question: 382001  -->
   <question type="proforma">
     <name>
       <text>proforma-003</text>
@@ -77,6 +80,7 @@
     <defaultgrade>1.0000000</defaultgrade>
     <penalty>0.2000000</penalty>
     <hidden>0</hidden>
+    <idnumber></idnumber>
     <uuid>UUID 2</uuid>
     <proformaversion>2.0</proformaversion>
     <taskrepository>https://repository.ostfalia.de</taskrepository>

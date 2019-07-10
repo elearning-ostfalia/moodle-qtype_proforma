@@ -171,6 +171,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <defaultgrade>1</defaultgrade>
     <penalty>0.2</penalty>
     <hidden></hidden>
+    <idnumber></idnumber>
     <uuid>UUID 1</uuid>
     <proformaversion>2.0</proformaversion>
     <taskrepository>'.qtype_proforma_test_helper::QUESTION_REPOSITORY.'</taskrepository>
@@ -233,6 +234,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <defaultgrade>1</defaultgrade>
     <penalty>0.2</penalty>
     <hidden></hidden>
+    <idnumber></idnumber>    
     <uuid>UUID 1</uuid>
     <taskrepository>'.qtype_proforma_test_helper::QUESTION_REPOSITORY.'</taskrepository>
     <taskpath>'.qtype_proforma_test_helper::QUESTION_PATH.'</taskpath>
