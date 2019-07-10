@@ -39,6 +39,7 @@ class qtype_proforma_renderer extends qtype_renderer {
 
     private $collapse_id = 0;
 
+
     public function formulation_and_controls(question_attempt $qa,
             question_display_options $options) {
 
@@ -300,10 +301,10 @@ class qtype_proforma_renderer extends qtype_renderer {
                     return $result;
                 }
 
-            case qtype_proforma_grader::FEEDBACK_FORMAT_LC:
+/*            case qtype_proforma_grader::FEEDBACK_FORMAT_LC:
                 if (empty($feedback))
                     return $result . '<no feedback, maybe internal error>';
-                return $result . $this->convert_LC_message_to_html($feedback, $qa);
+                return $result . $this->convert_LC_message_to_html($feedback, $qa);*/
             case qtype_proforma_grader::FEEDBACK_FORMAT_PROFORMA2:
                 if (empty($feedback))
                     return $result . '<no feedback, maybe internal error>';
@@ -492,6 +493,9 @@ class qtype_proforma_renderer extends qtype_renderer {
         }
 
         //$result .= html_writer::start_tag('div');
+        //if ($teacher)
+        //    $result .= print_collapsible_region_start('', $this->create_collapsible_region_id(), '', '', true, true);
+
         switch ($level) {
             case 'error':
                 //$result .= html_writer::tag('b', $level);
@@ -523,19 +527,21 @@ class qtype_proforma_renderer extends qtype_renderer {
                     break;
             }
         }
+
+        //$result .= print_collapsible_region_end(true);
         //$result .= html_writer::end_tag('div');
         return $result;
     }
 
-
-    private function create_collapsible_region_id(question_attempt $qa) {
-        $qa_id = (empty($qa->get_database_id())?'x':$qa->get_database_id()) . '-' .
+    // background: often more than one question is displayed per page. In this case
+    // the collapsible regions do not work if the identifier is not unique
+    private function create_collapsible_region_id(question_attempt $qa = null) {
+        if ($qa != null)
+            $qa_id = (empty($qa->get_database_id())?'x':$qa->get_database_id()) . '-' .
                 (empty($qa->get_usage_id())?'y':$qa->get_usage_id());
-        /*        if (empty($qa_id))
-                    $qa_id = $qa->get_usage_id();
-                if (empty($qa_id))
-                    throw new Exception("no identifier for question available");
-        */
+        else
+            $qa_id = '0';
+
         $this->collapse_id++;
         return 'm-id-test-proforma-' . $qa_id . '-' . $this->collapse_id;
 
@@ -553,18 +559,17 @@ class qtype_proforma_renderer extends qtype_renderer {
             }
             // print further teacher feedback if any
             if ($this->is_teacher() && count($feedbacklist->{'teacher-feedback'})) {
-                //$result .= print_collapsible_region_start('', $this->create_collapsible_region_id($qa), '', '', true, true);
                 foreach ($feedbacklist->{'teacher-feedback'} as $feedback) {
                     $result .= $this->print_proforma_single_feedback($feedback, true, true);
                 }
-                //$result .= print_collapsible_region_end(true);
+
             }
         }
 
         return $result;
     }
 
-
+/*
     public function convert_LC_message_to_html($message, question_attempt $qa) {
         $xmldoc = new DOMDocument();
         if (!$xmldoc->loadXML($message, LIBXML_NOERROR )) {
@@ -596,16 +601,6 @@ class qtype_proforma_renderer extends qtype_renderer {
         $testresults = $taskresult->getElementsByTagName('testresult');
 
 
-        // TODO: find better way to create a unique identifier
-        // (background: often more than one question is displayed per page. In this case
-        // the collapsible regions do not waork if the identifier is not unique)
-        //$qa_id = (empty($qa->get_database_id())?'x':$qa->get_database_id()) . '-' .
-        //    (empty($qa->get_usage_id())?'y':$qa->get_usage_id());
-/*        if (empty($qa_id))
-            $qa_id = $qa->get_usage_id();
-        if (empty($qa_id))
-            throw new Exception("no identifier for question available");
-*/
         foreach ($testresults as $testresult) {
             $this->collapse_id++;
             $testname = $testresult->getElementsByTagName('testname')[0]->nodeValue;
@@ -614,7 +609,6 @@ class qtype_proforma_renderer extends qtype_renderer {
             // create unique identifier for each region
             // since there can be multiple regions per page!
             $id = $this->create_collapsible_region_id($qa);
-            //$id = 'm-id-test-proforma-' . $qa_id . '-' . $this->collapse_id;
 
             switch ($testgrade) {
                 case 'failed':
@@ -636,6 +630,7 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         return $output;
     }
+*/
 
     public function manual_comment(question_attempt $qa, question_display_options $options) {
         if ($options->manualcomment != question_display_options::EDITABLE) {
@@ -661,13 +656,11 @@ class qtype_proforma_renderer extends qtype_renderer {
         if (empty($question->modelsolfiles)) // $question->modelsolution))
             return '';
 
-        // todo: find better way for id...
-        $qa_id = 'm-modelsolution-'.(empty($qa->get_database_id())?'x':$qa->get_database_id()) . '-' .
-            (empty($qa->get_usage_id())?'y':$qa->get_usage_id());
+        $qa_id = $this->create_collapsible_region_id($qa);
 
         $output = print_collapsible_region_start('', $qa_id,
-            get_string('modelsolution', 'qtype_proforma'),
-            '', true, true);
+                get_string('modelsolution', 'qtype_proforma'),
+                '', true, true);
 
         // read model solution from file(s)
         foreach (explode(',',$question->modelsolfiles) as $ms) {
@@ -681,10 +674,10 @@ class qtype_proforma_renderer extends qtype_renderer {
             $output .= html_writer::tag('div', 'File '. $ms,
                     array('class' => 'proforma_testlog_title'));
 
-            $output .= html_writer::tag('div', '<pre>'.
+            $output .= html_writer::tag('div', '<xmp>'.
                     qtype_proforma::read_file_content($question->contextid,
                             qtype_proforma::FILEAREA_MODELSOL, $ms, $question->id) .
-                    '</pre>', array('class' => 'proforma_testlog'));
+                    '</xmp>', array('class' => 'proforma_testlog'));
         }
 
         // $output .= html_writer::tag('div', '<pre>'. $question->modelsolution .'</pre>', array('class' => 'proforma_testlog'));
