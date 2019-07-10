@@ -142,6 +142,9 @@ $string['aggregationstrategy_help'] = 'Aggregationsstrategie, die zum Ermitteln 
 $string['nocreate'] = 'Neue Fragen müssen extern erzeugt und anschließend in die Fragensammlung importiert werden.<br>
 Einen Editor zum Erzeugen von ProFormA-Fragen gibt es hier: https://media.elan-ev.de/proforma/editor/releases.html.';
 
+$string['internaltesterror'] = 'Während des Testlaufs wurde ein interner Fehler festgestellt.';
+
+
 
 
 

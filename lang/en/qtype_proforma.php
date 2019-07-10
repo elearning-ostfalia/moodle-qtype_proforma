@@ -148,4 +148,4 @@ $string['aggregationstrategy_help'] = 'Aggregation strategy used for grading thi
 $string['nocreate'] = 'Please use "import question" in order to create a new Proforma question.<br>
 ProFormA questions must be created with an external tool such as https://media.elan-ev.de/proforma/editor/releases.html.';
 
-
+$string['internaltesterror'] = 'Internal error in a test';

@@ -625,7 +625,9 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
         }
 
         if ($testsWithInternalError) {
-            return array(question_state::$needsgrading, null, 'internal error in one subtest', $result, $feedbackformat);
+            // TODO: get language string on display not here
+            return array(question_state::$needsgrading, null,
+                    get_string('internaltesterror', 'qtype_proforma'), $result, $feedbackformat);
         }
 
         return array($questionstate, $grade, '', $result, $feedbackformat);
