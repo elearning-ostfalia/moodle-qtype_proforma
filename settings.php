@@ -48,7 +48,7 @@ $settings->add(new admin_setting_configtext('qtype_proforma/graderuri_path',
 */
 $settings->add(new admin_setting_configtext('qtype_proforma/grading_timeout',
         get_string('grading_timeout', 'qtype_proforma'),
-        get_string('grading_timeout_desc', 'qtype_proforma'), 10,
+        get_string('grading_timeout_desc', 'qtype_proforma'), 40,
         PARAM_INT, 3));
 
 
