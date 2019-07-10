@@ -24,7 +24,7 @@ Feature: EDIT
       | Test questions   | proforma | proforma-003 | filepicker            |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" node in "Course administration"
+    And I navigate to "Question bank" in current page administration
 
   Scenario: Edit a ProFormA question
     When I click on "Edit" "link" in the "proforma-001" "table_row"

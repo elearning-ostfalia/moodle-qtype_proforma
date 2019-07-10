@@ -20,7 +20,7 @@ Feature: IMPORT
 
   @javascript @_file_upload
   Scenario: import ProFormA question.
-    When I navigate to "Import" node in "Course administration > Question bank"
+    When I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_xml" to "1"
     And I upload "question/type/proforma/tests/fixtures/testquestion_v2.xml" file to "Import" filemanager
     And I press "id_submitbutton"

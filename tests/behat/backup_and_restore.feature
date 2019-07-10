@@ -34,7 +34,7 @@ Feature: BACKUP AND RESTORE
       | Confirmation | Filename | test_backup.mbz |
     And I restore "test_backup.mbz" backup into a new course using this options:
       | Schema | Course name | Course 2 |
-    And I navigate to "Question bank" node in "Course administration"
+    And I navigate to "Question bank" in current page administration
     And I should see "proforma-001"
     And I should see "proforma-003"
     And I click on "Edit" "link" in the "proforma-001" "table_row"
