@@ -24,7 +24,6 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-
 defined('MOODLE_INTERNAL') || die();
 
 
@@ -33,29 +32,28 @@ defined('MOODLE_INTERNAL') || die();
 // rename to UpgradeSimpleXmlWriter in order to avoid name clashes
 class UpgradeSimpleXmlWriter extends XMLWriter {
 
-    function createAttribute($name, $value) {
+    public function create_attribute($name, $value) {
         $this->startAttribute($name);
         $this->text($value);
         $this->endAttribute();
     }
 
-    function createChildElementWithText($name, $text) {
+    public function create_childelement_with_text($name, $text) {
         $this->startElement($name);
         $this->text($text);
         $this->endElement();
     }
-
 }
 
 function extract_proformatask($category, $questionid, $taskfilename) {
 
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
-    echo 'Q/C/T=' . $questionid .' / '.$category.' / '.$taskfilename.'<br>';
+    echo 'Q/C/T=' . $questionid . ' / ' . $category . ' / ' . $taskfilename . '<br>';
     $file = $fs->get_file($category, 'qtype_proforma', 'task',
-            $questionid, '/' , $taskfilename);
+            $questionid, '/', $taskfilename);
     if (!$file) {
-        echo '<red><b>ERROR: could not find task file '. $taskfilename . '</b></red><br>';
+        echo '<red><b>ERROR: could not find task file ' . $taskfilename . '</b></red><br>';
         return null;
     }
 
@@ -63,8 +61,9 @@ function extract_proformatask($category, $questionid, $taskfilename) {
     $tempdir = make_temp_directory('proforma_import/' . $uniquecode);
     try {
         $files = $file->extract_to_pathname(get_file_packer('application/zip'), $tempdir);
-        if (!$files)
+        if (!$files) {
             throw new coding_exception("could not extract zip file");
+        }
 
         $filenames = array();
         $iterator = new DirectoryIterator($tempdir);
@@ -82,8 +81,7 @@ function extract_proformatask($category, $questionid, $taskfilename) {
     } catch (Exception $e) {
         fulldelete($tempdir);
         throw $e;
-    }
-    finally {
+    } finally {
         fulldelete($tempdir);
     }
 
@@ -99,17 +97,17 @@ function extract_proformatask($category, $questionid, $taskfilename) {
     $xw->startDocument('1.0', 'UTF-8');
 
     $xw->startElement('grading-hints');
-    //$xw->createAttribute('xmlns', 'urn:proforma:v2.0');
+    // $xw->createAttribute('xmlns', 'urn:proforma:v2.0');
 
     $xw->startElement('root');
-    $xw->createAttribute('function', 'sum');
+    $xw->create_attribute('function', 'sum');
 
     foreach ($task->tests->test as $test) {
-            $xw->startElement('test-ref');
-            $xw->createAttribute('ref', (string)$test['id']); // $id);
-            $xw->createAttribute('weight', '-1');
-            $xw->createChildElementWithText('title', (string)$test->title);
-            $xw->endElement(); // test-ref
+        $xw->startElement('test-ref');
+        $xw->create_attribute('ref', (string) $test['id']); // $id);
+        $xw->create_attribute('weight', '-1');
+        $xw->create_childelement_with_text('title', (string) $test->title);
+        $xw->endElement(); // test-ref
     }
 
     $xw->endElement(); // root
@@ -136,7 +134,7 @@ function initialise_proforma_gradinghints() {
         $contextid = get_proforma_contextid($DB, $question->questionid);
         $gradinghints = extract_proformatask($contextid, $question->questionid, $question->taskfilename);
         if (isset($gradinghints)) {
-            echo '<xmp>'. $gradinghints .'</xmp><br>';
+            echo '<xmp>' . $gradinghints . '</xmp><br>';
         }
         $DB->execute('UPDATE {qtype_proforma_options} ' .
                 'SET gradinghints = ? WHERE gradinghints is null and questionid = ?',
@@ -160,7 +158,7 @@ function update_proforma_download_filearea() {
         echo 'Q/C =' . $itemid;
         // read contextid
         $contextid = get_proforma_contextid($DB, $itemid);
-        echo '/' . $contextid .'<br>';
+        echo '/' . $contextid . '<br>';
 
         $files = explode(',', $question->instructions);
         if (count($files) > 0) {
@@ -168,7 +166,7 @@ function update_proforma_download_filearea() {
             $count = 0;
             $oldfiles = $fs->get_area_files($contextid, 'qtype_proforma', 'instruction', $itemid, 'id', false);
             foreach ($oldfiles as $oldfile) {
-                echo "FS[" .$oldfile->get_filename() ."]";
+                echo "FS[" . $oldfile->get_filename() . "]";
                 $filerecord = new stdClass();
                 $filerecord->filearea = 'download';
                 $fs->create_file_from_storedfile($filerecord, $oldfile);
@@ -176,20 +174,21 @@ function update_proforma_download_filearea() {
             }
             if ($count) {
                 $fs->delete_area_files($contextid, 'qtype_proforma', 'instruction', $itemid);
-                if ($count <> count($files))
-                    echo 'WARNING: INS count ' .$count . '<> count ' . count($files) .'<br>';
+                if ($count <> count($files)) {
+                    echo 'WARNING: INS count ' . $count . '<> count ' . count($files) . '<br>';
+                }
             }
         }
         echo '<br>';
 
-        $files = explode(',',$question->libraries);
+        $files = explode(',', $question->libraries);
         if (count($files) > 0) {
             echo ' libs=' . $question->libraries . PHP_EOL;
 
             $count = 0;
             $oldfiles = $fs->get_area_files($contextid, 'qtype_proforma', 'library', $itemid, 'id', false);
             foreach ($oldfiles as $oldfile) {
-                echo "FS[" .$oldfile->get_filename() ."]";
+                echo "FS[" . $oldfile->get_filename() . "]";
 
                 $filerecord = new stdClass();
                 $filerecord->filearea = 'download';
@@ -198,8 +197,9 @@ function update_proforma_download_filearea() {
             }
             if ($count) {
                 $fs->delete_area_files($contextid, 'qtype_proforma', 'instruction', $itemid);
-                if ($count <> count($files))
-                    echo 'WARNING: LIB count ' .$count . '<> count ' . count($files) . '<br>';
+                if ($count <> count($files)) {
+                    echo 'WARNING: LIB count ' . $count . '<> count ' . count($files) . '<br>';
+                }
             }
         }
         echo '<br>';
@@ -219,13 +219,12 @@ function get_proforma_contextid($DB, $itemid) {
             "FROM {files} " .
             "WHERE component = 'qtype_proforma' and itemid = ?", array($itemid));
 
-    //$files = $DB->get_records('files', "itemid = '" . $itemid . '" AND filearea = "instruction"');
     if (count($contextids) !== 1) {
         $contextids->close();
         throw new moodle_exception('database inconsistent: could not find contextid for question ' . $itemid);
     }
 
-    foreach($contextids as $id) {
+    foreach ($contextids as $id) {
         $contextid = $id->contextid;
     }
     $contextids->close();

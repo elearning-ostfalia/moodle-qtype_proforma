@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+
 /**
  * Upgrade code for the proforma question type.
  * @param int $oldversion the version we are upgrading from.

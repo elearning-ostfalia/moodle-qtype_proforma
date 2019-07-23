@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Helper class for creating XML
@@ -25,13 +25,13 @@
 
 class SimpleXmlWriter extends XMLWriter {
 
-    function createAttribute($name, $value) {
+    public function create_attribute($name, $value) {
         $this->startAttribute($name);
         $this->text($value);
         $this->endAttribute();
     }
 
-    function createChildElementWithText($name, $text) {
+    public function create_childelement_with_text($name, $text) {
         $this->startElement($name);
         $this->text($text);
         $this->endElement();

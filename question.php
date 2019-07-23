@@ -15,11 +15,11 @@
 // along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The ProFormA Question definition  
+ * The ProFormA Question definition
  *
  * @package    qtype
  * @subpackage proforma
- * @copyright  2009 The Open University 
+ * @copyright  2009 The Open University
  * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
@@ -33,14 +33,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/question/type/proforma/grader_2.php');
 require_once($CFG->dirroot . '/question/type/proforma/grader.php');
-
-/*
- * muss nach Settungs:
- *          <FIELD NAME="graderurl" TYPE="text" NOTNULL="true" DEFAULT="http://141.41.9.4:8080/api/v1/grading/prog-languages/praktomat/2/submissions" SEQUENCE="false" COMMENT="The ProFormA Grader URL."/>
-        <FIELD NAME="repository" TYPE="text" NOTNULL="true" DEFAULT="https://repository.ostfalia.de" SEQUENCE="false" COMMENT="The ProFormA Repository URL."/>
-        <FIELD NAME="templatepath" TYPE="text" NOTNULL="false" DEFAULT="/res/fhwf/ProFormA/" SEQUENCE="false" COMMENT="The template for a ProFormA Task Path."/>
-
- */
 
 
 /**
@@ -60,9 +52,6 @@ class qtype_proforma_question extends question_graded_automatically {
 
     // additional files for download in student view. All filenames are comma separated
     public $templates;
-
-    //public $instructions;
-    //public $libraries;
 
     public $downloads;
     public $displayfiles; // not used so far!!!
@@ -103,10 +92,11 @@ class qtype_proforma_question extends question_graded_automatically {
     public $proformaversion;
 
 
-    private function get_grader()  {
-        if ($this->grader == null)
+    private function get_grader() {
+        if ($this->grader == null) {
             $this->grader = new qtype_proforma_grader_2();
-        //$this->grader = new qtype_proforma_grader();
+            // $this->grader = new qtype_proforma_grader();
+        }
 
         return $this->grader;
     }
@@ -124,7 +114,6 @@ class qtype_proforma_question extends question_graded_automatically {
             */
             default:
                 return question_engine::make_behaviour('adaptiveexternalgrading', $qa, $preferredbehaviour);
-//                return question_engine::make_behaviour('interactivewithfeedback', $qa, $preferredbehaviour);
         }
     }
 
@@ -140,7 +129,6 @@ class qtype_proforma_question extends question_graded_automatically {
         }
         return "TODO: get_validation_error";
     }
-
 
 
     /**
@@ -166,7 +154,7 @@ class qtype_proforma_question extends question_graded_automatically {
     public function get_expected_data() {
         $expecteddata = array();
         switch ($this->responseformat) {
-/*            case 'editorfilepicker':
+            /*  case 'editorfilepicker':
                 $expecteddata['answer'] = PARAM_RAW;
                 $expecteddata['attachments'] = question_attempt::PARAM_FILES;
                 break;*/
@@ -193,22 +181,25 @@ class qtype_proforma_question extends question_graded_automatically {
             // return 'das ist ein Rückgabewert'.PHP_EOL.'von summarise response'.PHP_EOL.'guckst Du!';
             $code = $response['answer']; // return $response['answer'];
             $text = '';
-            if (is_a($code, 'question_file_loader'))
+            if (is_a($code, 'question_file_loader')) {
                 $text = $code->__toString();
-            else
+            } else {
                 $text = $code;
-            if (strlen($text) > self::SUMMARY_LENGTH)
+            }
+            if (strlen($text) > self::SUMMARY_LENGTH) {
                 return substr($text, 0, self::SUMMARY_LENGTH) . '...';
+            }
             return $text;
 
-            //return question_utils::to_plain_text($response['answer'],
-            //        $response['answerformat'], array('para' => false));
+            // return question_utils::to_plain_text($response['answer'],
+            // $response['answerformat'], array('para' => false));
         } else if (isset($response['attachments'])) {
 
             if (is_a($response['attachments'], 'question_file_loader')) {
                 $files = $response['attachments']->get_files();
-                if (!$files)
+                if (!$files) {
                     throw new coding_exception("no files attached");
+                }
 
                 if (count($files) > 1) {
                     // more than one file: return filenames
@@ -217,31 +208,22 @@ class qtype_proforma_question extends question_graded_automatically {
                         $filenames[] = $file->get_filename();
                     }
 
-                    return implode(', ', $filenames); // 'several files' . (array_values($files)[0])->get_filename();
+                    return implode(', ', $filenames);
                 }
                 // only one file: get first file
                 $file = array_values($files)[0];
-                if (!$file instanceof stored_file)
+                if (!$file instanceof stored_file) {
                     throw new coding_exception("wrong class");
-                // return content of file
-                $extension = pathinfo($file->get_filename())["extension"];
-                //if (strtolower($extension) === 'zip' or strtolower($extension) === 'jar') {
-                    return $file->get_filename();
-/*                }
-
-                $content = '('. $file->get_filename() . ') ' . $file->get_content();
-                if (strlen($content) > self::SUMMARY_LENGTH)
-                    return substr($content, 0, self::SUMMARY_LENGTH) . '...';
-                return $content;
-*/
+                }
+                // do not return content of file because we do not know if it is binary!
+                return $file->get_filename();
             }
-
 
             return '(uploaded file)';
         } else {
             // response data could be extracted from question step which
             // could be grader feedback without any user repsonse
-//            debugging('nothing to output ...');
+            // debugging('nothing to output ...');
             return null;
         }
     }
@@ -274,9 +256,10 @@ class qtype_proforma_question extends question_graded_automatically {
                 ($response['answer'] !== '');
         if (!empty($this->responsetemplate != '' && $hasinlinetext)) {
             // inline text equals to response template?
-            if ($this->responsetemplate == $response['answer'])
+            if ($this->responsetemplate == $response['answer']) {
                 // yes => no input in editor
                 $hasinlinetext = false;
+            }
         }
         $hasattachments = array_key_exists('attachments', $response)
             && $response['attachments'] instanceof question_response_files;
@@ -285,7 +268,7 @@ class qtype_proforma_question extends question_graded_automatically {
         if ($hasattachments) {
             $attachcount = count($response['attachments']->get_files());
             // if ($attachcount == 0) {
-            //     throw new coding_exception('no attachments found');
+            // throw new coding_exception('no attachments found');
             // }
         } else {
             $attachcount = 0;
@@ -304,19 +287,6 @@ class qtype_proforma_question extends question_graded_automatically {
             case 'editor':
                 $meetsconentreq = $hasinlinetext;
                 break;
-//            case 'editorfilepicker':
-//                $meetsconentreq = $hascontent;
-                // do not check here in order to get a
-                // useful feedback for student
-                /*
-                if ($this->inputwithfile) {
-                    $meetsconentreq = $hascontent;
-                } else {
-                    $meetsconentreq = (($hasinlinetext and ($attachcount == 0)) or
-                            (!$hasinlinetext and ($attachcount > 0)));
-                }
-                */
-//                break;
             default:
                 throw new coding_exception("invalid responseformat");
         }
@@ -376,8 +346,9 @@ class qtype_proforma_question extends question_graded_automatically {
      */
     public function grade_response(array $response) {
 
-        if (!$this->is_complete_response($response))
+        if (!$this->is_complete_response($response)) {
             throw new coding_exception('complete response expected');
+        }
 
         $hasinlinetext = array_key_exists('answer', $response) && ($response['answer'] !== '');
         $hasattachments = array_key_exists('attachments', $response)
@@ -392,60 +363,49 @@ class qtype_proforma_question extends question_graded_automatically {
 
         $dummy = $this->get_grader();
 
-        $grader_output = "";
+        $graderoutput = "";
         $code = "";
         if ($hasinlinetext) {
             $code = $response['answer'];
             if (!is_string($code)) {
                 if (is_a($code, 'question_file_loader')) {
-                    $newcode = $code-> __toString();
+                    $newcode = $code->__toString();
                     $code = $newcode;
-                }
-                else
+                } else {
                     throw new coding_exception('invalid datatype for grade_response');
+                }
             }
         }
 
         if ($attachcount > 0) {
             $files = $response['attachments']->get_files();
-            if (!$files)
+            if (!$files) {
                 throw new coding_exception("no files attached");
+            }
 
             // get first file
             $file = array_values($files)[0];
-            if (!$file instanceof stored_file)
+            if (!$file instanceof stored_file) {
                 throw new coding_exception("wrong class");
+            }
 
-            list($grader_output, $httpcode) = $this->grader->send_files_to_grader(
+            list($graderoutput, $httpcode) = $this->grader->send_files_to_grader(
                     $files,
                     $this);
-/*                    $this->responsefilename,
-                    $this->taskfilename,
-                    $this->taskrepository,
-                    $this->taskpath
-            ); */
         } else if (!empty($code)) {
-            list($grader_output, $httpcode) = $this->grader->send_code_to_grader(
+            list($graderoutput, $httpcode) = $this->grader->send_code_to_grader(
                     $code,
                     $this);
-/*                    $this->responsefilename,
-                    $this->taskfilename,
-                    $this->taskrepository,
-                    $this->taskpath
-            );*/
         } else {
             throw new coding_exception('no attachments and no code available');
         }
 
         $state = 'valid data SUBMITTED!';
+        list($state, $fraction, $error, $feedback, $feedbackformat) =
+            $this->grader->extract_grade($graderoutput, $httpcode, $this);
 
-        list($state, $fraction, $error, $feedback, $feedback_format) =
-            $this->grader->extract_grade($grader_output, $httpcode, $this);
-        // $testoutcomeserial = serialize($result);
-
-        // $fraction = 5 / 10;
-        return array($fraction, $state/*question_state::graded_state_for_fraction($fraction)*/,
-            array ('_feedback' => $feedback, '_errormsg' => $error, '_feedbackformat' => $feedback_format));
+        return array($fraction, $state,
+            array ('_feedback' => $feedback, '_errormsg' => $error, '_feedbackformat' => $feedbackformat));
     }
 
 
@@ -466,10 +426,10 @@ class qtype_proforma_question extends question_graded_automatically {
             // Response attachments visible if the question has them.
             return $this->attachments != 0;
 
-/*        } else if ($component == 'question' && $filearea == 'response_answer') {
+            /* } else if ($component == 'question' && $filearea == 'response_answer') {
             // Response attachments visible if the question has them.
             return $this->responseformat === 'editorfilepicker';
-*/
+            */
         } else if ($component == 'qtype_proforma' && $filearea == qtype_proforma::FILEAREA_COMMENT) {
             return $options->manualcomment && $args[0] == $this->id;
 
@@ -480,8 +440,9 @@ class qtype_proforma_question extends question_graded_automatically {
     }
 
     public function get_task_file() {
-        if ($this->taskstorage != qtype_proforma::INTERNAL_STORAGE)
+        if ($this->taskstorage != qtype_proforma::INTERNAL_STORAGE) {
             return null;
+        }
 
         $fs = get_file_storage();
 
@@ -500,12 +461,6 @@ class qtype_proforma_question extends question_graded_automatically {
         return $file;
     }
 
-
-    /**
-     * extract tests from task file
-     * @return array
-     * @throws coding_exception
-     */
     /*
     public function extract_data_from_taskfile() {
         // Retrieve the file from the Files API.

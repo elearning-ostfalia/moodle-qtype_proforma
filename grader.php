@@ -12,10 +12,10 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Interface to Grader  
+ * Interface to Grader
  *
  * @package    qtype
  * @subpackage proforma
@@ -50,13 +50,13 @@ class qtype_proforma_grader {
            ein Standard-DES-Passwort-Hash einen 2-Zeichen-Salt, ein
            MD5-basierter hingegen nutzt 12 Zeichen. */
 
-        $course_id = crypt($COURSE->id, 'pro#forma');
+        $courseid = crypt($COURSE->id, 'pro#forma');
 
-        if (crypt($COURSE->id, $course_id) != $course_id) {
+        if (crypt($COURSE->id, $courseid) != $courseid) {
             debugging("course_id does not match!");
         }
 
-        return $course_id;
+        return $courseid;
     }
 
 
@@ -69,12 +69,12 @@ class qtype_proforma_grader {
            ein Standard-DES-Passwort-Hash einen 2-Zeichen-Salt, ein
            MD5-basierter hingegen nutzt 12 Zeichen. */
 
-        $user_id = crypt($USER->id, 'pro#forma');
-        if (crypt($USER->id, $user_id) != $user_id) {
+        $userid = crypt($USER->id, 'pro#forma');
+        if (crypt($USER->id, $userid) != $userid) {
             debugging("user_id does not match!");
         }
 
-        return $user_id;
+        return $userid;
     }
 
     private function set_dummy_result() {
@@ -127,7 +127,7 @@ class qtype_proforma_grader {
 
     // virtual
     public function extract_grade($result, $httpcode, qtype_proforma_question $question) {
-        return $this->extract_grade_from_LON_CAPA_format_result($result);
+        return $this->extract_grade_from_lon_capa_format_result($result);
     }
     /**
      * @param $result
@@ -138,7 +138,7 @@ class qtype_proforma_grader {
      * 4. grading message (or '' in case of error)
      * @throws coding_exception
      */
-    private function extract_grade_from_LON_CAPA_format_result($result) {
+    private function extract_grade_from_lon_capa_format_result($result) {
         $questionstate = question_state::$invalid;
         $grade = 0;
         $feedbackformat = self::FEEDBACK_FORMAT_LC;
@@ -165,9 +165,9 @@ class qtype_proforma_grader {
         }
 
         $awarddetails = $xmldoc->getElementsByTagName('awarddetail');
-        $result_awarded = $xmldoc->getElementsByTagName('awarded');
+        $resultawarded = $xmldoc->getElementsByTagName('awarded');
         $messages = $xmldoc->getElementsByTagName('message');
-        if (count($awarddetails) != 1 || count($result_awarded) != 1 || count($messages) != 1) {
+        if (count($awarddetails) != 1 || count($resultawarded) != 1 || count($messages) != 1) {
             // ERROR: XML result does not contain element awarddetail
             // (invalid format?)
             // TODO handle unknown format
@@ -175,10 +175,9 @@ class qtype_proforma_grader {
         }
 
         // get expected elements
-        $awarded = $result_awarded[0]->nodeValue;
+        $awarded = $resultawarded[0]->nodeValue;
         $award = $awarddetails[0]->nodeValue;
         $message = $messages[0]; // leave DOM element
-
 
         // evaluate grading result
         switch (strtoupper($award)) {
@@ -215,46 +214,42 @@ class qtype_proforma_grader {
     }
 
 
-
-
-     private function post_to_grader(&$post_fields, qtype_proforma_question $question) {
+    private function post_to_grader(&$postfields, qtype_proforma_question $question) {
         global $USER, $COURSE;
 
-         if ($question->taskstorage == qtype_proforma::INTERNAL_STORAGE) { // do not use === here!
-             $task =  $question->get_task_file();
-             if (!$task instanceof stored_file) {
-                 throw new coding_exception("no task file available");
-             }
+        if ($question->taskstorage == qtype_proforma::INTERNAL_STORAGE) { // do not use === here!
+            $task = $question->get_task_file();
+            if (!$task instanceof stored_file) {
+                throw new coding_exception("no task file available");
+            }
+            $postfields['task-file'] = $task;
+        } else {
+            $postfields['task-repo'] = $question->taskrepository;
+            $postfields['task-path'] = $question->taskpath;
+        }
 
-             $post_fields['task-file'] = $task;
-         } else {
-             $post_fields['task-repo'] = $question->taskrepository;
-             $post_fields['task-path'] = $question->taskpath;
-         }
+        // debugging('send user=' . $USER->id . '='. $user_id .', course='. $COURSE->id . '='.$course_id);
+        $postfields['course'] = $this->get_course();
+        $postfields['user'] = $this->get_user();
 
-         // debugging('send user=' . $USER->id . '='. $user_id .', course='. $COURSE->id . '='.$course_id);
+        $protocolhost = get_config('qtype_proforma', 'graderuri_host');
 
-         $post_fields['course'] = $this->get_course();
-         $post_fields['user'] = $this->get_user();
+        /*
+        if (!empty(strstr($protocolhost, '2.2.2.2' ))) {
+         // no actual host configured (debug host name)
+         // => return fake result (in order to avoid waiting for timeout
+         // of unreachable host)
+         return $this->set_dummy_result(); // fake
+        }
+        */
+        $path = get_config('qtype_proforma', 'graderuri_path');
+        $uri = $protocolhost . $path;
 
-         $protocolhost = get_config('qtype_proforma', 'graderuri_host');
+        $curl = new curl();
+        $output = $curl->post($uri, $postfields);
+        $info = $curl->get_info();
 
-/*
-         if (!empty(strstr($protocolhost, '2.2.2.2' ))) {
-             // no actual host configured (debug host name)
-             // => return fake result (in order to avoid waiting for timeout
-             // of unreachable host)
-             return $this->set_dummy_result(); // fake
-         }
-*/
-         $path = get_config('qtype_proforma', 'graderuri_path');
-         $uri = $protocolhost . $path;
-
-         $curl = new curl();
-         $output = $curl->post($uri, $post_fields);
-         $info = $curl->get_info();
-
-         return array($output, $info->httpcode===200?null:$info->httpcode) ;
+        return array($output, $info->httpcode === 200 ? null : $info->httpcode);
     }
 
 
@@ -267,21 +262,17 @@ class qtype_proforma_grader {
      * @param $taskrepo
      * @param $taskpath
      */
-    public function send_file_to_grader($file, qtype_proforma_question $question) { // $filename, $taskfilename, $taskrepo, $taskpath) {
+    public function send_file_to_grader($file, qtype_proforma_question $question) {
 
         if (!$file instanceof stored_file) {
             throw new coding_exception("wrong class");
         }
 
-//        debugging("VERSION 1");
-
-        $post_fields = array(
+        $postfields = array(
                 'submission-file' => $file,
                 'submission-filename' => $question->responsefilename);
-                //'task-repo' => $question->taskrepository,
-                //'task-path' => $question->taskpath);
 
-        return $this->post_to_grader($post_fields, $question);
+        return $this->post_to_grader($postfields, $question);
     }
 
     public function send_files_to_grader($file, qtype_proforma_question $question) {
@@ -297,25 +288,16 @@ class qtype_proforma_grader {
      * @return mixed|string
      */
     public function send_code_to_grader($code, qtype_proforma_question $question) {
-    // $classname, $taskfilename, $taskrepo, $taskpath) {
         if (empty($code)) {
             throw new coding_exception('send_code_to_grader with empty code');
         }
 
         $filename = $question->responsefilename;
-/*        if (get_config('qtype_proforma', 'javafile_without_package')) {
-            $array = explode('/', $filename);
-            $array= explode('\\', end($array)); // normally not needed
-            $filename = end($array);
-        }
-*/
 
-        $post_fields = array(
+        $postfields = array(
             'submission' => $code,
             'submission-filename' => $filename);
-            //'task-repo' => $question->taskrepository,
-            //'task-path' => $question->taskpath);
 
-        return $this->post_to_grader($post_fields, $question);
+        return $this->post_to_grader($postfields, $question);
     }
 }

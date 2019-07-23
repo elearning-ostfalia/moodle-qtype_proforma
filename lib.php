@@ -12,10 +12,10 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin library  
+ * Plugin library
  *
  * @package    qtype
  * @subpackage proforma
@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
-
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -66,8 +65,8 @@ function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $fo
             break;
         default:
             $pass = false;
-            foreach (qtype_proforma::fileareas() as $proforma_filearea => $value) {
-                if ($proforma_filearea === $filearea) {
+            foreach (qtype_proforma::fileareas() as $proformafilearea => $value) {
+                if ($proformafilearea === $filearea) {
                     if (!has_capability('moodle/question:flag', $context)) {
                         return false;
                     } else {
@@ -76,8 +75,9 @@ function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $fo
                 }
             }
 
-            if (!$pass)
+            if (!$pass) {
                 return false;
+            }
     }
 
     // Leave this line out if you set the itemid to null in make_pluginfile_url (set $itemid to 0 instead).
@@ -87,10 +87,10 @@ function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $fo
     // user really does have access to the file in question.
 
     // Extract the filename / filepath from the $args array.
-    //$filename = array_pop($args); // The last item in the $args array.
+    // $filename = array_pop($args); // The last item in the $args array.
 
     if (!$args) {
-        //echo 'no file given';
+        // echo 'no file given';
         return false;
     }
 
@@ -101,21 +101,7 @@ function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $fo
     $fs = get_file_storage();
     $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $itemid, $filepath , $filename);
     if (!$file) {
-/*
-        if ($filearea === 'download') {
-            // hack:
-            // when converting fileareas instruction and library to download
-            // the files itself were not converted.
-            // In order to enable downloading these files use the old fileare names
-            $file = $fs->get_file($context->id, 'qtype_proforma', 'library', $itemid, $filepath , $filename);
-            if (!$file) {
-                $file = $fs->get_file($context->id, 'qtype_proforma', 'instruction', $itemid, $filepath , $filename);
-                if (!$file)
-                    return false;
-            }
-        } else
-*/
-            return false; // The file does not exist.
+        return false; // The file does not exist.
     }
 
     // We can now send the file back to the browser

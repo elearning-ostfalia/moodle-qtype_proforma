@@ -12,10 +12,10 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The ProFormA Question configuration settings  
+ * The ProFormA Question configuration settings
  *
  * @package    qtype
  * @subpackage proforma
@@ -24,23 +24,21 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-
 defined('MOODLE_INTERNAL') || die();
 
 // Options for connection to Praktomat/Middleware
 $settings->add(new admin_setting_heading('grader',
-    get_string('grader_heading', 'qtype_proforma'), ''));
+        get_string('grader_heading', 'qtype_proforma'), ''));
 
 $settings->add(new admin_setting_configtext('qtype_proforma/graderuri_host',
-    get_string('graderuri_host', 'qtype_proforma'),
-    get_string('graderuri_host_desc', 'qtype_proforma'),
-    'http://localhost:8001'));
+        get_string('graderuri_host', 'qtype_proforma'),
+        get_string('graderuri_host_desc', 'qtype_proforma'),
+        'http://localhost:8001'));
 
 $settings->add(new admin_setting_configtext('qtype_proforma/graderuri_path',
-    get_string('graderuri_path', 'qtype_proforma'),
-    get_string('graderuri_path_desc', 'qtype_proforma'),
-    '/api/v2/submissions', PARAM_PATH, 80));
-
+        get_string('graderuri_path', 'qtype_proforma'),
+        get_string('graderuri_path_desc', 'qtype_proforma'),
+        '/api/v2/submissions', PARAM_PATH, 80));
 
 /*$settings->add(new admin_setting_configcheckbox('qtype_proforma/javafile_without_package',
         get_string('javafile_without_package', 'qtype_proforma'),
@@ -51,39 +49,23 @@ $settings->add(new admin_setting_configtext('qtype_proforma/grading_timeout',
         get_string('grading_timeout_desc', 'qtype_proforma'), 40,
         PARAM_INT, 3));
 
-
 // Use CodeMirror
 $settings->add(new admin_setting_heading('CodeMirror',
-    'CodeMirror', ''));
+        'CodeMirror', ''));
 
 $settings->add(new admin_setting_configcheckbox('qtype_proforma/usecodemirror',
-    get_string('usecodemirror', 'qtype_proforma'),
-    get_string('usecodemirror_desc', 'qtype_proforma'), 1));
+        get_string('usecodemirror', 'qtype_proforma'),
+        get_string('usecodemirror_desc', 'qtype_proforma'), 1));
 
 // Misc
 
 $settings->add(new admin_setting_heading('misc',
         get_string('questiondefaults', 'qtype_proforma'), ''));
 
-// Default options for repository
-//$settings->add(new admin_setting_heading('repository',
-//        get_string('repository', 'qtype_proforma'), ''));
-
-/*$settings->add(new admin_setting_configtext('qtype_proforma/repositoryhost',
-        get_string('repositoryhost', 'qtype_proforma'),
-        get_string('repositoryhost_desc', 'qtype_proforma'),
-        'https://...'));
-
-$settings->add(new admin_setting_configtext('qtype_proforma/repositorypath',
-        get_string('repositorypath', 'qtype_proforma'),
-        get_string('repositorypath_desc', 'qtype_proforma'),
-        '', PARAM_PATH, 80)); // /res/fhwf/ProFormA/Tests/borm/zip/
-*/
-
 
 $settings->add(new admin_setting_configtext('qtype_proforma/defaultpenalty',
-    get_string('defaultpenalty', 'qtype_proforma'),
-    get_string('defaultpenalty_desc', 'qtype_proforma'), 0.1));
+        get_string('defaultpenalty', 'qtype_proforma'),
+        get_string('defaultpenalty_desc', 'qtype_proforma'), 0.1));
 
 // can we use this??? because float format is depending on language (. or ,)
 /*

@@ -12,10 +12,10 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The ProFormA Question Backup Functions  
+ * The ProFormA Question Backup Functions
  *
  * @package    qtype
  * @subpackage proforma
@@ -35,7 +35,6 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
  *
  */
 class backup_qtype_proforma_plugin extends backup_qtype_plugin {
-
     /**
      * Returns the qtype information to attach to question element
      */
@@ -53,13 +52,13 @@ class backup_qtype_proforma_plugin extends backup_qtype_plugin {
         // Now create the qtype own structures.
         $dummy = new qtype_proforma();
 
-        $extra_fields = $dummy->extra_question_fields();
-        array_shift($extra_fields); // remove first element (= table name)
+        $extrafields = $dummy->extra_question_fields();
+        array_shift($extrafields); // remove first element (= table name)
 
-        $extra_fields[] = 'comment';
-        $extra_fields[] = 'commentformat';
+        $extrafields[] = 'comment';
+        $extrafields[] = 'commentformat';
 
-        $proforma = new backup_nested_element('proforma', array('id'), $extra_fields);
+        $proforma = new backup_nested_element('proforma', array('id'), $extrafields);
 
         // Now the own qtype tree.
         $pluginwrapper->add_child($proforma);

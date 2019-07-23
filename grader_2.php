@@ -24,7 +24,6 @@
  * @author     K.arin Borm <k.borm[at]ostfalia.de>
  */
 
-
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 require_once($CFG->dirroot . '/question/type/proforma/grader.php');
@@ -275,7 +274,7 @@ EOD;
         $xw->startElement('submission');
 
         // Attributes for submission
-        $xw->createAttribute('xmlns', 'urn:proforma:v2.0');
+        $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
         // $xw->createAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
         // $xw->createAttribute('xsi:schemaLocation', 'urn:proforma:v2.0 schema.xsd');
 
@@ -283,7 +282,7 @@ EOD;
         if ($question->taskstorage == qtype_proforma::INTERNAL_STORAGE) { // do not use === here!
             // external task in http field
             $xw->startElement('external-task');
-            $xw->createAttribute('uuid', $question->uuid);
+            $xw->create_attribute('uuid', $question->uuid);
             $xw->text('http-file:'.$question->taskfilename);
             // $xw->text('http-file:task-file');
             $xw->endElement(); // lms
@@ -297,7 +296,7 @@ EOD;
         if (isset($files)) {
             if (count($files) == 1) {
                 $file = array_values($files)[0];
-                $xw->createChildElementWithText('external-submission', 'http-file:' . $file->get_filename());
+                $xw->create_childelement_with_text('external-submission', 'http-file:' . $file->get_filename());
             } else {
                 $httpfilename = '';
                 foreach ($files as $file) {
@@ -307,7 +306,7 @@ EOD;
                         $httpfilename = $httpfilename . ',' . $file->get_filename();
                     }
                 }
-                $xw->createChildElementWithText('external-submission', 'http-file:' . $httpfilename);
+                $xw->create_childelement_with_text('external-submission', 'http-file:' . $httpfilename);
             }
         } else if (isset($code)) {
             // $xw->createChildElementWithText('external-submission', 'http-text:'.$filename);
@@ -316,7 +315,7 @@ EOD;
             $xw->startElement('files');
                 $xw->startElement('file');
                     $xw->startElement('embedded-txt-file');
-                    $xw->createAttribute('filename', $filename);
+                    $xw->create_attribute('filename', $filename);
                     // $xw->startCdata();
                     $xw->writeCData($code);
                     // $xw->endCdata();
@@ -329,23 +328,23 @@ EOD;
 
         // lms
         $xw->startElement('lms');
-        $xw->createAttribute('url', $CFG->wwwroot);
+        $xw->create_attribute('url', $CFG->wwwroot);
 
-        $xw->createChildElementWithText('submission-datetime', date('c', time()));
-        $xw->createChildElementWithText('user-id', $this->get_user());
-        $xw->createChildElementWithText('course-id', $this->get_course());
+        $xw->create_childelement_with_text('submission-datetime', date('c', time()));
+        $xw->create_childelement_with_text('user-id', $this->get_user());
+        $xw->create_childelement_with_text('course-id', $this->get_course());
 
         $xw->endElement(); // lms
 
         // result-spec
         $xw->startElement('result-spec');
         // Attributes for submission
-        $xw->createAttribute('format', 'xml');
-        $xw->createAttribute('structure', 'separate-test-feedback');
-        $xw->createAttribute('lang', 'de');
+        $xw->create_attribute('format', 'xml');
+        $xw->create_attribute('structure', 'separate-test-feedback');
+        $xw->create_attribute('lang', 'de');
 
-        $xw->createChildElementWithText('student-feedback-level', 'debug' /*'info'*/);
-        $xw->createChildElementWithText('teacher-feedback-level', 'debug');
+        $xw->create_childelement_with_text('student-feedback-level', 'debug' /*'info'*/);
+        $xw->create_childelement_with_text('teacher-feedback-level', 'debug');
 
         $xw->endElement(); // result-spec
 

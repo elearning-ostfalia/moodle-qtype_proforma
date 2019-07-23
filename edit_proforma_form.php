@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * editiing form for ProFormA question
@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
-
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -373,7 +372,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
     }
 
-    function definition_after_data() {
+    public function definition_after_data() {
         // debugging('called');
     }
 

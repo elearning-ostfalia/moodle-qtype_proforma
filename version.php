@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * The ProFormA Question version information
@@ -27,10 +27,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_proforma';
-$plugin->version   = 2019071001;
+$plugin->version   = 2019072300;
 
 $plugin->requires  = 2017111300;
-$plugin->release = '1.0.3';
+$plugin->release = '1.0.4';
 
 $plugin->maturity  = MATURITY_STABLE;
 

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Strings for component 'qtype_proforma', language 'de''
@@ -28,7 +28,7 @@ $string['pluginname'] = 'ProFormA-Aufgabe';
 $string['pluginname_help'] = 'Programmieraufgabe basierend auf einer ProFormA-Aufgabendatei mit automatischer Bewertung. Der Studierende kann entweder seine Lösung als Datei hochladen oder sie direkt in einem Editor eingeben. Dazu kann eine Code-Vorlage vorgegeben werden. ';
 $string['pluginnameadding'] = 'ProFormA-Aufgabe hinzufügen';
 $string['pluginnameediting'] = 'ProFormA-Aufgabe ändern';
-$string['pluginnamesummary'] = 'Automatisch bewertete Programmieraufgabe: <br> 
+$string['pluginnamesummary'] = 'Automatisch bewertete Programmieraufgabe: <br>
 ACHTUNG: Neue Aufgaben müssen in die Moodle-Fragedatenbank <b>importiert</b> werden und können nur darüber eingebunden werden.<br>
 Einen Editor zum Erstellen von Aufgaben gibt es unter https://media.elan-ev.de/proforma/editor/releases.html.';
 $string['allowattachments'] = 'Max. Anzahl Dateien';
@@ -65,7 +65,6 @@ $string['filename_hint'] = $string['filename'];
 $string['filename_hint_help'] = 'Dateiname wird bei Nutzung des Editors in der studentischen Anzeige (anstelle von Filepicker) für den eingereichten Code als Dateiname angenommen';
 
 $string['taskfilename'] = 'ProFormA-Aufgabendatei';
-//$string['taskfile'] = 'Task file';
 $string['taskfilename_hint'] = $string['taskfilename'];
 $string['taskfilename_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei';
 
@@ -83,7 +82,7 @@ $string['graderuri_host_desc'] = 'Protokoll und Server der Grader URI';
 $string['graderuri_path'] = 'URI: Pfad';
 $string['graderuri_path_desc'] = 'Pfad der Grader URI';
 $string['javafile_without_package'] = 'Entfernen des Java-Paket-Pfads beim Einreichen mit Editoreingabe';
-$string['javafile_without_package_desc'] = 'Falls zur Eingabe der Einreichung der Editor verwendet wird, wird der an den Grader gesendete Dateiname aus der Musterlösung erzeugt.  
+$string['javafile_without_package_desc'] = 'Falls zur Eingabe der Einreichung der Editor verwendet wird, wird der an den Grader gesendete Dateiname aus der Musterlösung erzeugt.
 Wenn diese einen Paket-Pfad enthält, kann es sein, dass der Grader damit nicht klarkommt. Mit Setzen dieses Schalters wird der Pfad nicht mitgesendet.';
 
 $string['grading_timeout'] = 'Grading Timeout';
@@ -96,8 +95,6 @@ $string['gradeinternalerror'] = 'Beim Bewerten ist ein Fehler aufgetreten. Die A
 
 $string['usecodemirror'] = 'CodeMirror als Quelltexteditor benutzen';
 $string['usecodemirror_desc'] = 'CodeMirror kann im Editor (studentische Sicht) und für die Eingabe der Codevorlage (Dozentensicht) eingesetzt werden. ';
-//$string['uuid'] = 'UUID';
-//$string['uuid_hint'] = $string['uuid'];
 $string['uuid_hint_help'] = 'UUID (universal unique identifier) der ProFormA-Aufgabendatei';
 $string['configmaxbytes'] = 'maximale Summe der Dateigrößen der studentischen Einreichung';
 $string['maxbytes'] = 'Max. Größe aller Dateien';
@@ -113,12 +110,6 @@ $string['templates_hint_help'] = 'Namen der zusätzlichen Codevorlagen (meist gi
 $string['downloads'] = 'Dateianhänge zur Aufgabenstellung';
 $string['downloads_hint'] = $string['downloads'];
 $string['downloads_hint_help'] = 'Dateien, die zum Lösen der Aufgabe benötigt werden und von den Studierenden heruntergeladen werden können';
-//$string['instructions'] = 'Allgemeine Anhänge';
-//$string['instructions_hint'] = $string['instructions'];
-//$string['instructions_hint_help'] = 'Dateien enthalten zusätzliche Angaben zur Aufgabenbeschreibung';
-//$string['libraries'] = 'Bibliotheken';
-//$string['libraries_hint'] = $string['libraries'];
-//$string['libraries_hint_help'] = 'Bibliotheken, die vom Studierenden zum Entwickeln seiner Lösung genutzt werden können/müssen und die zum Download bereitgestellt werden';
 $string['modelsolfiles'] = 'Datei(en) der Musterlösung';
 $string['modelsolfiles_hint'] = $string['modelsolfiles'];
 $string['modelsolfiles_hint_help'] = 'Dateien, die zusammen die Musterlösung bilden';

@@ -12,14 +12,14 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * The ProFormA Question texts
  *
  * @package    qtype
  * @subpackage proforma
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com} 
+ * @copyright  1999 onwards Martin Dougiamas {@link http://moodle.com}
  * @copyright  2018 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -68,7 +68,6 @@ $string['filename_hint'] = $string['filename'];
 $string['filename_hint_help'] = 'filename used for submitted source code';
 
 $string['taskfilename'] = 'Task file';
-//$string['taskfile'] = 'Task file';
 $string['taskfilename_hint'] = $string['taskfilename'];
 $string['taskfilename_hint_help'] = 'Corresponding ProFormA task file';
 
@@ -86,12 +85,11 @@ $string['graderuri_host_desc'] = 'Protocol and Server Part of Grader URI';
 $string['graderuri_path'] = 'URI: Path';
 $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 $string['javafile_without_package'] = 'send Java submission file without package path to grader';
-$string['javafile_without_package_desc'] = 'in case of editor submission format teh submiited filename is generated directly from Model solution. 
+$string['javafile_without_package_desc'] = 'in case of editor submission format teh submiited filename is generated directly from Model solution.
 If the filename contains the package path this might lead to grading errors. Set this flag if the package path shall be ignored.';
 
 $string['grading_timeout'] = 'Grading Timeout';
 $string['grading_timeout_desc'] = 'Timout for grading request in seconds';
-
 
 $string['passed'] = 'PASSED';
 $string['failed'] = 'FAILED';
@@ -99,7 +97,6 @@ $string['gradepassed'] = 'Your answer is correct.';
 $string['gradefailed'] = 'Your answer is not completely correct.';
 $string['gradepartialpassed'] = 'Your answer is partially correct. For details see information below. ';
 $string['gradeinternalerror'] = 'Your answer could not be graded due to an internal error in the grading system.';
-
 
 $string['usecodemirror'] = 'Use CodeMirror as source code editor. ';
 $string['usecodemirror_desc'] = 'For student response and for input of model solution and template. ';
@@ -119,12 +116,6 @@ $string['templates_hint_help'] = 'Filenames of additional template files (normal
 $string['downloads'] = 'Downloadable files';
 $string['downloads_hint'] = $string['downloads'];
 $string['downloads_hint_help'] = 'Files needed to solve the task (can be downloaded by student)';
-//$string['instructions'] = 'General attachments';
-//$string['instructions_hint'] = $string['instructions'];
-//$string['instructions_hint_help'] = 'Files containing further information for the task';
-//$string['libraries'] = 'Library files';
-//$string['libraries_hint'] = $string['libraries'];
-//$string['libraries_hint_help'] = 'Library files for download to the student';
 $string['modelsolfiles'] = 'Model solution files';
 $string['modelsolfiles_hint'] = $string['modelsolfiles'];
 $string['modelsolfiles_hint_help'] = 'Model solution files';

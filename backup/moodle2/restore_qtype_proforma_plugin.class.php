@@ -12,10 +12,10 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The ProFormA Question Restoration functions  
+ * The ProFormA Question Restoration functions
  *
  * @package    qtype
  * @subpackage proforma
@@ -23,9 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 defined('MOODLE_INTERNAL') || die();
-
 
 /**
  * restore plugin class that provides the necessary information
@@ -38,7 +36,7 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
      */
     protected function define_question_plugin_structure() {
         return array(
-            new restore_path_element('proforma', $this->get_pathfor('/proforma'))
+                new restore_path_element('proforma', $this->get_pathfor('/proforma'))
         );
     }
 
@@ -48,7 +46,7 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
     public function process_proforma($data) {
         global $DB;
 
-        $data = (object)$data;
+        $data = (object) $data;
         $oldid = $data->id;
 
         if (!isset($data->responsetemplate)) {
@@ -80,7 +78,7 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
      */
     public static function define_decode_contents() {
         return array(
-            new restore_decode_content('qtype_proforma_options', 'comment', 'qtype_proforma'),
+                new restore_decode_content('qtype_proforma_options', 'comment', 'qtype_proforma'),
         );
     }
 
