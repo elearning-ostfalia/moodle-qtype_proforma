@@ -36,7 +36,6 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     $dbman = $DB->get_manager ();
     $table = new xmldb_table('qtype_proforma_options');
 
-
     if ($oldversion < 2017122001) {
         // Define field filetypes to be added to question_proforma_options.
         $field = new xmldb_field('filetypes', XMLDB_TYPE_TEXT, null, null, null, null, null, 'maxbytes');
@@ -218,7 +217,6 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         // maybe default values are not set!!
         $field = new xmldb_field('proformaversion', XMLDB_TYPE_TEXT, null, null, null, null, null, 'gradinghints');
         if (!$dbman->field_exists($table, $field)) {
-            //$dbman->drop_field($table, $field, 'proformaversion');
             $dbman->add_field($table, $field);
         }
         $field = new xmldb_field('aggregationstrategy', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 1, 'modelsolfiles');
@@ -239,10 +237,9 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         // merge fileareas to download
         update_proforma_download_filearea();
         // DO NOT DO THIS unless the hash for the files is converted!
-        //$DB->execute('UPDATE {files} '.
-        //        'SET filearea = "download" ' .
-        //        'WHERE (filearea = "library" or filearea = "instruction") and component ="qtype_proforma"');
-
+        // $DB->execute('UPDATE {files} '.
+        // 'SET filearea = "download" ' .
+        // 'WHERE (filearea = "library" or filearea = "instruction") and component ="qtype_proforma"');
 
         $field = new xmldb_field('instructions', XMLDB_TYPE_TEXT, null, null, null, null, null, 'templates');
         if ($dbman->field_exists($table, $field)) {
