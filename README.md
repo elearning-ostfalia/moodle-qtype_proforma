@@ -12,6 +12,7 @@ itself does not care about the programming language as far as there is support b
 It does not contain any code depending on a particular programming language 
 (except for syntax highlighting).
 
+
   
 Note: The renderer code partly bases upon the renderer from essay question type (Moodle core).
 Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copied from Coderunner 
@@ -59,9 +60,12 @@ Java code with JUnit.
 Instead a ProFormA task must be created with an external tool and then imported into Moodle.   
 We use a separate editor for creating those tasks (https://github.com/ProFormA/formatEditor). 
 There is an online version available at 
-https://media.elan-ev.de/proforma/editor/releases/3.0.1/proformaEditor.html.       
+https://media.elan-ev.de/proforma/editor/releases/3.0.1/proformaEditor.html       
 Of course ProFormA tasks can be created with from different other external tools.
 
+Import process:
+
+![import](doc/import_en.png "import")
 
 ## Settings
 
