@@ -187,7 +187,7 @@ class qtype_proforma_question extends question_graded_automatically {
                 $text = $code;
             }
             if (strlen($text) > self::SUMMARY_LENGTH) {
-                return substr($text, 0, self::SUMMARY_LENGTH) . '...';
+                return mb_substr($text, 0, self::SUMMARY_LENGTH) . '...';
             }
             return $text;
 
