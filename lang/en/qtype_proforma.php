@@ -140,3 +140,4 @@ $string['nocreate'] = 'Please use "import question" in order to create a new Pro
 ProFormA questions must be created with an external tool such as https://media.elan-ev.de/proforma/editor/releases.html.';
 
 $string['internaltesterror'] = 'Internal error in a test';
+$string['privacy:metadata'] = 'The ProFormA question type plugin does not store any personal data.';

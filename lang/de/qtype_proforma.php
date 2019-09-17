@@ -135,7 +135,7 @@ Einen Editor zum Erzeugen von ProFormA-Fragen gibt es hier: https://media.elan-e
 
 $string['internaltesterror'] = 'Während des Testlaufs wurde ein interner Fehler festgestellt.';
 
-
+$string['privacy:metadata'] = 'Das ProFormA Frageformat Plugin speichert keine personenbezogenen Daten.';
 
 
 
