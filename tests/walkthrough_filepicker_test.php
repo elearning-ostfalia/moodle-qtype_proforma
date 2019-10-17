@@ -81,7 +81,7 @@ class qtype_proforma_walkthrough_filepicker_testcase extends qtype_proforma_walk
 
 
 
-
+/* TODO: check what test is actually doing ...
     public function test_deferredfeedback_attempt_on_last() {
         global $PAGE;
 
@@ -132,9 +132,11 @@ class qtype_proforma_walkthrough_filepicker_testcase extends qtype_proforma_walk
         $this->quba = question_engine::make_questions_usage_by_activity('unit_test',
                 context_system::instance());
         $this->quba->set_preferred_behaviour($preferredbehaviour);
+        // SLOT = number of question within quiz (1.question)
         $this->slot = $this->quba->add_question($q, 1);
+        $this->question = $q;
         $this->quba->start_question_based_on($this->slot, $oldqa);
-        $this->prepare_test($preferredbehaviour, $q);
+        $this->prepare_test($preferredbehaviour, $this->quba->get_question(1));
 
         $this->check_step_count(1);
         $this->save_to_database();
@@ -191,10 +193,6 @@ class qtype_proforma_walkthrough_filepicker_testcase extends qtype_proforma_walk
         $this->finish_attempt();
         $this->check_gave_up();
 
-/*            $this->check_current_state(question_state::$needsgrading);
-        $this->check_current_mark(null);
-        $this->check_step_count(3);
-*/
         $this->save_to_database();
 
         // Now start a new attempt based on the old one.
@@ -217,7 +215,7 @@ class qtype_proforma_walkthrough_filepicker_testcase extends qtype_proforma_walk
         $this->load_from_database();
         $this->check_not_yet_graded();
     }
-
+*/
 
     public function run_test_multiple_tries_1($preferredbehaviour, $no_of_tries) {
         // user is needed for upload

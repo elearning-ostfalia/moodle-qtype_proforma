@@ -47,6 +47,7 @@ require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_bas
 
 class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthrough_test_base {
 
+
     private $behaviours_multiple_tries = array(
             array('interactive', self::interactive_tries),
             array('adaptive', self::interactive_tries),
@@ -62,14 +63,16 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
         $testfunction('adaptive');
         print('immediatefeedback'.PHP_EOL);flush();
         $testfunction('immediatefeedback');
-        print('deferredfeedback'.PHP_EOL);flush();
-        $testfunction('deferredfeedback');
+
         print('interactive'.PHP_EOL);flush();
         $testfunction('interactive');
         print('interactivecountback'.PHP_EOL);flush();
         $testfunction('interactivecountback');
         print('immediatecbm'.PHP_EOL);
         $testfunction('immediatecbm');
+
+        print('deferredfeedback'.PHP_EOL);flush();
+        $testfunction('deferredfeedback');
 
     }
 
@@ -484,6 +487,32 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
 
             // Verify  => response is graded
             $this->check_graded_right($preferredbehaviour != 'adaptivenopenalty'?0.8:1.0); // , true);
+        });
+    }
+
+
+    /**
+     * save correct, submit, save wrong answer, finish
+     */
+    public function test_test_multiple_tries_4() {
+        $this->run_on_mulitiple_tries_behaviours(function($preferredbehaviour, $no_of_tries) {
+            // Create a proforma question.
+            $q = test_question_maker::make_question('proforma', 'editor');
+            $this->start_attempt_at_question($q, $preferredbehaviour, 1);
+            $this->prepare_test($preferredbehaviour, $q);
+
+            // Save a correct response.
+            $this->press_submit(self::CORRECT_RESPONSE);
+            $this->check_graded_right();
+
+            $this->save(self::WRONG_RESPONSE, '2');
+            // Verify, not yet graded
+            $this->check_not_yet_graded();
+
+            // Finish the attempt
+            $this->finish_attempt();
+            // Verify  => response is graded
+            $this->check_graded_wrong();
         });
     }
 

@@ -391,14 +391,14 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         $fs->create_file_from_string($filerecord, $contents);
     }
 
-    private function save_response($response) {
+    private function save_response($response, $sequencecheck = '1') {
         $prefix = $this->quba->get_field_prefix($this->slot);
         $fieldname = $prefix . 'answer';
         $this->quba->process_all_actions(null, array(
                 'slots'                    => $this->slot,
                 $fieldname                 => $response,
                 $fieldname . 'format'      => FORMAT_HTML,
-                $prefix . ':sequencecheck' => '1',
+                $prefix . ':sequencecheck' => $sequencecheck,
         ));
     }
 
@@ -513,11 +513,11 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         }
     }
 
-    protected function check_contains_submit() {
+/*    protected function check_contains_submit() {
         $this->assertTag(array('tag' => 'input', 'attributes' => array('type' => 'submit')),
                 $this->currentoutput);
     }
-
+*/
     protected function check_contains_textarea($name, $content = '', $height = 10) {
         $fieldname = $this->quba->get_field_prefix($this->slot) . $name;
 
@@ -529,6 +529,28 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         if (!is_null($content)) {
             $this->assertRegExp('/' . preg_quote(s($content), '/') . '/', $this->currentoutput);
         }
+    }
+
+    protected function check_verify_button_enabled($exists = true, $enabled = true) {
+        $doc = new DOMDocument();
+        $doc->loadHTML($this->currentoutput, LIBXML_NOERROR);
+        $options = array();
+        $options['tag'] = 'input';
+        $options['class'] = 'submit';
+        // $options['attributes'] = 'disabled';
+        $result = $this->findNodes($doc, $options);
+        if (!$exists) {
+            $this->assertFalse($result);
+            return;
+        }
+        $this->assertEquals(1, count($result));
+        $element = $result[0];
+        $this->assertNotEquals(null, $element);
+        $value = $element->getAttribute('disabled');
+        if ($enabled)
+            $this->assertEquals('', $value);
+        else
+            $this->assertEquals('disabled', $value);
     }
 
     protected function check_answer_text($content = null, $isReadonly = false) {
@@ -620,6 +642,8 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         $this->check_step_count($this->expected_step_counter);
         $this->check_current_mark($mark);
         $this->render();
+        $verify_exists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $this->check_verify_button_enabled($verify_exists);
         $this->check_answer_text($this->current_response, // self::CORRECT_RESPONSE,
                 (self::EXPECTED_BEHAVIOUR == "interactivewithfeedback" or $this->is_finished)?true:false);
         $this->check_current_output(
@@ -674,6 +698,8 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         $this->render();
         // answer field is disabled because you have to press 'Try again' Button
         // $this->check_answer_text($response, true); //????
+        $verify_exists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $this->check_verify_button_enabled($verify_exists);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
                 // $this->get_contains_general_feedback_expectation($q),
@@ -698,6 +724,8 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         $this->check_current_state(question_state::$todo);
         $this->check_current_mark(null);
         $this->render();
+        $verify_exists = $this->preferredbehaviour != 'deferredfeedback';
+        $this->check_verify_button_enabled($verify_exists);
         $this->check_answer_text($answer);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
@@ -724,6 +752,8 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         }
 
         $this->render();
+        $verify_exists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $this->check_verify_button_enabled($verify_exists);
         $this->check_answer_text(null, true);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
@@ -755,9 +785,9 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
                 if ($internalerror)
                     $this->check_current_mark(null);
                 else {
-                    if (!$initialstate)
-                        $this->check_current_mark(0.0);
-                    else
+                    //if (!$initialstate)
+                    //    $this->check_current_mark(0.0);
+                    //else
                         $this->check_current_mark(null);
                 }
                 break;
@@ -767,6 +797,8 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
 
         $this->render();
         $this->check_answer_text();
+        $verify_exists = $this->preferredbehaviour != 'deferredfeedback';
+        $this->check_verify_button_enabled($verify_exists);
 //        if (!$this->is_finished)
 //            $this->check_contains_submit();
 /*        $this->check_current_output(
@@ -801,6 +833,8 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         $this->check_current_mark(null);
 
         $this->render();
+        $verify_exists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $this->check_verify_button_enabled($verify_exists);
         $this->check_answer_text(null, true);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
@@ -935,7 +969,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
 
 
 
-    protected function save($response)
+    protected function save($response, $sequencecheck = '1')
     {
         $this->check_step_count($this->expected_step_counter);
         $this->store_response_data($response, null);
@@ -945,7 +979,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         $this->last_attachments = $this->current_attachments;
         $this->current_attachments = null;
 */
-        $this->save_response($response);
+        $this->save_response($response, $sequencecheck);
         if (!$this->is_same_response()) {
             $this->expected_step_counter++;
         }
