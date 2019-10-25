@@ -413,8 +413,14 @@ class qtype_proforma_renderer extends qtype_renderer {
 
     private function is_teacher() {
         global $COURSE, $USER;
-        $context = context_course::instance($COURSE->id);
-        return has_capability('moodle/question:editmine', $context, $USER->id);
+        if ($COURSE) {
+            $context = context_course::instance($COURSE->id);
+            if ($context) {
+                return has_capability('moodle/grade:viewhidden', $context);
+            }
+        }
+
+        return false;
     }
 
     private function print_proforma_single_feedback($feedback, $teacher = false, $subtest = false,

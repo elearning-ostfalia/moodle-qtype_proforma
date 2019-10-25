@@ -21,7 +21,7 @@
  * @subpackage proforma
  * @copyright  2017 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author     K.arin Borm <k.borm[at]ostfalia.de>
+ * @author     K. Borm <k.borm[at]ostfalia.de>
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -373,7 +373,7 @@ EOD;
         $path = get_config('qtype_proforma', 'graderuri_path');
         $uri = $protocolhost . $path;
 
-        // return array($this->set_dummy_result2(), 200); // fake
+        // return array($this->set_dummy_result3(), 200); // fake
 
         $curl = new curl();
         $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'grading_timeout');

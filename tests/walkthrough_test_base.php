@@ -843,7 +843,10 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
 
         global $COURSE, $USER;
         $context = context_course::instance($COURSE->id);
-        if (has_capability('moodle/question:editmine', $context, $USER->id)) {
+
+
+        global $COURSE, $USER;
+        if (has_capability('moodle/grade:viewhidden', $context, $USER->id)) {
             $this->check_current_output($this->get_contains_specific_feedback_expectation());
         } else {
             $this->check_current_output($this->get_does_not_contain_specific_feedback_expectation());
