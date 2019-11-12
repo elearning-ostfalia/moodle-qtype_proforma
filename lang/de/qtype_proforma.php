@@ -60,17 +60,27 @@ $string['repositorypath'] = 'Verzeichnis im Repository';
 $string['repositorypath_desc'] = 'Verzeichnis einer ProFormA-Aufgabe im Repository';
 
 
-$string['filename'] = 'Dateiname der studentischen Einreichung';
+$string['filename'] = 'Dateiname';
 $string['filename_hint'] = $string['filename'];
-$string['filename_hint_help'] = 'Dateiname wird bei Nutzung des Editors in der studentischen Anzeige (anstelle von Filepicker) für den eingereichten Code als Dateiname angenommen';
+$string['filename_hint_help'] = 'Da bei Nutzung des Editors als Eingabeform kein Dateiname zum Kompilieren vorhanden ist, muss dieser fest vorgegeben werden.';
 
 $string['taskfilename'] = 'ProFormA-Aufgabendatei';
 $string['taskfilename_hint'] = $string['taskfilename'];
 $string['taskfilename_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei';
 
-$string['proglang'] = 'Syntax Highlighting';
+$string['compile'] = 'Compilation';
+$string['code'] = 'Quellcode';
+
+
+$string['highlight'] = 'Syntax Highlighting';
+$string['highlight_hint'] = $string['proglang'];
+$string['highlight_hint_help'] = 'Programmiersprache, die für das Syntax Highlighting genutzt werden soll';
+
+$string['proglang'] = 'Programmiersprache';
 $string['proglang_hint'] = $string['proglang'];
-$string['proglang_hint_help'] = 'Programmiersprache, die für das Syntax Highlighting genutzt werden soll';
+$string['proglang_hint_help'] = 'Verwendete Programmiersprache der Aufgabe';
+$string['other'] = 'andere';
+
 
 $string['miscellaneousheader'] = 'Verschiedenes';
 $string['defaultpenalty'] = 'Abzug bei Fehlversuchen';

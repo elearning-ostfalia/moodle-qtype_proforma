@@ -49,8 +49,12 @@ class qtype_proforma extends question_type {
 
     const FILEAREA_COMMENT = 'comment';
 
+    // Question is stored in external repostory.
     const INTERNAL_STORAGE = 1;
+    // Question is imported and then stored as file in Moodle Data.
     const EXTERNAL_STORAGE = 2;
+    // Question is created as Moodle question in Form Editor and only stored for caching purposes.
+    const CACHE_STORAGE = 3;
 
     const ALL_OR_NOTHING = 1;
     const WEIGHTED_SUM = 2;

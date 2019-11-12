@@ -71,9 +71,18 @@ $string['taskfilename'] = 'Task file';
 $string['taskfilename_hint'] = $string['taskfilename'];
 $string['taskfilename_hint_help'] = 'Corresponding ProFormA task file';
 
-$string['proglang'] = 'Syntax highlighting';
+$string['highlight'] = 'Syntax highlighting';
+$string['highlight_hint'] = $string['highlight'];
+$string['highlight_hint_help'] = 'The programming language is used to set syntax highlighting in all editors associated with this question';
+
+$string['proglang'] = 'Programming language';
 $string['proglang_hint'] = $string['proglang'];
-$string['proglang_hint_help'] = 'The programming language is used to set syntax highlighting in all editors associated with this question';
+$string['proglang_hint_help'] = 'Programming language of task';
+$string['other'] = 'other';
+
+$string['compile'] = 'Compilation';
+$string['code'] = 'Source Code';
+
 
 $string['miscellaneousheader'] = 'Miscellaneous';
 $string['defaultpenalty'] = 'Default penalty';
