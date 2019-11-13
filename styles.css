@@ -82,7 +82,8 @@ CodeMirror specific styles
     height: 300px;
     color: black;
     direction: ltr;
-    border: solid 1px; /* NEW TODO: sollte besser über Moodle kommen!! */
+    border: solid 1px; /* NEW TODO: should be derived from Moodle!! */
+    resize: vertical;
 }
 
 /* PADDING */
