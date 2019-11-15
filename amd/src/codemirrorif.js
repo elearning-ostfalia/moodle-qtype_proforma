@@ -99,7 +99,7 @@ define(['jquery',
                         matchBrackets: true,
                         autoCloseBrackets: true,
                         styleActiveLine: true,
-                        readOnly: readonly ? true : false,
+                        readOnly: readonly,
                         extraKeys: {'Tab': function(){editor.replaceSelection('    ' , 'end');}},
                         lineNumbers: true
                         //viewportMargin: Infinity
@@ -110,8 +110,9 @@ define(['jquery',
                     var newMode =  map_proglang_to_codemirror_mode(mode);
 
                     editor.setOption("mode", newMode);
-                    if (enlarge_width)
+                    if (enlarge_width) {
                         editor.setSize("100%", null);
+                    }
 
                     editor.refresh();
                     // refresh codemirror editors  -
@@ -125,9 +126,49 @@ define(['jquery',
                             }, 5);
                         });
                     }
+
+                    // make Codemirror resizable which is unfortunately not a feature of Codemirror:
+                    // resize code is from https://codepen.io/sakifargo/pen/KodNyR
+                    // see https://github.com/codemirror/CodeMirror/issues/850
+                    // (does not work with Edge since Edge does not support CSS-resize)
+                    var wrapper = editor.getWrapperElement().parentNode; // get DIV parent
+                    wrapper.style.resize = "vertical"; // add resize handle to parent
+                    wrapper.style.overflow = "hidden"; // do not show scrollbars in parent
+                    // A fixed initial height is required for the resize handle to appear and
+                    // to not fall into a shrinking loop due to the neg. offset in cm_resize()! :-o
+                    // (also needed when editor initially does not contain any text)
+                    wrapper.style.height = "25em"; // editor.getWrapperElement().offsetHeight; // "25em";
+                    //wrapper.classList.add("form-control");
+                    // editor.getWrapperElement().classList.add("form-control");
+
+                    function resizeObserver() {
+                        function cm_resize() {
+                            // And CM needs room for the resize handle...
+                            editor.setSize(wrapper.clientWidth-10, wrapper.clientHeight);
+                            editor.refresh();
+                        }
+
+                        cm_resize(); // adjust size
+
+                        if (window.ResizeObserver) {
+                            new ResizeObserver(cm_resize).observe(wrapper);
+                        } else if (window.MutationObserver) {
+                            // resizing the browser is not detected with MutationObserver
+                            new MutationObserver(cm_resize).observe(wrapper, {attributes: true});
+                        }
+                        else {
+                            // e.g. Edge???
+                        }
+                    }
+
+                    if( document.readyState !== 'loading' ) {
+                        resizeObserver();
+                    } else {
+                        document.addEventListener("DOMContentLoaded",resizeObserver());
+                    }
+
                 } catch(err) {
                     alert("Exception caught in codemirrorif.js function init_codemirror\n " + err.toString());
-                    return;
                 }
             }
         };
