@@ -79,8 +79,7 @@ CodeMirror specific styles
 .CodeMirror {
     /* Set height, width, borders, and global font properties here */
     font-family: monospace;
-    /*height: 300px;*/
-    /*color: red */ /*black*/;
+    height: 350px;
     direction: ltr;
     border: solid 1px #ced4da;; /* NEW TODO: should be derived from Moodle!!  form-control */
     /*resize: vertical;*/
