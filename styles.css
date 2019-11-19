@@ -79,35 +79,27 @@ CodeMirror specific styles
 .CodeMirror {
     /* Set height, width, borders, and global font properties here */
     font-family: monospace;
-    height: 300px;
-    color: black;
+    /*height: 300px;*/
+    /*color: red */ /*black*/;
     direction: ltr;
-    border: solid 1px; /* NEW TODO: should be derived from Moodle!! */
-    resize: vertical;
+    border: solid 1px #ced4da;; /* NEW TODO: should be derived from Moodle!!  form-control */
+    /*resize: vertical;*/
 }
+
+/*
+.CodeMirror {
+    resize: vertical;
+    overflow: auto !important;
+}
+*/
 
 /* PADDING */
-
-/* NEW: no padding for left side */
-/*
-.CodeMirror.form-control {
-	padding-left: 0px;
-	padding-top: 0px;
-}
-*/
-/* NEW: does not work!
-moodle changes border colour when focused
- CodeMirror.form-control:focus {
-	border-color:red;
-}
-*/
-
-
 
 .CodeMirror-lines {
     padding: 4px 0; /* Vertical padding around content */
 }
-.CodeMirror pre {
+.CodeMirror pre.CodeMirror-line,
+.CodeMirror pre.CodeMirror-line-like {
     padding: 0 4px; /* Horizontal padding of content */
 }
 
@@ -153,7 +145,12 @@ moodle changes border colour when focused
 .cm-fat-cursor div.CodeMirror-cursors {
     z-index: 1;
 }
-
+.cm-fat-cursor-mark {
+    background-color: rgba(20, 255, 20, 0.5);
+    -webkit-animation: blink 1.06s steps(1) infinite;
+    -moz-animation: blink 1.06s steps(1) infinite;
+    animation: blink 1.06s steps(1) infinite;
+}
 .cm-animate-fat-cursor {
     width: auto;
     border: 0;
@@ -185,7 +182,7 @@ moodle changes border colour when focused
 
 .CodeMirror-rulers {
     position: absolute;
-    left: 0; right: 0; top: -50px; bottom: -20px;
+    left: 0; right: 0; top: -50px; bottom: 0;
     overflow: hidden;
 }
 .CodeMirror-ruler {
@@ -234,8 +231,8 @@ moodle changes border colour when focused
 
 /* Default styles for common addons */
 
-div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
-div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
+div.CodeMirror span.CodeMirror-matchingbracket {color: #0b0;}
+div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #a22;}
 .CodeMirror-matchingtag { background: rgba(255, 150, 0, .3); }
 .CodeMirror-activeline-background {background: #e8f2ff;}
 
@@ -325,7 +322,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
     cursor: text;
     min-height: 1px; /* prevents collapsing before first draw */
 }
-.CodeMirror pre {
+.CodeMirror pre.CodeMirror-line,
+.CodeMirror pre.CodeMirror-line-like {
     /* Reset some styles that the rest of the page might have set */
     -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0;
     border-width: 0;
@@ -344,7 +342,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
     -webkit-font-variant-ligatures: contextual;
     font-variant-ligatures: contextual;
 }
-.CodeMirror-wrap pre {
+.CodeMirror-wrap pre.CodeMirror-line,
+.CodeMirror-wrap pre.CodeMirror-line-like {
     word-wrap: break-word;
     white-space: pre-wrap;
     word-break: normal;
@@ -359,7 +358,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 .CodeMirror-linewidget {
     position: relative;
     z-index: 2;
-    overflow: auto;
+    padding: 0.1px; /* Force widget margins to stay inside of the container */
 }
 
 .CodeMirror-widget {}
@@ -405,18 +404,10 @@ div.CodeMirror-dragcursors {
 
 .CodeMirror-focused div.CodeMirror-cursors {
     visibility: visible;
-    border-color:#66afe9; /* moodle changes border colour when focused */
 }
 
-.CodeMirror-selected {
-    background: #d9d9d9;
-    border-color:#66afe9; /* moodle changes border colour when focused */
-}
-.CodeMirror-focused .CodeMirror-selected {
-background: #d7d4f0;
-    border-color:#66afe9; /* moodle changes border colour when focused */
-
-}
+.CodeMirror-selected { background: #d9d9d9; }
+.CodeMirror-focused .CodeMirror-selected { background: #d7d4f0; }
 .CodeMirror-crosshair { cursor: crosshair; }
 .CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection { background: #d7d4f0; }
 .CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection { background: #d7d4f0; }

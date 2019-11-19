@@ -3,7 +3,7 @@
     <library>
         <location>amd/src</location>
         <name>CodeMirror</name>
-        <version>5.29.0</version>
+        <version>5.49.2</version>
         <license>MIT, http://codemirror.net/LICENSE</license>
     </library>
 </libraries>
