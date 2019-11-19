@@ -187,8 +187,8 @@ class qtype_proforma extends question_type {
             if ($id !== '') {
                 $xw->startElement('test-ref');
                 $xw->create_attribute('ref', $formdata->testid[$index]); // $id);
-                if (array_key_exists($index, $formdata->weight)) {
-                    $xw->create_attribute('weight', $formdata->weight[$index]);
+                if (array_key_exists($index, $formdata->testweight)) {
+                    $xw->create_attribute('weight', $formdata->testweight[$index]);
                 } else {
                     $xw->create_attribute('weight', '-1');
                 }
@@ -650,6 +650,30 @@ class qtype_proforma extends question_type {
         $expout .= '<commentfiles>' . $format->write_files($datafiles) . "</commentfiles>\n";
 
         return $expout;
+    }
+
+    public static function as_codemirror($textarea_id,$mode = 'java', $header = null) {
+        if (get_config('qtype_proforma', 'usecodemirror')) {
+            $WRITABLE = 0;
+
+            global $PAGE, $CFG;
+            require_once($CFG->dirroot . '/config.php');
+            // TODO: move READONLY and WRITABLE to common class
+            // TODO: where does textarea identifier come from?
+            $moodleversion = $CFG->version;
+            // debugging('Moodle Version is ' . $moodleversion);
+
+            if ($moodleversion > 2018051700) {
+                // starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
+                // so this must be explicitly be done in Javascript.
+                $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
+                        array($textarea_id, $WRITABLE, $mode, $header, 1));
+            } else {
+                // In 3.4 resizing must be prohinited because the window is too small
+                $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
+                        array($textarea_id, $WRITABLE, $mode, $header));
+            }
+        }
     }
 
 }

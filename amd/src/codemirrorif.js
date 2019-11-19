@@ -38,9 +38,9 @@ require([
 */
 
 define(['jquery',
-        'qtype_proforma/codemirror', 'qtype_proforma/clike', 'qtype_proforma/python',
+        'qtype_proforma/codemirror', 'qtype_proforma/clike', 'qtype_proforma/python', 'qtype_proforma/xml',
         'qtype_proforma/closebrackets', 'qtype_proforma/matchbrackets', 'qtype_proforma/active-line'],
-    function($, CodeMirror, clike, python, closebrackets, matchbrackets, activeline) {
+    function($, CodeMirror, clike, python, xml, closebrackets, matchbrackets, activeline) {
 
         // maps the programming language value used in PHP to the CodeMirror mode
         map_proglang_to_codemirror_mode = function(moodle_mode) {
@@ -49,6 +49,7 @@ define(['jquery',
                 case "python": return "text/x-python";
                 case "setlx":  return "text/text";
                 case "c":      return "text/x-csrc";
+                case "xml":    return "application/xml";
                 case "none":   return "";
                 default:
                     alert("unsupported mode " + moodle_mode + " for map_proglang_to_codemirror_mode");
@@ -147,7 +148,7 @@ define(['jquery',
                         function resizeObserver() {
                             function cm_resize() {
                                 // And CM needs room for the resize handle...
-                                editor.setSize(wrapper.clientWidth-10, wrapper.clientHeight);
+                                editor.setSize(wrapper.clientWidth-10, wrapper.clientHeight-5);
                                 editor.refresh();
                             }
 

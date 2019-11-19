@@ -71,6 +71,8 @@ $string['taskfilename_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei';
 $string['compile'] = 'Compilation';
 $string['code'] = 'Quellcode';
 
+$string['addjunit'] = 'JUnit Test hinzufügen';
+
 
 $string['highlight'] = 'Syntax Highlighting';
 $string['highlight_hint'] = $string['proglang'];

@@ -83,6 +83,8 @@ $string['other'] = 'other';
 $string['compile'] = 'Compilation';
 $string['code'] = 'Source Code';
 
+$string['addjunit'] = 'Add JUnit test';
+
 
 $string['miscellaneousheader'] = 'Miscellaneous';
 $string['defaultpenalty'] = 'Default penalty';

@@ -30,51 +30,17 @@ defined('MOODLE_INTERNAL') || die();
 // ProFormA question type editing form.
 class qtype_proforma_edit_form extends question_edit_form {
 
-    const WRITABLE = 0;
     protected $createquestion = false;
-
 
     // try and show proper message when creating a proforma question without import:
     // tpdp: generates an error message after cancel click
     protected function definition() {
         $mform = $this->_form;
-
-        if (!empty($this->question->options)) {
-            parent::definition();
-        } else {
-            // create question
+        if (empty($this->question->options)) {
+            // create question (derived class would be better..)
             $this->createquestion = true;
-            parent::definition();
-/*
-            $mform->addElement('static', 'nocreate', '', '<div class="red"><b>' .get_string('nocreate', 'qtype_proforma') .'</b></div>', '');
-
-            parent::definition();
-            $mform->removeElement('updatebuttonar');
-            $mform->removeElement('tagsheader');
-            $mform->removeElement('tags');
-            // $mform->removeElement('generalfeedback');
-            // $mform->removeElement('submitbutton');
-            // the following code does not work :-(
-            $mform->setExpanded('generalheader', false);
-            // $mform->freeze('category');
-            $mform->freeze('name');
-
-            $mform->freeze('questiontext');
-            // $mform->freeze('defaultmark');
-            $mform->freeze('generalfeedback');
-            $mform->disabledIf('submitbutton', 'name', 'neq', '???');
-
-            $mform->hideIf('defaultmark', 'name', 'neq', '???');
-            // the following code does not work :-(
-            $mform->hideIf('questiontext', 'name', 'neq', '???');
-            $mform->hideIf('generalfeedback', 'name', 'neq', '???');
-            // $mform->hideIf('category', 'name', 'neq', '???');
-*/
-            /*
-            $this->add_hidden_fields();
-            $mform->addElement('cancel');
-            */
         }
+        parent::definition();
     }
     /*
     public function set_data($question) {
@@ -109,6 +75,16 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     public function qtype() {
         return 'proforma';
+    }
+
+    private function create_test_title($mform, &$testoptions, $prefix, $defaultweight) {
+        $testoptions[] = $mform->createElement('text', $prefix . 'title',
+                get_string('testtitle', 'qtype_proforma'), array('size' => 60));
+        $testoptions[] = $mform->createElement('text', $prefix . 'weight',
+                get_string('weight', 'qtype_proforma'), array('size' => 2));
+        $mform->setType($prefix . 'title', PARAM_TEXT);
+        $mform->setType($prefix . 'weight', PARAM_FLOAT);
+        $mform->setDefault($prefix . 'weight', $defaultweight);
     }
 
     /**
@@ -164,40 +140,11 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->addHelpButton('programminglanguage', 'highlight_hint', 'qtype_proforma');
         $mform->setDefault('programminglanguage', 'java');
 
-        // Response Template
-        // $mform->addElement('header', 'responsetemplateheader', get_string('responsetemplateheader', 'qtype_proforma'));
-        // $mform->setExpanded('responsetemplateheader');
-
-        // $this->add_static_field($mform, 'firstTemplate', get_string('responsetemplate', 'qtype_proforma'),
-        // 'templates');
-        // $mform->addElement('static', 'firstTemplate', get_string('responsetemplate', 'qtype_proforma'), '');
-        // $mform->addHelpButton('firstTemplate', 'responsetemplate', 'qtype_proforma');
-
-        // $mform->addElement('hidden', 'templates'); // must be available in form for later handling
-        // $mform->setType('templates', PARAM_TEXT);
-        // $mform->addRule('templates', null, 'required', null, 'client');
-
-        // Note: Behat does not test fields that do not have a name. Therefore
-        // a name is used in the English version as long as I have a better solution
-        // for this problem (I do not actually want to show a name!)
+        // response template
         $mform->addElement('textarea', 'responsetemplate', get_string('responsetemplate', 'qtype_proforma'), 'rows="20" cols="80"');
         if (get_config('qtype_proforma', 'usecodemirror')) {
+            qtype_proforma::as_codemirror('id_responsetemplate', 'java', 'id_responsetemplateheader');
             global $PAGE;
-            require_once($CFG->dirroot . '/config.php');
-            // TODO: move READONLY and WRITABLE to common class
-            // TODO: where does textarea identifier come from?
-            $moodleversion = $CFG->version;
-            // debugging('Moodle Version is ' . $moodleversion);
-            if ($moodleversion > 2018051700) {
-                // starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
-                // so this must be explicitly be done in Javascript.
-                $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                        array('id_responsetemplate', self::WRITABLE, 'java', 'id_responsetemplateheader', 1));
-            } else {
-                // In 3.4 resizing must be prohinited because the window is too small
-                $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                        array('id_responsetemplate', self::WRITABLE, 'java', 'id_responsetemplateheader'));
-            }
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
                     array('id_programminglanguage', 'id_responsetemplate'));
         }
@@ -217,7 +164,6 @@ class qtype_proforma_edit_form extends question_edit_form {
             $this->add_static_field($mform, 'responsefilename', get_string('filename', 'qtype_proforma'));
         }
         $mform->hideIf('responsefilename', 'responseformat', 'neq', 'editor');
-//        }
         $mform->setType('responsefilename', PARAM_TEXT);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
     }
@@ -236,23 +182,6 @@ class qtype_proforma_edit_form extends question_edit_form {
         return $sets;
     }
 
-    /**
-     * List the nonexistent file types that need to be removed.
-     *
-     * @param string $types space , or ; separated types
-     * @return array A list of the nonexistent file types.
-     */
-    private function get_nonexistent_file_types($types) {
-        $nonexistent = [];
-        foreach ($this->get_typesets($types) as $type) {
-            // If there's no extensions under that group, it doesn't exist.
-            $extensions = file_get_typegroup('extension', [$type]);
-            if (empty($extensions)) {
-                $nonexistent[$type] = true;
-            }
-        }
-        return array_keys($nonexistent);
-    }
 
     private function add_static_field($mform, $field, $label, $sizefield = null) {
         // $mform->addElement('static', $field, $label);
@@ -366,9 +295,9 @@ class qtype_proforma_edit_form extends question_edit_form {
         if ($this->createquestion) {
             // create new question
             $proglangooptions = array('Java', get_string('other', 'qtype_proforma'));
-            $mform->addElement('select', 'proglangtask',
+            $mform->addElement('select', 'proglang',
                     get_string('proglang', 'qtype_proforma'), $proglangooptions);
-            $mform->addHelpButton('proglang', 'proglangtask', 'qtype_proforma');
+            $mform->addHelpButton('proglang', 'proglang_hint', 'qtype_proforma');
 
             // override default penalty
             $mform->setDefault('proglang', 'Java');
@@ -409,16 +338,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             if (empty($values['filetypes'])) {
                 return true;
             }
-            /*
-            $nonexistent = $this->get_nonexistent_file_types($values['filetypes']);
-            if (empty($nonexistent)) {
-                return true;
-            } else {
-                $a = join(' ', $nonexistent);
-                return ["filetypes" => get_string('nonexistentfiletypes', 'qtype_proforma', $a)];
-            }
-            */
-            // .py is not recognised => do not check extensions
+            // .py is not recognised => do not check extensions!
             // TODO: check valid format: ; separated + . with extension
             return true;
         });
@@ -507,10 +427,13 @@ class qtype_proforma_edit_form extends question_edit_form {
         $repeatarray = array();
 
         $testoptions = array();
-        $testoptions[] = $mform->createElement('text', 'testtitle',
+        $this->create_test_title($mform, $testoptions, 'test', '1');
+
+        /*        $testoptions[] = $mform->createElement('text', 'testtitle',
                 get_string('testtitle', 'qtype_proforma'), array('size' => 50));
-        $testoptions[] = $mform->createElement('text', 'weight',
-                get_string('weight', 'qtype_proforma'), array('size' => 2));
+        $testoptions[] = $mform->createElement('text', 'testweight',
+                get_string('testweight', 'qtype_proforma'), array('size' => 2));*/
+
         if (!$this->createquestion) {
             $testoptions[] = $mform->createElement('text', 'testid', 'Id', array('size' => 3));
             $testoptions[] = $mform->createElement('text', 'testtype',
@@ -520,32 +443,13 @@ class qtype_proforma_edit_form extends question_edit_form {
                 get_string('testdescription', 'qtype_proforma'), array('size' => 80));
 
         if ($this->createquestion) {
-            // Note: Behat does not test fields that do not have a name. Therefore
-            // a name is used in the English version as long as I have a better solution
-            // for this problem (I do not actually want to show a name!)
+            // add textarea for JUnit test code
             $testoptions[] = $mform->createElement('textarea', 'code',
                     get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
-            if (get_config('qtype_proforma', 'usecodemirror')) {
-                global $PAGE, $CFG;
-                require_once($CFG->dirroot . '/config.php');
-                // TODO: move READONLY and WRITABLE to common class
-                // TODO: where does textarea identifier come from?
-                $moodleversion = $CFG->version;
-                // debugging('Moodle Version is ' . $moodleversion);
-                if ($moodleversion > 2018051700) {
-                    // starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
-                    // so this must be explicitly be done in Javascript.
-                    $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                            array('id_code', self::WRITABLE, 'java', 'id_responsetemplateheader', 1));
-                } else {
-                    // In 3.4 resizing must be prohinited because the window is too small
-                    $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                            array('id_code', self::WRITABLE, 'java', 'id_responsetemplateheader'));
-                }
-            }
-            // $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_proforma');
-            $label = '{no}. JUnit Test'; // get_string('answerno', 'qtype_numerical', '{no}');
+            qtype_proforma::as_codemirror('id_code_0');
 
+            //qtype_proforma::as_codemirror('id_code_1');
+            $label = '{no}. JUnit Test'; // get_string('answerno', 'qtype_numerical', '{no}');
         } else {
             $label = '{no}. Test'; // get_string('answerno', 'qtype_numerical', '{no}');
         }
@@ -553,34 +457,32 @@ class qtype_proforma_edit_form extends question_edit_form {
         $repeatarray[] = $mform->createElement('group', 'testoptions',
                 $label, $testoptions, null, false);
 
-
-
         $repeateloptions = array();
         // $repeatedoptions['testtitle']['type'] = PARAM_RAW;
 
-        $repeateloptions['weight']['default'] = 1;
+        $repeateloptions['testweight']['default'] = 1;
         $repeateloptions['testtitle']['default'] = '';
         $repeateloptions['testdescription']['default'] = '';
         $repeateloptions['testtype']['default'] = '';
 
-        // $repeateloptions['weight']['rule'] = 'numeric';
+        // $repeateloptions['testweight']['rule'] = 'numeric';
         $repeateloptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         $repeateloptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         // $repeateloptions['testdescription']['disabledif'] = array('aggregationstrategy', 'neq', 111);
 
         /*
-        $repeateloptions['weight']['type'] = PARAM_INT;
-        $repeateloptions['weight']['helpbutton'] = array('choiceoptions', 'choice');
+        $repeateloptions['testweight']['type'] = PARAM_INT;
+        $repeateloptions['testweight']['helpbutton'] = array('choiceoptions', 'choice');
         */
         // $mform->setType('option', PARAM_CLEANHTML);
 
         $mform->setType('testdescription', PARAM_TEXT);
         $mform->setType('testtitle', PARAM_TEXT);
-        $mform->setType('weight', PARAM_INT);
+        $mform->setType('testweight', PARAM_FLOAT);
         $mform->setType('testid', PARAM_RAW);
         $mform->setType('testtype', PARAM_RAW);
 
-        // $mform->disabledIf('weight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
+        // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
 
         if ($this->createquestion) {
             // Modification for creating a new Java question:
@@ -589,11 +491,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             // Create a compilation test options.
             $compilegroup=array();
             $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
-            $compilegroup[] =& $mform->createElement('text', 'compileweight',
-                    get_string('weight', 'qtype_proforma'), array('size' => 2));
-            $mform->setDefault('compileweight', '0');
-
-            $mform->setType('compileweight', PARAM_INT);
+            $this->create_test_title($mform, $compilegroup, 'compile', '0');
             $mform->addGroup($compilegroup, 'compilegroup', get_string('compile', 'qtype_proforma'), ' ', false);
 
         } else {
@@ -603,11 +501,21 @@ class qtype_proforma_edit_form extends question_edit_form {
         if ($repeatno > 0) {
             $this->repeat_elements($repeatarray, $repeatno,
                     $repeateloptions, 'option_repeats', 'option_add_fields',
-                    1,  null, true);
+                    1,  get_string('addjunit', 'qtype_proforma'), true);
 
             if (!$this->createquestion) {
                 // remove button for adding new test elements
                 $mform->removeElement('option_add_fields');
+            } else {
+                // used CodeMirror for JUnit code
+                // => figure out number of JUnit tests
+                $repeats = optional_param('option_repeats', 1, PARAM_INT);
+                $addfields = optional_param('option_add_fields', '', PARAM_TEXT);
+                if (!empty($addfields)){
+                    $repeats += 1;
+                }
+                for ($i = 1; $i < $repeats; $i++)
+                    qtype_proforma::as_codemirror('id_code_' . $i);
             }
         } else {
             $mform->addElement('static', 'no_tests', get_string('notests', 'qtype_proforma'), '');
@@ -615,10 +523,30 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         if ($this->createquestion) {
             // Create a Checkstyle test
+            // (no group)
+            $testoptions = array();
+            $this->create_test_title($mform, $testoptions, 'checkstyle', '0.2');
+            $mform->addGroup($testoptions, 'checkstyleoptions', 'Checkstyle',
+                    array(' '), false);
+
+            $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
+            qtype_proforma::as_codemirror('id_checkstylecode', 'xml');
+            /*
             $checkstylegroup=array();
-            $checkstylegroup[] =& $mform->createElement('text', 'compileweight', get_string('weight', 'qtype_proforma'));
-            $mform->setType('compileweight', PARAM_INT);
+            $checkstylegroup[] =& $mform->createElement('text', 'checkstyleweight',
+                    get_string('weight', 'qtype_proforma'), array('size' => 2));
+            $mform->setType('checkstyleweight', PARAM_INT);
+            // Note: Behat does not test fields that do not have a name. Therefore
+            // a name is used in the English version as long as I have a better solution
+            // for this problem (I do not actually want to show a name!)
+            $checkstylegroup[] = $mform->createElement('textarea', 'checkstylecode',
+                    get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
+            // qtype_proforma::as_codemirror('id_checkstylecode', 'xml');
+
+            // $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_proforma');
+
             $mform->addGroup($checkstylegroup, 'checkstylegroup', 'Checkstyle', ' ', false);
+            */
         }
 
 
@@ -744,7 +672,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $question->testtitle = array();
             $question->testdescription = array();
             $question->testtype = array();
-            $question->weight = array();
+            $question->testweight = array();
             $question->testid = array();
 
             /*
@@ -798,14 +726,14 @@ class qtype_proforma_edit_form extends question_edit_form {
 
                         unset($this->_form->_defaultValues["testtitle[{$key}]"]);
                         unset($this->_form->_defaultValues["testid[{$key}]"]);
-                        unset($this->_form->_defaultValues["weight[{$key}]"]);
+                        unset($this->_form->_defaultValues["testweight[{$key}]"]);
                         unset($this->_form->_defaultValues["testdescription[{$key}]"]);
                         unset($this->_form->_defaultValues["testtype[{$key}]"]);
                         $question->testid[] = $ref;
                         $question->testtitle[] = $title;
                         $question->testdescription[] = $description;
                         $question->testtype[] = $testtype;
-                        $question->weight[] = $weight;
+                        $question->testweight[] = $weight;
                         $key++;
                     }
                 }
@@ -829,9 +757,9 @@ class qtype_proforma_edit_form extends question_edit_form {
                         if (isset($question->gradinghints)) {
                             $key = 0;
                             foreach ($question->gradinghints as $gh) {
-                                unset($this->_form->_defaultValues["weight[{$key}]"]);
+                                unset($this->_form->_defaultValues["testweight[{$key}]"]);
                                 $key++;
-                                $question->weight[] = $gh['weight'];
+                                $question->testweight[] = $gh['weight'];
                             }
                         }
             */
