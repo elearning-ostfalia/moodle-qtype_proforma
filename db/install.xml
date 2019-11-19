@@ -18,8 +18,8 @@
         <FIELD NAME="uuid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The UUID of a task."/>
         <!-- <FIELD NAME="modelsolution" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="An examplary solution to the question."/> -->
         <FIELD NAME="responsetemplate" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The template to pre-populate student's response field during attempt."/>
-        <FIELD NAME="taskrepository" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="URI of repository."/>
-        <FIELD NAME="taskpath" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Location of task zip file in repository including filename."/>
+        <FIELD NAME="taskrepository" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="URI of repository."/>
+        <FIELD NAME="taskpath" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Location of task zip file in repository including filename."/>
         <FIELD NAME="responsefilename" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Filename for user source code (if file upload is not used)."/>
         <FIELD NAME="programminglanguage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Programming language"/>
         <FIELD NAME="taskfilename" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Name of task file if stored in Moodle."/>

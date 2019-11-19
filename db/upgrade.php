@@ -264,5 +264,20 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018122706, 'qtype', 'proforma');
     }
 
+    if ($oldversion < 2019111901) {
+        // do not force taskrepository and taskpath to have a value.
+        $field = new xmldb_field('taskrepository', XMLDB_TYPE_TEXT, null, null, null, null, null, 'responsetemplate');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+        $field = new xmldb_field('taskpath', XMLDB_TYPE_TEXT, null, null, null, null, null, 'responsetemplate');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // ProFormA savepoint reached.
+        //upgrade_plugin_savepoint(true, 2019111900, 'qtype', 'proforma');
+    }
+
     return true;
 }

@@ -77,12 +77,16 @@ class qtype_proforma_edit_form extends question_edit_form {
         return 'proforma';
     }
 
-    private function create_test_title($mform, &$testoptions, $prefix, $defaultweight) {
-        $testoptions[] = $mform->createElement('text', $prefix . 'title',
-                get_string('testtitle', 'qtype_proforma'), array('size' => 60));
+    private function create_test_weight(&$testoptions, $prefix, $defaultweight, $withtitle = false) {
+        $mform = $this->_form;
+        if ($withtitle) {
+            $testoptions[] = $mform->createElement('text', $prefix . 'title',
+                    get_string('testtitle', 'qtype_proforma'), array('size' => 60));
+            $mform->setType($prefix . 'title', PARAM_TEXT);
+        }
+
         $testoptions[] = $mform->createElement('text', $prefix . 'weight',
                 get_string('weight', 'qtype_proforma'), array('size' => 2));
-        $mform->setType($prefix . 'title', PARAM_TEXT);
         $mform->setType($prefix . 'weight', PARAM_FLOAT);
         $mform->setDefault($prefix . 'weight', $defaultweight);
     }
@@ -427,18 +431,11 @@ class qtype_proforma_edit_form extends question_edit_form {
         $repeatarray = array();
 
         $testoptions = array();
-        $this->create_test_title($mform, $testoptions, 'test', '1');
+        $this->create_test_weight($testoptions, 'test', '1', true);
 
-        /*        $testoptions[] = $mform->createElement('text', 'testtitle',
-                get_string('testtitle', 'qtype_proforma'), array('size' => 50));
-        $testoptions[] = $mform->createElement('text', 'testweight',
-                get_string('testweight', 'qtype_proforma'), array('size' => 2));*/
-
-        if (!$this->createquestion) {
-            $testoptions[] = $mform->createElement('text', 'testid', 'Id', array('size' => 3));
-            $testoptions[] = $mform->createElement('text', 'testtype',
-                    get_string('testtype', 'qtype_proforma'), array('size' => 80));
-        }
+        $testoptions[] = $mform->createElement('text', 'testid', 'Id', array('size' => 3));
+        $testoptions[] = $mform->createElement('text', 'testtype',
+                get_string('testtype', 'qtype_proforma'), array('size' => 80));
         $testoptions[] = $mform->createElement('text', 'testdescription',
                 get_string('testdescription', 'qtype_proforma'), array('size' => 80));
 
@@ -447,23 +444,20 @@ class qtype_proforma_edit_form extends question_edit_form {
             $testoptions[] = $mform->createElement('textarea', 'code',
                     get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
             qtype_proforma::as_codemirror('id_code_0');
-
-            //qtype_proforma::as_codemirror('id_code_1');
-            $label = '{no}. JUnit Test'; // get_string('answerno', 'qtype_numerical', '{no}');
+            $label = '{no}. JUnit Test';
         } else {
-            $label = '{no}. Test'; // get_string('answerno', 'qtype_numerical', '{no}');
+            $label = '{no}. Test';
         }
 
         $repeatarray[] = $mform->createElement('group', 'testoptions',
                 $label, $testoptions, null, false);
 
         $repeateloptions = array();
-        // $repeatedoptions['testtitle']['type'] = PARAM_RAW;
-
         $repeateloptions['testweight']['default'] = 1;
         $repeateloptions['testtitle']['default'] = '';
         $repeateloptions['testdescription']['default'] = '';
-        $repeateloptions['testtype']['default'] = '';
+        $repeateloptions['testtype']['default'] = 'unittest'; // JAVA-JUNIT
+        $repeateloptions['testid']['default'] = '{no}'; // JAVA-JUNIT
 
         // $repeateloptions['testweight']['rule'] = 'numeric';
         $repeateloptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
@@ -471,7 +465,6 @@ class qtype_proforma_edit_form extends question_edit_form {
         // $repeateloptions['testdescription']['disabledif'] = array('aggregationstrategy', 'neq', 111);
 
         /*
-        $repeateloptions['testweight']['type'] = PARAM_INT;
         $repeateloptions['testweight']['helpbutton'] = array('choiceoptions', 'choice');
         */
         // $mform->setType('option', PARAM_CLEANHTML);
@@ -491,7 +484,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             // Create a compilation test options.
             $compilegroup=array();
             $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
-            $this->create_test_title($mform, $compilegroup, 'compile', '0');
+            $this->create_test_weight($compilegroup, 'compile', '0');
             $mform->addGroup($compilegroup, 'compilegroup', get_string('compile', 'qtype_proforma'), ' ', false);
 
         } else {
@@ -525,7 +518,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             // Create a Checkstyle test
             // (no group)
             $testoptions = array();
-            $this->create_test_title($mform, $testoptions, 'checkstyle', '0.2');
+            $this->create_test_weight($testoptions, 'checkstyle', '0.2');
             $mform->addGroup($testoptions, 'checkstyleoptions', 'Checkstyle',
                     array(' '), false);
 
