@@ -55,10 +55,10 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
     <proglang version="1.8">java</proglang>
     <submission-restrictions/>
     <files>
-        <file id="1" used-by-grader="true" visible="false">
+        <file id="1" used-by-grader="true" visible="no">
             <embedded-txt-file filename="TODO.java">class XTest {}</embedded-txt-file>
         </file>
-        <file id="checkstyle" used-by-grader="true" visible="false">
+        <file id="checkstyle" used-by-grader="true" visible="no">
             <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;
 &lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;&#13;
 &lt;module name=&quot;Checker&quot;&gt;&#13;
@@ -70,7 +70,7 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
   &lt;/module&gt;&#13;
 &lt;/module&gt;</embedded-txt-file>
         </file>
-        <file id="MS" used-by-grader="false" visible="false">
+        <file id="MS" used-by-grader="false" visible="no">
             <embedded-txt-file filename="modelsolution.java"></embedded-txt-file>
         </file>
     </files>
@@ -112,7 +112,9 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
             </test-configuration>
         </test>
     </tests>
-    <grading-hints/>
+    <grading-hints>
+        <root/>
+    </grading-hints>
     <meta-data/>
 </task>
 ';

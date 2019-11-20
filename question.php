@@ -440,7 +440,8 @@ class qtype_proforma_question extends question_graded_automatically {
     }
 
     public function get_task_file() {
-        if ($this->taskstorage != qtype_proforma::PERSISTENT_TASKFILE) {
+        if ($this->taskstorage != qtype_proforma::PERSISTENT_TASKFILE and
+                $this->taskstorage != qtype_proforma::VOLATILE_TASKFILE) {
             return null;
         }
 

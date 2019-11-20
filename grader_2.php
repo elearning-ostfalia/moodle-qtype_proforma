@@ -279,7 +279,8 @@ EOD;
         // $xw->createAttribute('xsi:schemaLocation', 'urn:proforma:v2.0 schema.xsd');
 
         // task
-        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE) { // do not use === here!
+        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE or
+                $question->taskstorage == qtype_proforma::VOLATILE_TASKFILE) { // do not use === here!
             // external task in http field
             $xw->startElement('external-task');
             $xw->create_attribute('uuid', $question->uuid);
@@ -360,10 +361,11 @@ EOD;
 
     private function post_to_grader(&$postfields, qtype_proforma_question $question) {
 
-        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE) { // do not use === here!
+        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE or
+                $question->taskstorage == qtype_proforma::VOLATILE_TASKFILE) { // do not use === here!
             $task = $question->get_task_file();
             if (!$task instanceof stored_file) {
-                throw new coding_exception("wrong class");
+                throw new coding_exception("task variable has wrong class");
             }
             $postfields['task-file'] = $task;
         }

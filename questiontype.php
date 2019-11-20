@@ -192,6 +192,9 @@ class qtype_proforma extends question_type {
                 break;
             case qtype_proforma::VOLATILE_TASKFILE:
                 $taskfile = qtype_proforma_proforma_task::create_java_task_file($formdata);
+                $options->taskfilename = 'task.xml';
+                qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
+                        $context->id, $formdata->id);
                 break;
             case qtype_proforma::REPOSITORY:
             default:

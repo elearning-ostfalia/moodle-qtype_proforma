@@ -75,7 +75,7 @@ class qtype_proforma_proforma_task {
                 $xw->startElement('file');
                 $xw->create_attribute('id', $formdata->testid[$index]); // $id);
                 $xw->create_attribute('used-by-grader', 'true');
-                $xw->create_attribute('visible', 'false');
+                $xw->create_attribute('visible', 'no');
                 $xw->startElement('embedded-txt-file');
                 $xw->create_attribute('filename', 'MISSING');
                 $xw->text($formdata->code[$index]);
@@ -89,7 +89,7 @@ class qtype_proforma_proforma_task {
         $xw->startElement('file');
         $xw->create_attribute('id', 'checkstyle'); // $id);
         $xw->create_attribute('used-by-grader', 'true');
-        $xw->create_attribute('visible', 'false');
+        $xw->create_attribute('visible', 'no');
         $xw->startElement('embedded-txt-file');
         $xw->create_attribute('filename', 'checkstyle.xml');
         $xw->text($formdata->checkstylecode);
@@ -100,7 +100,7 @@ class qtype_proforma_proforma_task {
         $xw->startElement('file');
         $xw->create_attribute('id', 'MS'); // $id);
         $xw->create_attribute('used-by-grader', 'false');
-        $xw->create_attribute('visible', 'false');
+        $xw->create_attribute('visible', 'no');
         $xw->startElement('embedded-txt-file');
         $xw->create_attribute('filename', 'modelsolution.java');
         $xw->text('');
@@ -178,8 +178,13 @@ class qtype_proforma_proforma_task {
 
         $xw->endElement(); // tests
 
-        $xw->startElement('grading-hints'); // not needed for grader
+        $xw->startElement('grading-hints');
+        $xw->startElement('root'); // not needed for grader
+        $xw->endElement(); // root
         $xw->endElement(); // grading-hints
+
+        $xw->startElement('meta-data');
+        $xw->endElement(); // meta-data
 
         $xw->endElement(); // task
 
@@ -243,18 +248,18 @@ class qtype_proforma_proforma_task {
      * @param $draftitemid draftid
      * @throws coding_exception
      */
-    public function store_task_file($content, $filename, &$draftitemid) {
+    public static function store_task_file($content, $filename, $contextid, $questionid) { // &$draftitemid) {
         if ($filename == null) {
             throw new coding_exception('cannot create task file because of missing filename');
         }
 
+        $fs = get_file_storage();
+        // Prepare file record object
+/*
+        // DRAFT
         if (!isset($draftitemid)) {
             $draftitemid = file_get_unused_draft_itemid();
         }
-
-        $fs = get_file_storage();
-
-        // Prepare file record object
         global $USER;
         $fileinfo = array(
                 'contextid' => context_user::instance($USER->id)->id, // ID of context
@@ -263,6 +268,20 @@ class qtype_proforma_proforma_task {
                 'itemid' => $draftitemid,               // usually = ID of row in table
                 'filepath' => '/',         // any path beginning and ending in /
                 'filename' => $filename);  // any filename
+*/
+
+        // ACTUAL FILEAREA
+        $fileinfo = array(
+                'contextid' => $contextid, // category id
+                'component' => 'qtype_proforma',
+                'filearea' => qtype_proforma::FILEAREA_TASK,
+                'itemid' => $questionid,           // question id
+                'filepath' => '/',
+                'filename' => $filename);
+
+        // delete old file if any
+        $fs->delete_area_files($contextid, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $questionid);
+
 
         /*$storedfile = */
         $fs->create_file_from_string($fileinfo, $content);
