@@ -31,9 +31,11 @@ class SimpleXmlWriter extends XMLWriter {
         $this->endAttribute();
     }
 
-    public function create_childelement_with_text($name, $text) {
+    public function create_childelement_with_text($name, $text = null) {
         $this->startElement($name);
-        $this->text($text);
+        if ($text) {
+            $this->text($text);
+        }
         $this->endElement();
     }
 

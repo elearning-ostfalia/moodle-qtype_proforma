@@ -138,7 +138,7 @@ $string['weight'] = 'Gewicht';
 $string['filepickeroptions'] = 'Filepicker-Eintellungen';
 
 $string['all_or_nothing'] = 'alles oder nichts';
-$string['weighted_mean'] = 'gewichtete Summe';
+$string['weighted_sum'] = 'gewichtete Summe';
 $string['aggregationstrategy'] = 'Aggregationsstrategie';
 $string['aggregationstrategy_help'] = 'Aggregationsstrategie, die zum Ermitteln der Bewertung genutzt werden soll';
 

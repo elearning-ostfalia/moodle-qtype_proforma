@@ -217,7 +217,7 @@ class qtype_proforma_grader {
     private function post_to_grader(&$postfields, qtype_proforma_question $question) {
         global $USER, $COURSE;
 
-        if ($question->taskstorage == qtype_proforma::INTERNAL_STORAGE) { // do not use === here!
+        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE) { // do not use === here!
             $task = $question->get_task_file();
             if (!$task instanceof stored_file) {
                 throw new coding_exception("no task file available");

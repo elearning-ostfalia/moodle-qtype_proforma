@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/moodlelib.php');
-require_once($CFG->dirroot . '/question/type/proforma/simplexmlwriter.php');
+require_once($CFG->dirroot . '/question/type/proforma/proformatask.php');
 
 /**
  * The proforma question type.
@@ -49,13 +49,18 @@ class qtype_proforma extends question_type {
 
     const FILEAREA_COMMENT = 'comment';
 
-    // Question is stored in external repostory.
-    const INTERNAL_STORAGE = 1;
-    // Question is imported and then stored as file in Moodle Data.
-    const EXTERNAL_STORAGE = 2;
-    // Question is created as Moodle question in Form Editor and only stored for caching purposes.
-    const CACHE_STORAGE = 3;
 
+    // Where is taskfile stored?
+    // - Taskfile is imported and then stored as file in Moodle Data.
+    const PERSISTENT_TASKFILE = 1;
+    // - Taskfile is stored in external repostory.
+    // Currently not supported.
+    const REPOSITORY = 2;
+    // - Question is created in Moodle Form Editor.
+    // Taskfile could be created on the fly and is only stored for caching purposes.
+    const VOLATILE_TASKFILE = 3;
+
+    // How is the mark calculated?
     const ALL_OR_NOTHING = 1;
     const WEIGHTED_SUM = 2;
 
@@ -163,49 +168,6 @@ class qtype_proforma extends question_type {
         parent::get_question_options($question);
     }
 
-    private function create_grading_hints($formdata) {
-
-        if (isset($formdata->gradinghints) && strlen($formdata->gradinghints) > 0) {
-            return $formdata->gradinghints;
-        }
-        $xw = new SimpleXmlWriter();
-        $xw->openMemory();
-
-        $xw->setIndent(1);
-        $xw->setIndentString(' ');
-
-        $xw->startDocument('1.0', 'UTF-8');
-
-        $xw->startElement('grading-hints');
-        // $xw->createAttribute('xmlns', 'urn:proforma:v2.0');
-
-        $xw->startElement('root');
-        $xw->create_attribute('function', 'sum');
-
-        $index = 0;
-        foreach ($formdata->testid as $id) {
-            if ($id !== '') {
-                $xw->startElement('test-ref');
-                $xw->create_attribute('ref', $formdata->testid[$index]); // $id);
-                if (array_key_exists($index, $formdata->testweight)) {
-                    $xw->create_attribute('weight', $formdata->testweight[$index]);
-                } else {
-                    $xw->create_attribute('weight', '-1');
-                }
-                $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
-                $xw->create_childelement_with_text('description', $formdata->testdescription[$index]);
-                $xw->create_childelement_with_text('test-type', $formdata->testtype[$index]);
-                $xw->endElement(); // test-ref
-                $index++;
-            }
-        }
-        $xw->endElement(); // root
-        $xw->endElement(); // grading-hints
-
-        $xw->endDocument();
-        $gradinghints = $xw->outputMemory();
-        return $gradinghints;
-    }
 
     /**
      * this function is used to store form data into database AND
@@ -225,8 +187,18 @@ class qtype_proforma extends question_type {
         if (!$options) {
             throw new coding_exception('proforma: save_question_options invalid branch');
         }
+        switch ($formdata->taskstorage) {
+            case qtype_proforma::PERSISTENT_TASKFILE:
+                break;
+            case qtype_proforma::VOLATILE_TASKFILE:
+                $taskfile = qtype_proforma_proforma_task::create_java_task_file($formdata);
+                break;
+            case qtype_proforma::REPOSITORY:
+            default:
+                throw new coding_exception('proforma: unsupported taskstorage ' . $formdata->taskstorage);
+        }
 
-        $options->gradinghints = $this->create_grading_hints($formdata);
+        $options->gradinghints = qtype_proforma_proforma_task::create_grading_hints($formdata);
 
         /*        $hint->hint = $this->import_or_save_files($formdata->hint[$i],
                     $context, 'question', 'hint', $hint->id);

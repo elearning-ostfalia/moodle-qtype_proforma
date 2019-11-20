@@ -143,7 +143,7 @@ $string['weight'] = 'weight';
 $string['filepickeroptions'] = 'Filepicker options';
 
 $string['all_or_nothing'] = 'All or nothing';
-$string['weighted_mean'] = 'Weighted sum';
+$string['weighted_sum'] = 'Weighted sum';
 $string['aggregationstrategy'] = 'Aggregation strategy';
 $string['aggregationstrategy_help'] = 'Aggregation strategy used for grading this question';
 

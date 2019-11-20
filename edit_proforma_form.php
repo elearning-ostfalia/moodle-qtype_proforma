@@ -226,27 +226,21 @@ class qtype_proforma_edit_form extends question_edit_form {
     }
 
     protected function add_grader_settings($mform) {
-
         $taskisimported = isset($this->question->options->taskstorage) &&
-                $this->question->options->taskstorage == qtype_proforma::INTERNAL_STORAGE;
+                $this->question->options->taskstorage == qtype_proforma::PERSISTENT_TASKFILE;
+        $taskisnew = isset($this->question->options->taskstorage) &&
+                $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE;
+
+        if ($taskisnew)
+            return;
 
         // ProFormA fields
         $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
-        // if (!$task_is_imported)
-        // $mform->setExpanded('graderoptions_header'); // collapsed by default if no required fields exist
-
-        /*        $mform->addElement('text', 'downloads', get_string('downloads', 'qtype_proforma'), array('size' => '60'));
-                $mform->setType('downloads', PARAM_TEXT);
-                $mform->addHelpButton('downloads', 'downloads_hint', 'qtype_proforma');
-                $mform->disabledIf('downloads', 'responseformat', 'neq', 'always_disabled');
-        */
 
         // Task Filename
-        if ($taskisimported) {// $task_is_imported) {
-            // $mform->addElement('static', 'taskfilename', get_string('taskfilename', 'qtype_proforma'), array('size' => '60'));
+        if ($taskisimported || $taskisnew) {
             $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
             $mform->setType('link', PARAM_TEXT);
-            // $mform->freeze('link');
             $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
         } else {
             // Repository
@@ -266,7 +260,9 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
 
         // UUID
-        if (!$taskisimported) { // !isset($this->question->id)) {
+        if ($taskisnew) {
+            $this->add_static_field($mform, 'uuid', get_string('uuid', 'qtype_proforma'));
+        } else if (!$taskisimported) { // !isset($this->question->id)) {
             // create new question
             $mform->addElement('text', 'uuid', get_string('uuid', 'qtype_proforma'), array('size' => '60'));
             $mform->addRule('uuid', null, 'required', null, 'client');
@@ -280,8 +276,6 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->addHelpButton('uuid', 'uuid_hint', 'qtype_proforma');
 
         $mform->addElement('static', 'proformaversion', 'ProFormA Version');
-
-
     }
 
     public function definition_after_data() {
@@ -296,8 +290,10 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected function definition_inner($mform) {
         $qtype = question_bank::get_qtype('proforma');
 
+
         if ($this->createquestion) {
             // create new question
+            $mform->addElement('hidden', 'taskstorage', qtype_proforma::VOLATILE_TASKFILE);
             $proglangooptions = array('Java', get_string('other', 'qtype_proforma'));
             $mform->addElement('select', 'proglang',
                     get_string('proglang', 'qtype_proforma'), $proglangooptions);
@@ -305,9 +301,9 @@ class qtype_proforma_edit_form extends question_edit_form {
 
             // override default penalty
             $mform->setDefault('proglang', 'Java');
-
-            //return;
         } else {
+            $mform->addElement('hidden', 'taskstorage', qtype_proforma::PERSISTENT_TASKFILE);
+
             // Attachments for Question Text (Downloads)
             $this->add_static_field($mform, 'downloadlist', get_string('downloads', 'qtype_proforma'),
                     'downloads');
@@ -318,13 +314,14 @@ class qtype_proforma_edit_form extends question_edit_form {
             $mform->addHelpButton('mslinks', 'modelsolfiles_hint', 'qtype_proforma');
             // $mform->addHelpButton('mslinks', 'modelsolfiles_hint', 'qtype_proforma');
         }
+        $mform->setType('taskstorage', PARAM_RAW);
 
         $this->add_response_options($mform, $qtype);
 
-        $this->add_grading_settings();
+        $this->add_test_settings();
 
         if ($this->createquestion) {
-
+            // ???
         } else {
             $this->add_grader_settings($mform);
         }
@@ -409,7 +406,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         return $xpathresult->length;
     }
 
-    protected function add_grading_settings() {
+    protected function add_test_settings() {
         $mform = $this->_form;
 
         // Header.
@@ -419,13 +416,13 @@ class qtype_proforma_edit_form extends question_edit_form {
         // Aggreagation strategy
         $aggregationstrategy = array(
                 qtype_proforma::ALL_OR_NOTHING => get_string('all_or_nothing', 'qtype_proforma'),
-                qtype_proforma::WEIGHTED_SUM  => get_string('weighted_mean', 'qtype_proforma')
+                qtype_proforma::WEIGHTED_SUM  => get_string('weighted_sum', 'qtype_proforma')
         );
 
         $mform->addElement('select', 'aggregationstrategy',
                 get_string('aggregationstrategy', 'qtype_proforma'), $aggregationstrategy);
         $mform->addHelpButton('aggregationstrategy', 'aggregationstrategy', 'qtype_proforma');
-        $mform->setDefault('aggregationstrategy', 'weighted_mean');
+        $mform->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
 
         // Tests.
         $repeatarray = array();
@@ -444,6 +441,8 @@ class qtype_proforma_edit_form extends question_edit_form {
             $testoptions[] = $mform->createElement('textarea', 'code',
                     get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
             qtype_proforma::as_codemirror('id_code_0');
+            //$testoptions[] = $mform->createElement('text', 'testfilename',
+            //        get_string('testfilename', 'qtype_proforma'), array('size' => 80));
             $label = '{no}. JUnit Test';
         } else {
             $label = '{no}. Test';
@@ -456,6 +455,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         $repeateloptions['testweight']['default'] = 1;
         $repeateloptions['testtitle']['default'] = '';
         $repeateloptions['testdescription']['default'] = '';
+        //$repeateloptions['testfilename']['default'] = '';
         $repeateloptions['testtype']['default'] = 'unittest'; // JAVA-JUNIT
         $repeateloptions['testid']['default'] = '{no}'; // JAVA-JUNIT
 
@@ -474,6 +474,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->setType('testweight', PARAM_FLOAT);
         $mform->setType('testid', PARAM_RAW);
         $mform->setType('testtype', PARAM_RAW);
+        //$mform->setType('testfilename', PARAM_TEXT);
 
         // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
 
@@ -486,6 +487,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
             $this->create_test_weight($compilegroup, 'compile', '0');
             $mform->addGroup($compilegroup, 'compilegroup', get_string('compile', 'qtype_proforma'), ' ', false);
+            $mform->disabledIf('compileweight', 'compile');
 
         } else {
             $repeatno = self::get_count_tests($this->question->options->gradinghints);
@@ -517,13 +519,20 @@ class qtype_proforma_edit_form extends question_edit_form {
         if ($this->createquestion) {
             // Create a Checkstyle test
             // (no group)
+
+
+
             $testoptions = array();
+            $testoptions[] =& $mform->createElement('advcheckbox', 'checkstyle', '', '');
             $this->create_test_weight($testoptions, 'checkstyle', '0.2');
             $mform->addGroup($testoptions, 'checkstyleoptions', 'Checkstyle',
                     array(' '), false);
 
             $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
             qtype_proforma::as_codemirror('id_checkstylecode', 'xml');
+            $mform->disabledIf('checkstyleweight', 'checkstyle');
+            $mform->disabledIf('id_checkstylecode', 'checkstyle');
+            $mform->disabledIf('checkstylecode', 'checkstyle');
             /*
             $checkstylegroup=array();
             $checkstylegroup[] =& $mform->createElement('text', 'checkstyleweight',
@@ -632,7 +641,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $this->_form->removeElement('furtherTemplates');
         }
 
-      // special handling for comment
+        // special handling for comment
         $draftid = file_get_submitted_draft_itemid('comment');
         $question->comment = array();
         $question->comment['text'] = file_prepare_draft_area(
@@ -661,102 +670,102 @@ class qtype_proforma_edit_form extends question_edit_form {
             $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
                     qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
             $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
+        }
 
-            $question->testtitle = array();
-            $question->testdescription = array();
-            $question->testtype = array();
-            $question->testweight = array();
-            $question->testid = array();
+        $question->testtitle = array();
+        $question->testdescription = array();
+        $question->testtype = array();
+        $question->testweight = array();
+        $question->testid = array();
 
-            /*
-                        // from edit_numerical_form
-                        // See comment in the parent method about this hack:
-                        // Evil hack alert. Formslib can store defaults in two ways for
-                        // repeat elements:
-                        //   ->_defaultValues['fraction[0]'] and
-                        //   ->_defaultValues['fraction'][0].
-                        // The $repeatedoptions['fraction']['default'] = 0 bit above means
-                        // that ->_defaultValues['fraction[0]'] has already been set, but we
-                        // are using object notation here, so we will be setting
-                        // ->_defaultValues['fraction'][0]. That does not work, so we have
-                        // to unset ->_defaultValues['fraction[0]'].
-                        unset($this->_form->_defaultValues["testtitle[{$key}]"]);
-            */
-            if (isset($question->gradinghints)) {
-                $xmldoc = new DOMDocument;
+        /*
+        // from edit_numerical_form
+        // See comment in the parent method about this hack:
+        // Evil hack alert. Formslib can store defaults in two ways for
+        // repeat elements:
+        //   ->_defaultValues['fraction[0]'] and
+        //   ->_defaultValues['fraction'][0].
+        // The $repeatedoptions['fraction']['default'] = 0 bit above means
+        // that ->_defaultValues['fraction[0]'] has already been set, but we
+        // are using object notation here, so we will be setting
+        // ->_defaultValues['fraction'][0]. That does not work, so we have
+        // to unset ->_defaultValues['fraction[0]'].
+        unset($this->_form->_defaultValues["testtitle[{$key}]"]);
+        */
+        if (isset($question->gradinghints)) {
+            $xmldoc = new DOMDocument;
 
-                if (!$xmldoc->loadXML($question->gradinghints)) {
-                    debugging('gradinghints is not valid XML');
-                    return 0; // 'INTERNAL ERROR: $taskresult is not XML';
-                }
-
-                $xpath = new DOMXPath($xmldoc);
-                // $xpath->registerNamespace('dns','urn:proforma:v2.0');
-                $xpathresult = $xpath->query('//grading-hints/root/test-ref');
-                $key = 0;
-                if ($xpathresult->length > 0) {
-                    foreach ($xpathresult as $testgrading) {
-                        $ref = $testgrading->getAttribute('ref');
-                        $weight = $testgrading->getAttribute('weight');
-                        $titles = $xpath->query('title', $testgrading);
-                        if ($titles->length > 0) {
-                            $title = $titles->item(0)->textContent;
-                        } else {
-                            $title = 'Title ' . $ref;
-                        }
-                        $descriptions = $xpath->query('description', $testgrading);
-                        if ($descriptions->length > 0) {
-                            $description = $descriptions->item(0)->textContent;
-                        } else {
-                            $description = '';
-                        }
-                        $testtypes = $xpath->query('test-type', $testgrading);
-                        if ($testtypes->length > 0) {
-                            $testtype = $testtypes->item(0)->textContent;
-                        } else {
-                            $testtype = '';
-                        }
-
-                        unset($this->_form->_defaultValues["testtitle[{$key}]"]);
-                        unset($this->_form->_defaultValues["testid[{$key}]"]);
-                        unset($this->_form->_defaultValues["testweight[{$key}]"]);
-                        unset($this->_form->_defaultValues["testdescription[{$key}]"]);
-                        unset($this->_form->_defaultValues["testtype[{$key}]"]);
-                        $question->testid[] = $ref;
-                        $question->testtitle[] = $title;
-                        $question->testdescription[] = $description;
-                        $question->testtype[] = $testtype;
-                        $question->testweight[] = $weight;
-                        $key++;
-                    }
-                }
+            if (!$xmldoc->loadXML($question->gradinghints)) {
+                debugging('gradinghints is not valid XML');
+                return 0; // 'INTERNAL ERROR: $taskresult is not XML';
             }
 
-            /*
-                        if (!isset($question->tests)) {
-                            $this->extract_data_from_taskfile($cat, $question);
-                        }
-                        if (isset($question->tests)) {
-                            $key = 0;
-                            foreach ($question->tests as $test) {
-                                unset($this->_form->_defaultValues["testtitle[{$key}]"]);
-                                unset($this->_form->_defaultValues["testid[{$key}]"]);
-                                $key++;
-                                $question->testid[] = $test['id'];
-                                $question->testtitle[] = $test['title'];
-                            }
-                        }
+            $xpath = new DOMXPath($xmldoc);
+            // $xpath->registerNamespace('dns','urn:proforma:v2.0');
+            $xpathresult = $xpath->query('//grading-hints/root/test-ref');
+            $key = 0;
+            if ($xpathresult->length > 0) {
+                foreach ($xpathresult as $testgrading) {
+                    $ref = $testgrading->getAttribute('ref');
+                    $weight = $testgrading->getAttribute('weight');
+                    $titles = $xpath->query('title', $testgrading);
+                    if ($titles->length > 0) {
+                        $title = $titles->item(0)->textContent;
+                    } else {
+                        $title = 'Title ' . $ref;
+                    }
+                    $descriptions = $xpath->query('description', $testgrading);
+                    if ($descriptions->length > 0) {
+                        $description = $descriptions->item(0)->textContent;
+                    } else {
+                        $description = '';
+                    }
+                    $testtypes = $xpath->query('test-type', $testgrading);
+                    if ($testtypes->length > 0) {
+                        $testtype = $testtypes->item(0)->textContent;
+                    } else {
+                        $testtype = '';
+                    }
 
-                        if (isset($question->gradinghints)) {
-                            $key = 0;
-                            foreach ($question->gradinghints as $gh) {
-                                unset($this->_form->_defaultValues["testweight[{$key}]"]);
-                                $key++;
-                                $question->testweight[] = $gh['weight'];
-                            }
-                        }
-            */
+                    unset($this->_form->_defaultValues["testtitle[{$key}]"]);
+                    unset($this->_form->_defaultValues["testid[{$key}]"]);
+                    unset($this->_form->_defaultValues["testweight[{$key}]"]);
+                    unset($this->_form->_defaultValues["testdescription[{$key}]"]);
+                    unset($this->_form->_defaultValues["testtype[{$key}]"]);
+                    $question->testid[] = $ref;
+                    $question->testtitle[] = $title;
+                    $question->testdescription[] = $description;
+                    $question->testtype[] = $testtype;
+                    $question->testweight[] = $weight;
+                    $key++;
+                }
+            }
         }
+
+        /*
+                    if (!isset($question->tests)) {
+                        $this->extract_data_from_taskfile($cat, $question);
+                    }
+                    if (isset($question->tests)) {
+                        $key = 0;
+                        foreach ($question->tests as $test) {
+                            unset($this->_form->_defaultValues["testtitle[{$key}]"]);
+                            unset($this->_form->_defaultValues["testid[{$key}]"]);
+                            $key++;
+                            $question->testid[] = $test['id'];
+                            $question->testtitle[] = $test['title'];
+                        }
+                    }
+
+                    if (isset($question->gradinghints)) {
+                        $key = 0;
+                        foreach ($question->gradinghints as $gh) {
+                            unset($this->_form->_defaultValues["testweight[{$key}]"]);
+                            $key++;
+                            $question->testweight[] = $gh['weight'];
+                        }
+                    }
+        */
 
         if (!empty($question->modelsolfiles)) {
             $question->mslinks = '';
