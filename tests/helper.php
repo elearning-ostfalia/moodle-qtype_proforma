@@ -41,6 +41,8 @@ class qtype_proforma_test_helper extends question_test_helper {
             // different response formats
             'editor',
             'filepicker',
+            // different settings for java junit tests
+            'java1',
             // different grading approaches
             'weightedsum',
             // different values set in question
@@ -74,7 +76,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     const QUESTION_MODELSOLS = 'ms1.txt, ms2.txt';
     const QUESTION_TASKFILENAME = 'testtask.zip';
     const QUESTION_TASKFILE = 'das ist das zip-file von testtask.zip';
-    const QUESTION_TASKSTORAGE = qtype_proforma::INTERNAL_STORAGE;
+    const QUESTION_TASKSTORAGE = qtype_proforma::PERSISTENT_TASKFILE;
 
     const QUESTION_PROFORMAVERSION = '2.0';
     const QUESTION_AGGREGATIONSTRATEGY = qtype_proforma::ALL_OR_NOTHING;
@@ -150,7 +152,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'format' => '1',
                         'itemid' => '34635511'));
 
-        if (isset($container->taskstorage) && $container->taskstorage == qtype_proforma::INTERNAL_STORAGE) {
+        if (isset($container->taskstorage) && $container->taskstorage == qtype_proforma::PERSISTENT_TASKFILE) {
             $container->taskfiledraftid =  file_get_unused_draft_itemid(); // $this->make_attachment_draft_area();
             $this->make_attachment_in_draft_area($container->taskfiledraftid, $container->taskfilename,
                     'Task.Zip-Dummy');
@@ -299,6 +301,63 @@ class qtype_proforma_test_helper extends question_test_helper {
         return $fromform;
     }
 
+
+    public function get_proforma_question_form_data_java1() {
+        $form = new stdClass();
+
+        // valid data for a task file in the repository!
+        $form->taskstorage = qtype_proforma::VOLATILE_TASKFILE;
+
+        $form->responsefilename = self::QUESTION_FILENAME;
+        $form->programminglanguage = 'java';
+
+        // $container->modelsolution = self::QUESTION_MODELSOLUTION;
+        $form->responsetemplate = self::QUESTION_TEMPLATE;
+
+        $form->gradinghints = self::QUESTION_GRADINGHINTS;
+        $form->aggregationstrategy = self::QUESTION_AGGREGATIONSTRATEGY;
+
+        $form->name = self::QUESTION_NAME;
+        $form->questiontext = self::QUESTION_TEXT;
+        //$form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        $form->defaultmark = 1.0;
+        $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
+        $form->penalty = 0.2;
+
+        $form->responseformat = 'editor';
+        $form->responsefieldlines = 10;
+        $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
+        $form->maxbytes = 10240;
+        $form->filetypes = '.java';
+
+        $form->code[0] = 'class XTest {}';
+        $form->testtitle[0] = 'JUnit Test 1';
+        $form->testweight[0] = '1';
+        $form->testid[0] = '1';
+
+        $form->checkstylecode = '<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<module name="Checker">
+  <property name="severity" value="warning"/>
+  <module name="TreeWalker">
+    <module name="NeedBraces">
+      <property name="severity" value="error"/>
+    </module>
+  </module>
+</module>';
+
+        $form->hint = array(
+                0 => array(
+                        'text' => 'hint 1<br>',
+                        'format' => '1',
+                        'itemid' => '83894244'),
+                1 => array(
+                        'text' => 'hint 2<br>',
+                        'format' => '1',
+                        'itemid' => '34635511'));
+
+        return $form;
+    }
 
     /**
      * Creates an empty draft area for attachments.
