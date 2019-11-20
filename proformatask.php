@@ -32,6 +32,14 @@ require_once($CFG->dirroot . '/question/type/proforma/simplexmlwriter.php');
 
 class qtype_proforma_proforma_task {
 
+    // http://www.seanbehan.com/how-to-generate-a-uuid-in-php/
+    private static function uuid(){
+        $data = random_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+
     public static function create_java_task_file($formdata) {
         $xw = new SimpleXmlWriter();
         $xw->openMemory();
@@ -44,7 +52,7 @@ class qtype_proforma_proforma_task {
         $xw->startElement('task');
         $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
         $xw->create_attribute('lang', 'de'); // TODO
-        $xw->create_attribute('uuid', 'TODO'); // TODO
+        $xw->create_attribute('uuid', qtype_proforma_proforma_task::uuid());
         $xw->create_attribute('xmlns:unit', 'urn:proforma:tests:unittest:v1.1');
         $xw->create_attribute('xmlns:cs', 'urn:proforma:tests:java-checkstyle:v1.1');
 
@@ -104,9 +112,10 @@ class qtype_proforma_proforma_task {
 
         $xw->startElement('model-solutions');
         $xw->startElement('model-solution');
+        $xw->create_attribute('id', '1');
         $xw->startElement('filerefs');
-        $xw->create_attribute('refid', 'MS');
         $xw->startElement('fileref');
+        $xw->create_attribute('refid', 'MS');
         $xw->endElement(); // fileref
         $xw->endElement(); // filerefs
         $xw->endElement(); // model-solution
@@ -127,9 +136,10 @@ class qtype_proforma_proforma_task {
         $xw->create_childelement_with_text('title', 'CheckStyle Test');
         $xw->create_childelement_with_text('test-type', 'java-checkstyle');
         $xw->startElement('test-configuration');
+
         $xw->startElement('filerefs');
-        $xw->create_attribute('refid', 'checkstyle');
         $xw->startElement('fileref');
+        $xw->create_attribute('refid', 'checkstyle');
         $xw->endElement(); // fileref
         $xw->endElement(); // filerefs
         $xw->startElement('cs:java-checkstyle');
@@ -150,8 +160,8 @@ class qtype_proforma_proforma_task {
 
                 $xw->startElement('test-configuration');
                 $xw->startElement('filerefs');
-                $xw->create_attribute('refid', $formdata->testid[$index]);
                 $xw->startElement('fileref');
+                $xw->create_attribute('refid', $formdata->testid[$index]);
                 $xw->endElement(); // fileref
                 $xw->endElement(); // filerefs
                 $xw->startElement('unit:unittest');
