@@ -499,7 +499,12 @@ class qtype_proforma_proforma_task {
 
     private static function get_java_entrypoint($code) {
         self::remove_java_comment($code);
+        $package = self::get_java_packagename($code);
         $classname = self::get_java_classname($code);
-        return self::get_java_packagename($code) . '.' . self::get_java_classname($code);
+        if (strlen($package) > 0) {
+            return $package . '.' . $classname;
+        }
+        return $classname;
+
     }
 }
