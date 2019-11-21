@@ -77,7 +77,10 @@ class qtype_proforma_proforma_task {
                 $xw->create_attribute('used-by-grader', 'true');
                 $xw->create_attribute('visible', 'no');
                 $xw->startElement('embedded-txt-file');
-                $xw->create_attribute('filename', 'MISSING');
+                $code = $formdata->testcode[$index];
+                $filename = self::get_java_file($code);
+                //debugging('FILENAME: ' . $filename);
+                $xw->create_attribute('filename', $filename);
                 $xw->text($formdata->testcode[$index]);
                 $xw->endElement(); // embedded-txt-file
                 $xw->endElement(); // file
@@ -438,5 +441,39 @@ class qtype_proforma_proforma_task {
                 }
             }
         }
+    }
+
+    // parse Java code
+
+    /**
+     * remove Java comments from code string
+     * @param $code
+     */
+    private static function remove_java_comment(&$code) {
+        $newCode = preg_replace('/\/\*[\s\S]*?\*\//m', '', $code); // comment with /* */
+        $newCode = preg_replace('/\/\/.*/', '', $newCode); // comment with //
+    }
+
+    private static function get_java_classname($code) {
+        self::remove_java_comment($code);
+        $matches = array();
+        $classname = preg_match('/class\s+([\S]+?)\s*(\{|extends|implements)/', $code, $matches);
+        if ($classname === 0)
+            return "";
+        if ($classname === FALSE) {
+            debugging('preg_match failed in get_java_classname');
+            return "";
+        }
+
+        switch (count($matches)) {
+            case 0:  return ""; // no className found???
+            case 1:  return $matches[0]; // unclear what it is, deliver everything
+            default: return trim($matches[1]); // found, expect className name as 2nd
+        }
+    }
+
+    private static function get_java_file($code) {
+        $classname = self::get_java_classname($code);
+        return $classname . ".java";
     }
 }
