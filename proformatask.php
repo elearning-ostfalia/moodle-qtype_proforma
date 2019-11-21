@@ -170,7 +170,9 @@ class qtype_proforma_proforma_task {
                 $xw->startElement('unit:unittest');
                 $xw->create_attribute('framework', 'JUnit');
                 $xw->create_attribute('version', '4.12');
-                $xw->create_childelement_with_text('unit:entry-point', 'TODO');
+                $code = $formdata->testcode[$index];
+                $entrypoint = self::get_java_entrypoint($code);
+                $xw->create_childelement_with_text('unit:entry-point', $entrypoint);
                 $xw->endElement(); // unit:unittest
                 $xw->endElement(); // test-configuration
 
@@ -455,7 +457,6 @@ class qtype_proforma_proforma_task {
     }
 
     private static function get_java_classname($code) {
-        self::remove_java_comment($code);
         $matches = array();
         $classname = preg_match('/class\s+([\S]+?)\s*(\{|extends|implements)/', $code, $matches);
         if ($classname === 0)
@@ -472,8 +473,33 @@ class qtype_proforma_proforma_task {
         }
     }
 
+    private static function get_java_packagename($code) {
+        $matches = array();
+        $classname = preg_match('/package([\s\S]*?);/', $code, $matches);
+        if ($classname === 0)
+            return "";
+        if ($classname === FALSE) {
+            debugging('preg_match failed in get_java_packagename');
+            return "";
+        }
+
+        switch (count($matches)) {
+            case 0:  return ""; // no className found???
+            case 1:  return $matches[0]; // unclear what it is, deliver everything
+            default: return trim($matches[1]); // found, expect className name as 2nd
+        }
+    }
+
+
     private static function get_java_file($code) {
+        self::remove_java_comment($code);
         $classname = self::get_java_classname($code);
         return $classname . ".java";
+    }
+
+    private static function get_java_entrypoint($code) {
+        self::remove_java_comment($code);
+        $classname = self::get_java_classname($code);
+        return self::get_java_packagename($code) . '.' . self::get_java_classname($code);
     }
 }
