@@ -103,7 +103,7 @@ class qtype_proforma_proforma_task {
         $xw->create_attribute('visible', 'no');
         $xw->startElement('embedded-txt-file');
         $xw->create_attribute('filename', 'modelsolution.java');
-        $xw->text('');
+        $xw->text('// no model solution available '); // write at least one byte in order to avoid problems with empty files
         $xw->endElement(); // embedded-txt-file
         $xw->endElement(); // file
 
@@ -217,11 +217,21 @@ class qtype_proforma_proforma_task {
         $xw->startElement('root');
         $xw->create_attribute('function', 'sum');
 
+        if (isset($formdata->checkstyle)) {
+            $xw->startElement('test-ref');
+            $xw->create_attribute('ref', 'compiler');
+            $xw->create_attribute('weight', $formdata->compileweight);
+            $xw->create_childelement_with_text('title', 'Compiler');
+            $xw->create_childelement_with_text('description', '');
+            $xw->create_childelement_with_text('test-type', 'java-compilation');
+            $xw->endElement(); // test-ref
+        }
+
         $index = 0;
         foreach ($formdata->testid as $id) {
             if ($id !== '') {
                 $xw->startElement('test-ref');
-                $xw->create_attribute('ref', $formdata->testid[$index]); // $id);
+                $xw->create_attribute('ref', $formdata->testid[$index]);
                 if (array_key_exists($index, $formdata->testweight)) {
                     $xw->create_attribute('weight', $formdata->testweight[$index]);
                 } else {
@@ -234,11 +244,24 @@ class qtype_proforma_proforma_task {
                 $index++;
             }
         }
+
+        if (isset($formdata->checkstyle)) {
+            $xw->startElement('test-ref');
+            $xw->create_attribute('ref', 'checkstyle');
+            $xw->create_attribute('weight', $formdata->checkstyleweight);
+            $xw->create_childelement_with_text('title', 'CheckStyle Test');
+            $xw->create_childelement_with_text('description', '');
+            $xw->create_childelement_with_text('test-type', 'java-checkstyle');
+            $xw->endElement(); // test-ref
+        }
+
         $xw->endElement(); // root
         $xw->endElement(); // grading-hints
 
         $xw->endDocument();
         $gradinghints = $xw->outputMemory();
+        //debugging($gradinghints);
+
         return $gradinghints;
     }
 
@@ -255,22 +278,7 @@ class qtype_proforma_proforma_task {
 
         $fs = get_file_storage();
         // Prepare file record object
-/*
-        // DRAFT
-        if (!isset($draftitemid)) {
-            $draftitemid = file_get_unused_draft_itemid();
-        }
-        global $USER;
-        $fileinfo = array(
-                'contextid' => context_user::instance($USER->id)->id, // ID of context
-                'component' => 'user',     // usually = table name
-                'filearea' => 'draft',     // usually = table name
-                'itemid' => $draftitemid,               // usually = ID of row in table
-                'filepath' => '/',         // any path beginning and ending in /
-                'filename' => $filename);  // any filename
-*/
 
-        // ACTUAL FILEAREA
         $fileinfo = array(
                 'contextid' => $contextid, // category id
                 'component' => 'qtype_proforma',
@@ -281,10 +289,127 @@ class qtype_proforma_proforma_task {
 
         // delete old file if any
         $fs->delete_area_files($contextid, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $questionid);
-
-
         /*$storedfile = */
         $fs->create_file_from_string($fileinfo, $content);
     }
+
+
+    public static function extract_formdata_from_taskfile($category, $question) {
+        $fs = get_file_storage();
+        $file = $fs->get_file($category, 'qtype_proforma', qtype_proforma::FILEAREA_TASK,
+                $question->id, '/' , $question->taskfilename);
+        if (!$file) {
+            return null; // The file does not exist.
+        }
+
+        $content = $file->get_content();
+
+        //$response = new SimpleXMLElement($message, LIBXML_PARSEHUGE);
+
+        $xmldoc = new DOMDocument;
+        if (!$xmldoc->loadXML($content)) { //}, LIBXML_NOERROR )) {
+            throw new coding_exception("task file is not xml");
+        }
+
+        $tests = array();
+        $files = array();
+
+        $xpath = new DOMXPath($xmldoc);
+        $xpath->registerNamespace('dns2','urn:proforma:v2.0');
+
+        // read files
+        $xpathresult=$xpath->query('//dns2:task/dns2:files/dns2:file');
+        foreach ($xpathresult as $file) {
+            $fileobject = array();
+            $fileobject['id'] = $file->attributes['id']->nodeValue;
+            $code = $file->firstChild; // //$xpath->query('./dn2:embedded-txt-file', $file);
+
+            $fileobject['filename'] = $code->attributes['filename']->nodeValue;
+            $fileobject['code'] = $code->nodeValue;
+            $files[$fileobject['id']] = $fileobject;
+        }
+        // read tests
+        $xpathresult=$xpath->query('//dns2:task/dns2:tests/dns2:test');
+        foreach ($xpathresult as $test) {
+            //$titles = $xpath->query($xpathtitle, $test);
+            $filerefs = $xpath->query('dn2:test-configuration/dns2:filerefs/dns2:fileref', $test);
+            foreach ($filerefs as $fileref) {
+                $refid = $fileref->attributes['refidid']->nodeValue;
+                $fileobject = $files[$refid];
+                $code = $fileobject['code'];
+
+            }
+
+            switch($test->attributes['id']->nodeValue) {
+                case 'checkstyle':
+                    $question->checkstylecode = $code;
+                    break;
+                case 'compiler': // assert(false);
+                    break;
+                default: // JUNIT test
+                    $question->testcode[$test->attributes['id']] = $code;
+                    //break;
+            }
+            //$testobject = array();
+            //$testobject['id'] = $test->attributes['id']->nodeValue;
+            //$testobject['title'] = $titles->item(0)->textContent;
+            // optional:
+            //if ($content->length > 0)
+            //    $testobject['description'] = $content->item(0)->textContent;
+
+            // $tests[$testobject['id']] = $testobject;
+        }
+
+
+        /*
+                $xpathresult=$xpath->query('//dns2:task/dns2:tests/dns2:test');
+
+                $xpathtitle = 'dns2:title';
+                $xpathdescription = 'dns2:description';
+                if ($xpathresult->length === 0) {
+                    // try version
+                    $xpath->registerNamespace('dns1','urn:proforma:task:v1.0.1');
+                    $xpathresult=$xpath->query('//dns1:task/dns1:tests/dns1:test');
+                    if ($xpathresult->length === 0) {
+                        //debugging('no tests found in task file');
+                        //throw new moodle_exception('no tests found in task file');
+                    }
+                    $xpathtitle = 'dns1:title';
+                    $xpathdescription = 'dns1:description';
+                }
+
+
+                foreach ($xpathresult as $test) {
+                    $titles = $xpath->query($xpathtitle, $test);
+                    $content = $xpath->query($xpathdescription, $test);
+
+                    $testobject = array();
+                    $testobject['id'] = $test->attributes['id']->nodeValue;
+                    $testobject['title'] = $titles->item(0)->textContent;
+                    // optional:
+                    if ($content->length > 0)
+                        $testobject['description'] = $content->item(0)->textContent;
+
+                    $tests[$testobject['id']] = $testobject;
+                }
+
+                // read grading hints (supported from version 2 on)
+                $gradfunction=$xpath->query('//dns2:grading-hints/dns2:root/@function');
+
+                $xpathresult=$xpath->query('//dns2:grading-hints/dns2:root/dns2:test-ref');
+                foreach ($xpathresult as $test) {
+                    $testobject = array();
+                    $testobject['ref'] = $test->getAttribute('ref');
+                    $testobject['weight'] = $test->getAttribute('weight');
+                    $gradinghints[$testobject['ref']] = $testobject;
+                }
+
+                return array($tests, $gradinghints);
+        */
+
+    }
+
+
+
 
 }
