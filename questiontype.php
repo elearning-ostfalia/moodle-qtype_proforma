@@ -446,65 +446,6 @@ class qtype_proforma extends question_type {
         */
     }
 
-    /*
-        public static function extract_data_from_taskfile($contents) {
-            $xmldoc = new DOMDocument;
-            if (!$xmldoc->loadXML($contents)) { //}, LIBXML_NOERROR )) {
-                throw new coding_exception("task file is not xml");
-            }
-
-            $tests = array();
-            $gradinghints = array();
-
-            $xpath = new DOMXPath($xmldoc);
-
-            $xpath->registerNamespace('dns2','urn:proforma:v2.0');
-            $xpathresult=$xpath->query('//dns2:task/dns2:tests/dns2:test');
-
-            $xpathtitle = 'dns2:title';
-            $xpathdescription = 'dns2:description';
-            if ($xpathresult->length === 0) {
-                // try version
-                $xpath->registerNamespace('dns1','urn:proforma:task:v1.0.1');
-                $xpathresult=$xpath->query('//dns1:task/dns1:tests/dns1:test');
-                if ($xpathresult->length === 0) {
-                    //debugging('no tests found in task file');
-                    //throw new moodle_exception('no tests found in task file');
-                }
-                $xpathtitle = 'dns1:title';
-                $xpathdescription = 'dns1:description';
-            }
-
-
-            foreach ($xpathresult as $test) {
-                $titles = $xpath->query($xpathtitle, $test);
-                $contents = $xpath->query($xpathdescription, $test);
-
-                $testobject = array();
-                $testobject['id'] = $test->attributes['id']->nodeValue;
-                $testobject['title'] = $titles->item(0)->textContent;
-                // optional:
-                if ($contents->length > 0)
-                    $testobject['description'] = $contents->item(0)->textContent;
-
-                $tests[$testobject['id']] = $testobject;
-            }
-
-            // read grading hints (supported from version 2 on)
-            $gradfunction=$xpath->query('//dns2:grading-hints/dns2:root/@function');
-
-            $xpathresult=$xpath->query('//dns2:grading-hints/dns2:root/dns2:test-ref');
-            foreach ($xpathresult as $test) {
-                $testobject = array();
-                $testobject['ref'] = $test->getAttribute('ref');
-                $testobject['weight'] = $test->getAttribute('weight');
-                $gradinghints[$testobject['ref']] = $testobject;
-            }
-
-            return array($tests, $gradinghints);
-        }
-    */
-
     /**
      * Whether this question type can perform a frequency analysis of student
      * responses.

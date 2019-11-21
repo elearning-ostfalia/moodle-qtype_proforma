@@ -73,12 +73,12 @@ class qtype_proforma_proforma_task {
         foreach ($formdata->testid as $id) {
             if ($id !== '') {
                 $xw->startElement('file');
-                $xw->create_attribute('id', $formdata->testid[$index]); // $id);
+                $xw->create_attribute('id', $formdata->testid[$index]);
                 $xw->create_attribute('used-by-grader', 'true');
                 $xw->create_attribute('visible', 'no');
                 $xw->startElement('embedded-txt-file');
                 $xw->create_attribute('filename', 'MISSING');
-                $xw->text($formdata->code[$index]);
+                $xw->text($formdata->testcode[$index]);
                 $xw->endElement(); // embedded-txt-file
                 $xw->endElement(); // file
                 $index++;
@@ -293,6 +293,104 @@ class qtype_proforma_proforma_task {
         $fs->create_file_from_string($fileinfo, $content);
     }
 
+    /*
+    // from edit_numerical_form
+    // See comment in the parent method about this hack:
+    // Evil hack alert. Formslib can store defaults in two ways for
+    // repeat elements:
+    //   ->_defaultValues['fraction[0]'] and
+    //   ->_defaultValues['fraction'][0].
+    // The $repeatedoptions['fraction']['default'] = 0 bit above means
+    // that ->_defaultValues['fraction[0]'] has already been set, but we
+    // are using object notation here, so we will be setting
+    // ->_defaultValues['fraction'][0]. That does not work, so we have
+    // to unset ->_defaultValues['fraction[0]'].
+    unset($this->_form->_defaultValues["testtitle[{$key}]"]);
+    */
+    public static function extract_formdata_from_gradinghints($question, $mform) {
+        $question->testtitle = array();
+        $question->testdescription = array();
+        $question->testtype = array();
+        $question->testweight = array();
+        $question->testid = array();
+
+        if (!isset($question->gradinghints)) {
+            // nothing to be done
+            return;
+        }
+
+        $xmldoc = new DOMDocument;
+
+        if (!$xmldoc->loadXML($question->gradinghints)) {
+            debugging('gradinghints is not valid XML');
+            return; // 'INTERNAL ERROR: $taskresult is not XML';
+        }
+
+        $xpath = new DOMXPath($xmldoc);
+        // $xpath->registerNamespace('dns','urn:proforma:v2.0');
+        $xpathresult = $xpath->query('//grading-hints/root/test-ref');
+        $key = 0;
+        if ($xpathresult->length == 0) {
+            debugging('no tests in gradinghints found');
+            return;
+        }
+
+        foreach ($xpathresult as $testgrading) {
+            $ref = $testgrading->getAttribute('ref');
+            $weight = $testgrading->getAttribute('weight');
+            $titles = $xpath->query('title', $testgrading);
+            if ($titles->length > 0) {
+                $title = $titles->item(0)->textContent;
+            } else {
+                $title = 'Title ' . $ref;
+            }
+            $descriptions = $xpath->query('description', $testgrading);
+            if ($descriptions->length > 0) {
+                $description = $descriptions->item(0)->textContent;
+            } else {
+                $description = '';
+            }
+            $testtypes = $xpath->query('test-type', $testgrading);
+            if ($testtypes->length > 0) {
+                $testtype = $testtypes->item(0)->textContent;
+            } else {
+                $testtype = '';
+            }
+
+            unset($mform->_defaultValues["testtitle[{$key}]"]);
+            unset($mform->_defaultValues["testid[{$key}]"]);
+            unset($mform->_defaultValues["testweight[{$key}]"]);
+            unset($mform->_defaultValues["testdescription[{$key}]"]);
+            unset($mform->_defaultValues["testtype[{$key}]"]);
+            if ($question->taskstorage == qtype_proforma::VOLATILE_TASKFILE) {
+                // special handling
+                switch($ref) {
+                    case 'compiler':
+                        $question->compileweight = $weight;
+                        $question->compile = 1;
+                        break;
+                    case 'checkstyle':
+                        $question->checkstyleweight = $weight;
+                        $question->checkstyle = 1;
+                        break;
+                    default:
+                        $question->testid[] = $ref;
+                        $question->testtitle[] = $title;
+                        $question->testdescription[] = $description;
+                        $question->testtype[] = $testtype;
+                        $question->testweight[] = $weight;
+                        break;
+                }
+            } else {
+                $question->testid[] = $ref;
+                $question->testtitle[] = $title;
+                $question->testdescription[] = $description;
+                $question->testtype[] = $testtype;
+                $question->testweight[] = $weight;
+            }
+            $key++;
+        }
+    }
 
     public static function extract_formdata_from_taskfile($category, $question) {
         $fs = get_file_storage();
@@ -304,112 +402,41 @@ class qtype_proforma_proforma_task {
 
         $content = $file->get_content();
 
-        //$response = new SimpleXMLElement($message, LIBXML_PARSEHUGE);
-
-        $xmldoc = new DOMDocument;
-        if (!$xmldoc->loadXML($content)) { //}, LIBXML_NOERROR )) {
-            throw new coding_exception("task file is not xml");
-        }
-
-        $tests = array();
-        $files = array();
-
-        $xpath = new DOMXPath($xmldoc);
-        $xpath->registerNamespace('dns2','urn:proforma:v2.0');
-
+        $task = new SimpleXMLElement($content, LIBXML_PARSEHUGE);
         // read files
-        $xpathresult=$xpath->query('//dns2:task/dns2:files/dns2:file');
-        foreach ($xpathresult as $file) {
+        foreach ($task->files->file as $file) {
             $fileobject = array();
-            $fileobject['id'] = $file->attributes['id']->nodeValue;
-            $code = $file->firstChild; // //$xpath->query('./dn2:embedded-txt-file', $file);
+            $fileobject['id'] = (string)$file['id'];
+            $code = $file->{'embedded-txt-file'}; // //$xpath->query('./dn2:embedded-txt-file', $file);
 
-            $fileobject['filename'] = $code->attributes['filename']->nodeValue;
-            $fileobject['code'] = $code->nodeValue;
+            $fileobject['filename'] = (string)$code['filename'];
+            $fileobject['code'] = (string)$code;
             $files[$fileobject['id']] = $fileobject;
         }
         // read tests
-        $xpathresult=$xpath->query('//dns2:task/dns2:tests/dns2:test');
-        foreach ($xpathresult as $test) {
-            //$titles = $xpath->query($xpathtitle, $test);
-            $filerefs = $xpath->query('dn2:test-configuration/dns2:filerefs/dns2:fileref', $test);
-            foreach ($filerefs as $fileref) {
-                $refid = $fileref->attributes['refidid']->nodeValue;
-                $fileobject = $files[$refid];
-                $code = $fileobject['code'];
-
+        $index = 0;
+        foreach ($task->tests->test as $test) {
+            $code = null;
+            foreach ($test->{'test-configuration'}->filerefs as $filerefs) {
+                foreach ($filerefs->fileref as $fileref) {
+                    // assume that we have only one file belonging to each test
+                    $refid = (string) $fileref['refid'];
+                    $fileobject = $files[$refid];
+                    $code = (string) $fileobject['code'];
+                }
+                switch ($test['id']) {
+                    case 'checkstyle':
+                        $question->checkstylecode = $code;
+                        break;
+                    case 'compiler': // assert(false);
+                        break;
+                    default: // JUNIT test
+                        $id = (string)$test['id'];
+                        $question->testcode[$index] = $code;
+                        $index++;
+                        break;
+                }
             }
-
-            switch($test->attributes['id']->nodeValue) {
-                case 'checkstyle':
-                    $question->checkstylecode = $code;
-                    break;
-                case 'compiler': // assert(false);
-                    break;
-                default: // JUNIT test
-                    $question->testcode[$test->attributes['id']] = $code;
-                    //break;
-            }
-            //$testobject = array();
-            //$testobject['id'] = $test->attributes['id']->nodeValue;
-            //$testobject['title'] = $titles->item(0)->textContent;
-            // optional:
-            //if ($content->length > 0)
-            //    $testobject['description'] = $content->item(0)->textContent;
-
-            // $tests[$testobject['id']] = $testobject;
         }
-
-
-        /*
-                $xpathresult=$xpath->query('//dns2:task/dns2:tests/dns2:test');
-
-                $xpathtitle = 'dns2:title';
-                $xpathdescription = 'dns2:description';
-                if ($xpathresult->length === 0) {
-                    // try version
-                    $xpath->registerNamespace('dns1','urn:proforma:task:v1.0.1');
-                    $xpathresult=$xpath->query('//dns1:task/dns1:tests/dns1:test');
-                    if ($xpathresult->length === 0) {
-                        //debugging('no tests found in task file');
-                        //throw new moodle_exception('no tests found in task file');
-                    }
-                    $xpathtitle = 'dns1:title';
-                    $xpathdescription = 'dns1:description';
-                }
-
-
-                foreach ($xpathresult as $test) {
-                    $titles = $xpath->query($xpathtitle, $test);
-                    $content = $xpath->query($xpathdescription, $test);
-
-                    $testobject = array();
-                    $testobject['id'] = $test->attributes['id']->nodeValue;
-                    $testobject['title'] = $titles->item(0)->textContent;
-                    // optional:
-                    if ($content->length > 0)
-                        $testobject['description'] = $content->item(0)->textContent;
-
-                    $tests[$testobject['id']] = $testobject;
-                }
-
-                // read grading hints (supported from version 2 on)
-                $gradfunction=$xpath->query('//dns2:grading-hints/dns2:root/@function');
-
-                $xpathresult=$xpath->query('//dns2:grading-hints/dns2:root/dns2:test-ref');
-                foreach ($xpathresult as $test) {
-                    $testobject = array();
-                    $testobject['ref'] = $test->getAttribute('ref');
-                    $testobject['weight'] = $test->getAttribute('weight');
-                    $gradinghints[$testobject['ref']] = $testobject;
-                }
-
-                return array($tests, $gradinghints);
-        */
-
     }
-
-
-
-
 }

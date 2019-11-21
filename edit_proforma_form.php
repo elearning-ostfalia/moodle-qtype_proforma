@@ -31,6 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 class qtype_proforma_edit_form extends question_edit_form {
 
     protected $createquestion = false;
+    protected $volatiletask = false;
 
     // try and show proper message when creating a proforma question without import:
     // tpdp: generates an error message after cancel click
@@ -64,6 +65,9 @@ class qtype_proforma_edit_form extends question_edit_form {
             $errors['attachments'] = get_string('mustattach', 'qtype_proforma');
         }
         */
+        if (isset($fromform->checkstyle) and $fromform->checkstyle == 1) {
+            // checkstyle code muse be set
+        }
 
         return $errors;
     }
@@ -155,7 +159,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_proforma');
 
         // Response Filename
-        if ($this->createquestion) {
+        if ($this->createquestion || $this->volatiletask) {
             $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
             $mform->addRule('responsefilename', null, 'required', null, 'client');
         } else {
@@ -228,8 +232,6 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected function add_grader_settings($mform) {
         $taskisimported = isset($this->question->options->taskstorage) &&
                 $this->question->options->taskstorage == qtype_proforma::PERSISTENT_TASKFILE;
-        $taskisnew = isset($this->question->options->taskstorage) &&
-                $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE;
 
         if ($taskisnew)
             return;
@@ -238,7 +240,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
 
         // Task Filename
-        if ($taskisimported || $taskisnew) {
+        if ($taskisimported || $this->volatiletask) {
             $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
             $mform->setType('link', PARAM_TEXT);
             $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
@@ -290,8 +292,11 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected function definition_inner($mform) {
         $qtype = question_bank::get_qtype('proforma');
 
+        $this->volatiletask = isset($this->question->options->taskstorage) &&
+                $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE;
 
-        if ($this->createquestion) {
+
+        if ($this->createquestion || $this->volatiletask) {
             // create new question
             $mform->addElement('hidden', 'taskstorage', qtype_proforma::VOLATILE_TASKFILE);
             $proglangooptions = array('Java', get_string('other', 'qtype_proforma'));
@@ -320,7 +325,7 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         $this->add_test_settings();
 
-        if ($this->createquestion) {
+        if ($this->createquestion || $this->volatiletask) {
             // ???
         } else {
             $this->add_grader_settings($mform);
@@ -344,50 +349,6 @@ class qtype_proforma_edit_form extends question_edit_form {
             return true;
         });
     }
-
-    /*
-    private function extract_data_from_taskfile($category, $question) {
-        // Retrieve the file from the Files API.
-        $uniquecode = time();
-        $tempdir = make_temp_directory('proforma_import/' . $uniquecode);
-
-        try {
-            $fs = get_file_storage();
-            $file = $fs->get_file($category, 'qtype_proforma', qtype_proforma::FILEAREA_TASK,
-                    $question->id, '/' , $question->taskfilename);
-            if (!$file) {
-                return null; // The file does not exist.
-            }
-
-
-            $files = $file->extract_to_pathname(get_file_packer('application/zip'), $tempdir);
-            if (!$files)
-                throw new coding_exception("could not extract zip file");
-
-            $filenames = array();
-            $iterator = new DirectoryIterator($tempdir);
-            foreach ($iterator as $fileinfo) {
-                if ($fileinfo->isFile() && strtolower(pathinfo($fileinfo->getFilename(), PATHINFO_BASENAME)) == 'task.xml') {
-                    $filenames[] = $fileinfo->getFilename();
-                }
-            }
-            if (!$filenames) {
-                throw new moodle_exception(get_string('noproformafile', 'qtype_proforma'));
-            }
-
-            $contents = file_get_contents($tempdir . '/' . $filenames[0]);
-
-        } catch (Exception $e) {
-            fulldelete($tempdir);
-            throw $e;
-        }
-        finally {
-            fulldelete($tempdir);
-        }
-
-        list($question->tests, $question->gradinghints) = qtype_proforma::extract_data_from_taskfile($contents);
-    }
-    */
 
     private static function get_count_tests($gradinghints) {
         if (!$gradinghints) {
@@ -436,11 +397,11 @@ class qtype_proforma_edit_form extends question_edit_form {
         $testoptions[] = $mform->createElement('text', 'testdescription',
                 get_string('testdescription', 'qtype_proforma'), array('size' => 80));
 
-        if ($this->createquestion) {
+        if ($this->createquestion || $this->volatiletask) {
             // add textarea for JUnit test code
-            $testoptions[] = $mform->createElement('textarea', 'code',
+            $testoptions[] = $mform->createElement('textarea', 'testcode',
                     get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
-            qtype_proforma::as_codemirror('id_code_0');
+            qtype_proforma::as_codemirror('id_testcode_0');
             //$testoptions[] = $mform->createElement('text', 'testfilename',
             //        get_string('testfilename', 'qtype_proforma'), array('size' => 80));
             $label = '{no}. JUnit Test';
@@ -478,7 +439,7 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
 
-        if ($this->createquestion) {
+        if ($this->createquestion || $this->volatiletask) {
             // Modification for creating a new Java question:
             // start with exactly one JUnit test.
             $repeatno = 1;
@@ -493,12 +454,12 @@ class qtype_proforma_edit_form extends question_edit_form {
             $repeatno = self::get_count_tests($this->question->options->gradinghints);
         }
 
-        if ($repeatno > 0) {
+        if ($repeatno > 0 || $this->volatiletask) {
             $this->repeat_elements($repeatarray, $repeatno,
                     $repeateloptions, 'option_repeats', 'option_add_fields',
                     1,  get_string('addjunit', 'qtype_proforma'), true);
 
-            if (!$this->createquestion) {
+            if (!$this->createquestion || $this->volatiletask) {
                 // remove button for adding new test elements
                 $mform->removeElement('option_add_fields');
             } else {
@@ -510,13 +471,13 @@ class qtype_proforma_edit_form extends question_edit_form {
                     $repeats += 1;
                 }
                 for ($i = 1; $i < $repeats; $i++)
-                    qtype_proforma::as_codemirror('id_code_' . $i);
+                    qtype_proforma::as_codemirror('id_testcode_' . $i);
             }
         } else {
             $mform->addElement('static', 'no_tests', get_string('notests', 'qtype_proforma'), '');
         }
 
-        if ($this->createquestion) {
+        if ($this->createquestion || $this->volatiletask) {
             // Create a Checkstyle test
             // (no group)
 
@@ -621,24 +582,36 @@ class qtype_proforma_edit_form extends question_edit_form {
             return $question;
         }
 
-        // create lists for download files
-        foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
-            $property1 = $value['formlist'];
-            $property2 = $value['questionlist'];
-
-            $question->$property1 = $this->create_downloadlist($question->$property2,
-                    $question->options->$property2);
+        global $USER;
+        $cat = $question->category;
+        foreach (explode(',', $question->category) as $category) {
+            $cat = $category;
         }
 
-        // create template list with all template files without the first one
-        // which gets its own editor
-        // (normally there should be only one template if no filepicker is used)
-        $alltemplates = explode(',', $question->templates);
-        $question->firstTemplate = array_shift($alltemplates);
-        $question->furtherTemplates = implode(',', $alltemplates);
+        if (isset($this->question->options->taskstorage) &&
+                $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE) {
+            // retrieve files content from task
+            qtype_proforma_proforma_task::extract_formdata_from_taskfile($cat, $question);
+        } else {
+            // create lists for download files
+            foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
+                $property1 = $value['formlist'];
+                $property2 = $value['questionlist'];
 
-        if (strlen($question->furtherTemplates) == 0) {
-            $this->_form->removeElement('furtherTemplates');
+                $question->$property1 = $this->create_downloadlist($question->$property2,
+                        $question->options->$property2);
+            }
+
+            // create template list with all template files without the first one
+            // which gets its own editor
+            // (normally there should be only one template if no filepicker is used)
+            $alltemplates = explode(',', $question->templates);
+            $question->firstTemplate = array_shift($alltemplates);
+            $question->furtherTemplates = implode(',', $alltemplates);
+
+            if (strlen($question->furtherTemplates) == 0) {
+                $this->_form->removeElement('furtherTemplates');
+            }
         }
 
         // special handling for comment
@@ -656,91 +629,16 @@ class qtype_proforma_edit_form extends question_edit_form {
         $question->comment['format'] = $question->options->commentformat;
         $question->comment['itemid'] = $draftid;
 
-        global $USER;
-        $cat = $question->category;
-        foreach (explode(',', $question->category) as $category) {
-            $cat = $category;
-        }
-
         if (!empty($question->taskfilename)) {
             // create temporary link for task file (does not belong to question class)
             // $draftid = file_get_submitted_draft_itemid('questiontext');
             // $question->link = '<a href="@@PLUGINFILE@@/'.$question->taskfilename.'">'. $question->taskfilename .'</a> ';
-
             $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
                     qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
             $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
         }
 
-        $question->testtitle = array();
-        $question->testdescription = array();
-        $question->testtype = array();
-        $question->testweight = array();
-        $question->testid = array();
-
-        /*
-        // from edit_numerical_form
-        // See comment in the parent method about this hack:
-        // Evil hack alert. Formslib can store defaults in two ways for
-        // repeat elements:
-        //   ->_defaultValues['fraction[0]'] and
-        //   ->_defaultValues['fraction'][0].
-        // The $repeatedoptions['fraction']['default'] = 0 bit above means
-        // that ->_defaultValues['fraction[0]'] has already been set, but we
-        // are using object notation here, so we will be setting
-        // ->_defaultValues['fraction'][0]. That does not work, so we have
-        // to unset ->_defaultValues['fraction[0]'].
-        unset($this->_form->_defaultValues["testtitle[{$key}]"]);
-        */
-        if (isset($question->gradinghints)) {
-            $xmldoc = new DOMDocument;
-
-            if (!$xmldoc->loadXML($question->gradinghints)) {
-                debugging('gradinghints is not valid XML');
-                return 0; // 'INTERNAL ERROR: $taskresult is not XML';
-            }
-
-            $xpath = new DOMXPath($xmldoc);
-            // $xpath->registerNamespace('dns','urn:proforma:v2.0');
-            $xpathresult = $xpath->query('//grading-hints/root/test-ref');
-            $key = 0;
-            if ($xpathresult->length > 0) {
-                foreach ($xpathresult as $testgrading) {
-                    $ref = $testgrading->getAttribute('ref');
-                    $weight = $testgrading->getAttribute('weight');
-                    $titles = $xpath->query('title', $testgrading);
-                    if ($titles->length > 0) {
-                        $title = $titles->item(0)->textContent;
-                    } else {
-                        $title = 'Title ' . $ref;
-                    }
-                    $descriptions = $xpath->query('description', $testgrading);
-                    if ($descriptions->length > 0) {
-                        $description = $descriptions->item(0)->textContent;
-                    } else {
-                        $description = '';
-                    }
-                    $testtypes = $xpath->query('test-type', $testgrading);
-                    if ($testtypes->length > 0) {
-                        $testtype = $testtypes->item(0)->textContent;
-                    } else {
-                        $testtype = '';
-                    }
-
-                    unset($this->_form->_defaultValues["testtitle[{$key}]"]);
-                    unset($this->_form->_defaultValues["testid[{$key}]"]);
-                    unset($this->_form->_defaultValues["testweight[{$key}]"]);
-                    unset($this->_form->_defaultValues["testdescription[{$key}]"]);
-                    unset($this->_form->_defaultValues["testtype[{$key}]"]);
-                    $question->testid[] = $ref;
-                    $question->testtitle[] = $title;
-                    $question->testdescription[] = $description;
-                    $question->testtype[] = $testtype;
-                    $question->testweight[] = $weight;
-                    $key++;
-                }
-            }
-        }
+        qtype_proforma_proforma_task::extract_formdata_from_gradinghints($question, $this->_form);
 
         /*
                     if (!isset($question->tests)) {

@@ -355,7 +355,7 @@ EOD;
         $submission = $xw->outputMemory();
         // echo $submission;
 
-        // debugging($submission);
+        //debugging($submission);
         return $submission;
     }
 
@@ -367,6 +367,7 @@ EOD;
             if (!$task instanceof stored_file) {
                 throw new coding_exception("task variable has wrong class");
             }
+            //debugging($task->get_content());
             $postfields['task-file'] = $task;
         }
 
@@ -448,21 +449,12 @@ EOD;
         }
 
         $filename = $question->responsefilename;
-        /*
-        if (get_config('qtype_proforma', 'javafile_without_package')) {
-            $array = explode('/', $filename);
-            $array= explode('\\', end($array)); // normally not needed
-            $filename = end($array);
-        }
-        */
 
         $submissionxml = $this->create_submission_xml($code, null, $filename, $question);
 
         $postfields = array(
                 'submission.xml' => $submissionxml,
                 $filename => $code // ????
-                // 'submission-text' => $code, //??
-                // 'submission-filename' => $question->responsefilename //??
         );
 
         return $this->post_to_grader($postfields, $question);
