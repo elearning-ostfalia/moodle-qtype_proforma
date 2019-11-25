@@ -33,8 +33,6 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected $createquestion = false;
     protected $volatiletask = false;
 
-    // try and show proper message when creating a proforma question without import:
-    // tpdp: generates an error message after cancel click
     protected function definition() {
         $mform = $this->_form;
         if (empty($this->question->options)) {
@@ -233,7 +231,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         $taskisimported = isset($this->question->options->taskstorage) &&
                 $this->question->options->taskstorage == qtype_proforma::PERSISTENT_TASKFILE;
 
-        if ($taskisnew)
+        if (!$taskisimported)
             return;
 
         // ProFormA fields
@@ -262,9 +260,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
 
         // UUID
-        if ($taskisnew) {
-            $this->add_static_field($mform, 'uuid', get_string('uuid', 'qtype_proforma'));
-        } else if (!$taskisimported) { // !isset($this->question->id)) {
+        if (!$taskisimported) { // !isset($this->question->id)) {
             // create new question
             $mform->addElement('text', 'uuid', get_string('uuid', 'qtype_proforma'), array('size' => '60'));
             $mform->addRule('uuid', null, 'required', null, 'client');
@@ -421,9 +417,25 @@ class qtype_proforma_edit_form extends question_edit_form {
         $repeateloptions['testid']['default'] = '{no}'; // JAVA-JUNIT
 
         // $repeateloptions['testweight']['rule'] = 'numeric';
-        $repeateloptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
-        $repeateloptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
-        // $repeateloptions['testdescription']['disabledif'] = array('aggregationstrategy', 'neq', 111);
+        if ($this->createquestion || $this->volatiletask) {
+            // so far (Moodle 3.6) hideif is not implemented in groups
+            // => quickhack
+
+            $repeats = optional_param('option_repeats', 1, PARAM_INT);
+            $addfields = optional_param('option_add_fields', '', PARAM_TEXT);
+            if (!empty($addfields)){
+                $repeats += 1;
+            }
+            for ($i = 0; $i < $repeats; $i++) {
+                $mform->hideif('testtype['.$i.']', 'aggregationstrategy', 'neq', 111);
+                $mform->hideif('testid['.$i.']', 'aggregationstrategy', 'neq', 111);
+            }
+
+
+        } else {
+            $repeateloptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
+            $repeateloptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
+        }
 
         /*
         $repeateloptions['testweight']['helpbutton'] = array('choiceoptions', 'choice');
@@ -448,7 +460,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
             $this->create_test_weight($compilegroup, 'compile', '0');
             $mform->addGroup($compilegroup, 'compilegroup', get_string('compile', 'qtype_proforma'), ' ', false);
-            $mform->disabledIf('compileweight', 'compile');
+            $mform->hideIf('compileweight', 'compile');
 
         } else {
             $repeatno = self::get_count_tests($this->question->options->gradinghints);
@@ -459,7 +471,7 @@ class qtype_proforma_edit_form extends question_edit_form {
                     $repeateloptions, 'option_repeats', 'option_add_fields',
                     1,  get_string('addjunit', 'qtype_proforma'), true);
 
-            if (!$this->createquestion || $this->volatiletask) {
+            if (!$this->createquestion and !$this->volatiletask) {
                 // remove button for adding new test elements
                 $mform->removeElement('option_add_fields');
             } else {
@@ -470,8 +482,9 @@ class qtype_proforma_edit_form extends question_edit_form {
                 if (!empty($addfields)){
                     $repeats += 1;
                 }
-                for ($i = 1; $i < $repeats; $i++)
+                for ($i = 1; $i < $repeats; $i++) {
                     qtype_proforma::as_codemirror('id_testcode_' . $i);
+                }
             }
         } else {
             $mform->addElement('static', 'no_tests', get_string('notests', 'qtype_proforma'), '');
@@ -480,20 +493,18 @@ class qtype_proforma_edit_form extends question_edit_form {
         if ($this->createquestion || $this->volatiletask) {
             // Create a Checkstyle test
             // (no group)
-
-
-
             $testoptions = array();
             $testoptions[] =& $mform->createElement('advcheckbox', 'checkstyle', '', '');
             $this->create_test_weight($testoptions, 'checkstyle', '0.2');
             $mform->addGroup($testoptions, 'checkstyleoptions', 'Checkstyle',
                     array(' '), false);
 
+
             $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
             qtype_proforma::as_codemirror('id_checkstylecode', 'xml');
-            $mform->disabledIf('checkstyleweight', 'checkstyle');
-            $mform->disabledIf('id_checkstylecode', 'checkstyle');
-            $mform->disabledIf('checkstylecode', 'checkstyle');
+            $mform->hideIf('checkstyleweight', 'checkstyle');
+//            $mform->hideIf('id_checkstylecode', 'checkstyle');
+            $mform->hideIf('checkstylecode', 'checkstyle');
             /*
             $checkstylegroup=array();
             $checkstylegroup[] =& $mform->createElement('text', 'checkstyleweight',
