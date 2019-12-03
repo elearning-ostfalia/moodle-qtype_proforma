@@ -39,6 +39,9 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
         // remove comments
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
         $expectedxml = preg_replace('/<!--(.|\s)*?-->/', '', $expectedxml);
+        // remove uuid
+        $xml = preg_replace('/uuid="(.|\s)*?"/', 'uuid="removed"', $xml);
+        $expectedxml = preg_replace('/uuid="(.|\s)*?"/', 'uuid="removed"', $expectedxml);
         $this->assertEquals(str_replace("\r\n", "\n", $expectedxml),
                 str_replace("\r\n", "\n", $xml));
     }
@@ -56,7 +59,7 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
     <submission-restrictions/>
     <files>
         <file id="1" used-by-grader="true" visible="no">
-            <embedded-txt-file filename="TODO.java">class XTest {}</embedded-txt-file>
+            <embedded-txt-file filename="XTest.java">class XTest {}</embedded-txt-file>
         </file>
         <file id="checkstyle" used-by-grader="true" visible="no">
             <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;
@@ -71,7 +74,7 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
 &lt;/module&gt;</embedded-txt-file>
         </file>
         <file id="MS" used-by-grader="false" visible="no">
-            <embedded-txt-file filename="modelsolution.java"></embedded-txt-file>
+            <embedded-txt-file filename="modelsolution.java">// no model solution available </embedded-txt-file>
         </file>
     </files>
     <model-solutions>
@@ -107,7 +110,7 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
                     <fileref refid="1"/>
                 </filerefs>
                 <unit:unittest framework="JUnit" version="4.12">
-                    <unit:entry-point>MISSING</unit:entry-point>
+                    <unit:entry-point>XTest</unit:entry-point>
                 </unit:unittest>
             </test-configuration>
         </test>

@@ -330,7 +330,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->maxbytes = 10240;
         $form->filetypes = '.java';
 
-        $form->code[0] = 'class XTest {}';
+        $form->testcode[0] = 'class XTest {}';
         $form->testtitle[0] = 'JUnit Test 1';
         $form->testweight[0] = '1';
         $form->testid[0] = '1';
