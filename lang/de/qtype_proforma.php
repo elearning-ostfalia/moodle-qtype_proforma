@@ -97,6 +97,14 @@ $string['javafile_without_package'] = 'Entfernen des Java-Paket-Pfads beim Einre
 $string['javafile_without_package_desc'] = 'Falls zur Eingabe der Einreichung der Editor verwendet wird, wird der an den Grader gesendete Dateiname aus der Musterlösung erzeugt.
 Wenn diese einen Paket-Pfad enthält, kann es sein, dass der Grader damit nicht klarkommt. Mit Setzen dieses Schalters wird der Pfad nicht mitgesendet.';
 
+$string['javasettings_header'] = 'Java-Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';
+$string['checkstyleversion'] = 'Checkstyle Version';
+$string['checkstyleversion_desc'] = 'Checkstyle-Version des Graders';
+$string['javaversion'] = 'Java Version';
+$string['javaversion_desc'] = 'Java-Version des Graders';
+$string['junitversion'] = 'JUnit Version';
+$string['junitversion_desc'] = 'JUnit-Version des Graders';
+
 $string['grading_timeout'] = 'Grading Timeout';
 $string['grading_timeout_desc'] = 'Zeit, nach der angenommen wird, dass vom Grader keine Antwort mehr kommt (in Sekunden)';
 

@@ -60,7 +60,8 @@ class qtype_proforma_proforma_task {
         $xw->create_childelement_with_text('description', $formdata->questiontext);
 
         $xw->startElement('proglang'); // not needed for grader
-        $xw->create_attribute('version', '1.8');
+        $javaversion = get_config('qtype_proforma', 'javaversion');
+        $xw->create_attribute('version', $javaversion);
         $xw->text($formdata->programminglanguage);
         $xw->endElement(); // submission-restrictions
 
@@ -146,7 +147,9 @@ class qtype_proforma_proforma_task {
         $xw->endElement(); // fileref
         $xw->endElement(); // filerefs
         $xw->startElement('cs:java-checkstyle');
-        $xw->create_attribute('version', '8.23');
+
+        $checkstyleversion = get_config('qtype_proforma', 'checkstyleversion');
+        $xw->create_attribute('version', $checkstyleversion);
         $xw->create_childelement_with_text('cs:max-checkstyle-warnings', '4');
         $xw->endElement(); // cs:java-checkstyle
         $xw->endElement(); // test-configuration
@@ -169,7 +172,8 @@ class qtype_proforma_proforma_task {
                 $xw->endElement(); // filerefs
                 $xw->startElement('unit:unittest');
                 $xw->create_attribute('framework', 'JUnit');
-                $xw->create_attribute('version', '4.12');
+                $junitversion = get_config('qtype_proforma', 'junitversion');
+                $xw->create_attribute('version', $junitversion);
                 $code = $formdata->testcode[$index];
                 $entrypoint = self::get_java_entrypoint($code);
                 $xw->create_childelement_with_text('unit:entry-point', $entrypoint);

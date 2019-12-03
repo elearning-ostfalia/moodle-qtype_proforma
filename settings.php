@@ -88,3 +88,21 @@ if (isset($CFG->maxbytes)) {
             get_max_upload_sizes($CFG->maxbytes, 0, 0, $maxbytes));
     $settings->add($element);
 }
+
+// Java - JUnit - Checkstyle
+
+$settings->add(new admin_setting_heading('java',
+        get_string('javasettings_header', 'qtype_proforma'), ''));
+
+$settings->add(new admin_setting_configtext('qtype_proforma/javaversion',
+        get_string('javaversion', 'qtype_proforma'),
+        get_string('javaversion_desc', 'qtype_proforma'), 1.8));
+
+
+$settings->add(new admin_setting_configtext('qtype_proforma/junitversion',
+        get_string('junitversion', 'qtype_proforma'),
+        get_string('junitversion_desc', 'qtype_proforma'), 4.12));
+
+$settings->add(new admin_setting_configtext('qtype_proforma/checkstyleversion',
+        get_string('checkstyleversion', 'qtype_proforma'),
+        get_string('checkstyleversion_desc', 'qtype_proforma'), 8.23));

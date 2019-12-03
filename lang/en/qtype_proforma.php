@@ -99,6 +99,14 @@ $string['javafile_without_package'] = 'send Java submission file without package
 $string['javafile_without_package_desc'] = 'in case of editor submission format teh submiited filename is generated directly from Model solution.
 If the filename contains the package path this might lead to grading errors. Set this flag if the package path shall be ignored.';
 
+$string['javasettings_header'] = 'Java Settings for Java questions created with Moodle';
+$string['checkstyleversion'] = 'Checkstyle version';
+$string['checkstyleversion_desc'] = 'Checkstyle version used by grader';
+$string['javaversion'] = 'Java version';
+$string['javaversion_desc'] = 'Java version used by grader';
+$string['junitversion'] = 'JUnit version';
+$string['junitversion_desc'] = 'JUnit version used by grader';
+
 $string['grading_timeout'] = 'Grading Timeout';
 $string['grading_timeout_desc'] = 'Timout for grading request in seconds';
 
