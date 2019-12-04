@@ -147,6 +147,9 @@ $string['notests'] = 'Tests are not available => use "all or nothing" ';
 $string['testdescription'] = 'Description';
 $string['testtype'] = 'Type';
 $string['testtitle'] = 'Title';
+$string['testlabel'] = '{no}. Test';
+$string['junittestlabel'] = '{no}. JUnit Test';
+$string['junittesttitle'] = 'JUnit Test';
 $string['weight'] = 'weight';
 $string['filepickeroptions'] = 'Filepicker options';
 

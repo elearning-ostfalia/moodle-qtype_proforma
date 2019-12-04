@@ -589,16 +589,16 @@ class qtype_proforma_edit_form extends question_edit_form {
                 // Add textarea for unit test code.
                 $testoptions[] = $mform->createElement('textarea', 'testcode',
                         get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
-                $label = '{no}. JUnit Test'; // use different label
+                $label = get_string('junittestlabel', 'qtype_proforma'); // use different label
             } else {
-                $label = '{no}. Test';
+                $label = get_string('testlabel', 'qtype_proforma');
             }
 
             $repeatarray = array();
             $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
             $repeatoptions = array();
             $repeatoptions['testweight']['default'] = 1;
-            $repeatoptions['testtitle']['default'] = '';
+            $repeatoptions['testtitle']['default'] = get_string('junittesttitle', 'qtype_proforma');
             $repeatoptions['testdescription']['default'] = '';
             //$repeateloptions['testfilename']['default'] = '';
             $repeatoptions['testtype']['default'] = 'unittest'; // JAVA-JUNIT
@@ -613,6 +613,8 @@ class qtype_proforma_edit_form extends question_edit_form {
                     $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
                     $mform->hideif('testid[' . $i . ']', 'aggregationstrategy', 'neq', 111);
                 }
+                // does not work
+                //$repeatoptions['testtitle']['rule'] = 'required'; // array(null, 'required', null, 'client');
             } else {
                 // disable testtype and test identifier for imported tasks
                 $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
@@ -625,6 +627,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $mform->setType('testweight', PARAM_FLOAT);
             $mform->setType('testid', PARAM_RAW);
             $mform->setType('testtype', PARAM_RAW);
+            // $mform->addRule('testtitle', null, 'required', null, 'client');
             //$mform->setType('testfilename', PARAM_TEXT);
 
             // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
@@ -637,6 +640,7 @@ class qtype_proforma_edit_form extends question_edit_form {
                 // Set CodeMirror for unit test code.
                 for ($i = 0; $i < $repeats; $i++) {
                     qtype_proforma::as_codemirror('id_testcode_' . $i);
+                    //$mform->addRule('testcode_' . $i, null, 'required', null, 'client');
                 }
             } else {
                 // Remove button for adding new test elements.
