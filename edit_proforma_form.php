@@ -587,8 +587,8 @@ class qtype_proforma_edit_form extends question_edit_form {
 
             if ($this->volatiletask) {
                 // Add textarea for unit test code.
-                $testoptions[] = $mform->createElement('textarea', 'testcode',
-                        get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
+//                $testoptions[] = $mform->createElement('textarea', 'testcode',
+//                        get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
                 $label = get_string('junittestlabel', 'qtype_proforma'); // use different label
             } else {
                 $label = get_string('testlabel', 'qtype_proforma');
@@ -596,6 +596,10 @@ class qtype_proforma_edit_form extends question_edit_form {
 
             $repeatarray = array();
             $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
+            if ($this->volatiletask) {
+                $repeatarray[] = $mform->createElement('textarea', 'testcode',
+                        '' /*get_string('code', 'qtype_proforma')*/, 'rows="20" cols="80"');
+            }
             $repeatoptions = array();
             $repeatoptions['testweight']['default'] = 1;
             $repeatoptions['testtitle']['default'] = get_string('junittesttitle', 'qtype_proforma');
