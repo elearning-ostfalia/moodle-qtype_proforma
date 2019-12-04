@@ -28,10 +28,15 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/proformatask.php');
 
 class qtype_proforma_java_task extends qtype_proforma_proforma_task {
-    public function create_java_task_file($formdata) {
-        return $this->create_task_file($formdata);
+    private static function has_checkstyle($formdata) {
+        return isset($formdata->checkstyle) && $formdata->checkstyle;
     }
-
+    private static function has_compiler($formdata) {
+        return isset($formdata->compile) && $formdata->compile;
+    }
+    private static function has_test($formdata, $index) {
+        return isset($formdata->testcode[$index]) && strlen(trim($formdata->testcode[$index]));
+    }
     protected function add_namespace_to_xml($xw) {
         $xw->create_attribute('xmlns:unit', 'urn:proforma:tests:unittest:v1.1');
         $xw->create_attribute('xmlns:cs', 'urn:proforma:tests:java-checkstyle:v1.1');
@@ -43,9 +48,9 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
     }
     protected function add_testfiles_to_xml($xw, $formdata) {
         // Junit files
-        $index = 0;
-        foreach ($formdata->testid as $id) {
-            if ($id !== '') {
+        for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
+            $id = $formdata->testid[$index];
+            if ($id !== '' && self::has_test($formdata, $index)) {
                 $xw->startElement('file');
                 $xw->create_attribute('id', $formdata->testid[$index]);
                 $xw->create_attribute('used-by-grader', 'true');
@@ -58,56 +63,39 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
                 $xw->text($formdata->testcode[$index]);
                 $xw->endElement(); // embedded-txt-file
                 $xw->endElement(); // file
-                $index++;
             }
         }
 
         // create checkstyle file
-        $xw->startElement('file');
-        $xw->create_attribute('id', 'checkstyle'); // $id);
-        $xw->create_attribute('used-by-grader', 'true');
-        $xw->create_attribute('visible', 'no');
-        $xw->startElement('embedded-txt-file');
-        $xw->create_attribute('filename', 'checkstyle.xml');
-        $xw->text($formdata->checkstylecode);
-        $xw->endElement(); // embedded-txt-file
-        $xw->endElement(); // file
+        if (self::has_checkstyle($formdata)) {
+            $xw->startElement('file');
+            $xw->create_attribute('id', 'checkstyle'); // $id);
+            $xw->create_attribute('used-by-grader', 'true');
+            $xw->create_attribute('visible', 'no');
+            $xw->startElement('embedded-txt-file');
+            $xw->create_attribute('filename', 'checkstyle.xml');
+            $xw->text($formdata->checkstylecode);
+            $xw->endElement(); // embedded-txt-file
+            $xw->endElement(); // file
+        }
     }
+
 
     protected function add_tests_to_xml($xw, $formdata) {
         // create compiler test
-        $xw->startElement('test');
-        $xw->create_attribute('id', 'compiler');
-        $xw->create_childelement_with_text('title', 'Compiler');
-        $xw->create_childelement_with_text('test-type', 'java-compilation');
-        $xw->create_childelement_with_text('test-configuration', null);
-        $xw->endElement(); // test
-
-        // create checkstyle test
-        $xw->startElement('test');
-        $xw->create_attribute('id', 'checkstyle');
-        $xw->create_childelement_with_text('title', 'CheckStyle Test');
-        $xw->create_childelement_with_text('test-type', 'java-checkstyle');
-        $xw->startElement('test-configuration');
-
-        $xw->startElement('filerefs');
-        $xw->startElement('fileref');
-        $xw->create_attribute('refid', 'checkstyle');
-        $xw->endElement(); // fileref
-        $xw->endElement(); // filerefs
-        $xw->startElement('cs:java-checkstyle');
-
-        $checkstyleversion = get_config('qtype_proforma', 'checkstyleversion');
-        $xw->create_attribute('version', $checkstyleversion);
-        $xw->create_childelement_with_text('cs:max-checkstyle-warnings', '4');
-        $xw->endElement(); // cs:java-checkstyle
-        $xw->endElement(); // test-configuration
-        $xw->endElement(); // test
+        if (self::has_compiler($formdata)) {
+            $xw->startElement('test');
+            $xw->create_attribute('id', 'compiler');
+            $xw->create_childelement_with_text('title', 'Compiler');
+            $xw->create_childelement_with_text('test-type', 'java-compilation');
+            $xw->create_childelement_with_text('test-configuration', null);
+            $xw->endElement(); // test
+        }
 
         // Junit tests
-        $index = 0;
-        foreach ($formdata->testid as $id) {
-            if ($id !== '') {
+        for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
+            $id = $formdata->testid[$index];
+            if ($id !== '' && self::has_test($formdata, $index)) {
                 $xw->startElement('test');
                 $xw->create_attribute('id', $formdata->testid[$index]); // $id);
                 $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
@@ -130,13 +118,35 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
                 $xw->endElement(); // test-configuration
 
                 $xw->endElement(); // test
-                $index++;
             }
+        }
+
+        // create checkstyle test
+        if (self::has_checkstyle($formdata)) {
+            $xw->startElement('test');
+            $xw->create_attribute('id', 'checkstyle');
+            $xw->create_childelement_with_text('title', 'CheckStyle Test');
+            $xw->create_childelement_with_text('test-type', 'java-checkstyle');
+            $xw->startElement('test-configuration');
+
+            $xw->startElement('filerefs');
+            $xw->startElement('fileref');
+            $xw->create_attribute('refid', 'checkstyle');
+            $xw->endElement(); // fileref
+            $xw->endElement(); // filerefs
+            $xw->startElement('cs:java-checkstyle');
+
+            $checkstyleversion = get_config('qtype_proforma', 'checkstyleversion');
+            $xw->create_attribute('version', $checkstyleversion);
+            $xw->create_childelement_with_text('cs:max-checkstyle-warnings', '4');
+            $xw->endElement(); // cs:java-checkstyle
+            $xw->endElement(); // test-configuration
+            $xw->endElement(); // test
         }
     }
 
-    protected function add_gradinghints_for_tests_to_xml($xw, $formdata) {
-        if (isset($formdata->checkstyle)) {
+    protected function add_tests_to_lms_grading_hints($xw, $formdata) {
+        if (self::has_compiler($formdata)) {
             $xw->startElement('test-ref');
             $xw->create_attribute('ref', 'compiler');
             $xw->create_attribute('weight', $formdata->compileweight);
@@ -146,9 +156,9 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
             $xw->endElement(); // test-ref
         }
 
-        $index = 0;
-        foreach ($formdata->testid as $id) {
-            if ($id !== '') {
+        for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
+            $id = $formdata->testid[$index];
+            if ($id !== '' && self::has_test($formdata, $index)) {
                 $xw->startElement('test-ref');
                 $xw->create_attribute('ref', $formdata->testid[$index]);
                 if (array_key_exists($index, $formdata->testweight)) {
@@ -160,11 +170,10 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
                 $xw->create_childelement_with_text('description', $formdata->testdescription[$index]);
                 $xw->create_childelement_with_text('test-type', $formdata->testtype[$index]);
                 $xw->endElement(); // test-ref
-                $index++;
             }
         }
 
-        if (isset($formdata->checkstyle)) {
+        if (self::has_checkstyle($formdata)) {
             $xw->startElement('test-ref');
             $xw->create_attribute('ref', 'checkstyle');
             $xw->create_attribute('weight', $formdata->checkstyleweight);
@@ -233,8 +242,25 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         }
     }
 
+    public function get_count_unit_tests($gradinghints) {
+        if (!$gradinghints) {
+            return 0;
+        }
+        $gh = new SimpleXMLElement($gradinghints, LIBXML_PARSEHUGE);
+        $count = 0;
+        foreach ($gh->root->{'test-ref'} as $test) {
+            if ((string)$test['ref'] == 'checkstyle')
+                continue;
+            if ((string)$test['ref'] == 'compiler')
+                continue;
+            $count++;
+        }
+        return $count;
+    }
+
 
     // parse Java code
+    // ---------------------
 
     /**
      * remove Java comments from code string

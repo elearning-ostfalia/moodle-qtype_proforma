@@ -190,7 +190,7 @@ class qtype_proforma extends question_type {
         switch ($formdata->taskstorage) {
             case qtype_proforma::PERSISTENT_TASKFILE:
                 $instance = new qtype_proforma_java_task;
-                $options->gradinghints = $instance->create_grading_hints($formdata);
+                $options->gradinghints = $instance->create_lms_grading_hints($formdata);
                 break;
             case qtype_proforma::VOLATILE_TASKFILE:
                 $instance = new qtype_proforma_java_task;
@@ -198,7 +198,7 @@ class qtype_proforma extends question_type {
                 $options->taskfilename = 'task.xml';
                 qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
                         $context->id, $formdata->id);
-                $options->gradinghints = $instance->create_grading_hints($formdata);
+                $options->gradinghints = $instance->create_lms_grading_hints($formdata);
                 break;
             case qtype_proforma::REPOSITORY:
             default:

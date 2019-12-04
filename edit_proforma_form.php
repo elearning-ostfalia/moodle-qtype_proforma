@@ -30,14 +30,13 @@ defined('MOODLE_INTERNAL') || die();
 // ProFormA question type editing form.
 class qtype_proforma_edit_form extends question_edit_form {
 
-    protected $createquestion = false;
     protected $volatiletask = false;
 
     protected function definition() {
         $mform = $this->_form;
         if (empty($this->question->options)) {
             // create question (derived class would be better..)
-            $this->createquestion = true;
+            $this->volatiletask = true;
         }
         parent::definition();
     }
@@ -79,7 +78,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         return 'proforma';
     }
 
-    private function create_test_weight(&$testoptions, $prefix, $defaultweight, $withtitle = false) {
+    private function add_test_weight_option(&$testoptions, $prefix, $defaultweight, $withtitle = false) {
         $mform = $this->_form;
         if ($withtitle) {
             $testoptions[] = $mform->createElement('text', $prefix . 'title',
@@ -157,7 +156,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_proforma');
 
         // Response Filename
-        if ($this->createquestion || $this->volatiletask) {
+        if ($this->volatiletask) {
             $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
             $mform->addRule('responsefilename', null, 'required', null, 'client');
         } else {
@@ -180,14 +179,14 @@ class qtype_proforma_edit_form extends question_edit_form {
      * @param string $types The space , ; separated list of types
      * @return array('groupname', 'mime/type', ...)
      */
-    private function get_typesets($types) {
+/*    private function get_typesets($types) {
         $sets = array();
         if (!empty($types)) {
             $sets = preg_split('/[\s,;:"\']+/', $types, null, PREG_SPLIT_NO_EMPTY);
         }
         return $sets;
     }
-
+*/
 
     private function add_static_field($mform, $field, $label, $sizefield = null) {
         // $mform->addElement('static', $field, $label);
@@ -288,11 +287,13 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected function definition_inner($mform) {
         $qtype = question_bank::get_qtype('proforma');
 
-        $this->volatiletask = isset($this->question->options->taskstorage) &&
-                $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE;
+        if (!$this->volatiletask) {
+            // check if question was created by moodle
+            $this->volatiletask = isset($this->question->options->taskstorage) &&
+                    $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE;
+        }
 
-
-        if ($this->createquestion || $this->volatiletask) {
+        if ($this->volatiletask) {
             // create new question
             $mform->addElement('hidden', 'taskstorage', qtype_proforma::VOLATILE_TASKFILE);
             $proglangooptions = array('Java', get_string('other', 'qtype_proforma'));
@@ -321,9 +322,7 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         $this->add_test_settings();
 
-        if ($this->createquestion || $this->volatiletask) {
-            // ???
-        } else {
+        if (!$this->volatiletask) {
             $this->add_grader_settings($mform);
         }
 
@@ -346,192 +345,51 @@ class qtype_proforma_edit_form extends question_edit_form {
         });
     }
 
-    private static function get_count_tests($gradinghints) {
-        if (!$gradinghints) {
-            return 0;
-        }
-        $xmldoc = new DOMDocument;
-
-        if (!$xmldoc->loadXML($gradinghints )) {
-            debugging('gradinghints is not valid XML');
-            return 0; // 'INTERNAL ERROR: $taskresult is not XML';
+    private function get_count_unittests($taskhandler) {
+        $repeats = 0;
+        // Get number of unit tests from (lms) grading hints.
+        // In case of an imported task this ist the number of all tests (not just unit tests).
+        if (isset($this->question) && isset($this->question->options) && isset($this->question->options->gradinghints)) {
+            $repeats = $taskhandler->get_count_unit_tests($this->question->options->gradinghints);
         }
 
-        $xpath = new DOMXPath($xmldoc);
-        // $xpath->registerNamespace('dns','urn:proforma:v2.0');
-        $xpathresult = $xpath->query('//grading-hints/root/test-ref');
-        return $xpathresult->length;
+        if ($this->volatiletask) {
+            // In case of manually added unit tests we need to know how many tests are actually present:
+            // (unfortunately there is no function to get this from Moodle core)
+            $currentrepeats = optional_param('option_repeats', 1, PARAM_INT);
+            $addfields = optional_param('option_add_fields', '', PARAM_TEXT);
+            if (!empty($addfields)) {
+                $currentrepeats += 1;
+            }
+            if ($currentrepeats > $repeats) {
+                $repeats = $currentrepeats;
+            }
+        }
+        return $repeats;
     }
 
     protected function add_test_settings() {
         $mform = $this->_form;
+        $taskhandler = null;
 
         // Header.
         $mform->addElement('header', 'test_header', get_string('tests', 'qtype_proforma'));
         $mform->setExpanded('test_header');
 
-        // Aggreagation strategy
+        // Aggreagation strategy.
         $aggregationstrategy = array(
                 qtype_proforma::ALL_OR_NOTHING => get_string('all_or_nothing', 'qtype_proforma'),
                 qtype_proforma::WEIGHTED_SUM  => get_string('weighted_sum', 'qtype_proforma')
         );
-
         $mform->addElement('select', 'aggregationstrategy',
                 get_string('aggregationstrategy', 'qtype_proforma'), $aggregationstrategy);
         $mform->addHelpButton('aggregationstrategy', 'aggregationstrategy', 'qtype_proforma');
         $mform->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
 
-        // Tests.
-        $repeatarray = array();
+        // Tests
+        $this->add_tests($mform);
 
-        $testoptions = array();
-        $this->create_test_weight($testoptions, 'test', '1', true);
-
-        $testoptions[] = $mform->createElement('text', 'testid', 'Id', array('size' => 3));
-        $testoptions[] = $mform->createElement('text', 'testtype',
-                get_string('testtype', 'qtype_proforma'), array('size' => 80));
-        $testoptions[] = $mform->createElement('text', 'testdescription',
-                get_string('testdescription', 'qtype_proforma'), array('size' => 80));
-
-        if ($this->createquestion || $this->volatiletask) {
-            // add textarea for JUnit test code
-            $testoptions[] = $mform->createElement('textarea', 'testcode',
-                    get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
-            qtype_proforma::as_codemirror('id_testcode_0');
-            //$testoptions[] = $mform->createElement('text', 'testfilename',
-            //        get_string('testfilename', 'qtype_proforma'), array('size' => 80));
-            $label = '{no}. JUnit Test';
-        } else {
-            $label = '{no}. Test';
-        }
-
-        $repeatarray[] = $mform->createElement('group', 'testoptions',
-                $label, $testoptions, null, false);
-
-        $repeateloptions = array();
-        $repeateloptions['testweight']['default'] = 1;
-        $repeateloptions['testtitle']['default'] = '';
-        $repeateloptions['testdescription']['default'] = '';
-        //$repeateloptions['testfilename']['default'] = '';
-        $repeateloptions['testtype']['default'] = 'unittest'; // JAVA-JUNIT
-        $repeateloptions['testid']['default'] = '{no}'; // JAVA-JUNIT
-
-        $repeats = 0;
-        if (isset($this->question) && isset($this->question->options) && isset($this->question->options->gradinghints)) {
-            $repeats = self::get_count_tests($this->question->options->gradinghints);
-        }
-
-        // $repeateloptions['testweight']['rule'] = 'numeric';
-        if ($this->createquestion || $this->volatiletask) {
-            // so far (Moodle 3.6) hideif is not implemented in groups
-            // => quickhack
-            $repeats_1 = optional_param('option_repeats', 1, PARAM_INT);
-            $addfields = optional_param('option_add_fields', '', PARAM_TEXT);
-            if (!empty($addfields)){
-                $repeats_1 += 1;
-            }
-            if ($repeats_1 > $repeats)
-                $repeats = $repeats_1;
-
-            for ($i = 0; $i < $repeats; $i++) {
-                $mform->hideif('testtype['.$i.']', 'aggregationstrategy', 'neq', 111);
-                $mform->hideif('testid['.$i.']', 'aggregationstrategy', 'neq', 111);
-            }
-        } else {
-            $repeateloptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
-            $repeateloptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
-        }
-
-        /*
-        $repeateloptions['testweight']['helpbutton'] = array('choiceoptions', 'choice');
-        */
-        // $mform->setType('option', PARAM_CLEANHTML);
-
-        $mform->setType('testdescription', PARAM_TEXT);
-        $mform->setType('testtitle', PARAM_TEXT);
-        $mform->setType('testweight', PARAM_FLOAT);
-        $mform->setType('testid', PARAM_RAW);
-        $mform->setType('testtype', PARAM_RAW);
-        //$mform->setType('testfilename', PARAM_TEXT);
-
-        // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
-
-        if ($this->createquestion || $this->volatiletask) {
-            // Modification for creating a new Java question:
-            // start with exactly one JUnit test.
-            //$repeatno = $repeats;
-            // Create a compilation test options.
-            $compilegroup=array();
-            $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
-            $this->create_test_weight($compilegroup, 'compile', '0');
-            $mform->addGroup($compilegroup, 'compilegroup', get_string('compile', 'qtype_proforma'), ' ', false);
-            $mform->hideIf('compileweight', 'compile');
-
-        }
-        // else {
-        //    $repeats = self::get_count_tests($this->question->options->gradinghints);
-        //}
-
-        if ($repeats > 0 || $this->volatiletask) {
-            $this->repeat_elements($repeatarray, $repeats,
-                    $repeateloptions, 'option_repeats', 'option_add_fields',
-                    1,  get_string('addjunit', 'qtype_proforma'), true);
-
-            if (!$this->createquestion and !$this->volatiletask) {
-                // remove button for adding new test elements
-                $mform->removeElement('option_add_fields');
-            } else {
-                // used CodeMirror for JUnit code
-                // => figure out number of JUnit tests
-                /*$repeats = optional_param('option_repeats', 1, PARAM_INT);
-                $addfields = optional_param('option_add_fields', '', PARAM_TEXT);
-                if (!empty($addfields)){
-                    $repeats += 1;
-                }*/
-                for ($i = 1; $i < $repeats; $i++) {
-                    qtype_proforma::as_codemirror('id_testcode_' . $i);
-                }
-            }
-        } else {
-            $mform->addElement('static', 'no_tests', get_string('notests', 'qtype_proforma'), '');
-        }
-
-        if ($this->createquestion || $this->volatiletask) {
-            // Create a Checkstyle test
-            // (no group)
-            $testoptions = array();
-            $testoptions[] =& $mform->createElement('advcheckbox', 'checkstyle', '', '');
-            $this->create_test_weight($testoptions, 'checkstyle', '0.2');
-            $mform->addGroup($testoptions, 'checkstyleoptions', 'Checkstyle',
-                    array(' '), false);
-
-
-            $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
-            qtype_proforma::as_codemirror('id_checkstylecode', 'xml');
-            $mform->hideIf('checkstyleweight', 'checkstyle');
-//            $mform->hideIf('id_checkstylecode', 'checkstyle');
-            $mform->hideIf('checkstylecode', 'checkstyle');
-            /*
-            $checkstylegroup=array();
-            $checkstylegroup[] =& $mform->createElement('text', 'checkstyleweight',
-                    get_string('weight', 'qtype_proforma'), array('size' => 2));
-            $mform->setType('checkstyleweight', PARAM_INT);
-            // Note: Behat does not test fields that do not have a name. Therefore
-            // a name is used in the English version as long as I have a better solution
-            // for this problem (I do not actually want to show a name!)
-            $checkstylegroup[] = $mform->createElement('textarea', 'checkstylecode',
-                    get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
-            // qtype_proforma::as_codemirror('id_checkstylecode', 'xml');
-
-            // $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_proforma');
-
-            $mform->addGroup($checkstylegroup, 'checkstylegroup', 'Checkstyle', ' ', false);
-            */
-        }
-
-
-        // -------------------------------------------------------------------------------
-
+        // Penalty
         $penalties = array(
                 1.0000000,
                 0.5000000,
@@ -552,8 +410,6 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->addElement('select', 'penalty',
                 get_string('penaltyforeachincorrecttry', 'question'), $penaltyoptions);
         $mform->addHelpButton('penalty', 'penaltyforeachincorrecttry', 'question');
-
-        // override default penalty
         $mform->setDefault('penalty', get_config('qtype_proforma', 'defaultpenalty'));
     }
 
@@ -694,5 +550,114 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
 
         return $question;
+    }
+
+    /** create
+     * - test overview in case of imported task and
+     * - test edit fields for tasks created with Moodle
+     * @param $mform
+     */
+    protected function add_tests($mform) {
+        $taskhandler = null;
+        // Compilation test options for Java.
+        if ($this->volatiletask) {
+            $taskhandler = new qtype_proforma_java_task();
+            $compilegroup = array();
+            $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
+            $this->add_test_weight_option($compilegroup, 'compile', '0');
+            $mform->addGroup($compilegroup, 'compilegroup', get_string('compile', 'qtype_proforma'), ' ', false);
+            $mform->hideIf('compileweight', 'compile');
+            $mform->setDefault('compile', 1);
+        } else {
+            $taskhandler = new qtype_proforma_proforma_task();
+        }
+
+        // retrieve number of tests (resp. unit tests)
+        $repeats = $this->get_count_unittests($taskhandler);
+        if ($repeats > 0) {
+            // Unit tests resp. tests from imported task
+            // Create row:
+            $testoptions = array();
+            $this->add_test_weight_option($testoptions, 'test', '1', true);
+            $testoptions[] = $mform->createElement('text', 'testid', 'Id', array('size' => 3));
+            $testoptions[] = $mform->createElement('text', 'testtype',
+                    get_string('testtype', 'qtype_proforma'), array('size' => 80));
+            $testoptions[] = $mform->createElement('text', 'testdescription',
+                    get_string('testdescription', 'qtype_proforma'), array('size' => 80));
+
+            if ($this->volatiletask) {
+                // Add textarea for unit test code.
+                $testoptions[] = $mform->createElement('textarea', 'testcode',
+                        get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
+                $label = '{no}. JUnit Test'; // use different label
+            } else {
+                $label = '{no}. Test';
+            }
+
+            $repeatarray = array();
+            $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
+            $repeatoptions = array();
+            $repeatoptions['testweight']['default'] = 1;
+            $repeatoptions['testtitle']['default'] = '';
+            $repeatoptions['testdescription']['default'] = '';
+            //$repeateloptions['testfilename']['default'] = '';
+            $repeatoptions['testtype']['default'] = 'unittest'; // JAVA-JUNIT
+            $repeatoptions['testid']['default'] = '{no}'; // JAVA-JUNIT
+
+            // $repeateloptions['testweight']['rule'] = 'numeric';
+            if ($this->volatiletask) {
+                // Hide testtype and test identifier for unit tests.
+                // So far (Moodle 3.6) hideif is not implemented for groups => quickhack.
+                // (needed from creating grading hints)
+                for ($i = 0; $i < $repeats; $i++) {
+                    $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
+                    $mform->hideif('testid[' . $i . ']', 'aggregationstrategy', 'neq', 111);
+                }
+            } else {
+                // disable testtype and test identifier for imported tasks
+                $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
+                $repeatoptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
+            }
+
+            // $repeateloptions['testweight']['helpbutton'] = 'Hilfetext';
+            $mform->setType('testdescription', PARAM_TEXT);
+            $mform->setType('testtitle', PARAM_TEXT);
+            $mform->setType('testweight', PARAM_FLOAT);
+            $mform->setType('testid', PARAM_RAW);
+            $mform->setType('testtype', PARAM_RAW);
+            //$mform->setType('testfilename', PARAM_TEXT);
+
+            // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
+
+            $this->repeat_elements($repeatarray, $repeats,
+                    $repeatoptions, 'option_repeats', 'option_add_fields',
+                    1, get_string('addjunit', 'qtype_proforma'), true);
+
+            if ($this->volatiletask) {
+                // Set CodeMirror for unit test code.
+                for ($i = 0; $i < $repeats; $i++) {
+                    qtype_proforma::as_codemirror('id_testcode_' . $i);
+                }
+            } else {
+                // Remove button for adding new test elements.
+                $mform->removeElement('option_add_fields');
+            }
+        } else {
+            $mform->addElement('static', 'no_tests', get_string('notests', 'qtype_proforma'), '');
+        }
+
+        if ($this->volatiletask) {
+            // Create a Checkstyle test (not part of the repeat group).
+            $testoptions = array();
+            $testoptions[] =& $mform->createElement('advcheckbox', 'checkstyle', '', '');
+            $this->add_test_weight_option($testoptions, 'checkstyle', '0.2');
+            $mform->addGroup($testoptions, 'checkstyleoptions', 'Checkstyle',
+                    array(' '), false);
+
+            $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
+            qtype_proforma::as_codemirror('id_checkstylecode', 'xml');
+            $mform->hideIf('checkstyleweight', 'checkstyle');
+            $mform->hideIf('checkstylecode', 'checkstyle');
+        }
     }
 }

@@ -47,7 +47,7 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
                 str_replace("\r\n", "\n", $xml));
     }
 
-    public function test_get_question_summary() {
+    public function test_create_java_file1() {
         // Create sample form data
         $formdata = test_question_maker::get_question_form_data('proforma', 'java1');
         $instance = new qtype_proforma_java_task;
@@ -92,6 +92,18 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
             <test-type>java-compilation</test-type>
             <test-configuration/>
         </test>
+        <test id="1">
+            <title>JUnit Test 1</title>
+            <test-type>unittest</test-type>
+            <test-configuration>
+                <filerefs>
+                    <fileref refid="1"/>
+                </filerefs>
+                <unit:unittest framework="JUnit" version="4.12">
+                    <unit:entry-point>XTest</unit:entry-point>
+                </unit:unittest>
+            </test-configuration>
+        </test>
         <test id="checkstyle">
             <title>CheckStyle Test</title>
             <test-type>java-checkstyle</test-type>
@@ -103,6 +115,51 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
                     <cs:max-checkstyle-warnings>4</cs:max-checkstyle-warnings>
                 </cs:java-checkstyle>
             </test-configuration>
+        </test>
+    </tests>
+    <grading-hints>
+        <root/>
+    </grading-hints>
+    <meta-data/>
+</task>
+';
+
+        $this->assert_same_xml($expectedxml, $taskfile);
+    }
+
+
+    public function test_create_java_file_without_checkstyle() {
+        // Create sample form data
+        $formdata = test_question_maker::get_question_form_data('proforma', 'java2');
+        $instance = new qtype_proforma_java_task;
+        $taskfile = $instance->create_task_file($formdata);
+
+        $expectedxml = '<?xml version="1.0" encoding="UTF-8"?>
+<task xmlns="urn:proforma:v2.0" lang="de" uuid="bbbf6679-0226-4fb3-8da0-4f370dd027cb" xmlns:unit="urn:proforma:tests:unittest:v1.1" xmlns:cs="urn:proforma:tests:java-checkstyle:v1.1">
+    <title>ProFormA question (äöüß)</title>
+    <description>Please code the reverse string function not using a library function.(äöüß)</description>
+    <proglang version="1.8">java</proglang>
+    <submission-restrictions/>
+    <files>
+        <file id="1" used-by-grader="true" visible="no">
+            <embedded-txt-file filename="XTest.java">class XTest {}</embedded-txt-file>
+        </file>
+        <file id="MS" used-by-grader="false" visible="no">
+            <embedded-txt-file filename="modelsolution.java">// no model solution available </embedded-txt-file>
+        </file>
+    </files>
+    <model-solutions>
+        <model-solution id="1">
+            <filerefs>
+                <fileref refid="MS"/>
+            </filerefs>
+        </model-solution>
+    </model-solutions>
+    <tests>
+        <test id="compiler">
+            <title>Compiler</title>
+            <test-type>java-compilation</test-type>
+            <test-configuration/>
         </test>
         <test id="1">
             <title>JUnit Test 1</title>
@@ -126,5 +183,81 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
 
         $this->assert_same_xml($expectedxml, $taskfile);
     }
+
+    public function test_create_java_without_compilation() {
+        // Create sample form data
+        $formdata = test_question_maker::get_question_form_data('proforma', 'java3');
+        $instance = new qtype_proforma_java_task;
+        $taskfile = $instance->create_task_file($formdata);
+
+        $expectedxml = '<?xml version="1.0" encoding="UTF-8"?>
+<task xmlns="urn:proforma:v2.0" lang="de" uuid="bbbf6679-0226-4fb3-8da0-4f370dd027cb" xmlns:unit="urn:proforma:tests:unittest:v1.1" xmlns:cs="urn:proforma:tests:java-checkstyle:v1.1">
+    <title>ProFormA question (äöüß)</title>
+    <description>Please code the reverse string function not using a library function.(äöüß)</description>
+    <proglang version="1.8">java</proglang>
+    <submission-restrictions/>
+    <files>
+        <file id="1" used-by-grader="true" visible="no">
+            <embedded-txt-file filename="XTest.java">class XTest {}</embedded-txt-file>
+        </file>
+        <file id="checkstyle" used-by-grader="true" visible="no">
+            <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;
+&lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;&#13;
+&lt;module name=&quot;Checker&quot;&gt;&#13;
+  &lt;property name=&quot;severity&quot; value=&quot;warning&quot;/&gt;&#13;
+  &lt;module name=&quot;TreeWalker&quot;&gt;&#13;
+    &lt;module name=&quot;NeedBraces&quot;&gt;&#13;
+      &lt;property name=&quot;severity&quot; value=&quot;error&quot;/&gt;&#13;
+    &lt;/module&gt;&#13;
+  &lt;/module&gt;&#13;
+&lt;/module&gt;</embedded-txt-file>
+        </file>
+        <file id="MS" used-by-grader="false" visible="no">
+            <embedded-txt-file filename="modelsolution.java">// no model solution available </embedded-txt-file>
+        </file>
+    </files>
+    <model-solutions>
+        <model-solution id="1">
+            <filerefs>
+                <fileref refid="MS"/>
+            </filerefs>
+        </model-solution>
+    </model-solutions>
+    <tests>
+        <test id="1">
+            <title>JUnit Test 1</title>
+            <test-type>unittest</test-type>
+            <test-configuration>
+                <filerefs>
+                    <fileref refid="1"/>
+                </filerefs>
+                <unit:unittest framework="JUnit" version="4.12">
+                    <unit:entry-point>XTest</unit:entry-point>
+                </unit:unittest>
+            </test-configuration>
+        </test>
+        <test id="checkstyle">
+            <title>CheckStyle Test</title>
+            <test-type>java-checkstyle</test-type>
+            <test-configuration>
+                <filerefs>
+                    <fileref refid="checkstyle"/>
+                </filerefs>
+                <cs:java-checkstyle version="8.23">
+                    <cs:max-checkstyle-warnings>4</cs:max-checkstyle-warnings>
+                </cs:java-checkstyle>
+            </test-configuration>
+        </test>
+    </tests>
+    <grading-hints>
+        <root/>
+    </grading-hints>
+    <meta-data/>
+</task>
+';
+
+        $this->assert_same_xml($expectedxml, $taskfile);
+    }
+
 
 }

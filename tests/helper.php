@@ -42,7 +42,7 @@ class qtype_proforma_test_helper extends question_test_helper {
             'editor',
             'filepicker',
             // different settings for java junit tests
-            'java1',
+            'java1', 'java2', 'java3',
             // different grading approaches
             'weightedsum',
             // different values set in question
@@ -335,6 +335,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testweight[0] = '1';
         $form->testid[0] = '1';
 
+        $form->compile = 1;
+
+        $form->checkstyle = 1;
         $form->checkstylecode = '<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 <module name="Checker">
@@ -356,6 +359,24 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'format' => '1',
                         'itemid' => '34635511'));
 
+        return $form;
+    }
+
+    /** without checkstyle
+     * @return stdClass
+     */
+    public function get_proforma_question_form_data_java2() {
+        $form = $this->get_proforma_question_form_data_java1();
+        $form->checkstyle = 0;
+        return $form;
+    }
+
+    /** without compilation
+     * @return stdClass
+     */
+    public function get_proforma_question_form_data_java3() {
+        $form = $this->get_proforma_question_form_data_java1();
+        $form->compile = 0;
         return $form;
     }
 

@@ -68,7 +68,7 @@ class qtype_proforma_proforma_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_gradinghints_for_tests_to_xml($xw, $formdata) {
+    protected function add_tests_to_lms_grading_hints($xw, $formdata) {
         $index = 0;
         foreach ($formdata->testid as $id) {
             if ($id !== '') {
@@ -87,6 +87,147 @@ class qtype_proforma_proforma_task {
             }
         }
     }
+
+    /** create task.xml from formdata
+     *
+     * @param $formdata
+     * @return string
+     */
+    public function create_task_file($formdata) {
+        $xw = new SimpleXmlWriter();
+        $xw->openMemory();
+
+        $xw->setIndent(true);
+        $xw->setIndentString('    ');
+
+        $xw->startDocument('1.0', 'UTF-8');
+
+        $xw->startElement('task');
+        $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
+        $xw->create_attribute('lang', 'de'); // TODO
+        $xw->create_attribute('uuid', qtype_proforma_proforma_task::uuid());
+        // override
+        $this->add_namespace_to_xml($xw);
+
+        $xw->create_childelement_with_text('title', $formdata->name);
+        $xw->create_childelement_with_text('description', $formdata->questiontext);
+        $xw->startElement('proglang'); // not needed for grader
+        $this->add_programming_language_to_xml($xw, $formdata);
+        $xw->endElement(); // submission-restrictions
+
+        $xw->startElement('submission-restrictions'); // not needed for grader
+        $xw->endElement(); // submission-restrictions
+
+        $xw->startElement('files');
+        $this->add_testfiles_to_xml($xw, $formdata);
+
+        // create dummy model solution file
+        $xw->startElement('file');
+        $xw->create_attribute('id', 'MS'); // $id);
+        $xw->create_attribute('used-by-grader', 'false');
+        $xw->create_attribute('visible', 'no');
+        $xw->startElement('embedded-txt-file');
+        $xw->create_attribute('filename', 'modelsolution.java');
+        $xw->text('// no model solution available '); // write at least one byte in order to avoid problems with empty files
+        $xw->endElement(); // embedded-txt-file
+        $xw->endElement(); // file
+
+        $xw->endElement(); // files
+
+        $xw->startElement('model-solutions');
+        $xw->startElement('model-solution');
+        $xw->create_attribute('id', '1');
+        $xw->startElement('filerefs');
+        $xw->startElement('fileref');
+        $xw->create_attribute('refid', 'MS');
+        $xw->endElement(); // fileref
+        $xw->endElement(); // filerefs
+        $xw->endElement(); // model-solution
+        $xw->endElement(); // model-solutions
+
+        $xw->startElement('tests');
+        $this->add_tests_to_xml($xw, $formdata);
+        $xw->endElement(); // tests
+
+        $xw->startElement('grading-hints');
+        $xw->startElement('root'); // not needed for grader
+        $xw->endElement(); // root
+        $xw->endElement(); // grading-hints
+
+        $xw->startElement('meta-data');
+        $xw->endElement(); // meta-data
+
+        $xw->endElement(); // task
+
+        $xw->endDocument();
+
+        $taskfile = $xw->outputMemory();
+        return $taskfile;
+    }
+
+    public function create_lms_grading_hints($formdata, $withprolog = true) {
+
+        if (isset($formdata->gradinghints) && strlen($formdata->gradinghints) > 0) {
+            return $formdata->gradinghints;
+        }
+        $xw = new SimpleXmlWriter();
+        $xw->openMemory();
+
+        $xw->setIndent(1);
+        $xw->setIndentString(' ');
+
+        if ($withprolog) {
+            $xw->startDocument('1.0', 'UTF-8');
+        } else {
+            $xw->startDocument();
+        }
+
+        $xw->startElement('grading-hints');
+        // $xw->createAttribute('xmlns', 'urn:proforma:v2.0');
+
+        $xw->startElement('root');
+        $xw->create_attribute('function', 'sum');
+
+        $this->add_tests_to_lms_grading_hints($xw, $formdata);
+
+        $xw->endElement(); // root
+        $xw->endElement(); // grading-hints
+
+        $xw->endDocument();
+        $gradinghints = $xw->outputMemory();
+        //debugging($gradinghints);
+
+        return $gradinghints;
+    }
+
+    /**
+     * @param $content task file (xml)
+     * @param $filename task filename
+     * @param $draftitemid draftid
+     * @throws coding_exception
+     */
+    public static function store_task_file($content, $filename, $contextid, $questionid) { // &$draftitemid) {
+        if ($filename == null) {
+            throw new coding_exception('cannot create task file because of missing filename');
+        }
+
+        $fs = get_file_storage();
+        // Prepare file record object
+
+        $fileinfo = array(
+                'contextid' => $contextid, // category id
+                'component' => 'qtype_proforma',
+                'filearea' => qtype_proforma::FILEAREA_TASK,
+                'itemid' => $questionid,           // question id
+                'filepath' => '/',
+                'filename' => $filename);
+
+        // delete old file if any
+        $fs->delete_area_files($contextid, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $questionid);
+        /*$storedfile = */
+        $fs->create_file_from_string($fileinfo, $content);
+    }
+
     /*
     // from edit_numerical_form
     // See comment in the parent method about this hack:
@@ -167,141 +308,28 @@ class qtype_proforma_proforma_task {
         }
     }
 
-
-    public function create_task_file($formdata) {
-        $xw = new SimpleXmlWriter();
-        $xw->openMemory();
-
-        $xw->setIndent(true);
-        $xw->setIndentString('    ');
-
-        $xw->startDocument('1.0', 'UTF-8');
-
-        $xw->startElement('task');
-        $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
-        $xw->create_attribute('lang', 'de'); // TODO
-        $xw->create_attribute('uuid', qtype_proforma_proforma_task::uuid());
-        // override
-        $this->add_namespace_to_xml($xw);
-
-        $xw->create_childelement_with_text('title', $formdata->name);
-        $xw->create_childelement_with_text('description', $formdata->questiontext);
-        $xw->startElement('proglang'); // not needed for grader
-        $this->add_programming_language_to_xml($xw, $formdata);
-        $xw->endElement(); // submission-restrictions
-
-        $xw->startElement('submission-restrictions'); // not needed for grader
-        $xw->endElement(); // submission-restrictions
-
-        $xw->startElement('files');
-        $this->add_testfiles_to_xml($xw, $formdata);
-
-        // create dummy model solution file
-        $xw->startElement('file');
-        $xw->create_attribute('id', 'MS'); // $id);
-        $xw->create_attribute('used-by-grader', 'false');
-        $xw->create_attribute('visible', 'no');
-        $xw->startElement('embedded-txt-file');
-        $xw->create_attribute('filename', 'modelsolution.java');
-        $xw->text('// no model solution available '); // write at least one byte in order to avoid problems with empty files
-        $xw->endElement(); // embedded-txt-file
-        $xw->endElement(); // file
-
-        $xw->endElement(); // files
-
-        $xw->startElement('model-solutions');
-        $xw->startElement('model-solution');
-        $xw->create_attribute('id', '1');
-        $xw->startElement('filerefs');
-        $xw->startElement('fileref');
-        $xw->create_attribute('refid', 'MS');
-        $xw->endElement(); // fileref
-        $xw->endElement(); // filerefs
-        $xw->endElement(); // model-solution
-        $xw->endElement(); // model-solutions
-
-        $xw->startElement('tests');
-        $this->add_tests_to_xml($xw, $formdata);
-        $xw->endElement(); // tests
-
-        $xw->startElement('grading-hints');
-        $xw->startElement('root'); // not needed for grader
-        $xw->endElement(); // root
-        $xw->endElement(); // grading-hints
-
-        $xw->startElement('meta-data');
-        $xw->endElement(); // meta-data
-
-        $xw->endElement(); // task
-
-        $xw->endDocument();
-
-        $taskfile = $xw->outputMemory();
-        return $taskfile;
-    }
-
-    public function create_grading_hints($formdata, $withprolog = true) {
-
-        if (isset($formdata->gradinghints) && strlen($formdata->gradinghints) > 0) {
-            return $formdata->gradinghints;
+    public function get_count_tests($gradinghints) {
+        if (!$gradinghints) {
+            return 0;
         }
-        $xw = new SimpleXmlWriter();
-        $xw->openMemory();
+        $xmldoc = new DOMDocument;
 
-        $xw->setIndent(1);
-        $xw->setIndentString(' ');
-
-        if ($withprolog) {
-            $xw->startDocument('1.0', 'UTF-8');
-        } else {
-            $xw->startDocument();
+        if (!$xmldoc->loadXML($gradinghints )) {
+            debugging('gradinghints is not valid XML');
+            return 0; // 'INTERNAL ERROR: $taskresult is not XML';
         }
 
-        $xw->startElement('grading-hints');
-        // $xw->createAttribute('xmlns', 'urn:proforma:v2.0');
-
-        $xw->startElement('root');
-        $xw->create_attribute('function', 'sum');
-
-        $this->add_gradinghints_for_tests_to_xml($xw, $formdata);
-
-        $xw->endElement(); // root
-        $xw->endElement(); // grading-hints
-
-        $xw->endDocument();
-        $gradinghints = $xw->outputMemory();
-        //debugging($gradinghints);
-
-        return $gradinghints;
+        $xpath = new DOMXPath($xmldoc);
+        // $xpath->registerNamespace('dns','urn:proforma:v2.0');
+        $xpathresult = $xpath->query('//grading-hints/root/test-ref');
+        return $xpathresult->length;
     }
 
-    /**
-     * @param $content task file (xml)
-     * @param $filename task filename
-     * @param $draftitemid draftid
-     * @throws coding_exception
-     */
-    public static function store_task_file($content, $filename, $contextid, $questionid) { // &$draftitemid) {
-        if ($filename == null) {
-            throw new coding_exception('cannot create task file because of missing filename');
-        }
-
-        $fs = get_file_storage();
-        // Prepare file record object
-
-        $fileinfo = array(
-                'contextid' => $contextid, // category id
-                'component' => 'qtype_proforma',
-                'filearea' => qtype_proforma::FILEAREA_TASK,
-                'itemid' => $questionid,           // question id
-                'filepath' => '/',
-                'filename' => $filename);
-
-        // delete old file if any
-        $fs->delete_area_files($contextid, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $questionid);
-        /*$storedfile = */
-        $fs->create_file_from_string($fileinfo, $content);
+    // override
+    public function get_count_unit_tests($gradinghints) {
+        return $this->get_count_tests($gradinghints);
     }
+
 
     protected function get_task_xml($category, $question) {
         $fs = get_file_storage();
