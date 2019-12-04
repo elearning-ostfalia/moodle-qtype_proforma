@@ -416,22 +416,27 @@ class qtype_proforma_edit_form extends question_edit_form {
         $repeateloptions['testtype']['default'] = 'unittest'; // JAVA-JUNIT
         $repeateloptions['testid']['default'] = '{no}'; // JAVA-JUNIT
 
+        $repeats = 0;
+        if (isset($this->question) && isset($this->question->options) && isset($this->question->options->gradinghints)) {
+            $repeats = self::get_count_tests($this->question->options->gradinghints);
+        }
+
         // $repeateloptions['testweight']['rule'] = 'numeric';
         if ($this->createquestion || $this->volatiletask) {
             // so far (Moodle 3.6) hideif is not implemented in groups
             // => quickhack
-
-            $repeats = optional_param('option_repeats', 1, PARAM_INT);
+            $repeats_1 = optional_param('option_repeats', 1, PARAM_INT);
             $addfields = optional_param('option_add_fields', '', PARAM_TEXT);
             if (!empty($addfields)){
-                $repeats += 1;
+                $repeats_1 += 1;
             }
+            if ($repeats_1 > $repeats)
+                $repeats = $repeats_1;
+
             for ($i = 0; $i < $repeats; $i++) {
                 $mform->hideif('testtype['.$i.']', 'aggregationstrategy', 'neq', 111);
                 $mform->hideif('testid['.$i.']', 'aggregationstrategy', 'neq', 111);
             }
-
-
         } else {
             $repeateloptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
             $repeateloptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
@@ -454,7 +459,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         if ($this->createquestion || $this->volatiletask) {
             // Modification for creating a new Java question:
             // start with exactly one JUnit test.
-            $repeatno = 1;
+            //$repeatno = $repeats;
             // Create a compilation test options.
             $compilegroup=array();
             $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
@@ -462,12 +467,13 @@ class qtype_proforma_edit_form extends question_edit_form {
             $mform->addGroup($compilegroup, 'compilegroup', get_string('compile', 'qtype_proforma'), ' ', false);
             $mform->hideIf('compileweight', 'compile');
 
-        } else {
-            $repeatno = self::get_count_tests($this->question->options->gradinghints);
         }
+        // else {
+        //    $repeats = self::get_count_tests($this->question->options->gradinghints);
+        //}
 
-        if ($repeatno > 0 || $this->volatiletask) {
-            $this->repeat_elements($repeatarray, $repeatno,
+        if ($repeats > 0 || $this->volatiletask) {
+            $this->repeat_elements($repeatarray, $repeats,
                     $repeateloptions, 'option_repeats', 'option_add_fields',
                     1,  get_string('addjunit', 'qtype_proforma'), true);
 
@@ -477,11 +483,11 @@ class qtype_proforma_edit_form extends question_edit_form {
             } else {
                 // used CodeMirror for JUnit code
                 // => figure out number of JUnit tests
-                $repeats = optional_param('option_repeats', 1, PARAM_INT);
+                /*$repeats = optional_param('option_repeats', 1, PARAM_INT);
                 $addfields = optional_param('option_add_fields', '', PARAM_TEXT);
                 if (!empty($addfields)){
                     $repeats += 1;
-                }
+                }*/
                 for ($i = 1; $i < $repeats; $i++) {
                     qtype_proforma::as_codemirror('id_testcode_' . $i);
                 }

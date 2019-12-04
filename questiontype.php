@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/moodlelib.php');
-require_once($CFG->dirroot . '/question/type/proforma/proformatask.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/javatask.php');
 
 /**
  * The proforma question type.
@@ -189,19 +189,22 @@ class qtype_proforma extends question_type {
         }
         switch ($formdata->taskstorage) {
             case qtype_proforma::PERSISTENT_TASKFILE:
+                $instance = new qtype_proforma_java_task;
+                $options->gradinghints = $instance->create_grading_hints($formdata);
                 break;
             case qtype_proforma::VOLATILE_TASKFILE:
-                $taskfile = qtype_proforma_proforma_task::create_java_task_file($formdata);
+                $instance = new qtype_proforma_java_task;
+                $taskfile = $instance->create_task_file($formdata);
                 $options->taskfilename = 'task.xml';
                 qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
                         $context->id, $formdata->id);
+                $options->gradinghints = $instance->create_grading_hints($formdata);
                 break;
             case qtype_proforma::REPOSITORY:
             default:
                 throw new coding_exception('proforma: unsupported taskstorage ' . $formdata->taskstorage);
         }
 
-        $options->gradinghints = qtype_proforma_proforma_task::create_grading_hints($formdata);
 
         /*        $hint->hint = $this->import_or_save_files($formdata->hint[$i],
                     $context, 'question', 'hint', $hint->id);

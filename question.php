@@ -31,8 +31,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/questionbase.php');
-require_once($CFG->dirroot . '/question/type/proforma/grader_2.php');
-require_once($CFG->dirroot . '/question/type/proforma/grader.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/grader_2.php');
+
 
 
 /**

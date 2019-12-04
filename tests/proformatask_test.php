@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/javatask.php');
 
 
 class qtype_proforma_proforma_task_test extends advanced_testcase {
@@ -49,7 +50,8 @@ class qtype_proforma_proforma_task_test extends advanced_testcase {
     public function test_get_question_summary() {
         // Create sample form data
         $formdata = test_question_maker::get_question_form_data('proforma', 'java1');
-        $taskfile = qtype_proforma_proforma_task::create_java_task_file($formdata);
+        $instance = new qtype_proforma_java_task;
+        $taskfile = $instance->create_task_file($formdata);
 
         $expectedxml = '<?xml version="1.0" encoding="UTF-8"?>
 <task xmlns="urn:proforma:v2.0" lang="de" uuid="bbbf6679-0226-4fb3-8da0-4f370dd027cb" xmlns:unit="urn:proforma:tests:unittest:v1.1" xmlns:cs="urn:proforma:tests:java-checkstyle:v1.1">

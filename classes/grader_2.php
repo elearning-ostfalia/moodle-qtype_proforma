@@ -26,8 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
-require_once($CFG->dirroot . '/question/type/proforma/grader.php');
-require_once($CFG->dirroot . '/question/type/proforma/simplexmlwriter.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/grader.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.php');
 
 
 class qtype_proforma_grader_2 extends  qtype_proforma_grader {
