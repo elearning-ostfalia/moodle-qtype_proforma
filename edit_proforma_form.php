@@ -608,8 +608,10 @@ class qtype_proforma_edit_form extends question_edit_form {
         if (isset($this->question->options->taskstorage) &&
                 $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE) {
             // retrieve files content from task
-            qtype_proforma_proforma_task::extract_formdata_from_taskfile($cat, $question);
+            $taskfilehandler = new qtype_proforma_java_task;
+            $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
         } else {
+            $taskfilehandler = new qtype_proforma_proforma_task;
             // create lists for download files
             foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
                 $property1 = $value['formlist'];
@@ -655,7 +657,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
         }
 
-        qtype_proforma_proforma_task::extract_formdata_from_gradinghints($question, $this->_form);
+        $taskfilehandler->extract_formdata_from_gradinghints($question, $this->_form);
 
         /*
                     if (!isset($question->tests)) {

@@ -53,6 +53,17 @@ class qtype_proforma_proforma_task {
     protected function add_tests_to_xml($xw, $formdata) {
     }
 
+    /**
+     * @param $question question object
+     * @param $ref test ref
+     * @param $weight test weight
+     * @return bool true if handled otherweise false
+     */
+    protected function set_formdata_from_gradinghints($question, $ref, $weight) {
+        return false;
+    }
+
+
     /** default implementation for imported taskfiles
      * @param $xw
      * @param $formdata
@@ -76,12 +87,86 @@ class qtype_proforma_proforma_task {
             }
         }
     }
-    // override for editing
+    /*
+    // from edit_numerical_form
+    // See comment in the parent method about this hack:
+    // Evil hack alert. Formslib can store defaults in two ways for
+    // repeat elements:
+    //   ->_defaultValues['fraction[0]'] and
+    //   ->_defaultValues['fraction'][0].
+    // The $repeatedoptions['fraction']['default'] = 0 bit above means
+    // that ->_defaultValues['fraction[0]'] has already been set, but we
+    // are using object notation here, so we will be setting
+    // ->_defaultValues['fraction'][0]. That does not work, so we have
+    // to unset ->_defaultValues['fraction[0]'].
+    unset($this->_form->_defaultValues["testtitle[{$key}]"]);
+    */
     public function extract_formdata_from_gradinghints($question, $mform) {
+        $question->testtitle = array();
+        $question->testdescription = array();
+        $question->testtype = array();
+        $question->testweight = array();
+        $question->testid = array();
+
+        if (!isset($question->gradinghints)) {
+            // nothing to be done
+            return;
+        }
+
+        $xmldoc = new DOMDocument;
+
+        if (!$xmldoc->loadXML($question->gradinghints)) {
+            debugging('gradinghints is not valid XML');
+            return; // 'INTERNAL ERROR: $taskresult is not XML';
+        }
+
+        $xpath = new DOMXPath($xmldoc);
+        // $xpath->registerNamespace('dns','urn:proforma:v2.0');
+        $xpathresult = $xpath->query('//grading-hints/root/test-ref');
+        $key = 0;
+        if ($xpathresult->length == 0) {
+            debugging('no tests in gradinghints found');
+            return;
+        }
+
+        foreach ($xpathresult as $testgrading) {
+            $ref = $testgrading->getAttribute('ref');
+            $weight = $testgrading->getAttribute('weight');
+            $titles = $xpath->query('title', $testgrading);
+            if ($titles->length > 0) {
+                $title = $titles->item(0)->textContent;
+            } else {
+                $title = 'Title ' . $ref;
+            }
+            $descriptions = $xpath->query('description', $testgrading);
+            if ($descriptions->length > 0) {
+                $description = $descriptions->item(0)->textContent;
+            } else {
+                $description = '';
+            }
+            $testtypes = $xpath->query('test-type', $testgrading);
+            if ($testtypes->length > 0) {
+                $testtype = $testtypes->item(0)->textContent;
+            } else {
+                $testtype = '';
+            }
+
+            unset($mform->_defaultValues["testtitle[{$key}]"]);
+            unset($mform->_defaultValues["testid[{$key}]"]);
+            unset($mform->_defaultValues["testweight[{$key}]"]);
+            unset($mform->_defaultValues["testdescription[{$key}]"]);
+            unset($mform->_defaultValues["testtype[{$key}]"]);
+            if (!$this->set_formdata_from_gradinghints($question, $ref, $weight)) {
+                $question->testid[] = $ref;
+                $question->testtitle[] = $title;
+                $question->testdescription[] = $description;
+                $question->testtype[] = $testtype;
+                $question->testweight[] = $weight;
+            }
+            $key++;
+        }
     }
 
-    public function extract_formdata_from_taskfile($category, $question) {
-    }
 
     public function create_task_file($formdata) {
         $xw = new SimpleXmlWriter();

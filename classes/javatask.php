@@ -175,103 +175,21 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         }
     }
 
-    /*
-    // from edit_numerical_form
-    // See comment in the parent method about this hack:
-    // Evil hack alert. Formslib can store defaults in two ways for
-    // repeat elements:
-    //   ->_defaultValues['fraction[0]'] and
-    //   ->_defaultValues['fraction'][0].
-    // The $repeatedoptions['fraction']['default'] = 0 bit above means
-    // that ->_defaultValues['fraction[0]'] has already been set, but we
-    // are using object notation here, so we will be setting
-    // ->_defaultValues['fraction'][0]. That does not work, so we have
-    // to unset ->_defaultValues['fraction[0]'].
-    unset($this->_form->_defaultValues["testtitle[{$key}]"]);
-    */
-    public function extract_formdata_from_gradinghints($question, $mform) {
-        $question->testtitle = array();
-        $question->testdescription = array();
-        $question->testtype = array();
-        $question->testweight = array();
-        $question->testid = array();
 
-        if (!isset($question->gradinghints)) {
-            // nothing to be done
-            return;
+    protected function set_formdata_from_gradinghints($question, $ref, $weight) {
+        switch($ref) {
+            case 'compiler':
+                $question->compileweight = $weight;
+                $question->compile = 1;
+                return true;
+            case 'checkstyle':
+                $question->checkstyleweight = $weight;
+                $question->checkstyle = 1;
+                return true;
+            default:
+                break;
         }
-
-        $xmldoc = new DOMDocument;
-
-        if (!$xmldoc->loadXML($question->gradinghints)) {
-            debugging('gradinghints is not valid XML');
-            return; // 'INTERNAL ERROR: $taskresult is not XML';
-        }
-
-        $xpath = new DOMXPath($xmldoc);
-        // $xpath->registerNamespace('dns','urn:proforma:v2.0');
-        $xpathresult = $xpath->query('//grading-hints/root/test-ref');
-        $key = 0;
-        if ($xpathresult->length == 0) {
-            debugging('no tests in gradinghints found');
-            return;
-        }
-
-        foreach ($xpathresult as $testgrading) {
-            $ref = $testgrading->getAttribute('ref');
-            $weight = $testgrading->getAttribute('weight');
-            $titles = $xpath->query('title', $testgrading);
-            if ($titles->length > 0) {
-                $title = $titles->item(0)->textContent;
-            } else {
-                $title = 'Title ' . $ref;
-            }
-            $descriptions = $xpath->query('description', $testgrading);
-            if ($descriptions->length > 0) {
-                $description = $descriptions->item(0)->textContent;
-            } else {
-                $description = '';
-            }
-            $testtypes = $xpath->query('test-type', $testgrading);
-            if ($testtypes->length > 0) {
-                $testtype = $testtypes->item(0)->textContent;
-            } else {
-                $testtype = '';
-            }
-
-            unset($mform->_defaultValues["testtitle[{$key}]"]);
-            unset($mform->_defaultValues["testid[{$key}]"]);
-            unset($mform->_defaultValues["testweight[{$key}]"]);
-            unset($mform->_defaultValues["testdescription[{$key}]"]);
-            unset($mform->_defaultValues["testtype[{$key}]"]);
-            if ($question->taskstorage == qtype_proforma::VOLATILE_TASKFILE) {
-                // special handling
-                switch($ref) {
-                    case 'compiler':
-                        $question->compileweight = $weight;
-                        $question->compile = 1;
-                        break;
-                    case 'checkstyle':
-                        $question->checkstyleweight = $weight;
-                        $question->checkstyle = 1;
-                        break;
-                    default:
-                        $question->testid[] = $ref;
-                        $question->testtitle[] = $title;
-                        $question->testdescription[] = $description;
-                        $question->testtype[] = $testtype;
-                        $question->testweight[] = $weight;
-                        break;
-                }
-            } else {
-                $question->testid[] = $ref;
-                $question->testtitle[] = $title;
-                $question->testdescription[] = $description;
-                $question->testtype[] = $testtype;
-                $question->testweight[] = $weight;
-            }
-            $key++;
-        }
+        return false;
     }
 
     public function extract_formdata_from_taskfile($category, $question) {
