@@ -315,16 +315,22 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         }
     }
 
-    private static function get_java_file($code) {
+    public static function get_java_file($code) {
         self::remove_java_comment($code);
         $classname = self::get_java_classname($code);
-        return $classname . ".java";
+        if ($classname) {
+            return $classname . ".java";
+        }
+        return null;
     }
 
-    private static function get_java_entrypoint($code) {
+    public static function get_java_entrypoint($code) {
         self::remove_java_comment($code);
         $package = self::get_java_packagename($code);
         $classname = self::get_java_classname($code);
+        if (!$classname) {
+            return null;
+        }
         if (strlen($package) > 0) {
             return $package . '.' . $classname;
         }
