@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 class qtype_proforma_edit_form extends question_edit_form {
 
     protected $volatiletask = false;
+    protected $taskhandler = null;
 
     protected function definition() {
         $mform = $this->_form;
@@ -61,13 +62,35 @@ class qtype_proforma_edit_form extends question_edit_form {
             $errors['attachments'] = get_string('mustattach', 'qtype_proforma');
         }
         */
-        if ($fromform["checkstyle"]) {
+        if ($this->volatiletask) {
+            if ($fromform["checkstyle"]) {
+                if (0 == strlen(trim($fromform["checkstylecode"]))) {
+                    // checkstyle code muse be set
+                    // $errors['checkstylecode'] = get_string('required');
+                    $errors['checkstylecode'] = get_string('codeempty', 'qtype_proforma');
+                }
+            }
 
-            $len = strlen(trim($fromform["checkstylecode"]));
-            if ($len == 0) {
-                // checkstyle code muse be set
-                // $errors['checkstylecode'] = get_string('required');
-                $errors['checkstylecode'] = get_string('codeempty', 'qtype_proforma');
+            $repeats = $this->get_count_unittests();
+            for ($i = 0; $i < $repeats; $i++) {
+                $title = $fromform["testtitle"][$i];
+                $code = $fromform["testcode"][$i];
+                $lencode = strlen(trim($code));
+                $lentitle = strlen(trim($title));
+                if (0 < $lentitle and 0 == $lencode) {
+                    // code is missing
+                    $errors['testcode['.$i.']'] = get_string('codeempty', 'qtype_proforma');
+                } else if (0 == $lentitle and 0 > $lencode) {
+                    // title is missing
+                    $errors['testtitle['.$i.']'] = get_string('required');
+                } else if ($lencode > 0 and $lentitle > 0) {
+                    // check classname
+                    if (!qtype_proforma_java_task::get_java_file($code)) {
+                        $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
+                    } else if (!qtype_proforma_java_task::get_java_entrypoint($code)) {
+                        $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
+                    }
+                }
             }
         }
 
@@ -233,35 +256,40 @@ class qtype_proforma_edit_form extends question_edit_form {
     }
 
     protected function add_grader_settings($mform) {
+        if ($this->volatiletask) {
+            return;
+        }
+
+        /*
         if (!(isset($this->question->options->taskstorage) &&
                 $this->question->options->taskstorage == qtype_proforma::PERSISTENT_TASKFILE)) {
             return;
         }
+        */
 
         // ProFormA fields
         $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
 
         // Task Filename
-        if ($this->volatiletask) {
-            $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
-            $mform->setType('link', PARAM_TEXT);
-            $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
-        } else {
-            // Repository
-            $mform->addElement('text', 'taskrepository', get_string('repository', 'qtype_proforma'), array('size' => '60'));
-            $mform->setType('taskrepository', PARAM_TEXT);
-            $mform->addRule('taskrepository', null, 'required', null, 'client');
-            $mform->addHelpButton('taskrepository', 'repository_hint', 'qtype_proforma');
-            // $mform->setDefault('taskrepository', get_config('qtype_proforma', 'repositoryhost'));
-            // $mform->hardFreeze('taskrepository');
-            // Task Path
-            $mform->addElement('text', 'taskpath', get_string('taskpath', 'qtype_proforma'), array('size' => '80'));
-            $mform->setType('taskpath', PARAM_TEXT);
-            $mform->addRule('taskpath', null, 'required', null, 'client');
-            $mform->addHelpButton('taskpath', 'taskpath_hint', 'qtype_proforma');
-            // $mform->setDefault('taskpath', '');
-            // $mform->hardFreeze('taskpath');
-        }
+        $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
+        $mform->setType('link', PARAM_TEXT);
+        $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
+        /*
+        // Repository is not sipported
+        $mform->addElement('text', 'taskrepository', get_string('repository', 'qtype_proforma'), array('size' => '60'));
+        $mform->setType('taskrepository', PARAM_TEXT);
+        $mform->addRule('taskrepository', null, 'required', null, 'client');
+        $mform->addHelpButton('taskrepository', 'repository_hint', 'qtype_proforma');
+        // $mform->setDefault('taskrepository', get_config('qtype_proforma', 'repositoryhost'));
+        // $mform->hardFreeze('taskrepository');
+        // Task Path
+        $mform->addElement('text', 'taskpath', get_string('taskpath', 'qtype_proforma'), array('size' => '80'));
+        $mform->setType('taskpath', PARAM_TEXT);
+        $mform->addRule('taskpath', null, 'required', null, 'client');
+        $mform->addHelpButton('taskpath', 'taskpath_hint', 'qtype_proforma');
+        // $mform->setDefault('taskpath', '');
+        // $mform->hardFreeze('taskpath');
+        */
 
         // UUID
         /*
@@ -272,12 +300,13 @@ class qtype_proforma_edit_form extends question_edit_form {
             $mform->addRule('uuid', null, 'required', null, 'client');
         } else {
         */
-            // change existing question => do not edit UUID
-            $this->add_static_field($mform, 'uuid', get_string('uuid', 'qtype_proforma'));
+        // change existing question => do not edit UUID
+        $this->add_static_field($mform, 'uuid', get_string('uuid', 'qtype_proforma'));
         // }
         $mform->setType('uuid', PARAM_TEXT);
         $mform->addHelpButton('uuid', 'uuid_hint', 'qtype_proforma');
 
+        // Proforma version
         $mform->addElement('static', 'proformaversion', 'ProFormA Version');
     }
 
@@ -351,12 +380,12 @@ class qtype_proforma_edit_form extends question_edit_form {
         });
     }
 
-    private function get_count_unittests($taskhandler) {
+    private function get_count_unittests() {
         $repeats = 0;
         // Get number of unit tests from (lms) grading hints.
         // In case of an imported task this ist the number of all tests (not just unit tests).
         if (isset($this->question) && isset($this->question->options) && isset($this->question->options->gradinghints)) {
-            $repeats = $taskhandler->get_count_unit_tests($this->question->options->gradinghints);
+            $repeats = $this->taskhandler->get_count_unit_tests($this->question->options->gradinghints);
         }
 
         if ($this->volatiletask) {
@@ -564,10 +593,9 @@ class qtype_proforma_edit_form extends question_edit_form {
      * @param $mform
      */
     protected function add_tests($mform) {
-        $taskhandler = null;
         // Compilation test options for Java.
         if ($this->volatiletask) {
-            $taskhandler = new qtype_proforma_java_task();
+            $this->taskhandler = new qtype_proforma_java_task();
             $compilegroup = array();
             $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
             $this->add_test_weight_option($compilegroup, 'compile', '0');
@@ -575,11 +603,11 @@ class qtype_proforma_edit_form extends question_edit_form {
             $mform->hideIf('compileweight', 'compile');
             $mform->setDefault('compile', 1);
         } else {
-            $taskhandler = new qtype_proforma_proforma_task();
+            $this->taskhandler = new qtype_proforma_proforma_task();
         }
 
         // retrieve number of tests (resp. unit tests)
-        $repeats = $this->get_count_unittests($taskhandler);
+        $repeats = $this->get_count_unittests();
         if ($repeats > 0) {
             // Unit tests resp. tests from imported task
             // Create row:
@@ -606,7 +634,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             }
             $repeatoptions = array();
             $repeatoptions['testweight']['default'] = 1;
-            $repeatoptions['testtitle']['default'] = get_string('junittesttitle', 'qtype_proforma');
+            // $repeatoptions['testtitle']['default'] = get_string('junittesttitle', 'qtype_proforma');
             $repeatoptions['testdescription']['default'] = '';
             // $repeateloptions['testfilename']['default'] = '';
             $repeatoptions['testtype']['default'] = 'unittest'; // JAVA-JUNIT

@@ -42,7 +42,7 @@ class qtype_proforma_test_helper extends question_test_helper {
             'editor',
             'filepicker',
             // different settings for java junit tests
-            'java1', 'java2', 'java3',
+            'java1', 'java2', 'java3', 'java4', 'java5',
             // different grading approaches
             'weightedsum',
             // different values set in question
@@ -379,6 +379,39 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->compile = 0;
         return $form;
     }
+
+    /** with 2 junit test2
+     * @return stdClass
+     */
+    public function get_proforma_question_form_data_java4() {
+        $form = $this->get_proforma_question_form_data_java1();
+
+        $form->testcode[1] = 'class YTest {}';
+        $form->testtitle[1] = 'JUnit Test 2';
+        $form->testweight[1] = '1';
+        $form->testid[1] = '2';
+
+        $form->testcode[2] = '';
+        $form->testtitle[2] = '';
+        $form->testweight[2] = '1';
+        $form->testid[2] = '3';
+
+        return $form;
+    }
+
+    /** with no junit test
+     * @return stdClass
+     */
+    public function get_proforma_question_form_data_java5() {
+        $form = $this->get_proforma_question_form_data_java1();
+
+        $form->testcode[0] = '';
+        $form->testtitle[0] = '';
+        $form->testweight[0] = '1';
+        $form->testid[0] = '1';
+        
+        return $form;
+    }    
 
     /**
      * Creates an empty draft area for attachments.

@@ -83,6 +83,9 @@ $string['compile'] = 'Compilation';
 $string['code'] = 'Source Code';
 
 $string['addjunit'] = 'Add JUnit test';
+$string['codeempty'] = 'Code is missing';
+$string['filenameerror'] = 'Cannot determine classname (filename)';
+$string['entrypointerror'] = 'Cannot determine classname (entrypoint)';
 
 
 $string['miscellaneousheader'] = 'Miscellaneous';
@@ -97,7 +100,7 @@ $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 $string['javafile_without_package'] = 'send Java submission file without package path to grader';
 $string['javafile_without_package_desc'] = 'in case of editor submission format teh submiited filename is generated directly from Model solution.
 If the filename contains the package path this might lead to grading errors. Set this flag if the package path shall be ignored.';
-$string['codeempty'] = 'Code is missing';
+
 
 
 

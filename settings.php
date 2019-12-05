@@ -40,10 +40,6 @@ $settings->add(new admin_setting_configtext('qtype_proforma/graderuri_path',
         get_string('graderuri_path_desc', 'qtype_proforma'),
         '/api/v2/submissions', PARAM_PATH, 80));
 
-/*$settings->add(new admin_setting_configcheckbox('qtype_proforma/javafile_without_package',
-        get_string('javafile_without_package', 'qtype_proforma'),
-        get_string('javafile_without_package_desc', 'qtype_proforma'), 0));
-*/
 $settings->add(new admin_setting_configtext('qtype_proforma/grading_timeout',
         get_string('grading_timeout', 'qtype_proforma'),
         get_string('grading_timeout_desc', 'qtype_proforma'), 40,

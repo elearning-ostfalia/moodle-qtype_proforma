@@ -67,13 +67,13 @@ class qtype_proforma_proforma_task {
      * @param $formdata
      */
     protected function add_tests_to_lms_grading_hints($xw, $formdata) {
-        $index = 0;
-        foreach ($formdata->testid as $id) {
+        for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
+            $id = $formdata->testid[$index];
             if ($id !== '') {
                 $xw->startElement('test-ref');
-                $xw->create_attribute('ref', $formdata->testid[$index]); // $id);
-                if (array_key_exists($index, $formdata->weight)) {
-                    $xw->create_attribute('weight', $formdata->weight[$index]);
+                $xw->create_attribute('ref', $formdata->testid[$index]);
+                if (array_key_exists($index, $formdata->testweight)) {
+                    $xw->create_attribute('weight', $formdata->testweight[$index]);
                 } else {
                     $xw->create_attribute('weight', '-1');
                 }
@@ -81,7 +81,6 @@ class qtype_proforma_proforma_task {
                 $xw->create_childelement_with_text('description', $formdata->testdescription[$index]);
                 $xw->create_childelement_with_text('test-type', $formdata->testtype[$index]);
                 $xw->endElement(); // test-ref
-                $index++;
             }
         }
     }

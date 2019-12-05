@@ -189,7 +189,7 @@ class qtype_proforma extends question_type {
         }
         switch ($formdata->taskstorage) {
             case self::PERSISTENT_TASKFILE:
-                $instance = new qtype_proforma_java_task;
+                $instance = new qtype_proforma_proforma_task;
                 $options->gradinghints = $instance->create_lms_grading_hints($formdata);
                 break;
             case self::VOLATILE_TASKFILE:

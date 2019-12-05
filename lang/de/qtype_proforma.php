@@ -72,6 +72,9 @@ $string['compile'] = 'Compilation';
 $string['code'] = 'Quellcode';
 
 $string['addjunit'] = 'JUnit Test hinzufügen';
+$string['codeempty'] = 'Code muss eingegeben werden.';
+$string['filenameerror'] = 'Kann Klassennamen nicht ermitteln (Dateiname).';
+$string['entrypointerror'] = 'Kann Klassennamen nicht ermitteln (Entrypoint).';
 
 
 $string['highlight'] = 'Syntax Highlighting';
@@ -96,7 +99,6 @@ $string['graderuri_path_desc'] = 'Pfad der Grader URI';
 $string['javafile_without_package'] = 'Entfernen des Java-Paket-Pfads beim Einreichen mit Editoreingabe';
 $string['javafile_without_package_desc'] = 'Falls zur Eingabe der Einreichung der Editor verwendet wird, wird der an den Grader gesendete Dateiname aus der Musterlösung erzeugt.
 Wenn diese einen Paket-Pfad enthält, kann es sein, dass der Grader damit nicht klarkommt. Mit Setzen dieses Schalters wird der Pfad nicht mitgesendet.';
-$string['codeempty'] = 'Code muss eingegeben werden.';
 
 $string['javasettings_header'] = 'Java-Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';
 $string['checkstyleversion'] = 'Checkstyle Version';
