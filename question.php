@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with ProFormA Question Type for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * The ProFormA Question definition

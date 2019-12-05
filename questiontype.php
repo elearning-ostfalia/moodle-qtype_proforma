@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * The ProFormA Question definition
@@ -188,11 +188,11 @@ class qtype_proforma extends question_type {
             throw new coding_exception('proforma: save_question_options invalid branch');
         }
         switch ($formdata->taskstorage) {
-            case qtype_proforma::PERSISTENT_TASKFILE:
+            case self::PERSISTENT_TASKFILE:
                 $instance = new qtype_proforma_java_task;
                 $options->gradinghints = $instance->create_lms_grading_hints($formdata);
                 break;
-            case qtype_proforma::VOLATILE_TASKFILE:
+            case self::VOLATILE_TASKFILE:
                 $instance = new qtype_proforma_java_task;
                 $taskfile = $instance->create_task_file($formdata);
                 $options->taskfilename = 'task.xml';
@@ -200,11 +200,10 @@ class qtype_proforma extends question_type {
                         $context->id, $formdata->id);
                 $options->gradinghints = $instance->create_lms_grading_hints($formdata);
                 break;
-            case qtype_proforma::REPOSITORY:
+            case self::REPOSITORY:
             default:
                 throw new coding_exception('proforma: unsupported taskstorage ' . $formdata->taskstorage);
         }
-
 
         /*        $hint->hint = $this->import_or_save_files($formdata->hint[$i],
                     $context, 'question', 'hint', $hint->id);
@@ -371,12 +370,9 @@ class qtype_proforma extends question_type {
     public function response_formats() {
         return array(
             // editor
-                'editor' => get_string('formateditor', 'qtype_proforma'),
+            'editor' => get_string('formateditor', 'qtype_proforma'),
             // filepicker
-                'filepicker' => get_string('formatfilepicker', 'qtype_proforma'),
-
-            // editor with no codemirror
-            // 'monospaced' => get_string('formatmonospaced', 'qtype_proforma'),
+            'filepicker' => get_string('formatfilepicker', 'qtype_proforma')
         );
     }
 
@@ -571,10 +567,8 @@ class qtype_proforma extends question_type {
         return $expout;
     }
 
-    public static function as_codemirror($textarea_id, $mode = 'java', $header = null, $readonly = false, $loadquery = true) {
+    public static function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = false, $loadquery = true) {
         if (get_config('qtype_proforma', 'usecodemirror')) {
-            // $WRITABLE = 0;
-
             global $PAGE, $CFG;
             require_once($CFG->dirroot . '/config.php');
             // load jquery css file for resizable
@@ -593,13 +587,12 @@ class qtype_proforma extends question_type {
                 // starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
                 // so this must be explicitly be done in Javascript.
                 $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                        array($textarea_id, $readonly, $mode, $header, 1));
+                        array($textareaid, $readonly, $mode, $header, 1));
             } else {
                 // In 3.4 resizing must be prohinited because the window is too small
                 $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                        array($textarea_id, $readonly, $mode, $header));
+                        array($textareaid, $readonly, $mode, $header));
             }
         }
     }
-
 }

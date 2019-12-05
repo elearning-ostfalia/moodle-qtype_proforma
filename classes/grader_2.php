@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Interface to Grader  ProFormA 2.0
@@ -353,9 +353,7 @@ EOD;
 
         $xw->endDocument();
         $submission = $xw->outputMemory();
-        // echo $submission;
-
-        //debugging($submission);
+        // debugging($submission);
         return $submission;
     }
 
@@ -367,7 +365,7 @@ EOD;
             if (!$task instanceof stored_file) {
                 throw new coding_exception("task variable has wrong class");
             }
-            //debugging($task->get_content());
+            // debugging($task->get_content());
             $postfields['task-file'] = $task;
         }
 

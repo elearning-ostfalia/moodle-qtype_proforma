@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * ProFormA task file
@@ -24,9 +24,7 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-
 defined('MOODLE_INTERNAL') || die();
-#require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.php');
 
 /*
@@ -36,7 +34,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.ph
 class qtype_proforma_proforma_task {
 
     // http://www.seanbehan.com/how-to-generate-a-uuid-in-php/
-    private static function uuid(){
+    private static function uuid() {
         $data = random_bytes(16);
         $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
         $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
@@ -105,7 +103,7 @@ class qtype_proforma_proforma_task {
         $xw->startElement('task');
         $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
         $xw->create_attribute('lang', 'de'); // TODO
-        $xw->create_attribute('uuid', qtype_proforma_proforma_task::uuid());
+        $xw->create_attribute('uuid', self::uuid());
         // override
         $this->add_namespace_to_xml($xw);
 
@@ -195,7 +193,7 @@ class qtype_proforma_proforma_task {
 
         $xw->endDocument();
         $gradinghints = $xw->outputMemory();
-        //debugging($gradinghints);
+        // debugging($gradinghints);
 
         return $gradinghints;
     }
@@ -206,7 +204,7 @@ class qtype_proforma_proforma_task {
      * @param $draftitemid draftid
      * @throws coding_exception
      */
-    public static function store_task_file($content, $filename, $contextid, $questionid) { // &$draftitemid) {
+    public static function store_task_file($content, $filename, $contextid, $questionid) {
         if ($filename == null) {
             throw new coding_exception('cannot create task file because of missing filename');
         }

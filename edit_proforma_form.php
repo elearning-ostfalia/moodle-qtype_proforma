@@ -61,8 +61,14 @@ class qtype_proforma_edit_form extends question_edit_form {
             $errors['attachments'] = get_string('mustattach', 'qtype_proforma');
         }
         */
-        if (isset($fromform->checkstyle) and $fromform->checkstyle == 1) {
-            // checkstyle code muse be set
+        if ($fromform["checkstyle"]) {
+
+            $len = strlen(trim($fromform["checkstylecode"]));
+            if ($len == 0) {
+                // checkstyle code muse be set
+                // $errors['checkstylecode'] = get_string('required');
+                $errors['checkstylecode'] = get_string('codeempty', 'qtype_proforma');
+            }
         }
 
         return $errors;
@@ -178,14 +184,15 @@ class qtype_proforma_edit_form extends question_edit_form {
      * @param string $types The space , ; separated list of types
      * @return array('groupname', 'mime/type', ...)
      */
-/*    private function get_typesets($types) {
+    /*
+     private function get_typesets($types) {
         $sets = array();
         if (!empty($types)) {
             $sets = preg_split('/[\s,;:"\']+/', $types, null, PREG_SPLIT_NO_EMPTY);
         }
         return $sets;
     }
-*/
+    */
 
     private function add_static_field($mform, $field, $label, $sizefield = null) {
         // $mform->addElement('static', $field, $label);
@@ -226,17 +233,16 @@ class qtype_proforma_edit_form extends question_edit_form {
     }
 
     protected function add_grader_settings($mform) {
-        $taskisimported = isset($this->question->options->taskstorage) &&
-                $this->question->options->taskstorage == qtype_proforma::PERSISTENT_TASKFILE;
-
-        if (!$taskisimported)
+        if (!(isset($this->question->options->taskstorage) &&
+                $this->question->options->taskstorage == qtype_proforma::PERSISTENT_TASKFILE)) {
             return;
+        }
 
         // ProFormA fields
         $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
 
         // Task Filename
-        if ($taskisimported || $this->volatiletask) {
+        if ($this->volatiletask) {
             $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
             $mform->setType('link', PARAM_TEXT);
             $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
@@ -258,16 +264,17 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
 
         // UUID
-        if (!$taskisimported) { // !isset($this->question->id)) {
+        /*
+        if (false) {
+            // !isset($this->question->id)) {
             // create new question
             $mform->addElement('text', 'uuid', get_string('uuid', 'qtype_proforma'), array('size' => '60'));
             $mform->addRule('uuid', null, 'required', null, 'client');
         } else {
+        */
             // change existing question => do not edit UUID
             $this->add_static_field($mform, 'uuid', get_string('uuid', 'qtype_proforma'));
-            // $mform->addRule('uuid', null, 'required', null, 'client');
-            // $mform->addElement('static', 'uuid', get_string('uuid', 'qtype_proforma'));
-        }
+        // }
         $mform->setType('uuid', PARAM_TEXT);
         $mform->addHelpButton('uuid', 'uuid_hint', 'qtype_proforma');
 
@@ -585,9 +592,6 @@ class qtype_proforma_edit_form extends question_edit_form {
                     get_string('testdescription', 'qtype_proforma'), array('size' => 80));
 
             if ($this->volatiletask) {
-                // Add textarea for unit test code.
-//                $testoptions[] = $mform->createElement('textarea', 'testcode',
-//                        get_string('code', 'qtype_proforma'), 'rows="20" cols="80"');
                 $label = get_string('junittestlabel', 'qtype_proforma'); // use different label
             } else {
                 $label = get_string('testlabel', 'qtype_proforma');
@@ -596,6 +600,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $repeatarray = array();
             $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
             if ($this->volatiletask) {
+                // Add textarea for unit test code.
                 $repeatarray[] = $mform->createElement('textarea', 'testcode',
                         '' /*get_string('code', 'qtype_proforma')*/, 'rows="20" cols="80"');
             }
@@ -603,7 +608,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $repeatoptions['testweight']['default'] = 1;
             $repeatoptions['testtitle']['default'] = get_string('junittesttitle', 'qtype_proforma');
             $repeatoptions['testdescription']['default'] = '';
-            //$repeateloptions['testfilename']['default'] = '';
+            // $repeateloptions['testfilename']['default'] = '';
             $repeatoptions['testtype']['default'] = 'unittest'; // JAVA-JUNIT
             $repeatoptions['testid']['default'] = '{no}'; // JAVA-JUNIT
 
@@ -617,7 +622,7 @@ class qtype_proforma_edit_form extends question_edit_form {
                     $mform->hideif('testid[' . $i . ']', 'aggregationstrategy', 'neq', 111);
                 }
                 // does not work
-                //$repeatoptions['testtitle']['rule'] = 'required'; // array(null, 'required', null, 'client');
+                // $repeatoptions['testtitle']['rule'] = 'required'; // array(null, 'required', null, 'client');
             } else {
                 // disable testtype and test identifier for imported tasks
                 $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
@@ -631,7 +636,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $mform->setType('testid', PARAM_RAW);
             $mform->setType('testtype', PARAM_RAW);
             // $mform->addRule('testtitle', null, 'required', null, 'client');
-            //$mform->setType('testfilename', PARAM_TEXT);
+            // $mform->setType('testfilename', PARAM_TEXT);
 
             // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
 
@@ -643,7 +648,6 @@ class qtype_proforma_edit_form extends question_edit_form {
                 // Set CodeMirror for unit test code.
                 for ($i = 0; $i < $repeats; $i++) {
                     qtype_proforma::as_codemirror('id_testcode_' . $i);
-                    //$mform->addRule('testcode_' . $i, null, 'required', null, 'client');
                 }
             } else {
                 // Remove button for adding new test elements.
@@ -665,6 +669,8 @@ class qtype_proforma_edit_form extends question_edit_form {
             qtype_proforma::as_codemirror('id_checkstylecode', 'xml');
             $mform->hideIf('checkstyleweight', 'checkstyle');
             $mform->hideIf('checkstylecode', 'checkstyle');
+            // cannot use required rule because rule is checked even if control is hidden :-(
+            // $mform->addRule('checkstylecode', null, 'required', '', 'client', false, false);
         }
     }
 }

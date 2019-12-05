@@ -12,8 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
-
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * The ProFormA Question texts
  *
@@ -98,6 +97,9 @@ $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 $string['javafile_without_package'] = 'send Java submission file without package path to grader';
 $string['javafile_without_package_desc'] = 'in case of editor submission format teh submiited filename is generated directly from Model solution.
 If the filename contains the package path this might lead to grading errors. Set this flag if the package path shall be ignored.';
+$string['codeempty'] = 'Code is missing';
+
+
 
 $string['javasettings_header'] = 'Java Settings for Java questions created with Moodle';
 $string['checkstyleversion'] = 'Checkstyle version';

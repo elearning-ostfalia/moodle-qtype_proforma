@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * create ProFormA java task file resp. extract data from such a file
@@ -58,7 +58,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
                 $xw->startElement('embedded-txt-file');
                 $code = $formdata->testcode[$index];
                 $filename = self::get_java_file($code);
-                //debugging('FILENAME: ' . $filename);
+                // debugging('FILENAME: ' . $filename);
                 $xw->create_attribute('filename', $filename);
                 $xw->text($formdata->testcode[$index]);
                 $xw->endElement(); // embedded-txt-file
@@ -249,10 +249,12 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         $gh = new SimpleXMLElement($gradinghints, LIBXML_PARSEHUGE);
         $count = 0;
         foreach ($gh->root->{'test-ref'} as $test) {
-            if ((string)$test['ref'] == 'checkstyle')
+            if ((string)$test['ref'] == 'checkstyle') {
                 continue;
-            if ((string)$test['ref'] == 'compiler')
+            }
+            if ((string)$test['ref'] == 'compiler') {
                 continue;
+            }
             $count++;
         }
         return $count;
@@ -267,41 +269,49 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
      * @param $code
      */
     private static function remove_java_comment(&$code) {
-        $newCode = preg_replace('/\/\*[\s\S]*?\*\//m', '', $code); // comment with /* */
-        $newCode = preg_replace('/\/\/.*/', '', $newCode); // comment with //
+        $code = preg_replace('/\/\*[\s\S]*?\*\//m', '', $code); // comment with /* */
+        $code = preg_replace('/\/\/.*/', '', $code); // comment with //
     }
 
     private static function get_java_classname($code) {
         $matches = array();
         $classname = preg_match('/class\s+([\S]+?)\s*(\{|extends|implements)/', $code, $matches);
-        if ($classname === 0)
+        if ($classname === 0) {
             return "";
-        if ($classname === FALSE) {
+        }
+        if ($classname === false) {
             debugging('preg_match failed in get_java_classname');
             return "";
         }
 
         switch (count($matches)) {
-            case 0:  return ""; // no className found???
-            case 1:  return $matches[0]; // unclear what it is, deliver everything
-            default: return trim($matches[1]); // found, expect className name as 2nd
+            case 0:
+                return ""; // no className found???
+            case 1:
+                return $matches[0]; // unclear what it is, deliver everything
+            default:
+                return trim($matches[1]); // found, expect className name as 2nd
         }
     }
 
     private static function get_java_packagename($code) {
         $matches = array();
         $classname = preg_match('/package([\s\S]*?);/', $code, $matches);
-        if ($classname === 0)
+        if ($classname === 0) {
             return "";
-        if ($classname === FALSE) {
+        }
+        if ($classname === false) {
             debugging('preg_match failed in get_java_packagename');
             return "";
         }
 
         switch (count($matches)) {
-            case 0:  return ""; // no className found???
-            case 1:  return $matches[0]; // unclear what it is, deliver everything
-            default: return trim($matches[1]); // found, expect className name as 2nd
+            case 0:
+                return ""; // no className found???
+            case 1:
+                return $matches[0]; // unclear what it is, deliver everything
+            default:
+                return trim($matches[1]); // found, expect className name as 2nd
         }
     }
 
