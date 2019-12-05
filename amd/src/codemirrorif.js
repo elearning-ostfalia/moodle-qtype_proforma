@@ -37,10 +37,10 @@ require([
 });
 */
 
-define(['jquery',
+define(['jquery', 'jqueryui',
         'qtype_proforma/codemirror', 'qtype_proforma/clike', 'qtype_proforma/python', 'qtype_proforma/xml',
         'qtype_proforma/closebrackets', 'qtype_proforma/matchbrackets', 'qtype_proforma/active-line'],
-    function($, CodeMirror, clike, python, xml, closebrackets, matchbrackets, activeline) {
+    function($, jqui, CodeMirror, clike, python, xml, closebrackets, matchbrackets, activeline) {
 
         // maps the programming language value used in PHP to the CodeMirror mode
         map_proglang_to_codemirror_mode = function(moodle_mode) {
@@ -128,6 +128,21 @@ define(['jquery',
                         });
                     }
 
+                    /*
+                        require(['jquery', 'jqueryui'], function($, jqui) {
+                        // JQuery is available via $
+                        // JQuery UI is available via $.ui
+                        });
+                     */
+                    //console.log('JQUERY ' + $);
+                    //console.log('JQUERY-UI' + $.ui);
+                    $(editor.getWrapperElement()).resizable({
+                        handles: 's', // only resize in north-south-direction
+                        resize: function () {
+                            editor.refresh();
+                        }
+                    });
+/*
                     if (window.ResizeObserver) {
                         // if the browser supports ResizeObserver than we make the parent window resizable
 
@@ -161,8 +176,37 @@ define(['jquery',
                         } else {
                             document.addEventListener("DOMContentLoaded",resizeObserver());
                         }
-                    } else {} // (MutationObserver does not work properly)
+                    } else { // (MutationObserver does not work properly)
 
+                    if (window.MutationObserver) {
+                        var target = document.getElementById(textarea_id);
+                        var wrapper = editor.getWrapperElement().parentNode; // get DIV parent
+                        wrapper.style.resize = "vertical"; // add resize handle to parent
+                        wrapper.style.overflow = "hidden"; // do not show scrollbars in parent
+                        // A fixed initial height is required for the resize handle to appear and
+                        // to not fall into a shrinking loop due to the neg. offset in cm_resize()! :-o
+                        // (also needed when editor initially does not contain any text)
+                        wrapper.style.height = "25em"; // editor.getWrapperElement().offsetHeight; // "25em";
+
+                        function cm_resize(mutations) {
+                            console.log('cm_resize');
+                            //editor.disabled = target.disabled;
+                            //mutations.forEach(function(mutation) {
+                            //    console.log('CM_disable ' + mutation.type);
+                            //});
+                            editor.setSize(wrapper.clientWidth-10, wrapper.clientHeight-1);
+                            editor.refresh();
+                        }
+
+                        // Konfiguration des Observers: alles melden - Änderungen an Daten, Kindelementen und Attributen
+                        var config = { attributes: true, childList: true, characterData: true }; // , subtree:true };
+                        var observer1 = new MutationObserver(cm_resize, config);
+                        var observer2 = new MutationObserver(cm_resize, config);
+                        observer1.observe(target, config);
+                        observer2.observe(wrapper, config);
+                    }
+                    // }
+*/
                 } catch(err) {
                     alert("Exception caught in codemirrorif.js function init_codemirror\n " + err.toString());
                 }

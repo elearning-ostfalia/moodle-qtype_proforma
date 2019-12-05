@@ -26,7 +26,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-
 // ProFormA question type editing form.
 class qtype_proforma_edit_form extends question_edit_form {
 

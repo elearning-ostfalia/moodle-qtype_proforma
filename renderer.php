@@ -30,6 +30,13 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
+// load Jquery for CodeMirror resizing. This cannot be done
+// inside function because an error occurs.
+global $PAGE;
+$PAGE->requires->jquery();
+$PAGE->requires->jquery_plugin('ui');
+$PAGE->requires->jquery_plugin('ui-css');
+
 /**
  * Generates the output for proforma questions.
  */
@@ -691,20 +698,12 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
     protected $textareaid = null;
 
     public function response_area_input($name, $qa, $step, $lines, $context) {
-        global $PAGE;
-
         $question = $qa->get_question();
         $mode = $question->programminglanguage;
 
-        // Prevent JS caching in Debug-Mode
-        // $CFG->cachejs = false; // set in config.php
         $input = $this->set_response_area_input($name, $qa, $step, $lines, $context);
         // convert textarea to codemirror editor
-        // self::load_codemirror_modes();
-        if (get_config('qtype_proforma', 'usecodemirror')) {
-            $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                    array($this->textareaid, self::WRITABLE, $mode));
-        }
+        qtype_proforma::as_codemirror($this->textareaid, $mode, null, false, false);
         return $input;
     }
 
@@ -745,15 +744,9 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
         $question = $qa->get_question();
         $mode = $question->programminglanguage;
 
-        // Prevent JS caching in Debug-Mode
-        // $CFG->cachejs = false; // set in config.php
         $input = $this->set_response_area_read_only($name, $qa, $step, $lines, $context);
         // convert textarea to codemirror editor
-        // self::load_codemirror_modes();
-        if (get_config('qtype_proforma', 'usecodemirror')) {
-            $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                    array($this->textareaid, self::READONLY, $mode));
-        }
+        qtype_proforma::as_codemirror($this->textareaid, $mode, null, true, false);
 
         return $input;
     }
