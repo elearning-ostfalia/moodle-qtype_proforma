@@ -31,12 +31,26 @@ Feature: ADD JAVA QUESTION
     When I add a "ProFormA" question filling the form with:
       | Question name            | java-question                  |
       | Question text            | write a java program that..... |
+      | Default mark             | 2                              |
       | General feedback         | This is general feedback       |
       | Response format          | editor                         |
       | Response filename        | MyClass.java                   |
       | Response template        | // type your code here         |
+      | Comment                  | this is a new question         |
+      | Weight                   | 17                             |
+#      | Title                    | JUnit test                     |
+#      | Description              | JUnit description              |
+#    And I set the field with xpath "//input[@name='testweight[0]']" to "25"
+# Compilation
+# JUnit test
+# TODO: code
+# TODO: weight
+# Checkstyle
+# TODO: enable
+# TODO: code
+# TODO: weight
+      | Penalty for each incorrect try  | 20%     |
     Then I should see "java-question"
-
     When I click on "Edit" "link" in the "java-question" "table_row"
     And I set the following fields to these values:
       | Question name | |
@@ -56,10 +70,26 @@ Feature: ADD JAVA QUESTION
     When I click on "Edit" "link" in the "edited java-question" "table_row"
     # in the "Question name" "table_row"
     # textarea (CodeMirror fields)
-    Then I should see "write a java program that....." in the "#id_questiontext" "css_element"
-    And I should see "This is general feedback" in the "#id_generalfeedback" "css_element"
-    And I should see "// type your code here" in the "#id_responsetemplate" "css_element"
-    # input type=text
-    And "#id_responsefilename[value='MyClass.java']" "css_element" should exist
-    And "#id_name[value='edited java-question']" "css_element" should exist
+    Then the field "Question name" matches value "edited java-question"
+    And the field "Question text" matches value "write a java program that....."
+    And the field "Default mark" matches value "2"
+    And the field "General feedback" matches value "This is general feedback"
+    And the field "Response format" matches value "editor"
+    And the field "Response filename" matches value "MyClass.java"
+    And the field "Response template" matches value "// type your code here"
+    And the field "Comment" matches value "this is a new question"
+    # compilation
+    And the field "Weight" matches value "17"
+    # JUnit test
+#    And the field "Title" matches value "JUnit test"
+#    And the field "Description" matches value "JUnit description"
+    # Checkstyle
+    And the field "Penalty for each incorrect try" matches value "20%"
+
+#    Then I should see "write a java program that....." in the "#id_questiontext" "css_element"
+#    And I should see "This is general feedback" in the "#id_generalfeedback" "css_element"
+#    And I should see "// type your code here" in the "#id_responsetemplate" "css_element"
+#    # input type=text
+#    And "#id_responsefilename[value='MyClass.java']" "css_element" should exist
+#    And "#id_name[value='edited java-question']" "css_element" should exist
 

@@ -155,7 +155,7 @@ $string['testtitle'] = 'Title';
 $string['testlabel'] = '{no}. Test';
 $string['junittestlabel'] = '{no}. JUnit Test';
 $string['junittesttitle'] = 'JUnit Test';
-$string['weight'] = 'weight';
+$string['weight'] = 'Weight';
 $string['filepickeroptions'] = 'Filepicker options';
 
 $string['all_or_nothing'] = 'All or nothing';
