@@ -101,6 +101,8 @@ class behat_proforma extends behat_base {
 
         // Set value
         $field->set_value($value);
+
+        // file_put_contents('/tmp/test.png', $this->getSession()->getScreenshot());
     }
 
 }

@@ -1,9 +1,9 @@
 @qtype @qtype_proforma
-Feature: ADD JAVA QUESTION
-  Test creating a ProFormA java question (check default values)
+Feature: ADD JAVA QUESTION WITH COMPILATION, JUNIT AND CHECKSTYLE
+  Test creating a ProFormA java question
   As a teacher
   In order to test my students
-  I need to be able to create a ProFormA question
+  I need to be able to create a Java question
 
   Background:
     Given the following "users" exist:
@@ -19,77 +19,62 @@ Feature: ADD JAVA QUESTION
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
-  # check info for use of import
-  #Scenario: Create a Java ProFormA question, check 'add'
-  #  When I press "Create a new question"
-  #  And I select "ProFormA Task" radio button
-  #  And I press "Add"
-  #  # When I add a "ProFormA" question filling the form with
-  #  Then I should see "Please use \"import question\" in order to create a new Proforma question"
-
-  Scenario: Create a ProFormA java question with simply compilation
+  Scenario: Create, save and open a ProFormA java question with compilation, one Junit test and checkstyle
     When I add a "ProFormA" question filling the form with:
       | Question name            | java-question                  |
       | Question text            | write a java program that..... |
       | Default mark             | 2                              |
       | General feedback         | This is general feedback       |
       | Response format          | editor                         |
+      | Input box size           | 20 lines                       |
       | Response filename        | MyClass.java                   |
       | Response template        | // type your code here         |
       | Comment                  | this is a new question         |
-      | Weight                   | 17                             |
-#      | Title                    | JUnit test                     |
-#      | Description              | JUnit description              |
-#    And I set the field with xpath "//input[@name='testweight[0]']" to "25"
-# Compilation
-# JUnit test
-# TODO: code
-# TODO: weight
-# Checkstyle
-# TODO: enable
-# TODO: code
-# TODO: weight
+      | Title                    | JUnit test title               |
+      | Description              | JUnit description              |
       | Penalty for each incorrect try  | 20%     |
-    Then I should see "java-question"
-    When I click on "Edit" "link" in the "java-question" "table_row"
-    And I set the following fields to these values:
-      | Question name | |
-    And I press "id_submitbutton"
-    Then I should see "You must supply a value here."
+    Then I should see "Code is missing"
 
     When I set the following fields to these values:
-      | Question name   | edited java-question |
-    #  | Response format | Only filepicker        |
-    # And I press "id_submitbutton"
-    # Then I should see "When \"Only filepicker\" is selected, or responses are optional, you must allow at least one attachment."
-    # When I set the following fields to these values:
-    #  | Response format | Editor |
-    And I press "id_submitbutton"
-    Then I should see "edited java-question"
-
-    When I click on "Edit" "link" in the "edited java-question" "table_row"
-    # in the "Question name" "table_row"
-    # textarea (CodeMirror fields)
-    Then the field "Question name" matches value "edited java-question"
-    And the field "Question text" matches value "write a java program that....."
-    And the field "Default mark" matches value "2"
-    And the field "General feedback" matches value "This is general feedback"
-    And the field "Response format" matches value "editor"
-    And the field "Response filename" matches value "MyClass.java"
-    And the field "Response template" matches value "// type your code here"
-    And the field "Comment" matches value "this is a new question"
-    # compilation
-    And the field "Weight" matches value "17"
-    # JUnit test
-#    And the field "Title" matches value "JUnit test"
-#    And the field "Description" matches value "JUnit description"
+      | Question name   | new java-question |
+    # Compilation
+    And I set the field "Weight" number "1" to "10"
+    # JUnit
+    And I set the field "Weight" number "2" to "20"
+    And I set the field with xpath "//textarea[@name='testcode[0]']" to "// class XClass {}"
     # Checkstyle
-    And the field "Penalty for each incorrect try" matches value "20%"
+    And I set the field with xpath "//input[@name='checkstyle']" to "1"
+    And I set the field "Weight" number "3" to "30"
+    And I set the field with xpath "//textarea[@name='checkstylecode']" to "<!-- checkstyle code-->"
+    And I press "id_submitbutton"
+    Then I should see "Cannot determine classname (filename)"
 
-#    Then I should see "write a java program that....." in the "#id_questiontext" "css_element"
-#    And I should see "This is general feedback" in the "#id_generalfeedback" "css_element"
-#    And I should see "// type your code here" in the "#id_responsetemplate" "css_element"
-#    # input type=text
-#    And "#id_responsefilename[value='MyClass.java']" "css_element" should exist
-#    And "#id_name[value='edited java-question']" "css_element" should exist
+    When I set the field with xpath "//textarea[@name='testcode[0]']" to "class XClass {}"
+    And I press "id_submitbutton"
+    Then I should see "new java-question"
 
+    When I click on "Edit" "link" in the "new java-question" "table_row"
+    Then the following fields match these values:
+      | Question name            | new java-question              |
+      | Question text            | write a java program that..... |
+      | Default mark             | 2                              |
+      | General feedback         | This is general feedback       |
+      | Response format          | editor                         |
+      | Input box size           | 20 lines                       |
+      | Response filename        | MyClass.java                   |
+      | Response template        | // type your code here         |
+      | Comment                  | this is a new question         |
+      | Title                    | JUnit test title               |
+      | Description              | JUnit description              |
+      | Penalty for each incorrect try  | 20%                     |
+
+    And the field "Weight" number "1" matches value "10"
+    # JUnit
+    And the field "Weight" number "2" matches value "20"
+    And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
+    # Checkstyle
+    And the field with xpath "//input[@name='checkstyle']" matches value "1"
+    And the field "Weight" number "3" matches value "30"
+    And the field with xpath "//textarea[@name='checkstylecode']" matches value "<!-- checkstyle code-->"
+
+    And I press "Cancel"
