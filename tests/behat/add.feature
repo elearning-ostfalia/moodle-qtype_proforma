@@ -1,9 +1,8 @@
-@qtype @qtype_proforma
-Feature: ADD JAVA QUESTION WITH COMPILATION, JUNIT AND CHECKSTYLE
+Feature: ADD JAVA QUESTION
   Test creating a ProFormA java question
   As a teacher
   In order to test my students
-  I need to be able to create a Java question
+  I need to be able to create a simple Java question
 
   Background:
     Given the following "users" exist:
@@ -18,6 +17,45 @@ Feature: ADD JAVA QUESTION WITH COMPILATION, JUNIT AND CHECKSTYLE
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
+
+  Scenario: Create, save and open a ProFormA java question with compilation, one Junit test (default values)
+    When I add a "ProFormA" question filling the form with:
+      | Question name            | java-question                  |
+      | Question text            | write a java program that..... |
+      | Response format          | editor                         |
+      | Response filename        | MyClass.java                   |
+      | Title                    | JUnit test title               |
+    Then I should see "Code is missing"
+
+    # JUnit
+    When I set the field with xpath "//textarea[@name='testcode[0]']" to "class XClass {}"
+    And I press "id_submitbutton"
+    Then I should see "java-question"
+
+    When I click on "Edit" "link" in the "java-question" "table_row"
+    Then the following fields match these values:
+      | Question name            |     java-question              |
+      | Question text            | write a java program that..... |
+      | Default mark             | 1                              |
+      | General feedback         |                                |
+      | Response format          | editor                         |
+      | Input box size           | 15 lines                       |
+      | Response filename        | MyClass.java                   |
+      | Response template        |                                |
+      | Comment                  |                                |
+      | Title                    | JUnit test title               |
+      | Description              |                                |
+      | Penalty for each incorrect try  | 10%                     |
+
+    And the field "Weight" number "1" matches value "0"
+    # JUnit
+    And the field "Weight" number "2" matches value "1"
+    And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
+    # Checkstyle
+    And the field with xpath "//input[@name='checkstyle']" matches value ""
+
+    And I press "Cancel"
+
 
   Scenario: Create, save and open a ProFormA java question with compilation, one Junit test and checkstyle
     When I add a "ProFormA" question filling the form with:
