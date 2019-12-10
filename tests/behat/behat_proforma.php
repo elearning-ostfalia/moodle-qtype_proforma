@@ -50,4 +50,57 @@ class behat_proforma extends behat_base {
 
         throw new Exception("Radio button {$name} not found");
     }
+
+    /**
+     * check text in field with the label (expecting more than one field existing with the same label)
+     * @Given /^the field "(?P<label_string>(?:[^"]|\\")*)" number "(?P<number_string>(?:[^"]|\\")*)" matches value "(?P<value_string>(?:[^"]|\\")*)"$/
+     * @throws ExpectationException
+     * @param $label field label
+     * @param $number one-based index of field
+     * @param $value expected value
+     */
+    public function theFieldNumberMatchesValue($label, $number, $value) {
+        // find all fields with label $label
+        $fieldnodes = $this->find_all('named_partial', array('field', $label));
+        if (count($fieldnodes) < $number)
+            throw new ExpectationException('Not enough fields found with label "' . $label . '": ' . count($fieldnodes), $this->getSession());
+        $fieldnode = $fieldnodes[$number-1];
+
+        // Get the actual field.
+        $field = behat_field_manager::get_form_field($fieldnode, $this->getSession());
+
+        // Checks if the provided value matches the current field value.
+        if (!$field->matches($value)) {
+            $fieldvalue = $field->get_value();
+            throw new ExpectationException(
+                    'The \'' . $label . '\' value is \'' . $fieldvalue . '\', \'' . $value . '\' expected' ,
+                    $this->getSession()
+            );
+        }
+    }
+
+
+    /**
+     * sets the text in field with the label (expecting more than one field existing with the same label)
+     * @Given /^I set the field "(?P<label_string>(?:[^"]|\\")*)" number "(?P<number_string>(?:[^"]|\\")*)" to "(?P<value_string>(?:[^"]|\\")*)"$/
+     * @throws ExpectationException
+     * @param $label field label
+     * @param $number one-based index of field
+     * @param $value new value
+     */
+    public function ISetTheFieldNumberTo($label, $number, $value) {
+        // find all fields with label $label
+        $fieldnodes = $this->find_all('named_partial', array('field', $label));
+
+        if (count($fieldnodes) < $number)
+            throw new ExpectationException('Not enough fields found with label "' . $label . '": ' . count($fieldnodes), $this->getSession());
+        $fieldnode = $fieldnodes[$number-1];
+
+        // Get the actual field.
+        $field = behat_field_manager::get_form_field($fieldnode, $this->getSession());
+
+        // Set value
+        $field->set_value($value);
+    }
+
 }
