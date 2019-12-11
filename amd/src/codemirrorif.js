@@ -128,20 +128,18 @@ define(['jquery', 'jqueryui',
                         });
                     }
 
-                    /*
-                        require(['jquery', 'jqueryui'], function($, jqui) {
-                        // JQuery is available via $
-                        // JQuery UI is available via $.ui
-                        });
-                     */
-                    //console.log('JQUERY ' + $);
-                    //console.log('JQUERY-UI' + $.ui);
                     $(editor.getWrapperElement()).resizable({
                         handles: 's', // only resize in north-south-direction
                         resize: function () {
                             editor.refresh();
                         }
                     });
+
+/*                    editor.classList.add("form-control");
+                    editor.classList.add("custom-select");
+                    editor.parent.classList.add("form-inline");
+                    editor.parent.classList.add("felement");
+*/
 /*
                     if (window.ResizeObserver) {
                         // if the browser supports ResizeObserver than we make the parent window resizable
@@ -208,7 +206,7 @@ define(['jquery', 'jqueryui',
                     // }
 */
                 } catch(err) {
-                    alert("Exception caught in codemirrorif.js function init_codemirror\n " + err.toString());
+                    console.error("Exception caught in codemirrorif.js function init_codemirror\n " + err.toString());
                 }
             }
         };
