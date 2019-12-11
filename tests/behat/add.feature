@@ -116,3 +116,50 @@ Feature: ADD JAVA QUESTION
     And the field with xpath "//textarea[@name='checkstylecode']" matches value "<!-- checkstyle code-->"
 
     And I press "Cancel"
+
+  Scenario: Create, save and open a ProFormA java question with compilation and two Junit tests
+    When I add a "ProFormA" question filling the form with:
+      | Question name            | java-question with 2 tests     |
+      | Question text            | write a java program that..... |
+      | Response format          | editor                         |
+      | Response filename        | MyClass.java                   |
+      | Response template        | // type your code here         |
+      | Title                    | JUnit #1                       |
+    Then I should see "Code is missing"
+    When I press "id_option_add_fields"
+    And I set the field with xpath "//textarea[@name='testcode[0]']" to "class XClass {}"
+    And I set the field with xpath "//textarea[@name='testcode[1]']" to "class YClass {}"
+    And I set the field with xpath "//input[@name='testdescription[1]']" to "this is the second JUnit test"
+    And I press "id_submitbutton"
+    Then I should see "Title is missing"
+
+    When I set the field with xpath "//input[@name='testtitle[1]']" to "Junit #2"
+    And I press "id_submitbutton"
+    Then I should see "java-question with 2 tests"
+
+    When I click on "Edit" "link" in the "java-question with 2 tests" "table_row"
+    Then the following fields match these values:
+      | Question name            | java-question with 2 tests     |
+      | Question text            | write a java program that..... |
+      | Default mark             | 1                              |
+      | General feedback         |                                |
+      | Response format          | editor                         |
+      | Input box size           | 15 lines                       |
+      | Response filename        | MyClass.java                   |
+      | Response template        | // type your code here         |
+      | Comment                  |                                |
+      | Penalty for each incorrect try  | 10%                     |
+
+    And the field "Weight" number "1" matches value "0"
+    # JUnit #1
+    And the field "Weight" number "2" matches value "1"
+    And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
+    And the field with xpath "//input[@name='testdescription[0]']" matches value ""
+    # JUnit #2
+    And the field "Weight" number "3" matches value "1"
+    And the field with xpath "//textarea[@name='testcode[1]']" matches value "class YClass {}"
+    And the field with xpath "//input[@name='testdescription[1]']" matches value "this is the second JUnit test"
+    # Checkstyle
+    And the field with xpath "//input[@name='checkstyle']" matches value ""
+
+    And I press "Cancel"

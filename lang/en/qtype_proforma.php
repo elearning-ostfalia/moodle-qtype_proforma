@@ -28,9 +28,7 @@ $string['pluginname_help'] = 'Question based on a ProFormA task file. Responses 
 $string['pluginname_link'] = 'question/type/proforma';
 $string['pluginnameadding'] = 'Adding a ProFormA question';
 $string['pluginnameediting'] = 'Editing a ProFormA question';
-$string['pluginnamesummary'] = 'Programming question that will be graded automatically.<br>
-Note! New questions must be <b>imported</b> into the question bank and cannot be created this way!<br>
-An editor for generating questions is here: https://media.elan-ev.de/proforma/editor/releases.html';
+$string['pluginnamesummary'] = 'Java programming question that will be graded automatically.';
 $string['allowattachments'] = 'Max. number of uploaded files';
 $string['formateditor'] = 'Editor';
 $string['formatfilepicker'] = 'File picker';
@@ -81,9 +79,11 @@ $string['other'] = 'other';
 
 $string['compile'] = 'Compilation';
 $string['code'] = 'Source Code';
+$string['code_help'] = 'Source Code for JUnit test';
 
 $string['addjunit'] = 'Add JUnit test';
 $string['codeempty'] = 'Code is missing';
+$string['titleempty'] = 'Title is missing';
 $string['filenameerror'] = 'Cannot determine classname (filename)';
 $string['entrypointerror'] = 'Cannot determine classname (entrypoint)';
 
@@ -162,9 +162,6 @@ $string['all_or_nothing'] = 'All or nothing';
 $string['weighted_sum'] = 'Weighted sum';
 $string['aggregationstrategy'] = 'Aggregation strategy';
 $string['aggregationstrategy_help'] = 'Aggregation strategy used for grading this question';
-
-$string['nocreate'] = 'Please use "import question" in order to create a new Proforma question.<br>
-ProFormA questions must be created with an external tool such as https://media.elan-ev.de/proforma/editor/releases.html.';
 
 $string['internaltesterror'] = 'Internal error in a test';
 $string['privacy:metadata'] = 'The ProFormA question type plugin does not store any personal data.';

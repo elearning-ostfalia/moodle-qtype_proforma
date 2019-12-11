@@ -28,9 +28,7 @@ $string['pluginname'] = 'ProFormA-Aufgabe';
 $string['pluginname_help'] = 'Programmieraufgabe basierend auf einer ProFormA-Aufgabendatei mit automatischer Bewertung. Der Studierende kann entweder seine Lösung als Datei hochladen oder sie direkt in einem Editor eingeben. Dazu kann eine Code-Vorlage vorgegeben werden. ';
 $string['pluginnameadding'] = 'ProFormA-Aufgabe hinzufügen';
 $string['pluginnameediting'] = 'ProFormA-Aufgabe ändern';
-$string['pluginnamesummary'] = 'Automatisch bewertete Programmieraufgabe: <br>
-ACHTUNG: Neue Aufgaben müssen in die Moodle-Fragedatenbank <b>importiert</b> werden und können nur darüber eingebunden werden.<br>
-Einen Editor zum Erstellen von Aufgaben gibt es unter https://media.elan-ev.de/proforma/editor/releases.html.';
+$string['pluginnamesummary'] = 'Automatisch bewertete Java-Programmieraufgabe.';
 $string['allowattachments'] = 'Max. Anzahl Dateien';
 $string['comment'] = 'Kommentar';
 $string['commentheader'] = 'Kommentar';
@@ -72,7 +70,8 @@ $string['compile'] = 'Compilation';
 $string['code'] = 'Quellcode';
 
 $string['addjunit'] = 'JUnit Test hinzufügen';
-$string['codeempty'] = 'Code muss eingegeben werden.';
+$string['codeempty'] = 'Code fehlt.';
+$string['titleempty'] = 'Titel fehlt.';
 $string['filenameerror'] = 'Kann Klassennamen nicht ermitteln (Dateiname).';
 $string['entrypointerror'] = 'Kann Klassennamen nicht ermitteln (Entrypoint).';
 
@@ -152,9 +151,6 @@ $string['all_or_nothing'] = 'alles oder nichts';
 $string['weighted_sum'] = 'gewichtete Summe';
 $string['aggregationstrategy'] = 'Aggregationsstrategie';
 $string['aggregationstrategy_help'] = 'Aggregationsstrategie, die zum Ermitteln der Bewertung genutzt werden soll';
-
-$string['nocreate'] = 'Neue Fragen müssen extern erzeugt und anschließend in die Fragensammlung importiert werden.<br>
-Einen Editor zum Erzeugen von ProFormA-Fragen gibt es hier: https://media.elan-ev.de/proforma/editor/releases.html.';
 
 $string['internaltesterror'] = 'Während des Testlaufs wurde ein interner Fehler festgestellt.';
 

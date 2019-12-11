@@ -80,9 +80,11 @@ class qtype_proforma_edit_form extends question_edit_form {
                 if (0 < $lentitle and 0 == $lencode) {
                     // code is missing
                     $errors['testcode['.$i.']'] = get_string('codeempty', 'qtype_proforma');
-                } else if (0 == $lentitle and 0 > $lencode) {
+                } else if (0 == $lentitle and 0 < $lencode) {
+                    debugging('title missing');
                     // title is missing
-                    $errors['testtitle['.$i.']'] = get_string('required');
+                    $errors['testweight['.$i.']'] = get_string('titleempty', 'qtype_proforma');
+                    $errors['testtitle['.$i.']'] = get_string('titleempty', 'qtype_proforma');
                 } else if ($lencode > 0 and $lentitle > 0) {
                     // check classname
                     if (!qtype_proforma_java_task::get_java_file($code)) {
@@ -600,6 +602,8 @@ class qtype_proforma_edit_form extends question_edit_form {
             $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
             $this->add_test_weight_option($compilegroup, 'compile', '0');
             $mform->addGroup($compilegroup, 'compilegroup', get_string('compile', 'qtype_proforma'), ' ', false);
+            $mform->addGroupRule('compilegroup', array(
+                    'compileweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
             $mform->hideIf('compileweight', 'compile');
             $mform->setDefault('compile', 1);
         } else {
@@ -634,6 +638,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             }
             $repeatoptions = array();
             $repeatoptions['testweight']['default'] = 1;
+            // $repeatoptions['testweight']['rule'] = 'numeric';
             // $repeatoptions['testtitle']['default'] = get_string('junittesttitle', 'qtype_proforma');
             $repeatoptions['testdescription']['default'] = '';
             // $repeateloptions['testfilename']['default'] = '';
@@ -651,6 +656,7 @@ class qtype_proforma_edit_form extends question_edit_form {
                 }
                 // does not work
                 // $repeatoptions['testtitle']['rule'] = 'required'; // array(null, 'required', null, 'client');
+                // $repeatoptions['testweight']['rule'] = 'required'; // array(get_string('err_numeric', 'form'), 'numeric', '', 'client');
             } else {
                 // disable testtype and test identifier for imported tasks
                 $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
@@ -681,6 +687,7 @@ class qtype_proforma_edit_form extends question_edit_form {
                 // Remove button for adding new test elements.
                 $mform->removeElement('option_add_fields');
             }
+
         } else {
             $mform->addElement('static', 'no_tests', get_string('notests', 'qtype_proforma'), '');
         }
@@ -692,6 +699,8 @@ class qtype_proforma_edit_form extends question_edit_form {
             $this->add_test_weight_option($testoptions, 'checkstyle', '0.2');
             $mform->addGroup($testoptions, 'checkstyleoptions', 'Checkstyle',
                     array(' '), false);
+            $mform->addGroupRule('checkstyleoptions', array(
+                    'checkstyleweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
 
             $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
             qtype_proforma::as_codemirror('id_checkstylecode', 'xml');
