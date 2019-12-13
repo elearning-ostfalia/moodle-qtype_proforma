@@ -191,6 +191,15 @@ class qtype_proforma extends question_type {
             case self::PERSISTENT_TASKFILE:
                 $instance = new qtype_proforma_proforma_task;
                 $options->gradinghints = $instance->create_lms_grading_hints($formdata);
+                // handle files (including model solution files) from imported question
+                foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
+                    $property = $value['formid'];
+                    if (isset($formdata->$property)) {
+                        file_save_draft_area_files($formdata->$property,
+                                $context->id, 'qtype_proforma', $filearea, $formdata->id);
+                    }
+                }
+
                 break;
             case self::VOLATILE_TASKFILE:
                 $instance = new qtype_proforma_java_task;
@@ -199,15 +208,34 @@ class qtype_proforma extends question_type {
                 qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
                         $context->id, $formdata->id);
                 $options->gradinghints = $instance->create_lms_grading_hints($formdata);
+                if ($formdata->responseformat == self::RESPONSE_FILEPICKER) {
+                    if (isset($formdata->modelsolfilemanager)) {
+                        // also create modelsolfiles
+                        $draftitemid = $formdata->modelsolfilemanager;
+                        $fs = get_file_storage();
+                        global $USER;
+                        $usercontext = context_user::instance($USER->id);
+                        $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
+                        $files = array();
+                        foreach ($draftfiles as $file) {
+                            if ($file->get_filename() != '.' and $file->get_filename() != '..') {
+                                $files[] = $file->get_filename();
+                            }
+                        }
+                        $options->modelsolfiles = implode(',', $files);
+                        file_save_draft_area_files($draftitemid, $context->id, 'qtype_proforma', self::FILEAREA_MODELSOL,
+                                $formdata->id);
+                    }
+                } else {
+                    // EDITOR
+                    $this->save_as_file($context->id, self::FILEAREA_MODELSOL,
+                            $formdata->responsefilename, $formdata->modelsolution, $formdata->id, true);
+                }
                 break;
             case self::REPOSITORY:
             default:
                 throw new coding_exception('proforma: unsupported taskstorage ' . $formdata->taskstorage);
         }
-
-        /*        $hint->hint = $this->import_or_save_files($formdata->hint[$i],
-                    $context, 'question', 'hint', $hint->id);
-                $hint->hintformat = $formdata->hint[$i]['format'];*/
 
         // we need a different handling for different variable structure for comment:
         // - array with comment (text, format)
@@ -231,32 +259,6 @@ class qtype_proforma extends question_type {
         } else if (isset($formdata->taskfile)) {
             question_bank::get_qtype('qtype_proforma')->import_file(
                     $this->importcontext, 'qtype_proforma', 'task', $options->id, $formdata->taskfile);
-        }
-
-        if (isset($formdata->modelsolfilemanager)) {
-            // also create modelsolfiles
-            $draftitemid = $formdata->modelsolfilemanager;
-            $fs = get_file_storage();
-            global $USER;
-            $usercontext = context_user::instance($USER->id);
-            $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
-            $files = array();
-            foreach ($draftfiles as $file) {
-                if ($file->get_filename() != '.' and $file->get_filename() != '..')
-                    $files[] = $file->get_filename();
-            }
-            $options->modelsolfiles = implode(',', $files);
-            file_save_draft_area_files($draftitemid, $context->id, 'qtype_proforma', self::FILEAREA_MODELSOL,
-                    $formdata->id);
-        } else {
-            // handle files (including model solution files) from imported question
-            foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
-                $property = $value['formid'];
-                if (isset($formdata->$property)) {
-                    file_save_draft_area_files($formdata->$property,
-                            $context->id, 'qtype_proforma', $filearea, $formdata->id);
-                }
-            }
         }
 
         // store response template as file (it is stored as file and as member variable
@@ -315,21 +317,21 @@ class qtype_proforma extends question_type {
         return $file->get_content();
     }
 
-    protected function save_as_file($contextid, $filearea, $filename, $content, $itemid) {
+    protected function save_as_file($contextid, $filearea, $filename, $content, $itemid, $cleanfilearea = false) {
         $fs = get_file_storage();
         // delete old file
         if (!is_null($itemid)) {
-            // echo 'delete file "'. $filename . '"<br>';
             $fs = get_file_storage();
-            // echo 'save_as_file: ' . $contextid . '/qtype_proforma/' . $filearea . '/' . $itemid . '<br>';
             if ($files = $fs->get_area_files($contextid, 'qtype_proforma', $filearea, $itemid)) {
                 $cleanfilename = clean_param($filename, PARAM_FILE);
-                // echo 'check for ' . $cleanfilename . '<br>';
                 foreach ($files as $file) {
-                    if ($cleanfilename === $file->get_filename()) {
-                        // $output1 =  'save_as_file: delete "' . $file->get_filename() . '"<br>';
-                        // echo $output1;
+                    if ($cleanfilearea) {
+                        // clean all files for this question in this filearea
                         $file->delete();
+                    } else {
+                        if ($cleanfilename === $file->get_filename()) {
+                            $file->delete();
+                        }
                     }
                 }
             }

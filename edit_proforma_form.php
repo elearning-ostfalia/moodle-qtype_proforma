@@ -535,7 +535,17 @@ class qtype_proforma_edit_form extends question_edit_form {
             file_prepare_draft_area($draftitemid, $this->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL,
                     $question->id, array('subdirs' => 0));
             $question->modelsolfilemanager = $draftitemid;
-
+            $fs = get_file_storage();
+            $draftfiles = $fs->get_area_files($this->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL, $question->id);
+            $files = array();
+            foreach ($draftfiles as $file) {
+                if ($file->get_filename() != '.' and $file->get_filename() != '..') {
+                    $files[] = $file;
+                }
+            }
+            if (count($files) === 1) {
+                $question->modelsolution = $files[0]->get_content();
+            }
         } else if (!empty($question->modelsolfiles)) {
             $question->mslinks = '';
             foreach (explode(',', $question->modelsolfiles) as $ms) {
