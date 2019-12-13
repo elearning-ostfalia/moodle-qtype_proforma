@@ -47,7 +47,8 @@ $string['templateeditor'] = 'Editor';
 
 $string['modelsolution'] = 'Model solution';
 $string['modelsolutionheader'] = 'Model Solution';
-$string['modelsolution_help'] = 'An exemplary solution for this question.';
+$string['modelsolution_help'] = 'An exemplary solution for this question. It is displayed to the student when "Right answer" is checked in "Review options" of the quiz.';
+
 $string['taskpath'] = 'Task path';
 $string['taskpath_hint'] = $string['taskpath'];
 $string['taskpath_hint_help'] = 'location of task zip file (in repository)';
@@ -74,7 +75,7 @@ $string['highlight_hint_help'] = 'The programming language is used to set syntax
 
 $string['proglang'] = 'Programming language';
 $string['proglang_hint'] = $string['proglang'];
-$string['proglang_hint_help'] = 'Programming language of task';
+$string['proglang_hint_help'] = 'Programming language of task. Currently only Java questions can be created.';
 $string['other'] = 'other';
 
 $string['compile'] = 'Compilation';
@@ -97,12 +98,6 @@ $string['graderuri_host'] = 'URI: Protocol and Server';
 $string['graderuri_host_desc'] = 'Protocol and Server Part of Grader URI';
 $string['graderuri_path'] = 'URI: Path';
 $string['graderuri_path_desc'] = 'Path Part of Grader URI';
-$string['javafile_without_package'] = 'send Java submission file without package path to grader';
-$string['javafile_without_package_desc'] = 'in case of editor submission format teh submiited filename is generated directly from Model solution.
-If the filename contains the package path this might lead to grading errors. Set this flag if the package path shall be ignored.';
-
-
-
 
 $string['javasettings_header'] = 'Java Settings for Java questions created with Moodle';
 $string['checkstyleversion'] = 'Checkstyle version';
@@ -143,6 +138,7 @@ $string['downloads_hint_help'] = 'Files needed to solve the task (can be downloa
 $string['modelsolfiles'] = 'Model solution files';
 $string['modelsolfiles_hint'] = $string['modelsolfiles'];
 $string['modelsolfiles_hint_help'] = 'Model solution files';
+
 $string['attachments'] = 'Downloads:';
 $string['questiondefaults'] = 'Default values for new questions';
 $string['none'] = 'none';

@@ -44,7 +44,9 @@ $string['templateeditor'] = '';
 
 $string['modelsolution'] = 'Musterlösung';
 $string['modelsolutionheader'] = 'Musterlösung';
-$string['modelsolution_help'] = 'Beispiellösung für die Aufgabe.';
+$string['modelsolution_help'] = 'Beispiellösung für die Aufgabe, wie sie dem Studierenden angezeigt werden soll, falls die Option "Richtige Antwort" in den Überprüfungsoptionen des Tests angeschaltet ist.';
+
+
 $string['taskpath'] = 'Verzeichnis';
 $string['taskpath_hint'] = $string['taskpath'];
 $string['taskpath_hint_help'] = 'Verzeichnis der ProFormA-Aufgabendatei im Repository';
@@ -82,7 +84,7 @@ $string['highlight_hint_help'] = 'Programmiersprache, die für das Syntax Highli
 
 $string['proglang'] = 'Programmiersprache';
 $string['proglang_hint'] = $string['proglang'];
-$string['proglang_hint_help'] = 'Verwendete Programmiersprache der Aufgabe';
+$string['proglang_hint_help'] = 'Verwendete Programmiersprache der Aufgabe. Zur Zeit können nur Java-Aufgaben erstellt werden.';
 $string['other'] = 'andere';
 
 
@@ -95,9 +97,6 @@ $string['graderuri_host'] = 'URI: Protokoll und Server';
 $string['graderuri_host_desc'] = 'Protokoll und Server der Grader URI';
 $string['graderuri_path'] = 'URI: Pfad';
 $string['graderuri_path_desc'] = 'Pfad der Grader URI';
-$string['javafile_without_package'] = 'Entfernen des Java-Paket-Pfads beim Einreichen mit Editoreingabe';
-$string['javafile_without_package_desc'] = 'Falls zur Eingabe der Einreichung der Editor verwendet wird, wird der an den Grader gesendete Dateiname aus der Musterlösung erzeugt.
-Wenn diese einen Paket-Pfad enthält, kann es sein, dass der Grader damit nicht klarkommt. Mit Setzen dieses Schalters wird der Pfad nicht mitgesendet.';
 
 $string['javasettings_header'] = 'Java-Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';
 $string['checkstyleversion'] = 'Checkstyle Version';

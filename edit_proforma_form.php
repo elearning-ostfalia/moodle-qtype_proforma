@@ -78,13 +78,13 @@ class qtype_proforma_edit_form extends question_edit_form {
                 $lencode = strlen(trim($code));
                 $lentitle = strlen(trim($title));
                 if (0 < $lentitle and 0 == $lencode) {
-                    // code is missing
+                    // Code is missing.
                     $errors['testcode['.$i.']'] = get_string('codeempty', 'qtype_proforma');
                 } else if (0 == $lentitle and 0 < $lencode) {
-                    debugging('title missing');
-                    // title is missing
-                    $errors['testweight['.$i.']'] = get_string('titleempty', 'qtype_proforma');
-                    $errors['testtitle['.$i.']'] = get_string('titleempty', 'qtype_proforma');
+                    // Title is missing
+                    // error message must be attached to testoptions group
+                    // $errors['testweight['.$i.']'] = get_string('titleempty', 'qtype_proforma');
+                    $errors['testoptions['.$i.']'] = get_string('titleempty', 'qtype_proforma');
                 } else if ($lencode > 0 and $lentitle > 0) {
                     // check classname
                     if (!qtype_proforma_java_task::get_java_file($code)) {
@@ -188,7 +188,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         // Response Filename
         if ($this->volatiletask) {
             $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
-            $mform->addRule('responsefilename', null, 'required', null, 'client');
+            // $mform->addRule('responsefilename', null, 'required', null, 'client');
         } else {
             // Further templates (there should be no other templates)
             $this->add_static_field($mform, 'furtherTemplates', get_string('templates', 'qtype_proforma'),
@@ -201,6 +201,29 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->hideIf('responsefilename', 'responseformat', 'neq', 'editor');
         $mform->setType('responsefilename', PARAM_TEXT);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
+
+        if ($this->volatiletask) {
+            // Model Solution files
+            $mform->addElement('textarea', 'modelsolution', get_string('modelsolution', 'qtype_proforma'), 'rows="20" cols="80"');
+            if (get_config('qtype_proforma', 'usecodemirror')) {
+                qtype_proforma::as_codemirror('id_modelsolution', 'java');
+                global $PAGE;
+                $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
+                        array('id_programminglanguage', 'id_modelsolution'));
+            }
+            $mform->addHelpButton('modelsolution', 'modelsolution', 'qtype_proforma');
+            $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
+
+
+            //$mform->addElement('filepicker', 'userfile', get_string('file'), null,
+            //        array('maxbytes' => $maxbytes, 'accepted_types' => '*'));
+            $mform->addElement('filemanager', 'modelsolfilemanager', get_string('modelsolfiles', 'qtype_proforma'), null,
+                    array('subdirs' => 0));
+
+            $mform->hideIf('modelsolfilemanager', 'responseformat', 'neq', 'filepicker');
+
+        }
+
     }
 
     /**
@@ -229,11 +252,6 @@ class qtype_proforma_edit_form extends question_edit_form {
                 $value = $this->question->$sizefield;
                 $attributes = array('size' => strlen($this->question->$sizefield));
             }
-            // create hidden elements
-            // Ich dachte, die kriege ich üebr den behat-test, aber das funzt nicht
-
-            // $mform->addElement('hidden', $sizefield, $value);
-            // $mform->setType($sizefield, PARAM_TEXT);
         } else {
             $attributes = array('size' => strlen($this->question->options->$field));
         }
@@ -245,29 +263,12 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
 
         $mform->setType($field, PARAM_TEXT);
-        // $mform->getElement($field)->setPersistantFreeze(false);
-
-        // as hidden field???
-        // $mform->addElement('hidden', $field);
-
-        // $mform->disabledIf($field, 'responseformat', 'neq', 'always');
-        // $mform->freeze($field);
-
-        // $mform->freeze();
-        // $mform->setConstants(array('taskpath' => $norepeats));
     }
 
     protected function add_grader_settings($mform) {
         if ($this->volatiletask) {
             return;
         }
-
-        /*
-        if (!(isset($this->question->options->taskstorage) &&
-                $this->question->options->taskstorage == qtype_proforma::PERSISTENT_TASKFILE)) {
-            return;
-        }
-        */
 
         // ProFormA fields
         $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
@@ -276,32 +277,8 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
         $mform->setType('link', PARAM_TEXT);
         $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
-        /*
-        // Repository is not sipported
-        $mform->addElement('text', 'taskrepository', get_string('repository', 'qtype_proforma'), array('size' => '60'));
-        $mform->setType('taskrepository', PARAM_TEXT);
-        $mform->addRule('taskrepository', null, 'required', null, 'client');
-        $mform->addHelpButton('taskrepository', 'repository_hint', 'qtype_proforma');
-        // $mform->setDefault('taskrepository', get_config('qtype_proforma', 'repositoryhost'));
-        // $mform->hardFreeze('taskrepository');
-        // Task Path
-        $mform->addElement('text', 'taskpath', get_string('taskpath', 'qtype_proforma'), array('size' => '80'));
-        $mform->setType('taskpath', PARAM_TEXT);
-        $mform->addRule('taskpath', null, 'required', null, 'client');
-        $mform->addHelpButton('taskpath', 'taskpath_hint', 'qtype_proforma');
-        // $mform->setDefault('taskpath', '');
-        // $mform->hardFreeze('taskpath');
-        */
 
         // UUID
-        /*
-        if (false) {
-            // !isset($this->question->id)) {
-            // create new question
-            $mform->addElement('text', 'uuid', get_string('uuid', 'qtype_proforma'), array('size' => '60'));
-            $mform->addRule('uuid', null, 'required', null, 'client');
-        } else {
-        */
         // change existing question => do not edit UUID
         $this->add_static_field($mform, 'uuid', get_string('uuid', 'qtype_proforma'));
         // }
@@ -333,7 +310,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         if ($this->volatiletask) {
             // create new question
             $mform->addElement('hidden', 'taskstorage', qtype_proforma::VOLATILE_TASKFILE);
-            $proglangooptions = array('Java', get_string('other', 'qtype_proforma'));
+            $proglangooptions = array('Java'); // , get_string('other', 'qtype_proforma'));
             $mform->addElement('select', 'proglang',
                     get_string('proglang', 'qtype_proforma'), $proglangooptions);
             $mform->addHelpButton('proglang', 'proglang_hint', 'qtype_proforma');
@@ -351,7 +328,6 @@ class qtype_proforma_edit_form extends question_edit_form {
             // Model Solution files (instead of modelsollist we show links)
             $mform->addElement('static', 'mslinks', get_string('modelsolfiles', 'qtype_proforma'), '');
             $mform->addHelpButton('mslinks', 'modelsolfiles_hint', 'qtype_proforma');
-            // $mform->addHelpButton('mslinks', 'modelsolfiles_hint', 'qtype_proforma');
         }
         $mform->setType('taskstorage', PARAM_RAW);
 
@@ -501,9 +477,11 @@ class qtype_proforma_edit_form extends question_edit_form {
         if (isset($this->question->options->taskstorage) &&
                 $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE) {
             // retrieve files content from task
+            $this->volatiletask = true;
             $taskfilehandler = new qtype_proforma_java_task;
             $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
         } else {
+            $this->volatiletask = false;
             $taskfilehandler = new qtype_proforma_proforma_task;
             // create lists for download files
             foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
@@ -552,32 +530,13 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         $taskfilehandler->extract_formdata_from_gradinghints($question, $this->_form);
 
-        /*
-                    if (!isset($question->tests)) {
-                        $this->extract_data_from_taskfile($cat, $question);
-                    }
-                    if (isset($question->tests)) {
-                        $key = 0;
-                        foreach ($question->tests as $test) {
-                            unset($this->_form->_defaultValues["testtitle[{$key}]"]);
-                            unset($this->_form->_defaultValues["testid[{$key}]"]);
-                            $key++;
-                            $question->testid[] = $test['id'];
-                            $question->testtitle[] = $test['title'];
-                        }
-                    }
+        if ($this->volatiletask) {
+            $draftitemid = file_get_submitted_draft_itemid('modelsolfilemanager');
+            file_prepare_draft_area($draftitemid, $this->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL,
+                    $question->id, array('subdirs' => 0));
+            $question->modelsolfilemanager = $draftitemid;
 
-                    if (isset($question->gradinghints)) {
-                        $key = 0;
-                        foreach ($question->gradinghints as $gh) {
-                            unset($this->_form->_defaultValues["testweight[{$key}]"]);
-                            $key++;
-                            $question->testweight[] = $gh['weight'];
-                        }
-                    }
-        */
-
-        if (!empty($question->modelsolfiles)) {
+        } else if (!empty($question->modelsolfiles)) {
             $question->mslinks = '';
             foreach (explode(',', $question->modelsolfiles) as $ms) {
                 $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
@@ -633,12 +592,10 @@ class qtype_proforma_edit_form extends question_edit_form {
             $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
             if ($this->volatiletask) {
                 // Add textarea for unit test code.
-                $repeatarray[] = $mform->createElement('textarea', 'testcode',
-                        '' /*get_string('code', 'qtype_proforma')*/, 'rows="20" cols="80"');
+                $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
             }
             $repeatoptions = array();
             $repeatoptions['testweight']['default'] = 1;
-            // $repeatoptions['testweight']['rule'] = 'numeric';
             // $repeatoptions['testtitle']['default'] = get_string('junittesttitle', 'qtype_proforma');
             $repeatoptions['testdescription']['default'] = '';
             // $repeateloptions['testfilename']['default'] = '';

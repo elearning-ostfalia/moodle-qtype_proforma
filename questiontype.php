@@ -233,18 +233,35 @@ class qtype_proforma extends question_type {
                     $this->importcontext, 'qtype_proforma', 'task', $options->id, $formdata->taskfile);
         }
 
-        // store response template as file (it is stored as file and as member variable
-        // in order to support file download and editor template in student view)
-
-        foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
-            $property = $value['formid'];
-            if (isset($formdata->$property)) {
-                file_save_draft_area_files($formdata->$property,
-                        $context->id, 'qtype_proforma', $filearea, $formdata->id);
+        if (isset($formdata->modelsolfilemanager)) {
+            // also create modelsolfiles
+            $draftitemid = $formdata->modelsolfilemanager;
+            $fs = get_file_storage();
+            global $USER;
+            $usercontext = context_user::instance($USER->id);
+            $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
+            $files = array();
+            foreach ($draftfiles as $file) {
+                if ($file->get_filename() != '.' and $file->get_filename() != '..')
+                    $files[] = $file->get_filename();
+            }
+            $options->modelsolfiles = implode(',', $files);
+            file_save_draft_area_files($draftitemid, $context->id, 'qtype_proforma', self::FILEAREA_MODELSOL,
+                    $formdata->id);
+        } else {
+            // handle files (including model solution files) from imported question
+            foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
+                $property = $value['formid'];
+                if (isset($formdata->$property)) {
+                    file_save_draft_area_files($formdata->$property,
+                            $context->id, 'qtype_proforma', $filearea, $formdata->id);
+                }
             }
         }
 
-        // note! at first store draft files, then override first template file
+        // store response template as file (it is stored as file and as member variable
+        // in order to support file download and editor template in student view)
+        //note! at first store draft files, then override first template file
         if (empty($formdata->templates)) {
             // no templates yet defined but the teacher has entered a template text
             if (!empty($formdata->responsetemplate)) {
@@ -254,7 +271,6 @@ class qtype_proforma extends question_type {
                 $this->save_as_file($context->id, self::FILEAREA_TEMPLATE,
                         $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
             }
-
         } else {
             // todo: if $formdata->responsetemplate is empty
             // then delete file and remove filename from template list
@@ -273,21 +289,6 @@ class qtype_proforma extends question_type {
                 }
             }
         }
-
-        /*
-                if (isset($formdata->instructionid)) {
-                    file_save_draft_area_files($formdata->instructionid,
-                            $context->id, 'qtype_proforma', self::FILEAREA_INSTRUCTION, $formdata->id);
-                }
-                if (isset($formdata->libraryid)) {
-                    file_save_draft_area_files($formdata->libraryid,
-                            $context->id, 'qtype_proforma', self::FILEAREA_LIBRARY, $formdata->id);
-                }
-                if (isset($formdata->modelsolid)) {
-                    file_save_draft_area_files($formdata->modelsolid,
-                            $context->id, 'qtype_proforma', self::FILEAREA_MODELSOL, $formdata->id);
-                }
-        */
 
         $DB->update_record('qtype_proforma_options', $options);
     }
