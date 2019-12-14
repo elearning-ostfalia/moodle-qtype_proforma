@@ -187,7 +187,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <filetypes>.java, .jar</filetypes>
     <taskstorage>'.qtype_proforma_test_helper::QUESTION_TASKSTORAGE.'</taskstorage>
     <aggregationstrategy>1</aggregationstrategy>
-    <gradinghints><![CDATA[<grading-hints><root function="sum"><test-ref ref="1" weight="2"></test-ref><test-ref ref="2" weight="3"/></root></grading-hints>]]></gradinghints>
+    <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
     <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES.'</templates>
     <downloads>'.qtype_proforma_test_helper::QUESTION_DOWNLOADS.'</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
@@ -249,7 +249,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <filetypes>.jjj</filetypes>
     <taskstorage>'.qtype_proforma_test_helper::QUESTION_TASKSTORAGE.'</taskstorage>
     <aggregationstrategy>2</aggregationstrategy>
-    <gradinghints><![CDATA[<grading-hints><root function="sum"><test-ref ref="1" weight="2"></test-ref><test-ref ref="2" weight="3"/></root></grading-hints>]]></gradinghints>
+    <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
     <proformaversion>2.0</proformaversion>    
     <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES.'</templates>
     <downloads>'.qtype_proforma_test_helper::QUESTION_DOWNLOADS.'</downloads>

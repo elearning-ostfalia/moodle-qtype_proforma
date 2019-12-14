@@ -58,6 +58,13 @@ Feature: IMPORT
     And the field with xpath "//input[@name='testid[0]']" matches value "1"
     And the field with xpath "//input[@name='testid[1]']" matches value "2"
 # todo: try and check values of static fields
+    # download links
+    And I should see "lib.txt, instruction.txt"
+    And I should see "ms1.txt"
+    And I should see "ms2.txt"
+    And I should see "templ2.txt"
+    And I should see "MyString.java"
+    # grader settings
     And I should see "UUID 1"
     And I should see "testtask.zip"
     And I should see "2.0"

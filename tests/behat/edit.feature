@@ -42,10 +42,24 @@ Feature: EDIT
       | Penalty for each incorrect try  | 20%                     |
     And the field "Weight" number "1" matches value "2"
     And the field "Weight" number "2" matches value "3"
-    And the field with xpath "//input[@name='testtitle[0]']" matches value "Title 1"
-    And the field with xpath "//input[@name='testtitle[1]']" matches value "Title 2"
-    And the field with xpath "//input[@name='testdescription[0]']" matches value ""
-    And the field with xpath "//input[@name='testdescription[1]']" matches value ""
+    And the field with xpath "//input[@name='testtitle[0]']" matches value "TEST 1"
+    And the field with xpath "//input[@name='testtitle[1]']" matches value "TEST 2"
+    And the field with xpath "//input[@name='testdescription[0]']" matches value "DESCRIPTION 1"
+    And the field with xpath "//input[@name='testdescription[1]']" matches value "DESCRIPTION 2"
+    And the field with xpath "//input[@name='testid[0]']" matches value "1"
+    And the field with xpath "//input[@name='testid[1]']" matches value "2"
+    And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
+    And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
+# todo: try and check values of static fields
+    # download links
+    And I should see "lib.txt, instruction.txt"
+    And I should see "ms1.txt"
+    And I should see "ms2.txt"
+    And I should see "MyString.java"
+    # grader settings
+    And I should see "UUID 1"
+    And I should see "testtask.zip"
+    And I should see "2.0"
 
     When I set the following fields to these values:
       | Question name            | edited question name           |
@@ -87,5 +101,9 @@ Feature: EDIT
     And the field with xpath "//input[@name='testtitle[1]']" matches value "edited title #2"
     And the field with xpath "//input[@name='testdescription[0]']" matches value "edited testdescription #1"
     And the field with xpath "//input[@name='testdescription[1]']" matches value "edited testdescription #2"
+    And the field with xpath "//input[@name='testid[0]']" matches value "1"
+    And the field with xpath "//input[@name='testid[1]']" matches value "2"
+    And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
+    And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
 
     And I press "Cancel"

@@ -82,11 +82,39 @@ class qtype_proforma_test_helper extends question_test_helper {
     const QUESTION_AGGREGATIONSTRATEGY = qtype_proforma::ALL_OR_NOTHING;
     const QUESTION_GRADINGHINTS = '<grading-hints>'.
   '<root function="sum">'.
-   '<test-ref ref="1" weight="2"></test-ref>'.
-   '<test-ref ref="2" weight="3"/>'.
+   '<test-ref ref="1" weight="2">
+        <title>TEST 1</title>
+        <test-type>TEST-CONFIG 1</test-type>
+        <description>DESCRIPTION 1</description>
+    </test-ref>'.
+   '<test-ref ref="2" weight="3">
+        <title>TEST 2</title>
+        <test-type>TEST-CONFIG 2</test-type>
+        <description>DESCRIPTION 2</description>
+    </test-ref>'.
   '</root>'.
  '</grading-hints>';
 
+
+    const QUESTION_GRADINGHINTS_JAVA = '<grading-hints>'.
+    '<root function="sum">'.
+    '<test-ref ref="compiler" weight="2">
+        <title>Compiler Test</title>
+        <test-type>java-compilation</test-type>
+        <description>DESCRIPTION 1</description>
+    </test-ref>'.
+    '<test-ref ref="1" weight="3">
+        <title>Junit Test 1</title>
+        <test-type>unittest</test-type>
+        <description>DESCRIPTION 2</description>
+    </test-ref>'.
+    '<test-ref ref="checkstyle" weight="4">
+        <title>Checkstyle</title>
+        <test-type>java-checkstyle</test-type>
+        <description>DESCRIPTION 3</description>
+    </test-ref>'.
+    '</root>'.
+    '</grading-hints>';
 
     private function attach_file_to_question($text, $filename, $filearea, $itemid, $contextid) {
         $fs = get_file_storage();
@@ -126,7 +154,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $container->proformaversion = self::QUESTION_PROFORMAVERSION;
     }
 
-    private function get_question_form_data($container) {
+    private function get_form_data($container) {
         $this->get_proforma_data($container);
         $container->name = self::QUESTION_NAME;
         $container->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
@@ -237,13 +265,12 @@ class qtype_proforma_test_helper extends question_test_helper {
         return $q;
     }
 
+
     public function make_proforma_question_weightedsum() {
         $q = $this->initialise_proforma_question();
         $q->aggregationstrategy = qtype_proforma::WEIGHTED_SUM;
         return $q;
     }
-
-
 
     /**
      * Make the data what would be received from the editing form for a proforma
@@ -255,9 +282,13 @@ class qtype_proforma_test_helper extends question_test_helper {
     public function get_proforma_question_form_data_editor() {
         $fromform = new stdClass();
 
-        $this->get_question_form_data($fromform);
+        $this->get_form_data($fromform);
         $fromform->responseformat = 'editor';
         $fromform->attachments = 0;
+        $fromform->testtype[0] = 'java-compilation';
+        $fromform->testtype[1] = 'unittest';
+        $fromform->testtitle[0] = 'a tile 1';
+        $fromform->testtitle[1] = 'a tile 2';
 
         return $fromform;
     }
@@ -275,7 +306,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
     public function get_proforma_question_form_data_filepicker() {
         $fromform = new stdClass();
-        $this->get_question_form_data($fromform);
+        $this->get_form_data($fromform);
         $fromform->responseformat = 'filepicker';
         $fromform->attachments = 3;
 
@@ -294,7 +325,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
     public function get_proforma_question_form_data_weightedsum() {
         $fromform = new stdClass();
-        $this->get_question_form_data($fromform);
+        $this->get_form_data($fromform);
 
         $fromform->aggregationstrategy = qtype_proforma::WEIGHTED_SUM;
 
@@ -302,6 +333,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     }
 
 
+    // used for behat tests
     public function get_proforma_question_form_data_java1() {
         $form = new stdClass();
 
@@ -314,30 +346,33 @@ class qtype_proforma_test_helper extends question_test_helper {
         // $container->modelsolution = self::QUESTION_MODELSOLUTION;
         $form->responsetemplate = self::QUESTION_TEMPLATE;
 
-        $form->gradinghints = self::QUESTION_GRADINGHINTS;
+        $form->gradinghints = self::QUESTION_GRADINGHINTS_JAVA;
         $form->aggregationstrategy = self::QUESTION_AGGREGATIONSTRATEGY;
 
         $form->name = self::QUESTION_NAME;
-        $form->questiontext = self::QUESTION_TEXT;
-        //$form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        //$form->questiontext = self::QUESTION_TEXT;
+        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
         $form->defaultmark = 1.0;
         $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
         $form->penalty = 0.2;
 
         $form->responseformat = 'editor';
+        $form->modelsolution = '// code for model solution';
         $form->responsefieldlines = 10;
         $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
-        $form->maxbytes = 10240;
-        $form->filetypes = '.java';
+        //$form->maxbytes = 10240;
+        //$form->filetypes = '.java';
 
         $form->testcode[0] = 'class XTest {}';
-        $form->testtitle[0] = 'JUnit Test 1';
-        $form->testweight[0] = '1';
+        $form->testtitle[0] = 'Junit Test 1';
+        $form->testweight[0] = '3';
         $form->testid[0] = '1';
 
         $form->compile = 1;
+        $form->compileweight = 2;
 
         $form->checkstyle = 1;
+        $form->checkstyleweight = 4;
         $form->checkstylecode = '<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 <module name="Checker">

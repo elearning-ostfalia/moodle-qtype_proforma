@@ -67,6 +67,7 @@ Feature: ADD JAVA QUESTION
       | Input box size           | 20 lines                       |
       | Response filename        | MyClass.java                   |
       | Response template        | // type your code here         |
+      | Model solution           | // code for model solution     |
       | Comment                  | this is a new question         |
       | Title                    | JUnit test title               |
       | Description              | JUnit description              |
@@ -101,6 +102,7 @@ Feature: ADD JAVA QUESTION
       | Input box size           | 20 lines                       |
       | Response filename        | MyClass.java                   |
       | Response template        | // type your code here         |
+      | Model solution           | // code for model solution     |
       | Comment                  | this is a new question         |
       | Title                    | JUnit test title               |
       | Description              | JUnit description              |
@@ -124,6 +126,7 @@ Feature: ADD JAVA QUESTION
       | Response format          | editor                         |
       | Response filename        | MyClass.java                   |
       | Response template        | // type your code here         |
+      | Model solution           | // code for model solution     |
       | Title                    | JUnit #1                       |
     Then I should see "Code is missing"
     When I press "id_option_add_fields"
@@ -144,9 +147,10 @@ Feature: ADD JAVA QUESTION
       | Default mark             | 1                              |
       | General feedback         |                                |
       | Response format          | editor                         |
-      | Input box size           | 15 lines                       |
+      | Input box size           | 10 lines                       |
       | Response filename        | MyClass.java                   |
       | Response template        | // type your code here         |
+      | Model solution           | // code for model solution     |
       | Comment                  |                                |
       | Penalty for each incorrect try  | 10%                     |
 
