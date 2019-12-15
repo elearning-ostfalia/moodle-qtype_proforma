@@ -23,6 +23,8 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 class SimpleXmlWriter extends XMLWriter {
 
     public function create_attribute($name, $value) {

@@ -187,27 +187,40 @@ class qtype_proforma extends question_type {
         if (!$options) {
             throw new coding_exception('proforma: save_question_options invalid branch');
         }
+
+        // handles all file imports (modelsolution, downloads, templates)
+        foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
+            $property = $value['formid'];
+            if (isset($formdata->$property)) {
+                file_save_draft_area_files($formdata->$property,
+                        $context->id, 'qtype_proforma', $filearea, $formdata->id);
+            }
+        }
+
+        // file handling
         switch ($formdata->taskstorage) {
             case self::PERSISTENT_TASKFILE:
                 $instance = new qtype_proforma_proforma_task;
                 $options->gradinghints = $instance->create_lms_grading_hints($formdata);
                 // handle files (including model solution files) from imported question
-                foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
+/*                foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
                     $property = $value['formid'];
                     if (isset($formdata->$property)) {
                         file_save_draft_area_files($formdata->$property,
                                 $context->id, 'qtype_proforma', $filearea, $formdata->id);
                     }
-                }
-
+                }*/
                 break;
             case self::VOLATILE_TASKFILE:
-                $instance = new qtype_proforma_java_task;
-                $taskfile = $instance->create_task_file($formdata);
-                $options->taskfilename = 'task.xml';
-                qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
-                        $context->id, $formdata->id);
-                $options->gradinghints = $instance->create_lms_grading_hints($formdata);
+                // handle 'save' from editor
+                if (!isset($formdata->taskfiledraftid)) {
+                    $instance = new qtype_proforma_java_task;
+                    $taskfile = $instance->create_task_file($formdata);
+                    $options->taskfilename = 'task.xml';
+                    qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
+                            $context->id, $formdata->id);
+                    $options->gradinghints = $instance->create_lms_grading_hints($formdata);
+                }
                 if ($formdata->responseformat == self::RESPONSE_FILEPICKER) {
                     if (isset($formdata->modelsolfilemanager)) {
                         // also create modelsolfiles
@@ -228,9 +241,12 @@ class qtype_proforma extends question_type {
                     }
                 } else {
                     // EDITOR
-                    $this->save_as_file($context->id, self::FILEAREA_MODELSOL,
-                            $formdata->responsefilename, $formdata->modelsolution, $formdata->id, true);
+                    if (isset($formdata->modelsolution)) {
+                        $this->save_as_file($context->id, self::FILEAREA_MODELSOL,
+                                $formdata->responsefilename, $formdata->modelsolution, $formdata->id, true);
+                    }
                 }
+
                 break;
             case self::REPOSITORY:
             default:

@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.php');
 
 /*
- * (lass for handling ProFormA tasks for differnt programming languages
+ * (class for handling ProFormA tasks for differnt programming languages
  * (i.e. create task and extract data for editor)
  */
 class qtype_proforma_proforma_task {
