@@ -52,7 +52,7 @@ Feature: ADD JAVA QUESTION
     And the field "Weight" number "2" matches value "1"
     And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
     # Checkstyle
-    And the checkstyle checkbox is not checked
+    And the "checkstyle" checkbox is "not checked"
 
     And I press "Cancel"
 
@@ -113,7 +113,7 @@ Feature: ADD JAVA QUESTION
     And the field "Weight" number "2" matches value "20"
     And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
     # Checkstyle
-    And the checkstyle checkbox is checked
+    And the "checkstyle" checkbox is "checked"
     And the field "Weight" number "3" matches value "30"
     And the field with xpath "//textarea[@name='checkstylecode']" matches value "<!-- checkstyle code-->"
 
@@ -154,6 +154,7 @@ Feature: ADD JAVA QUESTION
       | Comment                  |                                |
       | Penalty for each incorrect try  | 10%                     |
 
+    And the "compile" checkbox is "checked"
     And the field "Weight" number "1" matches value "0"
     # JUnit #1
     And the field "Weight" number "2" matches value "1"
@@ -164,6 +165,6 @@ Feature: ADD JAVA QUESTION
     And the field with xpath "//textarea[@name='testcode[1]']" matches value "class YClass {}"
     And the field with xpath "//input[@name='testdescription[1]']" matches value "this is the second JUnit test"
     # Checkstyle
-    And the checkstyle checkbox is not checked
+    And the "checkstyle" checkbox is "not checked"
 
     And I press "Cancel"

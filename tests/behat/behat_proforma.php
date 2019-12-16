@@ -183,52 +183,86 @@ class behat_proforma extends behat_base {
         return download_file_content($url, array('Cookie' => 'MoodleSession=' . $session));
     }
 
-
     /**
-     * Checks that the checkstyle checkbox is checked.
+     * Checks the value of a field using xpath.
      *
-     * @Then /^the checkstyle checkbox is checked$/
+     * @Then /^the field "(?P<label_string>(?:[^"]|\\")*)" matches value "(?P<value_string>(?:[^"]|\\")*)"$/
      * @throws ExpectationException
      * @throws ElementNotFoundException Thrown by behat_base::find
      * @return void
      */
-    public function the_checkstyle_checkbox_is_checked() {
+    public function the_field_matches_value($label, $value) {
         // Get the field.
-        $fieldxpath = "//input[@name='checkstyle' and @type='checkbox']";
+        $fieldxpath = "//input[@name='".$label."']";
         $fieldnode = $this->find('xpath', $fieldxpath);
         $formfield = behat_field_manager::get_form_field($fieldnode, $this->getSession());
 
         // Checks if the provided value matches the current field value.
-        $value = 1;
         if (!$formfield->matches($value)) {
             $fieldvalue = $formfield->get_value();
             throw new ExpectationException(
-                    'The checkstyle checkbox value is \'' . $fieldvalue . '\', \'' . $value . '\' expected' ,
+                    'The field "' . $label . '"" value is \'' . $fieldvalue . '\', \'' . $value . '\' expected' ,
                     $this->getSession()
             );
         }
     }
 
+
     /**
-     * Checks that the checkstyle checkbox is not checked.
+     * Checks the value of a weight field.
      *
-     * @Then /^the checkstyle checkbox is not checked$/
+     * @Then /^the field "(?P<label_string>(?:[^"]|\\")*)" weight matches value "(?P<value_string>(?:[^"]|\\")*)"$/
      * @throws ExpectationException
      * @throws ElementNotFoundException Thrown by behat_base::find
      * @return void
      */
-    public function the_checkstyle_checkbox_is_not_checked() {
+    /*
+    public function the_field_weight_matches_value($label, $value) {
         // Get the field.
-        $fieldxpath = "//input[@name='checkstyle' and @type='checkbox']";
+        $fieldxpath = "//input[@name='".$label."weight' and @type='text']";
         $fieldnode = $this->find('xpath', $fieldxpath);
         $formfield = behat_field_manager::get_form_field($fieldnode, $this->getSession());
 
         // Checks if the provided value matches the current field value.
-        $value = 0;
         if (!$formfield->matches($value)) {
             $fieldvalue = $formfield->get_value();
             throw new ExpectationException(
-                    'The checkstyle checkbox value is \'' . $fieldvalue . '\', \'' . $value . '\' expected' ,
+                    'The "' . $label . '"" weight value is \'' . $fieldvalue . '\', \'' . $value . '\' expected' ,
+                    $this->getSession()
+            );
+        }
+    }*/
+
+    /**
+     * Checks that if a checkbox is checked or not.
+     *
+     * @Then /^the "(?P<name_string>(?:[^"]|\\")*)" checkbox is "(?P<value_string>(?:[^"]|\\")*)"$/
+     * @throws ExpectationException
+     * @throws ElementNotFoundException Thrown by behat_base::find
+     * @return void
+     */
+    public function the_checkbox_is($name, $value) {
+        // Get the field.
+        $fieldxpath = "//input[@name='".$name."' and @type='checkbox']";
+        $fieldnode = $this->find('xpath', $fieldxpath);
+        $formfield = behat_field_manager::get_form_field($fieldnode, $this->getSession());
+
+        // Checks if the provided value matches the current field value.
+        switch($value) {
+            case 'checked':
+                $value = 1;
+                break;
+            case 'unchecked':
+            case 'not checked':
+                $value = 0;
+                break;
+            default:
+                break;
+        }
+        if (!$formfield->matches($value)) {
+            $fieldvalue = $formfield->get_value();
+            throw new ExpectationException(
+                    'The "'.$name.'"checkbox value is \'' . $fieldvalue . '\', \'' . $value . '\' expected' ,
                     $this->getSession()
             );
         }

@@ -39,25 +39,26 @@ Feature: IMPORT (Moodle-XML format)
       | Response format          | editor                         |
       | Input box size           | 15 lines                       |
       | Response filename        | MyString.java                   |
-      # multiline cannot be tested that what
+      # multiline cannot be tested that way
 #      | Response template        | public class MyString {         |
 #      | Model solution           | public class MyString {         |
       | Comment                  | <p>a comment</p>         |
       | Penalty for each incorrect try  | 10%                     |
 
-    And the field "Weight" number "1" matches value "0"
+    # Compile
+    And the "compile" checkbox is "checked"
+    And the field "compileweight" matches value "0"
     # JUnit
-    And the field "Weight" number "2" matches value "1.4"
-    When I set the field with xpath "//input[@name='testtitle[0]']" to "JUnit-Test1"
-    And I set the field with xpath "//input[@name='testdescription[0]']" to ""
-
+    And the field "testweight[0]" matches value "1.4"
+    And the field "testtitle[0]" matches value "JUnit-Test1"
+    And the field "testdescription[0]" matches value ""
     #And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
-    And the field "Weight" number "3" matches value "1"
-    When I set the field with xpath "//input[@name='testtitle[1]']" to "JUnit 2"
-    And I set the field with xpath "//input[@name='testdescription[1]']" to "Test 2"
+    And the field "testweight[1]" matches value "1"
+    And the field "testtitle[1]" matches value "JUnit 2"
+    And the field "testdescription[1]" matches value "Test 2"
     # Checkstyle
-    And the checkstyle checkbox is checked
-    And the field "Weight" number "4" matches value "0.2"
+    And the "checkstyle" checkbox is "checked"
+    And the field "checkstyleweight" matches value "0.2"
     And the field with xpath "//textarea[@name='checkstylecode']" matches value "<!-- empty file -->"
 
     And I press "Cancel"
@@ -94,14 +95,14 @@ Feature: IMPORT (Moodle-XML format)
       | Comment                  | <p>Check if the code uses a library function.</p>         |
       | Penalty for each incorrect try  | 20%                     |
 
-    And the field "Weight" number "1" matches value "2"
+    And the field "compileweight" matches value "2"
     # JUnit
-    And the field "Weight" number "2" matches value "3"
-    When I set the field with xpath "//input[@name='testtitle[0]']" to "Junit Test 1"
+    And the field "testweight[0]" matches value "3"
+    And the field "testtitle[0]" matches value "JUnit-Test1"
     #And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
     # Checkstyle
-    And the checkstyle checkbox is checked
-    And the field "Weight" number "3" matches value "4"
+    And the "checkstyle" checkbox is "checked"
+    And the field "checkstyleweight" matches value "4"
     #And the field with xpath "//textarea[@name='checkstylecode']" matches value "<!-- checkstyle code-->"
 
     And I press "Cancel"
@@ -122,16 +123,16 @@ Feature: IMPORT (Moodle-XML format)
       | Aggregation strategy      | All or nothing                 |
       | Penalty for each incorrect try  | 20%                     |
 #      | Response template        | multiline              |
-    And the field "Weight" number "1" matches value "0"
-    And the field "Weight" number "2" matches value "1"
-    And the field with xpath "//input[@name='testtitle[0]']" matches value "Compiler Test"
-    And the field with xpath "//input[@name='testtitle[1]']" matches value "Junit Test 1"
-    And the field with xpath "//input[@name='testdescription[0]']" matches value ""
-    And the field with xpath "//input[@name='testdescription[1]']" matches value ""
-    And the field with xpath "//input[@name='testtype[0]']" matches value "java-compilation"
-    And the field with xpath "//input[@name='testtype[1]']" matches value "unittest"
-    And the field with xpath "//input[@name='testid[0]']" matches value "1"
-    And the field with xpath "//input[@name='testid[1]']" matches value "2"
+    And the field "testweight[0]" matches value "0"
+    And the field "testweight[1]" matches value "1"
+    And the field "testtitle[0]" matches value "Compiler Test"
+    And the field "testtitle[1]" matches value "Junit Test 1"
+    And the field "testdescription[0]" matches value ""
+    And the field "testdescription[1]" matches value ""
+    And the field "testtype[0]" matches value "java-compilation"
+    And the field "testtype[1]" matches value "unittest"
+    And the field "testid[0]" matches value "1"
+    And the field "testid[1]" matches value "2"
 # todo: try and check values of static fields
     # download links
     And I should see "lib.txt, instruction.txt"
