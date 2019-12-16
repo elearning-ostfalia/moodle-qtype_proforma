@@ -135,8 +135,8 @@ class qtype_proforma_test_helper extends question_test_helper {
         $container->uuid = 'UUID 1';
 
         // valid data for a task file in the repository!
-        $container->taskrepository = self::QUESTION_REPOSITORY;
-        $container->taskpath = self::QUESTION_PATH;
+        $container->taskrepository = null; // self::QUESTION_REPOSITORY;
+        $container->taskpath = null; // self::QUESTION_PATH;
         $container->taskfilename = self::QUESTION_TASKFILENAME;
         $container->taskstorage = self::QUESTION_TASKSTORAGE;
 

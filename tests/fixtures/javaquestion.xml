@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 1102  -->
+  <question type="proforma">
+    <name>
+      <text>palindrom</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>write a function that checks if a given string is a palindrom</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text><![CDATA[<p>general feedback<br></p>]]></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.1000000</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <uuid></uuid>
+    <proformaversion></proformaversion>
+    <taskrepository></taskrepository>
+    <taskpath></taskpath>
+    <taskfilename>task.xml</taskfilename>
+    <responsefilename>MyString.java</responsefilename>
+    <programminglanguage>java</programminglanguage>
+    <responsetemplate>public class MyString {
+    // todo
+}</responsetemplate>
+    <responseformat>editor</responseformat>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>1</attachments>
+    <maxbytes>0</maxbytes>
+    <filetypes></filetypes>
+    <taskstorage>3</taskstorage>
+    <aggregationstrategy>2</aggregationstrategy>
+    <gradinghints><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<grading-hints>
+ <root function="sum">
+  <test-ref ref="compiler" weight="0">
+   <title>Compiler</title>
+   <description/>
+   <test-type>java-compilation</test-type>
+  </test-ref>
+  <test-ref ref="1" weight="1.4">
+   <title>JUnit-Test1</title>
+   <description/>
+   <test-type>unittest</test-type>
+  </test-ref>
+  <test-ref ref="2" weight="1">
+   <title>JUnit 2</title>
+   <description>Test 2</description>
+   <test-type>unittest</test-type>
+  </test-ref>
+  <test-ref ref="checkstyle" weight="0.2">
+   <title>CheckStyle Test</title>
+   <description/>
+   <test-type>java-checkstyle</test-type>
+  </test-ref>
+ </root>
+</grading-hints>
+]]></gradinghints>
+    <templates>template.txt</templates>
+    <downloads></downloads>
+    <modelsolfiles>MyString.java</modelsolfiles>
+    <comment format="html">
+      <text><![CDATA[<p>a comment</p>]]></text>
+    </comment>
+<templatefiles><file name="template.txt" path="/" encoding="base64">cHVibGljIGNsYXNzIE15U3RyaW5nIHsNCiAgICAvLyB0b2RvDQp9</file>
+</templatefiles>
+<downloadfiles></downloadfiles>
+<modelsolutionfiles><file name="MyString.java" path="/" encoding="base64">cHVibGljIGNsYXNzIE15U3RyaW5nIHsNCgkNCglzdGF0aWMgcHVibGljIEJvb2xlYW4gaXNQYWxpbmRyb20oU3RyaW5nIGFTdHJpbmcpIA0KCXsNCgkJU3RyaW5nIHJldmVyc2UgPSBuZXcgU3RyaW5nQnVpbGRlcihhU3RyaW5nKS5yZXZlcnNlKCkudG9TdHJpbmcoKTsNCg0KCQlyZXR1cm4gKGFTdHJpbmcuZXF1YWxzSWdub3JlQ2FzZShyZXZlcnNlKSk7DQoJfQ0KfQ==</file>
+</modelsolutionfiles>
+<task><file name="task.xml" path="/" encoding="base64">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHRhc2sgeG1sbnM9InVybjpwcm9mb3JtYTp2Mi4wIiBsYW5nPSJkZSIgdXVpZD0iNmM3YWUyY2YtMTUwMi00YzBkLWI4YTQtNDlkYWI2ZjRiMjc1IiB4bWxuczp1bml0PSJ1cm46cHJvZm9ybWE6dGVzdHM6dW5pdHRlc3Q6djEuMSIgeG1sbnM6Y3M9InVybjpwcm9mb3JtYTp0ZXN0czpqYXZhLWNoZWNrc3R5bGU6djEuMSI+CiAgICA8dGl0bGU+cGFsaW5kcm9tPC90aXRsZT4KICAgIDxkZXNjcmlwdGlvbj4mbHQ7cCZndDt3cml0ZSBhIGZ1bmN0aW9uIHRoYXQgY2hlY2tzIGlmIGEgZ2l2ZW4gc3RyaW5nIGlzIGEgcGFsaW5kcm9tJmx0Oy9wJmd0OzwvZGVzY3JpcHRpb24+CiAgICA8cHJvZ2xhbmcgdmVyc2lvbj0iMS44Ij5qYXZhPC9wcm9nbGFuZz4KICAgIDxzdWJtaXNzaW9uLXJlc3RyaWN0aW9ucy8+CiAgICA8ZmlsZXM+CiAgICAgICAgPGZpbGUgaWQ9IjEiIHVzZWQtYnktZ3JhZGVyPSJ0cnVlIiB2aXNpYmxlPSJubyI+CiAgICAgICAgICAgIDxlbWJlZGRlZC10eHQtZmlsZSBmaWxlbmFtZT0iUGFsaW5kcm9tVGVzdC5qYXZhIj5pbXBvcnQgc3RhdGljIG9yZy5qdW5pdC5Bc3NlcnQuKjsmIzEzOwomIzEzOwppbXBvcnQgb3JnLmp1bml0LlRlc3Q7JiMxMzsKaW1wb3J0IG9yZy5qdW5pdC5GaXhNZXRob2RPcmRlcjsmIzEzOwppbXBvcnQgb3JnLmp1bml0LnJ1bm5lcnMuTWV0aG9kU29ydGVyczsmIzEzOwomIzEzOwpARml4TWV0aG9kT3JkZXIoTWV0aG9kU29ydGVycy5OQU1FX0FTQ0VORElORykmIzEzOwpwdWJsaWMgY2xhc3MgUGFsaW5kcm9tVGVzdCB7JiMxMzsKJiMxMzsKCUBUZXN0JiMxMzsKCXB1YmxpYyB2b2lkIHRlc3RMYWdlcnRvbm5lbm5vdHJlZ2FsKCkgeyYjMTM7CgkJYXNzZXJ0VHJ1ZSggTXlTdHJpbmcuaXNQYWxpbmRyb20oJnF1b3Q7TGFnZXJ0b25uZW5ub3RyZWdhbCZxdW90OykpOyYjMTM7Cgl9JiMxMzsKJiMxMzsKJiMxMzsKCUBUZXN0JiMxMzsKCXB1YmxpYyB2b2lkIHRlc3RSZW50bmVyKCkgeyYjMTM7CgkJYXNzZXJ0VHJ1ZSggTXlTdHJpbmcuaXNQYWxpbmRyb20oJnF1b3Q7UmVudG5lciZxdW90OykpOyYjMTM7Cgl9JiMxMzsKCQkmIzEzOwomIzEzOwoJQFRlc3QmIzEzOwoJcHVibGljIHZvaWQgdGVzdEVtcHR5KCkgeyYjMTM7CgkJYXNzZXJ0VHJ1ZSggTXlTdHJpbmcuaXNQYWxpbmRyb20oJnF1b3Q7JnF1b3Q7KSk7CQkJJiMxMzsKCQkJJiMxMzsKCX0mIzEzOwomIzEzOwoJQFRlc3QmIzEzOwoJcHVibGljIHZvaWQgdGVzdFJhbmRvbSgpIHsmIzEzOwoJCWFzc2VydFRydWUoIE15U3RyaW5nLmlzUGFsaW5kcm9tKCZxdW90O2FiYzEyMzMyMWNiYSZxdW90OykpOwkJCSYjMTM7CgkJCSYjMTM7Cgl9JiMxMzsKJiMxMzsKJiMxMzsKCSYjMTM7Cn0mIzEzOwo8L2VtYmVkZGVkLXR4dC1maWxlPgogICAgICAgIDwvZmlsZT4KICAgICAgICA8ZmlsZSBpZD0iMiIgdXNlZC1ieS1ncmFkZXI9InRydWUiIHZpc2libGU9Im5vIj4KICAgICAgICAgICAgPGVtYmVkZGVkLXR4dC1maWxlIGZpbGVuYW1lPSJQYWxpbmRyb21UZXN0XzIuamF2YSI+aW1wb3J0IHN0YXRpYyBvcmcuanVuaXQuQXNzZXJ0Lio7JiMxMzsKJiMxMzsKaW1wb3J0IG9yZy5qdW5pdC5UZXN0OyYjMTM7CmltcG9ydCBvcmcuanVuaXQuRml4TWV0aG9kT3JkZXI7JiMxMzsKaW1wb3J0IG9yZy5qdW5pdC5ydW5uZXJzLk1ldGhvZFNvcnRlcnM7JiMxMzsKJiMxMzsKQEZpeE1ldGhvZE9yZGVyKE1ldGhvZFNvcnRlcnMuTkFNRV9BU0NFTkRJTkcpJiMxMzsKcHVibGljIGNsYXNzIFBhbGluZHJvbVRlc3RfMiB7JiMxMzsKCUBUZXN0JiMxMzsKCXB1YmxpYyB2b2lkIHRlc3RGYWxzZTEoKSB7JiMxMzsKCQlhc3NlcnRGYWxzZSggTXlTdHJpbmcuaXNQYWxpbmRyb20oJnF1b3Q7YWJjMTIzMzIxY2JjJnF1b3Q7KSk7CQkJJiMxMzsKCQkJJiMxMzsKCX0mIzEzOwomIzEzOwoJQFRlc3QmIzEzOwoJcHVibGljIHZvaWQgdGVzdEZhbHNlMigpIHsmIzEzOwoJCWFzc2VydEZhbHNlKCBNeVN0cmluZy5pc1BhbGluZHJvbSgmcXVvdDthYmImcXVvdDspKTsJCQkmIzEzOwoJCQkmIzEzOwoJfSYjMTM7CiYjMTM7Cn0mIzEzOwo8L2VtYmVkZGVkLXR4dC1maWxlPgogICAgICAgIDwvZmlsZT4KICAgICAgICA8ZmlsZSBpZD0iY2hlY2tzdHlsZSIgdXNlZC1ieS1ncmFkZXI9InRydWUiIHZpc2libGU9Im5vIj4KICAgICAgICAgICAgPGVtYmVkZGVkLXR4dC1maWxlIGZpbGVuYW1lPSJjaGVja3N0eWxlLnhtbCI+Jmx0OyEtLSBlbXB0eSBmaWxlIC0tJmd0OzwvZW1iZWRkZWQtdHh0LWZpbGU+CiAgICAgICAgPC9maWxlPgogICAgICAgIDxmaWxlIGlkPSJNUyIgdXNlZC1ieS1ncmFkZXI9ImZhbHNlIiB2aXNpYmxlPSJubyI+CiAgICAgICAgICAgIDxlbWJlZGRlZC10eHQtZmlsZSBmaWxlbmFtZT0ibW9kZWxzb2x1dGlvbi5qYXZhIj4vLyBubyBtb2RlbCBzb2x1dGlvbiBhdmFpbGFibGUgPC9lbWJlZGRlZC10eHQtZmlsZT4KICAgICAgICA8L2ZpbGU+CiAgICA8L2ZpbGVzPgogICAgPG1vZGVsLXNvbHV0aW9ucz4KICAgICAgICA8bW9kZWwtc29sdXRpb24gaWQ9IjEiPgogICAgICAgICAgICA8ZmlsZXJlZnM+CiAgICAgICAgICAgICAgICA8ZmlsZXJlZiByZWZpZD0iTVMiLz4KICAgICAgICAgICAgPC9maWxlcmVmcz4KICAgICAgICA8L21vZGVsLXNvbHV0aW9uPgogICAgPC9tb2RlbC1zb2x1dGlvbnM+CiAgICA8dGVzdHM+CiAgICAgICAgPHRlc3QgaWQ9ImNvbXBpbGVyIj4KICAgICAgICAgICAgPHRpdGxlPkNvbXBpbGVyPC90aXRsZT4KICAgICAgICAgICAgPHRlc3QtdHlwZT5qYXZhLWNvbXBpbGF0aW9uPC90ZXN0LXR5cGU+CiAgICAgICAgICAgIDx0ZXN0LWNvbmZpZ3VyYXRpb24vPgogICAgICAgIDwvdGVzdD4KICAgICAgICA8dGVzdCBpZD0iMSI+CiAgICAgICAgICAgIDx0aXRsZT5KVW5pdC1UZXN0MTwvdGl0bGU+CiAgICAgICAgICAgIDx0ZXN0LXR5cGU+dW5pdHRlc3Q8L3Rlc3QtdHlwZT4KICAgICAgICAgICAgPHRlc3QtY29uZmlndXJhdGlvbj4KICAgICAgICAgICAgICAgIDxmaWxlcmVmcz4KICAgICAgICAgICAgICAgICAgICA8ZmlsZXJlZiByZWZpZD0iMSIvPgogICAgICAgICAgICAgICAgPC9maWxlcmVmcz4KICAgICAgICAgICAgICAgIDx1bml0OnVuaXR0ZXN0IGZyYW1ld29yaz0iSlVuaXQiIHZlcnNpb249IjQuMTIiPgogICAgICAgICAgICAgICAgICAgIDx1bml0OmVudHJ5LXBvaW50PlBhbGluZHJvbVRlc3Q8L3VuaXQ6ZW50cnktcG9pbnQ+CiAgICAgICAgICAgICAgICA8L3VuaXQ6dW5pdHRlc3Q+CiAgICAgICAgICAgIDwvdGVzdC1jb25maWd1cmF0aW9uPgogICAgICAgIDwvdGVzdD4KICAgICAgICA8dGVzdCBpZD0iMiI+CiAgICAgICAgICAgIDx0aXRsZT5KVW5pdCAyPC90aXRsZT4KICAgICAgICAgICAgPHRlc3QtdHlwZT51bml0dGVzdDwvdGVzdC10eXBlPgogICAgICAgICAgICA8dGVzdC1jb25maWd1cmF0aW9uPgogICAgICAgICAgICAgICAgPGZpbGVyZWZzPgogICAgICAgICAgICAgICAgICAgIDxmaWxlcmVmIHJlZmlkPSIyIi8+CiAgICAgICAgICAgICAgICA8L2ZpbGVyZWZzPgogICAgICAgICAgICAgICAgPHVuaXQ6dW5pdHRlc3QgZnJhbWV3b3JrPSJKVW5pdCIgdmVyc2lvbj0iNC4xMiI+CiAgICAgICAgICAgICAgICAgICAgPHVuaXQ6ZW50cnktcG9pbnQ+UGFsaW5kcm9tVGVzdF8yPC91bml0OmVudHJ5LXBvaW50PgogICAgICAgICAgICAgICAgPC91bml0OnVuaXR0ZXN0PgogICAgICAgICAgICA8L3Rlc3QtY29uZmlndXJhdGlvbj4KICAgICAgICA8L3Rlc3Q+CiAgICAgICAgPHRlc3QgaWQ9ImNoZWNrc3R5bGUiPgogICAgICAgICAgICA8dGl0bGU+Q2hlY2tTdHlsZSBUZXN0PC90aXRsZT4KICAgICAgICAgICAgPHRlc3QtdHlwZT5qYXZhLWNoZWNrc3R5bGU8L3Rlc3QtdHlwZT4KICAgICAgICAgICAgPHRlc3QtY29uZmlndXJhdGlvbj4KICAgICAgICAgICAgICAgIDxmaWxlcmVmcz4KICAgICAgICAgICAgICAgICAgICA8ZmlsZXJlZiByZWZpZD0iY2hlY2tzdHlsZSIvPgogICAgICAgICAgICAgICAgPC9maWxlcmVmcz4KICAgICAgICAgICAgICAgIDxjczpqYXZhLWNoZWNrc3R5bGUgdmVyc2lvbj0iOC4yMyI+CiAgICAgICAgICAgICAgICAgICAgPGNzOm1heC1jaGVja3N0eWxlLXdhcm5pbmdzPjQ8L2NzOm1heC1jaGVja3N0eWxlLXdhcm5pbmdzPgogICAgICAgICAgICAgICAgPC9jczpqYXZhLWNoZWNrc3R5bGU+CiAgICAgICAgICAgIDwvdGVzdC1jb25maWd1cmF0aW9uPgogICAgICAgIDwvdGVzdD4KICAgIDwvdGVzdHM+CiAgICA8Z3JhZGluZy1oaW50cz4KICAgICAgICA8cm9vdC8+CiAgICA8L2dyYWRpbmctaGludHM+CiAgICA8bWV0YS1kYXRhLz4KPC90YXNrPgo=</file>
+</task>
+<commentfiles></commentfiles>
+  </question>
+
+</quiz>

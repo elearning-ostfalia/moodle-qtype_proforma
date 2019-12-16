@@ -21,6 +21,7 @@ Feature: EXPORT
     And the following "questions" exist:
       | questioncategory | qtype | name      | template         |
       | Test questions   | proforma | proforma-001 | editor           |
+      | Test questions   | proforma | proforma-002 | java1           |
       | Test questions   | proforma | proforma-003 | filepicker            |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -29,7 +30,7 @@ Feature: EXPORT
     When I navigate to "Question bank > Export" in current page administration
     And I set the field "id_format_xml" to "1"
     And I press "Export questions to file"
-    Then following "click here" should download between "5135" and "5145" bytes
+    Then following "click here" should download file with between "12027" and "12037" bytes
     # If the download step is the last in the scenario then we can sometimes run
     # into the situation where the download page causes a http redirect but behat
     # has already conducted its reset (generating an error). By putting a logout
