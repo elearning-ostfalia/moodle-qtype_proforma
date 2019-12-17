@@ -17,8 +17,7 @@
 /**
  * editiing form for ProFormA question
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
@@ -28,10 +27,19 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/java_formcreator.php');
 
-// ProFormA question type editing form.
+/**
+ * ProFormA question type editing form.
+ */
 class qtype_proforma_edit_form extends question_edit_form {
 
+    /**
+     * @var bool If the task is created on the fly resp. cashed
+     * (instead of being imported and never changed)
+     */
     protected $volatiletask = false;
+    /**
+     * @var base_form_creator The class that creates the form elements
+     */
     protected $formcreator = null;
 
     protected function definition() {
@@ -56,6 +64,14 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
     }
     */
+
+    /**
+     * This function chekcs if the user input is valid.
+     *
+     * @param array $fromform
+     * @param array $files
+     * @return mixed
+     */
     public function validation($fromform, $files) {
         $errors = parent::validation($fromform, $files);
         return $this->formcreator->validation($fromform, $files, $errors);

@@ -15,10 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * base class for creating polymorph question edit forms
+ * abstract base class for creating polymorph question edit forms
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
@@ -26,23 +25,63 @@
 defined('MOODLE_INTERNAL') || die();
 
 class base_form_creator {
+    /**
+     * @var MoodleQuickForm The form object that must be filled with input fields.
+     */
     protected $form = null;
     protected $taskhandler = null;
 
+    /**
+     * base_form_creator constructor.
+     *
+     * @param $form
+     */
     protected function __construct($form) {
         $this->form = $form;
     }
 
     // override
+
+    /**
+     * validate field values
+     * @param $fromform Validation argument
+     * @param $files Validation argument
+     * @param $errors Array with error messages (so far)
+     * @return array with error messages
+     */
     public function validation($fromform, $files, $errors) {
         return $errors;
     }
+
+    /**
+     * Add something to select the programming language.
+     *
+     * @param $question
+     */
     public function add_proglang_selection($question) {
     }
+
+    /**
+     * Add grader options/information (UUID).
+     *
+     * @param $question
+     */
     public function add_grader_settings($question) {
     }
+
+    /**
+     * Add downloads for question text
+     *
+     * @param $question
+     */
     public function add_questiontext_attachments($question) {
     }
+
+    /**
+     * Add response template
+     *
+     * @param $question
+     */
     public function add_responsetemplate($question) {
         $mform = $this->form;
         $mform->addElement('textarea', 'responsetemplate', get_string('responsetemplate', 'qtype_proforma'), 'rows="20" cols="80"');
@@ -55,20 +94,56 @@ class base_form_creator {
         $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_proforma');
 
     }
+
+    /**
+     * Add response filename
+     *
+     * @param $question
+     */
     public function add_responsefilename($question) {
     }
+
+    /**
+     * Add model solution
+     *
+     * @param $question
+     */
     public function add_modelsolution($question) {
     }
 
     // override
+
+    /**
+     * Get test label for add_tests
+     *
+     * @return string label of (unit) tests
+     */
     protected function get_test_label() {
         return get_string('testlabel', 'qtype_proforma');
     }
+
+    /**
+     * Modify repeatarray in add_tests
+     *
+     * @param $repeatarray
+     */
     protected function modify_repeatarray(&$repeatarray) {
     }
+
+    /**
+     * Modify repeatoptions add_tests
+     *
+     * @param $repeatoptions
+     */
     protected function modify_repeatoptions(&$repeatoptions) {
     }
 
+    /**
+     * Add tests as repeat group
+     * @param $question
+     * @param $questioneditform
+     * @return int
+     */
     public function add_tests($question, $questioneditform) {
         $mform = $this->form;
         // retrieve number of tests (resp. unit tests)
@@ -122,7 +197,11 @@ class base_form_creator {
         return $repeats;
     }
 
-
+    /**
+     * get number of tests for repeat group
+     * @param $question
+     * @return int
+     */
     protected function get_count_tests($question) {
         $repeats = 0;
         // Get number of unit tests from (lms) grading hints.
@@ -134,6 +213,12 @@ class base_form_creator {
         return $repeats;
     }
 
+    /**
+     * Add response options.
+     *
+     * @param $question
+     * @param $qtype
+     */
     public function add_response_options($question, $qtype) {
         global $CFG, $COURSE;
         $mform = $this->form;
@@ -193,6 +278,12 @@ class base_form_creator {
         $this->add_modelsolution($question);
     }
 
+    /**
+     * Add test settings.
+     *
+     * @param $question
+     * @param $questioneditform
+     */
     public function add_test_settings($question, $questioneditform) {
         $mform = $this->form;
 
@@ -239,6 +330,13 @@ class base_form_creator {
         $mform->setDefault('penalty', get_config('qtype_proforma', 'defaultpenalty'));
     }
 
+    /**
+     * function for handling data preprocessing depending on question type
+     * @param $question
+     * @param $cat category
+     * @param MoodleQuickForm $form
+     * @param qtype_proforma_edit_form $editor
+     */
     public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
         // special handling for comment
         $draftid = file_get_submitted_draft_itemid('comment');
@@ -257,6 +355,16 @@ class base_form_creator {
     }
 
     // helper functions
+
+    /**
+     * Add static text.
+     *
+     * @param $question
+     * @param $mform form
+     * @param $field fieldname
+     * @param $label labeltext
+     * @param null $sizefield sizefield
+     */
     protected function add_static_field($question, $mform, $field, $label, $sizefield = null) {
         // $mform->addElement('static', $field, $label);
         if (isset($sizefield)) {
@@ -280,6 +388,14 @@ class base_form_creator {
         $mform->setType($field, PARAM_TEXT);
     }
 
+    /**
+     * Helper function to create a weight field.
+     *
+     * @param $testoptions array to append field(s) to
+     * @param $prefix prefix of name
+     * @param $defaultweight default value for weight
+     * @param bool $withtitle True: also create title field
+     */
     protected function add_test_weight_option(&$testoptions, $prefix, $defaultweight, $withtitle = false) {
         $mform = $this->form;
         if ($withtitle) {
@@ -293,5 +409,4 @@ class base_form_creator {
         $mform->setType($prefix . 'weight', PARAM_FLOAT);
         $mform->setDefault($prefix . 'weight', $defaultweight);
     }
-
 }

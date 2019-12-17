@@ -273,6 +273,11 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         $code = preg_replace('/\/\/.*/', '', $code); // comment with //
     }
 
+    /**
+     * Tries to evaluate the class name in the source code.
+     * @param $code
+     * @return string The classname evaluated from sourcse code.
+     */
     private static function get_java_classname($code) {
         $matches = array();
         $classname = preg_match('/class\s+([\S]+?)\s*(\{|extends|implements)/', $code, $matches);
@@ -294,6 +299,11 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         }
     }
 
+    /**
+     * Tries and find a package name in the source code.
+     * @param $code
+     * @return string
+     */
     private static function get_java_packagename($code) {
         $matches = array();
         $classname = preg_match('/package([\s\S]*?);/', $code, $matches);
@@ -315,6 +325,13 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         }
     }
 
+    /**
+     * Tries and detects the classname in the code and returns the associated
+     * filename.
+     *
+     * @param $code
+     * @return null|string null if no filename can be evaluated.
+     */
     public static function get_java_file($code) {
         self::remove_java_comment($code);
         $classname = self::get_java_classname($code);
@@ -324,6 +341,14 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         return null;
     }
 
+    /**
+     * Tries and detects the package and classname in the code and returns
+     * the 'full' classname.
+     *
+     * @param $code
+     * @return null|string null if no classname can be evaluated otherwise
+     * the evaluated full classname.
+     */
     public static function get_java_entrypoint($code) {
         self::remove_java_comment($code);
         $package = self::get_java_packagename($code);

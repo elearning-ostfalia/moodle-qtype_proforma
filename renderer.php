@@ -17,8 +17,7 @@
 /**
  * The ProFormA Question renderer (code bases upon essay question renderer from Moodle core)
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2009 The Open University
  * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
