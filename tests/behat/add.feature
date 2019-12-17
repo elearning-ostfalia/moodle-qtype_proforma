@@ -47,9 +47,9 @@ Feature: ADD JAVA QUESTION
       | Description              |                                |
       | Penalty for each incorrect try  | 10%                     |
 
-    And the field "Weight" number "1" matches value "0"
+    And the field "compileweight" matches value "0"
     # JUnit
-    And the field "Weight" number "2" matches value "1"
+    And the field "testweight[0]" matches value "1"
     And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
     # Checkstyle
     And the "checkstyle" checkbox is "not checked"
@@ -77,13 +77,13 @@ Feature: ADD JAVA QUESTION
     When I set the following fields to these values:
       | Question name   | new java-question |
     # Compilation
-    And I set the field "Weight" number "1" to "10"
+    And I set the field "compileweight" to "10"
     # JUnit
-    And I set the field "Weight" number "2" to "20"
+    And I set the field "testweight[0]" "20"
     And I set the field with xpath "//textarea[@name='testcode[0]']" to "// class XClass {}"
     # Checkstyle
     And I set the field with xpath "//input[@name='checkstyle']" to "1"
-    And I set the field "Weight" number "3" to "30"
+    And I set the field "checkstyle" to "30"
     And I set the field with xpath "//textarea[@name='checkstylecode']" to "<!-- checkstyle code-->"
     And I press "id_submitbutton"
     Then I should see "Cannot determine classname (filename)"
@@ -108,13 +108,15 @@ Feature: ADD JAVA QUESTION
       | Description              | JUnit description              |
       | Penalty for each incorrect try  | 20%                     |
 
-    And the field "Weight" number "1" matches value "10"
+    # Compile
+    And the "compile" checkbox is "checked"
+    And the field with name "compileweight" matches value "10"
     # JUnit
-    And the field "Weight" number "2" matches value "20"
+    And the field with name "testweight[0]" matches value "20"
     And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
     # Checkstyle
     And the "checkstyle" checkbox is "checked"
-    And the field "Weight" number "3" matches value "30"
+    And the field "checkstyleweight" matches value "30"
     And the field with xpath "//textarea[@name='checkstylecode']" matches value "<!-- checkstyle code-->"
 
     And I press "Cancel"
@@ -155,13 +157,13 @@ Feature: ADD JAVA QUESTION
       | Penalty for each incorrect try  | 10%                     |
 
     And the "compile" checkbox is "checked"
-    And the field "Weight" number "1" matches value "0"
+    And the field "compileweight" matches value "0"
     # JUnit #1
-    And the field "Weight" number "2" matches value "1"
+    And the field "testweight[0]" matches value "1"
     And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
     And the field with xpath "//input[@name='testdescription[0]']" matches value ""
     # JUnit #2
-    And the field "Weight" number "3" matches value "1"
+    And the field "testweight[1]" matches value "1"
     And the field with xpath "//textarea[@name='testcode[1]']" matches value "class YClass {}"
     And the field with xpath "//input[@name='testdescription[1]']" matches value "this is the second JUnit test"
     # Checkstyle

@@ -39,12 +39,31 @@ Feature: IMPORT (Moodle-XML format)
       | Response format          | editor                         |
       | Input box size           | 15 lines                       |
       | Response filename        | MyString.java                   |
-      # multiline cannot be tested that way
-#      | Response template        | public class MyString {         |
-#      | Model solution           | public class MyString {         |
       | Comment                  | <p>a comment</p>         |
       | Penalty for each incorrect try  | 10%                     |
 
+    # multiline fields
+    And the field "Response template" matches multiline
+    """
+    public class MyString {
+        // todo
+    }
+    """
+    # may contain tabs :-(
+#    And the field "Model solution" matches multiline
+#    """
+#    public class MyString {
+#
+#        static public Boolean isPalindrom(String aString)
+#        {
+#            String reverse = new StringBuilder(aString).reverse().toString();
+#
+#            return (aString.equalsIgnoreCase(reverse));
+#        }
+#    }
+#    """
+    # too many lines
+    #And the field "testcode[0]" matches multiline
     # Compile
     And the "compile" checkbox is "checked"
     And the field "compileweight" matches value "0"
@@ -52,7 +71,6 @@ Feature: IMPORT (Moodle-XML format)
     And the field "testweight[0]" matches value "1.4"
     And the field "testtitle[0]" matches value "JUnit-Test1"
     And the field "testdescription[0]" matches value ""
-    #And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
     And the field "testweight[1]" matches value "1"
     And the field "testtitle[1]" matches value "JUnit 2"
     And the field "testdescription[1]" matches value "Test 2"
@@ -98,12 +116,25 @@ Feature: IMPORT (Moodle-XML format)
     And the field "compileweight" matches value "2"
     # JUnit
     And the field "testweight[0]" matches value "3"
-    And the field "testtitle[0]" matches value "JUnit-Test1"
-    #And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
+    And the field "testtitle[0]" matches value "Junit Test 1"
+    And the field "testdescription[0]" matches value "DESCRIPTION 2"
+    And the field "testcode[0]" matches value "class XTest {}"
     # Checkstyle
     And the "checkstyle" checkbox is "checked"
     And the field "checkstyleweight" matches value "4"
-    #And the field with xpath "//textarea[@name='checkstylecode']" matches value "<!-- checkstyle code-->"
+    And the field "checkstylecode" matches multiline
+    """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+    <module name="Checker">
+      <property name="severity" value="warning"/>
+      <module name="TreeWalker">
+        <module name="NeedBraces">
+          <property name="severity" value="error"/>
+        </module>
+      </module>
+    </module>
+    """
 
     And I press "Cancel"
 
@@ -123,17 +154,17 @@ Feature: IMPORT (Moodle-XML format)
       | Aggregation strategy      | All or nothing                 |
       | Penalty for each incorrect try  | 20%                     |
 #      | Response template        | multiline              |
-    And the field "testweight[0]" matches value "0"
-    And the field "testweight[1]" matches value "1"
-    And the field "testtitle[0]" matches value "Compiler Test"
-    And the field "testtitle[1]" matches value "Junit Test 1"
-    And the field "testdescription[0]" matches value ""
-    And the field "testdescription[1]" matches value ""
-    And the field "testtype[0]" matches value "java-compilation"
-    And the field "testtype[1]" matches value "unittest"
-    And the field "testid[0]" matches value "1"
-    And the field "testid[1]" matches value "2"
-# todo: try and check values of static fields
+    And the field with name "testweight[0]" matches value "0"
+    And the field with name "testweight[1]" matches value "1"
+    And the field with name "testtitle[0]" matches value "Compiler Test"
+    And the field with name "testtitle[1]" matches value "Junit Test 1"
+    And the field with name "testdescription[0]" matches value ""
+    And the field with name "testdescription[1]" matches value ""
+    And the field with name "testtype[0]" matches value "java-compilation"
+    And the field with name "testtype[1]" matches value "unittest"
+    And the field with name "testid[0]" matches value "1"
+    And the field with name "testid[1]" matches value "2"
+    # static fields
     # download links
     And I should see "lib.txt, instruction.txt"
     And I should see "ms1.txt"
@@ -146,5 +177,3 @@ Feature: IMPORT (Moodle-XML format)
     And I should see "2.0"
 
     And I press "Cancel"
-
-

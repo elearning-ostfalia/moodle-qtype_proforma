@@ -60,8 +60,8 @@ class qtype_proforma_test_helper extends question_test_helper {
 
     const QUESTION_GENERAL_FEEDBACK = '<p>You must not use a library function.</p>';
     const QUESTION_COMMENT = '<p>Check if the code uses a library function.</p>';
-    const QUESTION_REPOSITORY = 'https://repository.ostfalia.de';
-    const QUESTION_PATH = '/path/to/reversestring.zip';
+    const QUESTION_REPOSITORY = ''; //'https://repository.ostfalia.de';
+    const QUESTION_PATH = ''; // '/path/to/reversestring.zip';
     const QUESTION_FILENAME = 'MyString.java';
     //const QUESTION_MODELSOLUTION = '//text in modelsolution (äöüß)';
     const QUESTION_TEMPLATE = '//text in responsetemplate';

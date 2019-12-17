@@ -25,16 +25,9 @@
 // require_once(__DIR__ . '/../../questiontype.php');
 
 use Behat\Mink\Exception\ExpectationException as ExpectationException;
+use Behat\Gherkin\Node\PyStringNode as PyStringNode;
 
 class behat_proforma extends behat_base {
-
-    /**
-     * @Given I set testmode
-     */
-    public function i_set_testmode() {
-        // ??? how do we do that?
-    }
-
     /**
      * @When /^I select "([^"]*)" radio button$/
      */
@@ -50,61 +43,6 @@ class behat_proforma extends behat_base {
 
         throw new Exception("Radio button {$name} not found");
     }
-
-    /**
-     * check text in field with the label (expecting more than one field existing with the same label)
-     * @Given /^the field "(?P<label_string>(?:[^"]|\\")*)" number "(?P<number_string>(?:[^"]|\\")*)" matches value "(?P<value_string>(?:[^"]|\\")*)"$/
-     * @throws ExpectationException
-     * @param $label field label
-     * @param $number one-based index of field
-     * @param $value expected value
-     */
-    public function theFieldNumberMatchesValue($label, $number, $value) {
-        // find all fields with label $label
-        $fieldnodes = $this->find_all('named_partial', array('field', $label));
-        if (count($fieldnodes) < $number)
-            throw new ExpectationException('Not enough fields found with label "' . $label . '": ' . count($fieldnodes), $this->getSession());
-        $fieldnode = $fieldnodes[$number-1];
-
-        // Get the actual field.
-        $field = behat_field_manager::get_form_field($fieldnode, $this->getSession());
-
-        // Checks if the provided value matches the current field value.
-        if (!$field->matches($value)) {
-            $fieldvalue = $field->get_value();
-            throw new ExpectationException(
-                    'The \'' . $label . '\' value is \'' . $fieldvalue . '\', \'' . $value . '\' expected' ,
-                    $this->getSession()
-            );
-        }
-    }
-
-
-    /**
-     * sets the text in field with the label (expecting more than one field existing with the same label)
-     * @Given /^I set the field "(?P<label_string>(?:[^"]|\\")*)" number "(?P<number_string>(?:[^"]|\\")*)" to "(?P<value_string>(?:[^"]|\\")*)"$/
-     * @throws ExpectationException
-     * @param $label field label
-     * @param $number one-based index of field
-     * @param $value new value
-     */
-    public function ISetTheFieldNumberTo($label, $number, $value) {
-        // find all fields with label $label
-        $fieldnodes = $this->find_all('named_partial', array('field', $label));
-
-        if (count($fieldnodes) < $number)
-            throw new ExpectationException('Not enough fields found with label "' . $label . '": ' . count($fieldnodes), $this->getSession());
-        $fieldnode = $fieldnodes[$number-1];
-
-        // Get the actual field.
-        $field = behat_field_manager::get_form_field($fieldnode, $this->getSession());
-
-        // Set value
-        $field->set_value($value);
-
-        // file_put_contents('/tmp/test.png', $this->getSession()->getScreenshot());
-    }
-
 
     /**
      * Downloads the file from a link on the page AND NEW: STORES IT TO FILESYSTEM and checks the size is in a given range.
@@ -186,12 +124,12 @@ class behat_proforma extends behat_base {
     /**
      * Checks the value of a field using xpath.
      *
-     * @Then /^the field "(?P<label_string>(?:[^"]|\\")*)" matches value "(?P<value_string>(?:[^"]|\\")*)"$/
+     * @Then /^the field with name "(?P<name_string>(?:[^"]|\\")*)" matches value "(?P<value_string>(?:[^"]|\\")*)"$/
      * @throws ExpectationException
      * @throws ElementNotFoundException Thrown by behat_base::find
      * @return void
      */
-    public function the_field_matches_value($label, $value) {
+    public function the_field_with_name_matches_value($label, $value) {
         // Get the field.
         $fieldxpath = "//input[@name='".$label."']";
         $fieldnode = $this->find('xpath', $fieldxpath);
@@ -207,31 +145,31 @@ class behat_proforma extends behat_base {
         }
     }
 
-
     /**
-     * Checks the value of a weight field.
+     * Checks the value of a multiline field.
      *
-     * @Then /^the field "(?P<label_string>(?:[^"]|\\")*)" weight matches value "(?P<value_string>(?:[^"]|\\")*)"$/
+     * @Then /^the field "(?P<label_string>(?:[^"]|\\")*)" matches multiline$/
      * @throws ExpectationException
      * @throws ElementNotFoundException Thrown by behat_base::find
      * @return void
      */
-    /*
-    public function the_field_weight_matches_value($label, $value) {
+    public function the_field_matches_multiline($label, PyStringNode $value) {
         // Get the field.
-        $fieldxpath = "//input[@name='".$label."weight' and @type='text']";
-        $fieldnode = $this->find('xpath', $fieldxpath);
-        $formfield = behat_field_manager::get_form_field($fieldnode, $this->getSession());
-
+        $formfield = behat_field_manager::get_form_field_from_label($label, $this);
+        $fieldvalue = $formfield->get_value();
         // Checks if the provided value matches the current field value.
-        if (!$formfield->matches($value)) {
-            $fieldvalue = $formfield->get_value();
+        $value = str_replace("\t","    ", (string)$value);
+        $fieldvalue = str_replace("\t","    ", $fieldvalue);
+        $value = str_replace(" ","*", (string)$value);
+        $fieldvalue = str_replace(" ","*", $fieldvalue);
+
+        if ($fieldvalue != $value) {
             throw new ExpectationException(
-                    'The "' . $label . '"" weight value is \'' . $fieldvalue . '\', \'' . $value . '\' expected' ,
+                    'The field "' . $label . '"" value is \'' . $fieldvalue . '\', \'' . $value . '\' expected' ,
                     $this->getSession()
             );
         }
-    }*/
+    }
 
     /**
      * Checks that if a checkbox is checked or not.

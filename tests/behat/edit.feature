@@ -40,8 +40,8 @@ Feature: EDIT
       | Comment                  | <p>Check if the code uses a library function.</p>                 |
       | Aggregation strategy      | All or nothing                |
       | Penalty for each incorrect try  | 20%                     |
-    And the field "Weight" number "1" matches value "2"
-    And the field "Weight" number "2" matches value "3"
+    And the field "testweight[0]" matches value "2"
+    And the field "testweight[1]" matches value "3"
     And the field with xpath "//input[@name='testtitle[0]']" matches value "TEST 1"
     And the field with xpath "//input[@name='testtitle[1]']" matches value "TEST 2"
     And the field with xpath "//input[@name='testdescription[0]']" matches value "DESCRIPTION 1"
@@ -73,8 +73,8 @@ Feature: EDIT
       | Comment                  | edited comment                 |
       | Aggregation strategy      | Weighted sum                 |
       | Penalty for each incorrect try  | 50%                     |
-    And I set the field "Weight" number "1" to "11"
-    And I set the field "Weight" number "2" to "22"
+    And I set the field "testweight[0]" to "11"
+    And I set the field "testweight[1]" to "22"
     And I set the field with xpath "//input[@name='testtitle[0]']" to "edited title #1"
     And I set the field with xpath "//input[@name='testtitle[1]']" to "edited title #2"
     And I set the field with xpath "//input[@name='testdescription[0]']" to "edited testdescription #1"
@@ -95,8 +95,8 @@ Feature: EDIT
       | Comment                  | edited comment                 |
       | Aggregation strategy      | Weighted sum                 |
       | Penalty for each incorrect try  | 50%                     |
-    And the field "Weight" number "1" matches value "11"
-    And the field "Weight" number "2" matches value "22"
+    And the field "testweight[0]" matches value "11"
+    And the field "testweight[1]" matches value "22"
     And the field with xpath "//input[@name='testtitle[0]']" matches value "edited title #1"
     And the field with xpath "//input[@name='testtitle[1]']" matches value "edited title #2"
     And the field with xpath "//input[@name='testdescription[0]']" matches value "edited testdescription #1"

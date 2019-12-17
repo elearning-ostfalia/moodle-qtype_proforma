@@ -59,16 +59,15 @@ Feature: BACKUP AND RESTORE
       | Model solution           | // code for model solution     |
       | Response filename        | MyString.java                  |
 #      | Response template        | multiline              |
-    And the field with xpath "//input[@name='testtitle[0]']" matches value "Junit Test 1"
-    And the field with xpath "//input[@name='testdescription[0]']" matches value "DESCRIPTION 2"
-    And the field with xpath "//input[@name='testtype[0]']" matches value "unittest"
-    And the field with xpath "//input[@name='testid[0]']" matches value "1"
+    And the field with name "testtitle[0]" matches value "Junit Test 1"
+    And the field with name "testdescription[0]" matches value "DESCRIPTION 2"
+    And the field with name "testtype[0]" matches value "unittest"
+    And the field with name "testid[0]" matches value "1"
   # cannot be tested that way
 #    And I set the field with xpath "//textarea[@name='testcode[0]']" to "class XClass {}"
-
-    And the field "Weight" number "1" matches value "2"
-    And the field "Weight" number "2" matches value "3"
-    And the field "Weight" number "3" matches value "4"
+    And the field with name "compileweight" matches value "2"
+    And the field with name "testweight[0]" matches value "3"
+#    And the field with name "testweight[1]" matches value "4"
 
     And I press "Cancel"
 
@@ -85,17 +84,16 @@ Feature: BACKUP AND RESTORE
       | Comment                  | <p>Check if the code uses a library function.</p>                 |
       | Aggregation strategy      | All or nothing                |
       | Penalty for each incorrect try  | 20%                     |
-    And the field "Weight" number "1" matches value "2"
-    And the field "Weight" number "2" matches value "3"
-    And the field with xpath "//input[@name='testtitle[0]']" matches value "TEST 1"
-    And the field with xpath "//input[@name='testtitle[1]']" matches value "TEST 2"
-    And the field with xpath "//input[@name='testdescription[0]']" matches value "DESCRIPTION 1"
-    And the field with xpath "//input[@name='testdescription[1]']" matches value "DESCRIPTION 2"
-    And the field with xpath "//input[@name='testid[0]']" matches value "1"
-    And the field with xpath "//input[@name='testid[1]']" matches value "2"
-    And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
-    And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
-# todo: try and check values of static fields
+    And the field with name "testweight[0]" matches value "2"
+    And the field with name "testweight[1]" matches value "3"
+    And the field with name "testtitle[0]" matches value "TEST 1"
+    And the field with name "testtitle[1]" matches value "TEST 2"
+    And the field with name "testdescription[0]" matches value "DESCRIPTION 1"
+    And the field with name "testdescription[1]" matches value "DESCRIPTION 2"
+    And the field with name "testid[0]" matches value "1"
+    And the field with name "testid[1]" matches value "2"
+    And the field with name "testtype[0]" matches value "TEST-CONFIG 1"
+    And the field with name "testtype[1]" matches value "TEST-CONFIG 2"
     # download links
     And I should see "lib.txt, instruction.txt"
     And I should see "ms1.txt"
@@ -125,16 +123,16 @@ Feature: BACKUP AND RESTORE
       | Aggregation strategy      | All or nothing                |
       | Penalty for each incorrect try  | 20%                     |
 #      | Response template        | multiline              |
-    And the field "Weight" number "1" matches value "2"
-    And the field "Weight" number "2" matches value "3"
-    And the field with xpath "//input[@name='testtitle[0]']" matches value "TEST 1"
-    And the field with xpath "//input[@name='testtitle[1]']" matches value "TEST 2"
-    And the field with xpath "//input[@name='testdescription[0]']" matches value "DESCRIPTION 1"
-    And the field with xpath "//input[@name='testdescription[1]']" matches value "DESCRIPTION 2"
-    And the field with xpath "//input[@name='testid[0]']" matches value "1"
-    And the field with xpath "//input[@name='testid[1]']" matches value "2"
-    And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
-    And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
+    And the field "testweight[0]" matches value "2"
+    And the field "testweight[1]" matches value "3"
+    And the field with name "testtitle[0]" matches value "TEST 1"
+    And the field with name "testtitle[1]" matches value "TEST 2"
+    And the field with name "testdescription[0]" matches value "DESCRIPTION 1"
+    And the field with name "testdescription[1]" matches value "DESCRIPTION 2"
+    And the field with name "testid[0]" matches value "1"
+    And the field with name "testid[1]" matches value "2"
+    And the field with name "testtype[0]" matches value "TEST-CONFIG 1"
+    And the field with name "testtype[1]" matches value "TEST-CONFIG 2"
 # todo: try and check values of static fields
     # download links
     And I should see "lib.txt, instruction.txt"
