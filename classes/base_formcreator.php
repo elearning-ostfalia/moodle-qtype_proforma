@@ -29,7 +29,7 @@ class base_form_creator {
     protected $form = null;
     protected $taskhandler = null;
 
-    function __construct($form) {
+    protected function __construct($form) {
         $this->form = $form;
     }
 
@@ -60,22 +60,6 @@ class base_form_creator {
     public function add_modelsolution($question) {
     }
 
-
-
-    protected function add_test_weight_option(&$testoptions, $prefix, $defaultweight, $withtitle = false) {
-        $mform = $this->form;
-        if ($withtitle) {
-            $testoptions[] = $mform->createElement('text', $prefix . 'title',
-                    get_string('testtitle', 'qtype_proforma'), array('size' => 60));
-            $mform->setType($prefix . 'title', PARAM_TEXT);
-        }
-
-        $testoptions[] = $mform->createElement('text', $prefix . 'weight',
-                get_string('weight', 'qtype_proforma'), array('size' => 2));
-        $mform->setType($prefix . 'weight', PARAM_FLOAT);
-        $mform->setDefault($prefix . 'weight', $defaultweight);
-    }
-
     // override
     protected function get_test_label() {
         return get_string('testlabel', 'qtype_proforma');
@@ -85,7 +69,7 @@ class base_form_creator {
     protected function modify_repeatoptions(&$repeatoptions) {
     }
 
-    public function add_tests($question, $question_edit_form) {
+    public function add_tests($question, $questioneditform) {
         $mform = $this->form;
         // retrieve number of tests (resp. unit tests)
         $repeats = $this->get_count_tests($question);
@@ -131,12 +115,13 @@ class base_form_creator {
 
         // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
 
-        $question_edit_form->repeat_elements($repeatarray, $repeats,
+        $questioneditform->repeat_elements($repeatarray, $repeats,
                 $repeatoptions, 'option_repeats', 'option_add_fields',
                 1, get_string('addjunit', 'qtype_proforma'), true);
 
         return $repeats;
     }
+
 
     protected function get_count_tests($question) {
         $repeats = 0;
@@ -208,7 +193,7 @@ class base_form_creator {
         $this->add_modelsolution($question);
     }
 
-    public function add_test_settings($question, $question_edit_form) {
+    public function add_test_settings($question, $questioneditform) {
         $mform = $this->form;
 
         // Header.
@@ -228,7 +213,7 @@ class base_form_creator {
         // Tests
         // - test overview in case of imported task and
         // - test edit fields for tasks created with Moodle
-        $this->add_tests($question, $question_edit_form);
+        $this->add_tests($question, $questioneditform);
 
         // Penalty
         $penalties = array(
@@ -254,6 +239,23 @@ class base_form_creator {
         $mform->setDefault('penalty', get_config('qtype_proforma', 'defaultpenalty'));
     }
 
+    public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
+        // special handling for comment
+        $draftid = file_get_submitted_draft_itemid('comment');
+        $question->comment = array();
+        $question->comment['text'] = file_prepare_draft_area(
+                $draftid,           // Draftid
+                $editor->context->id, // context
+                'qtype_proforma',      // component
+                qtype_proforma::FILEAREA_COMMENT,       // filarea
+                !empty($question->id) ? (int) $question->id : null, // itemid
+                $editor->fileoptions, // options
+                $question->options->comment // text.
+        );
+        $question->comment['format'] = $question->options->commentformat;
+        $question->comment['itemid'] = $draftid;
+    }
+
     // helper functions
     protected function add_static_field($question, $mform, $field, $label, $sizefield = null) {
         // $mform->addElement('static', $field, $label);
@@ -277,4 +279,19 @@ class base_form_creator {
 
         $mform->setType($field, PARAM_TEXT);
     }
+
+    protected function add_test_weight_option(&$testoptions, $prefix, $defaultweight, $withtitle = false) {
+        $mform = $this->form;
+        if ($withtitle) {
+            $testoptions[] = $mform->createElement('text', $prefix . 'title',
+                    get_string('testtitle', 'qtype_proforma'), array('size' => 60));
+            $mform->setType($prefix . 'title', PARAM_TEXT);
+        }
+
+        $testoptions[] = $mform->createElement('text', $prefix . 'weight',
+                get_string('weight', 'qtype_proforma'), array('size' => 2));
+        $mform->setType($prefix . 'weight', PARAM_FLOAT);
+        $mform->setDefault($prefix . 'weight', $defaultweight);
+    }
+
 }

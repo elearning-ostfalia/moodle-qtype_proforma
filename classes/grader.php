@@ -122,9 +122,6 @@ class qtype_proforma_grader {
         return $dummyresult;
     }
 
-
-
-
     // virtual
     public function extract_grade($result, $httpcode, qtype_proforma_question $question) {
         return $this->extract_grade_from_lon_capa_format_result($result);
@@ -251,9 +248,6 @@ class qtype_proforma_grader {
 
         return array($output, $info->httpcode === 200 ? null : $info->httpcode);
     }
-
-
-
 
     /** sends a student's uploaded file to the grader. Exactly one file is supported.
      *

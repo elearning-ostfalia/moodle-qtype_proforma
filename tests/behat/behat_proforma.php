@@ -160,8 +160,8 @@ class behat_proforma extends behat_base {
         // Checks if the provided value matches the current field value.
         $value = str_replace("\t","    ", (string)$value);
         $fieldvalue = str_replace("\t","    ", $fieldvalue);
-        $value = str_replace(" ","*", (string)$value);
-        $fieldvalue = str_replace(" ","*", $fieldvalue);
+        //$value = str_replace(" ","*", (string)$value);
+        //$fieldvalue = str_replace(" ","*", $fieldvalue);
 
         if ($fieldvalue != $value) {
             throw new ExpectationException(

@@ -384,35 +384,6 @@ EOD;
         return array($output, $httpcode);
     }
 
-    /** sends a student's uploaded file to the grader. Exactly one file is supported.
-     *
-     * @param $file
-     * @param $question
-     * @return mixed|string
-     */
-
-    /*
-    public function send_file_to_grader($file, qtype_proforma_question $question) {
-
-        if (!$file instanceof stored_file) {
-            throw new coding_exception("wrong class");
-        }
-
-        //        debugging("VERSION 2");
-        $files = array($file);
-
-        $submission = $this->create_submission_xml(null, $files, $question->responsefilename, $question);
-
-        //echo $submission;
-        $post_fields = array(
-                'submission.xml' => $submission,
-                'submission-file' => $file,
-        );
-
-        return $this->post_to_grader($post_fields, $question);
-    }
-    */
-
     public function send_files_to_grader($files, qtype_proforma_question $question) {
         // check files
         foreach ($files as $file) {

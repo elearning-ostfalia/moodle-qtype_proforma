@@ -28,7 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
 
 class proforma_form_creator extends base_form_creator {
-    function __construct($form) {
+
+    public function __construct($form) {
         parent::__construct($form);
     }
 
@@ -88,12 +89,71 @@ class proforma_form_creator extends base_form_creator {
         $repeatoptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
     }
 
-    public function add_tests($question, $question_edit_form) {
+    public function add_tests($question, $questioneditform) {
         $this->taskhandler = new qtype_proforma_proforma_task();
-        $repeats = parent::add_tests($question, $question_edit_form);
+        $repeats = parent::add_tests($question, $questioneditform);
         // Remove button for adding new test elements.
         $mform = $this->form;
         $mform->removeElement('option_add_fields');
-
+        return $repeats;
     }
+
+    private function create_downloadlist($qelement, $oelement) {
+        $qelement = $oelement;
+        if (isset($qelement)) {
+            $list = array();
+            foreach (explode(',', $qelement) as $download) {
+                $list[] = $download;
+            }
+            $downloadlist = implode(', ', $list);
+            return $downloadlist;
+        }
+        return '';
+    }
+
+    public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
+        parent::data_preprocessing($question, $cat, $form, $editor);
+
+        // create lists for download files
+        foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
+            $property1 = $value['formlist'];
+            $property2 = $value['questionlist'];
+
+            $question->$property1 = $this->create_downloadlist($question->$property2,
+                    $question->options->$property2);
+        }
+
+        // create template list with all template files without the first one
+        // which gets its own editor
+        // (normally there should be only one template if no filepicker is used)
+        $alltemplates = explode(',', $question->templates);
+        $question->firstTemplate = array_shift($alltemplates);
+        $question->furtherTemplates = implode(',', $alltemplates);
+
+        if (strlen($question->furtherTemplates) == 0) {
+            $form->removeElement('furtherTemplates');
+        }
+
+        if (!empty($question->taskfilename)) {
+            // create temporary link for task file (does not belong to question class)
+            // $draftid = file_get_submitted_draft_itemid('questiontext');
+            // $question->link = '<a href="@@PLUGINFILE@@/'.$question->taskfilename.'">'. $question->taskfilename .'</a> ';
+            $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
+                    qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
+            $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
+        }
+
+        if (!empty($question->modelsolfiles)) {
+            $question->mslinks = '';
+            foreach (explode(',', $question->modelsolfiles) as $ms) {
+                $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
+                        qtype_proforma::FILEAREA_MODELSOL, $question->id, '/', $ms);
+                $question->mslinks = $question->mslinks . '<a href=' . $url->out().'>'. $ms .'</a> ';
+            }
+        }
+
+        $taskfilehandler = new qtype_proforma_proforma_task;
+        $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
+    }
+
 }

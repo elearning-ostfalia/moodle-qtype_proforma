@@ -29,7 +29,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.p
 
 class java_form_creator extends base_form_creator {
 
-    function __construct($form) {
+    public function __construct($form) {
         parent::__construct($form);
     }
     // override
@@ -66,9 +66,6 @@ class java_form_creator extends base_form_creator {
         $mform->addHelpButton('modelsolution', 'modelsolution', 'qtype_proforma');
         $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
 
-
-        //$mform->addElement('filepicker', 'userfile', get_string('file'), null,
-        //        array('maxbytes' => $maxbytes, 'accepted_types' => '*'));
         $mform->addElement('filemanager', 'modelsolfilemanager', get_string('modelsolfiles', 'qtype_proforma'), null,
                 array('subdirs' => 0));
 
@@ -133,11 +130,11 @@ class java_form_creator extends base_form_creator {
     }
 
 
-    public function add_tests($question, $question_edit_form) {
+    public function add_tests($question, $questioneditform) {
         $mform = $this->form;
         $this->taskhandler = new qtype_proforma_java_task();
         $this->add_compilation($question);
-        $repeats = parent::add_tests($question, $question_edit_form);
+        $repeats = parent::add_tests($question, $questioneditform);
         // Set CodeMirror for unit test code.
         for ($i = 0; $i < $repeats; $i++) {
             qtype_proforma::as_codemirror('id_testcode_' . $i);
@@ -152,6 +149,7 @@ class java_form_creator extends base_form_creator {
         }
 
         $this->add_checkstyle($question);
+        return $repeats;
     }
 
 
@@ -190,5 +188,29 @@ class java_form_creator extends base_form_creator {
         }
 
         return $errors;
+    }
+
+    public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
+        parent::data_preprocessing($question, $cat, $form, $editor);
+
+        $taskfilehandler = new qtype_proforma_java_task();
+        $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
+        $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
+
+        $draftitemid = file_get_submitted_draft_itemid('modelsolfilemanager');
+        file_prepare_draft_area($draftitemid, $editor->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL,
+                $question->id, array('subdirs' => 0));
+        $question->modelsolfilemanager = $draftitemid;
+        $fs = get_file_storage();
+        $draftfiles = $fs->get_area_files($editor->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL, $question->id);
+        $files = array();
+        foreach ($draftfiles as $file) {
+            if ($file->get_filename() != '.' and $file->get_filename() != '..') {
+                $files[] = $file;
+            }
+        }
+        if (count($files) === 1) {
+            $question->modelsolution = $files[0]->get_content();
+        }
     }
 }

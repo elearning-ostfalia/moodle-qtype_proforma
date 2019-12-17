@@ -140,19 +140,6 @@ class qtype_proforma_edit_form extends question_edit_form {
         });
     }
 
-    private function create_downloadlist($qelement, $oelement) {
-        $qelement = $oelement;
-        if (isset($qelement)) {
-            $list = array();
-            foreach (explode(',', $qelement) as $download) {
-                $list[] = $download;
-            }
-            $downloadlist = implode(', ', $list);
-            return $downloadlist;
-        }
-        return '';
-    }
-
     /**
      * Perform any preprocessing needed on the data passed to {@link set_data()}
      * before it is used to initialise the form.
@@ -173,7 +160,6 @@ class qtype_proforma_edit_form extends question_edit_form {
 
             foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
                 $property = $value["questionlist"];
-                // echo 'data_preprocessing ' . $filearea . ' => ' . $property . ' <br>';
                 $question->$property = '';
             }
 
@@ -182,7 +168,6 @@ class qtype_proforma_edit_form extends question_edit_form {
             return $question;
         }
 
-        global $USER;
         $cat = $question->category;
         foreach (explode(',', $question->category) as $category) {
             $cat = $category;
@@ -190,87 +175,13 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         if (isset($this->question->options->taskstorage) &&
                 $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE) {
-            // retrieve files content from task
             $this->volatiletask = true;
-            $taskfilehandler = new qtype_proforma_java_task;
-            //$this->formcreator = new java_form_creator($this->_form);
-            $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
+            $formcreator = new java_form_creator($this->_form);
         } else {
             $this->volatiletask = false;
-            $taskfilehandler = new qtype_proforma_proforma_task;
-            //$this->formcreator = new proforma_form_creator($this->_form);
-
-            // create lists for download files
-            foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
-                $property1 = $value['formlist'];
-                $property2 = $value['questionlist'];
-
-                $question->$property1 = $this->create_downloadlist($question->$property2,
-                        $question->options->$property2);
-            }
-
-            // create template list with all template files without the first one
-            // which gets its own editor
-            // (normally there should be only one template if no filepicker is used)
-            $alltemplates = explode(',', $question->templates);
-            $question->firstTemplate = array_shift($alltemplates);
-            $question->furtherTemplates = implode(',', $alltemplates);
-
-            if (strlen($question->furtherTemplates) == 0) {
-                $this->_form->removeElement('furtherTemplates');
-            }
+            $formcreator = new proforma_form_creator($this->_form);
         }
-
-        // special handling for comment
-        $draftid = file_get_submitted_draft_itemid('comment');
-        $question->comment = array();
-        $question->comment['text'] = file_prepare_draft_area(
-            $draftid,           // Draftid
-            $this->context->id, // context
-            'qtype_proforma',      // component
-                qtype_proforma::FILEAREA_COMMENT,       // filarea
-            !empty($question->id) ? (int) $question->id : null, // itemid
-            $this->fileoptions, // options
-            $question->options->comment // text.
-        );
-        $question->comment['format'] = $question->options->commentformat;
-        $question->comment['itemid'] = $draftid;
-
-        if (!empty($question->taskfilename)) {
-            // create temporary link for task file (does not belong to question class)
-            // $draftid = file_get_submitted_draft_itemid('questiontext');
-            // $question->link = '<a href="@@PLUGINFILE@@/'.$question->taskfilename.'">'. $question->taskfilename .'</a> ';
-            $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
-                    qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
-            $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
-        }
-
-        $taskfilehandler->extract_formdata_from_gradinghints($question, $this->_form);
-
-        if ($this->volatiletask) {
-            $draftitemid = file_get_submitted_draft_itemid('modelsolfilemanager');
-            file_prepare_draft_area($draftitemid, $this->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL,
-                    $question->id, array('subdirs' => 0));
-            $question->modelsolfilemanager = $draftitemid;
-            $fs = get_file_storage();
-            $draftfiles = $fs->get_area_files($this->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL, $question->id);
-            $files = array();
-            foreach ($draftfiles as $file) {
-                if ($file->get_filename() != '.' and $file->get_filename() != '..') {
-                    $files[] = $file;
-                }
-            }
-            if (count($files) === 1) {
-                $question->modelsolution = $files[0]->get_content();
-            }
-        } else if (!empty($question->modelsolfiles)) {
-            $question->mslinks = '';
-            foreach (explode(',', $question->modelsolfiles) as $ms) {
-                $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
-                        qtype_proforma::FILEAREA_MODELSOL, $question->id, '/', $ms);
-                $question->mslinks = $question->mslinks . '<a href=' . $url->out().'>'. $ms .'</a> ';
-            }
-        }
+        $formcreator->data_preprocessing($question, $cat, $this->_form, $this);
 
         return $question;
     }

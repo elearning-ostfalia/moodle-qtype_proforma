@@ -202,14 +202,6 @@ class qtype_proforma extends question_type {
             case self::PERSISTENT_TASKFILE:
                 $instance = new qtype_proforma_proforma_task;
                 $options->gradinghints = $instance->create_lms_grading_hints($formdata);
-                // handle files (including model solution files) from imported question
-/*                foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
-                    $property = $value['formid'];
-                    if (isset($formdata->$property)) {
-                        file_save_draft_area_files($formdata->$property,
-                                $context->id, 'qtype_proforma', $filearea, $formdata->id);
-                    }
-                }*/
                 break;
             case self::VOLATILE_TASKFILE:
                 // handle 'save' from editor
@@ -279,7 +271,7 @@ class qtype_proforma extends question_type {
 
         // store response template as file (it is stored as file and as member variable
         // in order to support file download and editor template in student view)
-        //note! at first store draft files, then override first template file
+        // note! at first store draft files, then override first template file
         if (empty($formdata->templates)) {
             // no templates yet defined but the teacher has entered a template text
             if (!empty($formdata->responsetemplate)) {
