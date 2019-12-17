@@ -52,7 +52,7 @@ define(['jquery', 'jqueryui',
                 case "xml":    return "application/xml";
                 case "none":   return "";
                 default:
-                    alert("unsupported mode " + moodle_mode + " for map_proglang_to_codemirror_mode");
+                    console.error("unsupported mode " + moodle_mode + " for map_proglang_to_codemirror_mode");
                     return "text/text";
             }
         };
@@ -77,7 +77,7 @@ define(['jquery', 'jqueryui',
                         changeMode(select_id, textarea_id);
                     });
                 } catch(err) {
-                    alert("Exception caught in codemirrorif.js function switch_mode\n " + err.toString());
+                    console.error("Exception caught in codemirrorif.js function switch_mode\n " + err.toString());
                     return;
                 }
             },
