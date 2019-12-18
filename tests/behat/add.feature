@@ -1,3 +1,4 @@
+@qtype @qtype_proforma
 Feature: ADD JAVA QUESTION
   Test creating a ProFormA java question
   As a teacher
@@ -46,11 +47,13 @@ Feature: ADD JAVA QUESTION
       | Title                    | JUnit test title               |
       | Description              |                                |
       | Penalty for each incorrect try  | 10%                     |
-
-    And the field "compileweight" matches value "0"
+    # compile
+      | compileweight              |      0                       |
+    #And the field "compileweight" matches value "0"
+    And the "compile" checkbox is "checked"
     # JUnit
     And the field "testweight[0]" matches value "1"
-    And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
+    And the field "testcode[0]" matches value "class XClass {}"
     # Checkstyle
     And the "checkstyle" checkbox is "not checked"
 
@@ -76,19 +79,21 @@ Feature: ADD JAVA QUESTION
 
     When I set the following fields to these values:
       | Question name   | new java-question |
+      | compileweight   | 10                |
+
     # Compilation
-    And I set the field "compileweight" to "10"
+    #And I set the field "compileweight" to "10"
     # JUnit
-    And I set the field "testweight[0]" "20"
-    And I set the field with xpath "//textarea[@name='testcode[0]']" to "// class XClass {}"
+    And I set the field "testweight[0]" to "20"
+    And I set the field "testcode[0]" to "// class XClass {}"
     # Checkstyle
-    And I set the field with xpath "//input[@name='checkstyle']" to "1"
-    And I set the field "checkstyle" to "30"
-    And I set the field with xpath "//textarea[@name='checkstylecode']" to "<!-- checkstyle code-->"
+    And I set the field "checkstyle" to "1"
+    And I set the field "checkstyleweight" to "30"
+    And I set the field "checkstylecode" to "<!-- checkstyle code-->"
     And I press "id_submitbutton"
     Then I should see "Cannot determine classname (filename)"
 
-    When I set the field with xpath "//textarea[@name='testcode[0]']" to "class XClass {}"
+    When I set the field "testcode[0]" to "class XClass {}"
     And I press "id_submitbutton"
     Then I should see "new java-question"
 
@@ -110,14 +115,14 @@ Feature: ADD JAVA QUESTION
 
     # Compile
     And the "compile" checkbox is "checked"
-    And the field with name "compileweight" matches value "10"
+    And the field "compileweight" matches value "10"
     # JUnit
-    And the field with name "testweight[0]" matches value "20"
-    And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
+    And the field "testweight[0]" matches value "20"
+    And the field "testcode[0]" matches value "class XClass {}"
     # Checkstyle
     And the "checkstyle" checkbox is "checked"
     And the field "checkstyleweight" matches value "30"
-    And the field with xpath "//textarea[@name='checkstylecode']" matches value "<!-- checkstyle code-->"
+    And the field "checkstylecode" matches value "<!-- checkstyle code-->"
 
     And I press "Cancel"
 
@@ -132,13 +137,13 @@ Feature: ADD JAVA QUESTION
       | Title                    | JUnit #1                       |
     Then I should see "Code is missing"
     When I press "id_option_add_fields"
-    And I set the field with xpath "//textarea[@name='testcode[0]']" to "class XClass {}"
-    And I set the field with xpath "//textarea[@name='testcode[1]']" to "class YClass {}"
-    And I set the field with xpath "//input[@name='testdescription[1]']" to "this is the second JUnit test"
+    And I set the field "testcode[0]" to "class XClass {}"
+    And I set the field "testcode[1]" to "class YClass {}"
+    And I set the field "testdescription[1]" to "this is the second JUnit test"
     And I press "id_submitbutton"
     Then I should see "Title is missing"
 
-    When I set the field with xpath "//input[@name='testtitle[1]']" to "Junit #2"
+    When I set the field "testtitle[1]" to "Junit #2"
     And I press "id_submitbutton"
     Then I should see "java-question with 2 tests"
 
@@ -149,7 +154,7 @@ Feature: ADD JAVA QUESTION
       | Default mark             | 1                              |
       | General feedback         |                                |
       | Response format          | editor                         |
-      | Input box size           | 10 lines                       |
+      | Input box size           | 15 lines                       |
       | Response filename        | MyClass.java                   |
       | Response template        | // type your code here         |
       | Model solution           | // code for model solution     |
@@ -160,12 +165,12 @@ Feature: ADD JAVA QUESTION
     And the field "compileweight" matches value "0"
     # JUnit #1
     And the field "testweight[0]" matches value "1"
-    And the field with xpath "//textarea[@name='testcode[0]']" matches value "class XClass {}"
-    And the field with xpath "//input[@name='testdescription[0]']" matches value ""
+    And the field "testcode[0]" matches value "class XClass {}"
+    And the field "testdescription[0]" matches value ""
     # JUnit #2
     And the field "testweight[1]" matches value "1"
-    And the field with xpath "//textarea[@name='testcode[1]']" matches value "class YClass {}"
-    And the field with xpath "//input[@name='testdescription[1]']" matches value "this is the second JUnit test"
+    And the field "testcode[1]" matches value "class YClass {}"
+    And the field "testdescription[1]" matches value "this is the second JUnit test"
     # Checkstyle
     And the "checkstyle" checkbox is "not checked"
 
