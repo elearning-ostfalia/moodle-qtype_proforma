@@ -25,14 +25,27 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * class is used to write XML with less lines of code
+ */
 class SimpleXmlWriter extends XMLWriter {
 
+    /** Create attribute for current element.
+     *
+     * @param string $name attribute name
+     * @param string $value attribute value
+     */
     public function create_attribute($name, $value) {
         $this->startAttribute($name);
         $this->text($value);
         $this->endAttribute();
     }
 
+    /** Create child element with just text (no attributes and no further children)
+     *
+     * @param string $name element name
+     * @param string $text element text (default: null)
+     */
     public function create_childelement_with_text($name, $text = null) {
         $this->startElement($name);
         if ($text) {

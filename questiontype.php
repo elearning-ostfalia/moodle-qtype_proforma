@@ -67,31 +67,45 @@ class qtype_proforma extends question_type {
 
 
     // Where is taskfile stored?
-    // - Taskfile is imported and then stored as file in Moodle Data.
+    /**
+     * Taskfile is imported and then stored as file in Moodle Data.
+     */
     const PERSISTENT_TASKFILE = 1;
-    // - Taskfile is stored in external repostory.
-    // Currently not supported.
+    /**
+     * Taskfile is stored in external repostory.
+     * Currently not supported.
+     */
     const REPOSITORY = 2;
-    // - Question is created in Moodle Form Editor.
-    // Taskfile could be created on the fly and is only stored for caching purposes.
+    /**
+     * Question is created in Moodle Form Editor.
+     * Taskfile could be created on the fly and is only stored for caching purposes.
+     */
     const VOLATILE_TASKFILE = 3;
 
     // How is the mark calculated?
-    // - 1 in case all tests have been passed, otherwise 0
+    /**
+     * 1 in case all tests have been passed, otherwise 0.
+     */
     const ALL_OR_NOTHING = 1;
-    // - weighted sum of all test results
+    /**
+     * Weighted sum of all test results.
+     */
     const WEIGHTED_SUM = 2;
 
     // Response Options:
-    // - Fileupload.
+    /**
+     * File upload.
+     */
     const RESPONSE_FILEPICKER = 'filepicker';
-    // - Editor.
+    /**
+     * Editor.
+     */
     const RESPONSE_EDITOR = 'editor';
 
     /**
      * Function returns array with fileareas containing files visible to students.
      *
-     * @return array with fileareas
+     * @return array with filearea data
      */
     public static function fileareas_for_studentfiles() {
         return array(
@@ -110,6 +124,12 @@ class qtype_proforma extends question_type {
         );
     }
 
+    /**
+     * Function contains all fileareas containing files visible to students
+     * and the filearea with the model solution files.
+     *
+     * @return array with filearea data
+     */
     public static function fileareas_with_model_solutions() {
         $fileareas = self::fileareas_for_studentfiles();
         $fileareas[self::FILEAREA_MODELSOL] = array(
@@ -121,6 +141,11 @@ class qtype_proforma extends question_type {
         return $fileareas;
     }
 
+    /**
+     * Returns all fileareas.
+     *
+     * @return array
+     */
     public static function all_fileareas() {
         $fileareas = self::fileareas_with_model_solutions();
         $fileareas[self::FILEAREA_TASK] = array(/*
@@ -146,7 +171,6 @@ class qtype_proforma extends question_type {
      *
      * @return an array with the table name (first) and then the column names (apart from id and questionid)
      */
-
     public function extra_question_fields() {
         $result = array('qtype_proforma_options',
                 'uuid',
@@ -180,10 +204,20 @@ class qtype_proforma extends question_type {
         return $result;
     }
 
+    /**
+     * Returns filearea names used for response files.
+     *
+     * @return array
+     */
     public function response_file_areas() {
         return array('attachments', 'answer');
     }
 
+    /**
+     * Loads the proforma question data from database.
+     *
+     * @param object $question
+     */
     public function get_question_options($question) {
         global $DB;
         $question->options = $DB->get_record('qtype_proforma_options',
@@ -193,7 +227,7 @@ class qtype_proforma extends question_type {
 
 
     /**
-     * this function is used to store form data into database AND
+     * This function is used to store form data into database AND
      * to store data from question bank import into database.
      *
      * @param object $formdata
@@ -326,6 +360,15 @@ class qtype_proforma extends question_type {
         $DB->update_record('qtype_proforma_options', $options);
     }
 
+    /**
+     * Helper function to read the content of a file stored 'in Moodle'.
+     *
+     * @param $contextid
+     * @param $filearea
+     * @param $filename
+     * @param $itemid
+     * @return string file content
+     */
     public static function read_file_content($contextid, $filearea, $filename, $itemid) {
         $fs = get_file_storage();
 
@@ -348,6 +391,17 @@ class qtype_proforma extends question_type {
         return $file->get_content();
     }
 
+    /**
+     * Write text to a file.
+     *
+     * @param $contextid
+     * @param $filearea
+     * @param $filename
+     * @param $content
+     * @param $itemid
+     * @param bool $cleanfilearea
+     * @return bool
+     */
     protected function save_as_file($contextid, $filearea, $filename, $content, $itemid, $cleanfilearea = false) {
         $fs = get_file_storage();
         // delete old file
@@ -383,6 +437,12 @@ class qtype_proforma extends question_type {
         return false;
     }
 
+    /**
+     * initialise a question instance (data not covered by extra_fields??)
+     *
+     * @param question_definition $question
+     * @param object $questiondata
+     */
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
         $question->comment = $questiondata->options->comment;
@@ -390,6 +450,13 @@ class qtype_proforma extends question_type {
 
     }
 
+    /**
+     * Delete a question.
+     *
+     * (parent function also calls delete_files)
+     * @param $questionid
+     * @param int $contextid
+     */
     public function delete_question($questionid, $contextid) {
         global $DB;
 
@@ -403,13 +470,14 @@ class qtype_proforma extends question_type {
      */
     public function response_formats() {
         return array(
-            // editor
             'editor' => get_string('formateditor', 'qtype_proforma'),
-            // filepicker
             'filepicker' => get_string('formatfilepicker', 'qtype_proforma')
         );
     }
 
+    /**
+     * @return array the supported programming languages
+     */
     public function get_proglang_options() {
         return array(
                 'java' => "Java",
@@ -446,6 +514,13 @@ class qtype_proforma extends question_type {
         );
     }
 
+    /**
+     * Move all files belonging when a question is moved
+     *
+     * @param int $questionid
+     * @param int $oldcontextid
+     * @param int $newcontextid
+     */
     public function move_files($questionid, $oldcontextid, $newcontextid) {
         parent::move_files($questionid, $oldcontextid, $newcontextid);
         $fs = get_file_storage();
@@ -458,13 +533,14 @@ class qtype_proforma extends question_type {
             $fs->move_area_files_to_new_context($oldcontextid,
                     $newcontextid, 'qtype_proforma', $filearea, $questionid);
         }
-
-        /*
-                $fs->move_area_files_to_new_context($oldcontextid,
-                        $newcontextid, 'qtype_proforma', self::FILEAREA_MODELSOL, $questionid);
-        */
     }
 
+    /**
+     * Delete all files belongig to a question.
+     *
+     * @param int $questionid
+     * @param int $contextid
+     */
     protected function delete_files($questionid, $contextid) {
         parent::delete_files($questionid, $contextid);
         $fs = get_file_storage();
@@ -474,9 +550,6 @@ class qtype_proforma extends question_type {
         foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
             $fs->delete_area_files($contextid, 'qtype_proforma', $filearea, $questionid);
         }
-        /*
-                $fs->delete_area_files($contextid, 'qtype_proforma', self::FILEAREA_MODELSOL, $questionid);
-        */
     }
 
     /**
@@ -601,19 +674,26 @@ class qtype_proforma extends question_type {
         return $expout;
     }
 
-    public static function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = false, $loadquery = true) {
+    /**
+     * Helper function for converting a text area into a CodeMirror window
+     *
+     * @param $textareaid: html identifier
+     * @param string $mode: Syntax highlighting mode
+     * @param null $header: header in form
+     * @param bool $readonly: is input disabled?
+     * @param bool $loadjquery: does jquery need to be loaded by page?
+     */
+    public static function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = false, $loadjquery = true) {
         if (get_config('qtype_proforma', 'usecodemirror')) {
             global $PAGE, $CFG;
             require_once($CFG->dirroot . '/config.php');
             // load jquery css file for resizable
-            if ($loadquery) {
+            if ($loadjquery) {
                 $PAGE->requires->jquery();
                 $PAGE->requires->jquery_plugin('ui');
                 $PAGE->requires->jquery_plugin('ui-css');
             }
 
-            // TODO: move READONLY and WRITABLE to common class
-            // TODO: where does textarea identifier come from?
             $moodleversion = $CFG->version;
             // debugging('Moodle Version is ' . $moodleversion);
 
