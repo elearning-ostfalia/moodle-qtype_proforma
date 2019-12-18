@@ -172,6 +172,31 @@ class behat_proforma extends behat_base {
     }
 
     /**
+     * Checks the beginning of the value of a multiline field.
+     *
+     * @Then /^the field "(?P<label_string>(?:[^"]|\\")*)" starts with "(?P<value_string>(?:[^"]|\\")*)"$/
+     * @throws ExpectationException
+     * @throws ElementNotFoundException Thrown by behat_base::find
+     * @return void
+     */
+    public function the_field_starts_with($label, $value) {
+        // Get the field.
+        $formfield = behat_field_manager::get_form_field_from_label($label, $this);
+        $fieldvalue = $formfield->get_value();
+        // Checks if the provided value matches the current field value.
+        //$value = str_replace("\t","    ", (string)$value);
+        //$fieldvalue = str_replace("\t","    ", $fieldvalue);
+
+        $length = strlen($value);
+        if (substr($fieldvalue, 0, $length) != $value) {
+            throw new ExpectationException(
+                    'The field "' . $label . '"" value is \'' . substr($fieldvalue, 0, $length) . '\', \'' . $value . '\' expected' ,
+                    $this->getSession()
+            );
+        }
+    }
+
+    /**
      * Checks that if a checkbox is checked or not.
      *
      * @Then /^the "(?P<name_string>(?:[^"]|\\")*)" checkbox is "(?P<value_string>(?:[^"]|\\")*)"$/

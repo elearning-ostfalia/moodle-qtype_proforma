@@ -49,20 +49,7 @@ Feature: IMPORT (Moodle-XML format)
         // todo
     }
     """
-    # may contain tabs :-(
-#    And the field "Model solution" matches multiline
-#    """
-#    public class MyString {
-#
-#        static public Boolean isPalindrom(String aString)
-#        {
-#            String reverse = new StringBuilder(aString).reverse().toString();
-#
-#            return (aString.equalsIgnoreCase(reverse));
-#        }
-#    }
-#    """
-    # too many lines
+    And the field "Model solution" starts with "public class MyString {"
     #And the field "testcode[0]" matches multiline
     # Compile
     And the "compile" checkbox is "checked"
