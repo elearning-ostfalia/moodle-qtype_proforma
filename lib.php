@@ -65,7 +65,7 @@ function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $fo
             break;
         default:
             $pass = false;
-            foreach (qtype_proforma::fileareas() as $proformafilearea => $value) {
+            foreach (qtype_proforma::fileareas_for_studentfiles() as $proformafilearea => $value) {
                 if ($proformafilearea === $filearea) {
                     if (!has_capability('moodle/question:flag', $context)) {
                         return false;

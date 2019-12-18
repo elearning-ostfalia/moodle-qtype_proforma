@@ -260,16 +260,16 @@ class base_form_creator {
 
         $mform->setType('filetypes', PARAM_RAW);
 
-        // Programming Language
+        // Programming Language.
         $mform->addElement('select', 'programminglanguage',
                 get_string('highlight', 'qtype_proforma'), $qtype->get_proglang_options());
         $mform->addHelpButton('programminglanguage', 'highlight_hint', 'qtype_proforma');
         $mform->setDefault('programminglanguage', 'java');
 
-        // response template
+        // Response template.
         $this->add_responsetemplate($question);
 
-        // Response Filename
+        // Response filename.
         $this->add_responsefilename($question);
         $mform->hideIf('responsefilename', 'responseformat', 'neq', 'editor');
         $mform->setType('responsefilename', PARAM_TEXT);

@@ -37,16 +37,32 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/javatask.php');
  */
 class qtype_proforma extends question_type {
 
-    // we use separate file areas to be able to handle different purposes
-    // differently in the future
+    // We use separate file areas to be able to handle different purposes
+    // differently in the future.
+
+    /**
+     * Filearea for code templates.
+     */
     const FILEAREA_TEMPLATE = 'template';
+    /**
+     * Filearea for question attachments downloadable by student.
+     */
     const FILEAREA_DOWNLOAD = 'download';
+    /**
+     * Filearea for files that are visible to students (currently not used).
+     */
     const FILEAREA_DISPLAY = 'display';
-
+    /**
+     * Filearea for model solution files.
+     */
     const FILEAREA_MODELSOL = 'modelsol';
-
+    /**
+     * Filearea for task file.
+     */
     const FILEAREA_TASK = 'task';
-
+    /**
+     * Filearea for files needed by comment field.
+     */
     const FILEAREA_COMMENT = 'comment';
 
 
@@ -61,16 +77,23 @@ class qtype_proforma extends question_type {
     const VOLATILE_TASKFILE = 3;
 
     // How is the mark calculated?
+    // - 1 in case all tests have been passed, otherwise 0
     const ALL_OR_NOTHING = 1;
+    // - weighted sum of all test results
     const WEIGHTED_SUM = 2;
 
-    public static $testmode = false;
-
+    // Response Options:
+    // - Fileupload.
     const RESPONSE_FILEPICKER = 'filepicker';
+    // - Editor.
     const RESPONSE_EDITOR = 'editor';
 
-    // static array for handling file areas
-    public static function fileareas() {
+    /**
+     * Function returns array with fileareas containing files visible to students.
+     *
+     * @return array with fileareas
+     */
+    public static function fileareas_for_studentfiles() {
         return array(
                 self::FILEAREA_TEMPLATE => array(
                         "formid" => "templateid",
@@ -88,7 +111,7 @@ class qtype_proforma extends question_type {
     }
 
     public static function fileareas_with_model_solutions() {
-        $fileareas = self::fileareas();
+        $fileareas = self::fileareas_for_studentfiles();
         $fileareas[self::FILEAREA_MODELSOL] = array(
                 "formid" => "modelsolid",
                 "files" => "modelsolutionfiles",
