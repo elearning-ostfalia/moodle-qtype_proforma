@@ -42,6 +42,9 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     protected $formcreator = null;
 
+    /**
+     * overloaded definition detects that a new question will be created.
+     */
     protected function definition() {
         if (empty($this->question->options)) {
             // create question (derived class would be better..)
@@ -50,6 +53,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
         parent::definition();
     }
+
     /*
     public function set_data($question) {
         if ($this->nocreate) {
@@ -101,11 +105,6 @@ class qtype_proforma_edit_form extends question_edit_form {
         return $sets;
     }
     */
-
-
-    public function definition_after_data() {
-        // debugging('called');
-    }
 
     /**
      * Add any question-type specific form fields.

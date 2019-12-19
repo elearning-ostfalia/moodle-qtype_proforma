@@ -29,10 +29,21 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.p
 
 class java_form_creator extends base_form_creator {
 
+    /**
+     * java_form_creator constructor.
+     *
+     * @param $form
+     */
     public function __construct($form) {
         parent::__construct($form);
     }
+
     // override
+    /**
+     * Add something to select the programming language.
+     *
+     * @param $question
+     */
     public function add_proglang_selection($question) {
         $mform = $this->form;
         // create new question
@@ -47,12 +58,23 @@ class java_form_creator extends base_form_creator {
         $mform->setDefault('proglang', 'Java');
     }
 
+    /**
+     * Add response filename (edit field)
+     *
+     * @param $question
+     */
     public function add_responsefilename($question) {
         $mform = $this->form;
         $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
         // $mform->addRule('responsefilename', null, 'required', null, 'client');
     }
 
+    /**
+     * Add model solution as edit field for editor response format or
+     * as fielmanager for filepicker response format.
+     *
+     * @param $question
+     */
     public function add_modelsolution($question) {
         $mform = $this->form;
         // Model Solution files
@@ -72,16 +94,31 @@ class java_form_creator extends base_form_creator {
         $mform->hideIf('modelsolfilemanager', 'responseformat', 'neq', 'filepicker');
     }
 
+    /**
+     * Get test label for add_tests.
+     *
+     * @return string label of JUnit tests
+     */
     protected function get_test_label() {
         return get_string('junittestlabel', 'qtype_proforma'); // use different label
     }
+
+    /**
+     * Modify repeatarray in add_tests: add editor for testcode
+     *
+     * @param $repeatarray
+     */
     protected function modify_repeatarray(&$repeatarray) {
         $mform = $this->form;
         // Add textarea for unit test code.
         $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
     }
 
-
+    /**
+     * Add compilation options.
+     *
+     * @param $question
+     */
     private function add_compilation($question) {
         $mform = $this->form;
         $compilegroup = array();
@@ -93,6 +130,12 @@ class java_form_creator extends base_form_creator {
         $mform->hideIf('compileweight', 'compile');
         $mform->setDefault('compile', 1);
     }
+
+    /**
+     * Add Checkstyle options.
+     *
+     * @param $question
+     */
     private function add_checkstyle($question) {
         $mform = $this->form;
         // Create a Checkstyle test (not part of the repeat group).
@@ -112,6 +155,13 @@ class java_form_creator extends base_form_creator {
         // $mform->addRule('checkstylecode', null, 'required', '', 'client', false, false);
     }
 
+    /**
+     * returns the number of tests. Since the user can add tests the hidden
+     * count field in the html output is also considered.
+     *
+     * @param $question
+     * @return int|mixed
+     */
     protected function get_count_tests($question) {
         $repeats = parent::get_count_tests($question);
 
@@ -129,11 +179,19 @@ class java_form_creator extends base_form_creator {
         return $repeats;
     }
 
-
+    /**
+     * add Java specific test section
+     *
+     * @param $question
+     * @param $questioneditform
+     * @return int
+     */
     public function add_tests($question, $questioneditform) {
         $mform = $this->form;
         $this->taskhandler = new qtype_proforma_java_task();
+        // add compilation
         $this->add_compilation($question);
+        // add JUnit
         $repeats = parent::add_tests($question, $questioneditform);
         // Set CodeMirror for unit test code.
         for ($i = 0; $i < $repeats; $i++) {
@@ -148,11 +206,19 @@ class java_form_creator extends base_form_creator {
             // $repeatoptions['testweight']['rule'] = 'required'; // array(get_string('err_numeric', 'form'), 'numeric', '', 'client');
         }
 
+        // add checkstyle
         $this->add_checkstyle($question);
         return $repeats;
     }
 
-
+    /**
+     * Validate form fields.
+     *
+     * @param Validation $fromform
+     * @param Validation $files
+     * @param array $errors
+     * @return array
+     */
     public function validation($fromform, $files, $errors) {
         $errors = parent::validation($fromform, $files, $errors);
         if ($fromform["checkstyle"]) {
@@ -190,6 +256,14 @@ class java_form_creator extends base_form_creator {
         return $errors;
     }
 
+    /**
+     * Prepare question to fit form field names and values.
+     *
+     * @param $question
+     * @param category $cat
+     * @param MoodleQuickForm $form
+     * @param qtype_proforma_edit_form $editor
+     */
     public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
         parent::data_preprocessing($question, $cat, $form, $editor);
 

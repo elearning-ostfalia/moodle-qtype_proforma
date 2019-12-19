@@ -28,24 +28,65 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/proformatask.php');
 
 class qtype_proforma_java_task extends qtype_proforma_proforma_task {
+
+    /**
+     * is Checkstyle option enabled?
+     *
+     * @param $formdata
+     * @return bool
+     */
     private static function has_checkstyle($formdata) {
         return isset($formdata->checkstyle) && $formdata->checkstyle;
     }
+
+    /**
+     * is compiler option enabled?
+     *
+     * @param $formdata
+     * @return bool
+     */
     private static function has_compiler($formdata) {
         return isset($formdata->compile) && $formdata->compile;
     }
+
+    /**
+     * is testcode for given test index set?
+     *
+     * @param $formdata
+     * @param $index
+     * @return bool
+     */
     private static function has_test($formdata, $index) {
         return isset($formdata->testcode[$index]) && strlen(trim($formdata->testcode[$index]));
     }
+
+    /**
+     * add extra namespaces to XML
+     *
+     * @param $xw
+     */
     protected function add_namespace_to_xml($xw) {
         $xw->create_attribute('xmlns:unit', 'urn:proforma:tests:unittest:v1.1');
         $xw->create_attribute('xmlns:cs', 'urn:proforma:tests:java-checkstyle:v1.1');
     }
+
+    /**
+     * add programming language to XML
+     * @param $xw
+     * @param $formdata
+     */
     protected function add_programming_language_to_xml($xw, $formdata) {
         $javaversion = get_config('qtype_proforma', 'javaversion');
         $xw->create_attribute('version', $javaversion);
         $xw->text($formdata->programminglanguage);
     }
+
+    /**
+     * add test files to XML.
+     *
+     * @param $xw
+     * @param $formdata
+     */
     protected function add_testfiles_to_xml($xw, $formdata) {
         // Junit files
         for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
@@ -80,7 +121,12 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         }
     }
 
-
+    /**
+     * Add tests to xml.
+     *
+     * @param $xw
+     * @param $formdata
+     */
     protected function add_tests_to_xml($xw, $formdata) {
         // create compiler test
         if (self::has_compiler($formdata)) {
@@ -145,6 +191,12 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         }
     }
 
+    /**
+     * Add tests to LMS internal grading hints.
+     *
+     * @param $xw
+     * @param $formdata
+     */
     protected function add_tests_to_lms_grading_hints($xw, $formdata) {
         if (self::has_compiler($formdata)) {
             $xw->startElement('test-ref');
@@ -184,7 +236,14 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         }
     }
 
-
+    /**
+     * set formdata from grading hints
+     *
+     * @param question $question
+     * @param test $ref
+     * @param test $weight
+     * @return bool
+     */
     protected function set_formdata_from_gradinghints($question, $ref, $weight) {
         switch($ref) {
             case 'compiler':
@@ -201,6 +260,12 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         return false;
     }
 
+    /**
+     * extract formdata from taskfile
+     *
+     * @param $category
+     * @param $question
+     */
     public function extract_formdata_from_taskfile($category, $question) {
         $content = $this->get_task_xml($category, $question);
 
@@ -242,6 +307,12 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         }
     }
 
+    /**
+     * get number of JUnit tests.
+     *
+     * @param $gradinghints
+     * @return int
+     */
     public function get_count_unit_tests($gradinghints) {
         if (!$gradinghints) {
             return 0;

@@ -23,23 +23,48 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
+// TODO: cleanup: LON-CAPA format is no longer needed!
 
 /*
  * base class for graders (and this one is for LON-CAPA feedback)
  */
 class qtype_proforma_grader {
 
+    // different message formats
+
+    /**
+     * ProFormA 2 format
+     */
     const FEEDBACK_FORMAT_PROFORMA2 = 0;
+    /**
+     * LON-CAPA format (no longer supported)
+     */
     const FEEDBACK_FORMAT_LC = 1; // LON CAPA
+    /**
+     * invalid
+     */
     const FEEDBACK_FORMAT_INVALID = -2;
+    /**
+     * error
+     */
     const FEEDBACK_FORMAT_ERROR = -1;
+
+    /**
+     * no feedback
+     */
     const FEEDBACK_FORMAT_NONE = -3;
+    /**
+     * HTTP error
+     */
     const FEEDBACK_FORMAT_HTTP_ERROR = -4;
 
+    /**
+     * returns (encrypted) course identifier
+     * @return string
+     */
     protected function get_course() {
         global $COURSE;
 
@@ -58,7 +83,11 @@ class qtype_proforma_grader {
         return $courseid;
     }
 
-
+    /**
+     * returns encrypted user identifier
+     *
+     * @return string
+     */
     protected function get_user() {
         global $USER;
 
@@ -76,6 +105,11 @@ class qtype_proforma_grader {
         return $userid;
     }
 
+    /**
+     * create fake response in LON-CAPA format
+     *
+     * @return string
+     */
     private function set_dummy_result() {
         $dummyresult = '<loncapagrade>' .
             '<awarddetail>INCORRECT</awarddetail>' .
@@ -121,10 +155,20 @@ class qtype_proforma_grader {
         return $dummyresult;
     }
 
-    // virtual
+    // override!
+
+    /**
+     * generates the grade from the given input parameters
+     *
+     * @param $result
+     * @param $httpcode
+     * @param qtype_proforma_question $question
+     * @return array
+     */
     public function extract_grade($result, $httpcode, qtype_proforma_question $question) {
         return $this->extract_grade_from_lon_capa_format_result($result);
     }
+
     /**
      * @param $result
      * @return array with:
@@ -209,7 +253,13 @@ class qtype_proforma_grader {
         return array($questionstate, $grade, '', $feedback, $feedbackformat);
     }
 
-
+    /**
+     * send grading request via HTTP post
+     * @param $postfields
+     * @param qtype_proforma_question $question
+     * @return array
+     * @throws coding_exception
+     */
     private function post_to_grader(&$postfields, qtype_proforma_question $question) {
         global $USER, $COURSE;
 
@@ -268,6 +318,12 @@ class qtype_proforma_grader {
         return $this->post_to_grader($postfields, $question);
     }
 
+    /**
+     * handles grading request for file upload with more than one file
+     * @param $file
+     * @param qtype_proforma_question $question
+     * @throws coding_exception
+     */
     public function send_files_to_grader($file, qtype_proforma_question $question) {
         throw new coding_exception('send_files_to_grader is not implemented');
     }

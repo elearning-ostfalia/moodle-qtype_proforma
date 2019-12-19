@@ -29,10 +29,20 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.p
 
 class proforma_form_creator extends base_form_creator {
 
+    /**
+     * proforma_form_creator constructor.
+     *
+     * @param $form
+     */
     public function __construct($form) {
         parent::__construct($form);
     }
 
+    /**
+     * Create links for files to be downloaded by student.
+     *
+     * @param $question
+     */
     public function add_questiontext_attachments($question) {
         $mform = $this->form;
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::PERSISTENT_TASKFILE);
@@ -43,12 +53,24 @@ class proforma_form_creator extends base_form_creator {
         $mform->addHelpButton('downloadlist', 'downloads_hint', 'qtype_proforma');
 
     }
+
+    /**
+     * Create links for model solution files.
+     *
+     * @param $question
+     */
     public function add_modelsolution($question) {
         $mform = $this->form;
         // Model Solution files (instead of modelsollist we show links)
         $mform->addElement('static', 'mslinks', get_string('modelsolfiles', 'qtype_proforma'), '');
         $mform->addHelpButton('mslinks', 'modelsolfiles_hint', 'qtype_proforma');
     }
+
+    /**
+     * Add response template editor for main template and links for further templates.
+     *
+     * @param $question
+     */
     public function add_responsetemplate($question) {
         $mform = $this->form;
         parent::add_responsetemplate($question);
@@ -59,11 +81,21 @@ class proforma_form_creator extends base_form_creator {
 
     }
 
+    /**
+     * Display response filename.
+     *
+     * @param $question
+     */
     public function add_responsefilename($question) {
         $mform = $this->form;
         $this->add_static_field($question, $mform, 'responsefilename', get_string('filename', 'qtype_proforma'));
     }
 
+    /**
+     * Display grader settings.
+     *
+     * @param $question
+     */
     public function add_grader_settings($question) {
         // ProFormA fields
         $mform = $this->form;
@@ -83,12 +115,24 @@ class proforma_form_creator extends base_form_creator {
         $mform->addElement('static', 'proformaversion', 'ProFormA Version');
     }
 
+    /**
+     * Modify respeatoptions
+     *
+     * @param $repeatoptions
+     */
     protected function modify_repeatoptions(&$repeatoptions) {
         // disable testtype and test identifier for imported tasks
         $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         $repeatoptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
     }
 
+    /**
+     * Add test section
+     *
+     * @param $question
+     * @param $questioneditform
+     * @return int
+     */
     public function add_tests($question, $questioneditform) {
         $this->taskhandler = new qtype_proforma_proforma_task();
         $repeats = parent::add_tests($question, $questioneditform);
@@ -98,6 +142,13 @@ class proforma_form_creator extends base_form_creator {
         return $repeats;
     }
 
+    /**
+     * Create text for download list
+     *
+     * @param $qelement
+     * @param $oelement
+     * @return string
+     */
     private function create_downloadlist($qelement, $oelement) {
         $qelement = $oelement;
         if (isset($qelement)) {
@@ -111,6 +162,14 @@ class proforma_form_creator extends base_form_creator {
         return '';
     }
 
+    /**
+     * Prepare question to fit form field names and values.
+     *
+     * @param $question
+     * @param category $cat
+     * @param MoodleQuickForm $form
+     * @param qtype_proforma_edit_form $editor
+     */
     public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
         parent::data_preprocessing($question, $cat, $form, $editor);
 

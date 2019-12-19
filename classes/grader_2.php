@@ -138,6 +138,14 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         return $submission;
     }
 
+    /**
+     * send grading request via HTTP post
+     *
+     * @param $postfields
+     * @param qtype_proforma_question $question
+     * @return array
+     * @throws coding_exception
+     */
     protected function post_to_grader(&$postfields, qtype_proforma_question $question) {
 
         if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE or
@@ -165,6 +173,14 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         return array($output, $httpcode);
     }
 
+    /**
+     * send file upload submission to grader
+     *
+     * @param $files
+     * @param qtype_proforma_question $question
+     * @return array
+     * @throws coding_exception
+     */
     public function send_files_to_grader($files, qtype_proforma_question $question) {
         // check files
         foreach ($files as $file) {
@@ -210,6 +226,17 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         return $this->post_to_grader($postfields, $question);
     }
 
+    /**
+     * updates the grade result for this specifix test
+     * @param $test
+     * @param $score
+     * @param $question
+     * @param $totalweight
+     * @param $gradingtests
+     * @param $gradecalc
+     * @return float|int
+     * @throws moodle_exception
+     */
     private function update_grade($test, $score, $question, $totalweight, $gradingtests, $gradecalc) {
 
         switch ($question->aggregationstrategy) {
@@ -238,6 +265,13 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         return $gradecalc;
     }
 
+    /**
+     * calc score for this specifix test resp. subtest
+     *
+     * @param $test
+     * @return array
+     * @throws moodle_exception
+     */
     public static function calc_score_for_test($test) {
         if (count($test->{'subtests-response'}) == 0) {
             throw new moodle_exception('Subtest results not found');
@@ -259,6 +293,14 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         return array($score / $counttests, $internalerror);
     }
 
+    /**
+     * calculate or extract grade from grader response
+     *
+     * @param $result
+     * @param $httpcode
+     * @param qtype_proforma_question $question
+     * @return array
+     */
     public function extract_grade($result, $httpcode, qtype_proforma_question $question) {
         $questionstate = question_state::$needsgrading;
                 // question_state::$invalid; // $needsgrading; // $invalid;

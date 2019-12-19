@@ -90,7 +90,11 @@ class qtype_proforma_question extends question_graded_automatically {
 
     public $proformaversion;
 
-
+    /**
+     * creates the grader object (why function???)
+     *
+     * @return null|qtype_proforma_grader_2
+     */
     private function get_grader() {
         if ($this->grader == null) {
             $this->grader = new qtype_proforma_grader_2();
@@ -100,6 +104,14 @@ class qtype_proforma_question extends question_graded_automatically {
         return $this->grader;
     }
 
+    /**
+     * make the behaviour needed for proforma:
+     * always adaptiveexternalgrading
+     *
+     * @param question_attempt $qa
+     * @param string $preferredbehaviour
+     * @return question_behaviour
+     */
     public function make_behaviour(question_attempt $qa, $preferredbehaviour) {
         switch($preferredbehaviour) {
             /* The question behaviour must be changed because we need the grader feedback
@@ -438,6 +450,11 @@ class qtype_proforma_question extends question_graded_automatically {
         }
     }
 
+    /**
+     * returns the task file object.
+     *
+     * @return bool|null|stored_file
+     */
     public function get_task_file() {
         if ($this->taskstorage != qtype_proforma::PERSISTENT_TASKFILE and
                 $this->taskstorage != qtype_proforma::VOLATILE_TASKFILE) {

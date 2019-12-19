@@ -70,7 +70,7 @@ class base_form_creator {
     }
 
     /**
-     * Add downloads for question text
+     * Add downloads for question text.
      *
      * @param $question
      */
@@ -78,7 +78,7 @@ class base_form_creator {
     }
 
     /**
-     * Add response template
+     * Add response template.
      *
      * @param $question
      */
@@ -96,7 +96,7 @@ class base_form_creator {
     }
 
     /**
-     * Add response filename
+     * Add response filename.
      *
      * @param $question
      */
@@ -104,7 +104,7 @@ class base_form_creator {
     }
 
     /**
-     * Add model solution
+     * Add model solution.
      *
      * @param $question
      */
@@ -114,7 +114,7 @@ class base_form_creator {
     // override
 
     /**
-     * Get test label for add_tests
+     * Get test label for add_tests.
      *
      * @return string label of (unit) tests
      */
@@ -123,7 +123,7 @@ class base_form_creator {
     }
 
     /**
-     * Modify repeatarray in add_tests
+     * Modify repeatarray in add_tests.
      *
      * @param $repeatarray
      */

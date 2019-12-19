@@ -33,7 +33,13 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.ph
  */
 class qtype_proforma_proforma_task {
 
-    // http://www.seanbehan.com/how-to-generate-a-uuid-in-php/
+    /**
+     * Create UUID
+     *
+     * http://www.seanbehan.com/how-to-generate-a-uuid-in-php/
+     *
+     * @return string
+     */
     private static function uuid() {
         $data = random_bytes(16);
         $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
@@ -42,16 +48,44 @@ class qtype_proforma_proforma_task {
     }
 
     // override for creating task
+
+    /**
+     * Add extra namespaces
+     * @param $xw
+     */
     protected function add_namespace_to_xml($xw) {
     }
+
+    /**
+     * Add programming language.
+     *
+     * @param $xw
+     * @param $formdata
+     */
     protected function add_programming_language_to_xml($xw, $formdata) {
     }
+
+    /**
+     * Add testfiles.
+     *
+     * @param $xw
+     * @param $formdata
+     */
     protected function add_testfiles_to_xml($xw, $formdata) {
     }
+
+    /**
+     * Add tests.
+     *
+     * @param $xw
+     * @param $formdata
+     */
     protected function add_tests_to_xml($xw, $formdata) {
     }
 
     /**
+     * Set formdata from grading hints
+     *
      * @param $question question object
      * @param $ref test ref
      * @param $weight test weight
@@ -62,7 +96,9 @@ class qtype_proforma_proforma_task {
     }
 
 
-    /** default implementation for imported taskfiles
+    /**
+     * Add test specific data to LMS internal grading hints
+     *
      * @param $xw
      * @param $formdata
      */
@@ -162,6 +198,13 @@ class qtype_proforma_proforma_task {
         return $taskfile;
     }
 
+    /**
+     * Create LMS internal grading hints.
+     *
+     * @param $formdata
+     * @param bool $withprolog
+     * @return string
+     */
     public function create_lms_grading_hints($formdata, $withprolog = true) {
 
         if (isset($formdata->gradinghints) && strlen($formdata->gradinghints) > 0) {
@@ -198,6 +241,8 @@ class qtype_proforma_proforma_task {
     }
 
     /**
+     * Store task file in Moodle.
+     *
      * @param $content task file (xml)
      * @param $filename task filename
      * @param $draftitemid draftid
@@ -225,20 +270,11 @@ class qtype_proforma_proforma_task {
         $fs->create_file_from_string($fileinfo, $content);
     }
 
-    /*
-    // from edit_numerical_form
-    // See comment in the parent method about this hack:
-    // Evil hack alert. Formslib can store defaults in two ways for
-    // repeat elements:
-    //   ->_defaultValues['fraction[0]'] and
-    //   ->_defaultValues['fraction'][0].
-    // The $repeatedoptions['fraction']['default'] = 0 bit above means
-    // that ->_defaultValues['fraction[0]'] has already been set, but we
-    // are using object notation here, so we will be setting
-    // ->_defaultValues['fraction'][0]. That does not work, so we have
-    // to unset ->_defaultValues['fraction[0]'].
-    unset($this->_form->_defaultValues["testtitle[{$key}]"]);
-    */
+    /**
+     * extract form data from LMS internal grading hints
+     * @param $question
+     * @param $mform
+     */
     public function extract_formdata_from_gradinghints($question, $mform) {
         $question->testtitle = array();
         $question->testdescription = array();
@@ -289,6 +325,20 @@ class qtype_proforma_proforma_task {
                 $testtype = '';
             }
 
+            /*
+            // from edit_numerical_form
+            // See comment in the parent method about this hack:
+            // Evil hack alert. Formslib can store defaults in two ways for
+            // repeat elements:
+            //   ->_defaultValues['fraction[0]'] and
+            //   ->_defaultValues['fraction'][0].
+            // The $repeatedoptions['fraction']['default'] = 0 bit above means
+            // that ->_defaultValues['fraction[0]'] has already been set, but we
+            // are using object notation here, so we will be setting
+            // ->_defaultValues['fraction'][0]. That does not work, so we have
+            // to unset ->_defaultValues['fraction[0]'].
+            unset($this->_form->_defaultValues["testtitle[{$key}]"]);
+            */
             unset($mform->_defaultValues["testtitle[{$key}]"]);
             unset($mform->_defaultValues["testid[{$key}]"]);
             unset($mform->_defaultValues["testweight[{$key}]"]);
@@ -305,6 +355,12 @@ class qtype_proforma_proforma_task {
         }
     }
 
+    /**
+     * Get number of tests from grading hints.
+     *
+     * @param $gradinghints
+     * @return int
+     */
     public function get_count_tests($gradinghints) {
         if (!$gradinghints) {
             return 0;
@@ -323,11 +379,25 @@ class qtype_proforma_proforma_task {
     }
 
     // override
+
+    /**
+     * get number of unit tests (if any), to be overriden
+     *
+     * @param $gradinghints
+     * @return int
+     */
     public function get_count_unit_tests($gradinghints) {
         return $this->get_count_tests($gradinghints);
     }
 
-
+    /**
+     * returns the task.xml
+     *
+     * @param $category
+     * @param $question
+     * @return string
+     * @throws moodle_exception
+     */
     protected function get_task_xml($category, $question) {
         $fs = get_file_storage();
         $file = $fs->get_file($category, 'qtype_proforma', qtype_proforma::FILEAREA_TASK,
