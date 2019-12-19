@@ -29,20 +29,43 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
-// load Jquery for CodeMirror resizing. This cannot be done
-// inside function because an error occurs.
+// load JQuery for CodeMirror resizing. This cannot be done
+// inside a function.
+
 global $PAGE;
-$PAGE->requires->jquery();
-$PAGE->requires->jquery_plugin('ui');
-$PAGE->requires->jquery_plugin('ui-css');
+if (!$PAGE->requires->is_head_done()) {
+    // this is_head_done check avoids a debugging error message telling us
+    // that we cannot add jquery after starting page output.
+    
+    // But: if the jquery calls are missing then Codemirror resizing does not work.
+    // This happens for the preview window for a specific step in the grades history :-(
+    $PAGE->requires->jquery();
+    $PAGE->requires->jquery_plugin('ui');
+    $PAGE->requires->jquery_plugin('ui-css');
+}
+
 
 /**
  * Generates the output for proforma questions.
  */
 class qtype_proforma_renderer extends qtype_renderer {
 
+    /**
+     * For creating a collapsible a unique identifier is needed.
+     * Therefore a counter is used that is incremented
+     * for each collapsible instance (kind of sequence counter).
+     *
+     * @var int
+     */
     private $collapseid = 0;
 
+    /**
+     * overridden function for creating the output
+     *
+     * @param question_attempt $qa
+     * @param question_display_options $options
+     * @return string outout as html fragment
+     */
     public function formulation_and_controls(question_attempt $qa,
             question_display_options $options) {
 
@@ -129,6 +152,13 @@ class qtype_proforma_renderer extends qtype_renderer {
         return $result;
     }
 
+    /**
+     * returns the download URI for a given file (identfied by filename and filearea)
+     * @param $question
+     * @param $filearea
+     * @param $filename
+     * @return string
+     */
     private function get_download_uri($question, $filearea, $filename) {
         if (empty($filename)) {
             return '';
@@ -138,6 +168,12 @@ class qtype_proforma_renderer extends qtype_renderer {
         return '<a href="' . $url->out() . '">' . $filename . '</a> ';
     }
 
+    /**
+     * returns the html fragment for download links
+     * @param $question
+     * @param $qa
+     * @return string
+     */
     protected function question_downloads($question, $qa) {
         $result = '';
 
@@ -325,6 +361,14 @@ class qtype_proforma_renderer extends qtype_renderer {
         return array("", "", qtype_proforma_grader::FEEDBACK_FORMAT_NONE);
     }
 
+    /**
+     * converts the ProFormA response to html
+     *
+     * @param $message
+     * @param $errormsg
+     * @param question_attempt $qa
+     * @return string
+     */
     public function convert_proforma2_message_to_html($message, $errormsg, question_attempt $qa) {
         $result = '';
         $question = $qa->get_question();
@@ -417,8 +461,13 @@ class qtype_proforma_renderer extends qtype_renderer {
         // . PHP_EOL . 'ORIGINAL: ' . html_writer::tag('xmp', $result, array('class' => 'proforma_testlog'));
     }
 
+    /**
+     * checks if teacher feedback shall be displayed
+     *
+     * @return bool
+     */
     private function is_teacher() {
-        global $COURSE, $USER;
+        global $COURSE;
         if ($COURSE) {
             $context = context_course::instance($COURSE->id);
             if ($context) {
@@ -429,6 +478,16 @@ class qtype_proforma_renderer extends qtype_renderer {
         return false;
     }
 
+    /**
+     * creates the html fragmenbt for a single freedback element
+     * @param $feedback
+     * @param bool $teacher
+     * @param bool $subtest
+     * @param bool $printpassedinfo
+     * @param bool $passed
+     * @param bool $general
+     * @return string
+     */
     private function print_proforma_single_feedback($feedback, $teacher = false, $subtest = false,
             $printpassedinfo = false, $passed = false, $general = false) {
 
@@ -497,8 +556,16 @@ class qtype_proforma_renderer extends qtype_renderer {
         return $result;
     }
 
-    // background: often more than one question is displayed per page. In this case
-    // the collapsible regions do not work if the identifier is not unique
+
+    /**
+     * creates a collapsible region identifier
+     *
+     * background: often more than one question is displayed per page. In this case
+     * the collapsible regions do not work if the identifier is not unique
+     *
+     * @param question_attempt|null $qa
+     * @return string
+     */
     private function create_collapsible_region_id(question_attempt $qa = null) {
         if ($qa != null) {
             $qaid = (empty($qa->get_database_id()) ? 'x' : $qa->get_database_id()) . '-' .
@@ -511,6 +578,12 @@ class qtype_proforma_renderer extends qtype_renderer {
         return 'm-id-test-proforma-' . $qaid . '-' . $this->collapseid;
     }
 
+    /**
+     * creates the html fragment for a subtest result
+     * @param $testresult
+     * @param $qa
+     * @return string
+     */
     private function print_proforma_subtest_result($testresult, $qa) {
         $passed = (string) $testresult->result->score === '1.0';
         $result = '';
@@ -533,7 +606,13 @@ class qtype_proforma_renderer extends qtype_renderer {
         return $result;
     }
 
-
+    /**
+     * returns the comment text
+     *
+     * @param question_attempt $qa
+     * @param question_display_options $options
+     * @return string
+     */
     public function manual_comment(question_attempt $qa, question_display_options $options) {
         if ($options->manualcomment != question_display_options::EDITABLE) {
             return '';
@@ -590,6 +669,19 @@ class qtype_proforma_renderer extends qtype_renderer {
         return $output;
     }
 
+    /**
+     * creates the html fragment for a test title
+     * @param $test
+     * @param $gradingtests
+     * @param $qa
+     * @param $question
+     * @param $totalweight
+     * @param $score
+     * @param $internalerror
+     * @param $result
+     * @param $allcorrect
+     * @throws moodle_exception
+     */
     private function render_proforma_test_title($test, $gradingtests, $qa, $question, $totalweight, $score, $internalerror,
             &$result, &$allcorrect) {
         $truefeedbackimg = $this->feedback_image((int) 1);
@@ -639,6 +731,8 @@ class qtype_proforma_renderer extends qtype_renderer {
     }
 
     /**
+     * renders a test with its score
+     *
      * @param $test
      * @param $result
      * @throws moodle_exception
@@ -655,6 +749,13 @@ class qtype_proforma_renderer extends qtype_renderer {
         }
     }
 
+    /**
+     * renders a test with its subtests
+     *
+     * @param $test
+     * @param $result
+     * @param $qa
+     */
     private function render_proforma_test_with_subtests($test, &$result, $qa) {
 
         foreach ($test->{'subtests-response'}->{'subtest-response'} as $response) {
@@ -668,18 +769,47 @@ class qtype_proforma_renderer extends qtype_renderer {
  */
 class qtype_proforma_format_filepicker_renderer extends plugin_renderer_base {
 
+    /**
+     * returns the html fragment for the reponse area in readonly mode
+     * @param $name
+     * @param $qa
+     * @param $step
+     * @param $lines
+     * @param $context
+     * @return string
+     */
     public function response_area_read_only($name, $qa, $step, $lines, $context) {
         return '';
     }
 
+    /**
+     * returns the html fragment for the reponse area in input mode
+     *
+     * @param $name
+     * @param $qa
+     * @param $step
+     * @param $lines
+     * @param $context
+     * @return string
+     */
     public function response_area_input($name, $qa, $step, $lines, $context) {
         return '';
     }
 
+    /**
+     * returns if the student submission can have attachments (true)
+     *
+     * @return bool true
+     */
     public function can_have_attachments() {
         return true;
     }
 
+    /**
+     * returns the class name
+     *
+     * @return string
+     */
     protected function class_name() {
         return 'qtype_proforma_filepicker';
     }
@@ -691,39 +821,47 @@ class qtype_proforma_format_filepicker_renderer extends plugin_renderer_base {
  */
 class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
 
-    const READONLY = 1;
-    const WRITABLE = 0;
-
-    protected $textareaid = null;
-
+    /**
+     * returns the html fragment for the reponse area in input mode
+     *
+     * @param $name
+     * @param $qa
+     * @param $step
+     * @param $lines
+     * @param $context
+     * @return string
+     */
     public function response_area_input($name, $qa, $step, $lines, $context) {
         $question = $qa->get_question();
         $mode = $question->programminglanguage;
-
-        $input = $this->set_response_area_input($name, $qa, $step, $lines, $context);
-        // convert textarea to codemirror editor
-        qtype_proforma::as_codemirror($this->textareaid, $mode, null, false, false);
-        return $input;
-    }
-
-    private function set_response_area_input($name, $qa, $step, $lines, $context) {
         $inputname = $qa->get_qt_field_name($name);
-        $id = $this->set_textarea_id($qa);
+        $id = $this->get_textarea_id($qa);
 
-        return $this->textarea($step->get_qt_var($name), $lines, array('name' => $inputname,
+        $input = $this->textarea($step->get_qt_var($name), $lines, array('name' => $inputname,
                         'id' => $id)) .
                 html_writer::empty_tag('input', array('type' => 'hidden',
                         'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
-    }
-
-    protected function set_textarea_id($qa) {
-        $responsefieldname = $qa->get_qt_field_name('answer');
-        $this->textareaid = 'id_' . $responsefieldname;
-        return $this->textareaid;
+        // convert textarea to codemirror editor
+        qtype_proforma::as_codemirror($id, $mode, null, false, false);
+        return $input;
     }
 
     /**
-     * @return string the HTML for the textarea.
+     * returns the html identfier for the textarea
+     * @param $qa
+     * @return string
+     */
+    protected function get_textarea_id($qa) {
+        $responsefieldname = $qa->get_qt_field_name('answer');
+        return 'id_' . $responsefieldname;
+    }
+
+    /**
+     * creates a html fragment for the textarea.
+     * @param $response
+     * @param $lines
+     * @param $attributes
+     * @return string string the HTML for the textarea.
      */
     protected function textarea($response, $lines, $attributes) {
         $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
@@ -732,31 +870,42 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
         return html_writer::tag('textarea', s($response), $attributes);
     }
 
+    /**
+     * returns the class name
+     *
+     * @return string
+     */
     protected function class_name() {
         return 'qtype_proforma_editor';
     }
 
+    /**
+     * returns the html fragment for the reponse area in input mode
+     *
+     * @param $name
+     * @param $qa
+     * @param $step
+     * @param $lines
+     * @param $context
+     * @return string
+     */
     public function response_area_read_only($name, $qa, $step, $lines, $context) {
-        global $PAGE;
-        global $CFG;
-
         $question = $qa->get_question();
         $mode = $question->programminglanguage;
+        $id = $this->get_textarea_id($qa);
+        $input = $this->textarea($step->get_qt_var($name), $lines, array('readonly' => 'readonly',
+                        'id' => $id));
 
-        $input = $this->set_response_area_read_only($name, $qa, $step, $lines, $context);
         // convert textarea to codemirror editor
-        qtype_proforma::as_codemirror($this->textareaid, $mode, null, true, false);
-
+        qtype_proforma::as_codemirror($id, $mode, null, true, false);
         return $input;
     }
 
-    private function set_response_area_read_only($name, $qa, $step, $lines, $context) {
-        $id = $this->set_textarea_id($qa);
-
-        return $this->textarea($step->get_qt_var($name), $lines, array('readonly' => 'readonly',
-                'id' => $id));
-    }
-
+    /**
+     * returns if the student submission can have attachments (false)
+     *
+     * @return bool false
+     */
     public function can_have_attachments() {
         return false;
     }
