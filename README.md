@@ -1,16 +1,17 @@
 The ProForma Moodle Question Type is a Moodle Plugin that is used for 
-automatically graded programming questions in Moodle quizzes.
+automatically grading programming questions in Moodle quizzes. Questions are 
+stored in the ProFormA format (https://github.com/ProFormA/proformaxml) version 2.0.  
 
 Standard test frameworks (e.g. JUNIT for Java) are used for specifying tests. So there is no 
-need to learn a new test description language.
+need to learn a new test description language. The plugin comes with a built-in
+Java question generator.
 
-Tests are run on an back-end system (grader) that conforms to the ProFormA standard 
-(https://github.com/ProFormA/proformaxml). It is not actually a grader but is 
-so called. 
+Tests are run on an back-end system (grader or test runner) that also conforms to the ProFormA standard 
+(https://github.com/ProFormA/proformaxml) version 2.0.  
  
 Simple Java questions can be created in Moodle with the ProFormA question editor. 
-Otherwise questions with any programming language can be imported as long as there is
-an external possibility to create them and the test runner supports the programming language.
+On the other hand questions with any programming language can be imported as long as 
+the test runner supports the programming language.
 
 Copyright note: The renderer code partly bases upon the renderer from essay question type (Moodle core).
 Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copied from Coderunner 
@@ -19,11 +20,11 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
 ## Features
 
 - Java code can be checked with JUnit and Checkstyle
-- Moodle quiz question type 
+- full featured Moodle quiz question type 
 - submission as file upload or as input into editor
-- Submission file upload with more than one file 
-- Syntax highlighting in editor
-- Code snippet as starting point for student
+- submission file upload with more than one file 
+- syntax highlighting in editor
+- code snippet as starting point for student
 - immediate feedback for students (optional) 
 - supported programming languages are only limited by the available grader back-ends
  
@@ -37,44 +38,53 @@ Alternative: File upload with filepicker for large files or if the response cons
 
 ![filepicker](doc/student_filepicker.png "student view with filepicker")
 
-Feedback from grader:
+Student feedback for Java question:
 
 ![filepicker](doc/student_feedback_2.png "feedback")
  
 
 ## Installation
 
+####  Prerequisites 
 
-Running this Plugin also requires the following plugins to be installed:
+The ProFormA question type requires:
 
-- Moodle-Plugin qbehaviour_adaptiveexternalgrading (question engine changes)
+- the Moodle plugin "qbehaviour_adaptiveexternalgrading" 
+(https://github.com/elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading) for 
+question engine changes and
 
-If you want to import ProFormA tasks from another source: 
+- a ProFromA grading back-end to run the tests.  
+ProFormA-Praktomat (https://github.com/elearning-ostfalia/Proforma-Praktomat) is recommended.
+
+#### Import from external sourcses
+
+For importing questions from an external source an import plugin is available (optional):   
 
 - Moodle-Plugin qformat_proforma (import for ProFormA questions)
 
-We have a separate editor for creating tasks (https://github.com/ProFormA/formatEditor). 
-There is an online version available at 
-https://media.elan-ev.de/proforma/editor/releases/3.0.1/proformaEditor.html       
-Of course ProFormA tasks can be created from different other external tools as well.
-
-Besides:
+We have a separate Javascript editor for creating tasks (https://github.com/ProFormA/formatEditor).
  
-- A ProFromA grading back-end is required to run the tests. We use 
-ProFormA-Praktomat (https://github.com/elearning-ostfalia/Proforma-Praktomat) for testing 
-Java code with JUnit and Checkstyle.
+An online version is available at 
+https://media.elan-ev.de/proforma/editor/releases/3.0.2/proformaEditor.html
+       
+Of course ProFormA tasks can be created by different other external tools as well.
 
 
-Import process:
+<!-- Import process:
 
 ![import](doc/import_en.png "import")
+-->
 
 ## Settings
 
 
 ### Admin settings
 
+At least the following settings must be made:  
+
 * set grader URI to IP address and port number of your 'ProFormA-Praktomat server'
+
+and for the built-in Java question generator: 
 
 * set Java version
 * set Checkstyle version
@@ -82,9 +92,10 @@ Import process:
 
 ### Quiz settings
 
-In order to show the grading feedback to the student you need to set the following options in your Moodle quiz:
+In order to display the grading feedback to the student you need to set the following 
+options in your Moodle quiz:
 
-* Question behaviour: 'Adaptive' (with our without penalties) for showing immediate feedback
+* Question behaviour: 'Adaptive' (with our without penalties) for displaying immediate feedback
   or 'deferred feedback' if the student  shall not see any feedback 
 * Review Options: 'Specific Feedback' set to 'on' for showing detailed grading results
 * Review Options: opt out 'Right Answer' if you do not want to show the model solution
