@@ -45,6 +45,7 @@ $string['templateeditor'] = '';
 $string['modelsolution'] = 'Musterlösung';
 $string['modelsolutionheader'] = 'Musterlösung';
 $string['modelsolution_help'] = 'Beispiellösung für die Aufgabe, wie sie dem Studierenden angezeigt werden soll, falls die Option "Richtige Antwort" in den Überprüfungsoptionen des Tests angeschaltet ist.';
+$string['msfilename'] = 'Datei ';
 
 
 $string['taskpath'] = 'Verzeichnis';

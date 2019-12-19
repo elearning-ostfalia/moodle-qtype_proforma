@@ -48,6 +48,7 @@ $string['templateeditor'] = 'Editor';
 $string['modelsolution'] = 'Model solution';
 $string['modelsolutionheader'] = 'Model Solution';
 $string['modelsolution_help'] = 'An exemplary solution for this question. It is displayed to the student when "Right answer" is checked in "Review options" of the quiz.';
+$string['msfilename'] = 'File';
 
 $string['taskpath'] = 'Task path';
 $string['taskpath_hint'] = $string['taskpath'];

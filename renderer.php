@@ -36,7 +36,7 @@ global $PAGE;
 if (!$PAGE->requires->is_head_done()) {
     // this is_head_done check avoids a debugging error message telling us
     // that we cannot add jquery after starting page output.
-    
+
     // But: if the jquery calls are missing then Codemirror resizing does not work.
     // This happens for the preview window for a specific step in the grades history :-(
     $PAGE->requires->jquery();
@@ -187,7 +187,7 @@ class qtype_proforma_renderer extends qtype_renderer {
         // prefix
         if (!empty($result)) {
             return html_writer::tag('p', html_writer::tag('div',
-                    get_string('attachments', 'qtype_proforma') . $result,
+                    get_string('attachments', 'qtype_proforma') . ' '. $result,
                     array('class' => 'downloads')));
         }
         return $result;
@@ -533,7 +533,15 @@ class qtype_proforma_renderer extends qtype_renderer {
                 $result .= html_writer::tag('div', $title, $csstitle);
                 break;
             case 'warn':
+                $result .= html_writer::tag('div', $title, $csstitle);
+                break;
             case 'info':
+                // do not display 'info title' for score tests (title is set by LMS and can be changed by teacher)
+                // because the title is displayed twice
+                if ($subtest or $general) {
+                    $result .= html_writer::tag('div', $title, $csstitle);
+                }
+                break;
             default:
                 $result .= html_writer::tag('div', $title, $csstitle);
                 break;
@@ -653,7 +661,8 @@ class qtype_proforma_renderer extends qtype_renderer {
             // Access rules for Downloads must ensure that the student cannot see the
             // model solution before he or she should see it!!! This can be difficult.
 
-            $output .= html_writer::tag('div', 'File ' . $ms,
+            $output .= html_writer::tag('div',
+                    get_string('msfilename', 'qtype_proforma') . ': ' .$ms,
                     array('class' => 'proforma_testlog_title'));
 
             $output .= html_writer::tag('div', '<xmp>' .
@@ -684,8 +693,9 @@ class qtype_proforma_renderer extends qtype_renderer {
      */
     private function render_proforma_test_title($test, $gradingtests, $qa, $question, $totalweight, $score, $internalerror,
             &$result, &$allcorrect) {
-        $truefeedbackimg = $this->feedback_image((int) 1);
-        $falsefeedbackimg = $this->feedback_image((int) 0);
+        $successimg = $this->feedback_image((int) 1);
+        $failimg = $this->feedback_image((int) 0);
+        $partimg = $this->feedback_image(0.1);
 
         $id = (string) $test['id'];
         $ghtest = $gradingtests->xpath("//test-ref[@ref='" . $id . "']");
@@ -705,18 +715,26 @@ class qtype_proforma_renderer extends qtype_renderer {
         $visiblescore = '';
         if ($question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
             $weight = floatval((string) $ghtest['weight']) / $totalweight;
-            $weightscore = number_format($score * $weight / 1 * 100, 0);
-            $visiblescore = ' (' . $weightscore . '/' . number_format($weight * 100, 0) . ' %)';
+            if ($weight > 0.0) {
+                // only display percentage if this test counts more than 0
+                $weightscore = number_format($score * $weight / 1 * 100, 0);
+                $visiblescore = ' (' . $weightscore . '/' . number_format($weight * 100, 0) . ' %)';
+            }
         }
 
         if ($score === 1.0) {
             $result .= print_collapsible_region_start('', $collid,
-                    $truefeedbackimg . ' ' . $testtitle . $visiblescore,
+                    $successimg . ' ' . $testtitle . $visiblescore,
+                    '', true, true);
+        } else if ($score === 0.0) {
+            $allcorrect = false;
+            $result .= print_collapsible_region_start('', $collid,
+                    $failimg . ' ' . $testtitle . $visiblescore,
                     '', true, true);
         } else {
             $allcorrect = false;
             $result .= print_collapsible_region_start('', $collid,
-                    $falsefeedbackimg . ' ' . $testtitle . $visiblescore,
+                    $partimg . ' ' . $testtitle . $visiblescore,
                     '', true, true);
         }
 
