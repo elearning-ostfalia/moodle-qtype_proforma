@@ -1,6 +1,6 @@
 The ProForma Moodle Question Type is a Moodle Plugin that is used for 
 automatically grading programming questions in Moodle quizzes. Questions are 
-stored in the ProFormA format (https://github.com/ProFormA/proformaxml) version 2.0.  
+stored in the ProFormA format (https://github.com/ProFormA/proformaxml) version 2.0. 
 
 Standard test frameworks (e.g. JUNIT for Java) are used for specifying tests. So there is no 
 need to learn a new test description language. The plugin comes with a built-in
@@ -20,7 +20,6 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
 ## Features
 
 - Java code can be checked with JUnit and Checkstyle
-- full featured Moodle quiz question type 
 - submission as file upload or as input into editor
 - submission file upload with more than one file 
 - syntax highlighting in editor
@@ -51,7 +50,7 @@ The ProFormA question type requires:
 
 - the Moodle plugin "qbehaviour_adaptiveexternalgrading" 
 (https://github.com/elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading) for 
-question engine changes and
+question engine adaptation and
 
 - a ProFromA grading back-end to run the tests.  
 ProFormA-Praktomat (https://github.com/elearning-ostfalia/Proforma-Praktomat) is recommended.
