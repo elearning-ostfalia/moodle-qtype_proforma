@@ -405,7 +405,13 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
      */
     public static function get_java_file($code) {
         self::remove_java_comment($code);
+        $package = self::get_java_packagename($code);
         $classname = self::get_java_classname($code);
+        if (strlen($package) > 0) {
+            $package = str_replace('.', '/', $package);
+            $classname = $package . '/' . $classname;
+        }
+
         if ($classname) {
             return $classname . ".java";
         }

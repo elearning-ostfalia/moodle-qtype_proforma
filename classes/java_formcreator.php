@@ -66,7 +66,8 @@ class java_form_creator extends base_form_creator {
     public function add_responsefilename($question) {
         $mform = $this->form;
         $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
-        // $mform->addRule('responsefilename', null, 'required', null, 'client');
+        // maybe in the future...
+        //$mform->addElement('button', 'generatefilename', get_string('generatefilename', 'qtype_proforma'));
     }
 
     /**
@@ -251,6 +252,19 @@ class java_form_creator extends base_form_creator {
                     $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
                 }
             }
+        }
+
+        if ($fromform["responseformat"] == 'editor') {
+            if (0 == strlen(trim($fromform["responsefilename"]))){
+                $errors['responsefilename'] = get_string('required');
+            }
+            if (0 < strlen(trim($fromform["modelsolution"]))) {
+                $filename = qtype_proforma_java_task::get_java_file($fromform["modelsolution"]);
+                if ($filename != null and trim($filename) != trim($fromform["responsefilename"])) {
+                    $errors['responsefilename'] = $filename . ' expected';
+                }
+            }
+
         }
 
         return $errors;

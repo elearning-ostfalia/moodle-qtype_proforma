@@ -64,7 +64,7 @@ $string['repositorypath_desc'] = 'Path of ProFormA task in Repository';
 
 $string['filename'] = 'Response filename';
 $string['filename_hint'] = $string['filename'];
-$string['filename_hint_help'] = 'filename used for submitted source code';
+$string['filename_hint_help'] = 'filename used for submitted source code (if necessary consider package name)';
 
 $string['taskfilename'] = 'Task file';
 $string['taskfilename_hint'] = $string['taskfilename'];

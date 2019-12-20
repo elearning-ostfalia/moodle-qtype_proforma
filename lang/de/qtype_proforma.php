@@ -63,7 +63,8 @@ $string['repositorypath_desc'] = 'Verzeichnis einer ProFormA-Aufgabe im Reposito
 
 $string['filename'] = 'Dateiname';
 $string['filename_hint'] = $string['filename'];
-$string['filename_hint_help'] = 'Da bei Nutzung des Editors als Eingabeform kein Dateiname zum Kompilieren vorhanden ist, muss dieser fest vorgegeben werden.';
+$string['filename_hint_help'] = 'Da bei Nutzung des Editors als Eingabeform kein Dateiname zum Kompilieren vorhanden ist, muss dieser fest vorgegeben werden.
+Bitte beachten, dass u.U. auch das Package im Namen enthalten sein muss.';
 
 $string['taskfilename'] = 'ProFormA-Aufgabendatei';
 $string['taskfilename_hint'] = $string['taskfilename'];
@@ -91,7 +92,7 @@ $string['other'] = 'andere';
 
 $string['miscellaneousheader'] = 'Verschiedenes';
 $string['defaultpenalty'] = 'Abzug bei Fehlversuchen';
-$string['defaultpenalty_desc'] = 'Abzug bei Fehlversuchen, falls Frageverhalten auf "Mehrfachbeantwortung (mit Abzügen)") gestellt ist';
+$string['defaultpenalty_desc'] = 'Abzug bei Fehlversuchen, falls Frageverhalten auf "Mehrfachbeantwortung (mit Abzügen)" gestellt ist';
 
 $string['grader_heading'] = 'Grader-Einstellungen';
 $string['graderuri_host'] = 'URI: Protokoll und Server';
@@ -99,7 +100,7 @@ $string['graderuri_host_desc'] = 'Protokoll und Server der Grader URI';
 $string['graderuri_path'] = 'URI: Pfad';
 $string['graderuri_path_desc'] = 'Pfad der Grader URI';
 
-$string['javasettings_header'] = 'Java-Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';
+$string['javasettings_header'] = 'Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';
 $string['checkstyleversion'] = 'Checkstyle Version';
 $string['checkstyleversion_desc'] = 'Checkstyle-Version des Graders';
 $string['javaversion'] = 'Java Version';
