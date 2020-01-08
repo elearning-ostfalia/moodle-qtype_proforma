@@ -490,7 +490,7 @@ class qtype_proforma_renderer extends qtype_renderer {
     }
 
     /**
-     * checks if the current user is a teacher (can see more than a teacher)
+     * checks if the current user is an admin (can see more than a teacher)
      *
      * @return bool
      */

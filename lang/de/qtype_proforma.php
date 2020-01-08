@@ -69,6 +69,8 @@ Bitte beachten, dass u.U. auch das Package im Namen enthalten sein muss.';
 $string['taskfilename'] = 'ProFormA-Aufgabendatei';
 $string['taskfilename_hint'] = $string['taskfilename'];
 $string['taskfilename_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei';
+$string['createdtask_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei. Achtung: Aufgabe muss erst gespeichert werden, damit die aktuelle ProFormA-Datei erzeugt wird.';
+
 
 $string['compile'] = 'Compilation';
 $string['code'] = 'Quellcode';

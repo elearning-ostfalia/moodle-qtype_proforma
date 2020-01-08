@@ -62,11 +62,19 @@ class base_form_creator {
     }
 
     /**
-     * Add grader options/information (UUID).
+     * Add grader options/information.
      *
      * @param $question
      */
     public function add_grader_settings($question) {
+        // ProFormA fields
+        $mform = $this->form;
+        $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
+
+        // Task Filename
+        $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
+        $mform->setType('link', PARAM_TEXT);
+        $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
     }
 
     /**
@@ -352,6 +360,15 @@ class base_form_creator {
         );
         $question->comment['format'] = $question->options->commentformat;
         $question->comment['itemid'] = $draftid;
+
+        if (!empty($question->taskfilename)) {
+            // create temporary link for task file (does not belong to question class)
+            // $draftid = file_get_submitted_draft_itemid('questiontext');
+            // $question->link = '<a href="@@PLUGINFILE@@/'.$question->taskfilename.'">'. $question->taskfilename .'</a> ';
+            $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
+                    qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
+            $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
+        }
     }
 
     // helper functions

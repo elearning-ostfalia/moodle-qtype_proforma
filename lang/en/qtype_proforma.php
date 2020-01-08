@@ -69,6 +69,9 @@ $string['filename_hint_help'] = 'filename used for submitted source code (if nec
 $string['taskfilename'] = 'Task file';
 $string['taskfilename_hint'] = $string['taskfilename'];
 $string['taskfilename_hint_help'] = 'Corresponding ProFormA task file';
+$string['createdtask_hint'] = $string['taskfilename'];
+$string['createdtask_hint_help'] = 'Corresponding ProFormA task file. Save question before downloading task!!';
+
 
 $string['highlight'] = 'Syntax highlighting';
 $string['highlight_hint'] = $string['highlight'];

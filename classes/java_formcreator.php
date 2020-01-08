@@ -95,6 +95,19 @@ class java_form_creator extends base_form_creator {
         $mform->hideIf('modelsolfilemanager', 'responseformat', 'neq', 'filepicker');
     }
 
+
+    /**
+     * Add grader options/information.
+     *
+     * @param $question
+     */
+    public function add_grader_settings($question) {
+        parent::add_grader_settings($question);
+        // ProFormA fields
+        $mform = $this->form;
+        $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
+    }
+
     /**
      * Get test label for add_tests.
      *
