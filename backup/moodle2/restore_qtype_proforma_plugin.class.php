@@ -101,7 +101,7 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
                 ", array('proforma'));
 
         foreach ($proformaswithoutoptions as $q) {
-            throw new coding_exception('after_execute_question called but why');
+            throw new coding_exception('qtype_proforma_options do not exist for question ' . $q->id);
 
             $defaultoptions = new stdClass();
             $defaultoptions->questionid = $q->id;

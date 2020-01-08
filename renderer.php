@@ -445,6 +445,17 @@ class qtype_proforma_renderer extends qtype_renderer {
         if (!$result) {
             return html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
         } else {
+            if ($this->is_admin()) {
+                // show grader info
+                $gradertext = "Grader ???";
+                try {
+                    $graderinfo = $response->{'response-meta-data'}->{'grader-engine'};
+                    $gradertext = $graderinfo['name'] . ' ' . $graderinfo['version'];
+                } catch (Exception $e) {
+                }
+                $result .= '<p></p>' . html_writer::tag('small', '[' . $gradertext . ']');
+            }
+
             if ($allcorrect) {
                 $result .= '<p></p>' . html_writer::tag('p', get_string('gradepassed', 'qtype_proforma'));
             } else {
@@ -462,7 +473,7 @@ class qtype_proforma_renderer extends qtype_renderer {
     }
 
     /**
-     * checks if teacher feedback shall be displayed
+     * checks if the current user is a teacher (can see more than the student)
      *
      * @return bool
      */
@@ -476,6 +487,16 @@ class qtype_proforma_renderer extends qtype_renderer {
         }
 
         return false;
+    }
+
+    /**
+     * checks if the current user is a teacher (can see more than a teacher)
+     *
+     * @return bool
+     */
+    private function is_admin() {
+        global $USER;
+        return is_siteadmin($USER);
     }
 
     /**
