@@ -15,26 +15,45 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The ProFormA Question version information
+ * Plugin library
  *
  * @package    qtype
  * @subpackage proforma
- * @copyright  2018 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @copyright  2020 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+namespace qtype_proforma\lib;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'qtype_proforma';
-$plugin->version   = 2020010901;
+require_once($CFG->dirroot . '/lib/accesslib.php');
 
-$plugin->requires  = 2017111300;
-$plugin->release = '2.0.1 BETA';
 
-$plugin->maturity  = MATURITY_BETA;
+/**
+ * checks if the current user is an admin (can see more than a teacher)
+ *
+ * @return bool
+ */
+function is_admin() {
+    global $USER;
+    return is_siteadmin($USER);
+}
 
-$plugin->dependencies = array(
-        'qbehaviour_adaptiveexternalgrading' => 2019061201
-);
+/**
+ * checks if the current user is a teacher (can see more than the student)
+ *
+ * @return bool
+ */
+function is_teacher() {
+    global $COURSE;
+    if ($COURSE) {
+        $context = \context_course::instance($COURSE->id);
+        if ($context) {
+            return has_capability('moodle/grade:viewhidden', $context);
+        }
+    }
 
+    return false;
+}

@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 class java_form_creator extends base_form_creator {
 
@@ -102,10 +103,13 @@ class java_form_creator extends base_form_creator {
      * @param $question
      */
     public function add_grader_settings($question) {
-        parent::add_grader_settings($question);
-        // ProFormA fields
-        $mform = $this->form;
-        $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
+        if (qtype_proforma\lib\is_admin()) {
+            // allow admin to see the created task.xml (for debugging purposes)
+            parent::add_grader_settings($question);
+            // ProFormA fields
+            $mform = $this->form;
+            $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
+        }
     }
 
     /**

@@ -485,9 +485,12 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         $xmlDoc = new DOMDocument();
         // use of '&nbsp' prevents loadXML from loading a document!
         $output = str_replace('&nbsp', ' ', $this->currentoutput);
+        // remove <xmp ...* ...</xmp>
+        $output = preg_replace('/\<xmp[\s\S]*?\<\/xmp\>/m', '', $output);
 
 
-        $this->assertTrue($xmlDoc->loadXML($output, LIBXML_NOERROR ), 'invalid XML output from renderer');
+        // $this->assertTrue($xmlDoc->loadXML($output, LIBXML_NOERROR ), 'invalid XML output from renderer');
+        $this->assertTrue($xmlDoc->loadXML($output  ), 'invalid XML output from renderer');
         // LIBXML_NOERROR is set in order to ignore errors in result
 
         $xpath = new DomXPath($xmlDoc);

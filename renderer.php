@@ -28,6 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
+require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 // load JQuery for CodeMirror resizing. This cannot be done
 // inside a function.
@@ -201,7 +202,7 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @param question_display_options $options controls what should and should
      *      not be displayed. Used to get the context.
      */
-    public function files_input(question_attempt $qa, qtype_proforma_question $question,
+    protected function files_input(question_attempt $qa, qtype_proforma_question $question,
             question_display_options $options) {
         global $CFG;
         require_once($CFG->dirroot . '/lib/form/filemanager.php');
@@ -272,7 +273,7 @@ class qtype_proforma_renderer extends qtype_renderer {
                 case qtype_proforma_grader::FEEDBACK_FORMAT_HTTP_ERROR:
                 default:
                     $output .= $this->notification('<b>INTERNAL ERROR: </b><p>' . $error . '</p>', 'error');
-                    if ($this->is_teacher()) {
+                    if (qtype_proforma\lib\is_teacher()) {
                         $options->feedback = true;
                     } else {
                         // the student shall not see any error text!
@@ -282,7 +283,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             }
         } else {
             // $output .= 'No error occured: ';
-            if (!empty($format) && $this->is_teacher()) {
+            if (!empty($format) && qtype_proforma\lib\is_teacher()) {
                 // force feedback to true for teachers so that they can see the actual feedback
                 // (deferred feedback still needs no feedback for students)
                 $options->feedback = true;
@@ -312,7 +313,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             case qtype_proforma_grader::FEEDBACK_FORMAT_INVALID: // no feedback
             case qtype_proforma_grader::FEEDBACK_FORMAT_NONE: // no feedback
             case qtype_proforma_grader::FEEDBACK_FORMAT_HTTP_ERROR: // no feedback
-                if (!empty($feedback) && $this->is_teacher()) {
+                if (!empty($feedback) && qtype_proforma\lib\is_teacher()) {
                     return html_writer::tag('xmp', $feedback, array('class' => 'proforma_testlog'));
                 } else {
                     return $result;
@@ -321,7 +322,7 @@ class qtype_proforma_renderer extends qtype_renderer {
                 if (empty($feedback)) {
                     return $result . '<no feedback, maybe internal error>';
                 }
-                return $result . $this->convert_proforma2_message_to_html($feedback, $errormsg, $qa);
+                return $result . $this->render_proforma2_message($feedback, $errormsg, $qa);
             default:
                 return $result . "INTERNAL ERROR: unsupported feedback format: " . $feedbackformat;
         }
@@ -369,7 +370,7 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @param question_attempt $qa
      * @return string
      */
-    public function convert_proforma2_message_to_html($message, $errormsg, question_attempt $qa) {
+    public function render_proforma2_message($message, $errormsg, question_attempt $qa) {
         $result = '';
         $question = $qa->get_question();
         $gh = new SimpleXMLElement($question->gradinghints);
@@ -380,7 +381,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             $totalweight += floatval((string) $test['weight']);
         }
 
-        $response = $message;
+        $response = '';
         try {
             $response = new SimpleXMLElement($message, LIBXML_PARSEHUGE);
             if (!isset($response->{'separate-test-feedback'})) {
@@ -392,11 +393,6 @@ class qtype_proforma_renderer extends qtype_renderer {
                     html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
         }
 
-        // Work out visual feedback for answer correctness.
-        $truefeedbackimg = $this->feedback_image((int) 1);
-        $falsefeedbackimg = $this->feedback_image((int) 0);
-        $partfeedbackimg = $this->feedback_image(0.5);
-
         // $xpath = new DOMXPath($xmldoc);
         // todo: check namespace!
         // $xpath->registerNamespace('dns','urn:proforma:v2.0');
@@ -405,7 +401,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             $result .= html_writer::tag('p', $this->print_proforma_single_feedback($feedback, false,
                     false, false, false, true));
         }
-        if ($this->is_teacher()) {
+        if (qtype_proforma\lib\is_teacher()) {
             foreach ($response->{'separate-test-feedback'}->{'submission-feedback-list'}->{'teacher-feedback'} as $feedback) {
                 $result .= html_writer::tag('p', $this->print_proforma_single_feedback($feedback, true,
                         false, false, false, true));
@@ -414,90 +410,84 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         $allcorrect = true;
         $containsinternalerror = false;
-        foreach ($response->{'separate-test-feedback'}->{'tests-response'}->{'test-response'} as $test) {
-            if (count($test->{'test-result'}) > 0) {
-                // handle test with score
-                $testresult = $test->{'test-result'}->result;
-                $internalerror = ((string) $testresult['is-internal-error'] === 'true');
-                if ($internalerror) {
-                    $containsinternalerror = true;
-                }
-                $score = floatval((string) $testresult->score);
 
-                $this->render_proforma_test_title($test, $gradingtests, $qa, $question, $totalweight,
-                        $score, $internalerror, $result, $allcorrect);
-
-                $this->render_proforma_test_with_score($test, $result);
-            } else {
-                // handle tests with subtest results
-                list($score, $internalerror) = qtype_proforma_grader_2::calc_score_for_test($test);
-                if ($internalerror) {
-                    $containsinternalerror = true;
-                }
-                $this->render_proforma_test_title($test, $gradingtests, $qa, $question, $totalweight,
-                        $score, $internalerror, $result, $allcorrect);
-
-                $this->render_proforma_test_with_subtests($test, $result, $qa);
-            }
-            $result .= print_collapsible_region_end(true);
-        }
-
-        if (!$result) {
-            return html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
+        $tests = $response->{'separate-test-feedback'}->{'tests-response'};
+        /*
+         * we want to avoid using namespaces in the response!
+        if (!$tests->registerXPathNamespace('dns', 'urn:proforma:v2.0')) {
+            $containsinternalerror = true;
+            $result .= '<p><b>INTERNAL ERROR</b>: unknown response namespace</p>';
         } else {
-            if ($this->is_admin()) {
-                // show grader info
-                $gradertext = "Grader ???";
-                try {
-                    $graderinfo = $response->{'response-meta-data'}->{'grader-engine'};
-                    $gradertext = $graderinfo['name'] . ' ' . $graderinfo['version'];
-                } catch (Exception $e) {
+        */
+        // iterate through all tests in the grading hints instead of
+        // iterating through all tests in the response.
+        // This guarantees that we detect missing tests in the response and
+        // we can reorder the result.
+        foreach ($gradingtests->{'test-ref'} as $ghtest) {
+            $testid = (string)$ghtest['ref'];
+            // Look for test in message:
+            // Using xpath is more elagant but requires registering the default namespace.
+            // $lookup = 'dns::test-response[@id="'.$testid.'"]';
+            // In order to be more flexible with the namespace version we just iterate over
+            // all tests in the response and seach for the appropriate one.
+            $test = null;
+            foreach ($tests->{'test-response'} as $resptest) {
+                if ($testid == (string)$resptest['id']) {
+                    $test = $resptest;
+                    break;
                 }
-                $result .= '<p></p>' . html_writer::tag('small', '[' . $gradertext . ']');
             }
 
-            if ($allcorrect) {
-                $result .= '<p></p>' . html_writer::tag('p', get_string('gradepassed', 'qtype_proforma'));
+            if ($test == null) {
+                $containsinternalerror = true;
+                $result .= '<p><b>INTERNAL ERROR</b>: Result for Test "' . $testid . '" is missing</p>';
             } else {
-                if ($containsinternalerror) {
-                    $result .= '<p></p>' . html_writer::tag('p', get_string('gradeinternalerror', 'qtype_proforma'));
-                } else {
-                    $result .= '<p></p>' . html_writer::tag('p', get_string('gradefailed', 'qtype_proforma'));
-                }
+                list($internalerror, $result, $correct) =
+                        $this->render_test($qa, $test[0], $gradingtests, $question, $totalweight, $result);
+                if ($internalerror)
+                    $containsinternalerror = true;
+                if (!$correct)
+                    $allcorrect = false;
             }
         }
+
+        if (qtype_proforma\lib\is_admin()) {
+            // infos for admins are displayed as small text
+            $result .= html_writer::start_tag('small', null);
+            // show grader info
+            $gradertext = "Grader ???";
+            try {
+                $graderinfo = $response->{'response-meta-data'}->{'grader-engine'};
+                $gradertext = $graderinfo['name'] . ' ' . $graderinfo['version'];
+            } catch (Exception $e) {
+            }
+            $result .= '<p></p>' . '[' . $gradertext . ']';
+
+            // debugging: show raw response
+            $qaid = $this->create_collapsible_region_id($qa);
+            $result .= print_collapsible_region_start('', $qaid,
+                    'raw response', '', true, true);
+            $result .= html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
+            $result .= print_collapsible_region_end(true);
+
+            $result .= html_writer::end_tag('small');
+        }
+
+        if ($allcorrect) {
+            $result .= '<p></p>' . html_writer::tag('p', get_string('gradepassed', 'qtype_proforma'));
+        } else {
+            if ($containsinternalerror) {
+                $result .= '<p></p>' . html_writer::tag('p', get_string('gradeinternalerror', 'qtype_proforma'));
+            } else {
+                $result .= '<p></p>' . html_writer::tag('p', get_string('gradefailed', 'qtype_proforma'));
+            }
+        }
+
 
         return $result;
-        // for debugging
-        // . PHP_EOL . 'ORIGINAL: ' . html_writer::tag('xmp', $result, array('class' => 'proforma_testlog'));
     }
 
-    /**
-     * checks if the current user is a teacher (can see more than the student)
-     *
-     * @return bool
-     */
-    private function is_teacher() {
-        global $COURSE;
-        if ($COURSE) {
-            $context = context_course::instance($COURSE->id);
-            if ($context) {
-                return has_capability('moodle/grade:viewhidden', $context);
-            }
-        }
 
-        return false;
-    }
-
-    /**
-     * checks if the current user is an admin (can see more than a teacher)
-     *
-     * @return bool
-     */
-    private function is_admin() {
-        global $USER;
-        return is_siteadmin($USER);
-    }
 
     /**
      * creates the html fragmenbt for a single freedback element
@@ -512,7 +502,7 @@ class qtype_proforma_renderer extends qtype_renderer {
     private function print_proforma_single_feedback($feedback, $teacher = false, $subtest = false,
             $printpassedinfo = false, $passed = false, $general = false) {
 
-        if ($teacher && !$this->is_teacher()) {
+        if ($teacher && !qtype_proforma\lib\is_teacher()) {
             return '';
         }
 
@@ -624,7 +614,7 @@ class qtype_proforma_renderer extends qtype_renderer {
                 $count++;
             }
             // print further teacher feedback if any
-            if ($this->is_teacher() && count($feedbacklist->{'teacher-feedback'})) {
+            if (qtype_proforma\lib\is_teacher() && count($feedbacklist->{'teacher-feedback'})) {
                 foreach ($feedbacklist->{'teacher-feedback'} as $feedback) {
                     $result .= $this->print_proforma_single_feedback($feedback, true, true);
                 }
@@ -781,7 +771,7 @@ class qtype_proforma_renderer extends qtype_renderer {
         foreach ($test->{'test-result'}->{'feedback-list'}->{'student-feedback'} as $feedback) {
             $result .= $this->print_proforma_single_feedback($feedback);
         }
-        if ($this->is_teacher()) {
+        if (qtype_proforma\lib\is_teacher()) {
             foreach ($test->{'test-result'}->{'feedback-list'}->{'teacher-feedback'} as $feedback) {
                 $result .= $this->print_proforma_single_feedback($feedback, true);
             }
@@ -800,6 +790,47 @@ class qtype_proforma_renderer extends qtype_renderer {
         foreach ($test->{'subtests-response'}->{'subtest-response'} as $response) {
             $result .= $this->print_proforma_subtest_result($response->{'test-result'}, $qa);
         }
+    }
+
+    /**
+     * @param question_attempt $qa
+     * @param $test
+     * @param $gradingtests
+     * @param $question
+     * @param $totalweight
+     * @param $result
+     * @return array
+     */
+    protected function render_test(question_attempt $qa, $test, $gradingtests, $question, $totalweight, &$result): array {
+        $containsinternalerror = false;
+        $allcorrect = true;
+        if (count($test->{'test-result'}) > 0) {
+            // handle test with score
+            $testresult = $test->{'test-result'}->result;
+            $internalerror = ((string) $testresult['is-internal-error'] === 'true');
+            if ($internalerror) {
+                $containsinternalerror = true;
+            }
+            $score = floatval((string) $testresult->score);
+
+            $this->render_proforma_test_title($test, $gradingtests, $qa, $question, $totalweight,
+                    $score, $internalerror, $result, $allcorrect);
+
+            $this->render_proforma_test_with_score($test, $result);
+        } else {
+            // handle tests with subtest results
+            list($score, $internalerror) = qtype_proforma_grader_2::calc_score_for_test($test);
+            if ($internalerror) {
+                $containsinternalerror = true;
+            }
+            $this->render_proforma_test_title($test, $gradingtests, $qa, $question, $totalweight,
+                    $score, $internalerror, $result, $allcorrect);
+
+            $this->render_proforma_test_with_subtests($test, $result, $qa);
+        }
+        // collapsible region is created inside render_proforma_test_title
+        $result .= print_collapsible_region_end(true);
+        return array($containsinternalerror, $result, $allcorrect);
     }
 }
 

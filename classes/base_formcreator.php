@@ -426,4 +426,14 @@ class base_form_creator {
         $mform->setType($prefix . 'weight', PARAM_FLOAT);
         $mform->setDefault($prefix . 'weight', $defaultweight);
     }
+
+    /**
+     * checks if the current user is an admin (can see more than a teacher)
+     *
+     * @return bool
+     */
+    protected function is_admin() {
+        global $USER;
+        return is_siteadmin($USER);
+    }
 }
