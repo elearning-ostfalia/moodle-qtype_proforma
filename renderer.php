@@ -381,7 +381,6 @@ class qtype_proforma_renderer extends qtype_renderer {
             $totalweight += floatval((string) $test['weight']);
         }
 
-        $response = '';
         try {
             $response = new SimpleXMLElement($message, LIBXML_PARSEHUGE);
             if (!isset($response->{'separate-test-feedback'})) {
@@ -603,7 +602,7 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @param $qa
      * @return string
      */
-    private function print_proforma_subtest_result($testresult, $qa) {
+    private function print_proforma_subtest_result($testresult) {
         $passed = (string) $testresult->result->score === '1.0';
         $result = '';
         foreach ($testresult->{'feedback-list'} as $feedbacklist) {
@@ -785,10 +784,10 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @param $result
      * @param $qa
      */
-    private function render_proforma_test_with_subtests($test, &$result, $qa) {
+    private function render_proforma_test_with_subtests($test, &$result) {
 
         foreach ($test->{'subtests-response'}->{'subtest-response'} as $response) {
-            $result .= $this->print_proforma_subtest_result($response->{'test-result'}, $qa);
+            $result .= $this->print_proforma_subtest_result($response->{'test-result'});
         }
     }
 
@@ -826,7 +825,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             $this->render_proforma_test_title($test, $gradingtests, $qa, $question, $totalweight,
                     $score, $internalerror, $result, $allcorrect);
 
-            $this->render_proforma_test_with_subtests($test, $result, $qa);
+            $this->render_proforma_test_with_subtests($test, $result);
         }
         // collapsible region is created inside render_proforma_test_title
         $result .= print_collapsible_region_end(true);
