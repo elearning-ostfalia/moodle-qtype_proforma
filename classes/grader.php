@@ -105,55 +105,6 @@ class qtype_proforma_grader {
         return $userid;
     }
 
-    /**
-     * create fake response in LON-CAPA format
-     *
-     * @return string
-     */
-    private function set_dummy_result() {
-        $dummyresult = '<loncapagrade>' .
-            '<awarddetail>INCORRECT</awarddetail>' .
-            '<message>' .
-            '<taskresult grade="failed">' .
-            '<tasktitle>reverse string</tasktitle>' .
-            '<testresult grade="failed">' .
-            '<testname>FAKE JUnit Test: Java JUnit Test</testname>' .
-            '<testlog><![CDATA[<pre>testet, ob die Funktion das macht, was sie machen soll' .
-            ' ' . PHP_EOL .
-            '                ======== Test Results ======' .
-            ' ' . PHP_EOL .
-            '                </pre><br/>' .
-            '<div>1 <tt>Java</tt> user-submitted files found for compilation:  MyString.java &nbsp;' . '</div>' .
-            ' ' .
-            '<div>Java compiler output:</div>' .
-            '<pre><b>MyString.java:1: error: reached end of file while parsing</b>' .
-            'dfgdfg' .
-            '^' .
-            '1 error' .
-            '1' .
-            '</pre>' .
-            ']]></testlog>' .
-            '</testresult>'.
-            ' ' .
-            '<testresult grade="passed">' .
-            '<testname>FAKE CheckStyle Test</testname>' .
-            '<testlog><![CDATA[<pre>' .
-            ' ' .
-            '======== Test Results ======' .
-            ' ' .
-            '</pre><br/><pre>Starting audit...' .
-            'Audit done.' .
-            '</pre>]]></testlog>' .
-            '</testresult>' .
-            ' ' .
-            '<filename>MyString.java</filename>' .
-            ' ' .
-            '</taskresult>' .
-            '</message>' .
-            '<awarded></awarded>' .
-            '</loncapagrade>';
-        return $dummyresult;
-    }
 
     // override!
 
@@ -166,92 +117,9 @@ class qtype_proforma_grader {
      * @return array
      */
     public function extract_grade($result, $httpcode, qtype_proforma_question $question) {
-        return $this->extract_grade_from_lon_capa_format_result($result);
+        throw new coding_exception('extract_grade is not implemented');
     }
 
-    /**
-     * @param $result
-     * @return array with:
-     * 1. question state
-     * 2. grade fraction [0...1]
-     * 3. error message (or '' in case of no error)
-     * 4. grading message (or '' in case of error)
-     * @throws coding_exception
-     */
-    private function extract_grade_from_lon_capa_format_result($result) {
-        $questionstate = question_state::$invalid;
-        $grade = 0;
-        $feedbackformat = self::FEEDBACK_FORMAT_LC;
-
-        // ERROR: no result
-        if ($result === false) {
-            // TODO: improve error handling with returning array with multible values
-            // - return only error text and calling function must convert???
-            // - or throw exception??
-            // - or use if-else
-            return array($questionstate, $grade, 'no result from grader (maybe grader is unreachable)', '', $feedbackformat);
-        }
-
-        if (empty($result)) {
-            debugging('extract_grade_from_LON_CAPA_format_result with empty result');
-        }
-        // result is expected to be XML. So read DOM tree
-        $xmldoc = new DOMDocument();
-        if (!$xmldoc->loadXML($result, LIBXML_NOERROR )) {
-            // LIBXML_NOERROR is set in order to ignore errors in result
-            // which would trigger Moodle to stop in development mode (i.e. showing all errors)
-            // ERROR: no xml format
-            return array($questionstate, $grade, $result, '', $feedbackformat);
-        }
-
-        $awarddetails = $xmldoc->getElementsByTagName('awarddetail');
-        $resultawarded = $xmldoc->getElementsByTagName('awarded');
-        $messages = $xmldoc->getElementsByTagName('message');
-        if (count($awarddetails) != 1 || count($resultawarded) != 1 || count($messages) != 1) {
-            // ERROR: XML result does not contain element awarddetail
-            // (invalid format?)
-            // TODO handle unknown format
-            return array($questionstate, $grade, $result, '', $feedbackformat);
-        }
-
-        // get expected elements
-        $awarded = $resultawarded[0]->nodeValue;
-        $award = $awarddetails[0]->nodeValue;
-        $message = $messages[0]; // leave DOM element
-
-        // evaluate grading result
-        switch (strtoupper($award)) {
-            case 'ERROR':
-                return array($questionstate, $grade, $message->nodeValue, '', $feedbackformat);
-            case 'INCORRECT':
-                $grade = 0;
-                $questionstate = question_state::$gradedwrong;
-                break;
-            case 'CORRECT':
-            case 'EXACT_ANS':
-                $grade = 1;
-                $questionstate = question_state::$gradedright;
-                break;
-            case 'APPROX_ANS':
-                $questionstate = question_state::$gradedpartial;
-                break;
-            default:
-                // return array($questionstate, $grade, $result);
-                throw new coding_exception("invalid award in qtype_proforma_grader::extract_grade_from_LON_CAPA_format_result: " .
-                    $award);
-        }
-
-        // override $grade with result from grader (if any)
-        if (!empty($awarded)) {
-            $grade = $awarded;
-        }
-
-        // nodeValue does not contain all xml tags.
-        // But we need the full message content. This is done
-        // by saveXML
-        $feedback = $message->ownerDocument->saveXML($message);
-        return array($questionstate, $grade, '', $feedback, $feedbackformat);
-    }
 
     /**
      * send grading request via HTTP post
