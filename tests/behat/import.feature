@@ -70,7 +70,7 @@ Feature: IMPORT (Moodle-XML format)
     And I press "Cancel"
 
   #@javascript @_file_upload
-  @_file_upload  
+  @_file_upload
   Scenario: import ProFormA question.
     When I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_xml" to "1"
