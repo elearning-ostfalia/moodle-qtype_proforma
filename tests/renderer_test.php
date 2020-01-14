@@ -366,8 +366,8 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
 <div id="'.$id.'_inner" class="collapsibleregioninner"><xmp class="proforma_testlog"><?xml version="1.0" encoding="utf-8"?>
 ';
         // strip prolog
-        $response = str_replace('\r\n', '\n', $response);
-        $response = substr($response, 40);
+        //$response = str_replace('\r\n', '\n', $response);
+        $response = substr($response, 39);
         $output .= $response . '</xmp></div>
 </div></div>';
         return $output;
@@ -566,7 +566,7 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
      * internal error
      * all or nothing, teacher feedback
      */
-    public function test_specific_feedback_internal_error_AON_TEACHER() {
+    public function test_specific_feedback_internal_error_AON_ADMIN() {
         $expected =
                 '<p>'.
                 $this->render_title('title1').
