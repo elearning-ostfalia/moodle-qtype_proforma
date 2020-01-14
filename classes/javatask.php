@@ -298,7 +298,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
                     case 'compiler': // assert(false);
                         break;
                     default: // JUNIT test
-                        $id = (string)$test['id'];
+                        // $id = (string)$test['id'];
                         $question->testcode[$index] = $code;
                         $index++;
                         break;

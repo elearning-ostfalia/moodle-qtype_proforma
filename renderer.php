@@ -443,10 +443,12 @@ class qtype_proforma_renderer extends qtype_renderer {
             } else {
                 list($internalerror, $result, $correct) =
                         $this->render_test($qa, $test[0], $gradingtests, $question, $totalweight, $result);
-                if ($internalerror)
+                if ($internalerror) {
                     $containsinternalerror = true;
-                if (!$correct)
+                }
+                if (!$correct) {
                     $allcorrect = false;
+                }
             }
         }
 
@@ -459,6 +461,7 @@ class qtype_proforma_renderer extends qtype_renderer {
                 $graderinfo = $response->{'response-meta-data'}->{'grader-engine'};
                 $gradertext = $graderinfo['name'] . ' ' . $graderinfo['version'];
             } catch (Exception $e) {
+                // ignore exception.
             }
             $result .= '<p></p>' . '[' . $gradertext . ']';
 

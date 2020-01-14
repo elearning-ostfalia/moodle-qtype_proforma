@@ -47,7 +47,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $xw->openMemory();
 
         $xw->setIndent(1);
-        $res = $xw->setIndentString(' ');
+        $xw->setIndentString(' ');
 
         $xw->startDocument('1.0', 'UTF-8');
 

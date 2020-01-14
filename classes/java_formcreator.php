@@ -68,7 +68,7 @@ class java_form_creator extends base_form_creator {
         $mform = $this->form;
         $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
         // maybe in the future...
-        //$mform->addElement('button', 'generatefilename', get_string('generatefilename', 'qtype_proforma'));
+        // $mform->addElement('button', 'generatefilename', get_string('generatefilename', 'qtype_proforma'));
     }
 
     /**
@@ -134,10 +134,8 @@ class java_form_creator extends base_form_creator {
 
     /**
      * Add compilation options.
-     *
-     * @param $question
      */
-    private function add_compilation($question) {
+    private function add_compilation() {
         $mform = $this->form;
         $compilegroup = array();
         $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
@@ -151,10 +149,8 @@ class java_form_creator extends base_form_creator {
 
     /**
      * Add Checkstyle options.
-     *
-     * @param $question
      */
-    private function add_checkstyle($question) {
+    private function add_checkstyle() {
         $mform = $this->form;
         // Create a Checkstyle test (not part of the repeat group).
         $testoptions = array();
@@ -208,7 +204,7 @@ class java_form_creator extends base_form_creator {
         $mform = $this->form;
         $this->taskhandler = new qtype_proforma_java_task();
         // add compilation
-        $this->add_compilation($question);
+        $this->add_compilation();
         // add JUnit
         $repeats = parent::add_tests($question, $questioneditform);
         // Set CodeMirror for unit test code.
@@ -225,7 +221,7 @@ class java_form_creator extends base_form_creator {
         }
 
         // add checkstyle
-        $this->add_checkstyle($question);
+        $this->add_checkstyle();
         return $repeats;
     }
 
@@ -272,7 +268,7 @@ class java_form_creator extends base_form_creator {
         }
 
         if ($fromform["responseformat"] == 'editor') {
-            if (0 == strlen(trim($fromform["responsefilename"]))){
+            if (0 == strlen(trim($fromform["responsefilename"]))) {
                 $errors['responsefilename'] = get_string('required');
             }
             if (0 < strlen(trim($fromform["modelsolution"]))) {

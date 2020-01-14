@@ -276,7 +276,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         }
 
         // ProFormA savepoint reached.
-        upgrade_plugin_savepoint(true, 2019111900, 'qtype', 'proforma');
+        upgrade_plugin_savepoint(true, 2019111901, 'qtype', 'proforma');
     }
 
     return true;
