@@ -49,6 +49,11 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
+# plugin requires special behaviour to run unit and behat tests
+  - moodle-plugin-ci add-plugin moodle-qbehaviour_adaptiveexternalgrading
+
+
+install:
 # Run the default install.  The overview of what this does:
 #    - Clone the Moodle project into a directory called moodle.
 #    - Create a data directory called moodledata.
