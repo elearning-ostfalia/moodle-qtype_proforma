@@ -49,7 +49,7 @@ class qtype_proforma_java_task_test extends advanced_testcase {
 
     public function test_create_java_file1() {
         // Create sample form data
-        $formdata = test_question_maker::get_question_form_data('proforma', 'java1');
+        $formdata = test_question_maker::get_question_form_data('proforma', 'java1unit');
         $instance = new qtype_proforma_java_task;
         $taskfile = $instance->create_task_file($formdata);
 
@@ -64,15 +64,15 @@ class qtype_proforma_java_task_test extends advanced_testcase {
             <embedded-txt-file filename="XTest.java">class XTest {}</embedded-txt-file>
         </file>
         <file id="checkstyle" used-by-grader="true" visible="no">
-            <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;
-&lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;&#13;
-&lt;module name=&quot;Checker&quot;&gt;&#13;
-  &lt;property name=&quot;severity&quot; value=&quot;warning&quot;/&gt;&#13;
-  &lt;module name=&quot;TreeWalker&quot;&gt;&#13;
-    &lt;module name=&quot;NeedBraces&quot;&gt;&#13;
-      &lt;property name=&quot;severity&quot; value=&quot;error&quot;/&gt;&#13;
-    &lt;/module&gt;&#13;
-  &lt;/module&gt;&#13;
+            <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;
+&lt;module name=&quot;Checker&quot;&gt;
+  &lt;property name=&quot;severity&quot; value=&quot;warning&quot;/&gt;
+  &lt;module name=&quot;TreeWalker&quot;&gt;
+    &lt;module name=&quot;NeedBraces&quot;&gt;
+      &lt;property name=&quot;severity&quot; value=&quot;error&quot;/&gt;
+    &lt;/module&gt;
+  &lt;/module&gt;
 &lt;/module&gt;</embedded-txt-file>
         </file>
         <file id="MS" used-by-grader="false" visible="no">
@@ -124,6 +124,8 @@ class qtype_proforma_java_task_test extends advanced_testcase {
 </task>
 ';
 
+        // handle non-unix line endings in testsfile
+        // $expectedxml = str_replace("\r\n", "\n", $expectedxml);
         $this->assert_same_xml($expectedxml, $taskfile);
     }
 
@@ -141,15 +143,15 @@ class qtype_proforma_java_task_test extends advanced_testcase {
     <submission-restrictions/>
     <files>
         <file id="checkstyle" used-by-grader="true" visible="no">
-            <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;
-&lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;&#13;
-&lt;module name=&quot;Checker&quot;&gt;&#13;
-  &lt;property name=&quot;severity&quot; value=&quot;warning&quot;/&gt;&#13;
-  &lt;module name=&quot;TreeWalker&quot;&gt;&#13;
-    &lt;module name=&quot;NeedBraces&quot;&gt;&#13;
-      &lt;property name=&quot;severity&quot; value=&quot;error&quot;/&gt;&#13;
-    &lt;/module&gt;&#13;
-  &lt;/module&gt;&#13;
+            <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;
+&lt;module name=&quot;Checker&quot;&gt;
+  &lt;property name=&quot;severity&quot; value=&quot;warning&quot;/&gt;
+  &lt;module name=&quot;TreeWalker&quot;&gt;
+    &lt;module name=&quot;NeedBraces&quot;&gt;
+      &lt;property name=&quot;severity&quot; value=&quot;error&quot;/&gt;
+    &lt;/module&gt;
+  &lt;/module&gt;
 &lt;/module&gt;</embedded-txt-file>
         </file>
         <file id="MS" used-by-grader="false" visible="no">
@@ -266,15 +268,15 @@ class qtype_proforma_java_task_test extends advanced_testcase {
             <embedded-txt-file filename="XTest.java">class XTest {}</embedded-txt-file>
         </file>
         <file id="checkstyle" used-by-grader="true" visible="no">
-            <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;
-&lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;&#13;
-&lt;module name=&quot;Checker&quot;&gt;&#13;
-  &lt;property name=&quot;severity&quot; value=&quot;warning&quot;/&gt;&#13;
-  &lt;module name=&quot;TreeWalker&quot;&gt;&#13;
-    &lt;module name=&quot;NeedBraces&quot;&gt;&#13;
-      &lt;property name=&quot;severity&quot; value=&quot;error&quot;/&gt;&#13;
-    &lt;/module&gt;&#13;
-  &lt;/module&gt;&#13;
+            <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;
+&lt;module name=&quot;Checker&quot;&gt;
+  &lt;property name=&quot;severity&quot; value=&quot;warning&quot;/&gt;
+  &lt;module name=&quot;TreeWalker&quot;&gt;
+    &lt;module name=&quot;NeedBraces&quot;&gt;
+      &lt;property name=&quot;severity&quot; value=&quot;error&quot;/&gt;
+    &lt;/module&gt;
+  &lt;/module&gt;
 &lt;/module&gt;</embedded-txt-file>
         </file>
         <file id="MS" used-by-grader="false" visible="no">
@@ -344,15 +346,15 @@ class qtype_proforma_java_task_test extends advanced_testcase {
             <embedded-txt-file filename="YTest.java">class YTest {}</embedded-txt-file>
         </file>
         <file id="checkstyle" used-by-grader="true" visible="no">
-            <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;
-&lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;&#13;
-&lt;module name=&quot;Checker&quot;&gt;&#13;
-  &lt;property name=&quot;severity&quot; value=&quot;warning&quot;/&gt;&#13;
-  &lt;module name=&quot;TreeWalker&quot;&gt;&#13;
-    &lt;module name=&quot;NeedBraces&quot;&gt;&#13;
-      &lt;property name=&quot;severity&quot; value=&quot;error&quot;/&gt;&#13;
-    &lt;/module&gt;&#13;
-  &lt;/module&gt;&#13;
+            <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;
+&lt;module name=&quot;Checker&quot;&gt;
+  &lt;property name=&quot;severity&quot; value=&quot;warning&quot;/&gt;
+  &lt;module name=&quot;TreeWalker&quot;&gt;
+    &lt;module name=&quot;NeedBraces&quot;&gt;
+      &lt;property name=&quot;severity&quot; value=&quot;error&quot;/&gt;
+    &lt;/module&gt;
+  &lt;/module&gt;
 &lt;/module&gt;</embedded-txt-file>
         </file>
         <file id="MS" used-by-grader="false" visible="no">

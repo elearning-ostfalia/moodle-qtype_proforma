@@ -42,7 +42,7 @@ class qtype_proforma_test_helper extends question_test_helper {
             'editor',
             'filepicker',
             // different settings for java junit tests
-            'java1', 'java2', 'java3', 'java4', 'java5',
+            'java1', 'java1unit', 'java2', 'java3', 'java4', 'java5',
             // different grading approaches
             'weightedsum',
             // different values set in question
@@ -364,7 +364,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         //$form->filetypes = '.java';
 
         $form->testcode[0] = 'class XTest {}';
-        $form->testtitle[0] = 'Junit Test 1';
+        $form->testtitle[0] = 'JUnit Test 1';
         $form->testweight[0] = '3';
         $form->testid[0] = '1';
 
@@ -384,6 +384,8 @@ class qtype_proforma_test_helper extends question_test_helper {
   </module>
 </module>';
 
+        // handle different line ending on different platforms
+        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
         $form->hint = array(
                 0 => array(
                         'text' => 'hint 1<br>',
@@ -397,11 +399,22 @@ class qtype_proforma_test_helper extends question_test_helper {
         return $form;
     }
 
+    /**
+     * same as java1 except for PHPUnit tests
+     */
+    public function get_proforma_question_form_data_java1unit() {
+            //$form->questiontext = self::QUESTION_TEXT;
+        $form = $this->get_proforma_question_form_data_java1();
+        $form->questiontext = self::QUESTION_TEXT;
+        return $form;
+
+    }
+
     /** without checkstyle
      * @return stdClass
      */
     public function get_proforma_question_form_data_java2() {
-        $form = $this->get_proforma_question_form_data_java1();
+        $form = $this->get_proforma_question_form_data_java1unit();
         $form->checkstyle = 0;
         return $form;
     }
@@ -410,7 +423,7 @@ class qtype_proforma_test_helper extends question_test_helper {
      * @return stdClass
      */
     public function get_proforma_question_form_data_java3() {
-        $form = $this->get_proforma_question_form_data_java1();
+        $form = $this->get_proforma_question_form_data_java1unit();
         $form->compile = 0;
         return $form;
     }
@@ -419,7 +432,7 @@ class qtype_proforma_test_helper extends question_test_helper {
      * @return stdClass
      */
     public function get_proforma_question_form_data_java4() {
-        $form = $this->get_proforma_question_form_data_java1();
+        $form = $this->get_proforma_question_form_data_java1unit();
 
         $form->testcode[1] = 'class YTest {}';
         $form->testtitle[1] = 'JUnit Test 2';
@@ -438,7 +451,7 @@ class qtype_proforma_test_helper extends question_test_helper {
      * @return stdClass
      */
     public function get_proforma_question_form_data_java5() {
-        $form = $this->get_proforma_question_form_data_java1();
+        $form = $this->get_proforma_question_form_data_java1unit();
 
         $form->testcode[0] = '';
         $form->testtitle[0] = '';
