@@ -284,22 +284,59 @@ EOD;
         array('Inline cannot be resolved', 'Sample.java	line 56'),
     );
     const SUBTEST_2_1 = array(
-            array('Even Number Of Characters', 1),
-            array('Failes Always', 0, 'testet Erwartungswert expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;'),
-            array('Empty String', 1),
-            array('Odd Number Of Characters', 1),
+            array(1,  array('Even Number Of Characters')),
+            array(0,  array('Failes Always', 'testet Erwartungswert expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;')),
+            array(1,  array('Empty String')),
+            array(1,  array('Odd Number Of Characters')),
     );
     const LOGS_2_1_TEACHER = array(
             array('MyString cannot be resolved to a variable', 'Sample.java	line 55'),
             array('Inline cannot be resolved', 'Sample.java	line 56'),
             array('Java-Compilation (teacher)', 'content11')
     );
+    const SUBTEST_2_1_CALLSTACK = 'testFailesAlways(reverse_task.MyStringTest): liefert immer einen Fehler expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;
+org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;
+	at org.junit.Assert.assertEquals(Assert.java:115)
+	at reverse_task.MyStringTest.testFailesAlways(MyStringTest.java:30)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.junit.runners.Suite.runChild(Suite.java:128)
+	at org.junit.runners.Suite.runChild(Suite.java:27)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:105)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:94)
+	at de.ostfalia.zell.praktomat.JunitProFormAListener.main(JunitProFormAListener.java:264)
+                        ';
     const SUBTEST_2_1_TEACHER = array(
-            array('Even Number Of Characters', 1),
-            array('Failes Always', 0, 'testet Erwartungswert expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;'),
-            array('Empty String', 1),
-            array('Odd Number Of Characters', 1),
+            array(1, array ('Even Number Of Characters')),
+            array(0, array('Failes Always', 'testet Erwartungswert expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;'),
+                    array('Exception', self::SUBTEST_2_1_CALLSTACK)),
+            array(1,  array('Empty String')),
+            array(1,  array('Odd Number Of Characters')),
     );
+
 
     private function assert_same_xml($expectedxml, $xml) {
         // remove comments
@@ -329,6 +366,7 @@ EOD;
 <div id="'.$id.'_inner" class="collapsibleregioninner"><xmp class="proforma_testlog"><?xml version="1.0" encoding="utf-8"?>
 ';
         // strip prolog
+        $response = str_replace('\r\n', '\n', $response);
         $response = substr($response, 40);
         $output .= $response . '</xmp></div>
 </div></div>';
@@ -392,14 +430,25 @@ EOD;
         foreach ($subtests as $subtest) {
             $output .= '<div class="proforma_subtest_title">
 ';
-            if ($subtest[1] == 1) {
+            if ($subtest[0] == 1) {
                 $output .= '<i class="icon fa fa-check text-success fa-fw " title="Correct" aria-label="Correct"></i>';
             } else {
                 $output .= '<i class="icon fa fa-remove text-danger fa-fw " title="Incorrect" aria-label="Incorrect"></i>';
             }
-            $output .= $subtest[0].'</div>';
-            if (count($subtest) > 2)
-                $output .= '<pre class="proforma_subtest_testlog">'.$subtest[2].'</pre>';
+            $output .= $subtest[1][0].'</div>';
+            if (count($subtest[1]) > 1)  {
+                $output .= '<pre class="proforma_subtest_testlog">'.$subtest[1][1].'</pre>';
+            }
+
+            $index = 2;
+            while (isset($subtest[$index])) {
+                $output .= '<div class="proforma_subtest_title_2">';
+                $output .= $subtest[$index][0].'</div>';
+                if (count($subtest[$index]) > 1) {
+                    $output .= '<pre class="proforma_subtest_testlog">'.$subtest[$index][1].'</pre>';
+                }
+                $index ++;
+            }
         }
         $output .= '</div></div></div>';
 
