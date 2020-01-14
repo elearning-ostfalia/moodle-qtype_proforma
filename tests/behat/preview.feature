@@ -26,7 +26,8 @@ Feature: PREVIEW
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
-  @javascript @_switch_window
+  #@javascript @_switch_window
+  @_switch_window
   Scenario: Preview a ProFormA question and submit a partially correct response.
     When I click on "Preview" "link" in the "proforma-001" "table_row"
     And I switch to "questionpreview" window
@@ -37,7 +38,8 @@ Feature: PREVIEW
     # And I should see "Downloads: temp.txt instruction.txt lib.txt"
     And I switch to the main window
 
-  @javascript @_switch_window
+  #@javascript @_switch_window
+  @_switch_window
   Scenario: Preview a ProFormA question and submit a partially correct response.
     When I click on "Preview" "link" in the "proforma-003" "table_row"
     And I switch to "questionpreview" window
