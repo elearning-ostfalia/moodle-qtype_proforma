@@ -1,5 +1,8 @@
 language: php
 
+# change distribution due to:
+# https://moodle.org/mod/forum/discuss.php?d=389744
+dist: bionic
 sudo: true
 
 addons:
