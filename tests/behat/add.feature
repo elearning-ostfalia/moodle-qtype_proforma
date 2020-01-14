@@ -56,9 +56,8 @@ Feature: ADD JAVA QUESTION
     And the field "testcode[0]" matches value "class XClass {}"
     # Checkstyle
     And the "checkstyle" checkbox is "not checked"
-
+    # Finish
     And I press "Cancel"
-
 
   Scenario: Create, save and open a ProFormA java question with compilation, one Junit test and checkstyle
     When I add a "ProFormA" question filling the form with:

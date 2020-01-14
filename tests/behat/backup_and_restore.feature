@@ -41,7 +41,6 @@ Feature: BACKUP AND RESTORE
     And I should see "proforma-002"
     And I should see "proforma-003"
 
-
     When I click on "Edit" "link" in the "proforma-002" "table_row"
     Then the following fields match these values:
       | Question name            | proforma-002           |
@@ -145,4 +144,3 @@ Feature: BACKUP AND RESTORE
     And I should see "2.0"
 
     And I press "Cancel"
-

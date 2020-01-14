@@ -25,11 +25,11 @@
     width: 100%;
 }
 
-.proforma_failed > .proforma_grade  {
+.proforma_failed > .proforma_grade {
     color: pink;
     font-weight: bold;
 }
-.proforma_passed > .proforma_grade  {
+.proforma_passed > .proforma_grade {
     color: lightgreen;
     font-weight: bold;
 }
@@ -64,8 +64,6 @@
     white-space: pre-wrap;
 }
 
-
-
 /*
 .que.proforma textarea.qtype_proforma_response {
     background-color: red;
@@ -92,6 +90,9 @@ CodeMirror specific styles
     overflow: auto !important;
 }
 */
+
+/* do not use stylelint from now on (code is copied from CodeMirror) */
+/* stylelint-disable */
 
 /* PADDING */
 

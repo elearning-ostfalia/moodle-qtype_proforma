@@ -485,7 +485,6 @@ class qtype_proforma_renderer extends qtype_renderer {
             }
         }
 
-
         return $result;
     }
 

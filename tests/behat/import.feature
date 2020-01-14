@@ -66,10 +66,8 @@ Feature: IMPORT (Moodle-XML format)
     And the "checkstyle" checkbox is "checked"
     And the field "checkstyleweight" matches value "0.2"
     And the field with xpath "//textarea[@name='checkstylecode']" matches value "<!-- empty file -->"
-
+    # Finish
     And I press "Cancel"
-
-
 
   #@javascript @_file_upload
   @_file_upload  
@@ -124,9 +122,7 @@ Feature: IMPORT (Moodle-XML format)
       </module>
     </module>
     """
-
     And I press "Cancel"
-
 
     When I click on "Edit" "link" in the "second ProFormA question" "table_row"
     Then the following fields match these values:
