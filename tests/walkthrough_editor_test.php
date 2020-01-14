@@ -45,6 +45,9 @@ require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_bas
  * - finish: state from grader??
  */
 
+define("DEBUG", 0);
+
+
 class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthrough_test_base {
 
 
@@ -57,21 +60,28 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
 
     protected function run_on_all_behaviours($testfunction) {
         // easier for debugging:
-        print('adaptivenopenalty' .PHP_EOL);flush();
+        if (DEBUG)
+            print('adaptivenopenalty' .PHP_EOL);flush();
         $testfunction('adaptivenopenalty');
-        print('adaptive'.PHP_EOL);flush();
+        if (DEBUG)
+            print('adaptive'.PHP_EOL);flush();
         $testfunction('adaptive');
-        print('immediatefeedback'.PHP_EOL);flush();
+        if (DEBUG)
+            print('immediatefeedback'.PHP_EOL);flush();
         $testfunction('immediatefeedback');
 
-        print('interactive'.PHP_EOL);flush();
+        if (DEBUG)
+            print('interactive'.PHP_EOL);flush();
         $testfunction('interactive');
-        print('interactivecountback'.PHP_EOL);flush();
+        if (DEBUG)
+            print('interactivecountback'.PHP_EOL);flush();
         $testfunction('interactivecountback');
-        print('immediatecbm'.PHP_EOL);
+        if (DEBUG)
+            print('immediatecbm'.PHP_EOL);
         $testfunction('immediatecbm');
 
-        print('deferredfeedback'.PHP_EOL);flush();
+        if (DEBUG)
+            print('deferredfeedback'.PHP_EOL);flush();
         $testfunction('deferredfeedback');
 
     }
