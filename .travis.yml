@@ -2,7 +2,7 @@ language: php
 
 # change distribution due to:
 # https://moodle.org/mod/forum/discuss.php?d=389744
-#dist: bionic
+dist: bionic
 sudo: true
 
 addons:
@@ -10,9 +10,9 @@ addons:
   postgresql: "9.4"
   apt:
     packages:
-#      - openjdk-8-jre-headless
-      - oracle-java8-installer
-      - oracle-java8-set-default
+      - openjdk-8-jre-headless
+#      - oracle-java8-installer
+#      - oracle-java8-set-default
       - chromium-chromedriver
 
 services:
