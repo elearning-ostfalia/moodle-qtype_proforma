@@ -30,7 +30,7 @@ Feature: BACKUP AND RESTORE
     And I log in as "admin"
     And I am on "Course 1" course homepage
 
-  #@javascript
+  @javascript
   Scenario: Backup and restore a course containing 2 ProFormA questions
     When I backup "Course 1" course using this options:
       | Confirmation | Filename | test_backup.mbz |

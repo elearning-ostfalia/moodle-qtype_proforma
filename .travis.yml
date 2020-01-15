@@ -23,8 +23,8 @@ cache:
     - $HOME/.npm
 
 php:
-# - 7.0  # moodle 3.6 requires at least PHP 7.0
-- 7.1 # moodle 3.7 requires at least PHP 7.1
+- 7.0  # moodle 3.6 requires at least PHP 7.0
+# - 7.1 # moodle 3.7 requires at least PHP 7.1
 # - 7.2
 
 env:

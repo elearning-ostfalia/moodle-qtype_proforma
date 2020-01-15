@@ -18,8 +18,7 @@ Feature: IMPORT (Moodle-XML format)
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
 
-#@javascript @_file_upload
-  @_file_upload
+  @javascript @_file_upload
   Scenario: import Java question.
     When I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_xml" to "1"
@@ -69,8 +68,7 @@ Feature: IMPORT (Moodle-XML format)
     # Finish
     And I press "Cancel"
 
-  #@javascript @_file_upload
-  @_file_upload
+  @javascript @_file_upload
   Scenario: import ProFormA question.
     When I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_xml" to "1"
