@@ -23,8 +23,8 @@ cache:
     - $HOME/.npm
 
 php:
-- 7.0  # moodle 3.6 requires at least PHP 7.0
-# - 7.1 # moodle 3.7 requires at least PHP 7.1
+# - 7.0  # moodle 3.6 requires at least PHP 7.0
+- 7.1 # moodle 3.7 requires at least PHP 7.1
 # - 7.2
 
 env:
@@ -119,5 +119,5 @@ script:
 
 # The following line is a temporary work-around for https://tracker.moodle.org/browse/MDL-66378.
 # Once that is fixed, this line can go.
-  - curl https://github.com/timhunt/php-webdriver/commit/7a0aa38f591b7395939df25d8cb6677bf99a481f.patch | git apply --directory moodle/vendor/instaclick/php-webdriver
+#  - curl https://github.com/timhunt/php-webdriver/commit/7a0aa38f591b7395939df25d8cb6677bf99a481f.patch | git apply --directory moodle/vendor/instaclick/php-webdriver
   - moodle-plugin-ci behat --profile chrome
