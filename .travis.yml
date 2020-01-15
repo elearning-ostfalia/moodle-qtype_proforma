@@ -10,7 +10,9 @@ addons:
   postgresql: "9.4"
   apt:
     packages:
-      - openjdk-8-jre-headless
+#      - openjdk-8-jre-headless
+      - oracle-java8-installer
+      - oracle-java8-set-default
       - chromium-chromedriver
 
 services:
@@ -51,8 +53,8 @@ before_install:
 # directories to build the project.  
   - cd ../..
 # Install this project into a directory called "ci".  
-#  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
-  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
+  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
+#  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
 # Update the $PATH so scripts from this project can be called easily.  
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
