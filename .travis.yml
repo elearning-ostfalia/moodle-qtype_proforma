@@ -11,7 +11,7 @@ addons:
   apt:
     packages:
       - openjdk-8-jre-headless
-      - chromium-chromedriver
+#      - chromium-chromedriver
 
 services:
   - mysql
@@ -115,9 +115,6 @@ script:
 #     handy for debugging, EG usage: --dump
 #   - The suite option allows you to set the theme to use for behat test. If
 #     not specified, the default theme is used, EG usage: --suite boost
-#  - moodle-plugin-ci behat
-
-# The following line is a temporary work-around for https://tracker.moodle.org/browse/MDL-66378.
-# Once that is fixed, this line can go.
-#  - curl https://github.com/timhunt/php-webdriver/commit/7a0aa38f591b7395939df25d8cb6677bf99a481f.patch | git apply --directory moodle/vendor/instaclick/php-webdriver
-  - moodle-plugin-ci behat --profile chrome
+#
+- moodle-plugin-ci behat
+#  - moodle-plugin-ci behat --profile chrome
