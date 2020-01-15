@@ -51,7 +51,8 @@ before_install:
 # directories to build the project.  
   - cd ../..
 # Install this project into a directory called "ci".  
-  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
+  # - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
+  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
 # Update the $PATH so scripts from this project can be called easily.  
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
@@ -87,7 +88,7 @@ script:
 # This step runs the Moodle Code Checker to make sure that your plugin
 # conforms to the Moodle coding standards.  It is highly recommended
 # that you keep this step.
-  - moodle-plugin-ci codechecker
+#  - moodle-plugin-ci codechecker
 # This step runs some light validation on the plugin file structure
 # and code.  Validation can be plugin specific.
   - moodle-plugin-ci validate
@@ -114,4 +115,9 @@ script:
 #     handy for debugging, EG usage: --dump
 #   - The suite option allows you to set the theme to use for behat test. If
 #     not specified, the default theme is used, EG usage: --suite boost
-  - moodle-plugin-ci behat
+#  - moodle-plugin-ci behat
+
+# The following line is a temporary work-around for https://tracker.moodle.org/browse/MDL-66378.
+# Once that is fixed, this line can go.
+  - curl https://github.com/timhunt/php-webdriver/commit/7a0aa38f591b7395939df25d8cb6677bf99a481f.patch | git apply --directory moodle/vendor/instaclick/php-webdriver
+  - moodle-plugin-ci behat --profile chrome
