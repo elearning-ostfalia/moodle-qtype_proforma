@@ -2,7 +2,7 @@ language: php
 
 # change distribution due to:
 # https://moodle.org/mod/forum/discuss.php?d=389744
-dist: bionic
+#dist: bionic
 sudo: true
 
 addons:
@@ -11,10 +11,10 @@ addons:
   apt:
     packages:
       - openjdk-8-jre-headless
-#      - chromium-chromedriver
+      - chromium-chromedriver
 
 services:
-  - mysql
+#  - mysql
   - postgresql
 
 cache:
@@ -39,7 +39,7 @@ env:
   - IGNORE_PATHS=tests
  matrix:
   - DB=pgsql
-  - DB=mysqli
+#  - DB=mysqli
 
 before_install:
 # This disables XDebug which should speed up the build.
@@ -51,7 +51,7 @@ before_install:
 # directories to build the project.  
   - cd ../..
 # Install this project into a directory called "ci".  
-  # - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
+#  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
 # Update the $PATH so scripts from this project can be called easily.  
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
@@ -76,6 +76,19 @@ install:
 # these steps can be re-ordered or removed to your liking.  And of
 # course, you can add any of your own custom steps.
 script:
+# This step runs the Behat tests of your plugin.  If your plugin has
+# Behat tests, then it is highly recommended that you keep this step.
+# There are two important options that you may want to use:
+#   - The auto rerun option allows you to rerun failures X number of times,
+#     default is 2, EG usage: --auto-rerun 3
+#   - The dump option allows you to print the failure HTML to the console,
+#     handy for debugging, EG usage: --dump
+#   - The suite option allows you to set the theme to use for behat test. If
+#     not specified, the default theme is used, EG usage: --suite boost
+#
+  - moodle-plugin-ci behat --auto-rerun 0
+  - moodle-plugin-ci behat --profile chrome --auto-rerun 0
+
 # This step lints your PHP files to check for syntax errors.
   - moodle-plugin-ci phplint
 # This step runs the PHP Copy/Paste Detector on your plugin.
@@ -106,15 +119,12 @@ script:
 # This step runs the PHPUnit tests of your plugin.  If your plugin has
 # PHPUnit tests, then it is highly recommended that you keep this step.
   - moodle-plugin-ci phpunit
-# This step runs the Behat tests of your plugin.  If your plugin has
-# Behat tests, then it is highly recommended that you keep this step.
-# There are two important options that you may want to use:
-#   - The auto rerun option allows you to rerun failures X number of times,
-#     default is 2, EG usage: --auto-rerun 3
-#   - The dump option allows you to print the failure HTML to the console,
-#     handy for debugging, EG usage: --dump
-#   - The suite option allows you to set the theme to use for behat test. If
-#     not specified, the default theme is used, EG usage: --suite boost
-#
-  - moodle-plugin-ci behat
-#  - moodle-plugin-ci behat --profile chrome
+
+
+after_script:
+# See: https://github.com/moodlerooms/moodle-plugin-ci/issues/32
+  # - ps aux
+  - killall -9 php
+  - killall -9 java
+  - killall -9 Xvfb
+  # - ps auxu
