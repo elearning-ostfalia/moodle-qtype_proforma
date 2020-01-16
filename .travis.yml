@@ -11,12 +11,10 @@ addons:
   apt:
     packages:
       - openjdk-8-jre-headless
-#      - oracle-java8-installer
-#      - oracle-java8-set-default
       - chromium-chromedriver
 
 services:
-#  - mysql
+  - mysql
   - postgresql
 
 cache:
@@ -88,7 +86,7 @@ script:
 #   - The suite option allows you to set the theme to use for behat test. If
 #     not specified, the default theme is used, EG usage: --suite boost
 #
-  - moodle-plugin-ci behat --auto-rerun 0
+  - moodle-plugin-ci behat --auto-rerun 0 --start-servers
   - moodle-plugin-ci behat --profile chrome --auto-rerun 0
 
 # This step lints your PHP files to check for syntax errors.
@@ -103,7 +101,7 @@ script:
 # This step runs the Moodle Code Checker to make sure that your plugin
 # conforms to the Moodle coding standards.  It is highly recommended
 # that you keep this step.
-#  - moodle-plugin-ci codechecker
+  - moodle-plugin-ci codechecker --quiet
 # This step runs some light validation on the plugin file structure
 # and code.  Validation can be plugin specific.
   - moodle-plugin-ci validate
@@ -111,11 +109,15 @@ script:
   - moodle-plugin-ci savepoints
 # This step validates the HTML and Javascript in your Mustache templates.
 #  - moodle-plugin-ci mustache
+
 # This step runs Grunt tasks on the plugin.  By default, it tries to run
 # tasks relevant to your plugin and Moodle version, but you can run
 # specific tasks by passing them as options,
 # EG: moodle-plugin-ci grunt -t task1 -t task2
-  - moodle-plugin-ci grunt
+#  - moodle-plugin-ci grunt
+# (disabled because of claiming stale javascript files)
+
+
 # This step runs Moodle PHPDoc checker on your plugin.
 #  - moodle-plugin-ci phpdoc
 # This step runs the PHPUnit tests of your plugin.  If your plugin has

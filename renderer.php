@@ -455,13 +455,13 @@ class qtype_proforma_renderer extends qtype_renderer {
         if (qtype_proforma\lib\is_admin()) {
             // infos for admins are displayed as small text
             $result .= html_writer::start_tag('small', null);
-            // show grader info
-            $gradertext = "Grader ???";
+            // show grader info.
             try {
                 $graderinfo = $response->{'response-meta-data'}->{'grader-engine'};
                 $gradertext = $graderinfo['name'] . ' ' . $graderinfo['version'];
             } catch (Exception $e) {
                 // ignore exception.
+                $gradertext = "Grader ???";
             }
             $result .= '<p></p>' . '[' . $gradertext . ']';
 
