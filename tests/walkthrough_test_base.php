@@ -442,7 +442,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
     }
 
     private function store_response_data($response, $attachedfiles) {
-        if (count($attachedfiles) > 1)
+        if (isset($attachedfiles) && count($attachedfiles) > 1)
             // prohibit crashing in process_submission
             throw new coding_exception('Moodle *test* environment does not support arrays for attachements, sorry!');
 
