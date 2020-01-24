@@ -2,15 +2,20 @@ language: php
 
 # change distribution due to:
 # https://moodle.org/mod/forum/discuss.php?d=389744
-dist: bionic
-sudo: true
+# dist: bionic
+sudo: required
 
 addons:
   firefox: "47.0.1"
   postgresql: "9.4"
   apt:
+    sources:
+      - google-chrome
     packages:
-      - openjdk-8-jre-headless
+      - google-chrome-stable
+      - oracle-java9-installer
+      - oracle-java9-set-default
+#      - openjdk-8-jre-headless
       - chromium-chromedriver
 
 services:
@@ -22,11 +27,9 @@ cache:
     - $HOME/.composer/cache
     - $HOME/.npm
 
-php:
-# - 7.0  # moodle 3.6 requires at least PHP 7.0
-- 7.1 # moodle 3.7 and moodle 3.8 require at least PHP 7.1
-- 7.2
-- 7.3
+# moodle 3.6 requires at least PHP 7.0
+# moodle 3.7 and moodle 3.8 require at least PHP 7.1
+# PHP 7.0 is not available for dist bionic
 
 jobs:
    include:
@@ -47,7 +50,7 @@ jobs:
        env:
          - MOODLE_BRANCH=MOODLE_36_STABLE
          - DB=pgsql
-         
+
 env:
  global:
   - IGNORE_PATHS=tests
@@ -102,7 +105,7 @@ script:
 
 # https://github.com/blackboard-open-source/moodle-plugin-ci/issues/70
 #  - moodle-plugin-ci behat --auto-rerun 0 --start-servers
-#  - moodle-plugin-ci behat --profile chrome --auto-rerun 0
+  - moodle-plugin-ci behat --profile chrome
 
 # This step lints your PHP files to check for syntax errors.
   - moodle-plugin-ci phplint
@@ -116,7 +119,7 @@ script:
 # This step runs the Moodle Code Checker to make sure that your plugin
 # conforms to the Moodle coding standards.  It is highly recommended
 # that you keep this step.
-#  - moodle-plugin-ci codechecker --quiet
+#  - moodle-plugin-ci codechecker
 # This step runs some light validation on the plugin file structure
 # and code.  Validation can be plugin specific.
   - moodle-plugin-ci validate
@@ -142,6 +145,6 @@ script:
 
 #after_script:
 # See: https://github.com/moodlerooms/moodle-plugin-ci/issues/32
-#  - killall -9 php
-#  - killall -9 java
-#  - killall -9 Xvfb
+- killall -9 php
+- killall -9 java
+- killall -9 Xvfb
