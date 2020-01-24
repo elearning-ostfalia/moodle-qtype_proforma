@@ -13,9 +13,9 @@ addons:
       - google-chrome
     packages:
       - google-chrome-stable
-      - oracle-java9-installer
-      - oracle-java9-set-default
-#      - openjdk-8-jre-headless
+#      - oracle-java9-installer
+#      - oracle-java9-set-default
+      - openjdk-8-jre-headless
       - chromium-chromedriver
 
 services:
