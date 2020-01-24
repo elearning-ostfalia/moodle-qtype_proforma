@@ -28,42 +28,31 @@ php:
 - 7.2
 - 7.3
 
+jobs:
+   include:
+     - name: 'Moodle 3.7, PHP 7.3, MySQL'
+       php: 7.3
+       env:
+         - MOODLE_BRANCH=MOODLE_37_STABLE
+         - DB=mysqli
+
+     - name: 'Moodle 3.7, PHP 7.2, MySQL'
+       php: 7.2
+       env:
+         - MOODLE_BRANCH=MOODLE_37_STABLE
+         - DB=mysqli
+
+     - name: 'Moodle 3.6, PHP 7.1, PostgreSQL'
+       php: 7.1
+       env:
+         - MOODLE_BRANCH=MOODLE_36_STABLE
+         - DB=pgsql
+         
 env:
  global:
-# This line determines which version branch of Moodle to test against.
-#  - MOODLE_BRANCH=MOODLE_36_STABLE
-# This matrix is used for testing against multiple databases.  So for
-# each version of PHP being tested, one build will be created for each
-# database listed here.  EG: for PHP 5.6, one build will be created
-# using PHP 5.6 and pgsql.  In addition, another build will be created
-# using PHP 5.6 and mysqli.
   - IGNORE_PATHS=tests
- matrix:
-  include:
-    - php: 7.3
-      env:
-        - MOODLE_BRANCH=MOODLE_38_STABLE
-        - DB=mysqli
 
-    - php: 7.1
-      env:
-        - MOODLE_BRANCH=MOODLE_38_STABLE
-        - DB=pgsql
 
-    - php: 7.2
-      env:
-        - MOODLE_BRANCH=MOODLE_37_STABLE
-        - DB=mysqli
-
-    - php: 7.1
-      env:
-        - MOODLE_BRANCH=MOODLE_37_STABLE
-        - DB=mysqli
-
-    - php: 7.1
-      env:
-        - MOODLE_BRANCH=MOODLE_36_STABLE
-        - DB=pgsql
 
 before_install:
 # This disables XDebug which should speed up the build.
@@ -151,10 +140,8 @@ script:
   - moodle-plugin-ci phpunit
 
 
-after_script:
+#after_script:
 # See: https://github.com/moodlerooms/moodle-plugin-ci/issues/32
-  # - ps aux
-  - killall -9 php
-  - killall -9 java
-  - killall -9 Xvfb
-  # - ps auxu
+#  - killall -9 php
+#  - killall -9 java
+#  - killall -9 Xvfb
