@@ -2,7 +2,7 @@ language: php
 
 # change distribution due to:
 # https://moodle.org/mod/forum/discuss.php?d=389744
-# dist: bionic
+dist: bionic
 sudo: required
 
 addons:
@@ -76,6 +76,8 @@ before_install:
 install:
 # plugin requires special behaviour to run unit and behat tests
   - moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading
+  - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 3;'
+
 # Run the default install.  The overview of what this does:
 #    - Clone the Moodle project into a directory called moodle.
 #    - Create a data directory called moodledata.
@@ -104,7 +106,7 @@ script:
 #
 
 # https://github.com/blackboard-open-source/moodle-plugin-ci/issues/70
-#  - moodle-plugin-ci behat --auto-rerun 0 --start-servers
+#  - moodle-plugin-ci behat --auto-rerun 0
   - moodle-plugin-ci behat --profile chrome
 
 # This step lints your PHP files to check for syntax errors.
