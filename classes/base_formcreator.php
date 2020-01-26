@@ -24,7 +24,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-class base_form_creator {
+abstract class base_form_creator {
     /**
      * @var MoodleQuickForm The form object that must be filled with input fields.
      */

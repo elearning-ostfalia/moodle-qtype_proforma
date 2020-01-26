@@ -139,7 +139,7 @@ class qtype_proforma_renderer extends qtype_renderer {
                 $files = $this->files_read_only($qa, $options);
             }
         }
-        $downloadtext = $this->question_downloads($question, $qa);
+        $downloadtext = $this->question_downloads($question);
 
         $result = '';
         $result .= html_writer::tag('div', $question->format_questiontext($qa) . $downloadtext,
@@ -172,10 +172,9 @@ class qtype_proforma_renderer extends qtype_renderer {
     /**
      * returns the html fragment for download links
      * @param $question
-     * @param $qa
      * @return string
      */
-    protected function question_downloads($question, $qa) {
+    protected function question_downloads($question) {
         $result = '';
 
         foreach (qtype_proforma::fileareas_for_studentfiles() as $filearea => $value) { // WITHOUT model solution!!!
@@ -258,7 +257,6 @@ class qtype_proforma_renderer extends qtype_renderer {
         $output = ''; // 'feedback: ';
 
         // always show error message (if any) even if no specific feedback shall be reported!
-        $question = $qa->get_question();
         $error = $qa->get_last_qt_var('_errormsg');
         $format = $qa->get_last_qt_var('_feedbackformat');
 
@@ -337,8 +335,6 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @throws coding_exception
      */
     private function get_feedback_for_last_answer(question_attempt $qa) {
-
-        $feedbackstep = null;
 
         foreach ($qa->get_reverse_step_iterator() as $step) {
             $answerresponse = $step->get_qt_data();
