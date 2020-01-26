@@ -71,7 +71,7 @@ before_install:
 install:
   # plugin requires special behaviour to run unit and behat tests
   - moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading
-  - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 3;'
+
 
 # Run the default install.  The overview of what this does:
 #    - Clone the Moodle project into a directory called moodle.
@@ -84,6 +84,8 @@ install:
 #    - If your plugin has Behat features, then Behat will be setup.
 #    - If your plugin has unit tests, then PHPUnit will be setup.
   - moodle-plugin-ci install
+  
+  - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 3;'
 
 # This lists steps that are run for the purposes of testing.  Any of
 # these steps can be re-ordered or removed to your liking.  And of
