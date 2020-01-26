@@ -30,49 +30,46 @@ cache:
 # PHP 7.0 is not available for dist bionic
 
 jobs:
-   include:
-     - name: 'Moodle 3.7, PHP 7.3, MySQL'
-       php: 7.3
-       env:
-         - MOODLE_BRANCH=MOODLE_37_STABLE
-         - DB=mysqli
+  include:
+    - name: 'Moodle 3.7, PHP 7.3, MySQL'
+      php: 7.3
+      env:
+        - MOODLE_BRANCH=MOODLE_37_STABLE
+        - DB=mysqli
 
-     - name: 'Moodle 3.7, PHP 7.2, MySQL'
-       php: 7.2
-       env:
-         - MOODLE_BRANCH=MOODLE_37_STABLE
-         - DB=mysqli
+    - name: 'Moodle 3.7, PHP 7.2, MySQL'
+      php: 7.2
+      env:
+        - MOODLE_BRANCH=MOODLE_37_STABLE
+        - DB=mysqli
 
-     - name: 'Moodle 3.6, PHP 7.1, PostgreSQL'
-       php: 7.1
-       env:
-         - MOODLE_BRANCH=MOODLE_36_STABLE
-         - DB=pgsql
+    - name: 'Moodle 3.6, PHP 7.1, PostgreSQL'
+      php: 7.1
+      env:
+        - MOODLE_BRANCH=MOODLE_36_STABLE
+        - DB=pgsql
 
 env:
- global:
-  - IGNORE_PATHS=tests
-
-
+  global:
+    - IGNORE_PATHS=tests
 
 before_install:
-# This disables XDebug which should speed up the build.
+  # This disables XDebug which should speed up the build.
   - phpenv config-rm xdebug.ini
-# This installs NodeJS which is used by Grunt, etc.  
+  # This installs NodeJS which is used by Grunt, etc.
   - nvm install 8.9
   - nvm use 8.9
-# Currently we are inside of the clone of your repository.  We move up two
-# directories to build the project.  
+  # Currently we are inside of the clone of your repository.  We move up two
+  # directories to build the project.
   - cd ../..
-# Install this project into a directory called "ci".  
+  # Install this project into a directory called "ci".
   - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
-#  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
-# Update the $PATH so scripts from this project can be called easily.  
+  # Update the $PATH so scripts from this project can be called easily.
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 
 install:
-# plugin requires special behaviour to run unit and behat tests
+  # plugin requires special behaviour to run unit and behat tests
   - moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading
   - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 3;'
 
@@ -107,45 +104,44 @@ script:
 #  - moodle-plugin-ci behat --auto-rerun 0
   - moodle-plugin-ci behat --profile chrome
 
-# This step lints your PHP files to check for syntax errors.
+  # This step lints your PHP files to check for syntax errors.
   - moodle-plugin-ci phplint
-# This step runs the PHP Copy/Paste Detector on your plugin.
-# This helps to find code duplication.
+  # This step runs the PHP Copy/Paste Detector on your plugin.
+  # This helps to find code duplication.
   - moodle-plugin-ci phpcpd
-# This step runs the PHP Mess Detector on your plugin. This helps to find
-# potential problems with your code which can result in
-# refactoring opportunities.
+  # This step runs the PHP Mess Detector on your plugin. This helps to find
+  # potential problems with your code which can result in
+  # refactoring opportunities.
   - moodle-plugin-ci phpmd
-# This step runs the Moodle Code Checker to make sure that your plugin
-# conforms to the Moodle coding standards.  It is highly recommended
-# that you keep this step.
-#  - moodle-plugin-ci codechecker
-# This step runs some light validation on the plugin file structure
-# and code.  Validation can be plugin specific.
+  # This step runs the Moodle Code Checker to make sure that your plugin
+  # conforms to the Moodle coding standards.  It is highly recommended
+  # that you keep this step.
+  #  - moodle-plugin-ci codechecker
+  # This step runs some light validation on the plugin file structure
+  # and code.  Validation can be plugin specific.
   - moodle-plugin-ci validate
-# This step validates your plugin's upgrade steps.
+  # This step validates your plugin's upgrade steps.
   - moodle-plugin-ci savepoints
-# This step validates the HTML and Javascript in your Mustache templates.
-#  - moodle-plugin-ci mustache
+  # This step validates the HTML and Javascript in your Mustache templates.
+  #  - moodle-plugin-ci mustache
 
-# This step runs Grunt tasks on the plugin.  By default, it tries to run
-# tasks relevant to your plugin and Moodle version, but you can run
-# specific tasks by passing them as options,
-# EG: moodle-plugin-ci grunt -t task1 -t task2
-#  - moodle-plugin-ci grunt
-# (disabled because of claiming stale javascript files)
+  # This step runs Grunt tasks on the plugin.  By default, it tries to run
+  # tasks relevant to your plugin and Moodle version, but you can run
+  # specific tasks by passing them as options,
+  # EG: moodle-plugin-ci grunt -t task1 -t task2
+  #  - moodle-plugin-ci grunt
+  # (disabled because of claiming stale javascript files)
 
 
-# This step runs Moodle PHPDoc checker on your plugin.
-#  - moodle-plugin-ci phpdoc
-# This step runs the PHPUnit tests of your plugin.  If your plugin has
-# PHPUnit tests, then it is highly recommended that you keep this step.
+  # This step runs Moodle PHPDoc checker on your plugin.
+  #  - moodle-plugin-ci phpdoc
+  # This step runs the PHPUnit tests of your plugin.  If your plugin has
+  # PHPUnit tests, then it is highly recommended that you keep this step.
   - moodle-plugin-ci phpunit
 
 
-#after_script:
+after_script:
 # See: https://github.com/moodlerooms/moodle-plugin-ci/issues/32
-- killall -9 php
-- killall -9 java
-- killall -9 Xvfb
-
+  - killall -9 php
+  - killall -9 java
+  - killall -9 Xvfb
