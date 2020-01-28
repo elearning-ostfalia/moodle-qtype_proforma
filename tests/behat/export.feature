@@ -30,7 +30,11 @@ Feature: EXPORT
     When I navigate to "Question bank > Export" in current page administration
     And I set the field "id_format_xml" to "1"
     And I press "Export questions to file"
-    Then following "click here" should download file with between "12055" and "12065" bytes
+    # Moodle 3.6.4
+    Then following "click here" should download file with between "12030" and "12040" bytes
+    # Moodle 3.6.8
+    # Then following "click here" should download file with between "12055" and "12065" bytes
+  
     # If the download step is the last in the scenario then we can sometimes run
     # into the situation where the download page causes a http redirect but behat
     # has already conducted its reset (generating an error). By putting a logout

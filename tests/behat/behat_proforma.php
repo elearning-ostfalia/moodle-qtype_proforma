@@ -117,7 +117,7 @@ class behat_proforma extends behat_base {
         $session = $this->getSession()->getCookie('MoodleSession');
         // download twice
         download_file_content($url, array('Cookie' => 'MoodleSession=' . $session),
-                null, false, 300, 20, false, '/var/www/html/moodle/behat_test_download.txt');
+                null, false, 300, 20, false, '/tmp/behattest_download.txt');
         return download_file_content($url, array('Cookie' => 'MoodleSession=' . $session));
     }
 
