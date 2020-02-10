@@ -925,8 +925,7 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
      * @return string
      */
     protected function get_textarea_id($qa) {
-        $responsefieldname = $qa->get_qt_field_name('answer');
-        return 'id_' . $responsefieldname;
+        return 'id_' . $qa->get_qt_field_name('answer');
     }
 
     /**
@@ -952,8 +951,15 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
         $question = $qa->get_question();
         $mode = $question->programminglanguage;
         $id = $this->get_textarea_id($qa);
-        $input = $this->textarea($step->get_qt_var($name), $lines, array('readonly' => 'readonly',
-                        'id' => $id));
+
+        $attributes = array();
+        $attributes['id'] = $id;
+        $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
+        $attributes['rows'] = $lines;
+        $attributes['cols'] = 60;
+        $attributes['readonly'] = 'readonly';
+
+        $input = html_writer::tag('textarea', s($step->get_qt_var($name)), $attributes);
 
         // convert textarea to codemirror editor
         qtype_proforma::as_codemirror($id, $mode, null, true, false);
