@@ -248,7 +248,7 @@ abstract class base_form_creator {
         $mform->addElement('select', 'responsefieldlines',
                 get_string('responsefieldlines', 'qtype_proforma'), $qtype->response_sizes());
         $mform->setDefault('responsefieldlines', 15);
-        $mform->hideIf('responsefieldlines', 'responseformat', 'eq', 'filepicker');
+        $mform->hideIf('responsefieldlines', 'responseformat', 'neq', 'editor');
 
         // FILEPICKER OPTIONS
         $choices = get_max_upload_sizes($CFG->maxbytes, $COURSE->maxbytes,
@@ -263,10 +263,18 @@ abstract class base_form_creator {
         $filepickeroptions[] = $mform->createElement('select', 'maxbytes', $name1, $choices);
         $filepickeroptions[] = $mform->createElement('text', 'filetypes', $name2);
         $mform->addGroup($filepickeroptions, 'filepickergroup',  get_string('filepickeroptions', 'qtype_proforma'), array(' '), false);
-        $mform->hideIf('filepickergroup', 'responseformat', 'eq', 'editor');
+        $mform->hideIf('filepickergroup', 'responseformat', 'neq', 'filepicker');
         $mform->addHelpButton('filepickergroup', 'acceptedfiletypes', 'qtype_proforma');
 
         $mform->setType('filetypes', PARAM_RAW);
+
+
+        // VERSION CONTROL OPTIONS
+        $mform->addElement('text', 'vcsuritemplate', get_string('vcsuritemplate', 'qtype_proforma'), array('size'=>'80'));
+        $mform->setDefault('vcsuritemplate', get_config('qtype_proforma', 'defaultvcsuri'));
+        $mform->setType('vcsuritemplate', PARAM_TEXT);
+        $mform->addHelpButton('vcsuritemplate', 'vcsuritemplate', 'qtype_proforma');
+        $mform->hideIf('vcsuritemplate', 'responseformat', 'neq', 'versioncontrol');
 
         // Programming Language.
         $mform->addElement('select', 'programminglanguage',
@@ -279,9 +287,8 @@ abstract class base_form_creator {
 
         // Response filename.
         $this->add_responsefilename($question);
+        // note: hidding responsefilename does not work with static text
         $mform->hideIf('responsefilename', 'responseformat', 'neq', 'editor');
-        $mform->setType('responsefilename', PARAM_TEXT);
-        $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
 
         $this->add_modelsolution($question);
     }

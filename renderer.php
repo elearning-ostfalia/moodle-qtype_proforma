@@ -73,8 +73,8 @@ class qtype_proforma_renderer extends qtype_renderer {
         $question = $qa->get_question();
         $files = '';
 
-        // get default renderer
-        $responseoutput = $question->get_format_renderer($this->page);
+        // get default renderer depending on responsetype
+        $renderer = $question->get_format_renderer($this->page);
 
         // Answer field.
         $step = $qa->get_last_step_with_qt_var('answer');
@@ -85,14 +85,14 @@ class qtype_proforma_renderer extends qtype_renderer {
         }
 
         if (empty($options->readonly)) {
-            // editor
-            $answer = $responseoutput->response_area_input('answer', $qa,
+            // student view for input
+            $answer = $renderer->response_area_input('answer', $qa,
                     $step, $question->responsefieldlines, $options->context);
 
         } else {
             // readonly for review
             // => we cannot use default renderer from question settings
-            // since the teacher could have changed them in the meantime
+            // since the teacher could have changed them in the meantime!!
             // => try and figure out what renderer to use
             $stepfiles = $qa->get_last_step_with_qt_var('attachments');
 
@@ -119,19 +119,19 @@ class qtype_proforma_renderer extends qtype_renderer {
 
             switch ($showwhat) {
                 case $showeditor:
-                    $responseoutput = $this->page->get_renderer('qtype_proforma', 'format_editor');
+                    $renderer = $this->page->get_renderer('qtype_proforma', 'format_editor');
                     break;
                 case $showfiles:
-                    $responseoutput = $this->page->get_renderer('qtype_proforma', 'format_filepicker');
+                    $renderer = $this->page->get_renderer('qtype_proforma', 'format_filepicker');
                     $files = $this->files_read_only($qa, $options);
                     break;
             }
-            $answer = $responseoutput->response_area_read_only('answer', $qa,
+            $answer = $renderer->response_area_read_only('answer', $qa,
                     $step, $question->responsefieldlines, $options->context);
 
         }
 
-        if ($responseoutput->can_have_attachments() && $question->attachments) {
+        if ($renderer->can_have_attachments() && $question->attachments) {
             if (empty($options->readonly)) {
                 $files = $this->files_input($qa, $question, $options);
 
@@ -904,9 +904,15 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
         $inputname = $qa->get_qt_field_name($name);
         $id = $this->get_textarea_id($qa);
 
-        $input = $this->textarea($step->get_qt_var($name), $lines, array('name' => $inputname,
-                        'id' => $id)) .
-                html_writer::empty_tag('input', array('type' => 'hidden',
+        $attributes = array();
+        $attributes['name'] = $inputname;
+        $attributes['id'] = $id;
+        $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
+        $attributes['rows'] = $lines;
+        $attributes['cols'] = 60;
+
+        $input = html_writer::tag('textarea', s($step->get_qt_var($name)), $attributes);
+        $input .= html_writer::empty_tag('input', array('type' => 'hidden',
                         'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
         // convert textarea to codemirror editor
         qtype_proforma::as_codemirror($id, $mode, null, false, false);
@@ -921,20 +927,6 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
     protected function get_textarea_id($qa) {
         $responsefieldname = $qa->get_qt_field_name('answer');
         return 'id_' . $responsefieldname;
-    }
-
-    /**
-     * creates a html fragment for the textarea.
-     * @param $response
-     * @param $lines
-     * @param $attributes
-     * @return string string the HTML for the textarea.
-     */
-    protected function textarea($response, $lines, $attributes) {
-        $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
-        $attributes['rows'] = $lines;
-        $attributes['cols'] = 60;
-        return html_writer::tag('textarea', s($response), $attributes);
     }
 
     /**
@@ -978,5 +970,94 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
     }
 }
 
+
+
+/**
+ * A renderer for questions where the student uses a version control system
+ */
+class qtype_proforma_format_versioncontrol_renderer extends plugin_renderer_base {
+
+    /**
+     * returns the html fragment for the reponse area in input mode
+     *
+     * @param $name
+     * @param $qa
+     * @param $step
+     * @param $lines
+     * @param $context
+     * @return string
+     */
+    public function response_area_input($name, $qa, $step, $lines, $context) {
+        $question = $qa->get_question();
+        $inputname = $qa->get_qt_field_name($name);
+        $id = $this->get_input_id($qa);
+
+        $attributes = array();
+        $attributes['name'] = $inputname;
+        $attributes['id'] = $id;
+        $attributes['type'] = 'text';
+        $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
+        $attributes['size'] = 20;
+
+        $input = html_writer::label(get_string('vcsidentifier', 'qtype_proforma'), $id);
+
+        $input .= html_writer::tag('input', '' /*s($step->get_qt_var($name))*/, $attributes);
+        $input .= html_writer::empty_tag('input', array('type' => 'hidden',
+                'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
+
+        return $input;
+    }
+
+    /**
+     * returns the html identfier for the textarea
+     * @param $qa
+     * @return string
+     */
+    protected function get_input_id($qa) {
+        return 'id_' . $qa->get_qt_field_name('answer');
+    }
+
+    /**
+     * returns the class name
+     *
+     * @return string
+     */
+    protected function class_name() {
+        return 'qtype_proforma_versioncontrol';
+    }
+
+    /**
+     * returns the html fragment for the reponse area in input mode
+     *
+     * @param $name
+     * @param $qa
+     * @param $step
+     * @param $lines
+     * @param $context
+     * @return string
+     */
+    public function response_area_read_only($name, $qa, $step, $lines, $context) {
+        $question = $qa->get_question();
+        $id = $this->get_input_id($qa);
+        $input = get_string('vcsidentifier', 'qtype_proforma');
+
+        $input .= s($step->get_qt_var($name));
+
+
+        // $input = $this->textarea($step->get_qt_var($name), $lines, array('readonly' => 'readonly',
+        //         'id' => $id));
+
+        return $input;
+    }
+
+    /**
+     * returns if the student submission can have attachments (false)
+     *
+     * @return bool false
+     */
+    public function can_have_attachments() {
+        return false;
+    }
+}
 
 

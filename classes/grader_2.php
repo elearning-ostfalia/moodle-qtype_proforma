@@ -40,7 +40,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @return string submission.xml string
      * @throws coding_exception
      */
-    private function create_submission_xml($code, $files, $filename, qtype_proforma_question $question) {
+    private function create_submission_xml($code, $files, $filename, $uri, qtype_proforma_question $question) {
         global $CFG;
 
         $xw = new SimpleXmlWriter();
@@ -75,7 +75,11 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             // external TODO???
         }
 
-        if (isset($files)) {
+        if (isset($uri)) {
+            // Version control system.
+            $xw->create_childelement_with_text('external-submission', $uri);
+        } else if (isset($files)) {
+            // File upload.
             if (count($files) == 1) {
                 $file = array_values($files)[0];
                 $xw->create_childelement_with_text('external-submission', 'http-file:' . $file->get_filename());
@@ -91,6 +95,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                 $xw->create_childelement_with_text('external-submission', 'http-file:' . $httpfilename);
             }
         } else if (isset($code)) {
+            // Editor.
             // $xw->createChildElementWithText('external-submission', 'http-text:'.$filename);
 
             // Start a child element
@@ -189,7 +194,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             }
         }
 
-        $submission = $this->create_submission_xml(null, $files, $question->responsefilename, $question);
+        $submission = $this->create_submission_xml(null, $files, $question->responsefilename, null, $question);
 
         // debugging($submission);
 
@@ -216,7 +221,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         $filename = $question->responsefilename;
 
-        $submissionxml = $this->create_submission_xml($code, null, $filename, $question);
+        $submissionxml = $this->create_submission_xml($code, null, $filename, null, $question);
 
         $postfields = array(
                 'submission.xml' => $submissionxml,
@@ -225,6 +230,21 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         return $this->post_to_grader($postfields, $question);
     }
+
+    public function send_external_submission_to_grader($uri, qtype_proforma_question $question) {
+        if (empty($uri)) {
+            throw new coding_exception('send_external_submission_to_grader with empty $uri');
+        }
+
+        $submissionxml = $this->create_submission_xml(null, null, null, $uri, $question);
+
+        $postfields = array(
+                'submission.xml' => $submissionxml
+        );
+
+        return $this->post_to_grader($postfields, $question);
+    }
+
 
     /**
      * updates the grade result for this specifix test

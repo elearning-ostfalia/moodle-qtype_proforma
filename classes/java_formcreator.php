@@ -67,6 +67,8 @@ class java_form_creator extends base_form_creator {
     public function add_responsefilename($question) {
         $mform = $this->form;
         $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
+        $mform->setType('responsefilename', PARAM_TEXT);
+        $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
         // maybe in the future...
         // $mform->addElement('button', 'generatefilename', get_string('generatefilename', 'qtype_proforma'));
     }

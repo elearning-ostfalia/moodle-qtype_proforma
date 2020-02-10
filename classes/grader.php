@@ -196,6 +196,16 @@ class qtype_proforma_grader {
         throw new coding_exception('send_files_to_grader is not implemented');
     }
 
+    /**
+     * sends a grading request for a submission located in a version control system
+     * @param $uri
+     * @param qtype_proforma_question $question
+     * @throws coding_exception
+     */
+    public function send_external_submission_to_grader($uri, qtype_proforma_question $question) {
+        throw new coding_exception('send_external_submission_to_grader is not implemented');
+    }
+
     /** sends the sudent's submitted source code to the grader
      *
      * @param $code

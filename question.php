@@ -90,6 +90,9 @@ class qtype_proforma_question extends question_graded_automatically {
 
     public $proformaversion;
 
+    /** @var string The URI template for accessing a version control system with submissions. */
+    public $vcsuritemplate;
+
     /**
      * creates the grader object (why function???)
      *
@@ -169,11 +172,14 @@ class qtype_proforma_question extends question_graded_automatically {
                 $expecteddata['answer'] = PARAM_RAW;
                 $expecteddata['attachments'] = question_attempt::PARAM_FILES;
                 break;*/
-            case 'editor':
+            case qtype_proforma::RESPONSE_EDITOR:
                 $expecteddata['answer'] = PARAM_RAW;
                 break;
-            case 'filepicker':
+            case qtype_proforma::RESPONSE_FILEPICKER:
                 $expecteddata['attachments'] = question_attempt::PARAM_FILES;
+                break;
+            case qtype_proforma::RESPONSE_VERSION_CONTROL:
+                $expecteddata['answer'] = PARAM_RAW;
                 break;
             default:
                 throw new coding_exception('unsupported responseformat '. $this->responseformat);
@@ -264,7 +270,7 @@ class qtype_proforma_question extends question_graded_automatically {
     public function is_complete_response(array $response) {
         // Determine if the given response has online text and attachments.
         $hasinlinetext = array_key_exists('answer', $response) &&
-                ($response['answer'] !== '');
+                (trim($response['answer']) !== '');
         if (!empty($this->responsetemplate != '' && $hasinlinetext)) {
             // inline text equals to response template?
             if ($this->responsetemplate == $response['answer']) {
@@ -292,10 +298,13 @@ class qtype_proforma_question extends question_graded_automatically {
 
         // Determine if we meet the optional requirements.
         switch ($this->responseformat) {
-            case 'filepicker':
+            case qtype_proforma::RESPONSE_FILEPICKER:
                 $meetsconentreq = ($attachcount > 0);
                 break;
-            case 'editor':
+            case qtype_proforma::RESPONSE_EDITOR:
+                $meetsconentreq = $hasinlinetext;
+                break;
+            case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 $meetsconentreq = $hasinlinetext;
                 break;
             default:
@@ -341,6 +350,10 @@ class qtype_proforma_question extends question_graded_automatically {
                 // todo check file content
                 return true;
                 break;
+            case qtype_proforma::RESPONSE_VERSION_CONTROL:
+                // we cannot decide if the student's response has changed
+                // since it is located somewhere else
+                return false;
             default:
                 throw new coding_exception('invalid response format "'. $this->responseformat . '"');
 
@@ -361,59 +374,66 @@ class qtype_proforma_question extends question_graded_automatically {
             throw new coding_exception('complete response expected');
         }
 
-        $hasinlinetext = array_key_exists('answer', $response) && ($response['answer'] !== '');
-        $hasattachments = array_key_exists('attachments', $response)
-                && $response['attachments'] instanceof question_response_files;
+        // create grader
+        $grader = $this->get_grader();
 
-        // Determine the number of attachments present.
-        if ($hasattachments) {
-            $attachcount = count($response['attachments']->get_files());
+        if ($this->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL) {
+            $uri = str_replace('{id}', $response['answer'], $this->vcsuritemplate);
+            list($graderoutput, $httpcode) = $grader->send_external_submission_to_grader($uri, $this);
         } else {
-            $attachcount = 0;
-        }
+            // quite complex determination of grading function
+            // (we might simply use the response format)
+            $hasinlinetext = array_key_exists('answer', $response) && ($response['answer'] !== '');
+            $hasattachments = array_key_exists('attachments', $response)
+                    && $response['attachments'] instanceof question_response_files;
 
-        $dummy = $this->get_grader();
+            // Determine the number of attachments present.
+            if ($hasattachments) {
+                $attachcount = count($response['attachments']->get_files());
+            } else {
+                $attachcount = 0;
+            }
 
-        $graderoutput = "";
-        $code = "";
-        if ($hasinlinetext) {
-            $code = $response['answer'];
-            if (!is_string($code)) {
-                if (is_a($code, 'question_file_loader')) {
-                    $newcode = $code->__toString();
-                    $code = $newcode;
-                } else {
-                    throw new coding_exception('invalid datatype for grade_response');
+            $graderoutput = "";
+            $code = "";
+            if ($hasinlinetext) {
+                $code = $response['answer'];
+                if (!is_string($code)) {
+                    if (is_a($code, 'question_file_loader')) {
+                        $newcode = $code->__toString();
+                        $code = $newcode;
+                    } else {
+                        throw new coding_exception('invalid datatype for grade_response');
+                    }
                 }
             }
+
+            if ($attachcount > 0) {
+                $files = $response['attachments']->get_files();
+                if (!$files) {
+                    throw new coding_exception("no files attached");
+                }
+
+                // get first file
+                $file = array_values($files)[0];
+                if (!$file instanceof stored_file) {
+                    throw new coding_exception("wrong class");
+                }
+
+                list($graderoutput, $httpcode) = $grader->send_files_to_grader(
+                        $files,
+                        $this);
+            } else if (!empty($code)) {
+                list($graderoutput, $httpcode) = $grader->send_code_to_grader(
+                        $code,
+                        $this);
+            } else {
+                throw new coding_exception('no attachments and no code available');
+            }
         }
 
-        if ($attachcount > 0) {
-            $files = $response['attachments']->get_files();
-            if (!$files) {
-                throw new coding_exception("no files attached");
-            }
-
-            // get first file
-            $file = array_values($files)[0];
-            if (!$file instanceof stored_file) {
-                throw new coding_exception("wrong class");
-            }
-
-            list($graderoutput, $httpcode) = $this->grader->send_files_to_grader(
-                    $files,
-                    $this);
-        } else if (!empty($code)) {
-            list($graderoutput, $httpcode) = $this->grader->send_code_to_grader(
-                    $code,
-                    $this);
-        } else {
-            throw new coding_exception('no attachments and no code available');
-        }
-
-        $state = 'valid data SUBMITTED!';
         list($state, $fraction, $error, $feedback, $feedbackformat) =
-            $this->grader->extract_grade($graderoutput, $httpcode, $this);
+                $grader->extract_grade($graderoutput, $httpcode, $this);
 
         return array($fraction, $state,
             array ('_feedback' => $feedback, '_errormsg' => $error, '_feedbackformat' => $feedbackformat));

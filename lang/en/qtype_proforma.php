@@ -165,3 +165,16 @@ $string['aggregationstrategy_help'] = 'Aggregation strategy used for grading thi
 
 $string['internaltesterror'] = 'Internal error in a test';
 $string['privacy:metadata'] = 'The ProFormA question type plugin does not store any personal data.';
+
+// version control system
+
+$string['versioncontrol'] = 'Version control (experimental)';
+$string['vcsuritemplate'] = 'URI of repository';
+$string['vcsuritemplate_help'] = 'location where the student\'s submission can be found. Can contain placeholder:<br> 
+{id} = identifier to be entered by student<br>
+{username} = student\'s login name in Moodle';
+$string['vcsidentifier'] = 'Your identifier for the version control system';
+
+$string['defaultvcsuri'] = 'URI template for version control system';
+$string['defaultvcsuri_desc'] = 'may contain place holders';
+

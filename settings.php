@@ -63,6 +63,8 @@ $settings->add(new admin_setting_configtext('qtype_proforma/defaultpenalty',
         get_string('defaultpenalty', 'qtype_proforma'),
         get_string('defaultpenalty_desc', 'qtype_proforma'), 0.1));
 
+
+
 // can we use this??? because float format is depending on language (. or ,)
 /*
 $settings->add(new admin_setting_configtext_with_advanced('qtype_proforma/defaultpenalty',
@@ -84,6 +86,11 @@ if (isset($CFG->maxbytes)) {
             get_max_upload_sizes($CFG->maxbytes, 0, 0, $maxbytes));
     $settings->add($element);
 }
+
+$settings->add(new admin_setting_configtext('qtype_proforma/defaultvcsuri',
+        get_string('defaultvcsuri', 'qtype_proforma'),
+        get_string('defaultvcsuri_desc', 'qtype_proforma'),
+        'https://server/path/to/project/{id}/subfolder', PARAM_TEXT, 80));
 
 // Java - JUnit - Checkstyle
 

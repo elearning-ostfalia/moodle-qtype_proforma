@@ -279,5 +279,17 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019111901, 'qtype', 'proforma');
     }
 
+    // Version control access
+    if ($oldversion < 2020021001) {
+        // do not force taskrepository and taskpath to have a value.
+        $field = new xmldb_field('vcsuritemplate', XMLDB_TYPE_TEXT, null, null, null, null, null, 'responsetemplate');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // ProFormA savepoint reached.
+        upgrade_plugin_savepoint(true, 2020021001, 'qtype', 'proforma');
+    }
+
+
     return true;
 }

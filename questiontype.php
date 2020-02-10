@@ -103,6 +103,12 @@ class qtype_proforma extends question_type {
     const RESPONSE_EDITOR = 'editor';
 
     /**
+     * Get submission from version control.
+     */
+    const RESPONSE_VERSION_CONTROL = 'versioncontrol';
+
+
+    /**
      * Function returns array with fileareas containing files visible to students.
      *
      * @return array with filearea data
@@ -193,6 +199,8 @@ class qtype_proforma extends question_type {
 
                 'aggregationstrategy',
                 'gradinghints',
+
+                'vcsuritemplate'
                 // 'comment', // is an array => do not add
                 // 'commentformat',
         );
@@ -470,8 +478,9 @@ class qtype_proforma extends question_type {
      */
     public function response_formats() {
         return array(
-            'editor' => get_string('formateditor', 'qtype_proforma'),
-            'filepicker' => get_string('formatfilepicker', 'qtype_proforma')
+            self::RESPONSE_EDITOR => get_string('formateditor', 'qtype_proforma'),
+            self::RESPONSE_FILEPICKER => get_string('formatfilepicker', 'qtype_proforma'),
+            self::RESPONSE_VERSION_CONTROL => get_string('versioncontrol', 'qtype_proforma')
         );
     }
 
