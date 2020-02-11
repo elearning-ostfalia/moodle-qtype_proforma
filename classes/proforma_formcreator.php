@@ -90,11 +90,9 @@ class proforma_form_creator extends base_form_creator {
         $mform = $this->form;
         // since static fields cannot be hidden we create a group
         $group = [];
-        $group[] =& $mform->createElement('static',  get_string('filename', 'qtype_proforma'), '', '');
-        $mform->addGroup($group, 'responsefilename', '', ' ', false);
+        $group[] =& $mform->createElement('static',  'dummy' , '', $question->options->responsefilename);
+        $mform->addGroup($group, 'responsefilename', get_string('filename', 'qtype_proforma'), ' ', false);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
-        // $mform->hideIf(‘formgroup’, ‘dependenton’, 'noteq', 1);
-
 
         // $this->add_static_field($question, $mform, 'responsefilename', get_string('filename', 'qtype_proforma'));
     }
