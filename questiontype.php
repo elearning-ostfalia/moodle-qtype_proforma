@@ -214,12 +214,12 @@ class qtype_proforma extends question_type {
     }
 
     /**
-     * Returns filearea names used for response files.
+     * Returns response variable names that may have associated files.
      *
      * @return array
      */
     public function response_file_areas() {
-        return array('attachments', 'answer');
+        return array(ATTACHMENTS, ANSWER);
     }
 
     /**
@@ -648,10 +648,9 @@ class qtype_proforma extends question_type {
      */
     public function export_to_xml($question, qformat_xml $format, $extra = null) {
         global $COURSE;
-        /*        if ($extra !== null) {
-                    throw new coding_exception("proforma:export_to_xml: Unexpected parameter");
-                }
-        */
+        // shall vcsuritemplate and vcslabel be deleted from extra field array because
+        // they belong to the course and not to the question???
+
         // Copy the question so we can modify it for export
         // (Just in case the original gets used elsewhere).
         $questiontoexport = $question; // clone $question;

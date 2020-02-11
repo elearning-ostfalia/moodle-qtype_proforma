@@ -188,6 +188,8 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <taskstorage>'.qtype_proforma_test_helper::QUESTION_TASKSTORAGE.'</taskstorage>
     <aggregationstrategy>1</aggregationstrategy>
     <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
+    <vcsuritemplate></vcsuritemplate>
+    <vcslabel></vcslabel>
     <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES.'</templates>
     <downloads>'.qtype_proforma_test_helper::QUESTION_DOWNLOADS.'</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>

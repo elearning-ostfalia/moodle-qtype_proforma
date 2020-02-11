@@ -21,7 +21,6 @@
  * @copyright  2009 The Open University
  * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author     K.Borm <k.borm[at]ostfalia.de>
                The Open University (for essay code base)
  */
 
@@ -32,6 +31,9 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/grader_2.php');
 
+define("ANSWER",      "answer");
+define("ATTACHMENTS", "attachments");
+define("VCSINPUT",    "vcsinput");
 
 
 /**
@@ -156,7 +158,7 @@ class qtype_proforma_question extends question_graded_automatically {
     }
 
 
-    /** BASIS KOMMENTAR AUS question_definition (abstract)
+    /** base comment from question_definition (abstract)
      * What data may be included in the form submission when a student submits
      * this question in its current state?
      *
@@ -171,17 +173,17 @@ class qtype_proforma_question extends question_graded_automatically {
         $expecteddata = array();
         switch ($this->responseformat) {
             /*  case 'editorfilepicker':
-                $expecteddata['answer'] = PARAM_RAW;
-                $expecteddata['attachments'] = question_attempt::PARAM_FILES;
+                $expecteddata[ANSWER] = PARAM_RAW;
+                $expecteddata[ATTACHMENTS] = question_attempt::PARAM_FILES;
                 break;*/
             case qtype_proforma::RESPONSE_EDITOR:
-                $expecteddata['answer'] = PARAM_RAW;
+                $expecteddata[ANSWER] = PARAM_RAW;
                 break;
             case qtype_proforma::RESPONSE_FILEPICKER:
-                $expecteddata['attachments'] = question_attempt::PARAM_FILES;
+                $expecteddata[ATTACHMENTS] = question_attempt::PARAM_FILES;
                 break;
             case qtype_proforma::RESPONSE_VERSION_CONTROL:
-                $expecteddata['answer'] = PARAM_RAW;
+                $expecteddata[VCSINPUT] = PARAM_TEXT;
                 break;
             default:
                 throw new coding_exception('unsupported responseformat '. $this->responseformat);
@@ -196,10 +198,8 @@ class qtype_proforma_question extends question_graded_automatically {
      * @return string a plain text summary of that response, that could be used in reports.
      */
     public function summarise_response(array $response) {
-        if (isset($response['answer'])) {
-            // return 'das ist ein Rückgabewert'.PHP_EOL.'von summarise response'.PHP_EOL.'guckst Du!';
-            $code = $response['answer']; // return $response['answer'];
-            $text = '';
+        if (isset($response[ANSWER])) {
+            $code = $response[ANSWER];
             if (is_a($code, 'question_file_loader')) {
                 $text = $code->__toString();
             } else {
@@ -210,12 +210,12 @@ class qtype_proforma_question extends question_graded_automatically {
             }
             return $text;
 
-            // return question_utils::to_plain_text($response['answer'],
+            // return question_utils::to_plain_text($response[ANSWER],
             // $response['answerformat'], array('para' => false));
-        } else if (isset($response['attachments'])) {
+        } else if (isset($response[ATTACHMENTS])) {
 
-            if (is_a($response['attachments'], 'question_file_loader')) {
-                $files = $response['attachments']->get_files();
+            if (is_a($response[ATTACHMENTS], 'question_file_loader')) {
+                $files = $response[ATTACHMENTS]->get_files();
                 if (!$files) {
                     throw new coding_exception("no files attached");
                 }
@@ -239,8 +239,11 @@ class qtype_proforma_question extends question_graded_automatically {
             }
 
             return '(uploaded file)';
+        } else if (isset($response[VCSINPUT])) {
+            return $this->vcslabel . ' '. $response[VCSINPUT];
         } else {
-            // response data could be extracted from question step which
+
+                // response data could be extracted from question step which
             // could be grader feedback without any user repsonse
             // debugging('nothing to output ...');
             return null;
@@ -270,51 +273,47 @@ class qtype_proforma_question extends question_graded_automatically {
      * @return bool whether this response is a complete answer to this question.
      */
     public function is_complete_response(array $response) {
-        // Determine if the given response has online text and attachments.
-        $hasinlinetext = array_key_exists('answer', $response) &&
-                (trim($response['answer']) !== '');
-        if (!empty($this->responsetemplate != '' && $hasinlinetext)) {
-            // inline text equals to response template?
-            if ($this->responsetemplate == $response['answer']) {
-                // yes => no input in editor
-                $hasinlinetext = false;
-            }
-        }
-        $hasattachments = array_key_exists('attachments', $response)
-            && $response['attachments'] instanceof question_response_files;
-
-        // Determine the number of attachments present.
-        if ($hasattachments) {
-            $attachcount = count($response['attachments']->get_files());
-            // if ($attachcount == 0) {
-            // throw new coding_exception('no attachments found');
-            // }
-        } else {
-            $attachcount = 0;
-        }
-
-        // Determine if we have /some/ content to be graded.
-        $hascontent = $hasinlinetext || ($attachcount > 0);
-
         $meetsconentreq = true;
 
-        // Determine if we meet the optional requirements.
+        // Determine if we have /some/ content to be graded.
         switch ($this->responseformat) {
             case qtype_proforma::RESPONSE_FILEPICKER:
+                $hasattachments = array_key_exists(ATTACHMENTS, $response)
+                        && $response[ATTACHMENTS] instanceof question_response_files;
+
+                // Determine the number of attachments present.
+                if ($hasattachments) {
+                    $attachcount = count($response[ATTACHMENTS]->get_files());
+                } else {
+                    $attachcount = 0;
+                }
                 $meetsconentreq = ($attachcount > 0);
                 break;
             case qtype_proforma::RESPONSE_EDITOR:
+                // Determine if the given response has online text and attachments.
+                $hasinlinetext = array_key_exists(ANSWER, $response) &&
+                        (trim($response[ANSWER]) !== '');
+                if (!empty($this->responsetemplate != '' && $hasinlinetext)) {
+                    // inline text equals to response template?
+                    if ($this->responsetemplate == $response[ANSWER]) {
+                        // yes => no input in editor
+                        $hasinlinetext = false;
+                    }
+                }
+
                 $meetsconentreq = $hasinlinetext;
                 break;
             case qtype_proforma::RESPONSE_VERSION_CONTROL:
-                $meetsconentreq = $hasinlinetext;
+                // Determine if the given response has online text and attachments.
+                $meetsconentreq = array_key_exists(VCSINPUT, $response) &&
+                        (trim($response[VCSINPUT]) !== '');
                 break;
             default:
                 throw new coding_exception("invalid responseformat");
         }
 
         // The response is complete iff all of our requirements are met.
-        return $hascontent && $meetsconentreq;
+        return $meetsconentreq;
     }
 
     // für question_with_responses
@@ -332,13 +331,13 @@ class qtype_proforma_question extends question_graded_automatically {
     public function is_same_response(array $prevresponse, array $newresponse) {
         switch ($this->responseformat) {
             case qtype_proforma::RESPONSE_EDITOR:
-                if (array_key_exists('answer', $prevresponse) && $prevresponse['answer'] !== $this->responsetemplate) {
-                    $value1 = (string) $prevresponse['answer'];
+                if (array_key_exists(ANSWER, $prevresponse) && $prevresponse[ANSWER] !== $this->responsetemplate) {
+                    $value1 = (string) $prevresponse[ANSWER];
                 } else {
                     $value1 = '';
                 }
-                if (array_key_exists('answer', $newresponse) && $newresponse['answer'] !== $this->responsetemplate) {
-                    $value2 = (string) $newresponse['answer'];
+                if (array_key_exists(ANSWER, $newresponse) && $newresponse[ANSWER] !== $this->responsetemplate) {
+                    $value2 = (string) $newresponse[ANSWER];
                 } else {
                     $value2 = '';
                 }
@@ -346,7 +345,7 @@ class qtype_proforma_question extends question_graded_automatically {
                 break;
             case qtype_proforma::RESPONSE_FILEPICKER:
                 if (!question_utils::arrays_same_at_key_missing_is_blank(
-                        $prevresponse, $newresponse, 'attachments')) {
+                        $prevresponse, $newresponse, ATTACHMENTS)) {
                     return false;
                 }
                 // todo check file content
@@ -380,18 +379,18 @@ class qtype_proforma_question extends question_graded_automatically {
         $grader = $this->get_grader();
 
         if ($this->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL) {
-            $uri = str_replace('{input}', $response['answer'], $this->vcsuritemplate);
+            $uri = str_replace('{input}', $response[VCSINPUT], $this->vcsuritemplate);
             list($graderoutput, $httpcode) = $grader->send_external_submission_to_grader($uri, $this);
         } else {
             // quite complex determination of grading function
             // (we might simply use the response format)
-            $hasinlinetext = array_key_exists('answer', $response) && ($response['answer'] !== '');
-            $hasattachments = array_key_exists('attachments', $response)
-                    && $response['attachments'] instanceof question_response_files;
+            $hasinlinetext = array_key_exists(ANSWER, $response) && ($response[ANSWER] !== '');
+            $hasattachments = array_key_exists(ATTACHMENTS, $response)
+                    && $response[ATTACHMENTS] instanceof question_response_files;
 
             // Determine the number of attachments present.
             if ($hasattachments) {
-                $attachcount = count($response['attachments']->get_files());
+                $attachcount = count($response[ATTACHMENTS]->get_files());
             } else {
                 $attachcount = 0;
             }
@@ -399,7 +398,7 @@ class qtype_proforma_question extends question_graded_automatically {
             $graderoutput = "";
             $code = "";
             if ($hasinlinetext) {
-                $code = $response['answer'];
+                $code = $response[ANSWER];
                 if (!is_string($code)) {
                     if (is_a($code, 'question_file_loader')) {
                         $newcode = $code->__toString();
@@ -411,7 +410,7 @@ class qtype_proforma_question extends question_graded_automatically {
             }
 
             if ($attachcount > 0) {
-                $files = $response['attachments']->get_files();
+                $files = $response[ATTACHMENTS]->get_files();
                 if (!$files) {
                     throw new coding_exception("no files attached");
                 }

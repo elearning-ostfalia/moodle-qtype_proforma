@@ -69,76 +69,63 @@ class qtype_proforma_renderer extends qtype_renderer {
      */
     public function formulation_and_controls(question_attempt $qa,
             question_display_options $options) {
+        // ugly code => refacture!
 
         $question = $qa->get_question();
-        $files = '';
+        $answer = '';
 
-        // get default renderer depending on responsetype
+        // Get default renderer depending on responsetype.
         $renderer = $question->get_format_renderer($this->page);
 
-        // Answer field.
-        $step = $qa->get_last_step_with_qt_var('answer');
-
-        if (!$step->has_qt_var('answer') && empty($options->readonly)) {
-            // Question has never been answered, fill it with response template.
-            $step = new question_attempt_step(array('answer' => $question->responsetemplate));
+        if ($question->responseformat != qtype_proforma::RESPONSE_VERSION_CONTROL) {
+            // Preset answer field with response template.
+            $step = $qa->get_last_step_with_qt_var(ANSWER);
+            if (!$step->has_qt_var(ANSWER) && empty($options->readonly)) {
+                // Question has never been answered, fill it with response template.
+                $step = new question_attempt_step(array(ANSWER => $question->responsetemplate));
+            }
+        } else {
+            $step = $qa->get_last_step_with_qt_var(VCSINPUT);
         }
 
         if (empty($options->readonly)) {
             // student view for input
-            $answer = $renderer->response_area_input('answer', $qa,
-                    $step, $question->responsefieldlines, $options->context);
-
+            $answer = $renderer->response_area_input($qa, $step, $options->context);
         } else {
             // readonly for review
-            // => we cannot use default renderer from question settings
-            // since the teacher could have changed them in the meantime!!
-            // => try and figure out what renderer to use
-            $stepfiles = $qa->get_last_step_with_qt_var('attachments');
-
-            $showeditor = 1; // constant
-            $showfiles = 2; // constant
-            $showwhat = 0;
-            if ($step->get_id()) {
-                $showwhat = $showeditor;
-            }
-            if ($stepfiles->get_id()) {
-                $showwhat = $showfiles;
-            }
-            if ($step->get_id() && $stepfiles->get_id()) {
-                if ($step->get_timecreated() < $stepfiles->get_timecreated()) {
-                    $showwhat = $showfiles; // 'FILES (and Editor)';
-                } else {
-                    if ($step->get_timecreated() > $stepfiles->get_timecreated()) {
-                        $showwhat = $showeditor; // 'EDITOR (and FILES)';
-                    } else {
-                        $showwhat = $showeditor; // BOTH!!'EDITOR and FILES';
-                    };
+            if ($question->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL) {
+                $answer = $renderer->response_area_read_only($qa, $step,
+                        $question->responsefieldlines, $options->context);
+            } else {
+                // => we cannot use default renderer from question settings
+                // since the teacher could have changed it in the meantime!!
+                // => try and figure out what renderer to use
+                switch ($this->determine_renderer($qa, $step)) {
+                    case qtype_proforma::RESPONSE_EDITOR:
+                        $renderer = $this->page->get_renderer('qtype_proforma', 'format_editor');
+                        break;
+                    case qtype_proforma::RESPONSE_FILEPICKER:
+                        $renderer = $this->page->get_renderer('qtype_proforma', 'format_filepicker');
+                        break;
+                    default:
+                        // keep renderer
+                        break;
                 }
-            }
+                $answer = $renderer->response_area_read_only($qa, $step,
+                        $question->responsefieldlines, $options->context);
 
-            switch ($showwhat) {
-                case $showeditor:
-                    $renderer = $this->page->get_renderer('qtype_proforma', 'format_editor');
-                    break;
-                case $showfiles:
-                    $renderer = $this->page->get_renderer('qtype_proforma', 'format_filepicker');
-                    $files = $this->files_read_only($qa, $options);
-                    break;
             }
-            $answer = $renderer->response_area_read_only('answer', $qa,
-                    $step, $question->responsefieldlines, $options->context);
-
         }
 
+        $files = '';
         if ($renderer->can_have_attachments() && $question->attachments) {
             if (empty($options->readonly)) {
                 $files = $this->files_input($qa, $question, $options);
-
             } else {
                 $files = $this->files_read_only($qa, $options);
             }
         }
+        
         $downloadtext = $this->question_downloads($question);
 
         $result = '';
@@ -146,8 +133,8 @@ class qtype_proforma_renderer extends qtype_renderer {
                 array('class' => 'qtext'));
 
         $result .= html_writer::start_tag('div', array('class' => 'ablock'));
-        $result .= html_writer::tag('div', $answer, array('class' => 'answer'));
-        $result .= html_writer::tag('div', $files, array('class' => 'attachments'));
+        $result .= html_writer::tag('div', $answer, array('class' => $renderer->answerfieldname()));
+        $result .= html_writer::tag('div', $files, array('class' => ATTACHMENTS));
         $result .= html_writer::end_tag('div');
 
         return $result;
@@ -829,77 +816,122 @@ class qtype_proforma_renderer extends qtype_renderer {
         $result .= print_collapsible_region_end(true);
         return array($containsinternalerror, $result, $allcorrect);
     }
+
+    /**
+     * @param question_attempt $qa
+     * @param $step
+     * @return int|string
+     */
+    protected function determine_renderer(question_attempt $qa, $step) {
+        $stepfiles = $qa->get_last_step_with_qt_var(ATTACHMENTS);
+
+        $renderer = null;
+        if (isset($step) && $step->get_id()) {
+            $renderer = qtype_proforma::RESPONSE_EDITOR;
+        }
+        if (isset($stepfiles) && $stepfiles->get_id()) {
+            $renderer = qtype_proforma::RESPONSE_FILEPICKER;
+            // check timestamp for files and answer
+            if (isset($step) && $step->get_id()) {
+                if ($step->get_timecreated() < $stepfiles->get_timecreated()) {
+                    $renderer = qtype_proforma::RESPONSE_FILEPICKER; // 'FILES (and Editor)';
+                } else {
+                    if ($step->get_timecreated() > $stepfiles->get_timecreated()) {
+                        $renderer = qtype_proforma::RESPONSE_EDITOR; // 'EDITOR (and FILES)';
+                    } else {
+                        $renderer = qtype_proforma::RESPONSE_EDITOR; // BOTH!!'EDITOR and FILES';
+                    };
+                }
+            }
+        }
+        return $renderer;
+    }
+}
+
+/**
+ * Abstract base class for all format renderer.
+ */
+abstract class qtype_proforma_format_renderer_base extends plugin_renderer_base {
+    abstract public function response_area_input($qa, $step, $context);
+    abstract protected function class_name();
+    abstract public function response_area_read_only($qa, $step, $lines, $context);
+    /**
+     * @return bool false: the student submission can have no attachments
+     */
+    public function can_have_attachments() {
+        return false;
+    }
+    abstract public function answerfieldname();
 }
 
 /**
  * A renderer for questions where the student needs to upload files
  */
-class qtype_proforma_format_filepicker_renderer extends plugin_renderer_base {
+class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_renderer_base {
 
     /**
      * returns the html fragment for the reponse area in readonly mode
-     * @param $name
      * @param $qa
      * @param $step
      * @param $lines
      * @param $context
      * @return string
      */
-    public function response_area_read_only($name, $qa, $step, $lines, $context) {
+    public function response_area_read_only($qa, $step, $lines, $context) {
         return '';
     }
 
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $name
      * @param $qa
      * @param $step
      * @param $lines
      * @param $context
      * @return string
      */
-    public function response_area_input($name, $qa, $step, $lines, $context) {
+    public function response_area_input($qa, $step, $context) {
         return '';
     }
 
     /**
-     * returns if the student submission can have attachments (true)
-     *
-     * @return bool true
+     * @return bool true: the student submission can have attachments
      */
     public function can_have_attachments() {
         return true;
     }
 
-    /**
-     * returns the class name
-     *
-     * @return string
-     */
+    /** @return string returns the class name */
     protected function class_name() {
         return 'qtype_proforma_filepicker';
     }
 
+    /**
+     * @return string: returns the name of the answer step field
+     */
+    public function answerfieldname() {
+        return ANSWER; // attachments are not stored here
+    }
 }
 
 /**
  * A renderer for questions where the student enters text into editor
  */
-class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
+class qtype_proforma_format_editor_renderer extends qtype_proforma_format_renderer_base {
 
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $name
      * @param $qa
      * @param $step
      * @param $lines
      * @param $context
      * @return string
      */
-    public function response_area_input($name, $qa, $step, $lines, $context) {
+    public function response_area_input($qa, $step, $context) {
+        $name = ANSWER;
         $question = $qa->get_question();
+        $lines = $question->responsefieldlines;
         $mode = $question->programminglanguage;
         $inputname = $qa->get_qt_field_name($name);
         $id = $this->get_textarea_id($qa);
@@ -925,14 +957,10 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
      * @return string
      */
     protected function get_textarea_id($qa) {
-        return 'id_' . $qa->get_qt_field_name('answer');
+        return 'id_' . $qa->get_qt_field_name(ANSWER);
     }
 
-    /**
-     * returns the class name
-     *
-     * @return string
-     */
+    /** @return string returns the class name */
     protected function class_name() {
         return 'qtype_proforma_editor';
     }
@@ -940,14 +968,14 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $name
      * @param $qa
      * @param $step
      * @param $lines
      * @param $context
      * @return string
      */
-    public function response_area_read_only($name, $qa, $step, $lines, $context) {
+    public function response_area_read_only($qa, $step, $lines, $context) {
+        $name = ANSWER;
         $question = $qa->get_question();
         $mode = $question->programminglanguage;
         $id = $this->get_textarea_id($qa);
@@ -967,13 +995,12 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
     }
 
     /**
-     * returns if the student submission can have attachments (false)
-     *
-     * @return bool false
+     * @return string: returns the name of the answer step field
      */
-    public function can_have_attachments() {
-        return false;
+    public function answerfieldname() {
+        return ANSWER;
     }
+
 }
 
 
@@ -981,7 +1008,7 @@ class qtype_proforma_format_editor_renderer extends plugin_renderer_base {
 /**
  * A renderer for questions where the student uses a version control system
  */
-class qtype_proforma_format_versioncontrol_renderer extends plugin_renderer_base {
+class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_format_renderer_base /*plugin_renderer_base*/ {
 
     /**
      * returns the html fragment for the reponse area in input mode
@@ -993,7 +1020,8 @@ class qtype_proforma_format_versioncontrol_renderer extends plugin_renderer_base
      * @param $context
      * @return string
      */
-    public function response_area_input($name, $qa, $step, $lines, $context) {
+    public function response_area_input($qa, $step, $context) {
+        $name = VCSINPUT;
         $question = $qa->get_question();
         $inputname = $qa->get_qt_field_name($name);
         $id = $this->get_input_id($qa);
@@ -1004,6 +1032,7 @@ class qtype_proforma_format_versioncontrol_renderer extends plugin_renderer_base
         $attributes['type'] = 'text';
         $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
         $attributes['size'] = 20;
+        $attributes['value'] = s($step->get_qt_var($name));
 
         $input = html_writer::tag('label',$question->vcslabel, array('for' => $inputname));
         $input .= html_writer::tag('input', '' /*s($step->get_qt_var($name))*/, $attributes);
@@ -1020,14 +1049,10 @@ class qtype_proforma_format_versioncontrol_renderer extends plugin_renderer_base
      * @return string
      */
     protected function get_input_id($qa) {
-        return 'id_' . $qa->get_qt_field_name('answer');
+        return 'id_' . $qa->get_qt_field_name(VCSINPUT);
     }
 
-    /**
-     * returns the class name
-     *
-     * @return string
-     */
+    /** @return string returns the class name */
     protected function class_name() {
         return 'qtype_proforma_versioncontrol';
     }
@@ -1042,7 +1067,8 @@ class qtype_proforma_format_versioncontrol_renderer extends plugin_renderer_base
      * @param $context
      * @return string
      */
-    public function response_area_read_only($name, $qa, $step, $lines, $context) {
+    public function response_area_read_only($qa, $step, $lines, $context) {
+        $name = VCSINPUT;
         $question = $qa->get_question();
         $id = $this->get_input_id($qa);
         $input = $question->vcslabel . ' ' . s($step->get_qt_var($name));
@@ -1054,12 +1080,10 @@ class qtype_proforma_format_versioncontrol_renderer extends plugin_renderer_base
     }
 
     /**
-     * returns if the student submission can have attachments (false)
-     *
-     * @return bool false
+     * @return string: returns the name of the answer step field
      */
-    public function can_have_attachments() {
-        return false;
+    public function answerfieldname() {
+        return VCSINPUT;
     }
 }
 
