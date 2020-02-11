@@ -1005,11 +1005,11 @@ class qtype_proforma_format_versioncontrol_renderer extends plugin_renderer_base
         $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
         $attributes['size'] = 20;
 
-        $input = html_writer::label(get_string('vcsidentifier', 'qtype_proforma'), $id);
-
+        $input = html_writer::tag('label',$question->vcslabel, array('for' => $inputname));
         $input .= html_writer::tag('input', '' /*s($step->get_qt_var($name))*/, $attributes);
         $input .= html_writer::empty_tag('input', array('type' => 'hidden',
                 'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
+
 
         return $input;
     }
@@ -1045,10 +1045,7 @@ class qtype_proforma_format_versioncontrol_renderer extends plugin_renderer_base
     public function response_area_read_only($name, $qa, $step, $lines, $context) {
         $question = $qa->get_question();
         $id = $this->get_input_id($qa);
-        $input = get_string('vcsidentifier', 'qtype_proforma');
-
-        $input .= s($step->get_qt_var($name));
-
+        $input = $question->vcslabel . ' ' . s($step->get_qt_var($name));
 
         // $input = $this->textarea($step->get_qt_var($name), $lines, array('readonly' => 'readonly',
         //         'id' => $id));

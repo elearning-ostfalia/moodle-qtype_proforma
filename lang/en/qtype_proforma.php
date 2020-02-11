@@ -171,10 +171,24 @@ $string['privacy:metadata'] = 'The ProFormA question type plugin does not store 
 $string['versioncontrol'] = 'Version control (experimental)';
 $string['vcsuritemplate'] = 'URI of repository';
 $string['vcsuritemplate_help'] = 'location where the student\'s submission can be found. Can contain placeholder:<br> 
-{id} = identifier to be entered by student<br>
+{input} = identifier to be entered by student<br>
 {username} = student\'s login name in Moodle';
-$string['vcsidentifier'] = 'Your identifier for the version control system';
+// $string['vcsidentifier'] = 'Your identifier for the version control system';
 
-$string['defaultvcsuri'] = 'URI template for version control system';
+$string['vcslabel'] = 'Label for input field';
+$string['vcslabel_help'] = 'only needed if  \'URI of repository\' contains {input}';
+
+
+$string['defaultvcsuri'] = 'Default URI template';
 $string['defaultvcsuri_desc'] = 'may contain place holders';
+$string['vcsfunction'] = 'PHP helper function for resolving \'func\'';
+$string['vcsfunction_desc'] = 'can be referenced as {func} resp. if used with other placeholders: {func(input)} or {func(username)}';
 
+$string['vcslabeldefault'] = 'Default label for input field';
+$string['vcslabeldefault_desc'] = 'only needed if actual URI templates contain {input}';
+
+$string['vcs_header'] = 'Version control system';
+$string['vcs_info'] = 'The actual student URI to locate the submission is compiled by evaluating different placeholders:<br>
+* {input}: generates an input field<br>
+* {username}: takes the student\'s username in Moodle<br>
+* {func}: return value of configured helper function';

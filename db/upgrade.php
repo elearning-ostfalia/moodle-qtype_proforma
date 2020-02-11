@@ -280,14 +280,18 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     // Version control access
-    if ($oldversion < 2020021001) {
-        // do not force taskrepository and taskpath to have a value.
+    if ($oldversion < 2020021100) {
+        // version control fields
         $field = new xmldb_field('vcsuritemplate', XMLDB_TYPE_TEXT, null, null, null, null, null, 'responsetemplate');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        $field = new xmldb_field('vcslabel', XMLDB_TYPE_TEXT, null, null, null, null, null, 'vcsuritemplate');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
         // ProFormA savepoint reached.
-        upgrade_plugin_savepoint(true, 2020021001, 'qtype', 'proforma');
+        upgrade_plugin_savepoint(true, 2020021100, 'qtype', 'proforma');
     }
 
 

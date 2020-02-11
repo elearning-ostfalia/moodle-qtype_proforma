@@ -87,10 +87,26 @@ if (isset($CFG->maxbytes)) {
     $settings->add($element);
 }
 
+
+$settings->add(new admin_setting_heading('vcs',
+        get_string('vcs_header', 'qtype_proforma'),
+        get_string('vcs_info', 'qtype_proforma')));
+
 $settings->add(new admin_setting_configtext('qtype_proforma/defaultvcsuri',
         get_string('defaultvcsuri', 'qtype_proforma'),
         get_string('defaultvcsuri_desc', 'qtype_proforma'),
-        'https://server/path/to/project/{id}/subfolder', PARAM_TEXT, 80));
+        'https://server/path/to/project/{input}/subfolder', PARAM_TEXT, 80));
+
+$settings->add(new admin_setting_configtext('qtype_proforma/vcslabeldefault',
+        get_string('vcslabeldefault', 'qtype_proforma'),
+        get_string('vcslabeldefault_desc', 'qtype_proforma'),
+        '', PARAM_TEXT, 20));
+
+
+$settings->add(new admin_setting_configtextarea('qtype_proforma/vcsfunction',
+        get_string('vcsfunction', 'qtype_proforma'),
+        get_string('vcsfunction_desc', 'qtype_proforma'),
+        '', PARAM_RAW, 80, 3));
 
 // Java - JUnit - Checkstyle
 

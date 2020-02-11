@@ -200,7 +200,8 @@ class qtype_proforma extends question_type {
                 'aggregationstrategy',
                 'gradinghints',
 
-                'vcsuritemplate'
+                'vcsuritemplate',
+                'vcslabel'
                 // 'comment', // is an array => do not add
                 // 'commentformat',
         );

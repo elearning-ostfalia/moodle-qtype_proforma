@@ -276,6 +276,12 @@ abstract class base_form_creator {
         $mform->addHelpButton('vcsuritemplate', 'vcsuritemplate', 'qtype_proforma');
         $mform->hideIf('vcsuritemplate', 'responseformat', 'neq', 'versioncontrol');
 
+        $mform->addElement('text', 'vcslabel', get_string('vcslabel', 'qtype_proforma'), array('size'=>'20'));
+        $mform->setDefault('vcslabel', get_config('qtype_proforma', 'vcslabeldefault'));
+        $mform->setType('vcslabel', PARAM_TEXT);
+        $mform->addHelpButton('vcslabel', 'vcslabel', 'qtype_proforma');
+        $mform->hideIf('vcslabel', 'responseformat', 'neq', 'versioncontrol');
+
         // Programming Language.
         $mform->addElement('select', 'programminglanguage',
                 get_string('highlight', 'qtype_proforma'), $qtype->get_proglang_options());

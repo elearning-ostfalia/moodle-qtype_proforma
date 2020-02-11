@@ -92,6 +92,8 @@ class qtype_proforma_question extends question_graded_automatically {
 
     /** @var string The URI template for accessing a version control system with submissions. */
     public $vcsuritemplate;
+    /** @var string The label for an input field (if any). */
+    public $vcslabel;
 
     /**
      * creates the grader object (why function???)
@@ -378,7 +380,7 @@ class qtype_proforma_question extends question_graded_automatically {
         $grader = $this->get_grader();
 
         if ($this->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL) {
-            $uri = str_replace('{id}', $response['answer'], $this->vcsuritemplate);
+            $uri = str_replace('{input}', $response['answer'], $this->vcsuritemplate);
             list($graderoutput, $httpcode) = $grader->send_external_submission_to_grader($uri, $this);
         } else {
             // quite complex determination of grading function
