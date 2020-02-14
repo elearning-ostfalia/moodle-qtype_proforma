@@ -49,11 +49,18 @@ jobs:
         - MOODLE_BRANCH=MOODLE_36_STABLE
         - DB=pgsql
 
-    - name: 'Moodle 3.6.4, PHP 7.3, PostgreSQL'
+    - name: 'Moodle 3.6.6, PHP 7.3, PostgreSQL'
       php: 7.1
       env:
-        - MOODLE_BRANCH=v3.6.4
+        - MOODLE_BRANCH=v3.6.6
         - DB=pgsql
+
+    - name: 'Moodle 3.6.7, PHP 7.3, PostgreSQL'
+      php: 7.1
+      env:
+        - MOODLE_BRANCH=v3.6.
+        - DB=pgsql
+
 
 env:
   global:
@@ -110,8 +117,8 @@ script:
 
 # Behat tests run with 3.6.4, 3.7.1 but not with 3.6.8+ or 3.7.4+
 # https://github.com/blackboard-open-source/moodle-plugin-ci/issues/70
-#  - moodle-plugin-ci behat --auto-rerun 0
-#  - moodle-plugin-ci behat --profile chrome --auto-rerun 0
+  - moodle-plugin-ci behat --auto-rerun 0
+  - moodle-plugin-ci behat --profile chrome --auto-rerun 0
 
   # This step lints your PHP files to check for syntax errors.
   - moodle-plugin-ci phplint
