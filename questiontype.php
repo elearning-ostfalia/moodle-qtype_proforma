@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/moodlelib.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/javatask.php');
+require_once($CFG->dirroot . '/question/type/proforma/question.php');
 
 /**
  * The proforma question type.

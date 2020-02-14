@@ -153,7 +153,6 @@ Feature: IMPORT (Moodle-XML format)
     And I should see "ms1.txt"
     And I should see "ms2.txt"
     And I should see "templ2.txt"
-    And I should see "MyString.java"
     # grader settings
     And I should see "UUID 1"
     And I should see "testtask.zip"

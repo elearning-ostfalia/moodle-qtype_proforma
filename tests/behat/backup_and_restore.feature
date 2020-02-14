@@ -138,7 +138,6 @@ Feature: BACKUP AND RESTORE
     And I should see "lib.txt, instruction.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
-    And I should see "MyString.java"
     # grader settings
     And I should see "UUID 2"
     And I should see "testtask.zip"
