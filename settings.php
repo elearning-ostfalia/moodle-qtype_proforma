@@ -102,11 +102,12 @@ $settings->add(new admin_setting_configtext('qtype_proforma/vcslabeldefault',
         get_string('vcslabeldefault_desc', 'qtype_proforma'),
         '', PARAM_TEXT, 20));
 
-
+/*
 $settings->add(new admin_setting_configtextarea('qtype_proforma/vcsfunction',
         get_string('vcsfunction', 'qtype_proforma'),
         get_string('vcsfunction_desc', 'qtype_proforma'),
         '', PARAM_RAW, 80, 3));
+*/
 
 // Java - JUnit - Checkstyle
 

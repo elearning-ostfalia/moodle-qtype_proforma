@@ -240,7 +240,22 @@ class qtype_proforma_question extends question_graded_automatically {
 
             return '(uploaded file)';
         } else if (isset($response[VCSINPUT])) {
-            return $this->vcslabel . ' '. $response[VCSINPUT];
+            $revision = '';
+            if (isset($response['_feedback'])) {
+                $feedback = new SimpleXMLElement($response['_feedback'], LIBXML_PARSEHUGE);
+                try {
+                    $praktomat = $feedback->{'response-meta-data'}->children('praktomat', TRUE);
+                    $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
+                    if (isset($vcs)) {
+                        $attrib = $vcs->attributes();
+                        $revision = ' (' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'] . ')';
+                    }
+                } catch (Exception $e) {
+                    // ignore exception.
+                    $revision = '';
+                }
+            }
+            return $this->vcslabel . ' '. $response[VCSINPUT] . $revision;
         } else {
 
                 // response data could be extracted from question step which

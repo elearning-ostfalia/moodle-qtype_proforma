@@ -94,8 +94,7 @@ class qtype_proforma_renderer extends qtype_renderer {
         } else {
             // readonly for review
             if ($question->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL) {
-                $answer = $renderer->response_area_read_only($qa, $step,
-                        $question->responsefieldlines, $options->context);
+                $answer = $renderer->response_area_read_only($qa, $step, $options->context);
             } else {
                 // => we cannot use default renderer from question settings
                 // since the teacher could have changed it in the meantime!!
@@ -111,8 +110,7 @@ class qtype_proforma_renderer extends qtype_renderer {
                         // keep renderer
                         break;
                 }
-                $answer = $renderer->response_area_read_only($qa, $step,
-                        $question->responsefieldlines, $options->context);
+                $answer = $renderer->response_area_read_only($qa, $step, $options->context);
 
             }
         }
@@ -125,7 +123,7 @@ class qtype_proforma_renderer extends qtype_renderer {
                 $files = $this->files_read_only($qa, $options);
             }
         }
-        
+
         $downloadtext = $this->question_downloads($question);
 
         $result = '';
@@ -433,6 +431,27 @@ class qtype_proforma_renderer extends qtype_renderer {
                     $allcorrect = false;
                 }
             }
+        }
+
+
+        try {
+            // evaluate show version control information
+            $praktomat = $response->{'response-meta-data'}->children('praktomat', TRUE);
+            $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
+            if (isset($vcs)) {
+                $attrib = $vcs->attributes();
+                $vcstext = $attrib['name'] . ': ' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'] ;
+            } else {
+                $vcstext = null;
+            }
+
+        } catch (Exception $e) {
+            // ignore exception.
+            $vcstext = null;
+        }
+
+        if (isset($vcstext)) {
+            $result .= html_writer::tag('small', $vcstext);
         }
 
         if (qtype_proforma\lib\is_admin()) {
@@ -854,7 +873,7 @@ class qtype_proforma_renderer extends qtype_renderer {
 abstract class qtype_proforma_format_renderer_base extends plugin_renderer_base {
     abstract public function response_area_input($qa, $step, $context);
     abstract protected function class_name();
-    abstract public function response_area_read_only($qa, $step, $lines, $context);
+    abstract public function response_area_read_only($qa, $step, $context);
     /**
      * @return bool false: the student submission can have no attachments
      */
@@ -873,11 +892,10 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
      * returns the html fragment for the reponse area in readonly mode
      * @param $qa
      * @param $step
-     * @param $lines
      * @param $context
      * @return string
      */
-    public function response_area_read_only($qa, $step, $lines, $context) {
+    public function response_area_read_only($qa, $step, $context) {
         return '';
     }
 
@@ -924,7 +942,6 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
      *
      * @param $qa
      * @param $step
-     * @param $lines
      * @param $context
      * @return string
      */
@@ -970,11 +987,10 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
      *
      * @param $qa
      * @param $step
-     * @param $lines
      * @param $context
      * @return string
      */
-    public function response_area_read_only($qa, $step, $lines, $context) {
+    public function response_area_read_only($qa, $step, $context) {
         $name = ANSWER;
         $question = $qa->get_question();
         $mode = $question->programminglanguage;
@@ -983,7 +999,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
         $attributes = array();
         $attributes['id'] = $id;
         $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
-        $attributes['rows'] = $lines;
+        $attributes['rows'] = $question->responsefieldlines;
         $attributes['cols'] = 60;
         $attributes['readonly'] = 'readonly';
 
@@ -1013,10 +1029,8 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $name
      * @param $qa
      * @param $step
-     * @param $lines
      * @param $context
      * @return string
      */
@@ -1024,7 +1038,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
         $name = VCSINPUT;
         $question = $qa->get_question();
         $inputname = $qa->get_qt_field_name($name);
-        $id = $this->get_input_id($qa);
+        $id = 'id_' . $qa->get_qt_field_name(VCSINPUT);
 
         $attributes = array();
         $attributes['name'] = $inputname;
@@ -1043,15 +1057,6 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
         return $input;
     }
 
-    /**
-     * returns the html identfier for the textarea
-     * @param $qa
-     * @return string
-     */
-    protected function get_input_id($qa) {
-        return 'id_' . $qa->get_qt_field_name(VCSINPUT);
-    }
-
     /** @return string returns the class name */
     protected function class_name() {
         return 'qtype_proforma_versioncontrol';
@@ -1060,22 +1065,16 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $name
      * @param $qa
      * @param $step
      * @param $lines
      * @param $context
      * @return string
      */
-    public function response_area_read_only($qa, $step, $lines, $context) {
+    public function response_area_read_only($qa, $step, $context) {
         $name = VCSINPUT;
         $question = $qa->get_question();
-        $id = $this->get_input_id($qa);
         $input = $question->vcslabel . ' ' . s($step->get_qt_var($name));
-
-        // $input = $this->textarea($step->get_qt_var($name), $lines, array('readonly' => 'readonly',
-        //         'id' => $id));
-
         return $input;
     }
 
