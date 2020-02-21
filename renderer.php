@@ -104,7 +104,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             // => we cannot use default renderer from question settings
             // since the teacher could have changed it in the meantime!!
             // => try and figure out what renderer to use
-            list($step, $renderer) = $this->determine_renderer($qa, $step);
+            list($step, $renderer) = $this->determine_renderer($qa, $step, $renderer);
             $answer = $renderer->response_area_read_only($qa, $step, $options->context);
         }
 
@@ -836,7 +836,7 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @param $step
      * @return int|string
      */
-    protected function determine_renderer(question_attempt $qa, $externalstep) {
+    protected function determine_renderer(question_attempt $qa, $externalstep, $externalrenderer) {
         foreach ($qa->get_reverse_step_iterator() as $step) {
             if ($step->has_qt_var(VCSINPUT) or $step->has_qt_var(VCSGROUP) or $step->has_qt_var(VCSUSERNAME)) {
                 return array($step, $this->page->get_renderer('qtype_proforma', 'format_versioncontrol'));
@@ -849,7 +849,7 @@ class qtype_proforma_renderer extends qtype_renderer {
                 return array($step, $this->page->get_renderer('qtype_proforma', 'format_editor'));
             }
         }
-        return array($externalstep, $this->page->get_renderer('qtype_proforma', 'format_editor'));
+        return array($externalstep, $externalrenderer);
     }
 }
 
@@ -1090,27 +1090,30 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
 
         } else if ($this->has_group_field($question)){
             $this->name = VCSGROUP;
-            $inputname = $qa->get_qt_field_name($this->name);
-            $id = 'id_' . $qa->get_qt_field_name($this->name);
+            $groupname = qtype_proforma\lib\get_groupname();
             $attributes = array();
+            $id = 'id_' . $qa->get_qt_field_name($this->name);
+            $inputname = $qa->get_qt_field_name($this->name);
             $attributes['name'] = $inputname;
             $attributes['id'] = $id;
-            $attributes['type'] = 'text';
-            if (! qtype_proforma\lib\is_teacher()) {
-                $attributes['readonly'] = 'true';
-            }
             $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
-            $attributes['size'] = 10;
-
-            $groupname = qtype_proforma\lib\get_groupname();
-            $attributes['value'] = $groupname; // s($step->get_qt_var($name));
-
-            $input = html_writer::tag('label', get_string('groupname', 'qtype_proforma') . ': ', array('for' => $inputname));
-            $input .= html_writer::tag('input', '', $attributes);
+            $attributes['value'] = $groupname;
+            if (qtype_proforma\lib\is_teacher()) {
+                // $attributes['readonly'] = 'true';
+                $attributes['type'] = 'text';
+                $attributes['size'] = 10;
+                $input = html_writer::tag('label', get_string('groupname', 'qtype_proforma') . ': ', array('for' => $inputname));
+                $input .= html_writer::tag('input', '', $attributes);
+            } else {
+                $attributes['type'] = 'hidden';
+                $input = get_string('groupname', 'qtype_proforma') . ': ' . $groupname;
+                $input .= html_writer::tag('input', '', $attributes);
+            }
             $input .= html_writer::empty_tag('input', array('type' => 'hidden',
                     'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
 
             return html_writer::tag('div', $input, array('class' => VCSGROUP));
+
         }
 
         return $input;
@@ -1131,6 +1134,9 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
      * @return string
      */
     public function response_area_read_only($qa, $step, $context) {
+        if (is_a ($step, 'question_attempt_step_read_only'))
+            return '';
+
         if (null !== $step->get_qt_var(VCSINPUT)) {
             $question = $qa->get_question();
             return $question->vcslabel . ' '. s($step->get_qt_var(VCSINPUT));
