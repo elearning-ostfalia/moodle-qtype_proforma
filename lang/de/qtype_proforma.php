@@ -165,7 +165,7 @@ $string['privacy:metadata'] = 'Das ProFormA Frageformat Plugin speichert keine p
 $string['versioncontrol'] = 'Version Control System';
 $string['vcsuritemplate'] = 'URI des Repository (Template)';
 $string['vcsuritemplate_help'] = 'Ort, von dem die studentische Einreichung abgeholt wird - muss genau einen Platzhalter enthalten:<br>
-{group} = Gruppenname der Gruppe, zu der der Studierende gehört<br>  
+{group} = Gruppenname der Gruppe, zu der der Studierende gehört<br>
 {input} = Eingabe des Studierenden';
 // {username} = student\'s login name in Moodle';
 
@@ -176,7 +176,7 @@ $string['vcslabel_help'] = 'Name des Eingabefelds {input} in der Anzeige';
 
 
 $string['defaultvcsuri'] = 'Standard-URI-Template';
-$string['defaultvcsuri_desc'] = 'sollte Platzhalter {input] enthalten';
+$string['defaultvcsuri_desc'] = 'sollte Platzhalter enthalten';
 //$string['vcsfunction'] = 'helper function for resolving \'func\'';
 //$string['vcsfunction_desc'] = 'can be referenced as {func} resp. if used with other placeholders: {func(input)} or {func(username)}';
 
@@ -186,6 +186,7 @@ $string['vcslabeldefault_desc'] = 'wird benötigt für das Eingabefeld {input}';
 $string['vcs_header'] = 'Version control system';
 $string['vcs_info'] = 'Für Einreichungen, die sich in einem Versionskontrollsystem (z.B. SVN, git o.ä.) befinden. 
 Die tatsächliche URI einer studentischen Einreichung wird aus dem URI-Template durch Ersetzen des Platzhalters ermittelt:<br>
+{group}: Name der Gruppe, zu der der Studierende gehört<br>
 {input}: erzeugt ein Eingabefeld, in dem der Studierende einen Identifier eingeben muss';
 // * {username}: takes the student\'s username in Moodle<br>
 // * {func}: return value of configured helper function';

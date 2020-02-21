@@ -192,6 +192,6 @@ $string['vcslabeldefault_desc'] = 'only needed if actual URI templates contain {
 $string['vcs_header'] = 'Version control system';
 $string['vcs_info'] = 'For use of a version control system that stores the students\' code. 
 The actual URI to locate the submission is compiled by replacing the placeholder in the URI template:<br>
+{group}: name of group that the student belongs to<br>
 {input}: generates an input field';
 // * {username}: takes the student\'s username in Moodle<br>
-// * {func}: return value of configured helper function';

@@ -95,7 +95,7 @@ $settings->add(new admin_setting_heading('vcs',
 $settings->add(new admin_setting_configtext('qtype_proforma/defaultvcsuri',
         get_string('defaultvcsuri', 'qtype_proforma'),
         get_string('defaultvcsuri_desc', 'qtype_proforma'),
-        'https://server/path/to/project/{input}/subfolder', PARAM_TEXT, 80));
+        'https://server/path/to/project/{group}/subfolder', PARAM_TEXT, 80));
 
 $settings->add(new admin_setting_configtext('qtype_proforma/vcslabeldefault',
         get_string('vcslabeldefault', 'qtype_proforma'),
