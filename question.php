@@ -385,7 +385,15 @@ class qtype_proforma_question extends question_graded_automatically {
             case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 // we cannot decide if the student's response has changed
                 // since it is located somewhere else
+                /*
+                if (array_key_exists(VCSGROUP, $prevresponse) &&
+                        array_key_exists(VCSGROUP, $newresponse) &&
+                        $prevresponse[VCSGROUP] === $newresponse[VCSGROUP]) {
+                    return true;
+                }
+                */
                 return false;
+
             default:
                 throw new coding_exception('invalid response format "'. $this->responseformat . '"');
 
