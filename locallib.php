@@ -57,3 +57,35 @@ function is_teacher() {
 
     return false;
 }
+
+/**
+ * @return string returns the name of the group that the current user belongs to
+ */
+function get_groupname() {
+    global $USER, $COURSE;
+    // Get all groupings.
+    $groupings = groups_get_user_groups($COURSE->id, $USER->id);
+
+    // Count groups and fetch name.
+    $count = 0;
+    $groupname = '???';
+    foreach ($groupings as $grouping) {
+        foreach ($grouping as $group) {
+            $count++;
+            $groupname = groups_get_group_name($group);
+        }
+    }
+
+    switch ($count) {
+        case 0:
+            // no group found
+            return 'N/A';
+        case 1:
+            return $groupname;
+        default:
+            // more than one group found
+            break;
+    }
+
+    return 'NOT UIQUE';
+}

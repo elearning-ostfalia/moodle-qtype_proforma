@@ -164,9 +164,12 @@ $string['privacy:metadata'] = 'Das ProFormA Frageformat Plugin speichert keine p
 
 $string['versioncontrol'] = 'Version Control System';
 $string['vcsuritemplate'] = 'URI des Repository (Template)';
-$string['vcsuritemplate_help'] = 'Ort, von dem die studentische Einreichung abgeholt wird, muss Platzhalter enthalten:<br> 
+$string['vcsuritemplate_help'] = 'Ort, von dem die studentische Einreichung abgeholt wird - muss genau einen Platzhalter enthalten:<br>
+{group} = Gruppenname der Gruppe, zu der der Studierende gehört<br>  
 {input} = Eingabe des Studierenden';
 // {username} = student\'s login name in Moodle';
+
+$string['groupname'] = 'Gruppe';
 
 $string['vcslabel'] = 'Name des Eingabefelds';
 $string['vcslabel_help'] = 'Name des Eingabefelds {input} in der Anzeige';

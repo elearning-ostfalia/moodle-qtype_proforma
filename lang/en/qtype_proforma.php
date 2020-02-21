@@ -170,9 +170,12 @@ $string['privacy:metadata'] = 'The ProFormA question type plugin does not store 
 
 $string['versioncontrol'] = 'Version control system';
 $string['vcsuritemplate'] = 'URI of repository';
-$string['vcsuritemplate_help'] = 'location where the student\'s submission can be found. Can contain placeholder:<br> 
+$string['vcsuritemplate_help'] = 'location where the student\'s submission can be found. Must contain exactly one placeholder:<br>
+{group} = groupname of the group that the student belongs to<br>
 {input} = identifier to be entered by student';
 // {username} = student\'s login name in Moodle';
+
+$string['groupname'] = 'Group';
 
 $string['vcslabel'] = 'Label for input field';
 $string['vcslabel_help'] = 'only needed if  \'URI of repository\' contains {input}';

@@ -60,6 +60,15 @@ class qtype_proforma_renderer extends qtype_renderer {
      */
     private $collapseid = 0;
 
+    private function get_last_step_for_vcs($qa) {
+        foreach ($qa->get_reverse_step_iterator() as $step) {
+            if ($step->has_qt_var(VCSINPUT) or $step->has_qt_var(VCSGROUP) or $step->has_qt_var(VCSUSERNAME)) {
+                return $step;
+            }
+        }
+        return new question_attempt_step_read_only();
+    }
+
     /**
      * overridden function for creating the output
      *
@@ -69,7 +78,6 @@ class qtype_proforma_renderer extends qtype_renderer {
      */
     public function formulation_and_controls(question_attempt $qa,
             question_display_options $options) {
-        // ugly code => refacture!
 
         $question = $qa->get_question();
         $answer = '';
@@ -77,15 +85,15 @@ class qtype_proforma_renderer extends qtype_renderer {
         // Get default renderer depending on responsetype.
         $renderer = $question->get_format_renderer($this->page);
 
-        if ($question->responseformat != qtype_proforma::RESPONSE_VERSION_CONTROL) {
-            // Preset answer field with response template.
+        // Get last input according to renderer type.
+        if ($question->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL) {
+            $step = $this->get_last_step_for_vcs($qa);
+        } else {
             $step = $qa->get_last_step_with_qt_var(ANSWER);
             if (!$step->has_qt_var(ANSWER) && empty($options->readonly)) {
                 // Question has never been answered, fill it with response template.
                 $step = new question_attempt_step(array(ANSWER => $question->responsetemplate));
             }
-        } else {
-            $step = $qa->get_last_step_with_qt_var(VCSINPUT);
         }
 
         if (empty($options->readonly)) {
@@ -93,28 +101,14 @@ class qtype_proforma_renderer extends qtype_renderer {
             $answer = $renderer->response_area_input($qa, $step, $options->context);
         } else {
             // readonly for review
-            if ($question->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL) {
-                $answer = $renderer->response_area_read_only($qa, $step, $options->context);
-            } else {
-                // => we cannot use default renderer from question settings
-                // since the teacher could have changed it in the meantime!!
-                // => try and figure out what renderer to use
-                switch ($this->determine_renderer($qa, $step)) {
-                    case qtype_proforma::RESPONSE_EDITOR:
-                        $renderer = $this->page->get_renderer('qtype_proforma', 'format_editor');
-                        break;
-                    case qtype_proforma::RESPONSE_FILEPICKER:
-                        $renderer = $this->page->get_renderer('qtype_proforma', 'format_filepicker');
-                        break;
-                    default:
-                        // keep renderer
-                        break;
-                }
-                $answer = $renderer->response_area_read_only($qa, $step, $options->context);
-
-            }
+            // => we cannot use default renderer from question settings
+            // since the teacher could have changed it in the meantime!!
+            // => try and figure out what renderer to use
+            list($step, $renderer) = $this->determine_renderer($qa, $step);
+            $answer = $renderer->response_area_read_only($qa, $step, $options->context);
         }
 
+        // Show file upload area resp. uploaded files
         $files = '';
         if ($renderer->can_have_attachments() && $question->attachments) {
             if (empty($options->readonly)) {
@@ -124,6 +118,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             }
         }
 
+        // Show question test atachments.
         $downloadtext = $this->question_downloads($question);
 
         $result = '';
@@ -438,7 +433,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             // evaluate show version control information
             $praktomat = $response->{'response-meta-data'}->children('praktomat', TRUE);
             $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
-            if (isset($vcs)) {
+            if (isset($vcs) && count($vcs) > 0) {
                 $attrib = $vcs->attributes();
                 $vcstext = $attrib['name'] . ': ' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'] ;
             } else {
@@ -841,29 +836,20 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @param $step
      * @return int|string
      */
-    protected function determine_renderer(question_attempt $qa, $step) {
-        $stepfiles = $qa->get_last_step_with_qt_var(ATTACHMENTS);
+    protected function determine_renderer(question_attempt $qa, $externalstep) {
+        foreach ($qa->get_reverse_step_iterator() as $step) {
+            if ($step->has_qt_var(VCSINPUT) or $step->has_qt_var(VCSGROUP) or $step->has_qt_var(VCSUSERNAME)) {
+                return array($step, $this->page->get_renderer('qtype_proforma', 'format_versioncontrol'));
+            }
+            if ($step->has_qt_var(ATTACHMENTS)) {
+                return array($step, $this->page->get_renderer('qtype_proforma', 'format_filepicker'));
 
-        $renderer = null;
-        if (isset($step) && $step->get_id()) {
-            $renderer = qtype_proforma::RESPONSE_EDITOR;
-        }
-        if (isset($stepfiles) && $stepfiles->get_id()) {
-            $renderer = qtype_proforma::RESPONSE_FILEPICKER;
-            // check timestamp for files and answer
-            if (isset($step) && $step->get_id()) {
-                if ($step->get_timecreated() < $stepfiles->get_timecreated()) {
-                    $renderer = qtype_proforma::RESPONSE_FILEPICKER; // 'FILES (and Editor)';
-                } else {
-                    if ($step->get_timecreated() > $stepfiles->get_timecreated()) {
-                        $renderer = qtype_proforma::RESPONSE_EDITOR; // 'EDITOR (and FILES)';
-                    } else {
-                        $renderer = qtype_proforma::RESPONSE_EDITOR; // BOTH!!'EDITOR and FILES';
-                    };
-                }
+            }
+            if ($step->has_qt_var(ANSWER)) {
+                return array($step, $this->page->get_renderer('qtype_proforma', 'format_editor'));
             }
         }
-        return $renderer;
+        return array($externalstep, $this->page->get_renderer('qtype_proforma', 'format_editor'));
     }
 }
 
@@ -881,6 +867,8 @@ abstract class qtype_proforma_format_renderer_base extends plugin_renderer_base 
         return false;
     }
     abstract public function answerfieldname();
+
+
 }
 
 /**
@@ -968,6 +956,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
         return $input;
     }
 
+
     /**
      * returns the html identfier for the textarea
      * @param $qa
@@ -1026,6 +1015,50 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
  */
 class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_format_renderer_base /*plugin_renderer_base*/ {
 
+    private $name = VCSINPUT;
+
+    /**
+     * checks if question contains input field in URI template
+     * @param $question
+     * @return bool
+     * @throws coding_exception
+     */
+    private function has_input_field($question) {
+        if ($question->responseformat != qtype_proforma::RESPONSE_VERSION_CONTROL) {
+            throw new coding_exception('unexpected responseformat in qtype_proforma_format_versioncontrol_renderer');
+        }
+
+        return (strpos($question->vcsuritemplate, PHINPUT) !== FALSE);
+    }
+
+    /**
+     * checks if question contains group field in URI template
+     * @param $question
+     * @return bool
+     * @throws coding_exception
+     */
+    private function has_group_field($question) {
+        if ($question->responseformat != qtype_proforma::RESPONSE_VERSION_CONTROL) {
+            throw new coding_exception('unexpected responseformat in qtype_proforma_format_versioncontrol_renderer');
+        }
+
+        return (strpos($question->vcsuritemplate, PHGROUP) !== FALSE);
+    }
+
+    /**
+     * checks if question contains username field in URI template
+     * @param $question
+     * @return bool
+     * @throws coding_exception
+     */
+    private function has_user_field($question) {
+        if ($question->responseformat != qtype_proforma::RESPONSE_VERSION_CONTROL) {
+            throw new coding_exception('unexpected responseformat in qtype_proforma_format_versioncontrol_renderer');
+        }
+
+        return (strpos($question->vcsuritemplate, PHUSERNAME) !== FALSE);
+    }
+
     /**
      * returns the html fragment for the reponse area in input mode
      *
@@ -1035,24 +1068,50 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
      * @return string
      */
     public function response_area_input($qa, $step, $context) {
-        $name = VCSINPUT;
+        $input = '';
         $question = $qa->get_question();
-        $inputname = $qa->get_qt_field_name($name);
-        $id = 'id_' . $qa->get_qt_field_name(VCSINPUT);
+        if ($this->has_input_field($question)) {
+            $this->name = VCSINPUT;
+            $inputname = $qa->get_qt_field_name($this->name);
+            $id = 'id_' . $qa->get_qt_field_name($this->name);
 
-        $attributes = array();
-        $attributes['name'] = $inputname;
-        $attributes['id'] = $id;
-        $attributes['type'] = 'text';
-        $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
-        $attributes['size'] = 20;
-        $attributes['value'] = s($step->get_qt_var($name));
+            $attributes = array();
+            $attributes['name'] = $inputname;
+            $attributes['id'] = $id;
+            $attributes['type'] = 'text';
+            $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
+            $attributes['size'] = 20;
+            $attributes['value'] = s($step->get_qt_var($this->name));
 
-        $input = html_writer::tag('label',$question->vcslabel, array('for' => $inputname));
-        $input .= html_writer::tag('input', '' /*s($step->get_qt_var($name))*/, $attributes);
-        $input .= html_writer::empty_tag('input', array('type' => 'hidden',
-                'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
+            $input = html_writer::tag('label',$question->vcslabel, array('for' => $inputname));
+            $input .= html_writer::tag('input', '' /*s($step->get_qt_var($name))*/, $attributes);
+            $input .= html_writer::empty_tag('input', array('type' => 'hidden',
+                    'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
 
+        } else if ($this->has_group_field($question)){
+            $this->name = VCSGROUP;
+            $inputname = $qa->get_qt_field_name($this->name);
+            $id = 'id_' . $qa->get_qt_field_name($this->name);
+            $attributes = array();
+            $attributes['name'] = $inputname;
+            $attributes['id'] = $id;
+            $attributes['type'] = 'text';
+            if (! qtype_proforma\lib\is_teacher()) {
+                $attributes['readonly'] = 'true';
+            }
+            $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
+            $attributes['size'] = 10;
+
+            $groupname = qtype_proforma\lib\get_groupname();
+            $attributes['value'] = $groupname; // s($step->get_qt_var($name));
+
+            $input = html_writer::tag('label', get_string('groupname', 'qtype_proforma') . ': ', array('for' => $inputname));
+            $input .= html_writer::tag('input', '', $attributes);
+            $input .= html_writer::empty_tag('input', array('type' => 'hidden',
+                    'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
+
+            return html_writer::tag('div', $input, array('class' => VCSGROUP));
+        }
 
         return $input;
     }
@@ -1072,17 +1131,23 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
      * @return string
      */
     public function response_area_read_only($qa, $step, $context) {
-        $name = VCSINPUT;
-        $question = $qa->get_question();
-        $input = $question->vcslabel . ' ' . s($step->get_qt_var($name));
-        return $input;
+        if (null !== $step->get_qt_var(VCSINPUT)) {
+            $question = $qa->get_question();
+            return $question->vcslabel . ' '. s($step->get_qt_var(VCSINPUT));
+        } else if (null !== $step->get_qt_var(VCSGROUP)) {
+            return get_string('groupname', 'qtype_proforma') . ': '. s($step->get_qt_var(VCSGROUP));
+        } else if (null !== $step->get_qt_var[VCSUSERNAME]) {
+            return 'User '. ': '. s($step->get_qt_var(VCSUSERNAME));
+        }
+
+        return '???';
     }
 
     /**
      * @return string: returns the name of the answer step field
      */
     public function answerfieldname() {
-        return VCSINPUT;
+        return $this->name;
     }
 }
 

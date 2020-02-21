@@ -34,7 +34,13 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/grader_2.php');
 define("ANSWER",      "answer");
 define("ATTACHMENTS", "attachments");
 define("VCSINPUT",    "vcsinput");
+define("VCSUSERNAME", "vcsuser");
+define("VCSGROUP",    "vcsgroup");
 
+// place holder
+define("PHINPUT",    "{input}");
+define("PHUSERNAME", "{username}");
+define("PHGROUP",    "{group}");
 
 /**
  * Represents the proforma question.
@@ -184,6 +190,7 @@ class qtype_proforma_question extends question_graded_automatically {
                 break;
             case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 $expecteddata[VCSINPUT] = PARAM_TEXT;
+                $expecteddata[VCSGROUP] = PARAM_TEXT;
                 break;
             default:
                 throw new coding_exception('unsupported responseformat '. $this->responseformat);
@@ -239,11 +246,11 @@ class qtype_proforma_question extends question_graded_automatically {
             }
 
             return '(uploaded file)';
-        } else if (isset($response[VCSINPUT])) {
+        } else if (isset($response[VCSINPUT]) or isset($response[VCSGROUP]) or isset($response[VCSUSERNAME])) {
             $revision = '';
             if (isset($response['_feedback'])) {
-                $feedback = new SimpleXMLElement($response['_feedback'], LIBXML_PARSEHUGE);
                 try {
+                    $feedback = new SimpleXMLElement($response['_feedback'], LIBXML_PARSEHUGE | LIBXML_NOERROR);
                     $praktomat = $feedback->{'response-meta-data'}->children('praktomat', TRUE);
                     $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
                     if (isset($vcs)) {
@@ -255,7 +262,13 @@ class qtype_proforma_question extends question_graded_automatically {
                     $revision = '';
                 }
             }
-            return $this->vcslabel . ' '. $response[VCSINPUT] . $revision;
+            if (isset($response[VCSINPUT])) {
+                return $this->vcslabel . ' '. $response[VCSINPUT] . $revision;
+            } else if (isset($response[VCSGROUP])) {
+                return get_string('groupname', 'qtype_proforma') . ': '. $response[VCSGROUP] . $revision;
+            } else if (isset($response[VCSUSERNAME])) {
+                return 'User '. ' '. $response[VCSUSERNAME] . $revision;
+            }
         } else {
 
                 // response data could be extracted from question step which
@@ -320,8 +333,11 @@ class qtype_proforma_question extends question_graded_automatically {
                 break;
             case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 // Determine if the given response has online text and attachments.
-                $meetsconentreq = array_key_exists(VCSINPUT, $response) &&
-                        (trim($response[VCSINPUT]) !== '');
+                if (array_key_exists(VCSINPUT, $response)) {
+                    $meetsconentreq = (trim($response[VCSINPUT]) !== '');
+                } else {
+                    $meetsconentreq = true;
+                }
                 break;
             default:
                 throw new coding_exception("invalid responseformat");
@@ -394,7 +410,13 @@ class qtype_proforma_question extends question_graded_automatically {
         $grader = $this->get_grader();
 
         if ($this->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL) {
-            $uri = str_replace('{input}', $response[VCSINPUT], $this->vcsuritemplate);
+            if (array_key_exists(VCSINPUT, $response)) {
+                $uri = str_replace('{input}', $response[VCSINPUT], $this->vcsuritemplate);
+            } else if (array_key_exists(VCSGROUP, $response)) {
+                $uri = str_replace('{group}', $response[VCSGROUP], $this->vcsuritemplate);
+            } else if (array_key_exists(VCSUSERNAME, $response)) {
+                $uri = str_replace('{username}', $response[VCSUSERNAME], $this->vcsuritemplate);
+            }
             list($graderoutput, $httpcode) = $grader->send_external_submission_to_grader($uri, $this);
         } else {
             // quite complex determination of grading function
