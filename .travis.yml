@@ -58,7 +58,7 @@ jobs:
     - name: 'Moodle 3.6.7, PHP 7.3, PostgreSQL'
       php: 7.1
       env:
-        - MOODLE_BRANCH=v3.6.
+        - MOODLE_BRANCH=v3.6.7
         - DB=pgsql
 
 

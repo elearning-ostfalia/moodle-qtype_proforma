@@ -20,7 +20,7 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
 ## Features
 
 - Java code can be checked with JUnit and Checkstyle
-- submission as file upload, input from editor or external repository (version control system)
+- submission as file upload, input from editor or export from an external repository (version control system)
 - submission file upload with more than one file 
 - syntax highlighting in editor
 - code snippet as starting point for student

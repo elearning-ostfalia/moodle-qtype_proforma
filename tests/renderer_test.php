@@ -337,6 +337,83 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
             array(1,  array('Odd Number Of Characters')),
     );
 
+    const RESPONSE_3 = <<<'EOD'
+<?xml version="1.0" encoding="UTF-8"?>
+<response xmlns="urn:proforma:v2.0" xmlns:praktomat="urn:proforma:praktomat:v2.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+    <separate-test-feedback>
+        <submission-feedback-list>
+        </submission-feedback-list>
+        <tests-response>
+            <test-response id="1">
+                <test-result>                
+                    <result >
+                        <score>1</score>
+                    </result>
+                    <feedback-list>
+                        <student-feedback level="info">
+                            <title>JUnit Test: Junit Test #1</title>
+                        </student-feedback>
+                    </feedback-list>
+                </test-result>
+            </test-response>
+        
+            <test-response id="2">
+                <test-result>                
+                    <result >
+                        <score>0</score>
+                    </result>
+                    <feedback-list>
+                        
+                        <student-feedback level="info">
+                            <title>JUnit Test: Junit Test de/ostfalia/DoSomethingTest</title>
+                            <content format="html"><![CDATA[<pre>
+
+======== Test Results ======
+
+</pre><br/>
+
+<div>1 <tt>Java</tt> user-submitted files found for compilation:  DoSomethingTest.java &nbsp; </div>
+
+<div>Java compiler output:</div>
+<pre><b>de/ostfalia/DoSomethingTest.java:21: error: duplicate class: de.ostfalia.DoSomethingTest</b>
+<b>  location: class DoSomethingTest</b>
+xx errors
+1
+</pre>
+]]></content>
+                        </student-feedback>
+                        
+                    </feedback-list>
+                </test-result>
+            </test-response>
+        </tests-response>
+    </separate-test-feedback>
+    <files>
+    </files>
+    <response-meta-data>
+    </response-meta-data>
+</response>    
+EOD;
+
+    const LOGS_3_1 = array();
+    const LOGS_3_2 = array(
+            array(null, '<pre>
+
+======== Test Results ======
+
+</pre><br/>
+
+<div>1 <tt>Java</tt> user-submitted files found for compilation:  DoSomethingTest.java &nbsp; </div>
+
+<div>Java compiler output:</div>
+<pre><b>de/ostfalia/DoSomethingTest.java:21: error: duplicate class: de.ostfalia.DoSomethingTest</b>
+<b>  location: class DoSomethingTest</b>
+xx errors
+1
+</pre>
+'),
+    );
 
     private function assert_same_xml($expectedxml, $xml) {
         // remove comments
@@ -378,12 +455,23 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
         $idprefix = '{COLLAPSE_ID}';
         $id = $idprefix.'-'.$number;
 
-        $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
+        if (isset($total)) {
+            // for subtests
+            $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">
 <i class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"></i> '.$title;
-
-        if (isset($total)) {
             $output .= ' ('.($score*100) .'/'.($total*100).' %)';
+        } else {
+            // for no subtests
+            if ($score < 1) {
+                $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
+<div id="'.$id.'_caption" class="collapsibleregioncaption">
+<i class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"></i> '.$title;
+            } else {
+                $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
+<div id="'.$id.'_caption" class="collapsibleregioncaption">
+<i class="icon fa fa-check text-success fa-fw "  title="Correct" aria-label="Correct"></i> '.$title;
+            }
         }
         $output .= ' </div>
 <div id="'.$id.'_inner" class="collapsibleregioninner">';
@@ -394,8 +482,12 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
             $output .= '<p><b>INTERNAL ERROR IN GRADER!!</b></p>';
         }
         foreach ($logs as $log) {
-            $output .= '<div class="proforma_testlog_title">'.$log[0].'</div>';
-            $output .= '<pre class="proforma_testlog">'.$log[1].'</pre>';
+            if (isset($log[0])) {
+                $output .= '<div class="proforma_testlog_title">'.$log[0].'</div>';
+            }
+            if (isset($log[1])) {
+                $output .= '<pre class="proforma_testlog">' . $log[1] . '</pre>';
+            }
         }
         $output .= '</div></div></div>';
 
@@ -489,6 +581,8 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
         // $this->assert_same_xml($expected, $output);
     }
 
+
+
     /**
      * internal error
      * all or nothing, student feedback
@@ -526,8 +620,22 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
     }
 
     /**
+     * subtest
+     * all or nothing, student feedback
+     */
+    public function test_specific_feedback_log_error_AON() {
+        $expected =
+                $this->render_collapsible_region_score(1, 1, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_3_1).
+                $this->render_collapsible_region_score(2, 0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_3_2).
+                '<p></p>
+<p>Your answer is not completely correct.</p>';
+
+        $this->assert_same_feedback(self::RESPONSE_3, '', null, $expected);
+    }
+
+    /**
      * internal error
-     * weighted sum, student feedback
+     * weighted sum (WS), student feedback
      */
     public function test_specific_feedback_internal_error_WS() {
         $expected =
@@ -564,7 +672,7 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
 
     /**
      * internal error
-     * all or nothing, teacher feedback
+     * all or nothing (AON), teacher feedback
      */
     public function test_specific_feedback_internal_error_AON_ADMIN() {
         $expected =
@@ -610,7 +718,7 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
 
     /**
      * internal error
-     * weighted sum, teacher feedback
+     * weighted sum (WS), teacher feedback
      */
     public function test_specific_feedback_internal_error_WS_ADMIN() {
         $expected =

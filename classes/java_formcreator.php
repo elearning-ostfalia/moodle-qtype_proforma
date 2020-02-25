@@ -282,6 +282,25 @@ class java_form_creator extends base_form_creator {
 
         }
 
+        if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
+            $repeats = count($fromform["testweight"]);
+            $sumweight = 0;
+            for ($i = 0; $i < $repeats; $i++) {
+                $sumweight += $fromform["testweight"][$i];
+            }
+            if ($fromform["checkstyle"]) {
+                $sumweight += $fromform["checkstyleweight"];
+            }
+            if ($fromform["compile"]) {
+                $sumweight += $fromform["compileweight"];
+            }
+            if ($repeats > 0 && $sumweight == 0) {
+                // error message must be attached to testoptions group
+                // otherwise it is not visible
+                $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
+            }
+        }
+
         return $errors;
     }
 

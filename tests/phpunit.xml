@@ -41,6 +41,7 @@
             </testsuite>
             <testsuite name="qtype_proforma basic tests">
                 <file>renderer_test.php</file>
+                <file>grader_test.php</file>
                 <file>proformatask_test.php</file>
                 <file>javatask_test.php</file>
                 <file>questiontype_test.php</file>

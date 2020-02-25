@@ -91,6 +91,8 @@ $string['codeempty'] = 'Code is missing';
 $string['titleempty'] = 'Title is missing';
 $string['filenameerror'] = 'Cannot determine classname (filename)';
 $string['entrypointerror'] = 'Cannot determine classname (entrypoint)';
+$string['sumweightzero'] = 'The sum of all weights must not be zero.';
+
 
 
 $string['miscellaneousheader'] = 'Miscellaneous';

@@ -300,8 +300,10 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $counttests = 0.0;
         $score = 0.0;
         $internalerror = false;
+        $testsfound = false;
 
         foreach ($test->{'subtests-response'}->{'subtest-response'} as $subtest) {
+            $testsfound = true;
             $testresult = $subtest->{'test-result'}->result;
             if ((string)$testresult['is-internal-error'] === 'true') {
                 $internalerror = true;
@@ -309,6 +311,10 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             $score += floatval((string)$testresult->score); // 0.0 or 1.0
             $counttests ++;
         }
+
+        // avoid division by zero
+        if (!$testsfound)
+            return array(0.0, $internalerror);
 
         return array($score / $counttests, $internalerror);
     }

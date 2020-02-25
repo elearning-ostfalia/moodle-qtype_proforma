@@ -80,6 +80,7 @@ $string['codeempty'] = 'Code fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
 $string['filenameerror'] = 'Kann Klassennamen nicht ermitteln (Dateiname).';
 $string['entrypointerror'] = 'Kann Klassennamen nicht ermitteln (Entrypoint).';
+$string['sumweightzero'] = 'Die Summe aller Gewichte darf nicht 0 sein.';
 
 
 $string['highlight'] = 'Syntax Highlighting';
