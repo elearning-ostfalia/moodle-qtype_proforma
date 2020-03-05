@@ -94,7 +94,7 @@ abstract class base_form_creator {
         $mform = $this->form;
         $mform->addElement('textarea', 'responsetemplate', get_string('responsetemplate', 'qtype_proforma'), 'rows="20" cols="80"');
         if (get_config('qtype_proforma', 'usecodemirror')) {
-            qtype_proforma::as_codemirror('id_responsetemplate', 'java', 'id_responsetemplateheader');
+            qtype_proforma\lib\as_codemirror('id_responsetemplate', 'java', 'id_responsetemplateheader');
             global $PAGE;
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
                     array('id_programminglanguage', 'id_responsetemplate'));

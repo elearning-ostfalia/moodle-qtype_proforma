@@ -84,7 +84,7 @@ class java_form_creator extends base_form_creator {
         // Model Solution files
         $mform->addElement('textarea', 'modelsolution', get_string('modelsolution', 'qtype_proforma'), 'rows="20" cols="80"');
         if (get_config('qtype_proforma', 'usecodemirror')) {
-            qtype_proforma::as_codemirror('id_modelsolution', 'java');
+            qtype_proforma\lib\as_codemirror('id_modelsolution', 'java');
             global $PAGE;
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
                     array('id_programminglanguage', 'id_modelsolution'));
@@ -164,7 +164,7 @@ class java_form_creator extends base_form_creator {
                 'checkstyleweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
 
         $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
-        qtype_proforma::as_codemirror('id_checkstylecode', 'xml');
+        qtype_proforma\lib\as_codemirror('id_checkstylecode', 'xml');
         $mform->hideIf('checkstyleweight', 'checkstyle');
         $mform->hideIf('checkstylecode', 'checkstyle');
         // cannot use required rule because rule is checked even if control is hidden :-(
@@ -211,7 +211,7 @@ class java_form_creator extends base_form_creator {
         $repeats = parent::add_tests($question, $questioneditform);
         // Set CodeMirror for unit test code.
         for ($i = 0; $i < $repeats; $i++) {
-            qtype_proforma::as_codemirror('id_testcode_' . $i);
+            qtype_proforma\lib\as_codemirror('id_testcode_' . $i);
             // Hide testtype and test identifier for unit tests.
             // So far (Moodle 3.6) hideif is not implemented for groups => quickhack.
             // (needed from creating grading hints)

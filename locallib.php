@@ -89,3 +89,40 @@ function get_groupname() {
 
     return 'NOT UIQUE';
 }
+
+
+/**
+ * Helper function for converting a text area into a CodeMirror window
+ *
+ * @param $textareaid: html identifier
+ * @param string $mode: Syntax highlighting mode
+ * @param null $header: header in form
+ * @param bool $readonly: is input disabled?
+ * @param bool $loadjquery: does jquery need to be loaded by page?
+ */
+function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = false, $loadjquery = true) {
+    if (get_config('qtype_proforma', 'usecodemirror')) {
+        global $PAGE, $CFG;
+        require_once($CFG->dirroot . '/config.php');
+        // load jquery css file for resizable
+        if ($loadjquery) {
+            $PAGE->requires->jquery();
+            $PAGE->requires->jquery_plugin('ui');
+            $PAGE->requires->jquery_plugin('ui-css');
+        }
+
+        $moodleversion = $CFG->version;
+        // debugging('Moodle Version is ' . $moodleversion);
+
+        if ($moodleversion > 2018051700) {
+            // starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
+            // so this must be explicitly be done in Javascript.
+            $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
+                    array($textareaid, $readonly, $mode, $header, 1));
+        } else {
+            // In 3.4 resizing must be prohinited because the window is too small
+            $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
+                    array($textareaid, $readonly, $mode, $header));
+        }
+    }
+}
