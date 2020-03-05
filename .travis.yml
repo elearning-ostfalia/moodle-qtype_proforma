@@ -116,7 +116,8 @@ before_script:
   - ls
   # ci		    moodle	moodle-plugin-ci-plugins
   #  elearning-ostfalia  moodledata	mtu.jsonpatch
-  - java -jar ./moodle/selenium.jar --version
+  # - java -jar ./moodle/selenium.jar --version (selenium is running then....)
+  # v2.53.1
   - cat ./moodle/config.php
 #  - lsof -i:4444 1>&2
 
