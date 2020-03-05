@@ -28,7 +28,7 @@ Feature: PREVIEW
 
   @javascript @_switch_window
   Scenario: Preview a ProFormA question and submit a partially correct response.
-    When I click on "Preview" "link" in the "proforma-001" "table_row"
+    When I choose "Preview" action for "proforma-001" in the question bank
     And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Immediate feedback"
     And I press "Start again with these options"
@@ -39,7 +39,7 @@ Feature: PREVIEW
 
   @javascript @_switch_window
   Scenario: Preview a ProFormA question and submit a partially correct response.
-    When I click on "Preview" "link" in the "proforma-003" "table_row"
+    When I choose "Preview" action for "proforma-003" in the question bank
     And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Immediate feedback"
     And I press "Start again with these options"

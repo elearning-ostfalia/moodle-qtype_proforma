@@ -33,7 +33,7 @@ Feature: ADD JAVA QUESTION
     And I press "id_submitbutton"
     Then I should see "java-question"
 
-    When I click on "Edit" "link" in the "java-question" "table_row"
+    When I choose "Edit question" action for "java-question" in the question bank
     Then the following fields match these values:
       | Question name            |     java-question              |
       | Question text            | write a java program that..... |
@@ -96,7 +96,7 @@ Feature: ADD JAVA QUESTION
     And I press "id_submitbutton"
     Then I should see "new java-question"
 
-    When I click on "Edit" "link" in the "new java-question" "table_row"
+    When I choose "Edit question" action for "new java-question" in the question bank
     Then the following fields match these values:
       | Question name            | new java-question              |
       | Question text            | write a java program that..... |
@@ -146,7 +146,7 @@ Feature: ADD JAVA QUESTION
     And I press "id_submitbutton"
     Then I should see "java-question with 2 tests"
 
-    When I click on "Edit" "link" in the "java-question with 2 tests" "table_row"
+    When I choose "Edit question" action for "java-question with 2 tests" in the question bank
     Then the following fields match these values:
       | Question name            | java-question with 2 tests     |
       | Question text            | write a java program that..... |

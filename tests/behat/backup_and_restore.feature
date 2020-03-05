@@ -42,7 +42,7 @@ Feature: BACKUP AND RESTORE
     And I should see "proforma-003"
     # new step from Moodle 3.6.7 on
     # And I choose "Edit question" action for "proforma-002" in the question bank
-    And I click on "Edit" "link" in the "proforma-002" "table_row"
+    And I choose "Edit question" action for "proforma-002" in the question bank
     Then the following fields match these values:
       | Question name            | proforma-002           |
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
@@ -71,7 +71,7 @@ Feature: BACKUP AND RESTORE
 
     And I press "Cancel"
 
-    When I click on "Edit" "link" in the "proforma-001" "table_row"
+    When I choose "Edit question" action for "proforma-001" in the question bank
     Then the following fields match these values:
       | Question name            | proforma-001                  |
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
@@ -106,7 +106,7 @@ Feature: BACKUP AND RESTORE
 
     And I press "Cancel"
 
-    When I click on "Edit" "link" in the "proforma-003" "table_row"
+    When I choose "Edit question" action for "proforma-003" in the question bank
     Then the following fields match these values:
       | Question name            | proforma-003          |
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |

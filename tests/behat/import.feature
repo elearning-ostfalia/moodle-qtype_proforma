@@ -30,7 +30,7 @@ Feature: IMPORT (Moodle-XML format)
     And I press "Continue"
     And I should see "palindrom"
 
-    When I click on "Edit" "link" in the "palindrom" "table_row"
+    When I choose "Edit question" action for "palindrom" in the question bank
     Then the following fields match these values:
       | Question name            | palindrom              |
       | Question text            | write a function that checks if a given string is a palindrom |
@@ -84,7 +84,7 @@ Feature: IMPORT (Moodle-XML format)
     And I should see "second ProFormA question"
     And I should see "java question"
 
-    When I click on "Edit" "link" in the "java question" "table_row"
+    When I choose "Edit question" action for "java question" in the question bank
     Then the following fields match these values:
       | Question name            | java question              |
       | Question text            | Write a short program that... |
@@ -122,7 +122,7 @@ Feature: IMPORT (Moodle-XML format)
     """
     And I press "Cancel"
 
-    When I click on "Edit" "link" in the "second ProFormA question" "table_row"
+    When I choose "Edit question" action for "second ProFormA question" in the question bank
     Then the following fields match these values:
       | Question name            | second ProFormA question           |
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |

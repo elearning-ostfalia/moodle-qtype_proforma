@@ -1,9 +1,9 @@
 @qtype @qtype_proforma
-Feature: EDIT
-  Test editing an ProFormA question
+Feature: DUPLICATE
+  Test copying a ProFormA question
   As a teacher
-  In order to be able to update my ProFormA question
-  I need to edit them
+  In order to use a exsiting ProFormA question with some changes
+  I need to copy them
 
   Background:
     Given the following "users" exist:
@@ -27,9 +27,10 @@ Feature: EDIT
     And I navigate to "Question bank" in current page administration
 
   Scenario: Edit a ProFormA question
-    When I choose "Edit question" action for "proforma-001" in the question bank
+    When I choose "Duplicate" action for "proforma-001" in the question bank
+    #When I click on "Edit" "link" in the "proforma-001" "table_row"
     Then the following fields match these values:
-      | Question name            | proforma-001                  |
+      | Question name            | proforma-001 (copy)            |
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
       | Default mark             | 1                              |
       | General feedback         | <p>You must not use a library function.</p>        |
@@ -61,49 +62,38 @@ Feature: EDIT
     And I should see "testtask.zip"
     And I should see "2.0"
 
-    When I set the following fields to these values:
-      | Question name            | edited question name           |
-      | Question text            | edited question text           |
+    And I set the following fields to these values:
+      | Question name | Duplicated question name                |
+      | Question text | Write a lot about duplicating questions |
       | Default mark             | 2                              |
-      | General feedback         | edited general feedback        |
-      | Response format          | Editor                         |
-      | Syntax highlighting      | Python                         |
-      | Input box size           | 25 lines                       |
-      | Response template        | edited start code              |
-      | Comment                  | edited comment                 |
-      | Aggregation strategy      | Weighted sum                 |
-      | Penalty for each incorrect try  | 50%                     |
-    And I set the field "testweight[0]" to "11"
-    And I set the field "testweight[1]" to "22"
-    And I set the field with xpath "//input[@name='testtitle[0]']" to "edited title #1"
-    And I set the field with xpath "//input[@name='testtitle[1]']" to "edited title #2"
-    And I set the field with xpath "//input[@name='testdescription[0]']" to "edited testdescription #1"
-    And I set the field with xpath "//input[@name='testdescription[1]']" to "edited testdescription #2"
-    And I press "id_submitbutton"
-    Then I should see "edited question name"
 
-    When I choose "Edit question" action for "edited question name" in the question bank
+
+    And I press "id_submitbutton"
+    Then I should see "Duplicated question name"
+
+    When I choose "Edit question" action for "Duplicated question name" in the question bank
     Then the following fields match these values:
-      | Question name            | edited question name           |
-      | Question text            | edited question text           |
+      | Question name            | Duplicated question name                  |
+      | Question text            | Write a lot about duplicating questions           |
       | Default mark             | 2                              |
-      | General feedback         | edited general feedback        |
-      | Response format          | Editor                         |
-      | Syntax highlighting      | Python                         |
-      | Input box size           | 25 lines                       |
-      | Response template        | edited start code              |
-      | Comment                  | edited comment                 |
-      | Aggregation strategy      | Weighted sum                 |
-      | Penalty for each incorrect try  | 50%                     |
-    And the field "testweight[0]" matches value "11"
-    And the field "testweight[1]" matches value "22"
-    And the field with xpath "//input[@name='testtitle[0]']" matches value "edited title #1"
-    And the field with xpath "//input[@name='testtitle[1]']" matches value "edited title #2"
-    And the field with xpath "//input[@name='testdescription[0]']" matches value "edited testdescription #1"
-    And the field with xpath "//input[@name='testdescription[1]']" matches value "edited testdescription #2"
+    And the field "testweight[0]" matches value "2"
+    And the field "testweight[1]" matches value "3"
+    And the field with xpath "//input[@name='testtitle[0]']" matches value "TEST 1"
+    And the field with xpath "//input[@name='testtitle[1]']" matches value "TEST 2"
+    And the field with xpath "//input[@name='testdescription[0]']" matches value "DESCRIPTION 1"
+    And the field with xpath "//input[@name='testdescription[1]']" matches value "DESCRIPTION 2"
     And the field with xpath "//input[@name='testid[0]']" matches value "1"
     And the field with xpath "//input[@name='testid[1]']" matches value "2"
     And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
     And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
+# todo: try and check values of static fields
+    # download links
+    And I should see "lib.txt, instruction.txt"
+    And I should see "ms1.txt"
+    And I should see "ms2.txt"
+    And I should see "MyString.java"
+    # grader settings
+    And I should see "UUID 1"
+    And I should see "testtask.zip"
+    And I should see "2.0"
 
-    And I press "Cancel"
