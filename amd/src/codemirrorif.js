@@ -26,21 +26,11 @@
  */
 
 
-/*
-require([
-    "cm/lib/codemirror", "cm/mode/htmlmixed/htmlmixed"
-], function(CodeMirror) {
-    CodeMirror.fromTextArea(document.getElementById("code"), {
-        lineNumbers: true,
-        mode: "text/x-java"
-    });
-});
-*/
-
-define(['jquery', 'jqueryui',
-        'qtype_proforma/codemirror', 'qtype_proforma/clike', 'qtype_proforma/python', 'qtype_proforma/xml',
-        'qtype_proforma/closebrackets', 'qtype_proforma/matchbrackets', 'qtype_proforma/active-line'],
-    function($, jqui, CodeMirror, clike, python, xml, closebrackets, matchbrackets, activeline) {
+define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
+        'qtype_proforma/clike',
+        'qtype_proforma/closebrackets', 'qtype_proforma/matchbrackets', 'qtype_proforma/active-line'
+    ],
+    function($, jqui, CodeMirror) {
 
         // maps the programming language value used in PHP to the CodeMirror mode
         map_proglang_to_codemirror_mode = function(moodle_mode) {
@@ -69,7 +59,9 @@ define(['jquery', 'jqueryui',
                     // map programming language to CodeMirror mode
                     var newMode =  map_proglang_to_codemirror_mode(progLang);
                     // change mode in CodeMirror
-                    $("#" + textarea_id).next(".CodeMirror").get(0).CodeMirror.setOption("mode", newMode);
+                    require(['qtype_proforma/xml', 'qtype_proforma/python'], function() {
+                        $("#" + textarea_id).next(".CodeMirror").get(0).CodeMirror.setOption("mode", newMode);
+                    });
                 };
                 try {
                     changeMode(select_id, textarea_id);
