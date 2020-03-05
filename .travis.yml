@@ -112,11 +112,12 @@ before_script:
   - /usr/lib/chromium-browser/chromedriver --version
   - chromium-browser --version
   - pwd
+  # /home/travis/build
   - ls
-  - find . -iname selenium*.jar
-  - find / -iname selenium*.jar
-
-#  - cat config.php 1>&2
+  # ci		    moodle	moodle-plugin-ci-plugins
+  #  elearning-ostfalia  moodledata	mtu.jsonpatch
+  - java -jar ./moodle/selenium.jar --version
+  - cat ./moodle/config.php
 #  - lsof -i:4444 1>&2
 
 
