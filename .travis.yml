@@ -108,13 +108,16 @@ install:
 
 before_script:
 # diagnosis
-  - firefox --version 1>&2
-  - /usr/lib/chromium-browser/chromedriver --version 1>&2
-  - chromium-browser --version 1>&2
-  - cat config.php 1>&2
-  - ls 1>&2
-  - pwd 1>&2
-  - lsof -i:4444 1>&2
+  - firefox --version
+  - /usr/lib/chromium-browser/chromedriver --version
+  - chromium-browser --version
+  - pwd
+  - ls
+  - find . -iname selenium*.jar
+  - find / -iname selenium*.jar
+
+#  - cat config.php 1>&2
+#  - lsof -i:4444 1>&2
 
 
 
