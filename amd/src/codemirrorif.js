@@ -27,23 +27,23 @@
 
 
 define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
-        'qtype_proforma/clike',
         'qtype_proforma/closebrackets', 'qtype_proforma/matchbrackets', 'qtype_proforma/active-line'
     ],
     function($, jqui, CodeMirror) {
 
-        // maps the programming language value used in PHP to the CodeMirror mode
+        // maps the programming language value used in PHP to the CodeMirror mode and
+        // the corresponding javascript file to load
         map_proglang_to_codemirror_mode = function(moodle_mode) {
             switch (moodle_mode) {
-                case "java":   return "text/x-java";
-                case "python": return "text/x-python";
-                case "setlx":  return "text/text";
-                case "c":      return "text/x-csrc";
-                case "xml":    return "application/xml";
-                case "none":   return "";
+                case "java":   return ["text/x-java", 'qtype_proforma/clike'];
+                case "python": return ["text/x-python", 'qtype_proforma/python'];
+                case "setlx":  return ["text/text", null];
+                case "c":      return ["text/x-csrc", 'qtype_proforma/clike'];
+                case "xml":    return ["application/xml", 'qtype_proforma/xml'];
+                case "none":   return ["", null];
                 default:
                     console.error("unsupported mode " + moodle_mode + " for map_proglang_to_codemirror_mode");
-                    return "text/text";
+                    return ["text/text", null];
             }
         };
 
@@ -59,8 +59,8 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                     // map programming language to CodeMirror mode
                     var newMode =  map_proglang_to_codemirror_mode(progLang);
                     // change mode in CodeMirror
-                    require(['qtype_proforma/xml', 'qtype_proforma/python'], function() {
-                        $("#" + textarea_id).next(".CodeMirror").get(0).CodeMirror.setOption("mode", newMode);
+                    require([newMode[1]], function() {
+                        $("#" + textarea_id).next(".CodeMirror").get(0).CodeMirror.setOption("mode", newMode[0]);
                     });
                 };
                 try {
@@ -101,8 +101,11 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                     // mode is not set when fromTextArea is used (why???)
                     // So mode is set later
                     var newMode =  map_proglang_to_codemirror_mode(mode);
+                    require([newMode[1]], function() {
+                        editor.setOption("mode", newMode[0]);
+                    });
 
-                    editor.setOption("mode", newMode);
+
                     if (enlarge_width) {
                         editor.setSize("100%", null);
                     }
