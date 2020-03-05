@@ -31,6 +31,12 @@ cache:
 
 jobs:
   include:
+    - name: 'Moodle 3.8, PHP 7.3, MySQL'
+      php: 7.3
+      env:
+        - MOODLE_BRANCH=MOODLE_38_STABLE
+        - DB=mysqli
+
     - name: 'Moodle 3.7, PHP 7.3, MySQL'
       php: 7.3
       env:
@@ -49,17 +55,17 @@ jobs:
         - MOODLE_BRANCH=MOODLE_36_STABLE
         - DB=pgsql
 
-    - name: 'Moodle 3.6.6, PHP 7.3, PostgreSQL'
-      php: 7.1
-      env:
-        - MOODLE_BRANCH=v3.6.6
-        - DB=pgsql
+#    - name: 'Moodle 3.6.6, PHP 7.3, PostgreSQL'
+#      php: 7.1
+#      env:
+#        - MOODLE_BRANCH=v3.6.6
+#        - DB=pgsql
 
-    - name: 'Moodle 3.6.7, PHP 7.3, PostgreSQL'
-      php: 7.1
-      env:
-        - MOODLE_BRANCH=v3.6.7
-        - DB=pgsql
+#    - name: 'Moodle 3.6.7, PHP 7.3, PostgreSQL'
+#      php: 7.1
+#      env:
+#        - MOODLE_BRANCH=v3.6.7
+#        - DB=pgsql
 
 
 env:
@@ -98,7 +104,7 @@ install:
 #    - If your plugin has unit tests, then PHPUnit will be setup.
   - moodle-plugin-ci install
 
-  - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 2;'
+  - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 3;'
 
 # This lists steps that are run for the purposes of testing.  Any of
 # these steps can be re-ordered or removed to your liking.  And of
