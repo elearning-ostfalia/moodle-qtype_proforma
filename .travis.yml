@@ -106,6 +106,18 @@ install:
 
   - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 3;'
 
+before_script:
+# diagnosis
+  - firefox --version
+  - /usr/lib/chromium-browser/chromedriver --version
+  - chromium-browser --version
+  - lsof -i:4444
+  - cat config.php
+  - ls
+  - pwd
+
+
+
 # This lists steps that are run for the purposes of testing.  Any of
 # these steps can be re-ordered or removed to your liking.  And of
 # course, you can add any of your own custom steps.
