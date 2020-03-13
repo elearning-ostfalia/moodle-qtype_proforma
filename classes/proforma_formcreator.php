@@ -74,7 +74,7 @@ class proforma_form_creator extends base_form_creator {
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::PERSISTENT_TASKFILE);
         $mform->setType('taskstorage', PARAM_RAW);
         // Attachments for Question Text (Downloads)
-        $this->add_static_field($question, $mform, 'downloadlist', get_string('downloads', 'qtype_proforma'),
+        $this->add_static_text($question, 'downloadlist', get_string('downloads', 'qtype_proforma'),
                 'downloads');
         $mform->addHelpButton('downloadlist', 'downloads_hint', 'qtype_proforma');
 
@@ -97,11 +97,11 @@ class proforma_form_creator extends base_form_creator {
      *
      * @param $question
      */
-    public function add_responsetemplate($question) {
+    protected function add_responsetemplate($question) {
         $mform = $this->form;
         parent::add_responsetemplate($question);
         // Further templates (there should be no other templates)
-        $this->add_static_field($question, $mform, 'furtherTemplates', get_string('templates', 'qtype_proforma'),
+        $this->add_static_text($question, 'furtherTemplates', get_string('templates', 'qtype_proforma'),
                 'templates');
         $mform->addHelpButton('furtherTemplates', 'templates_hint', 'qtype_proforma');
 
@@ -112,17 +112,19 @@ class proforma_form_creator extends base_form_creator {
      *
      * @param $question
      */
-    public function add_responsefilename($question) {
+/*
+    protected function add_responsefilename($question) {
         $mform = $this->form;
+
         // since static fields cannot be hidden we create a group
         $group = [];
         $group[] =& $mform->createElement('static',  'dummy' , '', $question->options->responsefilename);
         $mform->addGroup($group, 'responsefilename', get_string('filename', 'qtype_proforma'), ' ', false);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
 
-        // $this->add_static_field($question, $mform, 'responsefilename', get_string('filename', 'qtype_proforma'));
+        // $this->add_static_field($question, 'responsefilename', get_string('filename', 'qtype_proforma'), 50);
     }
-
+*/
     /**
      * Display grader settings.
      *
@@ -131,22 +133,13 @@ class proforma_form_creator extends base_form_creator {
     public function add_grader_settings($question) {
         $mform = $this->form;
         parent::add_grader_settings($question);
-        /*
-        // ProFormA fields
-        $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
-
-        // Task Filename
-        $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
-        $mform->setType('link', PARAM_TEXT);
-        $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
-        */
         // UUID
-        $this->add_static_field($question, $mform, 'uuid', get_string('uuid', 'qtype_proforma'));
-        $mform->setType('uuid', PARAM_TEXT);
+        $this->add_static_field($question, 'uuid', get_string('uuid', 'qtype_proforma'), 40);
+        // $mform->setType('uuid', PARAM_TEXT);
         $mform->addHelpButton('uuid', 'uuid_hint', 'qtype_proforma');
 
         // Proforma version
-        $mform->addElement('static', 'proformaversion', 'ProFormA Version');
+        $this->add_static_field($question, 'proformaversion', 'ProFormA Version', 6);
     }
 
     /**
@@ -207,11 +200,10 @@ class proforma_form_creator extends base_form_creator {
     public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
         parent::data_preprocessing($question, $cat, $form, $editor);
 
-        // create lists for download files
+        // Create lists for download links in edit form.
         foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
             $property1 = $value['formlist'];
             $property2 = $value['questionlist'];
-
             $question->$property1 = $this->create_downloadlist($question->$property2,
                     $question->options->$property2);
         }

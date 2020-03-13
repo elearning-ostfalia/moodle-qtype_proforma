@@ -72,9 +72,39 @@ abstract class base_form_creator {
         $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
 
         // Task Filename
-        $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
-        $mform->setType('link', PARAM_TEXT);
+        $this->add_static_text($question, 'link', 'taskfilename', 'qtype_proforma');
+
+//        $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
+//        $mform->setType('link', PARAM_TEXT);
         $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
+    }
+
+    /**
+     *  Add hidden fields for question attributes that are not part of the edit form.
+     * (Static elements are not sent as input data when submit is pressed,
+     * needed for duplicating a question)
+     * @throws coding_exception
+     */
+    public function add_hidden_fields() {
+        $mform = $this->form;
+
+        $hiddenfields = array('taskfilename', 'taskpath', 'templates', 'modelsolfiles', 'downloads');
+
+        // add hidden fields for filearea draft ids (if any)
+        foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
+            $property = $value['formid'];
+            if (!isset($property)) {
+                throw new coding_exception('formid is not set for filearea ' + $filearea);
+            }
+            $hiddenfields[] = $property;
+            //$mform->addElement('text', $property, ' should be hidden ' . $property, array('size' => '10'));
+            //$mform->setType($property, PARAM_TEXT);
+        }
+
+        foreach ($hiddenfields as $field) {
+            $mform->addElement('hidden', $field, $field, array('size' => '30'));
+            $mform->setType($field, PARAM_TEXT);
+        }
     }
 
     /**
@@ -90,7 +120,7 @@ abstract class base_form_creator {
      *
      * @param $question
      */
-    public function add_responsetemplate($question) {
+    protected function add_responsetemplate($question) {
         $mform = $this->form;
         $mform->addElement('textarea', 'responsetemplate', get_string('responsetemplate', 'qtype_proforma'), 'rows="20" cols="80"');
         if (get_config('qtype_proforma', 'usecodemirror')) {
@@ -104,11 +134,17 @@ abstract class base_form_creator {
     }
 
     /**
-     * Add response filename.
+     * Add response filename (edit field)
      *
      * @param $question
      */
-    public function add_responsefilename($question) {
+    protected function add_responsefilename($question) {
+        $mform = $this->form;
+        $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
+        $mform->setType('responsefilename', PARAM_TEXT);
+        $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
+        // maybe in the future...
+        // $mform->addElement('button', 'generatefilename', get_string('generatefilename', 'qtype_proforma'));
     }
 
     /**
@@ -359,8 +395,29 @@ abstract class base_form_creator {
      * @param qtype_proforma_edit_form $editor
      */
     public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
-        // special handling for comment
-        $draftid = file_get_submitted_draft_itemid('comment');
+        // prepare all fileareas
+        foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
+            // prepare draft file area (in case of copy)
+            $property = $value["formid"];
+            if (isset($question->$property)) {
+                // we already have a draft area => ready
+                continue;
+            }
+            $draftid = file_get_submitted_draft_itemid($property);
+            if ($draftid === 0  and $question->makecopy === 1) {
+                // We need to copy question.
+                $fileoptions = $editor->fileoptions;
+                $fileoptions['subdirs'] = false;
+                file_prepare_draft_area($draftid, $editor->context->id,
+                        'qtype_proforma', $filearea,
+                        empty($question->id) ? null : (int) $question->id,
+                        $editor->fileoptions);
+            }
+            $question->$property = $draftid;
+        }
+
+        // Special handling for comment.
+        $draftid = file_get_submitted_draft_itemid(qtype_proforma::FILEAREA_COMMENT);
         $question->comment = array();
         $question->comment['text'] = file_prepare_draft_area(
                 $draftid,           // Draftid
@@ -376,15 +433,54 @@ abstract class base_form_creator {
 
         if (!empty($question->taskfilename)) {
             // create temporary link for task file (does not belong to question class)
-            // $draftid = file_get_submitted_draft_itemid('questiontext');
-            // $question->link = '<a href="@@PLUGINFILE@@/'.$question->taskfilename.'">'. $question->taskfilename .'</a> ';
-            $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
-                    qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
-            $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
+/*            if (isset($question->taskfiledraftid) &&  $question->taskfiledraftid != 0) {
+                // No link for draft zip????
+                // $question->link = 'N/A';
+                $url = moodle_url::make_pluginfile_url(5, 'user',
+                        'draft', $question->taskfiledraftid, '/', $question->taskfilename);
+
+                // $question->link = '<a href="@@PLUGINFILE@@/'.$question->taskfiledraftid.'">'. $question->taskfilename .'</a> ';
+                $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
+            } else {*/
+                $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
+                        qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
+                $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
+//            }
         }
     }
 
     // helper functions
+
+    /**
+     * Add field that shall not be editable.
+     *
+     * @param $question
+     * @param $mform form
+     * @param $field fieldname
+     * @param $label labeltext
+     * @param null $sizefield sizefield
+     */
+    protected function add_static_field($question, $field, $label, $size) {
+        $mform = $this->form;
+        if (isset($this->question->options->$field)) {
+            $size = $question->options->$field;
+        } else if (isset($this->question->$field)) {
+            $size = $question->options->$field;
+        }
+        $mform->addElement('text', $field, $label, array('size' => $size));
+        $mform->disabledIf($field, 'responseformat', 'neq', 'alwaysdisabled');
+        $mform->setType($field, PARAM_TEXT);
+
+/*        $textelement = $field;
+        $mform->addElement('static', $textelement, $label);
+        debugging('static text: ' . $field);
+        $mform->setType($textelement, PARAM_TEXT);
+
+        $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
+        $mform->setType($field, PARAM_TEXT);
+*/
+    }
+
 
     /**
      * Add static text.
@@ -395,8 +491,8 @@ abstract class base_form_creator {
      * @param $label labeltext
      * @param null $sizefield sizefield
      */
-    protected function add_static_field($question, $mform, $field, $label, $sizefield = null) {
-        // $mform->addElement('static', $field, $label);
+    protected function add_static_text($question, $field, $label) {
+        $mform = $this->form;
         if (isset($sizefield)) {
             if (isset($this->question->options->$sizefield)) {
                 $value = $question->options->$sizefield;
@@ -406,7 +502,7 @@ abstract class base_form_creator {
                 $attributes = array('size' => strlen($question->$sizefield));
             }
         } else {
-            $attributes = array('size' => strlen($question->options->$field));
+            // $attributes = array('size' => strlen($question->options->$field));
         }
 
         if (isset($attributes) && count($attributes) > 0) {
@@ -415,6 +511,7 @@ abstract class base_form_creator {
             $mform->addElement('static', $field, $label);
         }
 
+        // debugging('static field: ' . $field);
         $mform->setType($field, PARAM_TEXT);
     }
 

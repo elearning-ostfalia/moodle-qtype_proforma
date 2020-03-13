@@ -123,10 +123,10 @@ class qtype_proforma extends question_type {
                         "formlist" => "templatelist"
                 ),
                 self::FILEAREA_DOWNLOAD => array(
-                        "formid" => "downloadid", // id created in proforma format after import
+                        "formid" => "downloadid", // draft id (for use in Proforma import or duplicate)
                         "files" => "downloadfiles", // tag in xml export
                         "questionlist" => "downloads", // name of question attribute resp. database column
-                        "formlist" => "downloadlist" // name of bound input  in edit form
+                        "formlist" => "downloadlist" // name of bound input in edit form
                 )
         );
     }
@@ -149,26 +149,32 @@ class qtype_proforma extends question_type {
     }
 
     /**
+     * Returns all ProFormA specific fileareas.
+     *
+     * @return array
+     */
+    public static function proforma_fileareas() {
+        $fileareas = self::fileareas_with_model_solutions();
+        $fileareas[self::FILEAREA_TASK] = array(
+                "formid" => "taskfiledraftid" /*,
+                "files" => "modelsolutionfiles",
+                //" questionlist" => "modelsolfiles",
+                // "formlist" => "modelsollist"
+                */
+        );
+        return $fileareas;
+    }
+
+
+    /**
      * Returns all fileareas.
      *
      * @return array
      */
     public static function all_fileareas() {
         $fileareas = self::fileareas_with_model_solutions();
-        $fileareas[self::FILEAREA_TASK] = array(/*
-                "formid" => "taskfiledraftid",
-                "files" => "modelsolutionfiles",
-                //" questionlist" => "modelsolfiles",
-                // "formlist" => "modelsollist"
-                */
-        );
-        $fileareas[self::FILEAREA_COMMENT] = array(/*
-                "formid" => "commentid",
-                "files" => "modelsolutionfiles",
-                // "questionlist" => "modelsolfiles",
-                // "formlist" => "modelsollist"
-                */
-        );
+        $fileareas[self::FILEAREA_COMMENT] = array();
+        $fileareas[self::FILEAREA_TASK] = array();
         return $fileareas;
     }
 
@@ -247,12 +253,13 @@ class qtype_proforma extends question_type {
         global $DB;
         $context = $formdata->context;
 
+        // Save parent data and extra fields.
         parent::save_question_options($formdata);
         $this->save_hints($formdata, false);
 
         $options = $DB->get_record('qtype_proforma_options', array('questionid' => $formdata->id));
         if (!$options) {
-            throw new coding_exception('proforma: save_question_options invalid branch');
+            throw new coding_exception('proforma: save_question_options no database record available');
         }
 
         // handles all file imports (modelsolution, downloads, templates)
@@ -327,10 +334,13 @@ class qtype_proforma extends question_type {
 
         }
 
+        $taskfilearea = self::FILEAREA_TASK;
         if (isset($formdata->taskfiledraftid)) {
-            /* $options->link = */
             file_save_draft_area_files($formdata->taskfiledraftid,
                     $context->id, 'qtype_proforma', self::FILEAREA_TASK, $formdata->id);
+        } else if (isset($formdata->$taskfilearea)) {
+                file_save_draft_area_files($formdata->$taskfilearea,
+                        $context->id, 'qtype_proforma', self::FILEAREA_TASK, $formdata->id);
         } else if (isset($formdata->taskfile)) {
             question_bank::get_qtype('qtype_proforma')->import_file(
                     $this->importcontext, 'qtype_proforma', 'task', $options->id, $formdata->taskfile);

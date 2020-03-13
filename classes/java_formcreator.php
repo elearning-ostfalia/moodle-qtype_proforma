@@ -60,20 +60,6 @@ class java_form_creator extends base_form_creator {
     }
 
     /**
-     * Add response filename (edit field)
-     *
-     * @param $question
-     */
-    public function add_responsefilename($question) {
-        $mform = $this->form;
-        $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
-        $mform->setType('responsefilename', PARAM_TEXT);
-        $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
-        // maybe in the future...
-        // $mform->addElement('button', 'generatefilename', get_string('generatefilename', 'qtype_proforma'));
-    }
-
-    /**
      * Add model solution as edit field for editor response format or
      * as fielmanager for filepicker response format.
      *
