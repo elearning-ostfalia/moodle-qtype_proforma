@@ -41,6 +41,9 @@ Feature: DUPLICATE
       | Comment                  | <p>Check if the code uses a library function.</p>                 |
       | Aggregation strategy      | All or nothing                |
       | Penalty for each incorrect try  | 20%                     |
+      | Response filename        | MyString.java                     |
+      | UUID                     | UUID 1                     |
+      | ProFormA Version         | 2.0                        |
     And the field "testweight[0]" matches value "2"
     And the field "testweight[1]" matches value "3"
     And the field with xpath "//input[@name='testtitle[0]']" matches value "TEST 1"
@@ -56,17 +59,58 @@ Feature: DUPLICATE
     And I should see "lib.txt, instruction.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
-    And I should see "MyString.java"
+#    And I should see "MyString.java"
     # grader settings
-    And I should see "UUID 1"
+#    And I should see "UUID 1"
     And I should see "testtask.zip"
-    And I should see "2.0"
+#    And I should see "2.0"
+
+    # save without changing any values
+    And I press "id_submitbutton"
+    Then I should see "proforma-001"
+    And I should see "proforma-001 (copy)"
+
+    # open copied question and check values
+    When I choose "Edit question" action for "proforma-001 (copy)" in the question bank
+    Then the following fields match these values:
+      | Question name            | proforma-001 (copy)            |
+      | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
+      | Default mark             | 1                              |
+      | General feedback         | <p>You must not use a library function.</p>        |
+      | Response format          | Editor                         |
+      | Syntax highlighting      | Java                           |
+      | Input box size           | 10 lines                       |
+      | Response template        | //text in responsetemplate     |
+      | Comment                  | <p>Check if the code uses a library function.</p>                 |
+      | Aggregation strategy      | All or nothing                |
+      | Penalty for each incorrect try  | 20%                     |
+      | Response filename        | MyString.java                     |
+      | UUID                     | UUID 1                     |
+      | ProFormA Version         | 2.0                        |
+    And the field "testweight[0]" matches value "2"
+    And the field "testweight[1]" matches value "3"
+    And the field with xpath "//input[@name='testtitle[0]']" matches value "TEST 1"
+    And the field with xpath "//input[@name='testtitle[1]']" matches value "TEST 2"
+    And the field with xpath "//input[@name='testdescription[0]']" matches value "DESCRIPTION 1"
+    And the field with xpath "//input[@name='testdescription[1]']" matches value "DESCRIPTION 2"
+    And the field with xpath "//input[@name='testid[0]']" matches value "1"
+    And the field with xpath "//input[@name='testid[1]']" matches value "2"
+    And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
+    And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
+# todo: try and check values of static fields
+    # download links
+    And I should see "lib.txt, instruction.txt"
+    And I should see "ms1.txt"
+    And I should see "ms2.txt"
+#    And I should see "MyString.java"
+    # grader settings
+#    And I should see "UUID 1"
+    And I should see "testtask.zip"
+#    And I should see "2.0"
 
     And I set the following fields to these values:
       | Question name | Duplicated question name                |
       | Question text | Write a lot about duplicating questions |
-      | Default mark             | 2                              |
-
 
     And I press "id_submitbutton"
     Then I should see "Duplicated question name"
@@ -75,7 +119,6 @@ Feature: DUPLICATE
     Then the following fields match these values:
       | Question name            | Duplicated question name                  |
       | Question text            | Write a lot about duplicating questions           |
-      | Default mark             | 2                              |
     And the field "testweight[0]" matches value "2"
     And the field "testweight[1]" matches value "3"
     And the field with xpath "//input[@name='testtitle[0]']" matches value "TEST 1"
@@ -91,9 +134,9 @@ Feature: DUPLICATE
     And I should see "lib.txt, instruction.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
-    And I should see "MyString.java"
+#    And I should see "MyString.java"
     # grader settings
-    And I should see "UUID 1"
+#    And I should see "UUID 1"
     And I should see "testtask.zip"
-    And I should see "2.0"
+#    And I should see "2.0"
 

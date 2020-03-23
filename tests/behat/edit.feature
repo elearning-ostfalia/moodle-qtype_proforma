@@ -38,8 +38,11 @@ Feature: EDIT
       | Input box size           | 10 lines                       |
       | Response template        | //text in responsetemplate     |
       | Comment                  | <p>Check if the code uses a library function.</p>                 |
-      | Aggregation strategy      | All or nothing                |
+      | Aggregation strategy     | All or nothing                |
       | Penalty for each incorrect try  | 20%                     |
+      | Response filename        | MyString.java                     |
+      | UUID                     | UUID 1                     |
+      | ProFormA Version         | 2.0                        |
     And the field "testweight[0]" matches value "2"
     And the field "testweight[1]" matches value "3"
     And the field with xpath "//input[@name='testtitle[0]']" matches value "TEST 1"
@@ -55,11 +58,11 @@ Feature: EDIT
     And I should see "lib.txt, instruction.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
-    And I should see "MyString.java"
+    # And I should see "MyString.java"
     # grader settings
-    And I should see "UUID 1"
+    #And I should see "UUID 1"
     And I should see "testtask.zip"
-    And I should see "2.0"
+    #And I should see "2.0"
 
     When I set the following fields to these values:
       | Question name            | edited question name           |
@@ -73,6 +76,9 @@ Feature: EDIT
       | Comment                  | edited comment                 |
       | Aggregation strategy      | Weighted sum                 |
       | Penalty for each incorrect try  | 50%                     |
+      | Response filename        | MyOtherString.java                     |
+#      | UUID                     | UUID 2                     |
+#      | ProFormA Version         | 3.0                        |
     And I set the field "testweight[0]" to "11"
     And I set the field "testweight[1]" to "22"
     And I set the field with xpath "//input[@name='testtitle[0]']" to "edited title #1"
@@ -95,6 +101,9 @@ Feature: EDIT
       | Comment                  | edited comment                 |
       | Aggregation strategy      | Weighted sum                 |
       | Penalty for each incorrect try  | 50%                     |
+      | Response filename        | MyOtherString.java                     |
+      | UUID                     | UUID 1                     |
+      | ProFormA Version         | 2.0                        |
     And the field "testweight[0]" matches value "11"
     And the field "testweight[1]" matches value "22"
     And the field with xpath "//input[@name='testtitle[0]']" matches value "edited title #1"
