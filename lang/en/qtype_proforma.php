@@ -70,7 +70,7 @@ $string['taskfilename'] = 'Task file';
 $string['taskfilename_hint'] = $string['taskfilename'];
 $string['taskfilename_hint_help'] = 'Corresponding ProFormA task file';
 $string['createdtask_hint'] = $string['taskfilename'];
-$string['createdtask_hint_help'] = 'Corresponding ProFormA task file. Save question before downloading task!!';
+$string['createdtask_hint_help'] = 'Corresponding ProFormA task file. Question must be saved in order to generate ProFormA task file!';
 
 
 $string['highlight'] = 'Syntax highlighting';
