@@ -88,7 +88,9 @@ abstract class base_form_creator {
     public function add_hidden_fields() {
         $mform = $this->form;
 
-        $hiddenfields = array('taskfilename', 'taskpath', 'templates', 'modelsolfiles', 'downloads');
+        $hiddenfields = array('taskfilename', 'taskpath', 'templates', 'modelsolfiles', 'downloads'
+        // , 'gradinghints' // values for grading hints are redundant
+        );
 
         // add hidden fields for filearea draft ids (if any)
         foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
@@ -97,13 +99,12 @@ abstract class base_form_creator {
                 throw new coding_exception('formid is not set for filearea ' + $filearea);
             }
             $hiddenfields[] = $property;
-            //$mform->addElement('text', $property, ' should be hidden ' . $property, array('size' => '10'));
-            //$mform->setType($property, PARAM_TEXT);
         }
 
         foreach ($hiddenfields as $field) {
-            $mform->addElement('hidden', $field, $field, array('size' => '30'));
-            $mform->setType($field, PARAM_TEXT);
+            //$mform->addElement('hidden', $field, $field, array('size' => '30'));
+            $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
+            $mform->setType($field, PARAM_RAW);
         }
     }
 
@@ -143,6 +144,9 @@ abstract class base_form_creator {
         $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
         $mform->setType('responsefilename', PARAM_TEXT);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
+        // do not set required since the filed can be hidden
+        // $mform->addRule('responsefilename', null, 'required', '', 'client', false, false);
+
         // maybe in the future...
         // $mform->addElement('button', 'generatefilename', get_string('generatefilename', 'qtype_proforma'));
     }

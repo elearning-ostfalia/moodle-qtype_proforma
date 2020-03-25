@@ -265,7 +265,7 @@ class qtype_proforma extends question_type {
         // handles all file imports (modelsolution, downloads, templates)
         foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
             $property = $value['formid'];
-            if (isset($formdata->$property)) {
+            if (!empty($formdata->$property)) {
                 file_save_draft_area_files($formdata->$property,
                         $context->id, 'qtype_proforma', $filearea, $formdata->id);
             }
@@ -279,14 +279,14 @@ class qtype_proforma extends question_type {
                 break;
             case self::VOLATILE_TASKFILE:
                 // handle 'save' from editor
-                if (!isset($formdata->taskfiledraftid)) {
-                    $instance = new qtype_proforma_java_task;
+                $instance = new qtype_proforma_java_task;
+                if (empty($formdata->taskfiledraftid)) {
                     $taskfile = $instance->create_task_file($formdata);
                     $options->taskfilename = 'task.xml';
                     qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
                             $context->id, $formdata->id);
-                    $options->gradinghints = $instance->create_lms_grading_hints($formdata);
                 }
+                $options->gradinghints = $instance->create_lms_grading_hints($formdata);
                 if ($formdata->responseformat == self::RESPONSE_FILEPICKER) {
                     if (isset($formdata->modelsolfilemanager)) {
                         // also create modelsolfiles
@@ -335,7 +335,7 @@ class qtype_proforma extends question_type {
         }
 
         $taskfilearea = self::FILEAREA_TASK;
-        if (isset($formdata->taskfiledraftid)) {
+        if (!empty($formdata->taskfiledraftid)) {
             file_save_draft_area_files($formdata->taskfiledraftid,
                     $context->id, 'qtype_proforma', self::FILEAREA_TASK, $formdata->id);
         } else if (isset($formdata->$taskfilearea)) {

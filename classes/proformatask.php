@@ -143,7 +143,11 @@ class qtype_proforma_proforma_task {
         $this->add_namespace_to_xml($xw);
 
         $xw->create_childelement_with_text('title', $formdata->name);
-        $xw->create_childelement_with_text('description', $formdata->questiontext);
+        if (is_string($formdata->questiontext)) {
+            $xw->create_childelement_with_text('description', $formdata->questiontext);
+        } else {
+            $xw->create_childelement_with_text('description', $formdata->questiontext['text']);
+        }
         $xw->startElement('proglang'); // not needed for grader
         $this->add_programming_language_to_xml($xw, $formdata);
         $xw->endElement(); // submission-restrictions
@@ -207,7 +211,7 @@ class qtype_proforma_proforma_task {
      */
     public function create_lms_grading_hints($formdata, $withprolog = true) {
 
-        if (isset($formdata->gradinghints) && strlen($formdata->gradinghints) > 0) {
+        if (!empty($formdata->gradinghints)) {
             return $formdata->gradinghints;
         }
         $xw = new SimpleXmlWriter();
@@ -282,7 +286,7 @@ class qtype_proforma_proforma_task {
         $question->testweight = array();
         $question->testid = array();
 
-        if (!isset($question->gradinghints)) {
+        if (empty($question->gradinghints)) {
             // nothing to be done
             return;
         }
@@ -302,6 +306,10 @@ class qtype_proforma_proforma_task {
             debugging('no tests in gradinghints found');
             return;
         }
+
+        // preset compile and checkstyle checkboxes as not checked
+        $question->compile = 0;
+        $question->checkstyle = 0;
 
         foreach ($xpathresult as $testgrading) {
             $ref = $testgrading->getAttribute('ref');
@@ -362,7 +370,7 @@ class qtype_proforma_proforma_task {
      * @return int
      */
     public function get_count_tests($gradinghints) {
-        if (!$gradinghints) {
+        if (empty($gradinghints)) {
             return 0;
         }
         $xmldoc = new DOMDocument;
