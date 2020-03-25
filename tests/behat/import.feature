@@ -136,6 +136,8 @@ Feature: IMPORT (Moodle-XML format)
       | Comment                  | <p>Check if the code uses a library function.(äöüß)</p>                 |
       | Aggregation strategy      | All or nothing                 |
       | Penalty for each incorrect try  | 20%                     |
+      | UUID                     | UUID 1                     |
+      | ProFormA Version         | 2.0                        |
 #      | Response template        | multiline              |
     And the field with name "testweight[0]" matches value "0"
     And the field with name "testweight[1]" matches value "1"
@@ -154,8 +156,8 @@ Feature: IMPORT (Moodle-XML format)
     And I should see "ms2.txt"
     And I should see "templ2.txt"
     # grader settings
-    And I should see "UUID 1"
+#    And I should see "UUID 1"
     And I should see "testtask.zip"
-    And I should see "2.0"
+#    And I should see "2.0"
 
     And I press "Cancel"

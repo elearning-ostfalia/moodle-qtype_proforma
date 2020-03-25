@@ -84,6 +84,9 @@ Feature: BACKUP AND RESTORE
       | Comment                  | <p>Check if the code uses a library function.</p>                 |
       | Aggregation strategy      | All or nothing                |
       | Penalty for each incorrect try  | 20%                     |
+      | Response filename        | MyString.java                     |
+      | UUID                     | UUID 1                     |
+      | ProFormA Version         | 2.0                        |
     And the field with name "testweight[0]" matches value "2"
     And the field with name "testweight[1]" matches value "3"
     And the field with name "testtitle[0]" matches value "TEST 1"
@@ -98,11 +101,11 @@ Feature: BACKUP AND RESTORE
     And I should see "lib.txt, instruction.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
-    And I should see "MyString.java"
+#    And I should see "MyString.java"
     # grader settings
-    And I should see "UUID 1"
+#    And I should see "UUID 1"
     And I should see "testtask.zip"
-    And I should see "2.0"
+#    And I should see "2.0"
 
     And I press "Cancel"
 
@@ -123,6 +126,8 @@ Feature: BACKUP AND RESTORE
       | Aggregation strategy      | All or nothing                |
       | Penalty for each incorrect try  | 20%                     |
 #      | Response template        | multiline              |
+      | UUID                     | UUID 2                     |
+      | ProFormA Version         | 2.0                        |
     And the field "testweight[0]" matches value "2"
     And the field "testweight[1]" matches value "3"
     And the field with name "testtitle[0]" matches value "TEST 1"
@@ -139,8 +144,8 @@ Feature: BACKUP AND RESTORE
     And I should see "ms1.txt"
     And I should see "ms2.txt"
     # grader settings
-    And I should see "UUID 2"
+#    And I should see "UUID 2"
     And I should see "testtask.zip"
-    And I should see "2.0"
+#    And I should see "2.0"
 
     And I press "Cancel"

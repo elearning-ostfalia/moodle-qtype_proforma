@@ -1,8 +1,8 @@
 @qtype @qtype_proforma
-Feature: DUPLICATE
+Feature: DUPLICATE PROFORMA
   Test copying a ProFormA question
   As a teacher
-  In order to use a exsiting ProFormA question with some changes
+  In order to use an exsiting ProFormA question with some changes
   I need to copy them
 
   Background:
@@ -140,3 +140,4 @@ Feature: DUPLICATE
     And I should see "testtask.zip"
 #    And I should see "2.0"
 
+# editing a duplicated question needs not to be tested here

@@ -42,7 +42,7 @@ class qtype_proforma_test_helper extends question_test_helper {
             'editor',
             'filepicker',
             // different settings for java junit tests
-            'java1', 'java1unit', 'java2', 'java3', 'java4', 'java5',
+            'java1', 'java1unit', 'java2', 'java3', 'java_2junit', 'java5',
             // different grading approaches
             'weightedsum',
             // different values set in question
@@ -107,6 +107,31 @@ class qtype_proforma_test_helper extends question_test_helper {
         <title>Junit Test 1</title>
         <test-type>unittest</test-type>
         <description>DESCRIPTION 2</description>
+    </test-ref>'.
+    '<test-ref ref="checkstyle" weight="4">
+        <title>Checkstyle</title>
+        <test-type>java-checkstyle</test-type>
+        <description>DESCRIPTION 3</description>
+    </test-ref>'.
+    '</root>'.
+    '</grading-hints>';
+
+    const QUESTION_GRADINGHINTS_JAVA_2JUNIT = '<grading-hints>'.
+    '<root function="sum">'.
+    '<test-ref ref="compiler" weight="2">
+        <title>Compiler Test</title>
+        <test-type>java-compilation</test-type>
+        <description>DESCRIPTION 1</description>
+    </test-ref>'.
+    '<test-ref ref="1" weight="3">
+        <title>Junit Test 1</title>
+        <test-type>unittest</test-type>
+        <description>Description Junit 1</description>
+    </test-ref>'.
+    '<test-ref ref="2" weight="6">
+        <title>Junit Test 2</title>
+        <test-type>unittest</test-type>
+        <description>Description Junit 2</description>
     </test-ref>'.
     '<test-ref ref="checkstyle" weight="4">
         <title>Checkstyle</title>
@@ -431,18 +456,28 @@ class qtype_proforma_test_helper extends question_test_helper {
     /** with 2 junit test2
      * @return stdClass
      */
-    public function get_proforma_question_form_data_java4() {
+    public function get_proforma_question_form_data_java_2junit() {
         $form = $this->get_proforma_question_form_data_java1unit();
+        // question format for behat
+        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
 
+        // this is redundant => do we need ist?
+        $form->gradinghints = self::QUESTION_GRADINGHINTS_JAVA_2JUNIT;
+
+        // Behat: values are set from grading hints!!
+        // Junit #2
         $form->testcode[1] = 'class YTest {}';
         $form->testtitle[1] = 'JUnit Test 2';
         $form->testweight[1] = '1';
         $form->testid[1] = '2';
 
+        // Junit #3 with empty fields
         $form->testcode[2] = '';
         $form->testtitle[2] = '';
-        $form->testweight[2] = '1';
+        $form->testweight[2] = '6';
         $form->testid[2] = '3';
+
+        $form->defaultmark = 3.0;
 
         return $form;
     }

@@ -1,5 +1,5 @@
 @qtype @qtype_proforma
-Feature: EDIT
+Feature: EDIT PROFORMA
   Test editing an ProFormA question
   As a teacher
   In order to be able to update my ProFormA question
@@ -28,6 +28,7 @@ Feature: EDIT
 
   Scenario: Edit a ProFormA question
     When I choose "Edit question" action for "proforma-001" in the question bank
+    # assert(expected old values)
     Then the following fields match these values:
       | Question name            | proforma-001                  |
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
@@ -49,11 +50,11 @@ Feature: EDIT
     And the field with xpath "//input[@name='testtitle[1]']" matches value "TEST 2"
     And the field with xpath "//input[@name='testdescription[0]']" matches value "DESCRIPTION 1"
     And the field with xpath "//input[@name='testdescription[1]']" matches value "DESCRIPTION 2"
+    # check readony-fields
     And the field with xpath "//input[@name='testid[0]']" matches value "1"
     And the field with xpath "//input[@name='testid[1]']" matches value "2"
     And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
     And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
-# todo: try and check values of static fields
     # download links
     And I should see "lib.txt, instruction.txt"
     And I should see "ms1.txt"
@@ -64,6 +65,7 @@ Feature: EDIT
     And I should see "testtask.zip"
     #And I should see "2.0"
 
+    # change all values that can be changed (keep editor set)
     When I set the following fields to these values:
       | Question name            | edited question name           |
       | Question text            | edited question text           |
@@ -110,9 +112,20 @@ Feature: EDIT
     And the field with xpath "//input[@name='testtitle[1]']" matches value "edited title #2"
     And the field with xpath "//input[@name='testdescription[0]']" matches value "edited testdescription #1"
     And the field with xpath "//input[@name='testdescription[1]']" matches value "edited testdescription #2"
+
+    # check readony-fields
     And the field with xpath "//input[@name='testid[0]']" matches value "1"
     And the field with xpath "//input[@name='testid[1]']" matches value "2"
     And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
     And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
+    # download links
+    And I should see "lib.txt, instruction.txt"
+    And I should see "ms1.txt"
+    And I should see "ms2.txt"
+    # And I should see "MyString.java"
+    # grader settings
+    #And I should see "UUID 1"
+    And I should see "testtask.zip"
+    #And I should see "2.0"
 
     And I press "Cancel"

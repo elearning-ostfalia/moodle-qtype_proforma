@@ -328,7 +328,7 @@ class qtype_proforma_java_task_test extends advanced_testcase {
 
     public function test_create_java_file_2_junits() {
         // Create sample form data
-        $formdata = test_question_maker::get_question_form_data('proforma', 'java4');
+        $formdata = test_question_maker::get_question_form_data('proforma', 'java_2junit');
         $instance = new qtype_proforma_java_task;
         $taskfile = $instance->create_task_file($formdata);
 
