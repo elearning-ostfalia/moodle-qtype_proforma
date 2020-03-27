@@ -224,8 +224,11 @@ class qtype_proforma_question extends question_graded_automatically {
             if (is_a($response[ATTACHMENTS], 'question_file_loader')) {
                 $files = $response[ATTACHMENTS]->get_files();
                 if (!$files) {
-                    throw new coding_exception("no files attached");
-                }
+                    // this happened once in production system, so do not throw exception!!
+                    // maybe files got stuck in the draft area?? or system crash occured during attempt???
+                    // throw new coding_exception("no files attached");
+                    return '(uploaded file(s) currently not available)';
+                } else
 
                 if (count($files) > 1) {
                     // more than one file: return filenames
