@@ -104,39 +104,39 @@ install:
 #    - If your plugin has unit tests, then PHPUnit will be setup.
   - moodle-plugin-ci install
 # timeout must be increased for import feature
-  - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 5;'
-  - moodle-plugin-ci add-config '$CFG->behat_profiles = [
-                                     'firefox_no_marionette' => [
-                                         'browser' => 'firefox',
-                                         'capabilities' => [
-                                                 'extra_capabilities' => [
-                                                         'marionette' => false,
-                                                         'binary' => '/usr/bin/firefox',
-                                                 ],
-                                         ],
-                                     ]
-                                 ];
-
-                                 $CFG->behat_config = [
-                                     'firefox_no_marionette' => [
-                                         'extensions' => [
-                                                 'Behat\MinkExtension' => [
-                                                         'default_session' => 'goutte',
-                                                         'goutte' => null,
-                                                         'javascript_session' => 'selenium2',
-                                                         'selenium2' => [
-                                                                 'browser' => 'firefox',
-                                                                 'capabilities' => [
-                                                                         'extra_capabilities' => [
-                                                                                 'marionette' => false,
-                                                                                 'binary' => '/usr/bin/firefox',
-                                                                         ]
-                                                                 ],
-                                                         ]
-                                                 ]
-                                         ]
-                                     ]
-                                 ];'
+  - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 13;'
+#  - moodle-plugin-ci add-config "$CFG->behat_profiles = [
+#                                     'firefox_no_marionette' => [
+#                                         'browser' => 'firefox',
+#                                         'capabilities' => [
+#                                                 'extra_capabilities' => [
+#                                                         'marionette' => false,
+#                                                         'binary' => '/usr/bin/firefox',
+#                                                 ],
+#                                         ],
+#                                     ]
+#                                 ];
+#
+#                                 $CFG->behat_config = [
+#                                     'firefox_no_marionette' => [
+#                                         'extensions' => [
+#                                                 'Behat\MinkExtension' => [
+#                                                         'default_session' => 'goutte',
+#                                                         'goutte' => null,
+#                                                         'javascript_session' => 'selenium2',
+#                                                         'selenium2' => [
+#                                                                 'browser' => 'firefox',
+#                                                                 'capabilities' => [
+#                                                                         'extra_capabilities' => [
+#                                                                                 'marionette' => false,
+#                                                                                 'binary' => '/usr/bin/firefox',
+#                                                                         ]
+#                                                                 ],
+#                                                         ]
+#                                                 ]
+#                                         ]
+#                                     ]
+#                                 ];"
 
 before_script:
 # diagnosis
@@ -185,7 +185,7 @@ script:
 
 # Behat tests fail (import.feature and backup_and_restore.feature)
 # https://github.com/blackboard-open-source/moodle-plugin-ci/issues/70
-#  - moodle-plugin-ci behat --auto-rerun 0
+  - moodle-plugin-ci behat --auto-rerun 0
 #  - moodle-plugin-ci behat --profile chrome --auto-rerun 0
 
   # This step lints your PHP files to check for syntax errors.

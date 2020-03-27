@@ -230,4 +230,23 @@ class behat_proforma extends behat_base {
             );
         }
     }
+
+    /**
+     * Check checkbox.
+     *
+     * @When /^I check the "([^"]*)" checkbox$/
+     */
+    public function iCheckCheckbox($name) {
+        $this->getSession()->getPage()->checkField($name);
+    }
+
+    /**
+     * Uncheck checkbox.
+     *
+     * @When /^I uncheck the "([^"]*)" checkbox$/
+     */
+    public function iUncheckCheckbox($name) {
+        $this->getSession()->getPage()->uncheckField($name);
+    }
+
 }

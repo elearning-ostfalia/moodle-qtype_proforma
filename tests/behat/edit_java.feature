@@ -20,14 +20,14 @@ Feature: EDIT JAVA
       | Course       | C1        | Test questions |
     And the following "questions" exist:
       | questioncategory | qtype | name      | template         |
-      | Test questions   | proforma | proforma-001 | editor           |
-      | Test questions   | proforma | proforma-003 | filepicker            |
       | Test questions   | proforma | proforma-java | java_2junit           |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
-  Scenario: Edit a ProFormA question (edit values)
+##########################################################################
+  Scenario: Check precondition for all successive scenarios
+##########################################################################
     When I choose "Edit question" action for "proforma-java" in the question bank
     # assert(expected old values)
     Then the following fields match these values:
@@ -78,8 +78,56 @@ Feature: EDIT JAVA
     </module>
     """
 
+##########################################################################
+  @javascript
+  Scenario: Edit a ProFormA question (uncheck/check checkstyle and compile)
+##########################################################################
+    When I choose "Edit question" action for "proforma-java" in the question bank
+    # uncheck compile and checkstyle
+    And I uncheck the "compile" checkbox
+    And I uncheck the "checkstyle" checkbox
+    And the "compile" checkbox is "unchecked"
+    And the "checkstyle" checkbox is "unchecked"
+
+    And I press "id_submitbutton"
+    Then I should see "proforma-java"
+
+    When I choose "Edit question" action for "proforma-java" in the question bank
+    # check for unchecked checkboxes
+    And the "compile" checkbox is "unchecked"
+    And the "checkstyle" checkbox is "unchecked"
+
+    # recheck
+    And I check the "compile" checkbox
+    And I check the "checkstyle" checkbox
+    And the "compile" checkbox is "checked"
+    And the "checkstyle" checkbox is "checked"
+    And the field "compileweight" matches value "0"
+    And the field "checkstyleweight" matches value "0.2"
+    # And the field "checkstylecode" matches value "" # currently not visible => we cannot check
+    # checkstyle code must be set because old value is lost
+    And I set the field "checkstylecode" to "<!-- empty-->"
+
+    And I press "id_submitbutton"
+    Then I should see "proforma-java"
+
+    When I choose "Edit question" action for "proforma-java" in the question bank
+    # check for checked checkboxes
+    And the "compile" checkbox is "checked"
+    And the "checkstyle" checkbox is "checked"
+
+    And I press "Cancel"
+
+
+
+
+
+##########################################################################
+  Scenario: Edit a ProFormA question (simply edit all values)
+##########################################################################
+    When I choose "Edit question" action for "proforma-java" in the question bank
     # change all values that can be changed (keep editor set)
-    When I set the following fields to these values:
+    And  I set the following fields to these values:
       | Question name            | updated proforma-java|
       | Question text            | new question text           |
       | Default mark             | 4                              |
@@ -154,12 +202,51 @@ Feature: EDIT JAVA
 
     And I press "Cancel"
 
-
-  Scenario: Edit a ProFormA question (uncheck checkstyle and compile)
+##########################################################################
+  Scenario: Edit a ProFormA question (remove and add Junit)
+##########################################################################
     When I choose "Edit question" action for "proforma-java" in the question bank
-    # assert(expected old values)
+
+    # remove JUnit 2 data by deleting content
+    And I set the field "testtitle[1]" to ""
+    And I set the field "testdescription[1]" to ""
+    And I set the field "testcode[1]" to ""
+    And I press "id_submitbutton"
+    Then I should see "proforma-java"
+
+    When I choose "Edit question" action for "proforma-java" in the question bank
+
+    # JUnit 1
+    And the field "testid[0]" matches value "1"
+    And the field "testtitle[0]" matches value "Junit Test 1"
+    And the field "testdescription[0]" matches value "Description Junit 1"
+    And the field "testtype[0]" matches value "unittest"
+    And the field "testweight[0]" matches value "3"
+    And the field "testcode[0]" matches value "class XTest {}"
+    # JUnit 2 is not visible
+    And I should not see "2. JUnit Test"
+
+    And I press "id_submitbutton"
+    Then I should see "proforma-java"
+
+    When I choose "Edit question" action for "proforma-java" in the question bank
+    # add Junit 2
+    And I press "Add JUnit test"
+    Then I should not see "3. JUnit Test"
+    And I should see "2. JUnit Test"
+    # add JUnit 2
+    And I set the field "testtitle[1]" to "new Junit Test 2"
+    And I set the field "testdescription[1]" to "new Description Junit 2"
+    And I set the field "testweight[1]" to "6.5"
+    And I set the field "testcode[1]" to "class NewYTest {}"
+
+    And I press "id_submitbutton"
+    Then I should see "proforma-java"
+
+    When I choose "Edit question" action for "proforma-java" in the question bank
+    # check all values
     Then the following fields match these values:
-      | Question name            | proforma-java           |
+      | Question name            | proforma-java|
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
       | Default mark             | 3                              |
       | General feedback         | <p>You must not use a library function.</p>        |
@@ -172,7 +259,6 @@ Feature: EDIT JAVA
       | Aggregation strategy      | All or nothing                |
       | Penalty for each incorrect try  | 20%                     |
       | Response filename        | MyString.java                     |
-    # compile
     And the "compile" checkbox is "checked"
     And the field "compileweight" matches value "2"
     # JUnit 1
@@ -183,12 +269,12 @@ Feature: EDIT JAVA
     And the field "testweight[0]" matches value "3"
     And the field "testcode[0]" matches value "class XTest {}"
     # JUnit 2
-    And the field "testtitle[1]" matches value "Junit Test 2"
-    And the field "testdescription[1]" matches value "Description Junit 2"
+    And the field "testtitle[1]" matches value "new Junit Test 2"
+    And the field "testdescription[1]" matches value "new Description Junit 2"
     And the field "testtype[1]" matches value "unittest"
-    And the field "testweight[1]" matches value "6"
+    And the field "testweight[1]" matches value "6.5"
     And the field "testid[1]" matches value "2"
-    And the field "testcode[1]" matches value "class YTest {}"
+    And the field "testcode[1]" matches value "class NewYTest {}"
     # Checkstyle
     And the "checkstyle" checkbox is "checked"
     And the field "checkstyleweight" matches value "4"
@@ -206,51 +292,6 @@ Feature: EDIT JAVA
     </module>
     """
 
-    # uncheck compile and checkstyle
-    # this does not seem to work!! May depend on browser???
-    When I set the field "compile" to "0"
-    And I set the field "checkstyle" to "0"
-
-    And the "compile" checkbox is "unchecked"
-    And the "checkstyle" checkbox is "unchecked"
-
-    # remove JUnit 2 data
-    And I set the field "testtitle[1]" to ""
-    And I set the field "testdescription[1]" to ""
-    And I set the field "testcode[1]" to ""
-    And I press "id_submitbutton"
-    Then I should see "proforma-java"
-
-    When I choose "Edit question" action for "proforma-java" in the question bank
-    Then the following fields match these values:
-      | Question name            | proforma-java|
-      | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
-      | Default mark             | 3                              |
-      | General feedback         | <p>You must not use a library function.</p>        |
-      | Response format          | Editor                         |
-      | Syntax highlighting      | Java                           |
-      | Input box size           | 10 lines                       |
-      | Response template        | //text in responsetemplate     |
-      | Model solution           | // code for model solution                 |
-      | Comment                  | <p>Check if the code uses a library function.</p>                 |
-      | Aggregation strategy      | All or nothing                |
-      | Penalty for each incorrect try  | 20%                     |
-      | Response filename        | MyString.java                     |
-
-
-    # compile
-    # And the "compile" checkbox is "unchecked"
-    # JUnit 1
-    And the field "testid[0]" matches value "1"
-    And the field "testtitle[0]" matches value "Junit Test 1"
-    And the field "testdescription[0]" matches value "Description Junit 1"
-    And the field "testtype[0]" matches value "unittest"
-    And the field "testweight[0]" matches value "3"
-    And the field "testcode[0]" matches value "class XTest {}"
-    # JUnit 2
-    And I should not see "2. JUnit Test"
-    # Checkstyle
-    And the "checkstyle" checkbox is "unchecked"
-
-
     And I press "Cancel"
+
+

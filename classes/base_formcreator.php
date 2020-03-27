@@ -102,8 +102,8 @@ abstract class base_form_creator {
         }
 
         foreach ($hiddenfields as $field) {
-            //$mform->addElement('hidden', $field, $field, array('size' => '30'));
-            $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
+            $mform->addElement('hidden', $field, $field, array('size' => '30'));
+            //$mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
             $mform->setType($field, PARAM_RAW);
         }
     }
