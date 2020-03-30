@@ -249,4 +249,33 @@ class behat_proforma extends behat_base {
         $this->getSession()->getPage()->uncheckField($name);
     }
 
+    /**
+     * Set codemirror text with javascript in *Javascript* testcases.
+     *
+     * @When /^I set the codemirror "(?P<name_string>(?:[^"]|\\")*)" to "(?P<value_string>(?:[^"]|\\")*)"$/
+     */
+    public function set_the_codemirror_to($name, $value) {
+        $command = 'return (function() { $("#id_' . $name . '").next(".CodeMirror").get(0).CodeMirror.setValue("'. $value. '"); })();';
+        // fwrite(STDOUT, $command);
+        $this->getSession()->getDriver()->evaluateScript($command);
+    }
+
+
+    /**
+     * Check codemirror text with javascript in *Javascript* testcases.
+     *
+     * @Then /^the codemirror "(?P<name_string>(?:[^"]|\\")*)" matches value "(?P<value_string>(?:[^"]|\\")*)"$/
+     */
+    public function the_codemirror_matches_value($name, $value) {
+        $command = 'return (function() { return $("#id_'. $name . '").next(".CodeMirror").get(0).CodeMirror.getValue(); })();';
+        // fwrite(STDOUT, $command);
+        $output = $this->getSession()->getDriver()->evaluateScript($command);
+        if ($output != $value) {
+            throw new ExpectationException(
+                    'The codemirror  "' . $name . '"" value is \'' . $output . '\', \'' . $value . '\' expected' ,
+                    $this->getSession()
+            );
+        }
+    }
+
 }

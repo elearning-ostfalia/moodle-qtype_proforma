@@ -25,6 +25,58 @@ Feature: EDIT JAVA
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
+
+
+##########################################################################
+  @javascript
+  Scenario: Edit a ProFormA question (uncheck/check checkstyle and compile)
+##########################################################################
+    When I choose "Edit question" action for "proforma-java" in the question bank
+    # uncheck compile and checkstyle
+    And I uncheck the "compile" checkbox
+    And I uncheck the "checkstyle" checkbox
+    And the "compile" checkbox is "unchecked"
+    And the "checkstyle" checkbox is "unchecked"
+
+    And I press "id_submitbutton"
+    Then I should see "proforma-java"
+
+    When I choose "Edit question" action for "proforma-java" in the question bank
+    # check for unchecked checkboxes
+    And the "compile" checkbox is "unchecked"
+    And the "checkstyle" checkbox is "unchecked"
+
+    # recheck
+    And I check the "compile" checkbox
+    And I check the "checkstyle" checkbox
+    And the "compile" checkbox is "checked"
+    And the "checkstyle" checkbox is "checked"
+    And the field "compileweight" matches value "0"
+    And the field "checkstyleweight" matches value "0.2"
+    And the field "checkstylecode" matches value ""
+
+    # checkstyle code must be set because old value is lost.
+    # since this is a Javascript testcase we need to use javascript function
+    # in order to set value in codemirror
+#    And I set the field "checkstylecode" to "<!-- empty-->"
+    And I set the codemirror "checkstylecode" to "<!-- empty-->"
+
+    And I press "id_submitbutton"
+    Then I should see "proforma-java"
+
+    When I choose "Edit question" action for "proforma-java" in the question bank
+    # check for checked checkboxes
+    And the "compile" checkbox is "checked"
+    And the field "compileweight" matches value "0"
+    And the "checkstyle" checkbox is "checked"
+    And the field "checkstyleweight" matches value "0.2"
+    # since this is a Javascript testcase we need to use javascript function
+    # in order to check value in codemirror
+    And the codemirror "checkstylecode" matches value "<!-- empty-->"
+
+    And I press "Cancel"
+
+
 ##########################################################################
   Scenario: Check precondition for all successive scenarios
 ##########################################################################
@@ -77,49 +129,6 @@ Feature: EDIT JAVA
       </module>
     </module>
     """
-
-##########################################################################
-  @javascript
-  Scenario: Edit a ProFormA question (uncheck/check checkstyle and compile)
-##########################################################################
-    When I choose "Edit question" action for "proforma-java" in the question bank
-    # uncheck compile and checkstyle
-    And I uncheck the "compile" checkbox
-    And I uncheck the "checkstyle" checkbox
-    And the "compile" checkbox is "unchecked"
-    And the "checkstyle" checkbox is "unchecked"
-
-    And I press "id_submitbutton"
-    Then I should see "proforma-java"
-
-    When I choose "Edit question" action for "proforma-java" in the question bank
-    # check for unchecked checkboxes
-    And the "compile" checkbox is "unchecked"
-    And the "checkstyle" checkbox is "unchecked"
-
-    # recheck
-    And I check the "compile" checkbox
-    And I check the "checkstyle" checkbox
-    And the "compile" checkbox is "checked"
-    And the "checkstyle" checkbox is "checked"
-    And the field "compileweight" matches value "0"
-    And the field "checkstyleweight" matches value "0.2"
-    # And the field "checkstylecode" matches value "" # currently not visible => we cannot check
-    # checkstyle code must be set because old value is lost
-    And I set the field "checkstylecode" to "<!-- empty-->"
-
-    And I press "id_submitbutton"
-    Then I should see "proforma-java"
-
-    When I choose "Edit question" action for "proforma-java" in the question bank
-    # check for checked checkboxes
-    And the "compile" checkbox is "checked"
-    And the "checkstyle" checkbox is "checked"
-
-    And I press "Cancel"
-
-
-
 
 
 ##########################################################################
