@@ -39,7 +39,10 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                 case "python": return ["text/x-python", 'qtype_proforma/python'];
                 case "setlx":  return ["text/text", null];
                 case "c":      return ["text/x-csrc", 'qtype_proforma/clike'];
-                case "xml":    return ["application/xml", 'qtype_proforma/xml'];
+                // with the actual xml mode the behat tests fail (hang in some scenarios
+                // with an error message in the console output of the browser.
+                // That's why I do not use xml mode anymore :-(
+                case "xml":    return ["", null]; // return ["application/xml", 'qtype_proforma/xml'];
                 case "none":   return ["", null];
                 default:
                     console.error("unsupported mode " + moodle_mode + " for map_proglang_to_codemirror_mode");
