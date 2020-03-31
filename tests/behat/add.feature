@@ -19,17 +19,19 @@ Feature: ADD JAVA QUESTION
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
+##########################################################################
   Scenario: Create, save and open a ProFormA java question with compilation, one Junit test (default values)
+##########################################################################
     When I add a "ProFormA" question filling the form with:
       | Question name            | java-question                  |
       | Question text            | write a java program that..... |
       | Response format          | editor                         |
       | Response filename        | MyClass.java                   |
       | Title                    | JUnit test title               |
+    And I press "id_submitbutton"
     Then I should see "Code is missing"
-
     # JUnit
-    When I set the field with xpath "//textarea[@name='testcode[0]']" to "class XClass {}"
+    When I set the field "testcode[0]" to "class XClass {}"
     And I press "id_submitbutton"
     Then I should see "java-question"
 
@@ -59,7 +61,9 @@ Feature: ADD JAVA QUESTION
     # Finish
     And I press "Cancel"
 
+##########################################################################
   Scenario: Create, save and open a ProFormA java question with compilation, one Junit test and checkstyle
+##########################################################################
     When I add a "ProFormA" question filling the form with:
       | Question name            | java-question                  |
       | Question text            | write a java program that..... |
@@ -125,7 +129,9 @@ Feature: ADD JAVA QUESTION
 
     And I press "Cancel"
 
+##########################################################################
   Scenario: Create, save and open a ProFormA java question with compilation and two Junit tests
+##########################################################################
     When I add a "ProFormA" question filling the form with:
       | Question name            | java-question with 2 tests     |
       | Question text            | write a java program that..... |

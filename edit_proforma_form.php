@@ -33,11 +33,6 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/java_formcreator.p
 class qtype_proforma_edit_form extends question_edit_form {
 
     /**
-     * @var bool If the task is created on the fly resp. cashed
-     * (instead of being imported and never changed)
-     */
-    protected $volatiletask = false;
-    /**
      * @var base_form_creator The class that creates the form elements
      */
     protected $formcreator = null;
@@ -47,30 +42,15 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     protected function definition() {
         if (empty($this->question->options)) {
-            // create question (derived class would be better..)
-            $this->volatiletask = true;
-            $this->formcreator = new proforma_form_creator($this->_form);
+            // New question => create Java form creator.
+            $this->formcreator = new java_form_creator($this->_form);
         }
         parent::definition();
     }
 
-    /*
-    public function set_data($question) {
-        if ($this->nocreate) {
-            //parent::parent::set_data($question);
-            if (is_object($question)) {
-                $default_values = (array)$question;
-            }
-            $this->_form->setDefaults($default_values);
-            return;
-        } else {
-            parent::set_data($question);
-        }
-    }
-    */
 
     /**
-     * This function chekcs if the user input is valid.
+     * This function checks if the user input is valid.
      *
      * @param array $fromform
      * @param array $files
@@ -114,17 +94,16 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected function definition_inner($mform) {
         $qtype = question_bank::get_qtype('proforma');
 
-        if (!$this->volatiletask) {
-            // check if question was created by moodle
-            $this->volatiletask = isset($this->question->options->taskstorage) &&
-                    $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE;
-        }
-        if ($this->volatiletask) {
-            // question was created by form editor
-            $this->formcreator = new java_form_creator($this->_form);
-        } else {
-            // question was imported
-            $this->formcreator = new proforma_form_creator($this->_form);
+        if ($this->formcreator == null) {
+            // Use case: edit existing question:
+            if (isset($this->question->options->taskstorage) &&
+                    $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE) {
+                // Question was created by form editor.
+                $this->formcreator = new java_form_creator($this->_form);
+            } else {
+                // Question was imported.
+                $this->formcreator = new proforma_form_creator($this->_form);
+            }
         }
 
         $this->formcreator->add_hidden_fields();
@@ -181,7 +160,12 @@ class qtype_proforma_edit_form extends question_edit_form {
 
             $question->furtherTemplates = '';
             $question->firstTemplate = '';
+            // debugging('data_preprocessing (1): $question->taskfiledraftid =  N/A');
             return $question;
+        }
+
+        if ($this->formcreator == null) {
+            throw new coding_exception('formcreator does not exist in data_preprocessing');
         }
 
         $cat = $question->category;
@@ -189,15 +173,8 @@ class qtype_proforma_edit_form extends question_edit_form {
             $cat = $category;
         }
 
-        if (isset($this->question->options->taskstorage) &&
-                $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE) {
-            $this->volatiletask = true;
-            $formcreator = new java_form_creator($this->_form);
-        } else {
-            $this->volatiletask = false;
-            $formcreator = new proforma_form_creator($this->_form);
-        }
-        $formcreator->data_preprocessing($question, $cat, $this->_form, $this);
+        $this->formcreator->data_preprocessing($question, $cat, $this->_form, $this);
+        // debugging('data_preprocessing (2): $question->taskfiledraftid = ' . $question->taskfiledraftid);
 
         return $question;
     }
