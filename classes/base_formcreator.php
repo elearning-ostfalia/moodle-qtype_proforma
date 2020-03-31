@@ -74,8 +74,8 @@ abstract class base_form_creator {
         // Task Filename
         $this->add_static_text($question, 'link', 'taskfilename', 'qtype_proforma');
 
-//        $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
-//        $mform->setType('link', PARAM_TEXT);
+        // $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
+        // $mform->setType('link', PARAM_TEXT);
         $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
     }
 
@@ -102,8 +102,8 @@ abstract class base_form_creator {
         }
 
         foreach ($hiddenfields as $field) {
-            $mform->addElement('hidden', $field, $field, array('size' => '30'));
-            //$mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
+            //$mform->addElement('hidden', $field, null, array('size' => '30'));
+            $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
             $mform->setType($field, PARAM_RAW);
         }
     }
@@ -271,7 +271,7 @@ abstract class base_form_creator {
         global $CFG, $COURSE;
         $mform = $this->form;
 
-        $defaultmaxsubmissionsizebytes = get_config('maxsubmissionsizebytes');
+        // $defaultmaxsubmissionsizebytes = get_config('maxsubmissionsizebytes');
         // $defaultfiletypes = (string)get_config('filetypeslist');
         //
         // Response Options
@@ -308,15 +308,14 @@ abstract class base_form_creator {
 
         $mform->setType('filetypes', PARAM_RAW);
 
-
         // VERSION CONTROL OPTIONS
-        $mform->addElement('text', 'vcsuritemplate', get_string('vcsuritemplate', 'qtype_proforma'), array('size'=>'80'));
+        $mform->addElement('text', 'vcsuritemplate', get_string('vcsuritemplate', 'qtype_proforma'), array('size' => '80'));
         $mform->setDefault('vcsuritemplate', get_config('qtype_proforma', 'defaultvcsuri'));
         $mform->setType('vcsuritemplate', PARAM_TEXT);
         $mform->addHelpButton('vcsuritemplate', 'vcsuritemplate', 'qtype_proforma');
         $mform->hideIf('vcsuritemplate', 'responseformat', 'neq', 'versioncontrol');
 
-        $mform->addElement('text', 'vcslabel', get_string('vcslabel', 'qtype_proforma'), array('size'=>'20'));
+        $mform->addElement('text', 'vcslabel', get_string('vcslabel', 'qtype_proforma'), array('size' => '20'));
         $mform->setDefault('vcslabel', get_config('qtype_proforma', 'vcslabeldefault'));
         $mform->setType('vcslabel', PARAM_TEXT);
         $mform->addHelpButton('vcslabel', 'vcslabel', 'qtype_proforma');
@@ -437,7 +436,8 @@ abstract class base_form_creator {
 
         if (!empty($question->taskfilename)) {
             // create temporary link for task file (does not belong to question class)
-/*            if (isset($question->taskfiledraftid) &&  $question->taskfiledraftid != 0) {
+            /*
+            if (isset($question->taskfiledraftid) &&  $question->taskfiledraftid != 0) {
                 // No link for draft zip????
                 // $question->link = 'N/A';
                 $url = moodle_url::make_pluginfile_url(5, 'user',
@@ -445,7 +445,7 @@ abstract class base_form_creator {
 
                 // $question->link = '<a href="@@PLUGINFILE@@/'.$question->taskfiledraftid.'">'. $question->taskfilename .'</a> ';
                 $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
-            } else {*/
+            } else { */
                 $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
                         qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
                 $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
@@ -505,9 +505,9 @@ abstract class base_form_creator {
                 $value = $question->$sizefield;
                 $attributes = array('size' => strlen($question->$sizefield));
             }
-        } else {
+        } // else {
             // $attributes = array('size' => strlen($question->options->$field));
-        }
+        // }
 
         if (isset($attributes) && count($attributes) > 0) {
             $mform->addElement('static', $field, $label, $attributes, '');
@@ -549,5 +549,13 @@ abstract class base_form_creator {
     protected function is_admin() {
         global $USER;
         return is_siteadmin($USER);
+    }
+
+    /**
+     * handle polymorphic behaviour when saving a question
+     * @param $formdata
+     * @param $options
+     */
+    public function save_question_options($formdata, &$options) {
     }
 }

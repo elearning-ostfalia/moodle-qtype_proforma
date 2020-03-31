@@ -30,6 +30,8 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 class java_form_creator extends base_form_creator {
 
+    // Must be name of associtated filearea!!.
+    const MODELSOLMANAGER = qtype_proforma::FILEAREA_MODELSOL; // 'modelsol';
     /**
      * java_form_creator constructor.
      *
@@ -40,6 +42,18 @@ class java_form_creator extends base_form_creator {
     }
 
     // override
+    /**
+     *  Add hidden fields for question attributes that are not part of the edit form.
+     * (Static elements are not sent as input data when submit is pressed,
+     * needed for duplicating a question)
+     * @throws coding_exception
+     */
+    public function add_hidden_fields() {
+        parent::add_hidden_fields();
+        // Model solution files can be uploaded
+        //$mform = $this->form;
+        //$mform->removeElement('modelsolfiles');
+    }
     /**
      * Add something to select the programming language.
      *
@@ -78,10 +92,10 @@ class java_form_creator extends base_form_creator {
         $mform->addHelpButton('modelsolution', 'modelsolution', 'qtype_proforma');
         $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
 
-        $mform->addElement('filemanager', 'modelsolfilemanager', get_string('modelsolfiles', 'qtype_proforma'), null,
+        $mform->addElement('filemanager', self::MODELSOLMANAGER, get_string('modelsolfiles', 'qtype_proforma'), null,
                 array('subdirs' => 0));
 
-        $mform->hideIf('modelsolfilemanager', 'responseformat', 'neq', 'filepicker');
+        $mform->hideIf(self::MODELSOLMANAGER, 'responseformat', 'neq', 'filepicker');
     }
 
 
@@ -305,10 +319,13 @@ class java_form_creator extends base_form_creator {
         $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
         $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
 
-        $draftitemid = file_get_submitted_draft_itemid('modelsolfilemanager');
+        $draftitemid = file_get_submitted_draft_itemid(self::MODELSOLMANAGER);
         file_prepare_draft_area($draftitemid, $editor->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL,
                 $question->id, array('subdirs' => 0));
-        $question->modelsolfilemanager = $draftitemid;
+        //$question->modelsolid = $draftitemid;
+        $attribute = qtype_proforma::FILEAREA_MODELSOL;
+        $question->$attribute = $draftitemid;
+
         $fs = get_file_storage();
         $draftfiles = $fs->get_area_files($editor->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL, $question->id);
         $files = array();
@@ -321,4 +338,55 @@ class java_form_creator extends base_form_creator {
             $question->modelsolution = $files[0]->get_content();
         }
     }
+
+    /**
+     * handle polymorphic behaviour when saving a question
+     * @param $formdata
+     * @param $options
+     */
+/*
+    public function save_question_options($formdata, &$options) {
+
+        if (empty($formdata->taskfiledraftid)) { // Only handle empty taskfiledraftid, other cases are handled later.
+            $instance = new qtype_proforma_java_task;
+            $context = $formdata->context;
+            $taskfile = $instance->create_task_file($formdata);
+            $options->taskfilename = 'task.xml';
+            qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
+                    $context->id, $formdata->id);
+        }
+        switch ($formdata->responseformat) {
+            case self::RESPONSE_FILEPICKER: // Filepicker.
+                if (isset($formdata->modelsolid)) {
+                    // Create 'modelsolfiles' as list of filenames
+                    $fs = get_file_storage();
+                    global $USER;
+                    $usercontext = context_user::instance($USER->id);
+                    $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft',
+                            self::MODELSOLMANAGER, 'id');
+                    $files = array();
+                    foreach ($draftfiles as $file) {
+                        if ($file->get_filename() != '.' and $file->get_filename() != '..') {
+                            $files[] = $file->get_filename();
+                        }
+                    }
+                    $options->modelsolfiles = implode(',', $files);
+                    // Save draft files in filearea.
+                    file_save_draft_area_files($formdata->modelsolid, $context->id, 'qtype_proforma', self::FILEAREA_MODELSOL,
+                            $formdata->id);
+
+                }
+                break;
+            case self::RESPONSE_EDITOR: //  Editor.
+                // Store model solution as file in filearea.
+                if (isset($formdata->modelsolution)) {
+                    $this->save_as_file($context->id, self::FILEAREA_MODELSOL,
+                            $formdata->responsefilename, $formdata->modelsolution, $formdata->id, true);
+                }
+                break;
+            default: // no special handling
+                break;
+        }
+    }
+*/
 }

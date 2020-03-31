@@ -242,6 +242,8 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
      * @return bool
      * @throws coding_exception
      */
+/*
+ * USERFIELD is currently not supported
     private function has_user_field($question) {
         if ($question->responseformat != qtype_proforma::RESPONSE_VERSION_CONTROL) {
             throw new coding_exception('unexpected responseformat in qtype_proforma_format_versioncontrol_renderer');
@@ -249,7 +251,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
 
         return (strpos($question->vcsuritemplate, PHUSERNAME) !== FALSE);
     }
-
+*/
     /**
      * returns the html fragment for the reponse area in input mode
      *
