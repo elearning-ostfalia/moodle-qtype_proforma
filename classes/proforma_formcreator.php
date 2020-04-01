@@ -240,7 +240,7 @@ class proforma_form_creator extends base_form_creator {
      * @param $options
      */
     public function save_question_options(&$options) {
-        parent::save_question_options($formdata, $options);
+        parent::save_question_options($options);
         $formdata = $this->form;
         $instance = new qtype_proforma_proforma_task();
         $options->gradinghints = $instance->create_lms_grading_hints($formdata);

@@ -263,7 +263,7 @@ class qtype_proforma extends question_type {
             throw new coding_exception('proforma: save_question_options no database record available');
         }
 
-        // file handling
+        // polymorphic behaviour
         switch ($formdata->taskstorage) {
             case self::PERSISTENT_TASKFILE:
                 $editor = new proforma_form_creator($formdata);
@@ -279,18 +279,6 @@ class qtype_proforma extends question_type {
                 throw new coding_exception('proforma: unsupported taskstorage ' . $formdata->taskstorage);
         }
 
-        $taskfilearea = self::FILEAREA_TASK;
-        if (!empty($formdata->taskfiledraftid)) {
-            file_save_draft_area_files($formdata->taskfiledraftid,
-                    $context->id, 'qtype_proforma', self::FILEAREA_TASK, $formdata->id);
-        } else if (isset($formdata->$taskfilearea)) {
-                file_save_draft_area_files($formdata->$taskfilearea,
-                        $context->id, 'qtype_proforma', self::FILEAREA_TASK, $formdata->id);
-        } else if (isset($formdata->taskfile)) {
-            question_bank::get_qtype('qtype_proforma')->import_file(
-                    $this->importcontext, 'qtype_proforma', 'task', $options->id, $formdata->taskfile);
-        }
-
         // we need a different handling for different variable structure for comment:
         // - array with comment (text, format)
         // - comment contains only flat text with seperate variable 'commentformat'
@@ -304,70 +292,10 @@ class qtype_proforma extends question_type {
             $options->comment = $formdata->comment;
             $options->commentformat = $formdata->commentformat;
         }
-        // store response template as file (it is stored as file and as member variable
-        // in order to support file download and editor template in student view)
-        // note! at first store draft files, then override first template file
-        if (empty($formdata->templates)) {
-            // no templates yet defined but the teacher has entered a template text
-            if (!empty($formdata->responsetemplate)) {
-                // handle situation where the template is created in moodle for the first time:
-                // set dummy template name and store file
-                $options->templates = $formdata->templates = 'template.txt';
-                qtype_proforma\lib\save_as_file($context->id, self::FILEAREA_TEMPLATE,
-                        $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
-            }
-        } else {
-            // todo: if $formdata->responsetemplate is empty
-            // then delete file and remove filename from template list
-            // (coulde be deleted in a row...)
-            $templates = explode(',', $formdata->templates);
-            if (!qtype_proforma\lib\save_as_file($context->id, self::FILEAREA_TEMPLATE,
-                    $templates[0] /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id)) {
-                // no file was stored => delete filename from list
-                array_shift($templates);
-                $options->templates = $formdata->templates = implode(',', $templates);
-                if (count($templates) > 0) {
-                    // set text of $formdata->responsetemplate to text of first element
-                    // todo: remove variable responsetemplate from database
-                    $options->responsetemplate = $formdata->responsetemplate = self::read_file_content($context->id,
-                            self::FILEAREA_TEMPLATE, $templates[0], $formdata->id);
-                }
-            }
-        }
 
         $DB->update_record('qtype_proforma_options', $options);
     }
 
-    /**
-     * Helper function to read the content of a file stored 'in Moodle'.
-     *
-     * @param $contextid
-     * @param $filearea
-     * @param $filename
-     * @param $itemid
-     * @return string file content
-     */
-    public static function read_file_content($contextid, $filearea, $filename, $itemid) {
-        $fs = get_file_storage();
-
-        // Prepare file record object
-        $fileinfo = array(
-                'contextid' => $contextid,
-                'component' => 'qtype_proforma',
-                'filearea' => $filearea,
-                'itemid' => $itemid,
-                'filepath' => '/',
-                'filename' => $filename,
-        );
-        // Get file
-        $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
-                $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
-
-        if (!$file) {
-            return 'file not found';
-        }
-        return $file->get_content();
-    }
 
     /**
      * initialise a question instance (data not covered by extra_fields??)

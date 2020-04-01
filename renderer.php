@@ -661,7 +661,7 @@ class qtype_proforma_renderer extends qtype_renderer {
                     array('class' => 'proforma_testlog_title'));
 
             $output .= html_writer::tag('div', '<xmp>' .
-                    qtype_proforma::read_file_content($question->contextid,
+                    qtype_proforma\lib\read_file_content($question->contextid,
                             qtype_proforma::FILEAREA_MODELSOL, $ms, $question->id) .
                     '</xmp>', array('class' => 'proforma_testlog'));
         }

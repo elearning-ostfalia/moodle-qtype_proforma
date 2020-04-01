@@ -128,7 +128,7 @@ function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = 
 }
 
 /**
- * Write text to a file.
+ * Helper function for writing text (string) to a file.
  *
  * @param $contextid
  * @param $filearea
@@ -172,4 +172,35 @@ function save_as_file($contextid, $filearea, $filename, $content, $itemid, $clea
         return true;
     }
     return false;
+}
+
+/**
+ * Helper function for reading a text file stored 'in Moodle'.
+ *
+ * @param $contextid
+ * @param $filearea
+ * @param $filename
+ * @param $itemid
+ * @return string file content
+ */
+function read_file_content($contextid, $filearea, $filename, $itemid) {
+    $fs = get_file_storage();
+
+    // Prepare file record object
+    $fileinfo = array(
+            'contextid' => $contextid,
+            'component' => 'qtype_proforma',
+            'filearea' => $filearea,
+            'itemid' => $itemid,
+            'filepath' => '/',
+            'filename' => $filename,
+    );
+    // Get file
+    $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
+            $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
+
+    if (!$file) {
+        return 'file not found';
+    }
+    return $file->get_content();
 }
