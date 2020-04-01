@@ -28,11 +28,16 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/javatask.php');
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
 
 class java_form_creator extends base_form_creator {
 
-    // Must be name of associtated filearea!!.
+    // Must be name of associated filearea!!.
     const MODELSOLMANAGER = qtype_proforma::FILEAREA_MODELSOL; // 'modelsol';
+
+    // Filearea object for handling model solution files.
+    protected $_ms_filearea = null;
+
     /**
      * java_form_creator constructor.
      *
@@ -40,6 +45,7 @@ class java_form_creator extends base_form_creator {
      */
     public function __construct($form) {
         parent::__construct($form);
+        $this->_ms_filearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
     }
 
     // override
@@ -308,6 +314,11 @@ class java_form_creator extends base_form_creator {
         $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
         $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
 
+        // Model solution files can be uploaded with a file manager
+        // or entered as text in editor.
+        $this->_ms_filearea->preprocess($editor->context->id, $question);
+        $files = $this->_ms_filearea->get_files($editor->context->id, $question->id);
+/*
         $draftitemid = file_get_submitted_draft_itemid(self::MODELSOLMANAGER);
         file_prepare_draft_area($draftitemid, $editor->context->id, 'qtype_proforma', self::MODELSOLMANAGER,
                 $question->id, array('subdirs' => 0));
@@ -322,6 +333,7 @@ class java_form_creator extends base_form_creator {
                 $files[] = $file;
             }
         }
+*/
         if (count($files) === 1) {
             $question->modelsolution = $files[0]->get_content();
         }
@@ -347,31 +359,20 @@ class java_form_creator extends base_form_creator {
         }
         switch ($formdata->responseformat) {
             case qtype_proforma::RESPONSE_FILEPICKER: // Filepicker.
-                $attribute = self::MODELSOLMANAGER;
-                if (isset($formdata->$attribute /*modelsolid*/)) {
-                    // Create 'modelsolfiles' as list of filenames
-                    $fs = get_file_storage();
-                    global $USER;
-                    $usercontext = context_user::instance($USER->id);
-                    $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft',
-                            java_form_creator::MODELSOLMANAGER, 'id');
-                    $files = array();
-                    foreach ($draftfiles as $file) {
-                        if ($file->get_filename() != '.' and $file->get_filename() != '..') {
-                            $files[] = $file->get_filename();
-                        }
-                    }
-                    $options->modelsolfiles = implode(',', $files);
+                $attribute = $this->_ms_filearea->get_name();
+                if (isset($formdata->$attribute)) {
                     // Save draft files in filearea.
-                    file_save_draft_area_files($formdata->$attribute, $formdata->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL,
+                    $this->_ms_filearea->save_draft_files($formdata->$attribute, $formdata->context->id, $formdata->id);
+                    // Create 'modelsolfiles' as list of filenames
+                    $options->modelsolfiles = $this->_ms_filearea->get_files_as_stringlist($formdata->context->id,
                             $formdata->id);
                 }
                 break;
             case qtype_proforma::RESPONSE_EDITOR: //  Editor.
-                // Store model solution as file in filearea.
+                // Store model solution text as file
                 if (isset($formdata->modelsolution)) {
-                    qtype_proforma\lib\save_as_file($formdata->context->id, qtype_proforma::FILEAREA_MODELSOL,
-                            $formdata->responsefilename, $formdata->modelsolution, $formdata->id, true);
+                    $this->_ms_filearea->save_textfile($formdata->context->id, $formdata->id,
+                            $formdata->responsefilename, $formdata->modelsolution);
                 }
                 break;
             default: // no special handling

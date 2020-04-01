@@ -26,13 +26,17 @@ Feature: ADD JAVA FILEPICKER QUESTION
     When I add a "ProFormA" question filling the form with:
       | Question name            | java-question                  |
       | Question text            | write a java program that..... |
-      | Response format          | filepicker                         |
+      | Response format          | filepicker                     |
       | Title                    | JUnit test title               |
-    # check that Response filename is no input field
+      | Accepted file types      | .java                          |
+      | Max. number of uploaded files | 2                         |
+      | Max. upload size         | 2MB                            |
+    # check that Response filename is not visible
     And I should not see "Response filename"
     And I set the codemirror "testcode_0" to "class TestClass {}"
     # updload model solution file
     And I upload "question/type/proforma/tests/fixtures/MyString.java" file to "Model solution files" filemanager
+
     And I press "id_submitbutton"
     Then I should see "java-question"
 
@@ -43,21 +47,22 @@ Feature: ADD JAVA FILEPICKER QUESTION
       | Default mark             | 1                              |
       | General feedback         |                                |
       | Response format          | filepicker                         |
-      | Input box size           | 15 lines                       |
       | Response template        |                                |
       | Comment                  |                                |
       | Title                    | JUnit test title               |
       | Description              |                                |
       | Penalty for each incorrect try  | 10%                     |
-    # compile
+      | Accepted file types      | .java                          |
+      | Max. number of uploaded files | 2                         |
+      | Max. upload size         | 2MB                            |
       | compileweight              |      0                       |
-    #And the field "compileweight" matches value "0"
+      | testweight[0]              |      1                       |
     And I should not see "Response filename"
     # And I pause
     And I should see "1" elements in "Model solution files" filemanager
     And the "compile" checkbox is "checked"
     # JUnit
-    And the field "testweight[0]" matches value "1"
+    #And the field "testweight[0]" matches value "1"
     And the codemirror "testcode_0" matches value "class TestClass {}"
     # Checkstyle
     And the "checkstyle" checkbox is "not checked"
