@@ -102,8 +102,8 @@ abstract class base_form_creator {
         }
 
         foreach ($hiddenfields as $field) {
-            //$mform->addElement('hidden', $field, null, array('size' => '30'));
-            $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
+            $mform->addElement('hidden', $field, null, array('size' => '30'));
+            // $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
             $mform->setType($field, PARAM_RAW);
         }
     }
@@ -449,7 +449,7 @@ abstract class base_form_creator {
                 $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
                         qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
                 $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
-//            }
+            // }
         }
     }
 
@@ -475,14 +475,14 @@ abstract class base_form_creator {
         $mform->disabledIf($field, 'responseformat', 'neq', 'alwaysdisabled');
         $mform->setType($field, PARAM_TEXT);
 
-/*        $textelement = $field;
+        /* $textelement = $field;
         $mform->addElement('static', $textelement, $label);
         debugging('static text: ' . $field);
         $mform->setType($textelement, PARAM_TEXT);
 
         $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
         $mform->setType($field, PARAM_TEXT);
-*/
+        */
     }
 
 
@@ -542,20 +542,21 @@ abstract class base_form_creator {
     }
 
     /**
-     * checks if the current user is an admin (can see more than a teacher)
-     *
-     * @return bool
-     */
-    protected function is_admin() {
-        global $USER;
-        return is_siteadmin($USER);
-    }
-
-    /**
      * handle polymorphic behaviour when saving a question
      * @param $formdata
      * @param $options
      */
-    public function save_question_options($formdata, &$options) {
+    public function save_question_options(&$options) {
+        $formdata = $this->form;
+        // Save files from draft area into proforma areas (modelsolution, downloads, templates)
+        // (needed for import and duplication).
+        foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
+            $property = $value['formid'];
+            if (!empty($formdata->$property)) {
+                // debugging('save draft: ' . $property);
+                file_save_draft_area_files($formdata->$property,
+                        $formdata->context->id, 'qtype_proforma', $filearea, $formdata->id);
+            }
+        }
     }
 }

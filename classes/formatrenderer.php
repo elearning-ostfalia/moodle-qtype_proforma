@@ -28,7 +28,7 @@
 // load JQuery for CodeMirror resizing. This cannot be done
 // inside a function.
 
-
+defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
@@ -242,8 +242,8 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
      * @return bool
      * @throws coding_exception
      */
-/*
- * USERFIELD is currently not supported
+    /*
+    * USERFIELD is currently not supported
     private function has_user_field($question) {
         if ($question->responseformat != qtype_proforma::RESPONSE_VERSION_CONTROL) {
             throw new coding_exception('unexpected responseformat in qtype_proforma_format_versioncontrol_renderer');
@@ -251,7 +251,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
 
         return (strpos($question->vcsuritemplate, PHUSERNAME) !== FALSE);
     }
-*/
+    */
     /**
      * returns the html fragment for the reponse area in input mode
      *
@@ -276,12 +276,12 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
             $attributes['size'] = 20;
             $attributes['value'] = s($step->get_qt_var($this->name));
 
-            $input = html_writer::tag('label',$question->vcslabel, array('for' => $inputname));
+            $input = html_writer::tag('label', $question->vcslabel, array('for' => $inputname));
             $input .= html_writer::tag('input', '' /*s($step->get_qt_var($name))*/, $attributes);
             $input .= html_writer::empty_tag('input', array('type' => 'hidden',
                     'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
 
-        } else if ($this->has_group_field($question)){
+        } else if ($this->has_group_field($question)) {
             $this->name = VCSGROUP;
             $groupname = qtype_proforma\lib\get_groupname();
             $attributes = array();
@@ -327,8 +327,9 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
      * @return string
      */
     public function response_area_read_only($qa, $step, $context) {
-        if (is_a ($step, 'question_attempt_step_read_only'))
+        if (is_a ($step, 'question_attempt_step_read_only')) {
             return '';
+        }
 
         if (null !== $step->get_qt_var(VCSINPUT)) {
             $question = $qa->get_question();

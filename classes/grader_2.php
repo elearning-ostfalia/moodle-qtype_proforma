@@ -313,8 +313,9 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         }
 
         // avoid division by zero
-        if (!$testsfound)
+        if (!$testsfound) {
             return array(0.0, $internalerror);
+        }
 
         return array($score / $counttests, $internalerror);
     }

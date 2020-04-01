@@ -29,7 +29,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/moodlelib.php');
-require_once($CFG->dirroot . '/question/type/proforma/classes/javatask.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/java_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/question.php');
 
 /**
@@ -262,83 +263,20 @@ class qtype_proforma extends question_type {
             throw new coding_exception('proforma: save_question_options no database record available');
         }
 
-        // Save files from draft area into proforma areas (modelsolution, downloads, templates)
-        // (needed for import and duplication).
-        foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
-            $property = $value['formid'];
-            if (!empty($formdata->$property)) {
-                // debugging('save draft: ' . $property);
-                file_save_draft_area_files($formdata->$property,
-                        $context->id, 'qtype_proforma', $filearea, $formdata->id);
-            }
-        }
-
         // file handling
         switch ($formdata->taskstorage) {
             case self::PERSISTENT_TASKFILE:
-                $instance = new qtype_proforma_proforma_task;
-                $options->gradinghints = $instance->create_lms_grading_hints($formdata);
+                $editor = new proforma_form_creator($formdata);
+                $editor->save_question_options($options);
                 break;
             case self::VOLATILE_TASKFILE:
                 // handle 'save' from editor
-                $instance = new qtype_proforma_java_task;
-                $options->gradinghints = $instance->create_lms_grading_hints($formdata);
-                if (empty($formdata->taskfiledraftid)) { // Only handle empty taskfiledraftid, other cases are handled later.
-                    $taskfile = $instance->create_task_file($formdata);
-                    $options->taskfilename = 'task.xml';
-                    qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
-                            $context->id, $formdata->id);
-                }
-                switch ($formdata->responseformat) {
-                    case self::RESPONSE_FILEPICKER: // Filepicker.
-                        $attribute = qtype_proforma::FILEAREA_MODELSOL;
-                        if (isset($formdata->$attribute /*modelsolid*/)) {
-                            // Create 'modelsolfiles' as list of filenames
-                            $fs = get_file_storage();
-                            global $USER;
-                            $usercontext = context_user::instance($USER->id);
-                            $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft',
-                                    java_form_creator::MODELSOLMANAGER, 'id');
-                            $files = array();
-                            foreach ($draftfiles as $file) {
-                                if ($file->get_filename() != '.' and $file->get_filename() != '..') {
-                                    $files[] = $file->get_filename();
-                                }
-                            }
-                            $options->modelsolfiles = implode(',', $files);
-                            // Save draft files in filearea.
-                            file_save_draft_area_files($formdata->$attribute, $context->id, 'qtype_proforma', self::FILEAREA_MODELSOL,
-                                     $formdata->id);
-                        }
-                        break;
-                    case self::RESPONSE_EDITOR: //  Editor.
-                        // Store model solution as file in filearea.
-                        if (isset($formdata->modelsolution)) {
-                            $this->save_as_file($context->id, self::FILEAREA_MODELSOL,
-                                    $formdata->responsefilename, $formdata->modelsolution, $formdata->id, true);
-                        }
-                        break;
-                    default: // no special handling
-                        break;
-                }
+                $editor = new java_form_creator($formdata);
+                $editor->save_question_options($options);
                 break;
             case self::REPOSITORY:
             default:
                 throw new coding_exception('proforma: unsupported taskstorage ' . $formdata->taskstorage);
-        }
-
-        // we need a different handling for different variable structure for comment:
-        // - array with comment (text, format)
-        // - comment contains only flat text with seperate variable 'commentformat'
-        if (!empty($formdata->comment['format'])) {
-            // $formdata->comment is array (when data comes from form input)
-            $options->comment = $this->import_or_save_files($formdata->comment,
-                    $context, 'qtype_proforma', 'comment', $formdata->id);
-            $options->commentformat = $formdata->comment['format'];
-        } else {
-            // data comes from file import, different internal structure :-(
-            $options->comment = $formdata->comment;
-            $options->commentformat = $formdata->commentformat;
         }
 
         $taskfilearea = self::FILEAREA_TASK;
@@ -353,6 +291,19 @@ class qtype_proforma extends question_type {
                     $this->importcontext, 'qtype_proforma', 'task', $options->id, $formdata->taskfile);
         }
 
+        // we need a different handling for different variable structure for comment:
+        // - array with comment (text, format)
+        // - comment contains only flat text with seperate variable 'commentformat'
+        if (!empty($formdata->comment['format'])) {
+            // $formdata->comment is array (when data comes from form input)
+            $options->comment = $this->import_or_save_files($formdata->comment,
+                    $formdata->context, 'qtype_proforma', 'comment', $formdata->id);
+            $options->commentformat = $formdata->comment['format'];
+        } else {
+            // data comes from file import, different internal structure :-(
+            $options->comment = $formdata->comment;
+            $options->commentformat = $formdata->commentformat;
+        }
         // store response template as file (it is stored as file and as member variable
         // in order to support file download and editor template in student view)
         // note! at first store draft files, then override first template file
@@ -362,7 +313,7 @@ class qtype_proforma extends question_type {
                 // handle situation where the template is created in moodle for the first time:
                 // set dummy template name and store file
                 $options->templates = $formdata->templates = 'template.txt';
-                $this->save_as_file($context->id, self::FILEAREA_TEMPLATE,
+                qtype_proforma\lib\save_as_file($context->id, self::FILEAREA_TEMPLATE,
                         $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
             }
         } else {
@@ -370,7 +321,7 @@ class qtype_proforma extends question_type {
             // then delete file and remove filename from template list
             // (coulde be deleted in a row...)
             $templates = explode(',', $formdata->templates);
-            if (!$this->save_as_file($context->id, self::FILEAREA_TEMPLATE,
+            if (!qtype_proforma\lib\save_as_file($context->id, self::FILEAREA_TEMPLATE,
                     $templates[0] /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id)) {
                 // no file was stored => delete filename from list
                 array_shift($templates);
@@ -416,52 +367,6 @@ class qtype_proforma extends question_type {
             return 'file not found';
         }
         return $file->get_content();
-    }
-
-    /**
-     * Write text to a file.
-     *
-     * @param $contextid
-     * @param $filearea
-     * @param $filename
-     * @param $content
-     * @param $itemid
-     * @param bool $cleanfilearea
-     * @return bool
-     */
-    protected function save_as_file($contextid, $filearea, $filename, $content, $itemid, $cleanfilearea = false) {
-        $fs = get_file_storage();
-        // delete old file
-        if (!is_null($itemid)) {
-            $fs = get_file_storage();
-            if ($files = $fs->get_area_files($contextid, 'qtype_proforma', $filearea, $itemid)) {
-                $cleanfilename = clean_param($filename, PARAM_FILE);
-                foreach ($files as $file) {
-                    if ($cleanfilearea) {
-                        // clean all files for this question in this filearea
-                        $file->delete();
-                    } else {
-                        if ($cleanfilename === $file->get_filename()) {
-                            $file->delete();
-                        }
-                    }
-                }
-            }
-        }
-
-        if (!empty($content)) {
-            $filerecord = array(
-                    'contextid' => $contextid,
-                    'component' => 'qtype_proforma',
-                    'filearea' => $filearea,
-                    'itemid' => $itemid,
-                    'filepath' => '/',
-                    'filename' => $filename,
-            );
-            $fs->create_file_from_string($filerecord, $content);
-            return true;
-        }
-        return false;
     }
 
     /**

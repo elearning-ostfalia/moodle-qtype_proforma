@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/javatask.php');
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 class java_form_creator extends base_form_creator {
@@ -42,18 +43,6 @@ class java_form_creator extends base_form_creator {
     }
 
     // override
-    /**
-     *  Add hidden fields for question attributes that are not part of the edit form.
-     * (Static elements are not sent as input data when submit is pressed,
-     * needed for duplicating a question)
-     * @throws coding_exception
-     */
-    public function add_hidden_fields() {
-        parent::add_hidden_fields();
-        // Model solution files can be uploaded
-        //$mform = $this->form;
-        //$mform->removeElement('modelsolfiles');
-    }
     /**
      * Add something to select the programming language.
      *
@@ -320,10 +309,9 @@ class java_form_creator extends base_form_creator {
         $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
 
         $draftitemid = file_get_submitted_draft_itemid(self::MODELSOLMANAGER);
-        file_prepare_draft_area($draftitemid, $editor->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL,
+        file_prepare_draft_area($draftitemid, $editor->context->id, 'qtype_proforma', self::MODELSOLMANAGER,
                 $question->id, array('subdirs' => 0));
-        //$question->modelsolid = $draftitemid;
-        $attribute = qtype_proforma::FILEAREA_MODELSOL;
+        $attribute = self::MODELSOLMANAGER;
         $question->$attribute = $draftitemid;
 
         $fs = get_file_storage();
@@ -344,26 +332,29 @@ class java_form_creator extends base_form_creator {
      * @param $formdata
      * @param $options
      */
-/*
-    public function save_question_options($formdata, &$options) {
+    public function save_question_options(&$options) {
+        parent::save_question_options($formdata, $options);
+
+        $formdata = $this->form;
+        $instance = new qtype_proforma_java_task;
+        $options->gradinghints = $instance->create_lms_grading_hints($formdata);
 
         if (empty($formdata->taskfiledraftid)) { // Only handle empty taskfiledraftid, other cases are handled later.
-            $instance = new qtype_proforma_java_task;
-            $context = $formdata->context;
             $taskfile = $instance->create_task_file($formdata);
             $options->taskfilename = 'task.xml';
             qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
-                    $context->id, $formdata->id);
+                    $formdata->context->id, $formdata->id);
         }
         switch ($formdata->responseformat) {
-            case self::RESPONSE_FILEPICKER: // Filepicker.
-                if (isset($formdata->modelsolid)) {
+            case qtype_proforma::RESPONSE_FILEPICKER: // Filepicker.
+                $attribute = self::MODELSOLMANAGER;
+                if (isset($formdata->$attribute /*modelsolid*/)) {
                     // Create 'modelsolfiles' as list of filenames
                     $fs = get_file_storage();
                     global $USER;
                     $usercontext = context_user::instance($USER->id);
                     $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft',
-                            self::MODELSOLMANAGER, 'id');
+                            java_form_creator::MODELSOLMANAGER, 'id');
                     $files = array();
                     foreach ($draftfiles as $file) {
                         if ($file->get_filename() != '.' and $file->get_filename() != '..') {
@@ -372,15 +363,14 @@ class java_form_creator extends base_form_creator {
                     }
                     $options->modelsolfiles = implode(',', $files);
                     // Save draft files in filearea.
-                    file_save_draft_area_files($formdata->modelsolid, $context->id, 'qtype_proforma', self::FILEAREA_MODELSOL,
+                    file_save_draft_area_files($formdata->$attribute, $formdata->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL,
                             $formdata->id);
-
                 }
                 break;
-            case self::RESPONSE_EDITOR: //  Editor.
+            case qtype_proforma::RESPONSE_EDITOR: //  Editor.
                 // Store model solution as file in filearea.
                 if (isset($formdata->modelsolution)) {
-                    $this->save_as_file($context->id, self::FILEAREA_MODELSOL,
+                    qtype_proforma\lib\save_as_file($formdata->context->id, qtype_proforma::FILEAREA_MODELSOL,
                             $formdata->responsefilename, $formdata->modelsolution, $formdata->id, true);
                 }
                 break;
@@ -388,5 +378,5 @@ class java_form_creator extends base_form_creator {
                 break;
         }
     }
-*/
+
 }

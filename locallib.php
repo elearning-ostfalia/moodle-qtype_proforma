@@ -126,3 +126,50 @@ function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = 
         }
     }
 }
+
+/**
+ * Write text to a file.
+ *
+ * @param $contextid
+ * @param $filearea
+ * @param $filename
+ * @param $content
+ * @param $itemid
+ * @param bool $cleanfilearea
+ * @return bool
+ * @throws \coding_exception
+ */
+function save_as_file($contextid, $filearea, $filename, $content, $itemid, $cleanfilearea = false) {
+    $fs = get_file_storage();
+    // delete old file
+    if (!is_null($itemid)) {
+        $fs = get_file_storage();
+        if ($files = $fs->get_area_files($contextid, 'qtype_proforma', $filearea, $itemid)) {
+            $cleanfilename = clean_param($filename, PARAM_FILE);
+            foreach ($files as $file) {
+                if ($cleanfilearea) {
+                    // clean all files for this question in this filearea
+                    $file->delete();
+                } else {
+                    if ($cleanfilename === $file->get_filename()) {
+                        $file->delete();
+                    }
+                }
+            }
+        }
+    }
+
+    if (!empty($content)) {
+        $filerecord = array(
+                'contextid' => $contextid,
+                'component' => 'qtype_proforma',
+                'filearea' => $filearea,
+                'itemid' => $itemid,
+                'filepath' => '/',
+                'filename' => $filename,
+        );
+        $fs->create_file_from_string($filerecord, $content);
+        return true;
+    }
+    return false;
+}

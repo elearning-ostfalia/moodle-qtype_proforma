@@ -40,6 +40,7 @@ class proforma_form_creator extends base_form_creator {
 
     /**
      * validate field values
+     *
      * @param $fromform Validation argument
      * @param $files Validation argument
      * @param $errors Array with error messages (so far)
@@ -112,19 +113,19 @@ class proforma_form_creator extends base_form_creator {
      *
      * @param $question
      */
-/*
-    protected function add_responsefilename($question) {
-        $mform = $this->form;
+    /*
+        protected function add_responsefilename($question) {
+            $mform = $this->form;
 
-        // since static fields cannot be hidden we create a group
-        $group = [];
-        $group[] =& $mform->createElement('static',  'dummy' , '', $question->options->responsefilename);
-        $mform->addGroup($group, 'responsefilename', get_string('filename', 'qtype_proforma'), ' ', false);
-        $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
+            // since static fields cannot be hidden we create a group
+            $group = [];
+            $group[] =& $mform->createElement('static',  'dummy' , '', $question->options->responsefilename);
+            $mform->addGroup($group, 'responsefilename', get_string('filename', 'qtype_proforma'), ' ', false);
+            $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
 
-        // $this->add_static_field($question, 'responsefilename', get_string('filename', 'qtype_proforma'), 50);
-    }
-*/
+            // $this->add_static_field($question, 'responsefilename', get_string('filename', 'qtype_proforma'), 50);
+        }
+    */
     /**
      * Display grader settings.
      *
@@ -224,7 +225,7 @@ class proforma_form_creator extends base_form_creator {
             foreach (explode(',', $question->modelsolfiles) as $ms) {
                 $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
                         qtype_proforma::FILEAREA_MODELSOL, $question->id, '/', $ms);
-                $question->mslinks = $question->mslinks . '<a href=' . $url->out().'>'. $ms .'</a> ';
+                $question->mslinks = $question->mslinks . '<a href=' . $url->out() . '>' . $ms . '</a> ';
             }
         }
 
@@ -232,4 +233,16 @@ class proforma_form_creator extends base_form_creator {
         $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
     }
 
+    /**
+     * handle polymorphic behaviour when saving a question
+     *
+     * @param $formdata
+     * @param $options
+     */
+    public function save_question_options(&$options) {
+        parent::save_question_options($formdata, $options);
+        $formdata = $this->form;
+        $instance = new qtype_proforma_proforma_task();
+        $options->gradinghints = $instance->create_lms_grading_hints($formdata);
+    }
 }
