@@ -307,33 +307,18 @@ class java_form_creator extends base_form_creator {
      * @param MoodleQuickForm $form
      * @param qtype_proforma_edit_form $editor
      */
-    public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
-        parent::data_preprocessing($question, $cat, $form, $editor);
+    public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
+        parent::data_preprocessing($question, $cat, $editor);
 
+        $form = $editor->get_form();
         $taskfilehandler = new qtype_proforma_java_task();
         $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
         $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
 
         // Model solution files can be uploaded with a file manager
         // or entered as text in editor.
-        $this->_ms_filearea->preprocess($editor->context->id, $question);
+        $this->_ms_filearea->on_preprocess($editor->context->id, $question);
         $files = $this->_ms_filearea->get_files($editor->context->id, $question->id);
-/*
-        $draftitemid = file_get_submitted_draft_itemid(self::MODELSOLMANAGER);
-        file_prepare_draft_area($draftitemid, $editor->context->id, 'qtype_proforma', self::MODELSOLMANAGER,
-                $question->id, array('subdirs' => 0));
-        $attribute = self::MODELSOLMANAGER;
-        $question->$attribute = $draftitemid;
-
-        $fs = get_file_storage();
-        $draftfiles = $fs->get_area_files($editor->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_MODELSOL, $question->id);
-        $files = array();
-        foreach ($draftfiles as $file) {
-            if ($file->get_filename() != '.' and $file->get_filename() != '..') {
-                $files[] = $file;
-            }
-        }
-*/
         if (count($files) === 1) {
             $question->modelsolution = $files[0]->get_content();
         }
@@ -359,20 +344,23 @@ class java_form_creator extends base_form_creator {
         }
         switch ($formdata->responseformat) {
             case qtype_proforma::RESPONSE_FILEPICKER: // Filepicker.
-                $attribute = $this->_ms_filearea->get_name();
+                $this->_ms_filearea->on_save($formdata, $options, 'modelsolfiles');
+/*                $attribute = $this->_ms_filearea->get_name();
                 if (isset($formdata->$attribute)) {
                     // Save draft files in filearea.
                     $this->_ms_filearea->save_draft_files($formdata->$attribute, $formdata->context->id, $formdata->id);
                     // Create 'modelsolfiles' as list of filenames
                     $options->modelsolfiles = $this->_ms_filearea->get_files_as_stringlist($formdata->context->id,
                             $formdata->id);
-                }
+                }*/
                 break;
             case qtype_proforma::RESPONSE_EDITOR: //  Editor.
                 // Store model solution text as file
-                if (isset($formdata->modelsolution)) {
+                if (!isset($formdata->import_process) or !$formdata->import_process)  {
+                    // Property 'modelsolution' exists only if the form editor was used.
+                    // So if we come from import we cannot evalute 'modelsolution'.
                     $this->_ms_filearea->save_textfile($formdata->context->id, $formdata->id,
-                            $formdata->responsefilename, $formdata->modelsolution);
+                            $formdata->responsefilename, isset($formdata->modelsolution)?$formdata->modelsolution:'');
                 }
                 break;
             default: // no special handling

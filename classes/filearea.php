@@ -35,11 +35,6 @@ class qtype_proforma_filearea {
     private $_name = null;
 
     /**
-     * @var null identifier for a user draft area (if created)
-     */
-    private $_draftid = null;
-
-    /**
      * qtype_proforma_filearea constructor.
      *
      * @param $name name of qtype_proforma filearea
@@ -60,12 +55,12 @@ class qtype_proforma_filearea {
      * @param $context_id
      * @param $question
      */
-    public function preprocess($context_id, &$question) {
-        $this->_draftid = file_get_submitted_draft_itemid($this->_name);
-        file_prepare_draft_area($this->_draftid, $context_id, 'qtype_proforma', $this->_name,
+    public function on_preprocess($context_id, &$question) {
+        $draftid = file_get_submitted_draft_itemid($this->_name);
+        file_prepare_draft_area($draftid, $context_id, 'qtype_proforma', $this->_name,
                 $question->id, array('subdirs' => 0));
         $attribute = $this->_name;
-        $question->$attribute = $this->_draftid;
+        $question->$attribute = $draftid;
     }
 
     /**
@@ -107,6 +102,21 @@ class qtype_proforma_filearea {
         return implode(',', $files);
     }
 
+    public function get_files_as_links($context_id, $question_id) {
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($context_id, 'qtype_proforma', $this->_name, $question_id);
+        $links = array();
+        foreach ($files as $file) {
+            if ($file->get_filename() != '.' and $file->get_filename() != '..') {
+                $url = moodle_url::make_pluginfile_url($context_id, 'qtype_proforma',
+                        $this->_name, $question_id, '/', $file->get_filename());
+                $link = '<a href=' . $url->out() . '>' . $file->get_filename() . '</a> ';
+                $links[] = $link;
+            }
+        }
+        return implode(',', $links);
+    }
+
     /**
      * save (= copy/move?) draft files as component files.
      * @param $draft_id
@@ -118,6 +128,20 @@ class qtype_proforma_filearea {
                 'qtype_proforma', $this->_name, $question_id);
     }
 
+    /*
+     * save draft files to filearea and create value for database column
+     * (todo: do we really need a database column for that? redundant)
+     */
+    public function on_save($formdata, &$options, $dbcolumn) {
+        $attribute = $this->_name;
+        if (isset($formdata->$attribute)) {
+            // Save draft files in filearea.
+            $this->save_draft_files($formdata->$attribute, $formdata->context->id, $formdata->id);
+            // Create 'modelsolfiles' as list of filenames
+            $options->$dbcolumn = $this->get_files_as_stringlist($formdata->context->id,
+                    $formdata->id);
+        }
+    }
     /** save text as file with given filename in filearea
      *
      * @param $context_id

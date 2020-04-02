@@ -397,7 +397,8 @@ abstract class base_form_creator {
      * @param MoodleQuickForm $form
      * @param qtype_proforma_edit_form $editor
      */
-    public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
+    public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
+        // $form = $editor->get_form();
         // prepare all fileareas
         foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
             // prepare draft file area (in case of copy)
@@ -418,6 +419,8 @@ abstract class base_form_creator {
             }
             $question->$property = $draftid;
         }
+        // !!! (todo replace draftid by filearea)
+        $question->modelsol = $question->modelsolid;
 
         // Special handling for comment.
         $draftid = file_get_submitted_draft_itemid(qtype_proforma::FILEAREA_COMMENT);
@@ -446,7 +449,7 @@ abstract class base_form_creator {
                 // $question->link = '<a href="@@PLUGINFILE@@/'.$question->taskfiledraftid.'">'. $question->taskfilename .'</a> ';
                 $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
             } else { */
-                $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
+                $url = moodle_url::make_pluginfile_url($question->contextid, 'qtype_proforma',
                         qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
                 $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
             // }

@@ -198,8 +198,9 @@ class proforma_form_creator extends base_form_creator {
      * @param MoodleQuickForm $form
      * @param qtype_proforma_edit_form $editor
      */
-    public function data_preprocessing(&$question, $cat, MoodleQuickForm $form, qtype_proforma_edit_form $editor) {
-        parent::data_preprocessing($question, $cat, $form, $editor);
+    public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
+        parent::data_preprocessing($question, $cat, $editor);
+        $form = $editor->get_form();
 
         // Create lists for download links in edit form.
         foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
@@ -220,6 +221,11 @@ class proforma_form_creator extends base_form_creator {
             $form->removeElement('furtherTemplates');
         }
 
+        // todo: create mslinks from filearea??
+        $ms_filearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
+        $question->mslinks = $ms_filearea->get_files_as_links($question->contextid,
+                $question->id);
+/*
         if (!empty($question->modelsolfiles)) {
             $question->mslinks = '';
             foreach (explode(',', $question->modelsolfiles) as $ms) {
@@ -228,7 +234,7 @@ class proforma_form_creator extends base_form_creator {
                 $question->mslinks = $question->mslinks . '<a href=' . $url->out() . '>' . $ms . '</a> ';
             }
         }
-
+*/
         $taskfilehandler = new qtype_proforma_proforma_task;
         $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
     }

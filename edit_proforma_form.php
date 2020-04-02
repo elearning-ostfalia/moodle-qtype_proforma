@@ -48,6 +48,9 @@ class qtype_proforma_edit_form extends question_edit_form {
         parent::definition();
     }
 
+    public function get_form() {
+        return $this->_form;
+    }
 
     /**
      * This function checks if the user input is valid.
@@ -138,6 +141,11 @@ class qtype_proforma_edit_form extends question_edit_form {
     /**
      * Perform any preprocessing needed on the data passed to {@link set_data()}
      * before it is used to initialise the form.
+     *
+     * $question->options are values read from database (if record is already stored in database)
+     * and are copied into attributes with same name.
+     * So only missing values $question->... must be created here.
+     *
      * @param object $question the data being passed to the form.
      * @return object $question the modified data.
      */
@@ -145,6 +153,8 @@ class qtype_proforma_edit_form extends question_edit_form {
         $question = parent::data_preprocessing($question);
         $question = $this->data_preprocessing_hints($question); // TODO das muss ohne gehen
 
+        // Remember that data come from user input.
+        $question->edit_form = true;
         if (empty($question->options)) {
             // preset all fields that can be disabled in the form. Otherwise they may be missing
             // somewhere! (resulting in an exception)
@@ -160,21 +170,29 @@ class qtype_proforma_edit_form extends question_edit_form {
 
             $question->furtherTemplates = '';
             $question->firstTemplate = '';
-            // debugging('data_preprocessing (1): $question->taskfiledraftid =  N/A');
             return $question;
+        }
+
+        $cat = $question->category;
+        $found = false;
+        foreach (explode(',', $question->category) as $category) {
+            $cat = $category;
+            if ($question->contextid == $category) {
+                $found = true;
+            }
+        }
+        // Can we use $question->contextid instead of $question->category?
+        // Check if the debugging message is visible...
+        if (!$found) {
+            debugging('$question->contextid not found in $question->category');
+        } else {
+            $cat = $question->contextid;
         }
 
         if ($this->formcreator == null) {
             throw new coding_exception('formcreator does not exist in data_preprocessing');
         }
-
-        $cat = $question->category;
-        foreach (explode(',', $question->category) as $category) {
-            $cat = $category;
-        }
-
-        $this->formcreator->data_preprocessing($question, $cat, $this->_form, $this);
-        // debugging('data_preprocessing (2): $question->taskfiledraftid = ' . $question->taskfiledraftid);
+        $this->formcreator->data_preprocessing($question, $cat, $this);
 
         return $question;
     }
