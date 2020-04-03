@@ -56,7 +56,7 @@ Feature: EDIT PROFORMA
     And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
     And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
     # download links
-    And I should see "lib.txt, instruction.txt"
+    And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
     # And I should see "MyString.java"
@@ -119,7 +119,7 @@ Feature: EDIT PROFORMA
     And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
     And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
     # download links
-    And I should see "lib.txt, instruction.txt"
+    And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
     # And I should see "MyString.java"

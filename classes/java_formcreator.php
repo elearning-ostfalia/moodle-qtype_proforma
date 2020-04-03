@@ -28,7 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/javatask.php');
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
-require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
 
 class java_form_creator extends base_form_creator {
 
@@ -87,6 +86,8 @@ class java_form_creator extends base_form_creator {
         $mform->addHelpButton('modelsolution', 'modelsolution', 'qtype_proforma');
         $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
 
+        // might be set as hidden element;
+        $mform->removeElement(self::MODELSOLMANAGER);
         $mform->addElement('filemanager', self::MODELSOLMANAGER, get_string('modelsolfiles', 'qtype_proforma'), null,
                 array('subdirs' => 0));
 
@@ -317,7 +318,6 @@ class java_form_creator extends base_form_creator {
 
         // Model solution files can be uploaded with a file manager
         // or entered as text in editor.
-        $this->_ms_filearea->on_preprocess($editor->context->id, $question);
         $files = $this->_ms_filearea->get_files($editor->context->id, $question->id);
         if (count($files) === 1) {
             $question->modelsolution = $files[0]->get_content();
@@ -336,7 +336,11 @@ class java_form_creator extends base_form_creator {
         $instance = new qtype_proforma_java_task;
         $options->gradinghints = $instance->create_lms_grading_hints($formdata);
 
-        if (empty($formdata->taskfiledraftid)) { // Only handle empty taskfiledraftid, other cases are handled later.
+        if (!isset($formdata->import_process) or !$formdata->import_process) {
+            // When importing a moodle xml question the preprocessing step is missing.
+            // So we must skip the creating task because the task.xml already exists
+            // and some data needed to create task.xml does not.
+//        if (empty($formdata->taskfiledraftid)) { // Only handle empty taskfiledraftid, other cases are handled later.
             $taskfile = $instance->create_task_file($formdata);
             $options->taskfilename = 'task.xml';
             qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
@@ -345,14 +349,6 @@ class java_form_creator extends base_form_creator {
         switch ($formdata->responseformat) {
             case qtype_proforma::RESPONSE_FILEPICKER: // Filepicker.
                 $this->_ms_filearea->on_save($formdata, $options, 'modelsolfiles');
-/*                $attribute = $this->_ms_filearea->get_name();
-                if (isset($formdata->$attribute)) {
-                    // Save draft files in filearea.
-                    $this->_ms_filearea->save_draft_files($formdata->$attribute, $formdata->context->id, $formdata->id);
-                    // Create 'modelsolfiles' as list of filenames
-                    $options->modelsolfiles = $this->_ms_filearea->get_files_as_stringlist($formdata->context->id,
-                            $formdata->id);
-                }*/
                 break;
             case qtype_proforma::RESPONSE_EDITOR: //  Editor.
                 // Store model solution text as file

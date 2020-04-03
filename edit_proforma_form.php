@@ -142,9 +142,18 @@ class qtype_proforma_edit_form extends question_edit_form {
      * Perform any preprocessing needed on the data passed to {@link set_data()}
      * before it is used to initialise the form.
      *
-     * $question->options are values read from database (if record is already stored in database)
-     * and are copied into attributes with same name.
-     * So only missing values $question->... must be created here.
+     * different scenarios:
+     * 1. edit:
+     * - $question->options->X are original values read from database (if record is already stored in database)
+     * - $question-X copy from $question->options->X (???)
+     *
+     * 2. submit:
+     * - $question->options->X are original values read from database (if record is already stored in database)
+     * - $question-X value from input (???)
+     *
+     * 3. duplicate:
+     * - $question->options->X are original values read from database (no record created, draft filearea must be created)
+     * - $question-X copy from $question->options->X (???)
      *
      * @param object $question the data being passed to the form.
      * @return object $question the modified data.
@@ -153,7 +162,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         $question = parent::data_preprocessing($question);
         $question = $this->data_preprocessing_hints($question); // TODO das muss ohne gehen
 
-        // Remember that data come from user input.
+        // Remember that data comes from user input.
         $question->edit_form = true;
         if (empty($question->options)) {
             // preset all fields that can be disabled in the form. Otherwise they may be missing

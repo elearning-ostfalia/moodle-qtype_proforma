@@ -24,6 +24,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
+
 abstract class base_form_creator {
     /**
      * @var MoodleQuickForm The form object that must be filled with input fields.
@@ -98,12 +100,15 @@ abstract class base_form_creator {
             if (!isset($property)) {
                 throw new coding_exception('formid is not set for filearea ' + $filearea);
             }
+            // Old approach:
             $hiddenfields[] = $property;
+            // New approach:
+            $hiddenfields[] = $filearea;
         }
 
         foreach ($hiddenfields as $field) {
-            $mform->addElement('hidden', $field, null, array('size' => '30'));
-            // $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
+            //$mform->addElement('hidden', $field, null, array('size' => '30'));
+            $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
             $mform->setType($field, PARAM_RAW);
         }
     }
@@ -401,6 +406,21 @@ abstract class base_form_creator {
         // $form = $editor->get_form();
         // prepare all fileareas
         foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
+/*            if (isset($question->$filearea)) {
+                // we already have a draft area => ready
+                // debugging('draftid available');
+                continue;
+            }*/
+            $filearea_object = new qtype_proforma_filearea($filearea);
+            $filearea_object->on_preprocess($editor->context->id, $question);
+            if (isset($value['formlist'])) {
+                $property1 = $value['formlist'];
+                $question->$property1 = $filearea_object->get_files_as_stringlist($cat, $question->id);
+            }
+            // old (only needed for $question->makecopy == 1:
+            $property = $value["formid"];
+            $question->$property = $question->$filearea;
+/*
             // prepare draft file area (in case of copy)
             $property = $value["formid"];
             if (isset($question->$property)) {
@@ -418,9 +438,10 @@ abstract class base_form_creator {
                         $editor->fileoptions);
             }
             $question->$property = $draftid;
+*/
         }
         // !!! (todo replace draftid by filearea)
-        $question->modelsol = $question->modelsolid;
+        // $question->modelsol = $question->modelsolid;
 
         // Special handling for comment.
         $draftid = file_get_submitted_draft_itemid(qtype_proforma::FILEAREA_COMMENT);
@@ -437,23 +458,9 @@ abstract class base_form_creator {
         $question->comment['format'] = $question->options->commentformat;
         $question->comment['itemid'] = $draftid;
 
-        if (!empty($question->taskfilename)) {
-            // create temporary link for task file (does not belong to question class)
-            /*
-            if (isset($question->taskfiledraftid) &&  $question->taskfiledraftid != 0) {
-                // No link for draft zip????
-                // $question->link = 'N/A';
-                $url = moodle_url::make_pluginfile_url(5, 'user',
-                        'draft', $question->taskfiledraftid, '/', $question->taskfilename);
-
-                // $question->link = '<a href="@@PLUGINFILE@@/'.$question->taskfiledraftid.'">'. $question->taskfilename .'</a> ';
-                $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
-            } else { */
-                $url = moodle_url::make_pluginfile_url($question->contextid, 'qtype_proforma',
-                        qtype_proforma::FILEAREA_TASK, $question->id, '/', $question->taskfilename);
-                $question->link = '<a href=' . $url->out() . '>' . $question->taskfilename . '</a> ';
-            // }
-        }
+        // Create task link from actual task.
+        $task = new qtype_proforma_filearea(qtype_proforma::FILEAREA_TASK);
+        $question->link = $task->get_files_as_links($cat, $question->id);
     }
 
     // helper functions

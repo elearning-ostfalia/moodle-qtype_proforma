@@ -177,6 +177,7 @@ class proforma_form_creator extends base_form_creator {
      * @param $oelement
      * @return string
      */
+    /*
     private function create_downloadlist($qelement, $oelement) {
         $qelement = $oelement;
         if (isset($qelement)) {
@@ -189,6 +190,7 @@ class proforma_form_creator extends base_form_creator {
         }
         return '';
     }
+    */
 
     /**
      * Prepare question to fit form field names and values.
@@ -203,12 +205,14 @@ class proforma_form_creator extends base_form_creator {
         $form = $editor->get_form();
 
         // Create lists for download links in edit form.
+        /*
         foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
             $property1 = $value['formlist'];
             $property2 = $value['questionlist'];
             $question->$property1 = $this->create_downloadlist($question->$property2,
                     $question->options->$property2);
         }
+        */
 
         // create template list with all template files without the first one
         // which gets its own editor
@@ -221,20 +225,11 @@ class proforma_form_creator extends base_form_creator {
             $form->removeElement('furtherTemplates');
         }
 
-        // todo: create mslinks from filearea??
+        // Create links for model solution files
         $ms_filearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
         $question->mslinks = $ms_filearea->get_files_as_links($question->contextid,
                 $question->id);
-/*
-        if (!empty($question->modelsolfiles)) {
-            $question->mslinks = '';
-            foreach (explode(',', $question->modelsolfiles) as $ms) {
-                $url = moodle_url::make_pluginfile_url($cat, 'qtype_proforma',
-                        qtype_proforma::FILEAREA_MODELSOL, $question->id, '/', $ms);
-                $question->mslinks = $question->mslinks . '<a href=' . $url->out() . '>' . $ms . '</a> ';
-            }
-        }
-*/
+
         $taskfilehandler = new qtype_proforma_proforma_task;
         $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
     }

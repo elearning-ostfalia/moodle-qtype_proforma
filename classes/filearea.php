@@ -99,7 +99,7 @@ class qtype_proforma_filearea {
                 $files[] = $file->get_filename();
             }
         }
-        return implode(',', $files);
+        return implode(', ', $files);
     }
 
     public function get_files_as_links($context_id, $question_id) {
@@ -110,11 +110,11 @@ class qtype_proforma_filearea {
             if ($file->get_filename() != '.' and $file->get_filename() != '..') {
                 $url = moodle_url::make_pluginfile_url($context_id, 'qtype_proforma',
                         $this->_name, $question_id, '/', $file->get_filename());
-                $link = '<a href=' . $url->out() . '>' . $file->get_filename() . '</a> ';
+                $link = '<a href=' . $url->out() . '>' . $file->get_filename() . '</a>';
                 $links[] = $link;
             }
         }
-        return implode(',', $links);
+        return implode(', ', $links);
     }
 
     /**

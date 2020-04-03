@@ -151,7 +151,7 @@ Feature: IMPORT (Moodle-XML format)
     And the field with name "testid[1]" matches value "2"
     # static fields
     # download links
-    And I should see "lib.txt, instruction.txt"
+    And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
     And I should see "templ2.txt"

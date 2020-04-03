@@ -482,10 +482,10 @@ class qtype_proforma extends question_type {
             if (is_array($datafiles)) { // Seems like a non-array does occur in some versions of PHP!
                 $property = $value["formid"];
                 //debugging('import ' . $property . ' files as draft');
-                // old: extra variable for storing draft id
-                $qo->$property = $format->import_files_as_draft($datafiles);
                 // new: use filearea as variable for storing draft id
-                $qo->$filearea = $qo->$property;
+                $qo->$filearea = $format->import_files_as_draft($datafiles);
+                // old: extra variable for storing draft id
+                $qo->$property = $qo->$filearea;
             }
         }
 

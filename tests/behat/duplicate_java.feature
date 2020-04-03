@@ -153,7 +153,7 @@ Feature: DUPLICATE JAVA
     """
 # todo: try and check values of static fields
     # download links
-    #And I should see "lib.txt, instruction.txt"
+    #And I should see "instruction.txt, lib.txt"
     #And I should see "ms1.txt"
     #And I should see "ms2.txt"
 #    And I should see "MyString.java"
@@ -216,7 +216,7 @@ Feature: DUPLICATE JAVA
     """
 # todo: try and check values of static fields
     # download links
-    #And I should see "lib.txt, instruction.txt"
+    #And I should see "instruction.txt, lib.txt"
     #And I should see "ms1.txt"
     #And I should see "ms2.txt"
 #    And I should see "MyString.java"
@@ -281,7 +281,7 @@ Feature: DUPLICATE JAVA
     """
 # todo: try and check values of static fields
     # download links
-    #And I should see "lib.txt, instruction.txt"
+    #And I should see "instruction.txt, lib.txt"
     #And I should see "ms1.txt"
     #And I should see "ms2.txt"
 #    And I should see "MyString.java"

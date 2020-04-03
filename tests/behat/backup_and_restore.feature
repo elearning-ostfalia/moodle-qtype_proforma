@@ -98,7 +98,7 @@ Feature: BACKUP AND RESTORE
     And the field with name "testtype[0]" matches value "TEST-CONFIG 1"
     And the field with name "testtype[1]" matches value "TEST-CONFIG 2"
     # download links
-    And I should see "lib.txt, instruction.txt"
+    And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
 #    And I should see "MyString.java"
@@ -140,7 +140,7 @@ Feature: BACKUP AND RESTORE
     And the field with name "testtype[1]" matches value "TEST-CONFIG 2"
 # todo: try and check values of static fields
     # download links
-    And I should see "lib.txt, instruction.txt"
+    And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
     # grader settings
