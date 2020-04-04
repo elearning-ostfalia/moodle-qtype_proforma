@@ -120,14 +120,14 @@ class qtype_proforma extends question_type {
                 self::FILEAREA_TEMPLATE => array(
                         "formid" => "templateid", // draftid from qformat_proforma (import)
                         "files" => "templatefiles",
-                        "questionlist" => "templates",
+                        "dbcolumn" => "templates",
                         "formlist" => "templatelist",
                         "value" => "template"
                 ),
                 self::FILEAREA_DOWNLOAD => array(
                         "formid" => "downloadid", // draft id (for use in Proforma import or duplicate)
                         "files" => "downloadfiles", // tag in xml export
-                        "questionlist" => "downloads", // name of question attribute resp. database column
+                        "dbcolumn" => "downloads", // name of question attribute resp. database column
                         "formlist" => "downloadlist", // name of bound input in edit form
                         "value" => null
                 )
@@ -145,7 +145,7 @@ class qtype_proforma extends question_type {
         $fileareas[self::FILEAREA_MODELSOL] = array(
                 "formid" => "modelsolid", // filearea draftid
                 "files" => "modelsolutionfiles",
-                "questionlist" => "modelsolfiles",
+                "dbcolumn" => "modelsolfiles",
                 "formlist" => "modelsollist",
                 "value" => "modelsolution"
         );
@@ -162,7 +162,7 @@ class qtype_proforma extends question_type {
         $fileareas[self::FILEAREA_TASK] = array(
                 "formid" => "taskfiledraftid" /*,
                 "files" => "modelsolutionfiles",
-                //" questionlist" => "modelsolfiles",
+                //" dbcolumn" => "modelsolfiles",
                 // "formlist" => "modelsollist"
                 */
         );
@@ -218,7 +218,7 @@ class qtype_proforma extends question_type {
         );
 
         foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
-            $result[] = $value['questionlist'];
+            $result[] = $value['dbcolumn'];
         }
 
         return $result;

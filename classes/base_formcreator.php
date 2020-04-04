@@ -96,12 +96,12 @@ abstract class base_form_creator {
 
         // add hidden fields for filearea draft ids (if any)
         foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
-            $property = $value['formid'];
+            /*$property = $value['formid'];
             if (!isset($property)) {
                 throw new coding_exception('formid is not set for filearea ' + $filearea);
             }
             // Old approach:
-            $hiddenfields[] = $property;
+            $hiddenfields[] = $property;*/
             // New approach:
             $hiddenfields[] = $filearea;
         }
@@ -539,23 +539,13 @@ abstract class base_form_creator {
         // (needed for import and duplication).
         foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
             $filearea_object = new qtype_proforma_filearea($filearea);
-            $filearea_object->on_save($formdata, $options, $value['questionlist']);
-
-/*
-            $property = $filearea; // $value['formid'];
-            if (!empty($formdata->$property)) {
-                // debugging('save draft: ' . $property);
-                file_save_draft_area_files($formdata->$property,
-                        $context->id, 'qtype_proforma', $filearea, $formdata->id);
-            }
-            */
+            $filearea_object->on_save($formdata, $options, $value['dbcolumn']);
         }
 
-        //??????
-        // store response template as file (it is stored as file and as member variable
+        // Store response template as file (it is stored as file and as member variable
         // in order to support file download and editor template in student view)
         // note! at first store draft files, then override first template file
-        if (empty($formdata->templates)) {
+        if (empty($options->templates)) {
             // no templates yet defined but the teacher has entered a template text
             if (!empty($formdata->responsetemplate)) {
                 // handle situation where the template is created in moodle for the first time:
@@ -565,26 +555,7 @@ abstract class base_form_creator {
                         $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
             }
         }
-        // } else {
-/*
-            // todo: if $formdata->responsetemplate is empty
-            // then delete file and remove filename from template list
-            // (coulde be deleted in a row...)
-            $templates = explode(',', $formdata->templates);
-            if (!qtype_proforma\lib\save_as_file($context->id, qtype_proforma::FILEAREA_TEMPLATE,
-                    $templates[0], $formdata->responsetemplate, $formdata->id)) {
-                // no file was stored => delete filename from list
-                array_shift($templates);
-                $options->templates = $formdata->templates = implode(',', $templates);
-                if (count($templates) > 0) {
-                    // set text of $formdata->responsetemplate to text of first element
-                    // todo: remove variable responsetemplate from database
-                    $options->responsetemplate = $formdata->responsetemplate = qtype_proforma\lib\read_file_content($context->id,
-                            qtype_proforma::FILEAREA_TEMPLATE, $templates[0], $formdata->id);
-                }
-            }
-*/
-//        }
+
 
         $taskfilearea = qtype_proforma::FILEAREA_TASK;
         if (!empty($formdata->taskfiledraftid)) {

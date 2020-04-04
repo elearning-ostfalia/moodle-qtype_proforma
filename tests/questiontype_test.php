@@ -415,10 +415,10 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $this->assert(new question_check_specified_fields_expectation($expectedq), $importedq);
 
         // check for existing file id
-        $this->assertEquals(true, isset($importedq->taskfiledraftid));
-        $this->assertEquals(true, isset($importedq->templateid));
-        $this->assertEquals(true, isset($importedq->downloadid));
-        $this->assertEquals(true, isset($importedq->modelsolid));
+        $this->assertEquals(true, isset($importedq->task));
+        $this->assertEquals(true, isset($importedq->template));
+        $this->assertEquals(true, isset($importedq->download));
+        $this->assertEquals(true, isset($importedq->modelsol));
     }
 
 }

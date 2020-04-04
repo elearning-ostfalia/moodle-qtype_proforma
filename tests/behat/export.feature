@@ -23,9 +23,9 @@ Feature: EXPORT
       | Course       | C1        | Test questions |
     And the following "questions" exist:
       | questioncategory | qtype | name      | template         |
-      | Test questions   | proforma | proforma-001-e | editor           |
-      | Test questions   | proforma | proforma-002-java1 | java1           |
-      | Test questions   | proforma | proforma-003-fp | filepicker            |
+      | Test questions   | proforma | proforma-001 | editor           |
+      | Test questions   | proforma | proforma-002 | java1           |
+      | Test questions   | proforma | proforma-003 | filepicker            |
 #      | Test questions   | proforma | proforma-003 | java_2junit            |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage

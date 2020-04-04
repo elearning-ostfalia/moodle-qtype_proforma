@@ -173,7 +173,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $question->taskfilename = '';
 
             foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
-                $property = $value["questionlist"];
+                $property = $value["dbcolumn"];
                 $question->$property = '';
             }
 
