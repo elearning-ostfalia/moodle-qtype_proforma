@@ -90,19 +90,12 @@ abstract class base_form_creator {
     public function add_hidden_fields() {
         $mform = $this->form;
 
-        $hiddenfields = array('taskfilename', 'taskpath', 'templates', 'modelsolfiles', 'downloads'
+        $hiddenfields = array('taskfilename', 'taskpath', // 'templates', 'modelsolfiles', 'downloads'
         // , 'gradinghints' // values for grading hints are redundant
         );
 
         // add hidden fields for filearea draft ids (if any)
         foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
-            /*$property = $value['formid'];
-            if (!isset($property)) {
-                throw new coding_exception('formid is not set for filearea ' + $filearea);
-            }
-            // Old approach:
-            $hiddenfields[] = $property;*/
-            // New approach:
             $hiddenfields[] = $filearea;
         }
 
@@ -413,9 +406,6 @@ abstract class base_form_creator {
                 $question->$property1 = $filearea_object->get_files_as_stringlist($cat, $question->id);
                 // debugging('List: ' . $property1 . ': ' . $question->$property1);
             }
-            // old (only needed for $question->makecopy == 1:
-            $property = $value["formid"];
-            $question->$property = $question->$filearea;
         }
 
         // Special handling for comment.
@@ -556,12 +546,8 @@ abstract class base_form_creator {
             }
         }
 
-
         $taskfilearea = qtype_proforma::FILEAREA_TASK;
-        if (!empty($formdata->taskfiledraftid)) {
-            file_save_draft_area_files($formdata->taskfiledraftid,
-                    $context->id, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $formdata->id);
-        } else if (isset($formdata->$taskfilearea)) {
+        if (isset($formdata->$taskfilearea)) {
             file_save_draft_area_files($formdata->$taskfilearea,
                     $context->id, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $formdata->id);
         } else if (isset($formdata->taskfile)) {

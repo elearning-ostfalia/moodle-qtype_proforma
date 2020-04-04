@@ -188,7 +188,6 @@ class proforma_form_creator extends base_form_creator {
         $alltemplates = explode(',', $question->templates);
         $question->firstTemplate = array_shift($alltemplates);
         $question->furtherTemplates = implode(',', $alltemplates);
-
         if (strlen($question->furtherTemplates) == 0) {
             $form->removeElement('furtherTemplates');
         }
@@ -209,8 +208,17 @@ class proforma_form_creator extends base_form_creator {
      * @param $options
      */
     public function save_question_options(&$options) {
-        parent::save_question_options($options);
         $formdata = $this->form;
+        if (isset($formdata->taskfiledraftid)) {
+            // special handling for proforma import (interim solution):
+            // rename draftid property
+            $formdata->task = $formdata->taskfiledraftid;
+            $formdata->modelsol = $formdata->modelsolid;
+            $formdata->download = $formdata->downloadid;
+            $formdata->template = $formdata->templateid;
+        }
+        parent::save_question_options($options);
+
         $instance = new qtype_proforma_proforma_task();
         $options->gradinghints = $instance->create_lms_grading_hints($formdata);
     }

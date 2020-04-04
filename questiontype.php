@@ -118,14 +118,12 @@ class qtype_proforma extends question_type {
     public static function fileareas_for_studentfiles() {
         return array(
                 self::FILEAREA_TEMPLATE => array(
-                        "formid" => "templateid", // draftid from qformat_proforma (import)
                         "files" => "templatefiles",
                         "dbcolumn" => "templates",
                         "formlist" => "templatelist",
                         "value" => "template"
                 ),
                 self::FILEAREA_DOWNLOAD => array(
-                        "formid" => "downloadid", // draft id (for use in Proforma import or duplicate)
                         "files" => "downloadfiles", // tag in xml export
                         "dbcolumn" => "downloads", // name of question attribute resp. database column
                         "formlist" => "downloadlist", // name of bound input in edit form
@@ -143,7 +141,6 @@ class qtype_proforma extends question_type {
     public static function fileareas_with_model_solutions() {
         $fileareas = self::fileareas_for_studentfiles();
         $fileareas[self::FILEAREA_MODELSOL] = array(
-                "formid" => "modelsolid", // filearea draftid
                 "files" => "modelsolutionfiles",
                 "dbcolumn" => "modelsolfiles",
                 "formlist" => "modelsollist",
@@ -160,7 +157,7 @@ class qtype_proforma extends question_type {
     public static function proforma_fileareas() {
         $fileareas = self::fileareas_with_model_solutions();
         $fileareas[self::FILEAREA_TASK] = array(
-                "formid" => "taskfiledraftid" /*,
+                /*,
                 "files" => "modelsolutionfiles",
                 //" dbcolumn" => "modelsolfiles",
                 // "formlist" => "modelsollist"
@@ -480,25 +477,15 @@ class qtype_proforma extends question_type {
             $datafiles = $format->getpath($data,
                     array('#', $value["files"], 0, '#', 'file'), array());
             if (is_array($datafiles)) { // Seems like a non-array does occur in some versions of PHP!
-                $property = $value["formid"];
-                //debugging('import ' . $property . ' files as draft');
-                // new: use filearea as variable for storing draft id
                 $qo->$filearea = $format->import_files_as_draft($datafiles);
-                // old: extra variable for storing draft id
-                $qo->$property = $qo->$filearea;
             }
         }
-
-
 
         $datafiles = $format->getpath($data,
                 array('#', 'task', 0, '#', 'file'), array());
         if (is_array($datafiles)) { // Seems like a non-array does occur in some versions of PHP!
-            // old: extra variable for storing draft id
-            $qo->taskfiledraftid = $format->import_files_as_draft($datafiles);
-            // new: use filearea as variable for storing draft id
             $filearea = qtype_proforma::FILEAREA_TASK;
-            $qo->$filearea = $qo->taskfiledraftid;
+            $qo->$filearea = $format->import_files_as_draft($datafiles);
         }
 
         return $qo;

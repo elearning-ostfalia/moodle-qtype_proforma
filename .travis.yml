@@ -55,11 +55,11 @@ jobs:
         - MOODLE_BRANCH=MOODLE_36_STABLE
         - DB=pgsql
 
-#    - name: 'Moodle 3.6.7, PHP 7.3, PostgreSQL'
-#      php: 7.1
-#      env:
-#        - MOODLE_BRANCH=v3.6.7
-#        - DB=pgsql
+    - name: 'Moodle 3.6.8, PHP 7.3, PostgreSQL'
+      php: 7.3
+      env:
+        - MOODLE_BRANCH=v3.6.8
+        - DB=pgsql
 
 
 env:
