@@ -52,7 +52,7 @@
     <vcsuritemplate></vcsuritemplate>
     <vcslabel></vcslabel>
     <templates>temp.txt</templates>
-    <downloads>lib.txt,instruction.txt</downloads>
+    <downloads>instruction.txt, lib.txt</downloads>
     <modelsolfiles>ms1.txt, ms2.txt</modelsolfiles>
     <comment format="html">
       <text><![CDATA[<p>Check if the code uses a library function.</p>]]></text>
@@ -185,7 +185,7 @@
     <vcsuritemplate></vcsuritemplate>
     <vcslabel></vcslabel>
     <templates>codesnippet.py</templates>
-    <downloads>lib.txt,instruction.txt</downloads>
+    <downloads>instruction.txt, lib.txt</downloads>
     <modelsolfiles>ms1.txt, ms2.txt</modelsolfiles>
     <comment format="html">
       <text><![CDATA[<p>Check if the code uses a library function.</p>]]></text>

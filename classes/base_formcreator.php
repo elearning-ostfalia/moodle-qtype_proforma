@@ -406,42 +406,17 @@ abstract class base_form_creator {
         // $form = $editor->get_form();
         // prepare all fileareas
         foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
-/*            if (isset($question->$filearea)) {
-                // we already have a draft area => ready
-                // debugging('draftid available');
-                continue;
-            }*/
             $filearea_object = new qtype_proforma_filearea($filearea);
             $filearea_object->on_preprocess($editor->context->id, $question);
             if (isset($value['formlist'])) {
                 $property1 = $value['formlist'];
                 $question->$property1 = $filearea_object->get_files_as_stringlist($cat, $question->id);
+                // debugging('List: ' . $property1 . ': ' . $question->$property1);
             }
             // old (only needed for $question->makecopy == 1:
             $property = $value["formid"];
             $question->$property = $question->$filearea;
-/*
-            // prepare draft file area (in case of copy)
-            $property = $value["formid"];
-            if (isset($question->$property)) {
-                // we already have a draft area => ready
-                continue;
-            }
-            $draftid = file_get_submitted_draft_itemid($property);
-            if ($draftid === 0  and $question->makecopy === 1) {
-                // We need to copy question.
-                $fileoptions = $editor->fileoptions;
-                $fileoptions['subdirs'] = false;
-                file_prepare_draft_area($draftid, $editor->context->id,
-                        'qtype_proforma', $filearea,
-                        empty($question->id) ? null : (int) $question->id,
-                        $editor->fileoptions);
-            }
-            $question->$property = $draftid;
-*/
         }
-        // !!! (todo replace draftid by filearea)
-        // $question->modelsol = $question->modelsolid;
 
         // Special handling for comment.
         $draftid = file_get_submitted_draft_itemid(qtype_proforma::FILEAREA_COMMENT);
@@ -559,15 +534,21 @@ abstract class base_form_creator {
     public function save_question_options(&$options) {
         $formdata = $this->form;
         $context = $formdata->context;
+
         // Save files from draft area into proforma areas (modelsolution, downloads, templates)
         // (needed for import and duplication).
         foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
-            $property = $value['formid'];
+            $filearea_object = new qtype_proforma_filearea($filearea);
+            $filearea_object->on_save($formdata, $options, $value['questionlist']);
+
+/*
+            $property = $filearea; // $value['formid'];
             if (!empty($formdata->$property)) {
                 // debugging('save draft: ' . $property);
                 file_save_draft_area_files($formdata->$property,
                         $context->id, 'qtype_proforma', $filearea, $formdata->id);
             }
+            */
         }
 
         //??????
@@ -583,13 +564,15 @@ abstract class base_form_creator {
                 qtype_proforma\lib\save_as_file($context->id, qtype_proforma::FILEAREA_TEMPLATE,
                         $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
             }
-        } else {
+        }
+        // } else {
+/*
             // todo: if $formdata->responsetemplate is empty
             // then delete file and remove filename from template list
             // (coulde be deleted in a row...)
             $templates = explode(',', $formdata->templates);
             if (!qtype_proforma\lib\save_as_file($context->id, qtype_proforma::FILEAREA_TEMPLATE,
-                    $templates[0] /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id)) {
+                    $templates[0], $formdata->responsetemplate, $formdata->id)) {
                 // no file was stored => delete filename from list
                 array_shift($templates);
                 $options->templates = $formdata->templates = implode(',', $templates);
@@ -600,7 +583,8 @@ abstract class base_form_creator {
                             qtype_proforma::FILEAREA_TEMPLATE, $templates[0], $formdata->id);
                 }
             }
-        }
+*/
+//        }
 
         $taskfilearea = qtype_proforma::FILEAREA_TASK;
         if (!empty($formdata->taskfiledraftid)) {

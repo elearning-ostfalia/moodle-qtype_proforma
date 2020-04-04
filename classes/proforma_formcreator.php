@@ -171,28 +171,6 @@ class proforma_form_creator extends base_form_creator {
     }
 
     /**
-     * Create text for download list
-     *
-     * @param $qelement
-     * @param $oelement
-     * @return string
-     */
-    /*
-    private function create_downloadlist($qelement, $oelement) {
-        $qelement = $oelement;
-        if (isset($qelement)) {
-            $list = array();
-            foreach (explode(',', $qelement) as $download) {
-                $list[] = $download;
-            }
-            $downloadlist = implode(', ', $list);
-            return $downloadlist;
-        }
-        return '';
-    }
-    */
-
-    /**
      * Prepare question to fit form field names and values.
      *
      * @param $question
@@ -203,16 +181,6 @@ class proforma_form_creator extends base_form_creator {
     public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
         parent::data_preprocessing($question, $cat, $editor);
         $form = $editor->get_form();
-
-        // Create lists for download links in edit form.
-        /*
-        foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
-            $property1 = $value['formlist'];
-            $property2 = $value['questionlist'];
-            $question->$property1 = $this->create_downloadlist($question->$property2,
-                    $question->options->$property2);
-        }
-        */
 
         // create template list with all template files without the first one
         // which gets its own editor

@@ -68,10 +68,10 @@ class qtype_proforma_test_helper extends question_test_helper {
 
     const QUESTION_INSTRUCTIONS = 'instruction.txt';
     const QUESTION_LIBRARIES = 'lib.txt';
-    const QUESTION_DOWNLOADS = qtype_proforma_test_helper::QUESTION_LIBRARIES .','.
-        qtype_proforma_test_helper::QUESTION_INSTRUCTIONS;
+    const QUESTION_DOWNLOADS =  qtype_proforma_test_helper::QUESTION_INSTRUCTIONS .', '.
+        qtype_proforma_test_helper::QUESTION_LIBRARIES;
 
-    const QUESTION_TEMPLATES = 'temp.txt'; // 'templ1.txt, templ2.txt';
+    const QUESTION_TEMPLATES = 'temp.txt';
     const QUESTION_TEMPLATES_2 = 'codesnippet.py';
     const QUESTION_MODELSOLS = 'ms1.txt, ms2.txt';
     const QUESTION_TASKFILENAME = 'testtask.zip';
@@ -206,22 +206,22 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'itemid' => '34635511'));
 
         if (isset($container->taskstorage) && $container->taskstorage == qtype_proforma::PERSISTENT_TASKFILE) {
-            $container->taskfiledraftid =  file_get_unused_draft_itemid(); // $this->make_attachment_draft_area();
-            $this->make_attachment_in_draft_area($container->taskfiledraftid, $container->taskfilename,
+
+            $container->task =  file_get_unused_draft_itemid();
+            $this->make_attachment_in_draft_area($container->task, $container->taskfilename,
                     'Task.Zip-Dummy');
 
-            $container->modelsolid = file_get_unused_draft_itemid();
-            $this->make_attachment_in_draft_area($container->modelsolid, 'ms1.txt',
+            $container->modelsol = file_get_unused_draft_itemid();
+            $this->make_attachment_in_draft_area($container->modelsol, 'ms1.txt',
                     'MS1-Dummy');
-            $this->make_attachment_in_draft_area($container->modelsolid, 'ms2.txt',
+            $this->make_attachment_in_draft_area($container->modelsol, 'ms2.txt',
                     'MS2-Dummy');
 
-            $container->downloadid = file_get_unused_draft_itemid();
-            $this->make_attachment_in_draft_area($container->downloadid, 'lib.txt',
+            $container->download = file_get_unused_draft_itemid();
+            $this->make_attachment_in_draft_area($container->download, self::QUESTION_LIBRARIES,
                     'LIB-Dummy');
 
-//            $container->instructionid = file_get_unused_draft_itemid();
-            $this->make_attachment_in_draft_area($container->downloadid, 'instruction.txt',
+            $this->make_attachment_in_draft_area($container->download, self::QUESTION_INSTRUCTIONS,
                     'INSTRUCTION-Dummy');
 
         }
@@ -236,6 +236,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         question_bank::load_question_definition_classes('proforma');
         $q = new qtype_proforma_question();
         test_question_maker::initialise_a_question($q);
+        //$q->contextid = context_system::instance()->id;
         $q->name = self::QUESTION_NAME;
         $q->questiontext = self::QUESTION_TEXT;
         $q->generalfeedback = self::QUESTION_GENERAL_FEEDBACK;
@@ -268,8 +269,11 @@ class qtype_proforma_test_helper extends question_test_helper {
      */
     public function make_proforma_question_editor() {
         $q = $this->initialise_proforma_question();
+        $q->contextid = 12;
+        $q->id = 75;
         $q->responseformat = 'editor';
         $q->attachments = 0;
+
         return $q;
     }
 
@@ -284,7 +288,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $q->templates = self::QUESTION_TEMPLATES_2;
         $q->programminglanguage = 'python';
-        $q->responsetemplate = ''; // ????
+        $q->responsetemplate = '#code snippet for python';
         $q->uuid = 'UUID 2';
 
         return $q;
@@ -315,9 +319,13 @@ class qtype_proforma_test_helper extends question_test_helper {
         $fromform->testtitle[0] = 'a tile 1';
         $fromform->testtitle[1] = 'a tile 2';
 
+        $fromform->template = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($fromform->template, self::QUESTION_TEMPLATES,
+                self::QUESTION_TEMPLATE);
+
         return $fromform;
     }
-
+/*
     public function get_proforma_question_data_editor() {
         $fromform = new stdClass();
 
@@ -327,6 +335,8 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         return $fromform;
     }
+*/
+
 
 
     public function get_proforma_question_form_data_filepicker() {
@@ -335,13 +345,13 @@ class qtype_proforma_test_helper extends question_test_helper {
         $fromform->responseformat = 'filepicker';
         $fromform->attachments = 3;
 
-
-        // two templates
         $fromform->templates = self::QUESTION_TEMPLATES_2;
-        $fromform->templateid = file_get_unused_draft_itemid();
-        $this->make_attachment_in_draft_area($fromform->templateid, self::QUESTION_TEMPLATES_2, //'templ1.txt',
+        $property = qtype_proforma::FILEAREA_TEMPLATE;
+        $fromform->$property = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
                 '#code snippet for python');
         $fromform->programminglanguage = 'python';
+        //$fromform->responsetemplate = '';
 
         $fromform->uuid = 'UUID 2';
 
@@ -478,6 +488,11 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testid[2] = '3';
 
         $form->defaultmark = 3.0;
+
+//       $form->download = file_get_unused_draft_itemid();
+//        $this->make_attachment_in_draft_area($form->download, 'a.txt', 'text');
+        // self::QUESTION_TEMPLATES, self::QUESTION_TEMPLATE);
+
 
         return $form;
     }

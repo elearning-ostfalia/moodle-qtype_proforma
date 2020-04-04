@@ -1,5 +1,8 @@
+##########################################################################
+# DOES NOT WORK (PROBABELY BECAUSE OF TEST ENVIRONMENT)
 @qtype @qtype_proforma
 Feature: EXPORT
+##########################################################################
   Test exporting ProFormA questions
   As a teacher
   In order to be able to reuse my ProFormA questions
@@ -20,13 +23,15 @@ Feature: EXPORT
       | Course       | C1        | Test questions |
     And the following "questions" exist:
       | questioncategory | qtype | name      | template         |
-      | Test questions   | proforma | proforma-001 | editor           |
-      | Test questions   | proforma | proforma-002 | java1           |
-      | Test questions   | proforma | proforma-003 | filepicker            |
+      | Test questions   | proforma | proforma-001-e | editor           |
+      | Test questions   | proforma | proforma-002-java1 | java1           |
+      | Test questions   | proforma | proforma-003-fp | filepicker            |
+#      | Test questions   | proforma | proforma-003 | java_2junit            |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
 
   Scenario: Export 4 ProFormA questions
+#    When I pause
     When I navigate to "Question bank > Export" in current page administration
     And I set the field "id_format_xml" to "1"
     And I press "Export questions to file"

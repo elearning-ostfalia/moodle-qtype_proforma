@@ -131,9 +131,8 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
 
     }
 
-    public function test_xml_export() {
+    public function test_xml_export_editor() {
         global $CFG, $USER;
-
 
         $this->resetAfterTest(true);
         $this->setAdminUser();
@@ -146,10 +145,6 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $question->contextid = 1; // must be the same as in questiontype.save_question_options
         // where do we get it? evaluated by debugging :-(
         $question->hidden = null; // dummy
-
-
-        //$q = test_question_maker::make_question('proforma', 'editor');
-        //$qdata = test_question_maker::get_question_data('proforma', 'editor');
 
         $questiontype = new qtype_proforma();
         $questiontype->get_question_options($question);
@@ -197,6 +192,90 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
       <text><![CDATA['.qtype_proforma_test_helper::QUESTION_COMMENT.']]></text>
     </comment>
 <templatefiles><file name="'.qtype_proforma_test_helper::QUESTION_TEMPLATES.'" path="/" encoding="base64">Ly90ZXh0IGluIHJlc3BvbnNldGVtcGxhdGU=</file>
+</templatefiles>
+<downloadfiles><file name="instruction.txt" path="/" encoding="base64">SU5TVFJVQ1RJT04tRHVtbXk=</file>
+<file name="lib.txt" path="/" encoding="base64">TElCLUR1bW15</file>
+</downloadfiles>
+<modelsolutionfiles><file name="ms1.txt" path="/" encoding="base64">TVMxLUR1bW15</file>
+<file name="ms2.txt" path="/" encoding="base64">TVMyLUR1bW15</file>
+</modelsolutionfiles>
+<task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
+</task>
+<commentfiles></commentfiles>
+    <hint format="html">
+      <text><![CDATA[hint 1<br>]]></text>
+    </hint>
+    <hint format="html">
+      <text><![CDATA[hint 2<br>]]></text>
+    </hint>
+  </question>
+';
+
+        $this->assert_same_xml($expectedxml, $export);
+    }
+
+
+    public function test_xml_export_filepicker() {
+        global $CFG, $USER;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $usercontextid = context_user::instance($USER->id)->id;
+
+        // Create a proforma question in the DB.
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $cat = $generator->create_question_category();
+        $question = $generator->create_question('proforma', 'filepicker', array('category' => $cat->id));
+        $question->contextid = 1; // must be the same as in questiontype.save_question_options
+        // where do we get it? evaluated by debugging :-(
+        $question->hidden = null; // dummy
+
+        $questiontype = new qtype_proforma();
+        $questiontype->get_question_options($question);
+        $exporter = new qformat_xml();
+        //$export = $questiontype->export_to_xml($question, $exporter);
+        $export = $exporter->writequestion($question);
+
+        $expectedxml = '<!-- question: '. $question->id . '  -->
+  <question type="proforma">
+    <name>
+      <text>'.qtype_proforma_test_helper::QUESTION_NAME.'</text>
+    </name>
+    <questiontext format="html">
+      <text>'.qtype_proforma_test_helper::QUESTION_TEXT.'</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text><![CDATA['.qtype_proforma_test_helper::QUESTION_GENERAL_FEEDBACK.']]></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.2</penalty>
+    <hidden></hidden>
+    <idnumber></idnumber>
+    <uuid>UUID 2</uuid>
+    <proformaversion>2.0</proformaversion>
+    <taskrepository>'.qtype_proforma_test_helper::QUESTION_REPOSITORY.'</taskrepository>
+    <taskpath>'.qtype_proforma_test_helper::QUESTION_PATH.'</taskpath>
+    <taskfilename>'.qtype_proforma_test_helper::QUESTION_TASKFILENAME.'</taskfilename>
+    <responsefilename>'.qtype_proforma_test_helper::QUESTION_FILENAME.'</responsefilename>
+    <programminglanguage>python</programminglanguage>
+    <responsetemplate>'.qtype_proforma_test_helper::QUESTION_TEMPLATE.'</responsetemplate>
+    <responseformat>filepicker</responseformat>
+    <responsefieldlines>10</responsefieldlines>
+    <attachments>3</attachments>
+    <maxbytes>10240</maxbytes>
+    <filetypes>.java, .jar</filetypes>
+    <taskstorage>'.qtype_proforma_test_helper::QUESTION_TASKSTORAGE.'</taskstorage>
+    <aggregationstrategy>1</aggregationstrategy>
+    <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
+    <vcsuritemplate></vcsuritemplate>
+    <vcslabel></vcslabel>
+    <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES_2.'</templates>
+    <downloads>'.qtype_proforma_test_helper::QUESTION_DOWNLOADS.'</downloads>
+    <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
+    <comment format="html">
+      <text><![CDATA['.qtype_proforma_test_helper::QUESTION_COMMENT.']]></text>
+    </comment>
+<templatefiles><file name="'.qtype_proforma_test_helper::QUESTION_TEMPLATES_2.'" path="/" encoding="base64">I2NvZGUgc25pcHBldCBmb3IgcHl0aG9u</file>
 </templatefiles>
 <downloadfiles><file name="instruction.txt" path="/" encoding="base64">SU5TVFJVQ1RJT04tRHVtbXk=</file>
 <file name="lib.txt" path="/" encoding="base64">TElCLUR1bW15</file>

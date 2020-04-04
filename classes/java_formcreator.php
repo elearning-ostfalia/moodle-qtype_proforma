@@ -340,7 +340,6 @@ class java_form_creator extends base_form_creator {
             // When importing a moodle xml question the preprocessing step is missing.
             // So we must skip the creating task because the task.xml already exists
             // and some data needed to create task.xml does not.
-//        if (empty($formdata->taskfiledraftid)) { // Only handle empty taskfiledraftid, other cases are handled later.
             $taskfile = $instance->create_task_file($formdata);
             $options->taskfilename = 'task.xml';
             qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
