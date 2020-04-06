@@ -527,7 +527,8 @@ abstract class base_form_creator {
 
         // Save files from draft area into proforma areas (modelsolution, downloads, templates)
         // (needed for import and duplication).
-        foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
+        // foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
+        foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
             $filearea_object = new qtype_proforma_filearea($filearea);
             $filearea_object->on_save($formdata, $options, $value['dbcolumn']);
         }
@@ -535,24 +536,22 @@ abstract class base_form_creator {
         // Store response template as file (it is stored as file and as member variable
         // in order to support file download and editor template in student view)
         // note! at first store draft files, then override first template file
-        if (empty($options->templates)) {
-            // no templates yet defined but the teacher has entered a template text
-            if (!empty($formdata->responsetemplate)) {
-                // handle situation where the template is created in moodle for the first time:
-                // set dummy template name and store file
-                $options->templates = $formdata->templates = 'template.txt';
-                qtype_proforma\lib\save_as_file($context->id, qtype_proforma::FILEAREA_TEMPLATE,
-                        $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
-            }
+        if (empty($options->templates) && !empty($formdata->responsetemplate)) {
+            // no template files stored but the teacher has entered a template text:
+            // handle situation where the template is created in moodle for the first time:
+            // set dummy template name and store file
+            $options->templates = $formdata->templates = 'template.txt';
+            qtype_proforma\lib\save_as_file($context->id, qtype_proforma::FILEAREA_TEMPLATE,
+                    $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
         }
 
-        $taskfilearea = qtype_proforma::FILEAREA_TASK;
+        /* $taskfilearea = qtype_proforma::FILEAREA_TASK;
         if (isset($formdata->$taskfilearea)) {
             file_save_draft_area_files($formdata->$taskfilearea,
                     $context->id, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $formdata->id);
-        } else if (isset($formdata->taskfile)) {
+        }  */ /*else if (isset($formdata->taskfile)) {
             question_bank::get_qtype('qtype_proforma')->import_file(
                     $this->importcontext, 'qtype_proforma', 'task', $options->id, $formdata->taskfile);
-        }
+        }*/
     }
 }

@@ -157,9 +157,9 @@ class qtype_proforma extends question_type {
     public static function proforma_fileareas() {
         $fileareas = self::fileareas_with_model_solutions();
         $fileareas[self::FILEAREA_TASK] = array(
+                "dbcolumn" => "taskfilename"
                 /*,
                 "files" => "modelsolutionfiles",
-                //" dbcolumn" => "modelsolfiles",
                 // "formlist" => "modelsollist"
                 */
         );

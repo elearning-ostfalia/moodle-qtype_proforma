@@ -123,7 +123,7 @@ class qtype_proforma_filearea {
      * @param $context_id
      * @param $question_id
      */
-    public function save_draft_files($draft_id, $context_id, $question_id) {
+    private function save_draft_files($draft_id, $context_id, $question_id) {
         file_save_draft_area_files($draft_id, $context_id,
                 'qtype_proforma', $this->_name, $question_id);
     }
@@ -138,8 +138,10 @@ class qtype_proforma_filearea {
             // Save draft files in filearea.
             $this->save_draft_files($formdata->$attribute, $formdata->context->id, $formdata->id);
             // Create 'modelsolfiles' as list of filenames
-            $options->$dbcolumn = $this->get_files_as_stringlist($formdata->context->id,
-                    $formdata->id);
+            if (isset($dbcolumn)) {
+                $options->$dbcolumn = $this->get_files_as_stringlist($formdata->context->id,
+                        $formdata->id);
+            }
         }
     }
     /** save text as file with given filename in filearea
