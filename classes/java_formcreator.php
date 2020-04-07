@@ -342,21 +342,21 @@ class java_form_creator extends base_form_creator {
         if (!isset($formdata->import_process) or !$formdata->import_process) {
             // When importing a moodle xml question the preprocessing step is missing and
             // we have no actual form data.
-
             // So we must skip creating task because the task.xml already exists
             // and some data needed to create task.xml does not.
+
+            // Otherwise we create the task.xml from the input data
             $taskfile = $instance->create_task_file($formdata);
             $options->taskfilename = 'task.xml';
             qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
                     $formdata->context->id, $formdata->id);
-            if ($formdata->responseformat == qtype_proforma::RESPONSE_EDITOR) {//  Editor.
-                // Store model solution text as file
+            if ($formdata->responseformat == qtype_proforma::RESPONSE_EDITOR) { // Editor.
+                // Store model solution text as file.
                 // Property 'modelsolution' exists only if the form editor was used.
                 // So if we come from import we cannot evalute 'modelsolution'.
                 $this->_ms_filearea->save_textfile($formdata->context->id, $formdata->id,
-                        $formdata->responsefilename, isset($formdata->modelsolution)?$formdata->modelsolution:'');
+                        $formdata->responsefilename, isset($formdata->modelsolution) ? $formdata->modelsolution : '');
             }
         }
     }
-
 }

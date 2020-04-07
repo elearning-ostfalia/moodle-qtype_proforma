@@ -228,7 +228,7 @@ class qtype_proforma_question extends question_graded_automatically {
                     // maybe files got stuck in the draft area?? or system crash occured during attempt???
                     // throw new coding_exception("no files attached");
                     return '(uploaded file(s) currently not available)';
-                } else
+                }
 
                 if (count($files) > 1) {
                     // more than one file: return filenames
@@ -254,7 +254,7 @@ class qtype_proforma_question extends question_graded_automatically {
             if (isset($response['_feedback'])) {
                 try {
                     $feedback = new SimpleXMLElement($response['_feedback'], LIBXML_PARSEHUGE | LIBXML_NOERROR);
-                    $praktomat = $feedback->{'response-meta-data'}->children('praktomat', TRUE);
+                    $praktomat = $feedback->{'response-meta-data'}->children('praktomat', true);
                     $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
                     if (isset($vcs)) {
                         $attrib = $vcs->attributes();

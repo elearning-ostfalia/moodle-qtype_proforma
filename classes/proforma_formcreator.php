@@ -198,8 +198,8 @@ class proforma_form_creator extends base_form_creator {
         }
 
         // Create links for model solution files
-        $ms_filearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
-        $question->mslinks = $ms_filearea->get_files_as_links($question->contextid,
+        $msfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
+        $question->mslinks = $msfilearea->get_files_as_links($question->contextid,
                 $question->id);
 
         $taskfilehandler = new qtype_proforma_proforma_task;

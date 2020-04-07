@@ -414,14 +414,13 @@ class qtype_proforma_renderer extends qtype_renderer {
             }
         }
 
-
         try {
             // evaluate show version control information
-            $praktomat = $response->{'response-meta-data'}->children('praktomat', TRUE);
+            $praktomat = $response->{'response-meta-data'}->children('praktomat', true);
             $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
             if (isset($vcs) && count($vcs) > 0) {
                 $attrib = $vcs->attributes();
-                $vcstext = $attrib['name'] . ': ' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'] ;
+                $vcstext = $attrib['name'] . ': ' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'];
             } else {
                 $vcstext = null;
             }

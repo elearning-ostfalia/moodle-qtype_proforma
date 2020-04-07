@@ -219,7 +219,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
             throw new coding_exception('unexpected responseformat in qtype_proforma_format_versioncontrol_renderer');
         }
 
-        return (strpos($question->vcsuritemplate, PHINPUT) !== FALSE);
+        return (strpos($question->vcsuritemplate, PHINPUT) !== false);
     }
 
     /**
@@ -233,7 +233,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
             throw new coding_exception('unexpected responseformat in qtype_proforma_format_versioncontrol_renderer');
         }
 
-        return (strpos($question->vcsuritemplate, PHGROUP) !== FALSE);
+        return (strpos($question->vcsuritemplate, PHGROUP) !== false);
     }
 
     /**
@@ -350,5 +350,3 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
         return $this->name;
     }
 }
-
-

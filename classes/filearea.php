@@ -52,21 +52,22 @@ class qtype_proforma_filearea {
     }
     /**
      * for data_preprocessing
-     * @param $context_id
+     *
+     * @param $contextid
      * @param $question
      */
-    public function on_preprocess($context_id, &$question) {
+    public function on_preprocess($contextid, &$question) {
         $draftid = file_get_submitted_draft_itemid($this->_name);
         /* if (!is_numeric($draftid)) {
             throw new coding_exception('qtype_proforma_filearea: invalid draftid');
         }
-        if (!is_numeric($context_id)) {
-            throw new coding_exception('qtype_proforma_filearea: invalid $context_id');
+        if (!is_numeric($contextid)) {
+            throw new coding_exception('qtype_proforma_filearea: invalid $contextid');
         } */
         // for new questions the question id is undefined
-        $questionid = isset($question->id)?$question->id:null;
+        $questionid = isset($question->id) ? $question->id : null;
 
-        file_prepare_draft_area($draftid, $context_id, 'qtype_proforma', $this->_name,
+        file_prepare_draft_area($draftid, $contextid, 'qtype_proforma', $this->_name,
                 $questionid, array('subdirs' => 0));
         $attribute = $this->_name;
         $question->$attribute = $draftid;
@@ -75,14 +76,14 @@ class qtype_proforma_filearea {
     /**
      * get all files in filearea
      *
-     * @param $context_id
-     * @param $question_id
+     * @param $contextid
+     * @param $questionid
      * @return array
      * @throws coding_exception
      */
-    public function get_files($context_id, $question_id) {
+    public function get_files($contextid, $questionid) {
         $fs = get_file_storage();
-        $draftfiles = $fs->get_area_files($context_id, 'qtype_proforma', $this->_name, $question_id);
+        $draftfiles = $fs->get_area_files($contextid, 'qtype_proforma', $this->_name, $questionid);
         $files = array();
         foreach ($draftfiles as $file) {
             if ($file->get_filename() != '.' and $file->get_filename() != '..') {
@@ -94,14 +95,15 @@ class qtype_proforma_filearea {
 
     /**
      * get string with filename list
-     * @param $context_id
-     * @param $question_id
+     *
+     * @param $contextid
+     * @param $questionid
      * @return string
      * @throws coding_exception
      */
-    public function get_files_as_stringlist($context_id, $question_id) {
+    public function get_files_as_stringlist($contextid, $questionid) {
         $fs = get_file_storage();
-        $draftfiles = $fs->get_area_files($context_id, 'qtype_proforma', $this->_name, $question_id);
+        $draftfiles = $fs->get_area_files($contextid, 'qtype_proforma', $this->_name, $questionid);
         $files = array();
         foreach ($draftfiles as $file) {
             if ($file->get_filename() != '.' and $file->get_filename() != '..') {
@@ -113,19 +115,20 @@ class qtype_proforma_filearea {
 
     /**
      * returns the filenames as link list
-     * @param $context_id
-     * @param $question_id
+     *
+     * @param $contextid
+     * @param $questionid
      * @return string
      * @throws coding_exception
      */
-    public function get_files_as_links($context_id, $question_id) {
+    public function get_files_as_links($contextid, $questionid) {
         $fs = get_file_storage();
-        $files = $fs->get_area_files($context_id, 'qtype_proforma', $this->_name, $question_id);
+        $files = $fs->get_area_files($contextid, 'qtype_proforma', $this->_name, $questionid);
         $links = array();
         foreach ($files as $file) {
             if ($file->get_filename() != '.' and $file->get_filename() != '..') {
-                $url = moodle_url::make_pluginfile_url($context_id, 'qtype_proforma',
-                        $this->_name, $question_id, '/', $file->get_filename());
+                $url = moodle_url::make_pluginfile_url($contextid, 'qtype_proforma',
+                        $this->_name, $questionid, '/', $file->get_filename());
                 $link = '<a href=' . $url->out() . '>' . $file->get_filename() . '</a>';
                 $links[] = $link;
             }
@@ -153,14 +156,14 @@ class qtype_proforma_filearea {
     }
     /** save text as file with given filename in filearea
      *
-     * @param $context_id
-     * @param $question_id
+     * @param $contextid
+     * @param $questionid
      * @param string $filename
      * @param string $text
      * @throws coding_exception
      */
-    public function save_textfile($context_id, $question_id, string $filename, string $text) {
-        qtype_proforma\lib\save_as_file($context_id, $this->_name,
-                $filename, $text, $question_id, true);
+    public function save_textfile($contextid, $questionid, string $filename, string $text) {
+        qtype_proforma\lib\save_as_file($contextid, $this->_name,
+                $filename, $text, $questionid, true);
     }
 }

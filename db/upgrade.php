@@ -294,6 +294,5 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020021100, 'qtype', 'proforma');
     }
 
-
     return true;
 }

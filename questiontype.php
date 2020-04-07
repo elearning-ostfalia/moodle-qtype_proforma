@@ -121,13 +121,11 @@ class qtype_proforma extends question_type {
                         "files" => "templatefiles",
                         "dbcolumn" => "templates",
                         "formlist" => "templatelist",
-                        // "value" => "template"
                 ),
                 self::FILEAREA_DOWNLOAD => array(
                         "files" => "downloadfiles", // tag in xml export
                         "dbcolumn" => "downloads", // name of question attribute resp. database column
                         "formlist" => "downloadlist", // name of bound input in edit form
-                        // "value" => null
                 )
         );
     }
@@ -144,7 +142,6 @@ class qtype_proforma extends question_type {
                 "files" => "modelsolutionfiles",
                 "dbcolumn" => "modelsolfiles",
                 "formlist" => "modelsollist",
-                // "value" => "modelsolution"
         );
         return $fileareas;
     }
@@ -157,7 +154,8 @@ class qtype_proforma extends question_type {
     public static function proforma_fileareas() {
         $fileareas = self::fileareas_with_model_solutions();
         $fileareas[self::FILEAREA_TASK] = array(
-                "dbcolumn" => "taskfilename"
+                "files"    => "task",
+                "dbcolumn" => "taskfilename",
         );
         return $fileareas;
     }
@@ -168,12 +166,14 @@ class qtype_proforma extends question_type {
      *
      * @return array
      */
+    /*
     public static function all_fileareas() {
         $fileareas = self::fileareas_with_model_solutions();
-        $fileareas[self::FILEAREA_COMMENT] = array();
         $fileareas[self::FILEAREA_TASK] = array();
+        $fileareas[self::FILEAREA_COMMENT] = array();
         return $fileareas;
     }
+    */
 
     /**
      * Defines the table which extends the question table. This allows the base questiontype
@@ -319,7 +319,6 @@ class qtype_proforma extends question_type {
         parent::initialise_question_instance($question, $questiondata);
         $question->comment = $questiondata->options->comment;
         $question->commentformat = $questiondata->options->commentformat;
-
     }
 
     /**
@@ -485,21 +484,13 @@ class qtype_proforma extends question_type {
         // $qo->commentitemid = $comment['itemid'];
 
         // import files
-        foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
+        foreach (self::proforma_fileareas() as $filearea => $value) {
             $datafiles = $format->getpath($data,
                     array('#', $value["files"], 0, '#', 'file'), array());
             if (is_array($datafiles)) { // Seems like a non-array does occur in some versions of PHP!
                 $qo->$filearea = $format->import_files_as_draft($datafiles);
             }
         }
-
-        $datafiles = $format->getpath($data,
-                array('#', 'task', 0, '#', 'file'), array());
-        if (is_array($datafiles)) { // Seems like a non-array does occur in some versions of PHP!
-            $filearea = qtype_proforma::FILEAREA_TASK;
-            $qo->$filearea = $format->import_files_as_draft($datafiles);
-        }
-
         return $qo;
     }
 
@@ -532,15 +523,11 @@ class qtype_proforma extends question_type {
         $fs = get_file_storage();
         $contextid = $question->contextid;
 
-        foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
+        foreach (self::proforma_fileareas() as $filearea => $value) {
             $datafiles = $fs->get_area_files(
                     $contextid, 'qtype_proforma', $filearea, $question->id);
             $expout .= '<' . $value['files'] . '>' . $format->write_files($datafiles) . "</" . $value['files'] . ">\n";
         }
-
-        $datafiles = $fs->get_area_files(
-                $contextid, 'qtype_proforma', self::FILEAREA_TASK, $question->id);
-        $expout .= '<task>' . $format->write_files($datafiles) . "</task>\n";
         $datafiles = $fs->get_area_files(
                 $contextid, 'qtype_proforma', self::FILEAREA_COMMENT, $question->id);
         $expout .= '<commentfiles>' . $format->write_files($datafiles) . "</commentfiles>\n";

@@ -100,8 +100,8 @@ abstract class base_form_creator {
         }
 
         foreach ($hiddenfields as $field) {
-            //$mform->addElement('hidden', $field, null, array('size' => '30'));
-            $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
+            $mform->addElement('hidden', $field, null, array('size' => '30'));
+            // $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
             $mform->setType($field, PARAM_RAW);
         }
     }
@@ -404,27 +404,27 @@ abstract class base_form_creator {
             $question->attachments = 0;
             $question->filetypes = '';
             $question->taskfilename = '';
-            $comment_text = null;
-            $comment_format = FORMAT_HTML;
+            $commenttext = null;
+            $commentformat = FORMAT_HTML;
 
-            foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
+            foreach (qtype_proforma::fileareas_with_model_solutions() as $fileareaname => $value) {
                 $property = $value["dbcolumn"];
                 $question->$property = '';
             }
         } else {
-            $comment_text = $question->options->comment;
-            $comment_format = $question->options->commentformat;
+            $commenttext = $question->options->comment;
+            $commentformat = $question->options->commentformat;
         }
 
         // prepare all fileareas
-        foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
+        foreach (qtype_proforma::proforma_fileareas() as $fileareaname => $value) {
             // create draft area
-            $filearea_object = new qtype_proforma_filearea($filearea);
-            $filearea_object->on_preprocess($editor->context->id, $question);
+            $filearea = new qtype_proforma_filearea($fileareaname);
+            $filearea->on_preprocess($editor->context->id, $question);
             // create stringlist variable
             if (isset($value['formlist']) && !empty($question->id)) {
                 $property1 = $value['formlist'];
-                $question->$property1 = $filearea_object->get_files_as_stringlist($cat, $question->id);
+                $question->$property1 = $filearea->get_files_as_stringlist($cat, $question->id);
             }
         }
 
@@ -438,9 +438,9 @@ abstract class base_form_creator {
                 qtype_proforma::FILEAREA_COMMENT,       // filarea
                 !empty($question->id) ? (int) $question->id : null, // itemid
                 $editor->fileoptions, // options
-                $comment_text
+                $commenttext
         );
-        $question->comment['format'] = $comment_format;
+        $question->comment['format'] = $commentformat;
         $question->comment['itemid'] = $draftid;
 
         // Create task link from actual task.
@@ -549,10 +549,9 @@ abstract class base_form_creator {
 
         // Save files from draft area into proforma areas (modelsolution, downloads, templates)
         // (needed for import and duplication).
-        // foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
-        foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
-            $filearea_object = new qtype_proforma_filearea($filearea);
-            $filearea_object->on_save($formdata, $options, $value['dbcolumn']);
+        foreach (qtype_proforma::proforma_fileareas() as $fileareaname => $value) {
+            $filearea = new qtype_proforma_filearea($fileareaname);
+            $filearea->on_save($formdata, $options, $value['dbcolumn']);
         }
 
         // Store response template as file (it is stored as file and as member variable

@@ -178,8 +178,8 @@ $string['vcslabel_help'] = 'Name des Eingabefelds {input} in der Anzeige';
 
 $string['defaultvcsuri'] = 'Standard-URI-Template';
 $string['defaultvcsuri_desc'] = 'sollte Platzhalter enthalten';
-//$string['vcsfunction'] = 'helper function for resolving \'func\'';
-//$string['vcsfunction_desc'] = 'can be referenced as {func} resp. if used with other placeholders: {func(input)} or {func(username)}';
+// $string['vcsfunction'] = 'helper function for resolving \'func\'';
+// $string['vcsfunction_desc'] = 'can be referenced as {func} resp. if used with other placeholders: {func(input)} or {func(username)}';
 
 $string['vcslabeldefault'] = 'Standard-Label für das Eingabefeld';
 $string['vcslabeldefault_desc'] = 'wird benötigt für das Eingabefeld {input}';
