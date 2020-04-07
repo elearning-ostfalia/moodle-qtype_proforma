@@ -396,15 +396,35 @@ abstract class base_form_creator {
      * @param qtype_proforma_edit_form $editor
      */
     public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
-        // $form = $editor->get_form();
+        if (empty($question->options)) {
+            // new question:
+            // preset all fields that can be disabled in the form. Otherwise they may be missing
+            // somewhere! (resulting in an exception)
+            $question->maxbytes = 0;
+            $question->attachments = 0;
+            $question->filetypes = '';
+            $question->taskfilename = '';
+            $comment_text = null;
+            $comment_format = FORMAT_HTML;
+
+            foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
+                $property = $value["dbcolumn"];
+                $question->$property = '';
+            }
+        } else {
+            $comment_text = $question->options->comment;
+            $comment_format = $question->options->commentformat;
+        }
+
         // prepare all fileareas
         foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
+            // create draft area
             $filearea_object = new qtype_proforma_filearea($filearea);
             $filearea_object->on_preprocess($editor->context->id, $question);
-            if (isset($value['formlist'])) {
+            // create stringlist variable
+            if (isset($value['formlist']) && !empty($question->id)) {
                 $property1 = $value['formlist'];
                 $question->$property1 = $filearea_object->get_files_as_stringlist($cat, $question->id);
-                // debugging('List: ' . $property1 . ': ' . $question->$property1);
             }
         }
 
@@ -418,14 +438,16 @@ abstract class base_form_creator {
                 qtype_proforma::FILEAREA_COMMENT,       // filarea
                 !empty($question->id) ? (int) $question->id : null, // itemid
                 $editor->fileoptions, // options
-                $question->options->comment // text.
+                $comment_text
         );
-        $question->comment['format'] = $question->options->commentformat;
+        $question->comment['format'] = $comment_format;
         $question->comment['itemid'] = $draftid;
 
         // Create task link from actual task.
-        $task = new qtype_proforma_filearea(qtype_proforma::FILEAREA_TASK);
-        $question->link = $task->get_files_as_links($cat, $question->id);
+        if (!empty($question->id)) {
+            $task = new qtype_proforma_filearea(qtype_proforma::FILEAREA_TASK);
+            $question->link = $task->get_files_as_links($cat, $question->id);
+        }
     }
 
     // helper functions
@@ -544,14 +566,5 @@ abstract class base_form_creator {
             qtype_proforma\lib\save_as_file($context->id, qtype_proforma::FILEAREA_TEMPLATE,
                     $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
         }
-
-        /* $taskfilearea = qtype_proforma::FILEAREA_TASK;
-        if (isset($formdata->$taskfilearea)) {
-            file_save_draft_area_files($formdata->$taskfilearea,
-                    $context->id, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $formdata->id);
-        }  */ /*else if (isset($formdata->taskfile)) {
-            question_bank::get_qtype('qtype_proforma')->import_file(
-                    $this->importcontext, 'qtype_proforma', 'task', $options->id, $formdata->taskfile);
-        }*/
     }
 }

@@ -311,16 +311,19 @@ class java_form_creator extends base_form_creator {
     public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
         parent::data_preprocessing($question, $cat, $editor);
 
-        $form = $editor->get_form();
-        $taskfilehandler = new qtype_proforma_java_task();
-        $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
-        $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
+        if (isset($question->id)) {
+            // preset data if question already exists
+            $form = $editor->get_form();
+            $taskfilehandler = new qtype_proforma_java_task();
+            $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
+            $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
 
-        // Model solution files can be uploaded with a file manager
-        // or entered as text in editor.
-        $files = $this->_ms_filearea->get_files($editor->context->id, $question->id);
-        if (count($files) === 1) {
-            $question->modelsolution = $files[0]->get_content();
+            // Model solution files can be uploaded with a file manager
+            // or entered as text in editor.
+            $files = $this->_ms_filearea->get_files($editor->context->id, $question->id);
+            if (count($files) === 1) {
+                $question->modelsolution = $files[0]->get_content();
+            }
         }
     }
 

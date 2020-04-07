@@ -164,24 +164,7 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         // Remember that data comes from user input.
         $question->edit_form = true;
-        if (empty($question->options)) {
-            // preset all fields that can be disabled in the form. Otherwise they may be missing
-            // somewhere! (resulting in an exception)
-            $question->maxbytes = 0;
-            $question->attachments = 0;
-            $question->filetypes = '';
-            $question->taskfilename = '';
-
-            foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
-                $property = $value["dbcolumn"];
-                $question->$property = '';
-            }
-
-            $question->furtherTemplates = '';
-            $question->firstTemplate = '';
-            return $question;
-        }
-
+        /*
         $cat = $question->category;
         $found = false;
         foreach (explode(',', $question->category) as $category) {
@@ -197,7 +180,9 @@ class qtype_proforma_edit_form extends question_edit_form {
         } else {
             $cat = $question->contextid;
         }
-
+        */
+        // $cat = $question->contextid;
+        $cat = $this->context->id;
         if ($this->formcreator == null) {
             throw new coding_exception('formcreator does not exist in data_preprocessing');
         }

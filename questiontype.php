@@ -121,13 +121,13 @@ class qtype_proforma extends question_type {
                         "files" => "templatefiles",
                         "dbcolumn" => "templates",
                         "formlist" => "templatelist",
-                        "value" => "template"
+                        // "value" => "template"
                 ),
                 self::FILEAREA_DOWNLOAD => array(
                         "files" => "downloadfiles", // tag in xml export
                         "dbcolumn" => "downloads", // name of question attribute resp. database column
                         "formlist" => "downloadlist", // name of bound input in edit form
-                        "value" => null
+                        // "value" => null
                 )
         );
     }
@@ -144,7 +144,7 @@ class qtype_proforma extends question_type {
                 "files" => "modelsolutionfiles",
                 "dbcolumn" => "modelsolfiles",
                 "formlist" => "modelsollist",
-                "value" => "modelsolution"
+                // "value" => "modelsolution"
         );
         return $fileareas;
     }
@@ -158,10 +158,6 @@ class qtype_proforma extends question_type {
         $fileareas = self::fileareas_with_model_solutions();
         $fileareas[self::FILEAREA_TASK] = array(
                 "dbcolumn" => "taskfilename"
-                /*,
-                "files" => "modelsolutionfiles",
-                // "formlist" => "modelsollist"
-                */
         );
         return $fileareas;
     }
@@ -254,6 +250,16 @@ class qtype_proforma extends question_type {
         global $DB;
         $context = $formdata->context;
 
+        if (isset($formdata->original_template)) {
+            // workaround for a bug (?) in the behat test environment in Moodle 3.6:
+            $formdata->behat_template = $formdata->template;
+            $formdata->template = $formdata->original_template;
+            if (empty($formdata->template)) {
+                // unset variable if empty in order to avoid problems.
+                unset($formdata->template);
+            }
+        }
+
         // Save parent data and extra fields.
         parent::save_question_options($formdata);
         $this->save_hints($formdata, false);
@@ -282,6 +288,7 @@ class qtype_proforma extends question_type {
         // we need a different handling for different variable structure for comment:
         // - array with comment (text, format)
         // - comment contains only flat text with seperate variable 'commentformat'
+        // (The handling is kept here because import_or_save_files is protected)
         if (!empty($formdata->comment['format'])) {
             // $formdata->comment is array (when data comes from form input)
             $options->comment = $this->import_or_save_files($formdata->comment,
@@ -294,6 +301,11 @@ class qtype_proforma extends question_type {
         }
 
         $DB->update_record('qtype_proforma_options', $options);
+
+        if (isset($formdata->original_template)) {
+            // workaround for a bug (?) in the behat test environment in Moodle 3.6:
+            $formdata->template = $formdata->behat_template;
+        }
     }
 
 

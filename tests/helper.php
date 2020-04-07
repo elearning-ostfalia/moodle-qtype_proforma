@@ -177,6 +177,13 @@ class qtype_proforma_test_helper extends question_test_helper {
         $container->gradinghints = self::QUESTION_GRADINGHINTS;
         $container->aggregationstrategy = self::QUESTION_AGGREGATIONSTRATEGY;
         $container->proformaversion = self::QUESTION_PROFORMAVERSION;
+
+        // in Moodle 3.6 the property 'template' is overridden by the test environment
+        // which results in failing tests.
+        // Workaround: we use a copy of the value named 'original_template'.
+        // Even if no template is used we must set this variable. Otherwise
+        // the proforma code thinks that there is a template.
+        $container->original_template = '';
     }
 
     private function get_form_data($container) {
@@ -323,20 +330,13 @@ class qtype_proforma_test_helper extends question_test_helper {
         $this->make_attachment_in_draft_area($fromform->template, self::QUESTION_TEMPLATES,
                 self::QUESTION_TEMPLATE);
 
-        return $fromform;
-    }
-/*
-    public function get_proforma_question_data_editor() {
-        $fromform = new stdClass();
-
-        $this->get_question_data($fromform);
-        $fromform->options->responseformat = 'editor';
-        $fromform->options->attachments = 0;
+        // in Moodle 3.6 the property 'template' is overridden by the test environment
+        // which results in failing tests.
+        // Workaround: we use a copy of the value named 'original_template'
+        $fromform->original_template = $fromform->template;
 
         return $fromform;
     }
-*/
-
 
 
     public function get_proforma_question_form_data_filepicker() {
@@ -350,6 +350,12 @@ class qtype_proforma_test_helper extends question_test_helper {
         $fromform->$property = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
                 '#code snippet for python');
+
+        // in Moodle 3.6 the property 'template' is overridden by the test environment
+        // which results in failing tests.
+        // Workaround: we use a copy of the value named 'original_template'
+        $fromform->original_template = $fromform->template;
+
         $fromform->programminglanguage = 'python';
         //$fromform->responsetemplate = '';
 
@@ -371,6 +377,13 @@ class qtype_proforma_test_helper extends question_test_helper {
     // used for behat tests
     public function get_proforma_question_form_data_java1() {
         $form = new stdClass();
+
+        // in Moodle 3.6 the property 'template' is overridden by the test environment
+        // which results in failing tests.
+        // Workaround: we use a copy of the value named 'original_template'.
+        // Even if no template is used we must set this variable. Otherwise
+        // the proforma code thinks that there is a template.
+        $form->original_template = '';
 
         // valid data for a task file in the repository!
         $form->taskstorage = qtype_proforma::VOLATILE_TASKFILE;
@@ -537,6 +550,9 @@ class qtype_proforma_test_helper extends question_test_helper {
     protected function make_attachment_in_draft_area($draftid, $filename, $contents) {
         global $USER;
 
+        if (!is_numeric($draftid)) {
+            throw new coding_exception('draftid is not numeric!' . $draftid);
+        }
         $fs = get_file_storage();
         $usercontext = context_user::instance($USER->id);
 

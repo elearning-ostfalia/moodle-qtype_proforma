@@ -57,8 +57,17 @@ class qtype_proforma_filearea {
      */
     public function on_preprocess($context_id, &$question) {
         $draftid = file_get_submitted_draft_itemid($this->_name);
+        /* if (!is_numeric($draftid)) {
+            throw new coding_exception('qtype_proforma_filearea: invalid draftid');
+        }
+        if (!is_numeric($context_id)) {
+            throw new coding_exception('qtype_proforma_filearea: invalid $context_id');
+        } */
+        // for new questions the question id is undefined
+        $questionid = isset($question->id)?$question->id:null;
+
         file_prepare_draft_area($draftid, $context_id, 'qtype_proforma', $this->_name,
-                $question->id, array('subdirs' => 0));
+                $questionid, array('subdirs' => 0));
         $attribute = $this->_name;
         $question->$attribute = $draftid;
     }
@@ -102,6 +111,13 @@ class qtype_proforma_filearea {
         return implode(', ', $files);
     }
 
+    /**
+     * returns the filenames as link list
+     * @param $context_id
+     * @param $question_id
+     * @return string
+     * @throws coding_exception
+     */
     public function get_files_as_links($context_id, $question_id) {
         $fs = get_file_storage();
         $files = $fs->get_area_files($context_id, 'qtype_proforma', $this->_name, $question_id);
@@ -117,16 +133,6 @@ class qtype_proforma_filearea {
         return implode(', ', $links);
     }
 
-    /**
-     * save (= copy/move?) draft files as component files.
-     * @param $draft_id
-     * @param $context_id
-     * @param $question_id
-     */
-    private function save_draft_files($draft_id, $context_id, $question_id) {
-        file_save_draft_area_files($draft_id, $context_id,
-                'qtype_proforma', $this->_name, $question_id);
-    }
 
     /*
      * save draft files to filearea and create value for database column
@@ -136,8 +142,9 @@ class qtype_proforma_filearea {
         $attribute = $this->_name;
         if (isset($formdata->$attribute)) {
             // Save draft files in filearea.
-            $this->save_draft_files($formdata->$attribute, $formdata->context->id, $formdata->id);
-            // Create 'modelsolfiles' as list of filenames
+            file_save_draft_area_files($formdata->$attribute, $formdata->context->id,
+                    'qtype_proforma', $this->_name,  $formdata->id);
+            // Create list of filenames.
             if (isset($dbcolumn)) {
                 $options->$dbcolumn = $this->get_files_as_stringlist($formdata->context->id,
                         $formdata->id);

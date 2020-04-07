@@ -182,6 +182,11 @@ class proforma_form_creator extends base_form_creator {
         parent::data_preprocessing($question, $cat, $editor);
         $form = $editor->get_form();
 
+        if (empty($question->options)) {
+            $question->furtherTemplates = '';
+            $question->firstTemplate = '';
+        }
+
         // create template list with all template files without the first one
         // which gets its own editor
         // (normally there should be only one template if no filepicker is used)
