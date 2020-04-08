@@ -499,4 +499,50 @@ class Dog extends Animal {}
         $this->assertNull($instance->get_java_file($code));
         $this->assertNull($instance->get_java_entrypoint($code));
     }
+
+    public function test_generic1() {
+        $code = 'class Animal<T> {}';
+        $instance = new qtype_proforma_java_task;
+        $this->assertEquals('Animal.java', $instance->get_java_file($code));
+        $this->assertEquals('Animal<T>', $instance->get_java_entrypoint($code));
+    }
+
+    public function test_generic2() {
+        $code = 'class Animal < T > {}';
+        $instance = new qtype_proforma_java_task;
+        $this->assertEquals('Animal.java', $instance->get_java_file($code));
+        $this->assertEquals('Animal<T>', $instance->get_java_entrypoint($code));
+    }
+
+    public function test_generic3() {
+        $code = 'class name<T1, T2, T3> { /* ... */ }';
+        $instance = new qtype_proforma_java_task;
+        $this->assertEquals('name.java', $instance->get_java_file($code));
+        $this->assertEquals('name<T1,T2,T3>', $instance->get_java_entrypoint($code));
+    }
+
+    public function test_generic4() {
+        $code = 'class name<T1, T2, T3> { /* .>.. */ }';
+        $instance = new qtype_proforma_java_task;
+        $this->assertEquals('name.java', $instance->get_java_file($code));
+        $this->assertEquals('name<T1,T2,T3>', $instance->get_java_entrypoint($code));
+    }
+
+    public function test_generic5() {
+        $code = 'class name<T1, /* > */ T2, T3> { /* .>.. */ }';
+        $instance = new qtype_proforma_java_task;
+        $this->assertEquals('name.java', $instance->get_java_file($code));
+        $this->assertEquals('name<T1,T2,T3>', $instance->get_java_entrypoint($code));
+    }
+
+    public function test_generic6() {
+        $code = 'class name<T1, // comment1 
+            T2, // comment2 
+            T3> { // comment3 
+                /* .>.. */ }';
+        $instance = new qtype_proforma_java_task;
+        $this->assertEquals('name.java', $instance->get_java_file($code));
+        $this->assertEquals('name<T1,T2,T3>', $instance->get_java_entrypoint($code));
+    }
+
 }

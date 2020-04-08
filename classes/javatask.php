@@ -351,23 +351,30 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
      */
     private static function get_java_classname($code) {
         $matches = array();
-        $classname = preg_match('/class\s+([\S]+?)\s*(\{|extends|implements)/', $code, $matches);
-        if ($classname === 0) {
+        //$classname = preg_match('/class\s+([\S]+?)\s*(\{|extends|implements)/', $code, $matches); // without Generic
+        // $classname = preg_match('/class\s+([\S]+\s*(\<.*\>)?)\s(\{|extends|implements)', $code, $matches);
+        $classnamematch = preg_match('/class\s+([\S]+\s*(?:\<(?:.|\R)+\>)?)\s(?:\{|extends|implements)/', $code, $matches);
+        if ($classnamematch === 0) {
             return "";
         }
-        if ($classname === false) {
+        if ($classnamematch === false) {
             debugging('preg_match failed in get_java_classname');
             return "";
         }
 
+        $classname = "";
         switch (count($matches)) {
             case 0:
                 return ""; // no className found???
             case 1:
-                return $matches[0]; // unclear what it is, deliver everything
+                $classname =  trim($matches[0]); // unclear what it is, deliver everything
             default:
-                return trim($matches[1]); // found, expect className name as 2nd
+                //????
+                $classname = trim($matches[1]); // found, expect className name as 2nd
         }
+        // Remove whitespace characters.
+        $classname =  preg_replace('/\s+/', '', $classname);
+        return $classname;
     }
 
     /**
@@ -407,6 +414,14 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         self::remove_java_comment($code);
         $package = self::get_java_packagename($code);
         $classname = self::get_java_classname($code);
+        // handle Java Generics
+        $index1 = strpos($classname, '<');
+        if ($index1 > 0) {
+            $index2 = strpos($classname, '>');
+            if ($index2 > 0) {
+                $classname = trim(substr($classname, 0, $index1));
+            }
+        }
         if (strlen($package) > 0) {
             $package = str_replace('.', '/', $package);
             $classname = $package . '/' . $classname;
