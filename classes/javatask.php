@@ -368,9 +368,11 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
                 return ""; // no className found???
             case 1:
                 $classname =  trim($matches[0]); // unclear what it is, deliver everything
+                break;
             default:
-                //????
+                // There should be only one match.
                 $classname = trim($matches[1]); // found, expect className name as 2nd
+                break;
         }
         // Remove whitespace characters.
         $classname =  preg_replace('/\s+/', '', $classname);
