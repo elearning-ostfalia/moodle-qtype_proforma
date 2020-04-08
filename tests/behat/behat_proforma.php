@@ -28,6 +28,8 @@ use Behat\Mink\Exception\ExpectationException as ExpectationException;
 use Behat\Gherkin\Node\PyStringNode as PyStringNode;
 
 class behat_proforma extends behat_base {
+
+    private $downloadfile = '/tmp/behattest_download.txt';
     /**
      * @When /^I select "([^"]*)" radio button$/
      */
@@ -117,7 +119,7 @@ class behat_proforma extends behat_base {
         $session = $this->getSession()->getCookie('MoodleSession');
         // download twice
         download_file_content($url, array('Cookie' => 'MoodleSession=' . $session),
-                null, false, 300, 20, false, '/tmp/behattest_download.txt');
+                null, false, 300, 20, false, $this->downloadfile);
         return download_file_content($url, array('Cookie' => 'MoodleSession=' . $session));
     }
 
