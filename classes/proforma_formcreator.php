@@ -75,10 +75,8 @@ class proforma_form_creator extends base_form_creator {
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::PERSISTENT_TASKFILE);
         $mform->setType('taskstorage', PARAM_RAW);
         // Attachments for Question Text (Downloads)
-        $this->add_static_text($question, 'downloadlist', get_string('downloads', 'qtype_proforma'),
-                'downloads');
-        $mform->addHelpButton('downloadlist', 'downloads_hint', 'qtype_proforma');
-
+        $mform->addElement('static', 'downloadlinks', get_string('downloads', 'qtype_proforma'), '');
+        $mform->addHelpButton('downloadlinks', 'downloads_hint', 'qtype_proforma');
     }
 
     /**
@@ -197,9 +195,12 @@ class proforma_form_creator extends base_form_creator {
             $form->removeElement('furtherTemplates');
         }
 
-        // Create links for model solution files
+        // Create links for model solution and download files
         $msfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
         $question->mslinks = $msfilearea->get_files_as_links($question->contextid,
+                $question->id);
+        $downloadfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_DOWNLOAD);
+        $question->downloadlinks = $downloadfilearea->get_files_as_links($question->contextid,
                 $question->id);
 
         $taskfilehandler = new qtype_proforma_proforma_task;

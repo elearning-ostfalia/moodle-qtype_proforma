@@ -30,19 +30,39 @@ Feature: PREVIEW
   Scenario: Preview a ProFormA question and submit a partially correct response.
     When I choose "Preview" action for "proforma-001" in the question bank
     And I switch to "questionpreview" window
-    And I set the field "How questions behave" to "Immediate feedback"
+    And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
     And I should see "Please code the reverse string function not using a library function.(äöüß)"
-    # how do we test downloads and template??
-    # And I should see "Downloads: temp.txt instruction.txt lib.txt"
+    # text in response template
+    And I should see "//text in responsetemplate"
+    # check download links
+    And I should see "temp.txt"
+    And I should see "instruction.txt"
+    And I should see "lib.txt"
+    And following "instruction.txt" should download file with between "17" and "20" bytes
+    And following "temp.txt" should download file with between "26" and "29" bytes
+    # And I pause
+    And following "lib.txt" should download file with between "9" and "12" bytes
+
     And I switch to the main window
 
   @javascript @_switch_window
   Scenario: Preview a ProFormA question and submit a partially correct response.
     When I choose "Preview" action for "proforma-003" in the question bank
     And I switch to "questionpreview" window
-    And I set the field "How questions behave" to "Immediate feedback"
+    And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
 
     And I should see "Please code the reverse string function not using a library function.(äöüß)"
+    # text in response template
+    # And I pause
+    And I should not see "#code snippet for python"
+    # check download links
+    And I should see "codesnippet.py"
+    And I should see "instruction.txt"
+    And I should see "lib.txt"
+    And following "instruction.txt" should download file with between "17" and "20" bytes
+    And following "codesnippet.py" should download file with between "24" and "27" bytes
+    And following "lib.txt" should download file with between "9" and "12" bytes
+
     And I switch to the main window

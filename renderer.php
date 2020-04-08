@@ -130,6 +130,7 @@ class qtype_proforma_renderer extends qtype_renderer {
         if (empty($filename)) {
             return '';
         }
+        $filename = trim($filename);
         $url = moodle_url::make_pluginfile_url($question->contextid, 'qtype_proforma',
                 $filearea, $question->id, '/', $filename);
         return '<a href="' . $url->out() . '">' . $filename . '</a> ';
