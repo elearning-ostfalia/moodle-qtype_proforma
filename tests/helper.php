@@ -390,6 +390,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $form->responsefilename = self::QUESTION_FILENAME;
         $form->programminglanguage = 'java';
+        $form->proglangversion = '1.8';
 
         // $container->modelsolution = self::QUESTION_MODELSOLUTION;
         $form->responsetemplate = self::QUESTION_TEMPLATE;
@@ -415,12 +416,14 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testtitle[0] = 'JUnit Test 1';
         $form->testweight[0] = '3';
         $form->testid[0] = '1';
+        $form->testversion[0] = "4.12";
 
         $form->compile = 1;
         $form->compileweight = 2;
 
         $form->checkstyle = 1;
         $form->checkstyleweight = 4;
+        $form->checkstyleversion = "8.23";
         $form->checkstylecode = '<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 <module name="Checker">
@@ -493,6 +496,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testtitle[1] = 'JUnit Test 2';
         $form->testweight[1] = '1';
         $form->testid[1] = '2';
+        $form->testversion[1] = "4.12";
 
         // Junit #3 with empty fields
         $form->testcode[2] = '';

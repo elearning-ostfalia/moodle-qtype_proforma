@@ -53,7 +53,7 @@ class qtype_proforma_proforma_task {
      * Add extra namespaces
      * @param $xw
      */
-    protected function add_namespace_to_xml($xw) {
+    protected function add_namespace_to_xml(SimpleXmlWriter $xw) {
     }
 
     /**
@@ -62,7 +62,7 @@ class qtype_proforma_proforma_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_programming_language_to_xml($xw, $formdata) {
+    protected function add_programming_language_to_xml(SimpleXmlWriter $xw, $formdata) {
     }
 
     /**
@@ -71,7 +71,7 @@ class qtype_proforma_proforma_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_testfiles_to_xml($xw, $formdata) {
+    protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
     }
 
     /**
@@ -80,7 +80,7 @@ class qtype_proforma_proforma_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_tests_to_xml($xw, $formdata) {
+    protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata) {
     }
 
     /**
@@ -102,7 +102,7 @@ class qtype_proforma_proforma_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_tests_to_lms_grading_hints($xw, $formdata) {
+    protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
         for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
             $id = $formdata->testid[$index];
             if ($id !== '') {

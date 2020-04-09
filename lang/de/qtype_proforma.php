@@ -78,6 +78,7 @@ $string['code'] = 'Quellcode';
 $string['addjunit'] = 'JUnit Test hinzufügen';
 $string['codeempty'] = 'Code fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
+$string['versionrequired'] = 'Version ist nicht ausgewählt.';
 $string['filenameerror'] = 'Kann Klassennamen nicht ermitteln (Dateiname).';
 $string['entrypointerror'] = 'Kann Klassennamen nicht ermitteln (Entrypoint).';
 $string['sumweightzero'] = 'Die Summe aller Gewichte darf nicht 0 sein.';
@@ -90,7 +91,12 @@ $string['highlight_hint_help'] = 'Programmiersprache, die für das Syntax Highli
 $string['proglang'] = 'Programmiersprache';
 $string['proglang_hint'] = $string['proglang'];
 $string['proglang_hint_help'] = 'Verwendete Programmiersprache der Aufgabe. Zur Zeit können nur Java-Aufgaben erstellt werden.';
+$string['proglangversion'] = 'Version der Programmiersprache';
+$string['proglangversion_hint'] = $string['proglangversion'];
+$string['proglangversion_hint_help'] = 'Version der Programmiersprache.';
 $string['other'] = 'andere';
+
+$string['version'] = 'Version';
 
 
 $string['miscellaneousheader'] = 'Verschiedenes';
@@ -105,11 +111,11 @@ $string['graderuri_path_desc'] = 'Pfad der Grader URI';
 
 $string['javasettings_header'] = 'Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';
 $string['checkstyleversion'] = 'Checkstyle Version';
-$string['checkstyleversion_desc'] = 'Checkstyle-Version des Graders';
+$string['checkstyleversion_desc'] = 'Komma separierte Liste mit Checkstyle-Versionen, die vom Grader unterstützt werden. Die erste ist Standard.';
 $string['javaversion'] = 'Java Version';
-$string['javaversion_desc'] = 'Java-Version des Graders';
+$string['javaversion_desc'] = 'Komma separierte Liste mit Java-Versionen, die vom Grader unterstützt werden. Die erste ist Standard.';
 $string['junitversion'] = 'JUnit Version';
-$string['junitversion_desc'] = 'JUnit-Version des Graders';
+$string['junitversion_desc'] = 'Komma separierte Liste mit JUnit-Versionen, die vom Grader unterstützt werden. Die erste ist Standard.';
 
 $string['grading_timeout'] = 'Grading Timeout';
 $string['grading_timeout_desc'] = 'Zeit, nach der angenommen wird, dass vom Grader keine Antwort mehr kommt (in Sekunden)';

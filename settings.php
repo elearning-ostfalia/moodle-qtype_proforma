@@ -116,13 +116,13 @@ $settings->add(new admin_setting_heading('java',
 
 $settings->add(new admin_setting_configtext('qtype_proforma/javaversion',
         get_string('javaversion', 'qtype_proforma'),
-        get_string('javaversion_desc', 'qtype_proforma'), 1.8));
+        get_string('javaversion_desc', 'qtype_proforma'), '1.8' ));
 
 
 $settings->add(new admin_setting_configtext('qtype_proforma/junitversion',
         get_string('junitversion', 'qtype_proforma'),
-        get_string('junitversion_desc', 'qtype_proforma'), 4.12));
+        get_string('junitversion_desc', 'qtype_proforma'), '4.12, 5'));
 
 $settings->add(new admin_setting_configtext('qtype_proforma/checkstyleversion',
         get_string('checkstyleversion', 'qtype_proforma'),
-        get_string('checkstyleversion_desc', 'qtype_proforma'), 8.23));
+        get_string('checkstyleversion_desc', 'qtype_proforma'), '8.29, 8.23'));

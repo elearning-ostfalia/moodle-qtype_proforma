@@ -43,7 +43,7 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected function definition() {
         if (empty($this->question->options)) {
             // New question => create Java form creator.
-            $this->formcreator = new java_form_creator($this->_form);
+            $this->formcreator = new java_form_creator($this->_form, true);
         }
         parent::definition();
     }

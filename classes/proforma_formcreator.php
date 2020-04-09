@@ -146,7 +146,7 @@ class proforma_form_creator extends base_form_creator {
      *
      * @param $repeatoptions
      */
-    protected function modify_repeatoptions(&$repeatoptions) {
+    protected function modify_test_repeatoptions(&$repeatoptions) {
         // disable testtype and test identifier for imported tasks
         $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         $repeatoptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);

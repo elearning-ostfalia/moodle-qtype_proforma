@@ -29,7 +29,7 @@ Feature: ADD JAVA QUESTION
       | Response filename        | MyClass.java                   |
       | Title                    | JUnit test title               |
     And I press "id_submitbutton"
-    Then I should see "Code is missing"
+    Then I should see "Code required"
     # JUnit
     When I set the field "testcode[0]" to "class XClass {}"
     And I press "id_submitbutton"
@@ -49,6 +49,7 @@ Feature: ADD JAVA QUESTION
       | Title                    | JUnit test title               |
       | Description              |                                |
       | Penalty for each incorrect try  | 10%                     |
+      | Programming language version  | 1.8                       |
     # compile
       | compileweight              |      0                       |
     #And the field "compileweight" matches value "0"
@@ -56,6 +57,7 @@ Feature: ADD JAVA QUESTION
     # JUnit
     And the field "testweight[0]" matches value "1"
     And the field "testcode[0]" matches value "class XClass {}"
+    And the field "testversion[0]" matches value "4.12"
     # Checkstyle
     And the "checkstyle" checkbox is "not checked"
     # Finish
@@ -78,7 +80,8 @@ Feature: ADD JAVA QUESTION
       | Title                    | JUnit test title               |
       | Description              | JUnit description              |
       | Penalty for each incorrect try  | 20%     |
-    Then I should see "Code is missing"
+      | Programming language version  | 1.8     |
+    Then I should see "Code required"
 
     When I set the following fields to these values:
       | Question name   | new java-question |
@@ -89,10 +92,12 @@ Feature: ADD JAVA QUESTION
     # JUnit
     And I set the field "testweight[0]" to "20"
     And I set the field "testcode[0]" to "// class XClass {}"
+    And I set the field "testversion[0]" to "4.12"
     # Checkstyle
     And I set the field "checkstyle" to "1"
     And I set the field "checkstyleweight" to "30"
     And I set the field "checkstylecode" to "<!-- checkstyle code-->"
+    And I set the field "checkstyleversion" to "8.23"
     And I press "id_submitbutton"
     Then I should see "Cannot determine classname (filename)"
 
@@ -115,6 +120,7 @@ Feature: ADD JAVA QUESTION
       | Title                    | JUnit test title               |
       | Description              | JUnit description              |
       | Penalty for each incorrect try  | 20%                     |
+    And the field "Programming language version" matches value "1.8"
 
     # Compile
     And the "compile" checkbox is "checked"
@@ -122,12 +128,17 @@ Feature: ADD JAVA QUESTION
     # JUnit
     And the field "testweight[0]" matches value "20"
     And the field "testcode[0]" matches value "class XClass {}"
+    And the field "testversion[0]" matches value "4.12"
     # Checkstyle
     And the "checkstyle" checkbox is "checked"
     And the field "checkstyleweight" matches value "30"
     And the field "checkstylecode" matches value "<!-- checkstyle code-->"
+    And the field "checkstyleversion" matches value "8.23"
 
     And I press "Cancel"
+
+
+
 
 ##########################################################################
   Scenario: Create, save and open a ProFormA java question with compilation and two Junit tests
@@ -140,13 +151,18 @@ Feature: ADD JAVA QUESTION
       | Response template        | // type your code here         |
       | Model solution           | // code for model solution     |
       | Title                    | JUnit #1                       |
-    Then I should see "Code is missing"
+    Then I should see "Code required"
+    # add new Junit
     When I press "id_option_add_fields"
     And I set the field "testcode[0]" to "class XClass {}"
+    And I set the field "testversion[0]" to "5"
+
     And I set the field "testcode[1]" to "class YClass {}"
     And I set the field "testdescription[1]" to "this is the second JUnit test"
+    And I set the field "testversion[1]" to "4.12"
+
     And I press "id_submitbutton"
-    Then I should see "Title is missing"
+    Then I should see "Title required"
 
     When I set the field "testtitle[1]" to "Junit #2"
     And I press "id_submitbutton"
@@ -172,10 +188,12 @@ Feature: ADD JAVA QUESTION
     And the field "testweight[0]" matches value "1"
     And the field "testcode[0]" matches value "class XClass {}"
     And the field "testdescription[0]" matches value ""
+    And the field "testversion[0]" matches value "5"
     # JUnit #2
     And the field "testweight[1]" matches value "1"
     And the field "testcode[1]" matches value "class YClass {}"
     And the field "testdescription[1]" matches value "this is the second JUnit test"
+    And the field "testversion[1]" matches value "4.12"
     # Checkstyle
     And the "checkstyle" checkbox is "not checked"
 

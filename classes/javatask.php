@@ -65,7 +65,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
      *
      * @param $xw
      */
-    protected function add_namespace_to_xml($xw) {
+    protected function add_namespace_to_xml(SimpleXmlWriter $xw) {
         $xw->create_attribute('xmlns:unit', 'urn:proforma:tests:unittest:v1.1');
         $xw->create_attribute('xmlns:cs', 'urn:proforma:tests:java-checkstyle:v1.1');
     }
@@ -75,9 +75,8 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_programming_language_to_xml($xw, $formdata) {
-        $javaversion = get_config('qtype_proforma', 'javaversion');
-        $xw->create_attribute('version', $javaversion);
+    protected function add_programming_language_to_xml(SimpleXmlWriter $xw, $formdata) {
+        $xw->create_attribute('version', $formdata->proglangversion);
         $xw->text($formdata->programminglanguage);
     }
 
@@ -87,7 +86,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_testfiles_to_xml($xw, $formdata) {
+    protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
         // Junit files
         for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
             $id = $formdata->testid[$index];
@@ -127,7 +126,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_tests_to_xml($xw, $formdata) {
+    protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata) {
         // create compiler test
         if (self::has_compiler($formdata)) {
             $xw->startElement('test');
@@ -155,7 +154,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
                 $xw->endElement(); // filerefs
                 $xw->startElement('unit:unittest');
                 $xw->create_attribute('framework', 'JUnit');
-                $junitversion = get_config('qtype_proforma', 'junitversion');
+                $junitversion = $formdata->testversion[$index];
                 $xw->create_attribute('version', $junitversion);
                 $code = $formdata->testcode[$index];
                 $entrypoint = self::get_java_entrypoint($code);
@@ -182,7 +181,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
             $xw->endElement(); // filerefs
             $xw->startElement('cs:java-checkstyle');
 
-            $checkstyleversion = get_config('qtype_proforma', 'checkstyleversion');
+            $checkstyleversion = $formdata->checkstyleversion;
             $xw->create_attribute('version', $checkstyleversion);
             $xw->create_childelement_with_text('cs:max-checkstyle-warnings', '4');
             $xw->endElement(); // cs:java-checkstyle
@@ -197,7 +196,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_tests_to_lms_grading_hints($xw, $formdata) {
+    protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
         if (self::has_compiler($formdata)) {
             $xw->startElement('test-ref');
             $xw->create_attribute('ref', 'compiler');
@@ -270,7 +269,10 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
         $content = $this->get_task_xml($category, $question);
 
         $task = new SimpleXMLElement($content, LIBXML_PARSEHUGE);
-        // read files
+        // Read java version.
+        $question->proglangversion = (string)$task->proglang['version'];
+
+        // Read files.
         foreach ($task->files->file as $file) {
             $fileobject = array();
             $fileobject['id'] = (string)$file['id'];
@@ -280,7 +282,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
             $fileobject['code'] = (string)$code;
             $files[$fileobject['id']] = $fileobject;
         }
-        // read tests
+        // Read tests.
         $index = 0;
         foreach ($task->tests->test as $test) {
             $code = null;
@@ -294,12 +296,22 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
                 switch ($test['id']) {
                     case 'checkstyle':
                         $question->checkstylecode = $code;
+                        $config = $test->{'test-configuration'};
+                        // Switch to namespace 'cs'.
+                        $cs = $config->children('cs', true);
+                        $question->checkstyleversion = (string)$cs->attributes()->version;
+                        // debugging('$question->checkstyleversion = ' . $question->checkstyleversion);
                         break;
                     case 'compiler': // assert(false);
                         break;
                     default: // JUNIT test
                         // $id = (string)$test['id'];
                         $question->testcode[$index] = $code;
+                        $config = $test->{'test-configuration'};
+                        // Switch to namespace 'unit'.
+                        $unittest = $config->children('unit', true)->{'unittest'};
+                        $question->testversion[$index] = (string)$unittest->attributes()->version;
+                        // debugging('$question->testversion[$index] = ' . $question->testversion[$index]);
                         $index++;
                         break;
                 }
@@ -351,7 +363,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
      */
     private static function get_java_classname($code) {
         $matches = array();
-        //$classname = preg_match('/class\s+([\S]+?)\s*(\{|extends|implements)/', $code, $matches); // without Generic
+        // $classname = preg_match('/class\s+([\S]+?)\s*(\{|extends|implements)/', $code, $matches); // without Generic
         // $classname = preg_match('/class\s+([\S]+\s*(\<.*\>)?)\s(\{|extends|implements)', $code, $matches);
         $classnamematch = preg_match('/class\s+([\S]+\s*(?:\<(?:.|\R)+\>)?)\s(?:\{|extends|implements)/', $code, $matches);
         if ($classnamematch === 0) {
@@ -367,7 +379,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
             case 0:
                 return ""; // no className found???
             case 1:
-                $classname =  trim($matches[0]); // unclear what it is, deliver everything
+                $classname = trim($matches[0]); // unclear what it is, deliver everything
                 break;
             default:
                 // There should be only one match.
@@ -375,7 +387,7 @@ class qtype_proforma_java_task extends qtype_proforma_proforma_task {
                 break;
         }
         // Remove whitespace characters.
-        $classname =  preg_replace('/\s+/', '', $classname);
+        $classname = preg_replace('/\s+/', '', $classname);
         return $classname;
     }
 

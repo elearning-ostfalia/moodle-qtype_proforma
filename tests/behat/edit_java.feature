@@ -45,7 +45,6 @@ Feature: EDIT JAVA
     # check for unchecked checkboxes
     And the "compile" checkbox is "unchecked"
     And the "checkstyle" checkbox is "unchecked"
-
     # recheck
     And I check the "compile" checkbox
     And I check the "checkstyle" checkbox
@@ -54,12 +53,17 @@ Feature: EDIT JAVA
     And the field "compileweight" matches value "0"
     And the field "checkstyleweight" matches value "0.2"
     And the field "checkstylecode" matches value ""
-
     # checkstyle code must be set because old value is lost.
     # since this is a Javascript testcase we need to use javascript function
     # in order to set value in codemirror
 #    And I set the field "checkstylecode" to "<!-- empty-->"
     And I set the codemirror "checkstylecode" to "<!-- empty-->"
+    # Check for Checkstyle version:
+    # Standard value is prefreed, but 'Choose' is also ok.
+    And the field "checkstyleversion" matches value "Choose"
+    And I press "id_submitbutton"
+    And I should see "Version required."
+    And I set the field "checkstyleversion" to "8.29"
 
     And I press "id_submitbutton"
     Then I should see "proforma-java"
@@ -70,6 +74,7 @@ Feature: EDIT JAVA
     And the field "compileweight" matches value "0"
     And the "checkstyle" checkbox is "checked"
     And the field "checkstyleweight" matches value "0.2"
+    And the field "checkstyleversion" matches value "8.29"
     # since this is a Javascript testcase we need to use javascript function
     # in order to check value in codemirror
     And the codemirror "checkstylecode" matches value "<!-- empty-->"
@@ -106,16 +111,18 @@ Feature: EDIT JAVA
     And the field "testtype[0]" matches value "unittest"
     And the field "testweight[0]" matches value "3"
     And the field "testcode[0]" matches value "class XTest {}"
+    And the field "testversion[0]" matches value "4.12"
     # JUnit 2
     And the field "testtitle[1]" matches value "Junit Test 2"
     And the field "testdescription[1]" matches value "Description Junit 2"
     And the field "testtype[1]" matches value "unittest"
     And the field "testweight[1]" matches value "6"
     And the field "testid[1]" matches value "2"
-    And the field "testcode[1]" matches value "class YTest {}"
+    And the field "testversion[1]" matches value "4.12"
     # Checkstyle
     And the "checkstyle" checkbox is "checked"
     And the field "checkstyleweight" matches value "4"
+    And the field "checkstyleversion" matches value "8.23"
     And the field "checkstylecode" matches multiline
     """
     <?xml version="1.0" encoding="UTF-8"?>
@@ -129,7 +136,6 @@ Feature: EDIT JAVA
       </module>
     </module>
     """
-
 
 ##########################################################################
   Scenario: Edit a ProFormA question (simply edit all values)
@@ -159,15 +165,18 @@ Feature: EDIT JAVA
     And I set the field "testdescription[0]" to "new Description Junit 1"
     And I set the field "testweight[0]" to "3.5"
     And I set the field "testcode[0]" to "class NewXTest {}"
+    And I set the field "testversion[0]" to "5"
     # JUnit 2
     And I set the field "testtitle[1]" to "new Junit Test 2"
     And I set the field "testdescription[1]" to "new Description Junit 2"
     And I set the field "testweight[1]" to "6.5"
     And I set the field "testcode[1]" to "class NewYTest {}"
+    And I set the field "testversion[1]" to "5"
     # Checkstyle
     #And I set the field "checkstyle" to "0"
     And I set the field "checkstyleweight" to "4.5"
     And I set the field "checkstylecode" to "<!-- empty-->"
+    And I set the field "checkstyleversion" to "8.29"
 
     And I press "id_submitbutton"
     Then I should see "updated proforma-java"
@@ -197,6 +206,7 @@ Feature: EDIT JAVA
     And the field "testtype[0]" matches value "unittest"
     And the field "testweight[0]" matches value "3.5"
     And the field "testcode[0]" matches value "class NewXTest {}"
+    And the field "testversion[0]" matches value "5"
     # JUnit 2
     And the field "testtitle[1]" matches value "new Junit Test 2"
     And the field "testdescription[1]" matches value "new Description Junit 2"
@@ -204,10 +214,12 @@ Feature: EDIT JAVA
     And the field "testweight[1]" matches value "6.5"
     And the field "testid[1]" matches value "2"
     And the field "testcode[1]" matches value "class NewYTest {}"
+    And the field "testversion[1]" matches value "5"
     # Checkstyle
     And the "checkstyle" checkbox is "checked"
     And the field "checkstyleweight" matches value "4.5"
     And the field "checkstylecode" matches value "<!-- empty-->"
+    And the field "checkstyleversion" matches value "8.29"
 
     And I press "Cancel"
 
@@ -232,6 +244,7 @@ Feature: EDIT JAVA
     And the field "testtype[0]" matches value "unittest"
     And the field "testweight[0]" matches value "3"
     And the field "testcode[0]" matches value "class XTest {}"
+    And the field "testversion[0]" matches value "4.12"
     # JUnit 2 is not visible
     And I should not see "2. JUnit Test"
 
@@ -248,6 +261,7 @@ Feature: EDIT JAVA
     And I set the field "testdescription[1]" to "new Description Junit 2"
     And I set the field "testweight[1]" to "6.5"
     And I set the field "testcode[1]" to "class NewYTest {}"
+    And I set the field "testversion[1]" to "5"
 
     And I press "id_submitbutton"
     Then I should see "proforma-java"
@@ -277,6 +291,7 @@ Feature: EDIT JAVA
     And the field "testtype[0]" matches value "unittest"
     And the field "testweight[0]" matches value "3"
     And the field "testcode[0]" matches value "class XTest {}"
+    And the field "testversion[0]" matches value "4.12"
     # JUnit 2
     And the field "testtitle[1]" matches value "new Junit Test 2"
     And the field "testdescription[1]" matches value "new Description Junit 2"
@@ -284,9 +299,11 @@ Feature: EDIT JAVA
     And the field "testweight[1]" matches value "6.5"
     And the field "testid[1]" matches value "2"
     And the field "testcode[1]" matches value "class NewYTest {}"
+    And the field "testversion[1]" matches value "5"
     # Checkstyle
     And the "checkstyle" checkbox is "checked"
     And the field "checkstyleweight" matches value "4"
+    And the field "checkstyleversion" matches value "8.23"
     And the field "checkstylecode" matches multiline
     """
     <?xml version="1.0" encoding="UTF-8"?>

@@ -82,13 +82,21 @@ $string['proglang_hint'] = $string['proglang'];
 $string['proglang_hint_help'] = 'Programming language of task. Currently only Java questions can be created.';
 $string['other'] = 'other';
 
+$string['version'] = 'Version';
+
+
+$string['proglangversion'] = 'Programming language version';
+$string['proglangversion_hint'] = $string['proglangversion'];
+$string['proglangversion_hint_help'] = 'Version der Programmiersprache.';
+
 $string['compile'] = 'Compilation';
 $string['code'] = 'Source Code';
 $string['code_help'] = 'Source Code for JUnit test';
 
 $string['addjunit'] = 'Add JUnit test';
-$string['codeempty'] = 'Code is missing';
-$string['titleempty'] = 'Title is missing';
+$string['codeempty'] = 'Code required';
+$string['titleempty'] = 'Title required';
+$string['versionrequired'] = 'Version required.';
 $string['filenameerror'] = 'Cannot determine classname (filename)';
 $string['entrypointerror'] = 'Cannot determine classname (entrypoint)';
 $string['sumweightzero'] = 'The sum of all weights must not be zero.';
@@ -107,11 +115,11 @@ $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 
 $string['javasettings_header'] = 'Java Settings for Java questions created with Moodle';
 $string['checkstyleversion'] = 'Checkstyle version';
-$string['checkstyleversion_desc'] = 'Checkstyle version used by grader';
+$string['checkstyleversion_desc'] = 'Comma separated list with Checkstyle versions that are supported by the grader. First one is default.';
 $string['javaversion'] = 'Java version';
-$string['javaversion_desc'] = 'Java version used by grader';
+$string['javaversion_desc'] = 'Comma separated list with Java versions that are supported by the grader. First one is default.';
 $string['junitversion'] = 'JUnit version';
-$string['junitversion_desc'] = 'JUnit version used by grader';
+$string['junitversion_desc'] = 'Comma separated list with JUnit versions that are supported by the grader. First one is default.';
 
 $string['grading_timeout'] = 'Grading Timeout';
 $string['grading_timeout_desc'] = 'Timout for grading request in seconds';

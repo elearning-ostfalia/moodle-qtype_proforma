@@ -37,14 +37,20 @@ class java_form_creator extends base_form_creator {
     // Filearea object for handling model solution files.
     protected $_ms_filearea = null;
 
+    protected $_newquestion = false;
+
     /**
      * java_form_creator constructor.
      *
      * @param $form
+     * @param null $newquestion new question indicator
      */
-    public function __construct($form) {
+    public function __construct($form, $newquestion = null) {
         parent::__construct($form);
         $this->_ms_filearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
+        if (isset($newquestion) && $newquestion) {
+            $this->_newquestion = $newquestion;
+        }
     }
 
     // override
@@ -55,16 +61,39 @@ class java_form_creator extends base_form_creator {
      */
     public function add_proglang_selection($question) {
         $mform = $this->form;
-        // create new question
+
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::VOLATILE_TASKFILE);
         $mform->setType('taskstorage', PARAM_RAW);
 
+        $mform->addElement('text', 'proglang',
+                get_string('proglang', 'qtype_proforma'), 'Java');
+        $mform->disabledIf('proglang', 'responseformat', 'neq', 'alwaysdisabled');
+        $mform->setType('proglang', PARAM_TEXT);
+        $mform->setDefault('proglang', 'Java');
+
+        /*
         $proglangooptions = array('Java'); // , get_string('other', 'qtype_proforma'));
         $mform->addElement('select', 'proglang',
                 get_string('proglang', 'qtype_proforma'), $proglangooptions);
         $mform->addHelpButton('proglang', 'proglang_hint', 'qtype_proforma');
-
         $mform->setDefault('proglang', 'Java');
+        */
+
+        $javaversion = get_config('qtype_proforma', 'javaversion');
+        $proglangversions = array();
+        if (!$this->_newquestion) {
+            // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
+            // In case no other value can be selected this is chosen by default.
+            $proglangversions[0] = get_string('choose');
+        }
+        foreach (explode(',', $javaversion) as $version) {
+            $proglangversions[trim($version)] = trim($version);
+        }
+        $mform->addElement('select', 'proglangversion',
+                get_string('proglangversion', 'qtype_proforma'), $proglangversions);
+        $mform->addHelpButton('proglangversion', 'proglangversion_hint', 'qtype_proforma');
+
+        $mform->addRule('proglangversion', get_string('error'), 'nonzero', null, 'client', false, false);
     }
 
     /**
@@ -124,10 +153,50 @@ class java_form_creator extends base_form_creator {
      *
      * @param $repeatarray
      */
-    protected function modify_repeatarray(&$repeatarray) {
+    protected function modify_test_repeatarray(&$repeatarray) {
         $mform = $this->form;
         // Add textarea for unit test code.
         $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
+    }
+
+    /**
+     * Modify testoptions in add_tests: add Junit version
+     *
+     * @param $testoptions
+     */
+    protected function modify_test_testoptions(&$testoptions) {
+        $mform = $this->form;
+        $csversion = get_config('qtype_proforma', 'junitversion');
+        $versions = array();
+        // force PHP to use strings as key even if the first key is an integer
+        $obj = new stdClass;
+
+        if (!$this->_newquestion) {
+            // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
+            // In case no other value can be selected this is chosen by default.
+            //$versions[] = get_string('choose');
+            $obj->{'0'} = get_string('choose');
+        }
+        foreach (explode(',', $csversion) as $version) {
+            $strversion = trim($version);
+            //$versions[$strversion] = $strversion;
+            $obj->{$strversion} = $strversion;
+        }
+        $versions = (array) $obj;
+
+        //debugging('Testversionen: ' . count($versions) . ' ' . $versions[0] . ' ' . var_dump($versions));
+
+        $testoptions[] = $mform->createElement('select', 'testversion',
+                get_string('version', 'qtype_proforma'), $versions);
+
+    }
+
+    /**
+     * Modify repeatoptions in add_tests
+     *
+     * @param $repeatoptions
+     */
+    protected function modify_test_repeatoptions(&$repeatoptions) {
     }
 
     /**
@@ -152,15 +221,34 @@ class java_form_creator extends base_form_creator {
         $mform = $this->form;
         // Create a Checkstyle test (not part of the repeat group).
         $testoptions = array();
+        // Add checkbox.
         $testoptions[] =& $mform->createElement('advcheckbox', 'checkstyle', '', '');
+        // Add Checkstyle version.
+        $csversion = get_config('qtype_proforma', 'checkstyleversion');
+        $versions = array();
+        if (!$this->_newquestion) {
+            // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
+            // In case no other value can be selected this is chosen by default.
+            $versions[0] = get_string('choose');
+        }
+        foreach (explode(',', $csversion) as $version) {
+            $versions[trim($version)] = trim($version);
+        }
+        $testoptions[] =& $mform->createElement('select', 'checkstyleversion',
+                get_string('version', 'qtype_proforma'), $versions);
+        // Add weight.
         $this->add_test_weight_option($testoptions, 'checkstyle', '0.2');
         $mform->addGroup($testoptions, 'checkstyleoptions', 'Checkstyle',
                 array(' '), false);
         $mform->addGroupRule('checkstyleoptions', array(
                 'checkstyleweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
-
+        // is checked even if checkstyle is not visible!
+        // $mform->addGroupRule('checkstyleoptions', array(
+        //        'checkstyleversion' => array(array(get_string('error'), 'nonzero', '', 'client'))));
+        // Add textarea.
         $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
         qtype_proforma\lib\as_codemirror('id_checkstylecode', 'xml');
+        $mform->hideIf('checkstyleversion', 'checkstyle');
         $mform->hideIf('checkstyleweight', 'checkstyle');
         $mform->hideIf('checkstylecode', 'checkstyle');
         // cannot use required rule because rule is checked even if control is hidden :-(
@@ -220,6 +308,8 @@ class java_form_creator extends base_form_creator {
 
         // add checkstyle
         $this->add_checkstyle();
+        // $this->form->addGroupRule('testoptions', array(
+        // 'testversion' => array(array(get_string('error'), 'nonzero', '', 'client'))));
         return $repeats;
     }
 
@@ -234,13 +324,19 @@ class java_form_creator extends base_form_creator {
     public function validation($fromform, $files, $errors) {
         $errors = parent::validation($fromform, $files, $errors);
         if ($fromform["checkstyle"]) {
+            // Check Checkstyle values:
             if (0 == strlen(trim($fromform["checkstylecode"]))) {
-                // checkstyle code muse be set
+                // Checkstyle code muse not be empty.
                 // $errors['checkstylecode'] = get_string('required');
                 $errors['checkstylecode'] = get_string('codeempty', 'qtype_proforma');
             }
+            if (0 == $fromform["checkstyleversion"]) {
+                // Unsupported version and no new choice.
+                $errors['checkstyleoptions'] = get_string('versionrequired', 'qtype_proforma');
+            }
         }
 
+        // Check Junit tests:
         $repeats = $this->get_count_tests(null);
         for ($i = 0; $i < $repeats; $i++) {
             $title = $fromform["testtitle"][$i];
@@ -248,7 +344,7 @@ class java_form_creator extends base_form_creator {
             $lencode = strlen(trim($code));
             $lentitle = strlen(trim($title));
             if (0 < $lentitle and 0 == $lencode) {
-                // Code is missing.
+                // Title is set but code is missing.
                 $errors['testcode['.$i.']'] = get_string('codeempty', 'qtype_proforma');
             } else if (0 == $lentitle and 0 < $lencode) {
                 // Title is missing
@@ -263,6 +359,10 @@ class java_form_creator extends base_form_creator {
                     $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
                 }
             }
+            if (0 == $fromform["testversion"][$i]) {
+                // Unsupported version and no new choice.
+                $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
+            }
         }
 
         if ($fromform["responseformat"] == 'editor') {
@@ -275,7 +375,6 @@ class java_form_creator extends base_form_creator {
                     $errors['responsefilename'] = $filename . ' expected';
                 }
             }
-
         }
 
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {

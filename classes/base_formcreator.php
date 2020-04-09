@@ -173,15 +173,23 @@ abstract class base_form_creator {
      *
      * @param $repeatarray
      */
-    protected function modify_repeatarray(&$repeatarray) {
+    protected function modify_test_repeatarray(&$repeatarray) {
     }
 
     /**
-     * Modify repeatoptions add_tests
+     * Modify repeatoptions in add_tests
      *
      * @param $repeatoptions
      */
-    protected function modify_repeatoptions(&$repeatoptions) {
+    protected function modify_test_repeatoptions(&$repeatoptions) {
+    }
+
+    /**
+     * Modify testoptions in add_tests
+     *
+     * @param $testoptions
+     */
+    protected function modify_test_testoptions(&$testoptions) {
     }
 
     /**
@@ -192,15 +200,16 @@ abstract class base_form_creator {
      */
     public function add_tests($question, $questioneditform) {
         $mform = $this->form;
-        // retrieve number of tests (resp. unit tests)
+        // Retrieve number of tests (resp. unit tests).
         $repeats = $this->get_count_tests($question);
         if ($repeats == 0) {
+            // No tests available => finished.
             $mform->addElement('static', 'no_tests', get_string('notests', 'qtype_proforma'), '');
             return $repeats;
         }
 
         // Unit tests resp. tests from imported task
-        // Create row:
+        // Create test group:
         $testoptions = array();
         $this->add_test_weight_option($testoptions, 'test', '1', true);
         $testoptions[] = $mform->createElement('text', 'testid', 'Id', array('size' => 3));
@@ -208,12 +217,13 @@ abstract class base_form_creator {
                 get_string('testtype', 'qtype_proforma'), array('size' => 80));
         $testoptions[] = $mform->createElement('text', 'testdescription',
                 get_string('testdescription', 'qtype_proforma'), array('size' => 80));
+        $this->modify_test_testoptions($testoptions);
 
         $label = $this->get_test_label();
 
         $repeatarray = array();
         $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
-        $this->modify_repeatarray($repeatarray);
+        $this->modify_test_repeatarray($repeatarray);
         $repeatoptions = array();
         $repeatoptions['testweight']['default'] = 1;
         // $repeatoptions['testtitle']['default'] = get_string('junittesttitle', 'qtype_proforma');
@@ -223,7 +233,7 @@ abstract class base_form_creator {
         $repeatoptions['testid']['default'] = '{no}'; // JAVA-JUNIT
 
         // $repeateloptions['testweight']['rule'] = 'numeric';
-        $this->modify_repeatoptions($repeatoptions);
+        $this->modify_test_repeatoptions($repeatoptions);
 
         // $repeateloptions['testweight']['helpbutton'] = 'Hilfetext';
         $mform->setType('testdescription', PARAM_TEXT);
@@ -231,7 +241,6 @@ abstract class base_form_creator {
         $mform->setType('testweight', PARAM_FLOAT);
         $mform->setType('testid', PARAM_RAW);
         $mform->setType('testtype', PARAM_RAW);
-        // $mform->addRule('testtitle', null, 'required', null, 'client');
         // $mform->setType('testfilename', PARAM_TEXT);
 
         // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
@@ -239,6 +248,8 @@ abstract class base_form_creator {
         $questioneditform->repeat_elements($repeatarray, $repeats,
                 $repeatoptions, 'option_repeats', 'option_add_fields',
                 1, get_string('addjunit', 'qtype_proforma'), true);
+
+        // $mform->addGroupRule('testoptions', array('testtitle' => array(null, 'required', null, 'client')));
 
         return $repeats;
     }
