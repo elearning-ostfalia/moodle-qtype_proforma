@@ -157,6 +157,9 @@ abstract class base_form_creator {
         // do not set required since the filed can be hidden
         // $mform->addRule('responsefilename', null, 'required', '', 'client', false, false);
 
+        // note: hidding responsefilename does not work with static text
+        $mform->hideIf('responsefilename', 'responseformat', 'neq', 'editor');
+
         // maybe in the future...
         // $mform->addElement('button', 'generatefilename', get_string('generatefilename', 'qtype_proforma'));
     }
@@ -347,14 +350,15 @@ abstract class base_form_creator {
                 get_string('highlight', 'qtype_proforma'), $qtype->get_proglang_options());
         $mform->addHelpButton('programminglanguage', 'highlight_hint', 'qtype_proforma');
         $mform->setDefault('programminglanguage', 'java');
+        // Show only if response format is editor
+        $mform->hideIf('programminglanguage', 'responseformat', 'neq', 'editor');
 
         // Response template.
         $this->add_responsetemplate($question);
 
         // Response filename.
         $this->add_responsefilename($question);
-        // note: hidding responsefilename does not work with static text
-        $mform->hideIf('responsefilename', 'responseformat', 'neq', 'editor');
+
 
         $this->add_modelsolution($question);
     }

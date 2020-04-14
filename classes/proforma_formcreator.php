@@ -109,24 +109,6 @@ class proforma_form_creator extends base_form_creator {
     }
 
     /**
-     * Display response filename.
-     *
-     * @param $question
-     */
-    /*
-        protected function add_responsefilename($question) {
-            $mform = $this->form;
-
-            // since static fields cannot be hidden we create a group
-            $group = [];
-            $group[] =& $mform->createElement('static',  'dummy' , '', $question->options->responsefilename);
-            $mform->addGroup($group, 'responsefilename', get_string('filename', 'qtype_proforma'), ' ', false);
-            $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
-
-            // $this->add_static_field($question, 'responsefilename', get_string('filename', 'qtype_proforma'), 50);
-        }
-    */
-    /**
      * Display grader settings.
      *
      * @param $question
