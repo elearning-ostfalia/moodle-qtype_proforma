@@ -33,7 +33,7 @@ $settings->add(new admin_setting_heading('grader',
 $settings->add(new admin_setting_configtext('qtype_proforma/graderuri_host',
         get_string('graderuri_host', 'qtype_proforma'),
         get_string('graderuri_host_desc', 'qtype_proforma'),
-        'http://localhost:8001'));
+        'http://localhost:8010'));
 
 $settings->add(new admin_setting_configtext('qtype_proforma/graderuri_path',
         get_string('graderuri_path', 'qtype_proforma'),
