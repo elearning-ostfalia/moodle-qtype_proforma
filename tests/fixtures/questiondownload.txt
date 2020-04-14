@@ -1,0 +1,1 @@
+text for use in behat tests as a sample for a question attachment

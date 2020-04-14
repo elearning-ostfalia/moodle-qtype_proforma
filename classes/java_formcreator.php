@@ -31,11 +31,11 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 class java_form_creator extends base_form_creator {
 
+    // Property name for model solution manager.
     // Must be name of associated filearea!!.
-    const MODELSOLMANAGER = qtype_proforma::FILEAREA_MODELSOL; // 'modelsol';
-
-    // Filearea object for handling model solution files.
-    protected $_ms_filearea = null;
+    const MODELSOLMANAGER = qtype_proforma::FILEAREA_MODELSOL;
+    // Property name for download manager.
+    const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
 
     protected $_newquestion = false;
 
@@ -47,13 +47,32 @@ class java_form_creator extends base_form_creator {
      */
     public function __construct($form, $newquestion = null) {
         parent::__construct($form);
-        $this->_ms_filearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
         if (isset($newquestion) && $newquestion) {
             $this->_newquestion = $newquestion;
         }
     }
 
     // override
+
+    /**
+     * Create filemanager for files to be downloaded by student.
+     *
+     * @param $question
+     */
+    public function add_questiontext_attachments($question) {
+        $mform = $this->form;
+
+        $mform->addElement('hidden', 'taskstorage', qtype_proforma::VOLATILE_TASKFILE);
+        $mform->setType('taskstorage', PARAM_RAW);
+
+        // Add Filemanager for download links associated with question text.
+        // Remove hidden element in base class.
+        $mform->removeElement(self::DOWNLOADMANAGER);
+        $mform->addElement('filemanager', self::DOWNLOADMANAGER, get_string('downloads', 'qtype_proforma'), null,
+                array('subdirs' => 0));
+        $mform->addHelpButton(self::DOWNLOADMANAGER, 'downloads_hint', 'qtype_proforma');
+    }
+
     /**
      * Add something to select the programming language.
      *
@@ -61,9 +80,6 @@ class java_form_creator extends base_form_creator {
      */
     public function add_proglang_selection($question) {
         $mform = $this->form;
-
-        $mform->addElement('hidden', 'taskstorage', qtype_proforma::VOLATILE_TASKFILE);
-        $mform->setType('taskstorage', PARAM_RAW);
 
         $mform->addElement('text', 'proglang',
                 get_string('proglang', 'qtype_proforma'), 'Java');
@@ -115,7 +131,8 @@ class java_form_creator extends base_form_creator {
         $mform->addHelpButton('modelsolution', 'modelsolution', 'qtype_proforma');
         $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
 
-        // might be set as hidden element;
+        // Add Filemanager for model solution in case of using the filepicker.
+        // Remove hidden element in base class.
         $mform->removeElement(self::MODELSOLMANAGER);
         $mform->addElement('filemanager', self::MODELSOLMANAGER, get_string('modelsolfiles', 'qtype_proforma'), null,
                 array('subdirs' => 0));
@@ -419,7 +436,8 @@ class java_form_creator extends base_form_creator {
 
             // Model solution files can be uploaded with a file manager
             // or entered as text in editor.
-            $files = $this->_ms_filearea->get_files($editor->context->id, $question->id);
+            $msfilearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
+            $files = $msfilearea->get_files($editor->context->id, $question->id);
             if (count($files) === 1) {
                 $question->modelsolution = $files[0]->get_content();
             }
@@ -453,7 +471,9 @@ class java_form_creator extends base_form_creator {
                 // Store model solution text as file.
                 // Property 'modelsolution' exists only if the form editor was used.
                 // So if we come from import we cannot evalute 'modelsolution'.
-                $this->_ms_filearea->save_textfile($formdata->context->id, $formdata->id,
+                // Filearea object for handling model solution files.
+                $msfilearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
+                $msfilearea->save_textfile($formdata->context->id, $formdata->id,
                         $formdata->responsefilename, isset($formdata->modelsolution) ? $formdata->modelsolution : '');
             }
         }

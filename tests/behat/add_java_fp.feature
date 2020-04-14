@@ -34,6 +34,13 @@ Feature: ADD JAVA FILEPICKER QUESTION
     # check that Response filename is not visible
     And I should not see "Response filename"
     And I set the codemirror "testcode_0" to "class TestClass {}"
+    #And I pause
+    # updload question attachment file (i.e. download link in preview)
+    And I upload "question/type/proforma/tests/fixtures/questiondownload.txt" file to "Downloadable files" filemanager
+    # It is not possible to upload files twice in the editor (bug in test environment?)
+    # Therefor ewe close the editor and reopen it.
+    And I press "id_submitbutton"
+    When I choose "Edit question" action for "java-question" in the question bank
     # updload model solution file
     And I upload "question/type/proforma/tests/fixtures/MyString.java" file to "Model solution files" filemanager
 
@@ -42,7 +49,7 @@ Feature: ADD JAVA FILEPICKER QUESTION
 
     When I choose "Edit question" action for "java-question" in the question bank
     Then the following fields match these values:
-      | Question name            |     java-question              |
+      | Question name            | java-question              |
       | Question text            | write a java program that..... |
       | Default mark             | 1                              |
       | General feedback         |                                |
@@ -60,6 +67,7 @@ Feature: ADD JAVA FILEPICKER QUESTION
     And I should not see "Response filename"
     # And I pause
     And I should see "1" elements in "Model solution files" filemanager
+    And I should see "1" elements in "Downloadable files" filemanager
     And the "compile" checkbox is "checked"
     # JUnit
     #And the field "testweight[0]" matches value "1"
@@ -67,4 +75,13 @@ Feature: ADD JAVA FILEPICKER QUESTION
     # Checkstyle
     And the "checkstyle" checkbox is "not checked"
     # Finish
-    And I press "Cancel"
+    And I press "id_submitbutton"
+    Then I should see "java-question"
+
+    # check for download link
+    When I choose "Preview" action for "java-question" in the question bank
+    And I switch to "questionpreview" window
+    Then I should see "questiondownload.txt"
+    And following "questiondownload.txt" should download file with between "65" and "67" bytes
+
+    And I switch to the main window
