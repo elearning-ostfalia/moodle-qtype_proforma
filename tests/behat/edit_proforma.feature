@@ -26,6 +26,7 @@ Feature: EDIT PROFORMA
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
+  @javascript @_file_upload
   Scenario: Edit a ProFormA question
     When I choose "Edit question" action for "proforma-001" in the question bank
     # assert(expected old values)
@@ -56,7 +57,8 @@ Feature: EDIT PROFORMA
     And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
     And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
     # download links
-    And I should see "instruction.txt, lib.txt"
+    And I should see "2" elements in "Downloadable files" filemanager
+    #And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
     # And I should see "MyString.java"
@@ -74,13 +76,15 @@ Feature: EDIT PROFORMA
       | Response format          | Editor                         |
       | Syntax highlighting      | Python                         |
       | Input box size           | 25 lines                       |
-      | Response template        | edited start code              |
+#      | Response template        | edited start code              |
       | Comment                  | edited comment                 |
       | Aggregation strategy      | Weighted sum                 |
       | Penalty for each incorrect try  | 50%                     |
       | Response filename        | MyOtherString.java                     |
-#      | UUID                     | UUID 2                     |
-#      | ProFormA Version         | 3.0                        |
+    # updload question attachment file (i.e. download link in preview)
+    And I upload "question/type/proforma/tests/fixtures/questiondownload.txt" file to "Downloadable files" filemanager
+
+    And I set the codemirror "responsetemplate" to "edited start code"
     And I set the field "testweight[0]" to "11"
     And I set the field "testweight[1]" to "22"
     And I set the field with xpath "//input[@name='testtitle[0]']" to "edited title #1"
@@ -119,7 +123,8 @@ Feature: EDIT PROFORMA
     And the field with xpath "//input[@name='testtype[0]']" matches value "TEST-CONFIG 1"
     And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
     # download links
-    And I should see "instruction.txt, lib.txt"
+    # And I should see "instruction.txt, lib.txt"
+    And I should see "3" elements in "Downloadable files" filemanager
     And I should see "ms1.txt"
     And I should see "ms2.txt"
     # And I should see "MyString.java"
@@ -128,4 +133,17 @@ Feature: EDIT PROFORMA
     And I should see "testtask.zip"
     #And I should see "2.0"
 
-    And I press "Cancel"
+    # Finish
+    And I press "id_submitbutton"
+    Then I should see "edited question name"
+
+    # check for download link
+    When I choose "Preview" action for "edited question name" in the question bank
+    And I switch to "questionpreview" window
+    Then I should see "questiondownload.txt"
+    Then I should see "lib.txt"
+    Then I should see "instruction.txt"
+    And following "questiondownload.txt" should download file with between "65" and "67" bytes
+    And following "instruction.txt" should download file with between "17" and "20" bytes
+    And following "lib.txt" should download file with between "9" and "12" bytes
+    And I switch to the main window

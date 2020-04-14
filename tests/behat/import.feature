@@ -151,7 +151,8 @@ Feature: IMPORT (Moodle-XML format)
     And the field with name "testid[1]" matches value "2"
     # static fields
     # download links
-    And I should see "instruction.txt, lib.txt"
+    And I should see "2" elements in "Downloadable files" filemanager
+    # And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
     And I should see "templ2.txt"
@@ -161,3 +162,12 @@ Feature: IMPORT (Moodle-XML format)
 #    And I should see "2.0"
 
     And I press "Cancel"
+
+    # check for download link in "proforma-003"
+    When I choose "Preview" action for "second ProFormA question" in the question bank
+    And I switch to "questionpreview" window
+    Then I should see "lib.txt"
+    Then I should see "instruction.txt"
+    And following "instruction.txt" should download file with between "17" and "20" bytes
+    And following "lib.txt" should download file with between "9" and "12" bytes
+    And I switch to the main window

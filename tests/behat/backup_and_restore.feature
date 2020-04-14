@@ -98,7 +98,8 @@ Feature: BACKUP AND RESTORE
     And the field with name "testtype[0]" matches value "TEST-CONFIG 1"
     And the field with name "testtype[1]" matches value "TEST-CONFIG 2"
     # download links
-    And I should see "instruction.txt, lib.txt"
+    # And I should see "instruction.txt, lib.txt"
+    And I should see "2" elements in "Downloadable files" filemanager
     And I should see "ms1.txt"
     And I should see "ms2.txt"
 #    And I should see "MyString.java"
@@ -140,12 +141,30 @@ Feature: BACKUP AND RESTORE
     And the field with name "testtype[1]" matches value "TEST-CONFIG 2"
 # todo: try and check values of static fields
     # download links
-    And I should see "instruction.txt, lib.txt"
+    # And I should see "instruction.txt, lib.txt"
+    And I should see "2" elements in "Downloadable files" filemanager
     And I should see "ms1.txt"
     And I should see "ms2.txt"
     # grader settings
 #    And I should see "UUID 2"
     And I should see "testtask.zip"
 #    And I should see "2.0"
-
     And I press "Cancel"
+
+    # check for download link in "proforma-003"
+    When I choose "Preview" action for "proforma-001" in the question bank
+    And I switch to "questionpreview" window
+    Then I should see "lib.txt"
+    Then I should see "instruction.txt"
+    And following "instruction.txt" should download file with between "17" and "20" bytes
+    And following "lib.txt" should download file with between "9" and "12" bytes
+    And I switch to the main window
+
+    # check for download link in "proforma-003"
+    When I choose "Preview" action for "proforma-003" in the question bank
+    And I switch to "questionpreview" window
+    Then I should see "lib.txt"
+    Then I should see "instruction.txt"
+    And following "instruction.txt" should download file with between "17" and "20" bytes
+    And following "lib.txt" should download file with between "9" and "12" bytes
+    And I switch to the main window

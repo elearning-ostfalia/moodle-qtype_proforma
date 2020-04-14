@@ -33,6 +33,9 @@ abstract class base_form_creator {
     protected $form = null;
     protected $taskhandler = null;
 
+    // Property name for download manager.
+    const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
+
     /**
      * base_form_creator constructor.
      *
@@ -112,6 +115,14 @@ abstract class base_form_creator {
      * @param $question
      */
     public function add_questiontext_attachments($question) {
+        $mform = $this->form;
+
+        // Add Filemanager for download links associated with question text.
+        // Remove hidden element in base class.
+        $mform->removeElement(self::DOWNLOADMANAGER);
+        $mform->addElement('filemanager', self::DOWNLOADMANAGER, get_string('downloads', 'qtype_proforma'), null,
+                array('subdirs' => 0));
+        $mform->addHelpButton(self::DOWNLOADMANAGER, 'downloads_hint', 'qtype_proforma');
     }
 
     /**
@@ -129,7 +140,8 @@ abstract class base_form_creator {
                     array('id_programminglanguage', 'id_responsetemplate'));
         }
         $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_proforma');
-
+        // Show only if response format is editor
+        $mform->hideIf('responsetemplate', 'responseformat', 'neq', 'editor');
     }
 
     /**

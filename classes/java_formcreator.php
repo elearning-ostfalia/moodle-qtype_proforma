@@ -34,8 +34,6 @@ class java_form_creator extends base_form_creator {
     // Property name for model solution manager.
     // Must be name of associated filearea!!.
     const MODELSOLMANAGER = qtype_proforma::FILEAREA_MODELSOL;
-    // Property name for download manager.
-    const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
 
     protected $_newquestion = false;
 
@@ -55,22 +53,15 @@ class java_form_creator extends base_form_creator {
     // override
 
     /**
-     * Create filemanager for files to be downloaded by student.
-     *
-     * @param $question
+     * Add hidden fields for question attributes that are not part of the edit form.
+     * @throws coding_exception
      */
-    public function add_questiontext_attachments($question) {
+    public function add_hidden_fields() {
+        parent::add_hidden_fields();
         $mform = $this->form;
 
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::VOLATILE_TASKFILE);
         $mform->setType('taskstorage', PARAM_RAW);
-
-        // Add Filemanager for download links associated with question text.
-        // Remove hidden element in base class.
-        $mform->removeElement(self::DOWNLOADMANAGER);
-        $mform->addElement('filemanager', self::DOWNLOADMANAGER, get_string('downloads', 'qtype_proforma'), null,
-                array('subdirs' => 0));
-        $mform->addHelpButton(self::DOWNLOADMANAGER, 'downloads_hint', 'qtype_proforma');
     }
 
     /**

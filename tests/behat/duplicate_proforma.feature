@@ -26,6 +26,7 @@ Feature: DUPLICATE PROFORMA
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
+  @javascript
   Scenario: Edit a ProFormA question
     When I choose "Duplicate" action for "proforma-001" in the question bank
     #When I click on "Edit" "link" in the "proforma-001" "table_row"
@@ -56,7 +57,8 @@ Feature: DUPLICATE PROFORMA
     And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
 # todo: try and check values of static fields
     # download links
-    And I should see "instruction.txt, lib.txt"
+    And I should see "2" elements in "Downloadable files" filemanager
+    # And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt, ms2.txt"
 #    And I should see "MyString.java"
     # grader settings
@@ -98,7 +100,8 @@ Feature: DUPLICATE PROFORMA
     And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
 # todo: try and check values of static fields
     # download links
-    And I should see "instruction.txt, lib.txt"
+    And I should see "2" elements in "Downloadable files" filemanager
+    # And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt, ms2.txt"
 #    And I should see "MyString.java"
     # grader settings
@@ -129,7 +132,8 @@ Feature: DUPLICATE PROFORMA
     And the field with xpath "//input[@name='testtype[1]']" matches value "TEST-CONFIG 2"
 # todo: try and check values of static fields
     # download links
-    And I should see "instruction.txt, lib.txt"
+    And I should see "2" elements in "Downloadable files" filemanager
+    # And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt, ms2.txt"
 #    And I should see "MyString.java"
     # grader settings
@@ -137,4 +141,13 @@ Feature: DUPLICATE PROFORMA
     And I should see "testtask.zip"
 #    And I should see "2.0"
 
-# editing a duplicated question needs not to be tested here
+    And I press "Cancel"
+
+    # check for download link in "proforma-003"
+    When I choose "Preview" action for "Duplicated question name" in the question bank
+    And I switch to "questionpreview" window
+    Then I should see "lib.txt"
+    Then I should see "instruction.txt"
+    And following "instruction.txt" should download file with between "17" and "20" bytes
+    And following "lib.txt" should download file with between "9" and "12" bytes
+    And I switch to the main window

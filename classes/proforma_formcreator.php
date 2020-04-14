@@ -66,17 +66,19 @@ class proforma_form_creator extends base_form_creator {
     }
 
     /**
-     * Create links for files to be downloaded by student.
-     *
-     * @param $question
+     * Add hidden fields for question attributes that are not part of the edit form.
+     * @throws coding_exception
      */
-    public function add_questiontext_attachments($question) {
+    public function add_hidden_fields() {
+        parent::add_hidden_fields();
+
         $mform = $this->form;
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::PERSISTENT_TASKFILE);
         $mform->setType('taskstorage', PARAM_RAW);
+
         // Attachments for Question Text (Downloads)
-        $mform->addElement('static', 'downloadlinks', get_string('downloads', 'qtype_proforma'), '');
-        $mform->addHelpButton('downloadlinks', 'downloads_hint', 'qtype_proforma');
+        // $mform->addElement('static', 'downloadlinks', get_string('downloads', 'qtype_proforma'), '');
+        // $mform->addHelpButton('downloadlinks', 'downloads_hint', 'qtype_proforma');
     }
 
     /**
@@ -199,9 +201,8 @@ class proforma_form_creator extends base_form_creator {
         $msfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
         $question->mslinks = $msfilearea->get_files_as_links($question->contextid,
                 $question->id);
-        $downloadfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_DOWNLOAD);
-        $question->downloadlinks = $downloadfilearea->get_files_as_links($question->contextid,
-                $question->id);
+        // $downloadfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_DOWNLOAD);
+        // $question->downloadlinks = $downloadfilearea->get_files_as_links($question->contextid, $question->id);
 
         $taskfilehandler = new qtype_proforma_proforma_task;
         $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
