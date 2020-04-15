@@ -71,7 +71,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     const QUESTION_DOWNLOADS =  qtype_proforma_test_helper::QUESTION_INSTRUCTIONS .', '.
         qtype_proforma_test_helper::QUESTION_LIBRARIES;
 
-    const QUESTION_TEMPLATES = 'temp.txt';
+    const QUESTION_TEMPLATES = 'template.txt';
     const QUESTION_TEMPLATES_2 = 'codesnippet.py';
     const QUESTION_MODELSOLS = 'ms1.txt, ms2.txt';
     const QUESTION_TASKFILENAME = 'testtask.zip';
@@ -393,7 +393,11 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->proglangversion = '1.8';
 
         // $container->modelsolution = self::QUESTION_MODELSOLUTION;
+        // set redundant :-( template
         $form->responsetemplate = self::QUESTION_TEMPLATE;
+        $form->template = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->template, 'template.txt',
+                self::QUESTION_TEMPLATE);
 
         $form->gradinghints = self::QUESTION_GRADINGHINTS_JAVA;
         $form->aggregationstrategy = self::QUESTION_AGGREGATIONSTRATEGY;

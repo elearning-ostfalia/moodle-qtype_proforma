@@ -25,7 +25,77 @@ Feature: EDIT JAVA
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
+##########################################################################
+  @javascript
+  Scenario: Check precondition for all successive scenarios
+##########################################################################
+    When I choose "Edit question" action for "proforma-java" in the question bank
+    # assert(expected old values)
+    Then the following fields match these values:
+      | Question name            | proforma-java           |
+      | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
+      | Default mark             | 3                              |
+      | General feedback         | <p>You must not use a library function.</p>        |
+      | Response format          | Editor                         |
+      | Syntax highlighting      | Java                           |
+      | Input box size           | 10 lines                       |
+      | Response template        | //text in responsetemplate     |
+      | Model solution           | // code for model solution                 |
+      | Comment                  | <p>Check if the code uses a library function.</p>                 |
+      | Aggregation strategy      | All or nothing                |
+      | Penalty for each incorrect try  | 20%                     |
+      | Response filename        | MyString.java                     |
+    # compile
+    And the "compile" checkbox is "checked"
+    And the field "compileweight" matches value "2"
+    # JUnit 1
+    And the field "testid[0]" matches value "1"
+    And the field "testtitle[0]" matches value "Junit Test 1"
+    And the field "testdescription[0]" matches value "Description Junit 1"
+    And the field "testtype[0]" matches value "unittest"
+    And the field "testweight[0]" matches value "3"
+    And the field "testcode[0]" matches value "class XTest {}"
+    And the field "testversion[0]" matches value "4.12"
+    # JUnit 2
+    And the field "testtitle[1]" matches value "Junit Test 2"
+    And the field "testdescription[1]" matches value "Description Junit 2"
+    And the field "testtype[1]" matches value "unittest"
+    And the field "testweight[1]" matches value "6"
+    And the field "testid[1]" matches value "2"
+    And the field "testversion[1]" matches value "4.12"
+    # Checkstyle
+    And the "checkstyle" checkbox is "checked"
+    And the field "checkstyleweight" matches value "4"
+    And the field "checkstyleversion" matches value "8.23"
+    And the field "checkstylecode" matches multiline
+    """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+    <module name="Checker">
+      <property name="severity" value="warning"/>
+      <module name="TreeWalker">
+        <module name="NeedBraces">
+          <property name="severity" value="error"/>
+        </module>
+      </module>
+    </module>
+    """
 
+    # Finish
+    And I press "Cancel"
+    Then I should see "proforma-java"
+
+    # check for download link
+    When I choose "Preview" action for "proforma-java" in the question bank
+    And I switch to "questionpreview" window
+    #Then I should see "lib.txt"
+    #Then I should see "instruction.txt"
+    Then I should see "template.txt"
+    Then I should see "//text in responsetemplate"
+    #And following "instruction.txt" should download file with between "17" and "20" bytes
+    #And following "lib.txt" should download file with between "9" and "12" bytes
+    And following "template.txt" should download file with between "26" and "28" bytes
+    And I switch to the main window
 
 ##########################################################################
   @javascript
@@ -82,62 +152,10 @@ Feature: EDIT JAVA
     And I press "Cancel"
 
 
-##########################################################################
-  Scenario: Check precondition for all successive scenarios
-##########################################################################
-    When I choose "Edit question" action for "proforma-java" in the question bank
-    # assert(expected old values)
-    Then the following fields match these values:
-      | Question name            | proforma-java           |
-      | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
-      | Default mark             | 3                              |
-      | General feedback         | <p>You must not use a library function.</p>        |
-      | Response format          | Editor                         |
-      | Syntax highlighting      | Java                           |
-      | Input box size           | 10 lines                       |
-      | Response template        | //text in responsetemplate     |
-      | Model solution           | // code for model solution                 |
-      | Comment                  | <p>Check if the code uses a library function.</p>                 |
-      | Aggregation strategy      | All or nothing                |
-      | Penalty for each incorrect try  | 20%                     |
-      | Response filename        | MyString.java                     |
-    # compile
-    And the "compile" checkbox is "checked"
-    And the field "compileweight" matches value "2"
-    # JUnit 1
-    And the field "testid[0]" matches value "1"
-    And the field "testtitle[0]" matches value "Junit Test 1"
-    And the field "testdescription[0]" matches value "Description Junit 1"
-    And the field "testtype[0]" matches value "unittest"
-    And the field "testweight[0]" matches value "3"
-    And the field "testcode[0]" matches value "class XTest {}"
-    And the field "testversion[0]" matches value "4.12"
-    # JUnit 2
-    And the field "testtitle[1]" matches value "Junit Test 2"
-    And the field "testdescription[1]" matches value "Description Junit 2"
-    And the field "testtype[1]" matches value "unittest"
-    And the field "testweight[1]" matches value "6"
-    And the field "testid[1]" matches value "2"
-    And the field "testversion[1]" matches value "4.12"
-    # Checkstyle
-    And the "checkstyle" checkbox is "checked"
-    And the field "checkstyleweight" matches value "4"
-    And the field "checkstyleversion" matches value "8.23"
-    And the field "checkstylecode" matches multiline
-    """
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
-    <module name="Checker">
-      <property name="severity" value="warning"/>
-      <module name="TreeWalker">
-        <module name="NeedBraces">
-          <property name="severity" value="error"/>
-        </module>
-      </module>
-    </module>
-    """
+
 
 ##########################################################################
+  @javascript @_file_upload
   Scenario: Edit a ProFormA question (simply edit all values)
 ##########################################################################
     When I choose "Edit question" action for "proforma-java" in the question bank
@@ -150,12 +168,15 @@ Feature: EDIT JAVA
       | Response format          | Editor                         |
       | Syntax highlighting      | Python                           |
       | Input box size           | 20 lines                       |
-      | Response template        | //new text in responsetemplate     |
-      | Model solution           | // new code for model solution                 |
+#      | Response template        | new code snippet that can be used as a starting point for the student     |
+#      | Model solution           | // new code for model solution                 |
       | Comment                  | new comment                  |
       | Aggregation strategy      | Weighted sum                |
       | Penalty for each incorrect try  | 10%                     |
       | Response filename        | newMyString.java                     |
+
+    And I set the codemirror "responsetemplate" to "new code snippet that can be used as a starting point for the student"
+    And I set the codemirror "modelsolution" to "// new code for model solution"
 
     # compile
     #And I set the field "compile" to "0"
@@ -164,18 +185,22 @@ Feature: EDIT JAVA
     And I set the field "testtitle[0]" to "new Junit Test 1"
     And I set the field "testdescription[0]" to "new Description Junit 1"
     And I set the field "testweight[0]" to "3.5"
-    And I set the field "testcode[0]" to "class NewXTest {}"
+#    And I set the field "testcode[0]" to "class NewXTest {}"
+    And I set the codemirror "testcode_0" to "class NewXTest {}"
+
     And I set the field "testversion[0]" to "5"
     # JUnit 2
     And I set the field "testtitle[1]" to "new Junit Test 2"
     And I set the field "testdescription[1]" to "new Description Junit 2"
     And I set the field "testweight[1]" to "6.5"
-    And I set the field "testcode[1]" to "class NewYTest {}"
+#    And I set the field "testcode[1]" to "class NewYTest {}"
+    And I set the codemirror "testcode_1" to "class NewYTest {}"
     And I set the field "testversion[1]" to "5"
     # Checkstyle
     #And I set the field "checkstyle" to "0"
     And I set the field "checkstyleweight" to "4.5"
-    And I set the field "checkstylecode" to "<!-- empty-->"
+    # And I set the field "checkstylecode" to "<!-- empty-->"
+    And I set the codemirror "checkstylecode" to "<!-- empty-->"
     And I set the field "checkstyleversion" to "8.29"
 
     And I press "id_submitbutton"
@@ -190,7 +215,7 @@ Feature: EDIT JAVA
       | Response format          | Editor                         |
       | Syntax highlighting      | Python                           |
       | Input box size           | 20 lines                       |
-      | Response template        | //new text in responsetemplate     |
+      | Response template        | new code snippet that can be used as a starting point for the student     |
       | Model solution           | // new code for model solution                 |
       | Comment                  | new comment                  |
       | Aggregation strategy      | Weighted sum                |
@@ -221,7 +246,25 @@ Feature: EDIT JAVA
     And the field "checkstylecode" matches value "<!-- empty-->"
     And the field "checkstyleversion" matches value "8.29"
 
-    And I press "Cancel"
+    # Finish
+    And I press "id_submitbutton"
+    Then I should see "updated proforma-java"
+
+    # check for download link
+    When I choose "Preview" action for "updated proforma-java" in the question bank
+    And I switch to "questionpreview" window
+    #Then I should see "questiondownload.txt"
+    #Then I should see "lib.txt"
+    #Then I should see "instruction.txt"
+    # new code template in editor and for download
+    Then I should see "template.txt"
+    Then I should see "new code snippet that can be used as a starting point for the student"
+    #And following "questiondownload.txt" should download file with between "65" and "67" bytes
+    #And following "instruction.txt" should download file with between "17" and "20" bytes
+    #And following "lib.txt" should download file with between "9" and "12" bytes
+    And following "template.txt" should download file with between "69" and "73" bytes
+    And I switch to the main window
+
 
 ##########################################################################
   Scenario: Edit a ProFormA question (remove and add Junit)

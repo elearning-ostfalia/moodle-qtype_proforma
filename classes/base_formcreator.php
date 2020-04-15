@@ -584,13 +584,16 @@ abstract class base_form_creator {
         // Store response template as file (it is stored as file and as member variable
         // in order to support file download and editor template in student view)
         // note! at first store draft files, then override first template file
-        if (empty($options->templates) && !empty($formdata->responsetemplate)) {
-            // no template files stored but the teacher has entered a template text:
-            // handle situation where the template is created in moodle for the first time:
-            // set dummy template name and store file
-            $options->templates = $formdata->templates = 'template.txt';
-            qtype_proforma\lib\save_as_file($context->id, qtype_proforma::FILEAREA_TEMPLATE,
-                    $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
+        // todo: remove redundancy
+        if ($formdata->responseformat == qtype_proforma::RESPONSE_EDITOR) { // Editor.
+            // if (empty($options->templates) && !empty($formdata->responsetemplate)) {
+                // no template files stored but the teacher has entered a template text:
+                // handle situation where the template is created in moodle for the first time:
+                // set dummy template name and store file
+                $options->templates = $formdata->templates = 'template.txt';
+                qtype_proforma\lib\save_as_file($context->id, qtype_proforma::FILEAREA_TEMPLATE,
+                        $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
+            // }
         }
     }
 }

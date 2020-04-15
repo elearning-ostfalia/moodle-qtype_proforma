@@ -64,6 +64,7 @@ Feature: ADD JAVA QUESTION
     And I press "Cancel"
 
 ##########################################################################
+  @javascript
   Scenario: Create, save and open a ProFormA java question with compilation, one Junit test and checkstyle
 ##########################################################################
     When I add a "ProFormA" question filling the form with:
@@ -74,13 +75,15 @@ Feature: ADD JAVA QUESTION
       | Response format          | editor                         |
       | Input box size           | 20 lines                       |
       | Response filename        | MyClass.java                   |
-      | Response template        | // type your code here         |
-      | Model solution           | // code for model solution     |
+#      | Response template        | // type your code here         |
+#      | Model solution           | // code for model solution     |
       | Comment                  | this is a new question         |
       | Title                    | JUnit test title               |
       | Description              | JUnit description              |
       | Penalty for each incorrect try  | 20%     |
       | Programming language version  | 1.8     |
+    And I set the codemirror "responsetemplate" to "// type your code here"
+    And I set the codemirror "modelsolution" to "// code for model solution"
     Then I should see "Code required"
 
     When I set the following fields to these values:
@@ -91,19 +94,30 @@ Feature: ADD JAVA QUESTION
     #And I set the field "compileweight" to "10"
     # JUnit
     And I set the field "testweight[0]" to "20"
-    And I set the field "testcode[0]" to "// class XClass {}"
+    # And I set the field "testcode[0]" to "// class XClass {}"
+    And I set the codemirror "testcode_0" to "// class XClass {}"
     And I set the field "testversion[0]" to "4.12"
     # Checkstyle
     And I set the field "checkstyle" to "1"
     And I set the field "checkstyleweight" to "30"
-    And I set the field "checkstylecode" to "<!-- checkstyle code-->"
+    # And I set the field "checkstylecode" to "<!-- checkstyle code-->"
+    And I set the codemirror "checkstylecode" to "<!-- checkstyle code-->"
     And I set the field "checkstyleversion" to "8.23"
     And I press "id_submitbutton"
     Then I should see "Cannot determine classname (filename)"
 
-    When I set the field "testcode[0]" to "class XClass {}"
+    # When I set the field "testcode[0]" to "class XClass {}"
+    When I set the codemirror "testcode_0" to "class XClass {}"
     And I press "id_submitbutton"
     Then I should see "new java-question"
+
+    # check for download link
+    When I choose "Preview" action for "java-question" in the question bank
+    And I switch to "questionpreview" window
+    Then I should see "template.txt"
+    Then I should see "// type your code here"
+    And following "template.txt" should download file with between "22" and "24" bytes
+    And I switch to the main window
 
     When I choose "Edit question" action for "new java-question" in the question bank
     Then the following fields match these values:
@@ -135,8 +149,24 @@ Feature: ADD JAVA QUESTION
     And the field "checkstylecode" matches value "<!-- checkstyle code-->"
     And the field "checkstyleversion" matches value "8.23"
 
-    And I press "Cancel"
+    And I set the codemirror "responsetemplate" to "new code snippet that can be used as a starting point for the student"
+    And I press "id_submitbutton"
+    Then I should see "new java-question"
 
+    # check for download link
+    When I choose "Preview" action for "new java-question" in the question bank
+    And I switch to "questionpreview" window
+    #Then I should see "questiondownload.txt"
+    #Then I should see "lib.txt"
+    #Then I should see "instruction.txt"
+    # new code template in editor and for download
+    Then I should see "template.txt"
+    Then I should see "new code snippet that can be used as a starting point for the student"
+    #And following "questiondownload.txt" should download file with between "65" and "67" bytes
+    #And following "instruction.txt" should download file with between "17" and "20" bytes
+    #And following "lib.txt" should download file with between "9" and "12" bytes
+    And following "template.txt" should download file with between "69" and "73" bytes
+    And I switch to the main window
 
 
 

@@ -48,6 +48,8 @@ class qtype_proforma_java_task_test extends advanced_testcase {
     }
 
     public function test_create_java_file1() {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
         // Create sample form data
         $formdata = test_question_maker::get_question_form_data('proforma', 'java1unit');
         $instance = new qtype_proforma_java_task;
@@ -130,6 +132,8 @@ class qtype_proforma_java_task_test extends advanced_testcase {
     }
 
     public function test_create_java_file_no_junit() {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
         // Create sample form data
         $formdata = test_question_maker::get_question_form_data('proforma', 'java5');
         $instance = new qtype_proforma_java_task;
@@ -196,6 +200,9 @@ class qtype_proforma_java_task_test extends advanced_testcase {
 
 
     public function test_create_java_file_without_checkstyle() {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
         // Create sample form data
         $formdata = test_question_maker::get_question_form_data('proforma', 'java2');
         $instance = new qtype_proforma_java_task;
@@ -252,6 +259,8 @@ class qtype_proforma_java_task_test extends advanced_testcase {
     }
 
     public function test_create_java_without_compilation() {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
         // Create sample form data
         $formdata = test_question_maker::get_question_form_data('proforma', 'java3');
         $instance = new qtype_proforma_java_task;
@@ -327,6 +336,8 @@ class qtype_proforma_java_task_test extends advanced_testcase {
     }
 
     public function test_create_java_file_2_junits() {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
         // Create sample form data
         $formdata = test_question_maker::get_question_form_data('proforma', 'java_2junit');
         $instance = new qtype_proforma_java_task;
@@ -544,5 +555,15 @@ class Dog extends Animal {}
         $this->assertEquals('name.java', $instance->get_java_file($code));
         $this->assertEquals('name<T1,T2,T3>', $instance->get_java_entrypoint($code));
     }
+
+    /** TODO handle interfaces  */
+    /*
+    public function test_generic7() {
+        $code = 'public interface IName<T> {  }';
+        $instance = new qtype_proforma_java_task;
+        $this->assertEquals('IName.java', $instance->get_java_file($code));
+        $this->assertEquals('IName<T>', $instance->get_java_entrypoint($code));
+    }
+*/
 
 }

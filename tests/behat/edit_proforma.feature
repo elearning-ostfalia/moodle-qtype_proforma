@@ -84,7 +84,7 @@ Feature: EDIT PROFORMA
     # updload question attachment file (i.e. download link in preview)
     And I upload "question/type/proforma/tests/fixtures/questiondownload.txt" file to "Downloadable files" filemanager
 
-    And I set the codemirror "responsetemplate" to "edited start code"
+    And I set the codemirror "responsetemplate" to "new code snippet that can be used as a starting point for the student"
     And I set the field "testweight[0]" to "11"
     And I set the field "testweight[1]" to "22"
     And I set the field with xpath "//input[@name='testtitle[0]']" to "edited title #1"
@@ -103,7 +103,7 @@ Feature: EDIT PROFORMA
       | Response format          | Editor                         |
       | Syntax highlighting      | Python                         |
       | Input box size           | 25 lines                       |
-      | Response template        | edited start code              |
+      | Response template        | new code snippet that can be used as a starting point for the student |
       | Comment                  | edited comment                 |
       | Aggregation strategy      | Weighted sum                 |
       | Penalty for each incorrect try  | 50%                     |
@@ -143,7 +143,11 @@ Feature: EDIT PROFORMA
     Then I should see "questiondownload.txt"
     Then I should see "lib.txt"
     Then I should see "instruction.txt"
+    # new code template in editor and for download
+    Then I should see "template.txt"
+    Then I should see "new code snippet that can be used as a starting point for the student"
     And following "questiondownload.txt" should download file with between "65" and "67" bytes
     And following "instruction.txt" should download file with between "17" and "20" bytes
     And following "lib.txt" should download file with between "9" and "12" bytes
+    And following "template.txt" should download file with between "69" and "73" bytes
     And I switch to the main window

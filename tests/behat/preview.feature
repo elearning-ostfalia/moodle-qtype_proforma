@@ -36,11 +36,11 @@ Feature: PREVIEW
     # text in response template
     And I should see "//text in responsetemplate"
     # check download links
-    And I should see "temp.txt"
+    And I should see "template.txt"
     And I should see "instruction.txt"
     And I should see "lib.txt"
     And following "instruction.txt" should download file with between "17" and "20" bytes
-    And following "temp.txt" should download file with between "26" and "29" bytes
+    And following "template.txt" should download file with between "26" and "29" bytes
     # And I pause
     And following "lib.txt" should download file with between "9" and "12" bytes
 
