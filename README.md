@@ -20,13 +20,14 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
 ## Features
 
 - Java code can be checked with JUnit and Checkstyle
-- submission as file upload, input from editor or export from an external repository (version control system)
-- submission file upload with more than one file 
-- syntax highlighting in editor
+- various submission formats: 
+    
+    * editor with programming language support such as syntax highlighting or automatic indentation
+    * file upload (for more than one file)
+    * external repository (version control system) 
 - code snippet as starting point for student
 - immediate feedback for students (optional) 
-- supported programming languages are only limited by the available grader back-ends
- 
+- supported programming languages are only limited by the available grader back-ends 
 
 ## Screenshots
 
@@ -64,7 +65,7 @@ For importing questions from an external source an import plugin is available (o
 We have a separate Javascript editor for creating tasks (https://github.com/ProFormA/formatEditor).
  
 An online version is available at 
-https://media.elan-ev.de/proforma/editor/releases/3.0.3/proformaEditor.html
+https://media.elan-ev.de/proforma/editor/releases/3.0.5/proformaEditor.html
        
 Of course ProFormA tasks can be created by different other external tools as well.
 
