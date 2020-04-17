@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/grader_2.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
 
 define("ANSWER",      "answer");
 define("ATTACHMENTS", "attachments");
@@ -530,6 +531,9 @@ class qtype_proforma_question extends question_graded_automatically {
             return null;
         }
 
+        $taskarea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_TASK);
+        return $taskarea->get_file($this->contextid, $this->taskfilename, $this->id);
+        /*
         $fs = get_file_storage();
 
         // Prepare file record object
@@ -544,6 +548,6 @@ class qtype_proforma_question extends question_graded_automatically {
         // Get file
         $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
                 $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
-        return $file;
+        return $file;*/
     }
 }

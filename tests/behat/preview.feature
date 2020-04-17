@@ -36,6 +36,7 @@ Feature: PREVIEW
     # text in response template
     And I should see "//text in responsetemplate"
     # check download links
+    And I should not see "codesnippet.py"
     And I should see "template.txt"
     And I should see "instruction.txt"
     And I should see "lib.txt"
@@ -58,11 +59,12 @@ Feature: PREVIEW
     # And I pause
     And I should not see "#code snippet for python"
     # check download links
-    And I should see "codesnippet.py"
+    And I should not see "codesnippet.py"
     And I should see "instruction.txt"
     And I should see "lib.txt"
+    And I should not see "template.txt"
     And following "instruction.txt" should download file with between "17" and "20" bytes
-    And following "codesnippet.py" should download file with between "24" and "27" bytes
+    # And following "template.txt" should download file with between "24" and "27" bytes
     And following "lib.txt" should download file with between "9" and "12" bytes
 
     And I switch to the main window

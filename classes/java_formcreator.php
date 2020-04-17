@@ -126,7 +126,7 @@ class java_form_creator extends base_form_creator {
         // Remove hidden element in base class.
         $mform->removeElement(self::MODELSOLMANAGER);
         $mform->addElement('filemanager', self::MODELSOLMANAGER, get_string('modelsolfiles', 'qtype_proforma'), null,
-                array('subdirs' => 0));
+                array('subdirs' => true));
 
         $mform->hideIf(self::MODELSOLMANAGER, 'responseformat', 'neq', 'filepicker');
     }
@@ -182,21 +182,16 @@ class java_form_creator extends base_form_creator {
         if (!$this->_newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
             // In case no other value can be selected this is chosen by default.
-            //$versions[] = get_string('choose');
             $obj->{'0'} = get_string('choose');
         }
         foreach (explode(',', $csversion) as $version) {
             $strversion = trim($version);
-            //$versions[$strversion] = $strversion;
             $obj->{$strversion} = $strversion;
         }
         $versions = (array) $obj;
 
-        //debugging('Testversionen: ' . count($versions) . ' ' . $versions[0] . ' ' . var_dump($versions));
-
         $testoptions[] = $mform->createElement('select', 'testversion',
                 get_string('version', 'qtype_proforma'), $versions);
-
     }
 
     /**
@@ -252,7 +247,7 @@ class java_form_creator extends base_form_creator {
                 'checkstyleweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
         // is checked even if checkstyle is not visible!
         // $mform->addGroupRule('checkstyleoptions', array(
-        //        'checkstyleversion' => array(array(get_string('error'), 'nonzero', '', 'client'))));
+        // 'checkstyleversion' => array(array(get_string('error'), 'nonzero', '', 'client'))));
         // Add textarea.
         $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
         qtype_proforma\lib\as_codemirror('id_checkstylecode', 'xml');

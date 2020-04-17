@@ -269,14 +269,13 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
     <vcsuritemplate></vcsuritemplate>
     <vcslabel></vcslabel>
-    <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES_2.'</templates>
+    <templates></templates>
     <downloads>'.qtype_proforma_test_helper::QUESTION_DOWNLOADS.'</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
     <comment format="html">
       <text><![CDATA['.qtype_proforma_test_helper::QUESTION_COMMENT.']]></text>
     </comment>
-<templatefiles><file name="'.qtype_proforma_test_helper::QUESTION_TEMPLATES_2.'" path="/" encoding="base64">I2NvZGUgc25pcHBldCBmb3IgcHl0aG9u</file>
-</templatefiles>
+<templatefiles></templatefiles>
 <downloadfiles><file name="instruction.txt" path="/" encoding="base64">SU5TVFJVQ1RJT04tRHVtbXk=</file>
 <file name="lib.txt" path="/" encoding="base64">TElCLUR1bW15</file>
 </downloadfiles>

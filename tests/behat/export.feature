@@ -38,7 +38,7 @@ Feature: EXPORT
     # Moodle 3.6.4
     # Then following "click here" should download file with between "12220" and "12230" bytes
     # Moodle 3.6.8
-    Then following "click here" should download file with between "12250" and "12260" bytes
+    Then following "click here" should download file with between "12145" and "12155" bytes
   
     # If the download step is the last in the scenario then we can sometimes run
     # into the situation where the download page causes a http redirect but behat

@@ -24,10 +24,12 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
 
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
 
 /**
  * Checks file access for proforma questions.
@@ -95,11 +97,21 @@ function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $fo
     }
 
     $filename = implode('/', $args); // $args contains elements of the filepath
-    $filepath = '/';
+    // $filepath = '/';
 
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
-    $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $itemid, $filepath , $filename);
+    // for historical reasons we use two approaches for retrieving the file:
+    // (I want to avoid updating database values to fit the new model)
+    // New approach:
+    // properly split filename into path and basename
+    list($filepath, $basename) = qtype_proforma_filearea::split_filename($filename);
+    $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $itemid, $filepath , $basename);
+    if (!$file) {
+        // Old approach:
+        // filename also contains path part
+        $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $itemid, '/', $filename);
+    }
     if (!$file) {
         return false; // The file does not exist.
     }

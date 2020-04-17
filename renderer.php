@@ -660,9 +660,9 @@ class qtype_proforma_renderer extends qtype_renderer {
                     get_string('msfilename', 'qtype_proforma') . ': ' .$ms,
                     array('class' => 'proforma_testlog_title'));
 
+            $msarea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
             $output .= html_writer::tag('div', '<xmp>' .
-                    qtype_proforma\lib\read_file_content($question->contextid,
-                            qtype_proforma::FILEAREA_MODELSOL, $ms, $question->id) .
+                    $msarea->read_file_content($question->contextid, $ms, $question->id) .
                     '</xmp>', array('class' => 'proforma_testlog'));
         }
 

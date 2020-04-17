@@ -155,7 +155,8 @@ Feature: IMPORT (Moodle-XML format)
     # And I should see "instruction.txt, lib.txt"
     And I should see "ms1.txt"
     And I should see "ms2.txt"
-    And I should see "templ2.txt"
+    # templates are not supported for filepicker
+    And I should not see "templ2.txt"
     # grader settings
 #    And I should see "UUID 1"
     And I should see "testtask.zip"

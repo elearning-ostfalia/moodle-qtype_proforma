@@ -121,7 +121,7 @@ abstract class base_form_creator {
         // Remove hidden element in base class.
         $mform->removeElement(self::DOWNLOADMANAGER);
         $mform->addElement('filemanager', self::DOWNLOADMANAGER, get_string('downloads', 'qtype_proforma'), null,
-                array('subdirs' => 0));
+                array('subdirs' => true));
         $mform->addHelpButton(self::DOWNLOADMANAGER, 'downloads_hint', 'qtype_proforma');
     }
 
@@ -355,11 +355,9 @@ abstract class base_form_creator {
 
         // Response template.
         $this->add_responsetemplate($question);
-
         // Response filename.
         $this->add_responsefilename($question);
-
-
+        // Model solution.
         $this->add_modelsolution($question);
     }
 
@@ -447,7 +445,7 @@ abstract class base_form_creator {
         foreach (qtype_proforma::proforma_fileareas() as $fileareaname => $value) {
             // create draft area
             $filearea = new qtype_proforma_filearea($fileareaname);
-            $filearea->on_preprocess($editor->context->id, $question);
+            $filearea->prepare_draft($editor->context->id, $question);
             // create stringlist variable
             if (isset($value['formlist']) && !empty($question->id)) {
                 $property1 = $value['formlist'];
@@ -578,22 +576,24 @@ abstract class base_form_creator {
         // (needed for import and duplication).
         foreach (qtype_proforma::proforma_fileareas() as $fileareaname => $value) {
             $filearea = new qtype_proforma_filearea($fileareaname);
-            $filearea->on_save($formdata, $options, $value['dbcolumn']);
+            $filearea->save_draft($formdata, $options, $value['dbcolumn']);
         }
 
-        // Store response template as file (it is stored as file and as member variable
-        // in order to support file download and editor template in student view)
-        // note! at first store draft files, then override first template file
+        // Special handling for responsetemplate:
+        // If responseformat is editor than the template is
+        // also stored as file for download.
+        // Otherwise a previously existing template file is deleted.
+        // in order to support file download and editor template in student view.
         // todo: remove redundancy
+        $templfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_TEMPLATE);
         if ($formdata->responseformat == qtype_proforma::RESPONSE_EDITOR) { // Editor.
-            // if (empty($options->templates) && !empty($formdata->responsetemplate)) {
-                // no template files stored but the teacher has entered a template text:
-                // handle situation where the template is created in moodle for the first time:
-                // set dummy template name and store file
-                $options->templates = $formdata->templates = 'template.txt';
-                qtype_proforma\lib\save_as_file($context->id, qtype_proforma::FILEAREA_TEMPLATE,
-                        $options->templates /*$formdata->responsefilename*/, $formdata->responsetemplate, $formdata->id);
-            // }
+            $options->templates = $formdata->templates = 'template.txt'; /*$formdata->responsefilename*/
+            $templfilearea->save_textfile($context->id, $formdata->id, $options->templates,
+                    $formdata->responsetemplate);
+        } else {
+            // Store empty file for filepicker or version control system (= delete file if any)
+            $templfilearea->save_textfile($context->id, $formdata->id, 'dummy.txt', '');
+            $options->templates = $formdata->templates = '';
         }
     }
 }
