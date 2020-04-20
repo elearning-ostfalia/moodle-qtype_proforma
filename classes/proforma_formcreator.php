@@ -201,6 +201,7 @@ class proforma_form_creator extends base_form_creator {
         if (isset($formdata->taskfiledraftid)) {
             // special handling for proforma import (interim solution):
             // rename draftid property
+            throw new moodle_exception('your qformat_proforma plugin is outdated, please upgrade!');
             $formdata->task = $formdata->taskfiledraftid;
             $formdata->modelsol = $formdata->modelsolid;
             $formdata->download = $formdata->downloadid;
