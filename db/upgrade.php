@@ -294,5 +294,14 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020021100, 'qtype', 'proforma');
     }
 
+    if ($oldversion < 2020042006) {
+        require_once(__DIR__ . '/upgradelib.php');
+        // extract filepath from filename and store separately
+        update_filenames();
+
+        // ProFormA savepoint reached.
+        upgrade_plugin_savepoint(true, 2020042006, 'qtype', 'proforma');
+    }
+
     return true;
 }

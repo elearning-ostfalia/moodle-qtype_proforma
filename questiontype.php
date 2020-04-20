@@ -488,6 +488,29 @@ class qtype_proforma extends question_type {
             $datafiles = $format->getpath($data,
                     array('#', $value["files"], 0, '#', 'file'), array());
             if (is_array($datafiles)) { // Seems like a non-array does occur in some versions of PHP!
+                // check for import with old style filenames
+                $dbcolumn = $value['dbcolumn'];
+                foreach (explode(',', $qo->$dbcolumn) as $filename) {
+                    $filename = trim($filename);
+                    if (strpos($filename, '/') != false) {
+                        $oldfilename = trim(clean_param($filename, PARAM_FILE));
+                        foreach ($datafiles as &$file) { // Note: use reference here!
+                            $originalfilename = $format->getpath($file, array('@', 'name'), '', true);
+                            if ($originalfilename == $oldfilename) {
+                                // Modify filename and path
+                                $pathparts = pathinfo('/'. $filename);
+                                $dirname = trim($pathparts['dirname']);
+                                $basename = trim($pathparts['basename']);
+                                if ($dirname[strlen($dirname) - 1] !== '/') {
+                                    $dirname = $dirname . '/';
+                                }
+                                // $originalfilepath = $format->getpath($file, array('@', 'path'), '/', true);
+                                $file['@']['name'] = $basename;
+                                $file['@']['path'] = $dirname;
+                            }
+                        }
+                    }
+                }
                 $qo->$filearea = $format->import_files_as_draft($datafiles);
             }
         }

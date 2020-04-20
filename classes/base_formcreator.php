@@ -590,6 +590,10 @@ abstract class base_form_creator {
             $options->templates = $formdata->templates = 'template.txt'; /*$formdata->responsefilename*/
             $templfilearea->save_textfile($context->id, $formdata->id, $options->templates,
                     $formdata->responsetemplate);
+            if (empty($formdata->responsetemplate)) {
+                // Remove templates value.
+                $options->templates = $formdata->templates = '';
+            }
         } else {
             // Store empty file for filepicker or version control system (= delete file if any)
             $templfilearea->save_textfile($context->id, $formdata->id, 'dummy.txt', '');

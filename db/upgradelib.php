@@ -45,6 +45,121 @@ class UpgradeSimpleXmlWriter extends XMLWriter {
     }
 }
 
+/**
+ * rename old file in filearea to new filename (filepath is stored filepath)
+ * @param $questionid
+ * @param $filename
+ * @param $filearea
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function update_filename($questionid, $filename, $filearea) {
+    global $DB;
+
+    $count = 0;
+    $filename = trim($filename);
+    $oldfilename = trim(clean_param($filename, PARAM_FILE));
+    $pathparts = pathinfo('/'. $filename);
+    $dirname = $pathparts['dirname'];
+    $basename = $pathparts['basename'];
+    if ($dirname[strlen($dirname) - 1] !== '/') {
+        $dirname = $dirname . '/';
+    }
+
+    // Get associated file from {files} table
+    $files  = $DB->get_recordset_sql("SELECT * " .
+            "FROM {files} " .
+            "WHERE itemid = :itemid " .
+            "AND filename = :filename " .
+            "AND filearea = :filearea ",
+            ['itemid' => $questionid, 'filearea' => $filearea, 'filename' => $oldfilename]);
+
+    foreach ($files as $file) {
+        // echo 'F=(' . $file->filearea . ') ' . $file->filepath . ' '. $file->filename . '<br>';
+        $fs = get_file_storage();
+        $file = $fs->get_file_by_id($file->id);
+        try {
+            // Rename file.
+            $file->rename($dirname, $basename);
+        } catch (file_exception $e) {
+            echo 'ERROR OCCURED:' . $e->getMessage() . '<br>';
+        }
+        $count++;
+    }
+    $files->close();
+
+    if ($count == 0) {
+        // check for new format:
+        $files  = $DB->get_recordset_sql("SELECT * " .
+                "FROM {files} " .
+                "WHERE itemid = :itemid " .
+                "AND filename = :filename " .
+                "AND filepath = :filepath " .
+                "AND filearea = :filearea ",
+                ['itemid' => $questionid, 'filearea' => $filearea, 'filename' => $basename, 'filepath' => $dirname]);
+
+        foreach ($files as $file) {
+            // Filename is already in new format => ignore.
+            // echo 'NEW F=(' . $file->filearea . ') ' . $file->filepath . ' '. $file->filename . '<br>';
+            $count++;
+        }
+        $files->close();
+    }
+
+    if ($count != 1) {
+        echo 'WARNING: number of files found for "' . $filename . '" ('. $oldfilename . ') in ('. $filearea . ') is ' . $count .
+                ' (Question id=' . $questionid . ')<br>';
+        // debugging('number of files found for "' . $filename . '" ('. $oldfilename . ') in ('. $filearea . ') is ' . $count);
+    }
+}
+
+/**
+ * converts the filenames of all files to the proper filename (relative path move to in filepath)
+ * Sample:
+ * old: / - and deostfaliafilename.java (path - filename)
+ * new: de/ostfalia/ - filename.java
+ *
+ * @throws dml_exception
+ */
+function update_filenames() {
+    global $DB;
+
+    // echo 'start updating filenames <br>';
+    // Get all questions with a '/' in the filename list.
+    $sql = "FROM {qtype_proforma_options} " .
+           "WHERE  modelsolfiles  LIKE '%/%' " .
+           "OR templates  like '%/%' " .
+           "OR downloads like '%/%'";
+    $total = $DB->count_records_sql("SELECT COUNT(*) " . $sql);
+    $questions = $DB->get_recordset_sql("SELECT * " . $sql);
+    $i = 0;
+    $pbar = new progress_bar('', $total, true);
+    foreach ($questions as $question) {
+        // echo 'Q=' . $question->questionid  . ' - ' . $question->modelsolfiles. ' - ' . $question->templates . ' - ' . $question->downloads . '<br>';
+
+        // Examine modelsol filenames:
+        foreach (explode(',', $question->modelsolfiles) as $file) {
+            if (strpos($file, '/') != false) {
+                update_filename($question->questionid, $file, 'modelsol');
+            }
+        }
+        foreach (explode(',', $question->templates) as $file) {
+            if (strpos($file, '/') != false) {
+                update_filename($question->questionid, $file, 'template');
+            }
+        }
+        foreach (explode(',', $question->downloads) as $file) {
+            if (strpos($file, '/') != false) {
+                update_filename($question->questionid, $file, 'download');
+            }
+        }
+        $i++;
+        $pbar->update($i, $total, "Updating ProFormA filename: $i/$total.");
+        // echo '<br>';
+    }
+    $questions->close();
+}
+
 function extract_proformatask($category, $questionid, $taskfilename) {
 
     // Retrieve the file from the Files API.

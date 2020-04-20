@@ -272,6 +272,7 @@ class qtype_proforma_filearea {
      * @return string file content
      */
     public function read_file_content($contextid, $filename, $itemid) {
+        /*
         $filearea = $this->_name;
         $fs = get_file_storage();
 
@@ -288,7 +289,8 @@ class qtype_proforma_filearea {
         // Get file
         $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
                 $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
-
+        */
+        $file = $this->get_file($contextid, $filename, $itemid);
         if (!$file) {
             return 'file not found';
         }
