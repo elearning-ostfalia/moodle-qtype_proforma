@@ -31,12 +31,25 @@ cache:
 
 jobs:
   include:
-    - name: 'Moodle 3.9, PHP 7.3, MySQL'
-      php: 7.3
+    - name: 'Moodle 4.0'
+      php: 7.4
       env:
         - MOODLE_BRANCH=master
         - DB=mysqli
-    - name: 'Moodle 3.8, PHP 7.3, MySQL'
+
+    - name: 'Moodle 3.9 (A)'
+      php: 7.4
+      env:
+        - MOODLE_BRANCH=MOODLE_39_STABLE
+        - DB=mysqli
+	
+    - name: 'Moodle 3.9 (B)'
+      php: 7.3
+      env:
+        - MOODLE_BRANCH=MOODLE_39_STABLE
+        - DB=pgsql
+
+    - name: 'Moodle 3.8'
       php: 7.3
       env:
         - MOODLE_BRANCH=MOODLE_38_STABLE
