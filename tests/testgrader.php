@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
 require_once($CFG->dirroot . '/question/type/proforma/classes/grader2.php');
 
 class qtype_proforma_testgrader extends  qtype_proforma_grader_2 {
