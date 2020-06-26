@@ -7,7 +7,8 @@ sudo: required
 
 addons:
   firefox: "47.0.1"
-  postgresql: "9.4"
+  postgresql: "11.8"
+#  postgresql: "9.4"
   apt:
     sources:
       - google-chrome
@@ -37,19 +38,19 @@ jobs:
         - MOODLE_BRANCH=master
         - DB=mysqli
 
-    - name: 'Moodle 3.9 (A)'
+    - name: 'Moodle 3.9 (MySQL)'
       php: 7.4
       env:
         - MOODLE_BRANCH=MOODLE_39_STABLE
         - DB=mysqli
 
-    - name: 'Moodle 3.9 (B)'
+    - name: 'Moodle 3.8 (Postgres)'
       php: 7.3
       env:
-        - MOODLE_BRANCH=MOODLE_39_STABLE
+        - MOODLE_BRANCH=MOODLE_38_STABLE
         - DB=pgsql
 
-    - name: 'Moodle 3.8'
+    - name: 'Moodle 3.8 (MySQL)'
       php: 7.3
       env:
         - MOODLE_BRANCH=MOODLE_38_STABLE
