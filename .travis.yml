@@ -7,7 +7,7 @@ sudo: required
 
 addons:
   firefox: "47.0.1"
-  postgresql: "11.8"
+  postgresql: "10.13"
 #  postgresql: "9.4"
   apt:
     sources:
