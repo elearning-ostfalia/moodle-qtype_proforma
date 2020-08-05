@@ -337,6 +337,7 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
             array(1,  array('Odd Number Of Characters')),
     );
 
+
     const RESPONSE_3 = <<<'EOD'
 <?xml version="1.0" encoding="UTF-8"?>
 <response xmlns="urn:proforma:v2.0" xmlns:praktomat="urn:proforma:praktomat:v2.0"
@@ -415,6 +416,106 @@ xx errors
 '),
     );
 
+    const RESPONSE_4 = <<<'EOD'
+<?xml version="1.0" encoding="utf-8"?>
+<response xmlns="urn:proforma:v2.0" xmlns:praktomat="urn:proforma:praktomat:v2.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+    <separate-test-feedback>
+        <submission-feedback-list>
+        </submission-feedback-list>
+        <tests-response>
+            <test-response id="1">
+                <test-result>                
+                    <result> >
+                        <score>0</score>
+                    </result>
+                    <feedback-list>
+    <student-feedback level="info">
+        <title>1 Java user-submitted file(s) found for compilation</title>
+        <content format="plaintext">de/ostfalia/zell/isPalindromTask/MyString.java</content>
+    </student-feedback>
+    <student-feedback level="error">
+        <title>Compilation failed</title>
+        <content format="plaintext">de/ostfalia/zell/isPalindromTask/MyString.java:8: error: not a statement
+            was
+            ^
+de/ostfalia/zell/isPalindromTask/MyString.java:8: error: &#39;;&#39; expected
+            was
+               ^
+de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or enum expected
+}          2
+           ^
+3 errors
+1
+</content>
+    </student-feedback>
+                    </feedback-list>
+                </test-result>
+            </test-response>
+            <test-response id="2">
+                <test-result>                
+                    <result> >
+                        <score>0</score>
+                    </result>
+                    <feedback-list>
+    <student-feedback level="info">
+        <title>1 Java user-submitted file(s) found for compilation</title>
+        <content format="plaintext">de/ostfalia/zell/isPalindromTask/MyString.java</content>
+    </student-feedback>
+    <student-feedback level="error">
+        <title>Compilation failed</title>
+        <content format="plaintext">de/ostfalia/zell/isPalindromTask/MyString.java:8: error: not a statement
+            was
+            ^
+de/ostfalia/zell/isPalindromTask/MyString.java:8: error: &#39;;&#39; expected
+            was
+               ^
+de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or enum expected
+}          2
+           ^
+3 errors
+1
+</content>
+    </student-feedback>
+                    </feedback-list>
+                </test-result>
+            </test-response>
+        </tests-response>
+    </separate-test-feedback>
+    
+    <files>
+    </files>
+    <response-meta-data>
+        <grader-engine name="praktomat" version="Version 4.5.1 | 20200803"/>
+    </response-meta-data>
+</response>
+EOD;
+
+/*
+<praktomat:response-meta-data>
+<praktomat:response-datetime>2020-08-04T13:29:42.570139</praktomat:response-datetime>
+
+</praktomat:response-meta-data>
+*/
+    const LOGS_4_1 = array(
+            array('1 Java user-submitted file(s) found for compilation', 'de/ostfalia/zell/isPalindromTask/MyString.java'),
+            array('Compilation failed', 'de/ostfalia/zell/isPalindromTask/MyString.java:8: error: not a statement
+            was
+            ^
+de/ostfalia/zell/isPalindromTask/MyString.java:8: error: \';\' expected
+            was
+               ^
+de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or enum expected
+}          2
+           ^
+3 errors
+1
+'),
+    );
+    const LOGS_4_2 = self::LOGS_4_1;
+
+
+
     private function assert_same_xml($expectedxml, $xml) {
         // remove comments
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
@@ -431,6 +532,13 @@ xx errors
         return '<pre class="proforma_testlog">' . $log .'</pre>';
     }
 
+    /**
+     * Generate expected grader info
+     * @param $number number for collapsible region (sequence)
+     * @param $graderinfo grader info string
+     * @param $response test response string
+     * @return string
+     */
     private function render_graderinfo($number, $graderinfo, $response) {
         $idprefix = '{COLLAPSE_ID}';
         $id = $idprefix.'-'.$number;
@@ -450,7 +558,16 @@ xx errors
         return $output;
     }
 
-
+    /** Generate output for a complete test
+     * @param $number (sequence)
+     * @param $score expected score for this test
+     * @param $total
+     * @param $title Title of this test (from grading hints)
+     * @param $description Description of the test (from grading hints)
+     * @param $logs
+     * @param bool $internalerror
+     * @return string
+     */
     private function render_collapsible_region_score($number, $score, $total, $title, $description, $logs, $internalerror = false) {
         $idprefix = '{COLLAPSE_ID}';
         $id = $idprefix.'-'.$number;
@@ -760,6 +877,21 @@ xx errors
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_2, '', self::GRADINGHINTS_1, $expected);
+    }
+
+    /**
+     * compilation error
+     */
+    public function test_compilation_error() {
+        $expected =
+                $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_4_1).
+                $this->render_collapsible_region_score(2, 0, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_4_2).
+                $this->render_graderinfo(3, 'praktomat Version 4.5.1 | 20200803', self::RESPONSE_4) .
+                '<p></p>
+<p>Your answer is not completely correct.</p>';
+
+        $this->setAdminUser();
+        $this->assert_same_feedback(self::RESPONSE_4, '', self::GRADINGHINTS_1, $expected);
     }
 
 }

@@ -9,7 +9,7 @@ Java question generator.
 Tests are run on an back-end system (grader or test runner) that also conforms to the ProFormA standard 
 (https://github.com/ProFormA/proformaxml) version 2.0.  
  
-Simple Java questions can be created in Moodle with the ProFormA question editor. 
+Simple Java questions can be created in Moodle with a Junit question editor. 
 On the other hand questions with any programming language can be imported as long as 
 the test runner supports the programming language.
 

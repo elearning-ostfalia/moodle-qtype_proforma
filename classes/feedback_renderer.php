@@ -32,6 +32,13 @@ class feedback_renderer {
      */
     private $main_renderer = null;
 
+    /** @var int sum of all weights */
+    private $totalweight = 0;
+
+    /**
+     * @var null reference to question attempt
+     */
+    private $qa = null;
     /**
      * feedback_renderer constructor.
      *
@@ -154,7 +161,6 @@ class feedback_renderer {
     /**
      * creates the html fragment for a subtest result
      * @param $testresult
-     * @param $qa
      * @return string
      */
     private function print_proforma_subtest_result($testresult) {
@@ -184,7 +190,6 @@ class feedback_renderer {
      *
      * @param $test
      * @param $result
-     * @param $qa
      */
     private function render_proforma_test_with_subtests($test, &$result) {
 
@@ -197,16 +202,14 @@ class feedback_renderer {
      * creates the html fragment for a test title
      * @param $test
      * @param $gradingtests
-     * @param $qa
      * @param $question
-     * @param $totalweight
      * @param $score
      * @param $internalerror
      * @param $result
      * @param $allcorrect
      * @throws moodle_exception
      */
-    private function render_proforma_test_title($test, $gradingtests, $qa, $question, $totalweight, $score, $internalerror,
+    private function render_proforma_test_title($test, $gradingtests, $question, $score, $internalerror,
             &$result, &$allcorrect) {
 
         $successimg = $this->main_renderer->feedback_image((int) 1);
@@ -224,13 +227,12 @@ class feedback_renderer {
         if (!isset($testtitle)) {
             $testtitle = 'Test ' . $id;
         }
-
         // create unique identifier for each region
         // since there can be multiple regions per page!
-        $collid = $this->main_renderer->create_collapsible_region_id($qa);
+        $collid = $this->main_renderer->create_collapsible_region_id($this->qa);
         $visiblescore = '';
         if ($question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
-            $weight = floatval((string) $ghtest['weight']) / $totalweight;
+            $weight = floatval((string) $ghtest['weight']) / $this->totalweight;
             if ($weight > 0.0) {
                 // only display percentage if this test counts more than 0
                 $weightscore = number_format($score * $weight / 1 * 100, 0);
@@ -265,15 +267,13 @@ class feedback_renderer {
     }
 
     /**
-     * @param question_attempt $qa
      * @param $test
      * @param $gradingtests
      * @param $question
-     * @param $totalweight
      * @param $result
      * @return array
      */
-    private function render_test(question_attempt $qa, $test, $gradingtests, $question, $totalweight, &$result): array {
+    private function render_test($test, $gradingtests, $question, &$result): array {
         $containsinternalerror = false;
         $allcorrect = true;
         if (count($test->{'test-result'}) > 0) {
@@ -285,7 +285,7 @@ class feedback_renderer {
             }
             $score = floatval((string) $testresult->score);
 
-            $this->render_proforma_test_title($test, $gradingtests, $qa, $question, $totalweight,
+            $this->render_proforma_test_title($test, $gradingtests, $question,
                     $score, $internalerror, $result, $allcorrect);
 
             $this->render_proforma_test_with_score($test, $result);
@@ -295,7 +295,7 @@ class feedback_renderer {
             if ($internalerror) {
                 $containsinternalerror = true;
             }
-            $this->render_proforma_test_title($test, $gradingtests, $qa, $question, $totalweight,
+            $this->render_proforma_test_title($test, $gradingtests, $question,
                     $score, $internalerror, $result, $allcorrect);
 
             $this->render_proforma_test_with_subtests($test, $result);
@@ -309,20 +309,20 @@ class feedback_renderer {
      * converts the ProFormA response to html
      *
      * @param $message
-     * @param $errormsg
      * @param question_attempt $qa
      * @return string
      */
-    public function render_proforma2_message($message, $errormsg, question_attempt $qa) {
+    public function render_proforma2_message($message, question_attempt $qa) {
+        $this->qa = $qa;
         $result = '';
         $question = $qa->get_question();
         $gh = new SimpleXMLElement($question->gradinghints);
         $gradingtests = $gh->root;
 
         // Calculate total weight.
-        $totalweight = 0;
+        $this->totalweight = 0;
         foreach ($gradingtests->{'test-ref'} as $test) {
-            $totalweight += floatval((string) $test['weight']);
+            $this->totalweight += floatval((string) $test['weight']);
         }
 
         try {
@@ -387,7 +387,7 @@ class feedback_renderer {
                 $result .= '<p><b>INTERNAL ERROR</b>: Result for Test "' . $testid . '" is missing</p>';
             } else {
                 list($internalerror, $result, $correct) =
-                        $this->render_test($qa, $test[0], $gradingtests, $question, $totalweight, $result);
+                        $this->render_test($test[0], $gradingtests, $question, $result);
                 if ($internalerror) {
                     $containsinternalerror = true;
                 }
@@ -416,7 +416,7 @@ class feedback_renderer {
             $result .= html_writer::tag('small', $vcstext);
         }
 
-        $result = $this->render_grader_info($message, $qa, $result, $response);
+        $result = $this->render_grader_info($message, $result, $response);
 
         if ($allcorrect) {
             $result .= '<p></p>' . html_writer::tag('p', get_string('gradepassed', 'qtype_proforma'));
@@ -434,12 +434,11 @@ class feedback_renderer {
     /**
      * generate info text about the grader
      * @param $message
-     * @param question_attempt $qa
      * @param string $result
      * @param SimpleXMLElement $response
      * @return string
      */
-    private function render_grader_info($message, question_attempt $qa, string $result, SimpleXMLElement $response): string {
+    private function render_grader_info($message, string $result, SimpleXMLElement $response): string {
         if (qtype_proforma\lib\is_admin()) {
             // infos for admins are displayed as small text
             $result .= html_writer::start_tag('small', null);
@@ -454,7 +453,7 @@ class feedback_renderer {
             $result .= '<p></p>' . '[' . $gradertext . ']';
 
             // debugging: show raw response
-            $qaid = $this->main_renderer->create_collapsible_region_id($qa);
+            $qaid = $this->main_renderer->create_collapsible_region_id($this->qa);
             $result .= print_collapsible_region_start('', $qaid,
                     'raw response', '', true, true);
             $result .= html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));

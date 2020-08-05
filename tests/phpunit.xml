@@ -28,13 +28,7 @@
 
 
         <testsuites>
-            <!-- <testsuite name="qtype_proforma_testsuite">
-                <directory suffix="_test.php">.</directory>
-                <exclude>
-                    <file>walkthrough_editorfilepicker_test.php</file>
-                </exclude>
-            </testsuite>-->
-
+<!--
             <testsuite name="qtype_proforma walkthrough tests">
                 <file>walkthrough_editor_test.php</file>
                 <file>walkthrough_filepicker_test.php</file>
@@ -47,16 +41,20 @@
                 <file>questiontype_test.php</file>
                 <file>question_test.php</file>
             </testsuite>
-
-            <!--
-            <testsuite name="qtype_proforma walkthrough tests">
-                <file>/var/www/html/moodle/question/type/proforma/tests/walkthrough_editor_test.php</file>
-                <file>/var/www/html/moodle/question/type/proforma/tests/walkthrough_filepicker_test.php</file>
+-->
+            <testsuite name="Test Suite">
+                <directory suffix=".php">../tests</directory>
+                <exclude>../tests/behat/behat_proforma.php</exclude>
+                <exclude>../tests/helper.php</exclude>
+                <exclude>../tests/testgrader.php</exclude>
+                <exclude>../tests/walkthrough_test_base.php</exclude>
             </testsuite>
-            <testsuite name="qtype_proforma basic tests">
-                <file>/var/www/html/moodle/question/type/proforma/tests/questiontype_test.php</file>
-                <file>/var/www/html/moodle/question/type/proforma/tests/question_test.php</file>
-            </testsuite> -->
         </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">..</directory>
+        </whitelist>
+    </filter>
 
 </phpunit>
