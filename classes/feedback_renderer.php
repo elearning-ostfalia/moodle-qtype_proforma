@@ -36,6 +36,11 @@ class feedback_renderer {
     private $totalweight = 0;
 
     /**
+     * @var null Grading hints of (Moodle not ProformA) question.
+     */
+    private $gradinghints = null;
+
+    /**
      * @var null reference to question attempt
      */
     private $qa = null;
@@ -58,7 +63,7 @@ class feedback_renderer {
      * @param bool $general
      * @return string
      */
-    private function print_proforma_single_feedback($feedback, $teacher = false, $subtest = false,
+    private function render_proforma_single_feedback($feedback, $teacher = false, $subtest = false,
             $printpassedinfo = false, $passed = false, $general = false) {
 
         if ($teacher && !qtype_proforma\lib\is_teacher()) {
@@ -148,15 +153,14 @@ class feedback_renderer {
     private function render_proforma_test_with_score($test, &$result) {
 
         foreach ($test->{'test-result'}->{'feedback-list'}->{'student-feedback'} as $feedback) {
-            $result .= $this->print_proforma_single_feedback($feedback);
+            $result .= $this->render_proforma_single_feedback($feedback);
         }
         if (qtype_proforma\lib\is_teacher()) {
             foreach ($test->{'test-result'}->{'feedback-list'}->{'teacher-feedback'} as $feedback) {
-                $result .= $this->print_proforma_single_feedback($feedback, true);
+                $result .= $this->render_proforma_single_feedback($feedback, true);
             }
         }
     }
-
 
     /**
      * creates the html fragment for a subtest result
@@ -169,14 +173,14 @@ class feedback_renderer {
         foreach ($testresult->{'feedback-list'} as $feedbacklist) {
             $count = 0;
             foreach ($feedbacklist->{'student-feedback'} as $feedback) {
-                $result .= $this->print_proforma_single_feedback($feedback, false, true,
+                $result .= $this->render_proforma_single_feedback($feedback, false, true,
                         $count === 0, $passed);
                 $count++;
             }
             // print further teacher feedback if any
             if (qtype_proforma\lib\is_teacher() && count($feedbacklist->{'teacher-feedback'})) {
                 foreach ($feedbacklist->{'teacher-feedback'} as $feedback) {
-                    $result .= $this->print_proforma_single_feedback($feedback, true, true);
+                    $result .= $this->render_proforma_single_feedback($feedback, true, true);
                 }
 
             }
@@ -201,23 +205,20 @@ class feedback_renderer {
     /**
      * creates the html fragment for a test title
      * @param $test
-     * @param $gradingtests
-     * @param $question
      * @param $score
      * @param $internalerror
      * @param $result
      * @param $allcorrect
      * @throws moodle_exception
      */
-    private function render_proforma_test_title($test, $gradingtests, $question, $score, $internalerror,
-            &$result, &$allcorrect) {
+    private function render_proforma_test_title($test, $score, $internalerror, &$result, &$allcorrect) {
 
         $successimg = $this->main_renderer->feedback_image((int) 1);
         $failimg = $this->main_renderer->feedback_image((int) 0);
         $partimg = $this->main_renderer->feedback_image(0.1);
 
         $id = (string) $test['id'];
-        $ghtest = $gradingtests->xpath("//test-ref[@ref='" . $id . "']");
+        $ghtest = $this->gradinghints->xpath("//test-ref[@ref='" . $id . "']");
         if (count($ghtest) == 0) {
             throw new moodle_exception('cannot find appropriate grading hints for test "' . $id . '""');
         }
@@ -231,7 +232,7 @@ class feedback_renderer {
         // since there can be multiple regions per page!
         $collid = $this->main_renderer->create_collapsible_region_id($this->qa);
         $visiblescore = '';
-        if ($question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
+        if ($this->qa->get_question()->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
             $weight = floatval((string) $ghtest['weight']) / $this->totalweight;
             if ($weight > 0.0) {
                 // only display percentage if this test counts more than 0
@@ -268,12 +269,10 @@ class feedback_renderer {
 
     /**
      * @param $test
-     * @param $gradingtests
-     * @param $question
      * @param $result
      * @return array
      */
-    private function render_test($test, $gradingtests, $question, &$result): array {
+    private function render_test($test, &$result): array {
         $containsinternalerror = false;
         $allcorrect = true;
         if (count($test->{'test-result'}) > 0) {
@@ -285,8 +284,7 @@ class feedback_renderer {
             }
             $score = floatval((string) $testresult->score);
 
-            $this->render_proforma_test_title($test, $gradingtests, $question,
-                    $score, $internalerror, $result, $allcorrect);
+            $this->render_proforma_test_title($test, $score, $internalerror, $result, $allcorrect);
 
             $this->render_proforma_test_with_score($test, $result);
         } else {
@@ -295,8 +293,7 @@ class feedback_renderer {
             if ($internalerror) {
                 $containsinternalerror = true;
             }
-            $this->render_proforma_test_title($test, $gradingtests, $question,
-                    $score, $internalerror, $result, $allcorrect);
+            $this->render_proforma_test_title($test, $score, $internalerror, $result, $allcorrect);
 
             $this->render_proforma_test_with_subtests($test, $result);
         }
@@ -313,18 +310,8 @@ class feedback_renderer {
      * @return string
      */
     public function render_proforma2_message($message, question_attempt $qa) {
-        $this->qa = $qa;
         $result = '';
-        $question = $qa->get_question();
-        $gh = new SimpleXMLElement($question->gradinghints);
-        $gradingtests = $gh->root;
-
-        // Calculate total weight.
-        $this->totalweight = 0;
-        foreach ($gradingtests->{'test-ref'} as $test) {
-            $this->totalweight += floatval((string) $test['weight']);
-        }
-
+        // Check type of response.
         try {
             $response = new SimpleXMLElement($message, LIBXML_PARSEHUGE);
             if (!isset($response->{'separate-test-feedback'})) {
@@ -336,18 +323,30 @@ class feedback_renderer {
                     html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
         }
 
+        // Preset member variables.
+        $this->qa = $qa;
+        $gh = new SimpleXMLElement($qa->get_question()->gradinghints);
+        $this->gradinghints = $gh->root;
+
+        // Calculate total weight.
+        $this->totalweight = 0;
+        foreach ($this->gradinghints->{'test-ref'} as $test) {
+            $this->totalweight += floatval((string) $test['weight']);
+        }
+
+
         // $xpath = new DOMXPath($xmldoc);
         // todo: check namespace!
         // $xpath->registerNamespace('dns','urn:proforma:v2.0');
 
         // Create general feedback for student and teacher.
         foreach ($response->{'separate-test-feedback'}->{'submission-feedback-list'}->{'student-feedback'} as $feedback) {
-            $result .= html_writer::tag('p', $this->print_proforma_single_feedback($feedback, false,
+            $result .= html_writer::tag('p', $this->render_proforma_single_feedback($feedback, false,
                     false, false, false, true));
         }
         if (qtype_proforma\lib\is_teacher()) {
             foreach ($response->{'separate-test-feedback'}->{'submission-feedback-list'}->{'teacher-feedback'} as $feedback) {
-                $result .= html_writer::tag('p', $this->print_proforma_single_feedback($feedback, true,
+                $result .= html_writer::tag('p', $this->render_proforma_single_feedback($feedback, true,
                         false, false, false, true));
             }
         }
@@ -367,7 +366,7 @@ class feedback_renderer {
         // iterating through all tests in the response.
         // This guarantees that we detect missing tests in the response and
         // we can reorder the result.
-        foreach ($gradingtests->{'test-ref'} as $ghtest) {
+        foreach ($this->gradinghints->{'test-ref'} as $ghtest) {
             $testid = (string)$ghtest['ref'];
             // Look for test in message:
             // Using xpath is more elagant but requires registering the default namespace.
@@ -387,7 +386,7 @@ class feedback_renderer {
                 $result .= '<p><b>INTERNAL ERROR</b>: Result for Test "' . $testid . '" is missing</p>';
             } else {
                 list($internalerror, $result, $correct) =
-                        $this->render_test($test[0], $gradingtests, $question, $result);
+                        $this->render_test($test[0], $result);
                 if ($internalerror) {
                     $containsinternalerror = true;
                 }
@@ -397,26 +396,10 @@ class feedback_renderer {
             }
         }
 
-        try {
-            // Evaluate version control information.
-            $praktomat = $response->{'response-meta-data'}->children('praktomat', true);
-            $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
-            if (isset($vcs) && count($vcs) > 0) {
-                $attrib = $vcs->attributes();
-                $vcstext = $attrib['name'] . ': ' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'];
-            } else {
-                $vcstext = null;
-            }
-        } catch (Exception $e) {
-            // Ignore exception.
-            $vcstext = null;
-        }
-
-        if (isset($vcstext)) {
-            $result .= html_writer::tag('small', $vcstext);
-        }
-
-        $result = $this->render_grader_info($message, $result, $response);
+        // Evaluate version control information.
+        $result = $this->render_vcs_information($response, $result);
+        // Render grading information
+        $result = $this->render_grader_info($message, $response, $result);
 
         if ($allcorrect) {
             $result .= '<p></p>' . html_writer::tag('p', get_string('gradepassed', 'qtype_proforma'));
@@ -434,11 +417,11 @@ class feedback_renderer {
     /**
      * generate info text about the grader
      * @param $message
-     * @param string $result
      * @param SimpleXMLElement $response
+     * @param string $result
      * @return string
      */
-    private function render_grader_info($message, string $result, SimpleXMLElement $response): string {
+    private function render_grader_info($message, SimpleXMLElement $response, string $result): string {
         if (qtype_proforma\lib\is_admin()) {
             // infos for admins are displayed as small text
             $result .= html_writer::start_tag('small', null);
@@ -460,6 +443,32 @@ class feedback_renderer {
             $result .= print_collapsible_region_end(true);
 
             $result .= html_writer::end_tag('small');
+        }
+        return $result;
+    }
+
+    /**
+     * @param SimpleXMLElement $response
+     * @param string $result
+     * @return string
+     */
+    protected function render_vcs_information(SimpleXMLElement $response, string $result): string {
+        try {
+            $praktomat = $response->{'response-meta-data'}->children('praktomat', true);
+            $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
+            if (isset($vcs) && count($vcs) > 0) {
+                $attrib = $vcs->attributes();
+                $vcstext = $attrib['name'] . ': ' . $attrib['submission-uri'] . ' Revision ' . $attrib['submission-revision'];
+            } else {
+                $vcstext = null;
+            }
+        } catch (Exception $e) {
+            // Ignore exception.
+            $vcstext = null;
+        }
+
+        if (isset($vcstext)) {
+            $result .= html_writer::tag('small', $vcstext);
         }
         return $result;
     }
