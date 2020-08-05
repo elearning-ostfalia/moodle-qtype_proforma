@@ -30,7 +30,7 @@ class feedback_renderer {
      * reference to qtype_proforma_renderer (main renderer)
      * @var qtype_proforma_renderer|null
      */
-    private $main_renderer = null;
+    private $mainrenderer = null;
 
     /** @var int sum of all weights */
     private $totalweight = 0;
@@ -50,7 +50,7 @@ class feedback_renderer {
      * @param qtype_proforma_renderer $renderer
      */
     public function __construct(qtype_proforma_renderer $renderer) {
-        $this->main_renderer = $renderer;
+        $this->mainrenderer = $renderer;
     }
 
     /**
@@ -85,14 +85,14 @@ class feedback_renderer {
             $csstitle = array('class' => 'proforma_subtest_title');
             $csscontent = array('class' => 'proforma_subtest_testlog');
             if ($printpassedinfo) {
-                $truefeedbackimg = $this->main_renderer->feedback_image((int) 1);
-                $falsefeedbackimg = $this->main_renderer->feedback_image((int) 0);
-                // smaller font?
+                $truefeedbackimg = $this->mainrenderer->feedback_image((int) 1);
+                $falsefeedbackimg = $this->mainrenderer->feedback_image((int) 0);
+                // Smaller font?
                 // $cssicon = array('class' => 'proforma_subtest_title', 'style' => 'font-size: 10%; background-size:10px');
                 // $result .= html_writer::tag('div', ($passed?$truefeedbackimg:$falsefeedbackimg), $cssicon);
                 $title = ($passed ? $truefeedbackimg : $falsefeedbackimg) . $title;
             } else {
-                // adjust left space
+                // Adjust left space.
                 $csstitle = array('class' => 'proforma_subtest_title_2');
             }
         } else {
@@ -100,7 +100,7 @@ class feedback_renderer {
             $csscontent = array('class' => 'proforma_testlog');
         }
 
-        // todo: show different level
+        // Todo: show different level.
         switch ($level) {
             case 'error':
                 $result .= html_writer::tag('div', $title, $csstitle);
@@ -112,11 +112,7 @@ class feedback_renderer {
                 $result .= html_writer::tag('div', $title, $csstitle);
                 break;
             case 'info':
-                // do not display 'info title' for score tests (title is set by LMS and can be changed by teacher)
-                // because the title is displayed twice
-                // if ($subtest or $general) {
-                    $result .= html_writer::tag('div', $title, $csstitle);
-                // }
+                $result .= html_writer::tag('div', $title, $csstitle);
                 break;
             default:
                 $result .= html_writer::tag('div', $title, $csstitle);
@@ -158,7 +154,7 @@ class feedback_renderer {
                         $count === 0, $passed);
                 $count++;
             }
-            // print further teacher feedback if any
+            // Print further teacher feedback if any.
             if (qtype_proforma\lib\is_teacher() && count($feedbacklist->{'teacher-feedback'})) {
                 foreach ($feedbacklist->{'teacher-feedback'} as $feedback) {
                     $result .= $this->render_single_feedback($feedback, true, true);
@@ -173,12 +169,12 @@ class feedback_renderer {
     /**
      * renders a test with its subtests
      *
-     * @param $subtests_response
+     * @param $subtestsresponse
      * @param $result
      */
-    private function render_subtest_response($subtests_response, &$result) {
+    private function render_subtest_response($subtestsresponse, &$result) {
 
-        foreach ($subtests_response->{'subtest-response'} as $response) {
+        foreach ($subtestsresponse->{'subtest-response'} as $response) {
             $result .= $this->render_subtest_result($response->{'test-result'});
         }
     }
@@ -194,9 +190,9 @@ class feedback_renderer {
      */
     private function render_test_title($test, $score, $internalerror, &$result, &$allcorrect) {
 
-        $successimg = $this->main_renderer->feedback_image((int) 1);
-        $failimg = $this->main_renderer->feedback_image((int) 0);
-        $partimg = $this->main_renderer->feedback_image(0.1);
+        $successimg = $this->mainrenderer->feedback_image((int) 1);
+        $failimg = $this->mainrenderer->feedback_image((int) 0);
+        $partimg = $this->mainrenderer->feedback_image(0.1);
 
         $id = (string) $test['id'];
         $ghtest = $this->gradinghints->xpath("//test-ref[@ref='" . $id . "']");
@@ -209,14 +205,14 @@ class feedback_renderer {
         if (!isset($testtitle)) {
             $testtitle = 'Test ' . $id;
         }
-        // create unique identifier for each region
+        // Create unique identifier for each region
         // since there can be multiple regions per page!
-        $collid = $this->main_renderer->create_collapsible_region_id($this->qa);
+        $collid = $this->mainrenderer->create_collapsible_region_id($this->qa);
         $visiblescore = '';
         if ($this->qa->get_question()->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
             $weight = floatval((string) $ghtest['weight']) / $this->totalweight;
             if ($weight > 0.0) {
-                // only display percentage if this test counts more than 0
+                // Only display percentage if this test counts more than 0.
                 $weightscore = number_format($score * $weight / 1 * 100, 0);
                 $visiblescore = ' (' . $weightscore . '/' . number_format($weight * 100, 0) . ' %)';
             }
@@ -270,7 +266,6 @@ class feedback_renderer {
     private function render_test_response($testresponse, &$result): array {
         $containsinternalerror = false;
         $allcorrect = true;
-//        if (count($testresponse->{'test-result'}) > 0) {
         if (count($testresponse->{'subtests-response'}) == 0) {
             // Handle test with score.
             $testresult = $testresponse->{'test-result'}->result;
@@ -292,7 +287,7 @@ class feedback_renderer {
 
             $this->render_subtest_response($testresponse->{'subtests-response'}, $result);
         }
-        // collapsible region is created inside render_proforma_test_title
+        // Collapsible region is created inside render_proforma_test_title.
         $result .= print_collapsible_region_end(true);
         return array($containsinternalerror, $result, $allcorrect);
     }
@@ -328,7 +323,6 @@ class feedback_renderer {
         foreach ($this->gradinghints->{'test-ref'} as $testresponse) {
             $this->totalweight += floatval((string) $testresponse['weight']);
         }
-
 
         // $xpath = new DOMXPath($xmldoc);
         // todo: check namespace!
@@ -393,9 +387,9 @@ class feedback_renderer {
 
         // Render version control information.
         $result = $this->render_vcs_information($response, $result);
-        // Render grading information
+        // Render grading information.
         $result = $this->render_grader_info($message, $response, $result);
-        // Render passed/failed
+        // Render passed/failed.
         if ($allcorrect) {
             $result .= '<p></p>' . html_writer::tag('p', get_string('gradepassed', 'qtype_proforma'));
         } else {
@@ -418,20 +412,20 @@ class feedback_renderer {
      */
     private function render_grader_info($message, SimpleXMLElement $response, string $result): string {
         if (qtype_proforma\lib\is_admin()) {
-            // infos for admins are displayed as small text
+            // Infos for admins are displayed as smaller text.
             $result .= html_writer::start_tag('small', null);
-            // show grader info.
+            // Show grader info.
             try {
                 $graderinfo = $response->{'response-meta-data'}->{'grader-engine'};
                 $gradertext = $graderinfo['name'] . ' ' . $graderinfo['version'];
             } catch (Exception $e) {
-                // ignore exception.
+                // Ignore exception.
                 $gradertext = "Grader ???";
             }
             $result .= '<p></p>' . '[' . $gradertext . ']';
 
-            // debugging: show raw response
-            $qaid = $this->main_renderer->create_collapsible_region_id($this->qa);
+            // Debugging: show raw response.
+            $qaid = $this->mainrenderer->create_collapsible_region_id($this->qa);
             $result .= print_collapsible_region_start('', $qaid,
                     'raw response', '', true, true);
             $result .= html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
