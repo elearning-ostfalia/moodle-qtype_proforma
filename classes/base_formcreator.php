@@ -26,6 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
 
+/**
+ * Bases class for rendering the question editor form for teachers
+ */
 abstract class base_form_creator {
     /**
      * @var MoodleQuickForm The form object that must be filled with input fields.
