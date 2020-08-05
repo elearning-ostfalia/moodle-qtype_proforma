@@ -397,9 +397,9 @@ xx errors
 </response>    
 EOD;
 
-    const LOGS_3_1 = array();
+    const LOGS_3_1 = array(array('JUnit Test: Junit Test #1', null));
     const LOGS_3_2 = array(
-            array(null, '<pre>
+            array('JUnit Test: Junit Test de/ostfalia/DoSomethingTest', '<pre>
 
 ======== Test Results ======
 

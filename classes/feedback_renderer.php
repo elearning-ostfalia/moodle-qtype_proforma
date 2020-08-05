@@ -63,7 +63,7 @@ class feedback_renderer {
      * @param bool $general
      * @return string
      */
-    private function render_proforma_single_feedback($feedback, $teacher = false, $subtest = false,
+    private function render_single_feedback($feedback, $teacher = false, $subtest = false,
             $printpassedinfo = false, $passed = false, $general = false) {
 
         if ($teacher && !qtype_proforma\lib\is_teacher()) {
@@ -114,9 +114,9 @@ class feedback_renderer {
             case 'info':
                 // do not display 'info title' for score tests (title is set by LMS and can be changed by teacher)
                 // because the title is displayed twice
-                if ($subtest or $general) {
+                // if ($subtest or $general) {
                     $result .= html_writer::tag('div', $title, $csstitle);
-                }
+                // }
                 break;
             default:
                 $result .= html_writer::tag('div', $title, $csstitle);
@@ -144,43 +144,24 @@ class feedback_renderer {
     }
 
     /**
-     * renders a test with its score
-     *
-     * @param $test
-     * @param $result
-     * @throws moodle_exception
-     */
-    private function render_proforma_test_with_score($test, &$result) {
-
-        foreach ($test->{'test-result'}->{'feedback-list'}->{'student-feedback'} as $feedback) {
-            $result .= $this->render_proforma_single_feedback($feedback);
-        }
-        if (qtype_proforma\lib\is_teacher()) {
-            foreach ($test->{'test-result'}->{'feedback-list'}->{'teacher-feedback'} as $feedback) {
-                $result .= $this->render_proforma_single_feedback($feedback, true);
-            }
-        }
-    }
-
-    /**
      * creates the html fragment for a subtest result
      * @param $testresult
      * @return string
      */
-    private function print_proforma_subtest_result($testresult) {
+    private function render_subtest_result($testresult) {
         $passed = (string) $testresult->result->score === '1.0';
         $result = '';
         foreach ($testresult->{'feedback-list'} as $feedbacklist) {
             $count = 0;
             foreach ($feedbacklist->{'student-feedback'} as $feedback) {
-                $result .= $this->render_proforma_single_feedback($feedback, false, true,
+                $result .= $this->render_single_feedback($feedback, false, true,
                         $count === 0, $passed);
                 $count++;
             }
             // print further teacher feedback if any
             if (qtype_proforma\lib\is_teacher() && count($feedbacklist->{'teacher-feedback'})) {
                 foreach ($feedbacklist->{'teacher-feedback'} as $feedback) {
-                    $result .= $this->render_proforma_single_feedback($feedback, true, true);
+                    $result .= $this->render_single_feedback($feedback, true, true);
                 }
 
             }
@@ -192,13 +173,13 @@ class feedback_renderer {
     /**
      * renders a test with its subtests
      *
-     * @param $test
+     * @param $subtests_response
      * @param $result
      */
-    private function render_proforma_test_with_subtests($test, &$result) {
+    private function render_subtest_response($subtests_response, &$result) {
 
-        foreach ($test->{'subtests-response'}->{'subtest-response'} as $response) {
-            $result .= $this->print_proforma_subtest_result($response->{'test-result'});
+        foreach ($subtests_response->{'subtest-response'} as $response) {
+            $result .= $this->render_subtest_result($response->{'test-result'});
         }
     }
 
@@ -211,7 +192,7 @@ class feedback_renderer {
      * @param $allcorrect
      * @throws moodle_exception
      */
-    private function render_proforma_test_title($test, $score, $internalerror, &$result, &$allcorrect) {
+    private function render_test_title($test, $score, $internalerror, &$result, &$allcorrect) {
 
         $successimg = $this->main_renderer->feedback_image((int) 1);
         $failimg = $this->main_renderer->feedback_image((int) 0);
@@ -267,35 +248,49 @@ class feedback_renderer {
         }
     }
 
+    private function render_feedback_list(SimpleXMLElement $feedbacklist, &$result) {
+        foreach ($feedbacklist->children() as $feedback) {
+            $teacher = ($feedback->getName() != "student-feedback");
+            if ($teacher) {
+                if (qtype_proforma\lib\is_teacher()) {
+                    $result .= $this->render_single_feedback($feedback, true);
+                }
+            } else {
+                $result .= $this->render_single_feedback($feedback);
+            }
+        }
+    }
+
+
     /**
-     * @param $test
+     * @param $testresponse
      * @param $result
      * @return array
      */
-    private function render_test($test, &$result): array {
+    private function render_test_response($testresponse, &$result): array {
         $containsinternalerror = false;
         $allcorrect = true;
-        if (count($test->{'test-result'}) > 0) {
-            // handle test with score
-            $testresult = $test->{'test-result'}->result;
+//        if (count($testresponse->{'test-result'}) > 0) {
+        if (count($testresponse->{'subtests-response'}) == 0) {
+            // Handle test with score.
+            $testresult = $testresponse->{'test-result'}->result;
             $internalerror = ((string) $testresult['is-internal-error'] === 'true');
             if ($internalerror) {
                 $containsinternalerror = true;
             }
             $score = floatval((string) $testresult->score);
-
-            $this->render_proforma_test_title($test, $score, $internalerror, $result, $allcorrect);
-
-            $this->render_proforma_test_with_score($test, $result);
+            $this->render_test_title($testresponse, $score, $internalerror, $result, $allcorrect);
+            $feedbacklist = $testresponse->{'test-result'}->{'feedback-list'};
+            $this->render_feedback_list($feedbacklist, $result);
         } else {
-            // handle tests with subtest results
-            list($score, $internalerror) = qtype_proforma_grader_2::calc_score_for_test($test);
+            // Handle tests with subtest results.
+            list($score, $internalerror) = qtype_proforma_grader_2::calc_score_for_test($testresponse);
             if ($internalerror) {
                 $containsinternalerror = true;
             }
-            $this->render_proforma_test_title($test, $score, $internalerror, $result, $allcorrect);
+            $this->render_test_title($testresponse, $score, $internalerror, $result, $allcorrect);
 
-            $this->render_proforma_test_with_subtests($test, $result);
+            $this->render_subtest_response($testresponse->{'subtests-response'}, $result);
         }
         // collapsible region is created inside render_proforma_test_title
         $result .= print_collapsible_region_end(true);
@@ -330,8 +325,8 @@ class feedback_renderer {
 
         // Calculate total weight.
         $this->totalweight = 0;
-        foreach ($this->gradinghints->{'test-ref'} as $test) {
-            $this->totalweight += floatval((string) $test['weight']);
+        foreach ($this->gradinghints->{'test-ref'} as $testresponse) {
+            $this->totalweight += floatval((string) $testresponse['weight']);
         }
 
 
@@ -341,12 +336,12 @@ class feedback_renderer {
 
         // Create general feedback for student and teacher.
         foreach ($response->{'separate-test-feedback'}->{'submission-feedback-list'}->{'student-feedback'} as $feedback) {
-            $result .= html_writer::tag('p', $this->render_proforma_single_feedback($feedback, false,
+            $result .= html_writer::tag('p', $this->render_single_feedback($feedback, false,
                     false, false, false, true));
         }
         if (qtype_proforma\lib\is_teacher()) {
             foreach ($response->{'separate-test-feedback'}->{'submission-feedback-list'}->{'teacher-feedback'} as $feedback) {
-                $result .= html_writer::tag('p', $this->render_proforma_single_feedback($feedback, true,
+                $result .= html_writer::tag('p', $this->render_single_feedback($feedback, true,
                         false, false, false, true));
             }
         }
@@ -373,20 +368,20 @@ class feedback_renderer {
             // $lookup = 'dns::test-response[@id="'.$testid.'"]';
             // In order to be more flexible with the namespace version we just iterate over
             // all tests in the response and seach for the appropriate one.
-            $test = null;
+            $testresponse = null;
             foreach ($tests->{'test-response'} as $resptest) {
                 if ($testid == (string)$resptest['id']) {
-                    $test = $resptest;
+                    $testresponse = $resptest;
                     break;
                 }
             }
 
-            if ($test == null) {
+            if ($testresponse == null) {
+                // Inconsitent response.
                 $containsinternalerror = true;
                 $result .= '<p><b>INTERNAL ERROR</b>: Result for Test "' . $testid . '" is missing</p>';
             } else {
-                list($internalerror, $result, $correct) =
-                        $this->render_test($test[0], $result);
+                list($internalerror, $result, $correct) = $this->render_test_response($testresponse[0], $result);
                 if ($internalerror) {
                     $containsinternalerror = true;
                 }
@@ -396,11 +391,11 @@ class feedback_renderer {
             }
         }
 
-        // Evaluate version control information.
+        // Render version control information.
         $result = $this->render_vcs_information($response, $result);
         // Render grading information
         $result = $this->render_grader_info($message, $response, $result);
-
+        // Render passed/failed
         if ($allcorrect) {
             $result .= '<p></p>' . html_writer::tag('p', get_string('gradepassed', 'qtype_proforma'));
         } else {
