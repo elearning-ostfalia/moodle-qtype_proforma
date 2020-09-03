@@ -135,7 +135,7 @@ In order to test if the communication between Moodle and Praktomat is ok you sho
 
 Then you should see:
 
-![Test Feedback](doc/testfeedback.png "Test Feedback")
+![Test Feedback](doc/testfeedback.PNG "Test Feedback")
 
 
 
