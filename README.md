@@ -1,17 +1,21 @@
 The ProForma Moodle Question Type is a Moodle Plugin that is used for 
 automatically grading programming questions in Moodle quizzes. Questions are 
-stored in the ProFormA format (https://github.com/ProFormA/proformaxml) version 2.0. 
+internally stored in the ProFormA format (https://github.com/ProFormA/proformaxml). 
 
-Standard test frameworks (e.g. JUNIT for Java) are used for specifying tests. So there is no 
-need to learn a new test description language. The plugin comes with a built-in
-Java question generator.
+Tests are run on an back-end system (test runner) that also conforms to the ProFormA standard (https://github.com/ProFormA/proformaxml) version 2: Praktomat (https://github.com/elearning-ostfalia/Proforma-Praktomat).
 
-Tests are run on an back-end system (grader or test runner) that also conforms to the ProFormA standard 
-(https://github.com/ProFormA/proformaxml) version 2.0.  
- 
-Simple Java questions can be created in Moodle with a Junit question editor. 
-On the other hand questions with any programming language can be imported as long as 
-the test runner supports the programming language.
+
+![system architecture](doc/architecture.png "System architecture")
+
+Standard test frameworks are used for specifying tests. Currently the following programming languages and test frameworks are supported:
+
+- Java: JUnit 4, JUnit 5, Checkstyle
+- Python: Doctest
+- Setlx: Test, Syntax Check
+
+Any other  programming language resp. test framework can be used as long as the Praktomat (or any other ProFormA compatible test runner used as back-end) supports it. Since all code is open source, it can be easily extended to other languages and frameworks.
+
+The plugin comes with a built-in Java question form editor. Simple Java questions can be created diretly in Moodle with that editor. Simple means: only one file per JUnit test and only one Checkstyle test. More complex questions must be created outside of the system with a stand-alone editor (https://media.elan-ev.de/proforma/editor/releases.html) or by other means (e.g. script). These questions can be imported by use of another Moodle plugin. 
 
 Copyright note: The renderer code partly bases upon the renderer from essay question type (Moodle core).
 Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copied from Coderunner 
@@ -49,25 +53,27 @@ Student feedback for Java question:
 
 The ProFormA question type requires:
 
-- the Moodle plugin "qbehaviour_adaptiveexternalgrading" 
+- the Moodle plugin `qbehaviour_adaptiveexternalgrading`
 (https://github.com/elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading) for 
 question engine adaptation and
 
 - a ProFromA grading back-end to run the tests.  
-ProFormA-Praktomat (https://github.com/elearning-ostfalia/Proforma-Praktomat) is recommended.
+`ProFormA-Praktomat` (https://github.com/elearning-ostfalia/Proforma-Praktomat) is recommended.
 
-#### Import from external sourcses
-
+Currently only simple Java questions can be directly created inside Moodle. 
 For importing questions from an external source an import plugin is available (optional):   
 
-- Moodle-Plugin qformat_proforma (import for ProFormA questions)
+- Moodle-Plugin `qformat_proforma` (import for ProFormA questions)
 
-We have a separate Javascript editor for creating tasks (https://github.com/ProFormA/formatEditor).
- 
-An online version is available at 
+We have a separate Javascript editor for creating tasks (https://github.com/ProFormA/formatEditor). An online version is available at 
 https://media.elan-ev.de/proforma/editor/releases/3.0.5/proformaEditor.html
        
 Of course ProFormA tasks can be created by different other external tools as well.
+
+
+In order to download all students' submissions for e.g. checking for plagiats 
+the plugin `proformasubmexport` is also avaliable (https://github.com/elearning-ostfalia/moodle-proformasubmexport).
+
 
 
 <!-- Import process:
@@ -89,6 +95,49 @@ and for the built-in Java question generator:
 * set Java version
 * set Checkstyle version
 * set JUnit version
+
+### Communication test / Sample
+
+In order to test if the communication between Moodle and Praktomat is ok you should create a simple question and check the result. 
+
+* Go to an existing course (or create one)
+* Go to the question back
+* press `Create a new question...`
+* select `ProFormA Task`
+* Fill in: `Question name` =`Test Question`, `Question text` = `test`
+* Go to `1. JUnit Test` and enter `Title` = `JUnit`
+* Enter the following code into the JUnit Test editor: 
+ 
+        import static org.junit.Assert.*;
+        import org.junit.Test;
+
+        public class PalindromTest {
+        
+            @Test
+            public void testRentner() {
+                assertEquals("Rentner", true, MyString.isPalindrom("Rentner"));
+            }
+        }        
+
+* Set `Response filename` to `MyString.java`
+* Press `Save Changes`
+* Select `Edit` -> `Preview`
+* Enter the follwing code into the editor:
+
+        public class MyString {
+            
+            static public Boolean isPalindrom(String aString) 
+            {
+                String reverse = new StringBuilder(aString).reverse().toString();
+                return (aString.equalsIgnoreCase(reverse));
+            }
+        }
+
+Then you should see:
+
+![Test Feedback](doc/testfeedback.png "Test Feedback")
+
+
 
 ### Quiz settings
 
