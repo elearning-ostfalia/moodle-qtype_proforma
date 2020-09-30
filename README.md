@@ -144,9 +144,9 @@ Then you should see:
 In order to display the grading feedback to the student you need to set the following 
 options in your Moodle quiz:
 
-* Question behaviour: 'Adaptive' (with our without penalties) for displaying immediate feedback
-  or 'deferred feedback' if the student  shall not see any feedback 
-* Review Options: 'Specific Feedback' set to 'on' for showing detailed grading results
-* Review Options: opt out 'Right Answer' if you do not want to show the model solution
+* Question behaviour: `Adaptive` (with our without penalties) for displaying immediate feedback
+  or `deferred feedback` if the student  shall not see any feedback 
+* Review Options: `Specific Feedback` set to `on` for showing detailed grading results
+* Review Options: opt out `Right Answer` if you do not want to show the model solution
 
 

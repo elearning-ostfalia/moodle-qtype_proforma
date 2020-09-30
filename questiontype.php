@@ -83,6 +83,9 @@ class qtype_proforma extends question_type {
      * Taskfile could be created on the fly and is only stored for caching purposes.
      */
     const VOLATILE_TASKFILE = 3;
+    const JAVA_TASKFILE = 3;
+    const SETLX_TASKFILE = 4;
+    const SELECT_TASKFILE = 0;
 
     // How is the mark calculated?
     /**
@@ -247,6 +250,11 @@ class qtype_proforma extends question_type {
      * @throws coding_exception
      */
     public function save_question_options($formdata) {
+        /* if ($formdata->taskstorage == self::SELECT_TASKFILE) {
+            parent::save_question_options($formdata);
+            return;
+        }*/
+        
         global $DB;
         $context = $formdata->context;
 
@@ -276,8 +284,13 @@ class qtype_proforma extends question_type {
                 $editor->save_question_options($options);
                 break;
             case self::VOLATILE_TASKFILE:
+            case self::JAVA_TASKFILE:                
                 // handle 'save' from editor
                 $editor = new java_form_creator($formdata);
+                $editor->save_question_options($options);
+                break;
+            case self::SELECT_TASKFILE:
+                $editor = new select_form_creator($formdata);
                 $editor->save_question_options($options);
                 break;
             case self::REPOSITORY:

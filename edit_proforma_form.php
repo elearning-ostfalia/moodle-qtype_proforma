@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/java_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/select_formcreator.php');
 
 /**
  * ProFormA question type editing form.
@@ -41,11 +42,17 @@ class qtype_proforma_edit_form extends question_edit_form {
      * overloaded definition detects that a new question will be created.
      */
     protected function definition() {
+        $removesubmit = FALSE;
         if (empty($this->question->options)) {
-            // New question => create Java form creator.
-            $this->formcreator = new java_form_creator($this->_form, true);
+            // New question => create select form creator.
+            $this->formcreator = new select_form_creator($this->_form, true);
+            $removesubmit = TRUE;
         }
         parent::definition();
+        if ($removesubmit) {
+            // Do not show submit button.            
+            $this->_form->removeElement('buttonar' /*'submitbutton'*/);
+        }
     }
 
     public function get_form() {
@@ -61,7 +68,11 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     public function validation($fromform, $files) {
         $errors = parent::validation($fromform, $files);
-        return $this->formcreator->validation($fromform, $files, $errors);
+        if (isset($this->formcreator)) {
+            return $errors;            
+        } else {
+            return $this->formcreator->validation($fromform, $files, $errors);            
+        }
     }
 
     /**
@@ -89,6 +100,35 @@ class qtype_proforma_edit_form extends question_edit_form {
     }
     */
 
+    protected function create_form_creator_in_definition($mform) {
+        if (isset($this->question->options->taskstorage)) {
+            switch ($this->question->options->taskstorage) {
+                case qtype_proforma::VOLATILE_TASKFILE:
+                case qtype_proforma::JAVA_TASKFILE:
+                    // Question was created by form editor.
+                    $this->formcreator = new java_form_creator($this->_form);
+                    break;
+                case qtype_proforma::SELECT_TASKFILE:
+                    // Question was created by form editor but not yet finished.
+                    switch ($this->question->options->programminglanguage) {
+                    case 'java':
+                        $this->formcreator = new java_form_creator($this->_form);
+                        break;
+                    default:
+                        throw new coding_exception('invalid programming language for editor ' . $this->question->options->programminglanguage);
+                    }
+                    break;
+
+                default:
+                    throw new coding_exception('invalid taskstorage value ' . $this->question->options->taskstorage);
+            }
+        }
+        if ($this->formcreator == null) {
+            // Question was imported.
+            $this->formcreator = new proforma_form_creator($this->_form);
+        }      
+    }
+    
     /**
      * Add any question-type specific form fields.
      *
@@ -99,14 +139,7 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         if ($this->formcreator == null) {
             // Use case: edit existing question:
-            if (isset($this->question->options->taskstorage) &&
-                    $this->question->options->taskstorage == qtype_proforma::VOLATILE_TASKFILE) {
-                // Question was created by form editor.
-                $this->formcreator = new java_form_creator($this->_form);
-            } else {
-                // Question was imported.
-                $this->formcreator = new proforma_form_creator($this->_form);
-            }
+            $this->create_form_creator_in_definition($mform);
         }
 
         $this->formcreator->add_hidden_fields();
