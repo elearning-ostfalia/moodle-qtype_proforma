@@ -25,6 +25,28 @@
 defined('MOODLE_INTERNAL') || die();
 
 
+/**
+ * Define a custom exception class
+ */
+class feedback_exception extends Exception
+{
+    // Redefine the exception so message isn't optional
+    public function __construct($message, $code = 0, Exception $previous = null) {
+        // some code
+    
+        // make sure everything is assigned properly
+        parent::__construct($message, $code, $previous);
+    }
+
+    // custom string representation of object
+    public function __toString() {
+        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
+    }
+}
+
+/**
+ * class for rendering the grader response (i.e. feedback of question)
+ */
 class feedback_renderer {
     /**
      * reference to qtype_proforma_renderer (main renderer)
@@ -127,7 +149,8 @@ class feedback_renderer {
                     break;
                 case 'html':
                     // $result .= $content;
-                    // Why this?
+                    // pre is needed because we need to embedded html into html???
+                    //$result .= html_writer::tag('pre', $content, $csscontent);
                     $result .= html_writer::tag('pre', $content, $csscontent);
                     break;
                 default:
@@ -186,18 +209,13 @@ class feedback_renderer {
      * @param $internalerror
      * @param $result
      * @param $allcorrect
-     * @throws moodle_exception
+     * @throws feedback_exception
      */
-    private function render_test_title($test, $score, $internalerror, &$result, &$allcorrect) {
-
-        $successimg = $this->mainrenderer->feedback_image((int) 1);
-        $failimg = $this->mainrenderer->feedback_image((int) 0);
-        $partimg = $this->mainrenderer->feedback_image(0.1);
-
+    private function render_test_title($test, $score, $internalerror, &$result, &$allcorrect) {      
         $id = (string) $test['id'];
         $ghtest = $this->gradinghints->xpath("//test-ref[@ref='" . $id . "']");
         if (count($ghtest) == 0) {
-            throw new moodle_exception('cannot find appropriate grading hints for test "' . $id . '""');
+            throw new feedback_exception('cannot find appropriate grading hints for test "' . $id . '""');
         }
 
         $ghtest = $ghtest[0];
@@ -205,6 +223,7 @@ class feedback_renderer {
         if (!isset($testtitle)) {
             $testtitle = 'Test ' . $id;
         }
+           
         // Create unique identifier for each region
         // since there can be multiple regions per page!
         $collid = $this->mainrenderer->create_collapsible_region_id($this->qa);
@@ -213,21 +232,34 @@ class feedback_renderer {
             $weight = floatval((string) $ghtest['weight']) / $this->totalweight;
             if ($weight > 0.0) {
                 // Only display percentage if this test counts more than 0.
-                $weightscore = number_format($score * $weight / 1 * 100, 0);
-                $visiblescore = ' (' . $weightscore . '/' . number_format($weight * 100, 0) . ' %)';
+                if (isset($score)) {
+                    $weightscore = number_format($score * $weight / 1 * 100, 0);
+                    $visiblescore = ' (' . $weightscore . '/' . number_format($weight * 100, 0) . ' %)';
+                } else {
+                    $visiblescore = ' ( ? /' . number_format($weight * 100, 0) . ' %)';
+                }
             }
         }
 
-        if ($score === 1.0) {
+        if ($internalerror) {
+            $exclamation = $this->mainrenderer->pix_icon('i/caution', 'info');
+            $allcorrect = false;
+            $result .= print_collapsible_region_start('', $collid,
+                    $exclamation . ' ' . $testtitle . $visiblescore,
+                    '', true, true);           
+        } else if ($score === 1.0) {
+            $successimg = $this->mainrenderer->feedback_image((int) 1);
             $result .= print_collapsible_region_start('', $collid,
                     $successimg . ' ' . $testtitle . $visiblescore,
                     '', true, true);
         } else if ($score === 0.0) {
+            $failimg = $this->mainrenderer->feedback_image((int) 0);
             $allcorrect = false;
             $result .= print_collapsible_region_start('', $collid,
                     $failimg . ' ' . $testtitle . $visiblescore,
                     '', true, true);
         } else {
+            $partimg = $this->mainrenderer->feedback_image(0.1);
             $allcorrect = false;
             $result .= print_collapsible_region_start('', $collid,
                     $partimg . ' ' . $testtitle . $visiblescore,
@@ -240,7 +272,8 @@ class feedback_renderer {
 
         if ($internalerror) {
             // $csscontent = array('class' => 'proforma_testlog');
-            $result .= html_writer::tag('p', '<b>INTERNAL ERROR IN GRADER!!</b>');
+            $result .= html_writer::tag('p', get_string('testinternalerror', 'qtype_proforma'), 
+                array('class' => 'proforma_testlog_description'));
         }
     }
 
@@ -267,16 +300,32 @@ class feedback_renderer {
         $containsinternalerror = false;
         $allcorrect = true;
         if (count($testresponse->{'subtests-response'}) == 0) {
-            // Handle test with score.
-            $testresult = $testresponse->{'test-result'}->result;
-            $internalerror = ((string) $testresult['is-internal-error'] === 'true');
-            if ($internalerror) {
+            // Handle test with score.            
+            try {
+                $testresult = $testresponse->{'test-result'}->result;
+                if (!isset($testresult)) {
+                    // format error: no test result found
+                    throw new feedback_exception('Response format error: no test result available');
+                }                
+                $internalerror = ((string) $testresult['is-internal-error'] === 'true');
+                if ($internalerror) {
+                    $containsinternalerror = true;
+                }
+                $score = floatval((string) $testresult->score);
+                if (!isset($score)) {
+                    // format error: no score found
+                    throw new feedback_exception('Response format error: no score available');
+                }                
+                $this->render_test_title($testresponse, $score, $internalerror, $result, $allcorrect);
+                $this->render_feedback_list($testresponse->{'test-result'}->{'feedback-list'}, $result);
+            } catch (Exception $ex) {
+                // display format errors (as much information as possible in order to 
+                // fix the bug)
                 $containsinternalerror = true;
+                $allcorrect = false;
+                $this->render_test_title($testresponse, null, true, $result, $allcorrect); 
+                $result .= html_writer::tag('pre', $ex->getMessage(), array('class' => 'proforma_testlog'));
             }
-            $score = floatval((string) $testresult->score);
-            $this->render_test_title($testresponse, $score, $internalerror, $result, $allcorrect);
-            $feedbacklist = $testresponse->{'test-result'}->{'feedback-list'};
-            $this->render_feedback_list($feedbacklist, $result);
         } else {
             // Handle tests with subtest results.
             list($score, $internalerror) = qtype_proforma_grader_2::calc_score_for_test($testresponse);
@@ -284,7 +333,6 @@ class feedback_renderer {
                 $containsinternalerror = true;
             }
             $this->render_test_title($testresponse, $score, $internalerror, $result, $allcorrect);
-
             $this->render_subtest_response($testresponse->{'subtests-response'}, $result);
         }
         // Collapsible region is created inside render_proforma_test_title.

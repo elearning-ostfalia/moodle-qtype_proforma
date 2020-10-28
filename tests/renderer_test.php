@@ -124,20 +124,22 @@ class qtype_proforma_renderer_test extends qtype_proforma_walkthrough_test_base 
 </response>
 EOD;
 
+    // Format:
+    // array (array(titel 1, content 1), array(titel 2, content 2)...)
     const LOGS_1_1 = array(
             array('MyString cannot be resolved to a variable', 'Sample.java	line 55'),
             array('Inline cannot be resolved', 'Sample.java	line 56'),
     );
     const LOGS_1_2 = array(
-            array('JUnit', 'Fake Message')
+            array('JUnit', ['Fake Message', 'html'])
     );
     const LOGS_1_1_TEACHER = array(
             array('MyString cannot be resolved to a variable', 'Sample.java	line 55'),
             array('Inline cannot be resolved', 'Sample.java	line 56'),
-            array('Java-Compilation (teacher)', 'content11'),
+            array('Java-Compilation (teacher)', ['content11', 'html']),
     );
     const LOGS_1_2_TEACHER = array(
-            array('JUnit', 'Fake Message'),
+            array('JUnit', ['Fake Message', 'html']),
             array('JUnit', 'content18')
     );
 
@@ -292,7 +294,7 @@ EOD;
     const LOGS_2_1_TEACHER = array(
             array('MyString cannot be resolved to a variable', 'Sample.java	line 55'),
             array('Inline cannot be resolved', 'Sample.java	line 56'),
-            array('Java-Compilation (teacher)', 'content11')
+            array('Java-Compilation (teacher)', ['content11', 'html'])
     );
     const SUBTEST_2_1_CALLSTACK = 'testFailesAlways(reverse_task.MyStringTest): liefert immer einen Fehler expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;
 org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;
@@ -399,7 +401,7 @@ EOD;
 
     const LOGS_3_1 = array(array('JUnit Test: Junit Test #1', null));
     const LOGS_3_2 = array(
-            array('JUnit Test: Junit Test de/ostfalia/DoSomethingTest', '<pre>
+            array('JUnit Test: Junit Test de/ostfalia/DoSomethingTest', ['<pre>
 
 ======== Test Results ======
 
@@ -413,7 +415,7 @@ EOD;
 xx errors
 1
 </pre>
-'),
+', 'html']),
     );
 
     const RESPONSE_4 = <<<'EOD'
@@ -514,8 +516,56 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
     );
     const LOGS_4_2 = self::LOGS_4_1;
 
+    
 
 
+    const RESPONSE_EMPTY = <<<'EOD'
+<?xml version="1.0" encoding="utf-8"?>
+<response xmlns="urn:proforma:v2.0" xmlns:praktomat="urn:proforma:praktomat:v2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <separate-test-feedback>
+    <submission-feedback-list>
+        </submission-feedback-list>
+    <tests-response>
+      <test-response id="1">
+        <test-result>
+          <result>
+            <score>1</score>
+          </result>
+          <feedback-list>
+            <student-feedback level="info">
+              <content format="plaintext">Beginne Pr&#252;fung...
+Pr&#252;fung beendet.
+</content>
+            </student-feedback>
+          </feedback-list>
+        </test-result>
+      </test-response>
+      <test-response id="2">
+            </test-response>
+    </tests-response>
+  </separate-test-feedback>
+  <files>
+    </files>
+  <response-meta-data>
+    <grader-engine name="praktomat" version="Version 4.5.1 | 20200803"/>
+    <praktomat:response-meta-data>
+      <praktomat:response-datetime>2020-10-26T16:01:03.745332</praktomat:response-datetime>
+      <praktomat:version-control-system name="SVN" submission-uri="https://svn.ostfalia.de/src" submission-revision="1234"/>
+    </praktomat:response-meta-data>
+  </response-meta-data>
+</response>    
+EOD;    
+
+    
+    const LOGS_EMPTY_1 = array(
+            array('', 'Beginne Prüfung...
+Prüfung beendet.
+', ''),
+    );
+    const LOGS_EMPTY_2 = array(
+            array(null, ['Response format error: no test result available', 'html']),
+    );  
+    
     private function assert_same_xml($expectedxml, $xml) {
         // remove comments
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
@@ -528,8 +578,12 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         return '<div>' . $title .'</div>';
     }
 
-    private function render_log($log) {
-        return '<pre class="proforma_testlog">' . $log .'</pre>';
+    private function render_log($log, $format = 'plaintext') {
+        if ($format == 'plaintext') {
+            return '<pre class="proforma_testlog">' . $log .'</pre>';            
+        } else {
+            return '<pre class="proforma_testlog">' . $log .'</pre>';            
+        }
     }
 
     /**
@@ -539,12 +593,19 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
      * @param $response test response string
      * @return string
      */
-    private function render_graderinfo($number, $graderinfo, $response) {
+    private function render_graderinfo($number, $graderinfo, $response, $svn = null) {
         $idprefix = '{COLLAPSE_ID}';
         $id = $idprefix.'-'.$number;
 
+        // Add small tag to svn uri.
+        if (isset($svn)) {
+            $svn = '<small>' . $svn . '</small>';
+        } else {
+            $svn = '';
+        }
+
         $output = '</div></div>
-<small></small><p></p>['.$graderinfo.']';
+'. $svn .'<small></small><p></p>['.$graderinfo.']';
         $output .= '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
 ';
         $output .= '<div id="'.$id.'_caption" class="collapsibleregioncaption">raw response </div>
@@ -572,38 +633,70 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $idprefix = '{COLLAPSE_ID}';
         $id = $idprefix.'-'.$number;
 
+        $iconpassed = 'class="icon fa fa-check text-success fa-fw "  title="Correct" aria-label="Correct"';
+        $iconfailed = 'class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"';
+        $iconinternalerror = 'class="icon fa fa-exclamation text-warning fa-fw " title="info" aria-label="info"';
+                  
         if (isset($total)) {
-            // for subtests
+            // with subtests
+            $icon = $iconpassed;
+            if ($internalerror) {
+                $icon = $iconinternalerror;                                
+            } else if (($score/$total) < 1) {
+                $icon = $iconfailed;                
+            }
             $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">
-<i class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"></i> '.$title;
-            $output .= ' ('.($score*100) .'/'.($total*100).' %)';
-        } else {
-            // for no subtests
-            if ($score < 1) {
-                $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
-<div id="'.$id.'_caption" class="collapsibleregioncaption">
-<i class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"></i> '.$title;
+<i ' . $icon . '></i> '.$title;
+            if ($internalerror and !isset($score)) {
+                $output .= ' ( ? /'.($total*100).' %)';                
             } else {
-                $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
-<div id="'.$id.'_caption" class="collapsibleregioncaption">
-<i class="icon fa fa-check text-success fa-fw "  title="Correct" aria-label="Correct"></i> '.$title;
+                $output .= ' ('.($score*100) .'/'.($total*100).' %)';                
             }
+        } else {
+            // without subtests
+            $icon = $iconpassed;
+            if ($internalerror) {
+                $icon = $iconinternalerror;                                
+            } else if ($score < 1) {
+                $icon = $iconfailed;                
+            }
+          
+            $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
+<div id="'.$id.'_caption" class="collapsibleregioncaption">
+<i ' . $icon . '></i> '.$title;
         }
+             
+        
         $output .= ' </div>
 <div id="'.$id.'_inner" class="collapsibleregioninner">';
 
         $output .= '<span class="proforma_testlog_description">'.$description.'</span>';
 
         if ($internalerror) {
-            $output .= '<p><b>INTERNAL ERROR IN GRADER!!</b></p>';
+            $output .= '<p class="proforma_testlog_description">An internal error occured during test execution:</p>';
         }
         foreach ($logs as $log) {
             if (isset($log[0])) {
                 $output .= '<div class="proforma_testlog_title">'.$log[0].'</div>';
             }
             if (isset($log[1])) {
-                $output .= '<pre class="proforma_testlog">' . $log[1] . '</pre>';
+                $content = $log[1];
+                if (is_array($content)) {
+                    // Log with format infomation:
+                    switch ($content[1]) {
+                        case 'html': 
+                            $output .= '<pre class="proforma_testlog">' . $content[0] . '</pre>';
+                            break;
+                        case 'plaintext':
+                            $output .= '<pre class="proforma_testlog">' . $content[0] . '</pre>';
+                            break;
+                        default:
+                            throw new Exception('invalid format');                            
+                    }
+                } else {
+                    $output .= '<pre class="proforma_testlog">' . $content . '</pre>';                    
+                }
             }
         }
         $output .= '</div></div></div>';
@@ -689,9 +782,9 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $expected = str_replace('{COLLAPSE_ID}', 'm-id-test-proforma-' . $qaid, $expected);
 
         //$dom->loadHTML($output);
-        $dom->loadHTML($output, LIBXML_NOERROR | LIBXML_NOXMLDECL );
+        $dom->loadHTML($output, LIBXML_NOERROR | LIBXML_NOXMLDECL | LIBXML_NOWARNING);
         $output_pretty = $dom->saveHTML();
-        $dom->loadHTML($expected, LIBXML_NOERROR | LIBXML_NOXMLDECL );
+        $dom->loadHTML($expected, LIBXML_NOERROR | LIBXML_NOXMLDECL | LIBXML_NOWARNING);
         $expected_pretty = $dom->saveHTML();
 
         $this->assert_same_xml($expected_pretty, $output_pretty);
@@ -708,7 +801,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $expected =
             '<p>'.
             $this->render_title('title1').
-            $this->render_log('Fake Message').
+            $this->render_log('Fake Message', 'html').
             '</p>'.
             $this->render_collapsible_region_score(1, 0.0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1).
             $this->render_collapsible_region_score(2, 0.0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2, true).
@@ -726,7 +819,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Result').
+                $this->render_log('Fake Result', 'html').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1).
                 $this->render_collapsible_region_subtests(2, 0.5, null, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1).
@@ -758,7 +851,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Message').
+                $this->render_log('Fake Message', 'html').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0.0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1).
                 $this->render_collapsible_region_score(2, 0.0, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2, true).
@@ -776,7 +869,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Result').
+                $this->render_log('Fake Result', 'html').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1).
                 $this->render_collapsible_region_subtests(2, 0.45, 0.6, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1).
@@ -795,7 +888,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Message').
+                $this->render_log('Fake Message', 'html').
                 '<p></p>'.
                 $this->render_title('title2').
                 $this->render_log('Teacher Message').
@@ -818,7 +911,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Result').
+                $this->render_log('Fake Result', false).
                 '<p></p>'.
                 $this->render_title('title2').
                 $this->render_log('Teacher Message 1').
@@ -841,7 +934,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Message').
+                $this->render_log('Fake Message', 'html').
                 '<p></p>'.
                 $this->render_title('title2').
                 $this->render_log('Teacher Message').
@@ -864,7 +957,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Result').
+                $this->render_log('Fake Result', false).
                 '<p></p>'.
                 $this->render_title('title2').
                 $this->render_log('Teacher Message 1').
@@ -894,4 +987,20 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
         $this->assert_same_feedback(self::RESPONSE_4, '', self::GRADINGHINTS_1, $expected);
     }
 
+    /**
+     * empty test result
+     */
+    public function test_empty_response() {
+        $expected =
+                $this->render_collapsible_region_score(1, 0.4, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_EMPTY_1).
+                $this->render_collapsible_region_score(2, null, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_EMPTY_2, true).
+                $this->render_graderinfo(3, 'praktomat Version 4.5.1 | 20200803', self::RESPONSE_EMPTY, 
+                     'SVN: https://svn.ostfalia.de/src Revision 1234') .
+                '<p></p>
+<p>Your answer could not be graded due to an internal error in the grading system.</p>';
+
+        $this->setAdminUser();
+        $this->assert_same_feedback(self::RESPONSE_EMPTY, '', self::GRADINGHINTS_1, $expected);
+    }    
+    
 }
