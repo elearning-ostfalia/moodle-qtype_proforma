@@ -1,16 +1,11 @@
 .que.proforma textarea.qtype_proforma_response {
     width: 100%;
 }
-/* not used anymore
-.que.proforma textarea.qtype_proforma_response.qtype_proforma_plain {
-    white-space: pre-wrap;
-    font: inherit;
-}
-*/
+
 
 .que.proforma textarea.qtype_proforma_response.qtype_proforma_editor {
     white-space: pre;
-    font-family: Andale Mono, Monaco, Courier New, DejaVu Sans Mono, monospace;
+    font-family: "Andale Mono", Monaco, "Courier New", "DejaVu Sans Mono", monospace;
 }
 
 .que.proforma .qtype_proforma_response {
@@ -25,44 +20,52 @@
     width: 100%;
 }
 
-.proforma_failed > .proforma_grade {
-    color: pink;
-    font-weight: bold;
+.proforma_general.proforma_html {
+    /*padding-left: 0.1cm;*/
 }
-.proforma_passed > .proforma_grade {
-    color: lightgreen;
-    font-weight: bold;
-}
-.proforma_testname {
-    font-weight: bold;
-}
-.proforma_testlog_title {
-    padding-left: 0.95cm;
-}
-
-.proforma_testlog_description {
-    padding-left: 0.95cm;
-}
-
-.proforma_testlog {
-    padding-left: 0.95cm;
-    font-family: Andale Mono, Monaco, Courier New, DejaVu Sans Mono, monospace;
+.proforma_general:not(.proforma_html) {
+    /*padding-left: 0.1cm;*/
+    font-family: "Andale Mono", Monaco, "Courier New", "DejaVu Sans Mono", monospace;
     white-space: pre-wrap;
 }
-.proforma_subtest_title {
+
+/* Feedback formats for testlogs not using subtests */
+.proforma_testlog_title {
+    padding-left: 24px; /*0.9cm;*/
+}
+.proforma_testlog_description {
+    padding-left: 24px; /*0.9cm;*/
+}
+.proforma_testlog.proforma_html {
+    padding-left: 24px; /*0.9cm;*/
+}
+.proforma_testlog:not(.proforma_html) {
+    padding-left: 24px; /*0.9cm;*/
+    font-family: "Andale Mono", Monaco, "Courier New", "DejaVu Sans Mono", monospace;
+    white-space: pre-wrap;
+}
+
+
+/* Feedback formats for subtests */
+.proforma_subtest_title { /* with icon */
     padding-left: 1cm;
     /*font-size: 0.73em;*/
 }
-.proforma_subtest_title_2 {
-    padding-left: 1.6cm;
+.proforma_subtest_title_2 { /* without icon */
+    padding-left: 1.5cm;
     /*font-size: 0.73em;*/
 }
-.proforma_subtest_testlog {
+.proforma_subtest_testlog.proforma_html {
     /*font-size: 0.73em;*/
-    padding-left: 1.6cm;
-    font-family: Andale Mono, Monaco, Courier New, DejaVu Sans Mono, monospace;
+    padding-left: 1.5cm;
+}
+.proforma_subtest_testlog:not(.proforma_html) {
+    /*font-size: 0.73em;*/
+    padding-left: 1.5cm;
+    font-family: "Andale Mono", Monaco, "Courier New", "DejaVu Sans Mono", monospace;
     white-space: pre-wrap;
 }
+
 
 /*
 .que.proforma textarea.qtype_proforma_response {

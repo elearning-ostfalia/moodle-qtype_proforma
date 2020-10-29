@@ -88,7 +88,7 @@ class qtype_proforma_renderer_test extends qtype_proforma_walkthrough_test_base 
             </student-feedback>
             <teacher-feedback level="debug">
               <title>Java-Compilation (teacher)</title>
-              <content format="html">content11</content>
+              <content format="html"><![CDATA[content11 <b>sample</b>]]></content>
               <filerefs/>
             </teacher-feedback>
           </feedback-list>
@@ -136,7 +136,7 @@ EOD;
     const LOGS_1_1_TEACHER = array(
             array('MyString cannot be resolved to a variable', 'Sample.java	line 55'),
             array('Inline cannot be resolved', 'Sample.java	line 56'),
-            array('Java-Compilation (teacher)', ['content11', 'html']),
+            array('Java-Compilation (teacher)', ['content11 <b>sample</b>', 'html']),
     );
     const LOGS_1_2_TEACHER = array(
             array('JUnit', ['Fake Message', 'html']),
@@ -175,7 +175,7 @@ EOD;
                         </student-feedback>            
                         <teacher-feedback level="debug">
                             <title>Java-Compilation (teacher)</title>
-                            <content format="html">content11</content>
+                            <content format="html"><![CDATA[content11 <b>sample</b>]]></content>
                         </teacher-feedback>
                     </feedback-list>
                 </test-result>
@@ -294,7 +294,7 @@ EOD;
     const LOGS_2_1_TEACHER = array(
             array('MyString cannot be resolved to a variable', 'Sample.java	line 55'),
             array('Inline cannot be resolved', 'Sample.java	line 56'),
-            array('Java-Compilation (teacher)', ['content11', 'html'])
+            array('Java-Compilation (teacher)', ['content11 <b>sample</b>', 'html'])
     );
     const SUBTEST_2_1_CALLSTACK = 'testFailesAlways(reverse_task.MyStringTest): liefert immer einen Fehler expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;
 org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;
@@ -579,13 +579,27 @@ Prüfung beendet.
     }
 
     private function render_log($log, $format = 'plaintext') {
-        if ($format == 'plaintext') {
-            return '<pre class="proforma_testlog">' . $log .'</pre>';            
-        } else {
-            return '<pre class="proforma_testlog">' . $log .'</pre>';            
+        switch ($format) {
+            case 'html':         
+                return '<p class="proforma_testlog proforma_html">' . $log .'</p>';
+            case 'plaintext':
+                return '<pre class="proforma_testlog">' . $log .'</pre>';            
+            default:
+                throw new Exception('invalid format: "' . $format . '"');
         }
     }
 
+    private function render_general_log($log, $format = 'plaintext') {
+        switch ($format) {
+            case 'html':         
+                return '<p class="proforma_general proforma_html">' . $log .'</p>';
+            case 'plaintext':
+                return '<pre class="proforma_general">' . $log .'</pre>';            
+            default:
+                throw new Exception('invalid format: "' . $format . '"');
+        }
+    }    
+    
     /**
      * Generate expected grader info
      * @param $number number for collapsible region (sequence)
@@ -684,18 +698,9 @@ Prüfung beendet.
                 $content = $log[1];
                 if (is_array($content)) {
                     // Log with format infomation:
-                    switch ($content[1]) {
-                        case 'html': 
-                            $output .= '<pre class="proforma_testlog">' . $content[0] . '</pre>';
-                            break;
-                        case 'plaintext':
-                            $output .= '<pre class="proforma_testlog">' . $content[0] . '</pre>';
-                            break;
-                        default:
-                            throw new Exception('invalid format');                            
-                    }
+                    $output .= $this->render_log($content[0], $content[1]);
                 } else {
-                    $output .= '<pre class="proforma_testlog">' . $content . '</pre>';                    
+                    $output .= $this->render_log($content);                    
                 }
             }
         }
@@ -801,7 +806,7 @@ Prüfung beendet.
         $expected =
             '<p>'.
             $this->render_title('title1').
-            $this->render_log('Fake Message', 'html').
+            $this->render_general_log('Fake Message', 'html').
             '</p>'.
             $this->render_collapsible_region_score(1, 0.0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1).
             $this->render_collapsible_region_score(2, 0.0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2, true).
@@ -819,7 +824,7 @@ Prüfung beendet.
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Result', 'html').
+                $this->render_general_log('Fake Result', 'html').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1).
                 $this->render_collapsible_region_subtests(2, 0.5, null, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1).
@@ -851,7 +856,7 @@ Prüfung beendet.
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Message', 'html').
+                $this->render_general_log('Fake Message', 'html').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0.0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1).
                 $this->render_collapsible_region_score(2, 0.0, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2, true).
@@ -869,7 +874,7 @@ Prüfung beendet.
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Result', 'html').
+                $this->render_general_log('Fake Result', 'html').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1).
                 $this->render_collapsible_region_subtests(2, 0.45, 0.6, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1).
@@ -888,10 +893,10 @@ Prüfung beendet.
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Message', 'html').
+                $this->render_general_log('Fake Message', 'html').
                 '<p></p>'.
                 $this->render_title('title2').
-                $this->render_log('Teacher Message').
+                $this->render_general_log('Teacher Message').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0.0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1_TEACHER).
                 $this->render_collapsible_region_score(2, 0.0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2_TEACHER, true).
@@ -911,10 +916,10 @@ Prüfung beendet.
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Result', false).
+                $this->render_general_log('Fake Result', 'html').
                 '<p></p>'.
                 $this->render_title('title2').
-                $this->render_log('Teacher Message 1').
+                $this->render_general_log('Teacher Message 1').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1_TEACHER).
                 $this->render_collapsible_region_subtests(2, 0.5, null, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1_TEACHER).
@@ -934,10 +939,10 @@ Prüfung beendet.
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Message', 'html').
+                $this->render_general_log('Fake Message', 'html').
                 '<p></p>'.
                 $this->render_title('title2').
-                $this->render_log('Teacher Message').
+                $this->render_general_log('Teacher Message').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0.0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1_TEACHER).
                 $this->render_collapsible_region_score(2, 0.0, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2_TEACHER, true).
@@ -957,10 +962,10 @@ Prüfung beendet.
         $expected =
                 '<p>'.
                 $this->render_title('title1').
-                $this->render_log('Fake Result', false).
+                $this->render_general_log('Fake Result', 'html').
                 '<p></p>'.
                 $this->render_title('title2').
-                $this->render_log('Teacher Message 1').
+                $this->render_general_log('Teacher Message 1').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1_TEACHER).
                 $this->render_collapsible_region_subtests(2, 0.45, 0.6, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1_TEACHER).

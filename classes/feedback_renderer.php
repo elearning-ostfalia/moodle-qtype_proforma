@@ -92,6 +92,7 @@ class feedback_renderer {
             return '';
         }
 
+        // Extract properties.
         $level = (string) $feedback['level'];
         $title = (string) $feedback->title;
         // Escaped character sequence is replaced by non-escaped character.
@@ -100,10 +101,11 @@ class feedback_renderer {
         $result = '';
 
         if ($general) {
+            // Feedback independend from tests.
             $csstitle = array();
-            $csscontent = array('class' => 'proforma_testlog');
-
+            $csscontent = array('class' => 'proforma_general');
         } else if ($subtest) {
+            // Detailed subtest results.
             $csstitle = array('class' => 'proforma_subtest_title');
             $csscontent = array('class' => 'proforma_subtest_testlog');
             if ($printpassedinfo) {
@@ -118,6 +120,7 @@ class feedback_renderer {
                 $csstitle = array('class' => 'proforma_subtest_title_2');
             }
         } else {
+            // Simple logs.
             $csstitle = array('class' => 'proforma_testlog_title');
             $csscontent = array('class' => 'proforma_testlog');
         }
@@ -148,10 +151,8 @@ class feedback_renderer {
                     $result .= html_writer::tag('pre', htmlspecialchars($content), $csscontent);
                     break;
                 case 'html':
-                    // $result .= $content;
-                    // pre is needed because we need to embedded html into html???
-                    //$result .= html_writer::tag('pre', $content, $csscontent);
-                    $result .= html_writer::tag('pre', $content, $csscontent);
+                    $csscontent['class'] .= ' proforma_html';
+                    $result .= html_writer::tag('p', $content, $csscontent);
                     break;
                 default:
                     debugging('missing or invalid format for feedback (student/teacher):' . $format);
