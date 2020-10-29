@@ -563,7 +563,7 @@ Prüfung beendet.
 ', ''),
     );
     const LOGS_EMPTY_2 = array(
-            array(null, ['Response format error: no test result available', 'html']),
+            array(null, ['Response format error: no test result available', 'plaintext']),
     );  
     
     private function assert_same_xml($expectedxml, $xml) {
