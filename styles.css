@@ -2,6 +2,11 @@
     width: 100%;
 }
 
+/* no space after pre text */
+.specificfeedback pre {
+  margin-bottom: 0.1rem; /* instead of 1rm */
+}
+
 
 .que.proforma textarea.qtype_proforma_response.qtype_proforma_editor {
     white-space: pre;
@@ -31,16 +36,16 @@
 
 /* Feedback formats for testlogs not using subtests */
 .proforma_testlog_title {
-    padding-left: 24px; /*0.9cm;*/
+    padding-left: 28px;
 }
 .proforma_testlog_description {
-    padding-left: 24px; /*0.9cm;*/
+    padding-left: 28px;
 }
 .proforma_testlog.proforma_html {
-    padding-left: 24px; /*0.9cm;*/
+    padding-left: 28px;
 }
 .proforma_testlog:not(.proforma_html) {
-    padding-left: 24px; /*0.9cm;*/
+    padding-left: 28px;
     font-family: "Andale Mono", Monaco, "Courier New", "DejaVu Sans Mono", monospace;
     white-space: pre-wrap;
 }
@@ -48,20 +53,20 @@
 
 /* Feedback formats for subtests */
 .proforma_subtest_title { /* with icon */
-    padding-left: 1cm;
+    padding-left: 28px;
     /*font-size: 0.73em;*/
 }
 .proforma_subtest_title_2 { /* without icon */
-    padding-left: 1.5cm;
+    padding-left: 52px;
     /*font-size: 0.73em;*/
 }
 .proforma_subtest_testlog.proforma_html {
     /*font-size: 0.73em;*/
-    padding-left: 1.5cm;
+    padding-left: 52px;
 }
 .proforma_subtest_testlog:not(.proforma_html) {
     /*font-size: 0.73em;*/
-    padding-left: 1.5cm;
+    padding-left: 52px;
     font-family: "Andale Mono", Monaco, "Courier New", "DejaVu Sans Mono", monospace;
     white-space: pre-wrap;
 }
