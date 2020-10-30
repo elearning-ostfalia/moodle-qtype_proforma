@@ -123,7 +123,8 @@ $string['grading_timeout_desc'] = 'Zeit, nach der angenommen wird, dass vom Grad
 $string['gradepassed'] = 'Die Antwort ist richtig.';
 $string['gradefailed'] = 'Die Antwort ist nicht vollständig richtig.';
 $string['gradepartialpassed'] = 'Die Antwort ist zum Teil richtig.';
-$string['gradeinternalerror'] = 'Beim Bewerten ist ein Fehler aufgetreten. Die Antwort konnte nicht bewertet werden.';
+$string['gradeinternalerror'] = 'Die Antwort kann aufgrund eines internen Fehlers nicht bewertet werden.';
+$string['testinternalerror'] = 'Beim Ausführen des Tests ist ein interner Fehler aufgetreten:';
 
 $string['usecodemirror'] = 'CodeMirror als Quelltexteditor benutzen';
 $string['usecodemirror_desc'] = 'CodeMirror kann im Editor (studentische Sicht) und für die Eingabe der Codevorlage (Dozentensicht) eingesetzt werden. ';

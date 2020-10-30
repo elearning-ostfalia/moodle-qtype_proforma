@@ -130,6 +130,8 @@ $string['gradepassed'] = 'Your answer is correct.';
 $string['gradefailed'] = 'Your answer is not completely correct.';
 $string['gradepartialpassed'] = 'Your answer is partially correct. For details see information below. ';
 $string['gradeinternalerror'] = 'Your answer could not be graded due to an internal error in the grading system.';
+$string['testinternalerror'] = 'An internal error occured during test execution:';
+
 
 $string['usecodemirror'] = 'Use CodeMirror as source code editor. ';
 $string['usecodemirror_desc'] = 'For student response and for input of model solution and template. ';
