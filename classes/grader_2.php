@@ -42,7 +42,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      */
     private function create_submission_xml($code, $files, $filename, $uri, qtype_proforma_question $question) {
         global $CFG;
-
+       
         $xw = new SimpleXmlWriter();
         $xw->openMemory();
 
@@ -96,17 +96,14 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             }
         } else if (isset($code)) {
             // Editor.
-            // $xw->createChildElementWithText('external-submission', 'http-text:'.$filename);
-
-            // Start a child element
             $xw->startElement('files');
                 $xw->startElement('file');
-                    $xw->startElement('embedded-txt-file');
+                    // Code is sent as base64 encoded text because it might contain illegal
+                    // characters which could lead to some problems otherwise. 
+                    $xw->startElement('embedded-bin-file');
                     $xw->create_attribute('filename', $filename);
-                    // $xw->startCdata();
-                    $xw->writeCData($code);
-                    // $xw->endCdata();
-                    $xw->endElement(); // embedded-txt-file
+                    $xw->text(base64_encode($code));
+                    $xw->endElement(); // embedded-bin-file                    
                 $xw->endElement(); // file
             $xw->endElement(); // files
         } else {
@@ -294,7 +291,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      */
     public static function calc_score_for_test($test) {
         if (count($test->{'subtests-response'}) == 0) {
-            throw new moodle_exception('Subtest results not found');
+            throw new moodle_exception('Format error: Subtest results not found');
         }
 
         $counttests = 0.0;

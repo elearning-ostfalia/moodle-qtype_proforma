@@ -1,3 +1,5 @@
+Requires at least Praktomat Version 4.7!!
+
 The ProForma Moodle Question Type is a Moodle Plugin that is used for 
 automatically grading programming questions in Moodle quizzes. Questions are 
 internally stored in the ProFormA format (https://github.com/ProFormA/proformaxml). 
