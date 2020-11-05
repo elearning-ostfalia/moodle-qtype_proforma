@@ -30,7 +30,6 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 class select_form_creator extends base_form_creator {
 
-    protected $_newquestion = false;
 
     /**
      * java_form_creator constructor.
@@ -39,10 +38,7 @@ class select_form_creator extends base_form_creator {
      * @param null $newquestion new question indicator
      */
     public function __construct($form, $newquestion = null) {
-        parent::__construct($form, null);
-        if (isset($newquestion) && $newquestion) {
-            $this->_newquestion = $newquestion;
-        }
+        parent::__construct($form, null, null);
     }
 
     // override
@@ -53,7 +49,7 @@ class select_form_creator extends base_form_creator {
      */
     public function add_hidden_fields() {
         parent::add_hidden_fields();
-        $mform = $this->form;
+        $mform = $this->_form;
 
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::SELECT_TASKFILE);
         $mform->setType('taskstorage', PARAM_RAW);
@@ -74,7 +70,7 @@ class select_form_creator extends base_form_creator {
      * @param $question
      */
     public function add_proglang_selection($question) {
-        $mform = $this->form;
+        $mform = $this->_form;
       
         $programminglangs = array('java' => 'Java', 'setlx' => 'SetlX');
         $mform->addElement('select', 'programminglanguage',

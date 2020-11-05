@@ -72,7 +72,7 @@ class proforma_form_creator extends base_form_creator {
     public function add_hidden_fields() {
         parent::add_hidden_fields();
 
-        $mform = $this->form;
+        $mform = $this->_form;
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::PERSISTENT_TASKFILE);
         $mform->setType('taskstorage', PARAM_RAW);
 
@@ -87,7 +87,7 @@ class proforma_form_creator extends base_form_creator {
      * @param $question
      */
     public function add_modelsolution($question) {
-        $mform = $this->form;
+        $mform = $this->_form;
         // Model Solution files (instead of modelsollist we show links)
         $mform->addElement('static', 'mslinks', get_string('modelsolfiles', 'qtype_proforma'), '');
         $mform->addHelpButton('mslinks', 'modelsolfiles_hint', 'qtype_proforma');
@@ -99,7 +99,7 @@ class proforma_form_creator extends base_form_creator {
      * @param $question
      */
     protected function add_responsetemplate($question) {
-        $mform = $this->form;
+        $mform = $this->_form;
         parent::add_responsetemplate($question);
         // Further templates (there should be no other templates)
         $this->add_static_text($question, 'furtherTemplates', get_string('templates', 'qtype_proforma'),
@@ -114,7 +114,7 @@ class proforma_form_creator extends base_form_creator {
      * @param $question
      */
     public function add_grader_settings($question) {
-        $mform = $this->form;
+        $mform = $this->_form;
         parent::add_grader_settings($question);
         // UUID
         $this->add_static_field($question, 'uuid', get_string('uuid', 'qtype_proforma'), 40);
@@ -144,10 +144,10 @@ class proforma_form_creator extends base_form_creator {
      * @return int
      */
     public function add_tests($question, $questioneditform) {
-        $this->taskhandler = new qtype_proforma_proforma_task();
+        $this->_taskhandler = new qtype_proforma_proforma_task();
         $repeats = parent::add_tests($question, $questioneditform);
         // Remove button for adding new test elements.
-        $mform = $this->form;
+        $mform = $this->_form;
         $mform->removeElement('option_add_fields');
         return $repeats;
     }
@@ -197,7 +197,7 @@ class proforma_form_creator extends base_form_creator {
      * @param $options
      */
     public function save_question_options(&$options) {
-        $formdata = $this->form;
+        $formdata = $this->_form;
         if (isset($formdata->taskfiledraftid)) {
             // special handling for proforma import (interim solution):
             // rename draftid property
@@ -212,12 +212,5 @@ class proforma_form_creator extends base_form_creator {
         $instance = new qtype_proforma_proforma_task();
         $options->gradinghints = $instance->create_lms_grading_hints($formdata);
     }
-    
-    /**
-     * polymorphy: get label for button adding new tests
-     * @return type
-     */
-    protected function get_add_test_label() {
-        return get_string('addjunit', 'qtype_proforma');            
-    }    
+ 
 }

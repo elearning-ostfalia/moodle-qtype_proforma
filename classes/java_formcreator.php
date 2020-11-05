@@ -31,10 +31,6 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 class java_form_creator extends base_form_creator {
 
-    // Property name for model solution manager.
-    // Must be name of associated filearea!!.
-    const MODELSOLMANAGER = qtype_proforma::FILEAREA_MODELSOL;
-
     protected $_newquestion = false;
 
     /**
@@ -44,7 +40,7 @@ class java_form_creator extends base_form_creator {
      * @param null $newquestion new question indicator
      */
     public function __construct($form, $newquestion = null) {
-        parent::__construct($form, qtype_proforma::response_formats());
+        parent::__construct($form, qtype_proforma::response_formats(), 'java');
         if (isset($newquestion) && $newquestion) {
             $this->_newquestion = $newquestion;
         }
@@ -58,7 +54,7 @@ class java_form_creator extends base_form_creator {
      */
     public function add_hidden_fields() {
         parent::add_hidden_fields();
-        $mform = $this->form;
+        $mform = $this->_form;
 
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::JAVA_TASKFILE);
         $mform->setType('taskstorage', PARAM_RAW);
@@ -70,7 +66,7 @@ class java_form_creator extends base_form_creator {
      * @param $question
      */
     public function add_proglang_selection($question) {
-        $mform = $this->form;
+        $mform = $this->_form;
 
         $mform->addElement('text', 'proglang',
                 get_string('proglang', 'qtype_proforma'), 'Java');
@@ -104,35 +100,6 @@ class java_form_creator extends base_form_creator {
     }
 
     /**
-     * Add model solution as edit field for editor response format or
-     * as fielmanager for filepicker response format.
-     *
-     * @param $question
-     */
-    public function add_modelsolution($question) {
-        $mform = $this->form;
-        // Model Solution files
-        $mform->addElement('textarea', 'modelsolution', get_string('modelsolution', 'qtype_proforma'), 'rows="20" cols="80"');
-        if (get_config('qtype_proforma', 'usecodemirror')) {
-            qtype_proforma\lib\as_codemirror('id_modelsolution', 'java');
-            global $PAGE;
-            $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
-                    array('id_programminglanguage', 'id_modelsolution'));
-        }
-        $mform->addHelpButton('modelsolution', 'modelsolution', 'qtype_proforma');
-        $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
-
-        // Add Filemanager for model solution in case of using the filepicker.
-        // Remove hidden element in base class.
-        $mform->removeElement(self::MODELSOLMANAGER);
-        $mform->addElement('filemanager', self::MODELSOLMANAGER, get_string('modelsolfiles', 'qtype_proforma'), null,
-                array('subdirs' => true));
-
-        $mform->hideIf(self::MODELSOLMANAGER, 'responseformat', 'neq', 'filepicker');
-    }
-
-
-    /**
      * Add grader options/information.
      *
      * @param $question
@@ -142,7 +109,7 @@ class java_form_creator extends base_form_creator {
             // allow admin to see the created task.xml (for debugging purposes)
             parent::add_grader_settings($question);
             // ProFormA fields
-            $mform = $this->form;
+            $mform = $this->_form;
             $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
         }
     }
@@ -162,7 +129,7 @@ class java_form_creator extends base_form_creator {
      * @param $repeatarray
      */
     protected function modify_test_repeatarray(&$repeatarray) {
-        $mform = $this->form;
+        $mform = $this->_form;
         // Add textarea for unit test code.
         $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
     }
@@ -173,7 +140,7 @@ class java_form_creator extends base_form_creator {
      * @param $testoptions
      */
     protected function modify_test_testoptions(&$testoptions) {
-        $mform = $this->form;
+        $mform = $this->_form;
         $csversion = get_config('qtype_proforma', 'junitversion');
         $versions = array();
         // force PHP to use strings as key even if the first key is an integer
@@ -203,25 +170,10 @@ class java_form_creator extends base_form_creator {
     }
 
     /**
-     * Add compilation options.
-     */
-    private function add_compilation() {
-        $mform = $this->form;
-        $compilegroup = array();
-        $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
-        $this->add_test_weight_option($compilegroup, 'compile', '0');
-        $mform->addGroup($compilegroup, 'compilegroup', get_string('compile', 'qtype_proforma'), ' ', false);
-        $mform->addGroupRule('compilegroup', array(
-                'compileweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
-        $mform->hideIf('compileweight', 'compile');
-        $mform->setDefault('compile', 1);
-    }
-
-    /**
      * Add Checkstyle options.
      */
     private function add_checkstyle() {
-        $mform = $this->form;
+        $mform = $this->_form;
         // Create a Checkstyle test (not part of the repeat group).
         $testoptions = array();
         // Add checkbox.
@@ -290,10 +242,10 @@ class java_form_creator extends base_form_creator {
      * @return int
      */
     public function add_tests($question, $questioneditform) {
-        $mform = $this->form;
-        $this->taskhandler = new qtype_proforma_java_task();
+        $mform = $this->_form;
+        $this->_taskhandler = new qtype_proforma_java_task();
         // add compilation
-        $this->add_compilation();
+        $this->add_compilation(get_string('compile', 'qtype_proforma'));
         // add JUnit
         $repeats = parent::add_tests($question, $questioneditform);
         // Set CodeMirror for unit test code.
@@ -449,7 +401,7 @@ class java_form_creator extends base_form_creator {
     public function save_question_options(&$options) {
         parent::save_question_options($options);
 
-        $formdata = $this->form;
+        $formdata = $this->_form;
         $instance = new qtype_proforma_java_task;
         $options->gradinghints = $instance->create_lms_grading_hints($formdata);
 

@@ -112,7 +112,9 @@ class qtype_proforma_question extends question_graded_automatically {
     private function get_grader() {
         if ($this->grader == null) {
             $this->grader = new qtype_proforma_grader_2();
-            // $this->grader = new qtype_proforma_grader();
+            /* global $CFG;
+            require_once($CFG->dirroot . '/question/type/proforma/tests/testgrader.php');
+            $this->grader = new qtype_proforma_testgrader();*/
         }
 
         return $this->grader;
@@ -526,28 +528,7 @@ class qtype_proforma_question extends question_graded_automatically {
      * @return bool|null|stored_file
      */
     public function get_task_file() {
-        if ($this->taskstorage != qtype_proforma::PERSISTENT_TASKFILE and
-                $this->taskstorage != qtype_proforma::VOLATILE_TASKFILE) {
-            return null;
-        }
-
         $taskarea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_TASK);
         return $taskarea->get_file($this->contextid, $this->taskfilename, $this->id);
-        /*
-        $fs = get_file_storage();
-
-        // Prepare file record object
-        $fileinfo = array(
-                'component' => 'qtype_proforma',
-                'filearea' => qtype_proforma::FILEAREA_TASK,
-                'itemid' => $this->id,           // question id
-                'contextid' => $this->contextid, // category id
-                'filepath' => '/',
-                'filename' => $this->taskfilename);
-
-        // Get file
-        $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
-                $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
-        return $file;*/
     }
 }

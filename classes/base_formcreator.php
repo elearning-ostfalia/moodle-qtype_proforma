@@ -31,15 +31,21 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
  * Bases class for rendering the question editor form for teachers
  */
 abstract class base_form_creator {
+    // Property name for model solution manager.
+    // Must be name of associated filearea!!.
+    const MODELSOLMANAGER = qtype_proforma::FILEAREA_MODELSOL;
+    
     /**
      * @var MoodleQuickForm The form object that must be filled with input fields.
      */
-    protected $form = null;
-    protected $taskhandler = null;
+    protected $_form = null;
+    protected $_taskhandler = null;
     /** 
      * response options
      */
-    protected $responseformats = null;
+    protected $_responseformats = null;
+    
+    protected $_syntaxhighlighting = 'java';
 
     // Property name for download manager.
     const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
@@ -49,9 +55,10 @@ abstract class base_form_creator {
      *
      * @param $form
      */
-    protected function __construct($form, $responseformats) {
-        $this->form = $form;
-        $this->responseformats = $responseformats;
+    protected function __construct($form, $responseformats = null, $syntaxhighlight = null) {
+        $this->_form = $form;
+        $this->_responseformats = $responseformats;
+        $this->_syntaxhighlighting = $syntaxhighlight;
     }
 
     // override
@@ -82,7 +89,7 @@ abstract class base_form_creator {
      */
     public function add_grader_settings($question) {
         // ProFormA fields
-        $mform = $this->form;
+        $mform = $this->_form;
         $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
 
         // Task Filename
@@ -100,7 +107,7 @@ abstract class base_form_creator {
      * @throws coding_exception
      */
     public function add_hidden_fields() {
-        $mform = $this->form;
+        $mform = $this->_form;
 
         $hiddenfields = array('taskfilename', 'taskpath', // 'templates', 'modelsolfiles', 'downloads'
         // , 'gradinghints' // values for grading hints are redundant
@@ -124,7 +131,7 @@ abstract class base_form_creator {
      * @param $question
      */
     public function add_questiontext_attachments($question) {
-        $mform = $this->form;
+        $mform = $this->_form;
 
         // Add Filemanager for download links associated with question text.
         // Remove hidden element in base class.
@@ -140,10 +147,12 @@ abstract class base_form_creator {
      * @param $question
      */
     protected function add_responsetemplate($question) {
-        $mform = $this->form;
-        $mform->addElement('textarea', 'responsetemplate', get_string('responsetemplate', 'qtype_proforma'), 'rows="20" cols="80"');
+        $mform = $this->_form;
+        $mform->addElement('textarea', 'responsetemplate', 
+            get_string('responsetemplate', 'qtype_proforma'), 'rows="20" cols="80"');
         if (get_config('qtype_proforma', 'usecodemirror')) {
-            qtype_proforma\lib\as_codemirror('id_responsetemplate', 'java', 'id_responsetemplateheader');
+            qtype_proforma\lib\as_codemirror('id_responsetemplate', 
+                $this->_syntaxhighlighting, 'id_responsetemplateheader');
             global $PAGE;
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
                     array('id_programminglanguage', 'id_responsetemplate'));
@@ -159,7 +168,7 @@ abstract class base_form_creator {
      * @param $question
      */
     protected function add_responsefilename() {
-        $mform = $this->form;
+        $mform = $this->_form;
         $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
         $mform->setType('responsefilename', PARAM_TEXT);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
@@ -174,11 +183,31 @@ abstract class base_form_creator {
     }
 
     /**
-     * Add model solution.
+     * Add model solution as edit field for editor response format or
+     * as fielmanager for filepicker response format.
      *
      * @param $question
      */
     public function add_modelsolution($question) {
+        $mform = $this->_form;
+        // Model Solution files
+        $mform->addElement('textarea', 'modelsolution', get_string('modelsolution', 'qtype_proforma'), 'rows="20" cols="80"');
+        if (get_config('qtype_proforma', 'usecodemirror')) {
+            qtype_proforma\lib\as_codemirror('id_modelsolution', $this->_syntaxhighlighting);
+            global $PAGE;
+            $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
+                    array('id_programminglanguage', 'id_modelsolution'));
+        }
+        $mform->addHelpButton('modelsolution', 'modelsolution', 'qtype_proforma');
+        $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
+
+        // Add Filemanager for model solution in case of using the filepicker.
+        // Remove hidden element in base class.
+        $mform->removeElement(self::MODELSOLMANAGER);
+        $mform->addElement('filemanager', self::MODELSOLMANAGER, get_string('modelsolfiles', 'qtype_proforma'), null,
+                array('subdirs' => true));
+
+        $mform->hideIf(self::MODELSOLMANAGER, 'responseformat', 'neq', 'filepicker');
     }
 
     // override
@@ -223,7 +252,7 @@ abstract class base_form_creator {
      * @return int
      */
     public function add_tests($question, $questioneditform) {
-        $mform = $this->form;
+        $mform = $this->_form;
         // Retrieve number of tests (resp. unit tests).
         $repeats = $this->get_count_tests($question);
         if ($repeats == 0) {
@@ -279,6 +308,21 @@ abstract class base_form_creator {
         return $repeats;
     }
 
+    /**
+     * Add compilation options.
+     */
+    protected function add_compilation($label) {
+        $mform = $this->_form;
+        $compilegroup = array();
+        $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
+        $this->add_test_weight_option($compilegroup, 'compile', '0');
+        $mform->addGroup($compilegroup, 'compilegroup', $label, ' ', false);
+        $mform->addGroupRule('compilegroup', array(
+                'compileweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
+        $mform->hideIf('compileweight', 'compile');
+        $mform->setDefault('compile', 1);
+    }    
+    
     
     /**
      * get number of tests for repeat group
@@ -290,14 +334,14 @@ abstract class base_form_creator {
         // Get number of unit tests from (lms) grading hints.
         // In case of an imported task this ist the number of all tests (not just unit tests).
         if (isset($question) && isset($question->options) && isset($question->options->gradinghints)) {
-            $repeats = $this->taskhandler->get_count_unit_tests($question->options->gradinghints);
+            $repeats = $this->_taskhandler->get_count_unit_tests($question->options->gradinghints);
         }
 
         return $repeats;
     }
     
     protected function add_editor_options($qtype) {
-        $mform = $this->form;
+        $mform = $this->_form;
         $mform->addElement('select', 'responsefieldlines',
                 get_string('responsefieldlines', 'qtype_proforma'), $qtype->response_sizes());
         $mform->setDefault('responsefieldlines', 15);
@@ -307,7 +351,7 @@ abstract class base_form_creator {
         $mform->addElement('select', 'programminglanguage',
                 get_string('highlight', 'qtype_proforma'), $qtype->get_proglang_options());
         $mform->addHelpButton('programminglanguage', 'highlight_hint', 'qtype_proforma');
-        $mform->setDefault('programminglanguage', 'java');
+        $mform->setDefault('programminglanguage', $this->_syntaxhighlighting);
         // Show only if response format is editor
         $mform->hideIf('programminglanguage', 'responseformat', 'neq', 'editor');
         // Response filename.
@@ -322,7 +366,7 @@ abstract class base_form_creator {
      */
     public function add_response_options($question, $qtype) {
         global $CFG, $COURSE;
-        $mform = $this->form;
+        $mform = $this->_form;
 
         // $defaultmaxsubmissionsizebytes = get_config('maxsubmissionsizebytes');
         // $defaultfiletypes = (string)get_config('filetypeslist');
@@ -331,29 +375,29 @@ abstract class base_form_creator {
         $mform->addElement('header', 'responseoptions', get_string('responseoptions', 'qtype_proforma'));
         $mform->setExpanded('responseoptions');
 
-        switch (count($this->responseformats) >= 1) {
+        switch (count($this->_responseformats) >= 1) {
             case 0:
                 break;
             case 1:
-                $mform->addElement('hidden', 'responseformat', array_key_first($this->responseformats));
+                $mform->addElement('hidden', 'responseformat', array_key_first($this->_responseformats));
                 $mform->setType('responseformat', PARAM_RAW);                
                 break;
             default:
                 $mform->addElement('select', 'responseformat',
-                    get_string('responseformat', 'qtype_proforma'), $this->responseformats);
+                    get_string('responseformat', 'qtype_proforma'), $this->_responseformats);
                 break;
         }
         
         // EDITOR OPTIONS
-        if (array_key_exists(qtype_proforma::RESPONSE_EDITOR, $this->responseformats)) {
+        if (array_key_exists(qtype_proforma::RESPONSE_EDITOR, $this->_responseformats)) {
             $mform->setDefault('responseformat', 'editor');
-            if ($this->responseformats) {
+            if ($this->_responseformats) {
                 $this->add_editor_options($qtype);                
             }            
         }
 
         // FILEPICKER OPTIONS
-        if (array_key_exists(qtype_proforma::RESPONSE_FILEPICKER, $this->responseformats)) {
+        if (array_key_exists(qtype_proforma::RESPONSE_FILEPICKER, $this->_responseformats)) {
             $choices = get_max_upload_sizes($CFG->maxbytes, $COURSE->maxbytes,
                     get_config('qtype_proforma', 'maxbytes'));
 
@@ -372,7 +416,7 @@ abstract class base_form_creator {
         }
 
         // VERSION CONTROL OPTIONS
-        if (array_key_exists(qtype_proforma::RESPONSE_VERSION_CONTROL, $this->responseformats)) {
+        if (array_key_exists(qtype_proforma::RESPONSE_VERSION_CONTROL, $this->_responseformats)) {
             $mform->addElement('text', 'vcsuritemplate', get_string('vcsuritemplate', 'qtype_proforma'), array('size' => '80'));
             $mform->setDefault('vcsuritemplate', get_config('qtype_proforma', 'defaultvcsuri'));
             $mform->setType('vcsuritemplate', PARAM_TEXT);
@@ -399,7 +443,7 @@ abstract class base_form_creator {
      * @param $questioneditform
      */
     public function add_test_settings($question, $questioneditform) {
-        $mform = $this->form;
+        $mform = $this->_form;
 
         // Header.
         $mform->addElement('header', 'test_header', get_string('tests', 'qtype_proforma'));
@@ -518,7 +562,7 @@ abstract class base_form_creator {
      * @param null $sizefield sizefield
      */
     protected function add_static_field($question, $field, $label, $size) {
-        $mform = $this->form;
+        $mform = $this->_form;
         if (isset($this->question->options->$field)) {
             $size = $question->options->$field;
         } else if (isset($this->question->$field)) {
@@ -549,7 +593,7 @@ abstract class base_form_creator {
      * @param null $sizefield sizefield
      */
     protected function add_static_text($question, $field, $label) {
-        $mform = $this->form;
+        $mform = $this->_form;
         if (isset($sizefield)) {
             if (isset($this->question->options->$sizefield)) {
                 $value = $question->options->$sizefield;
@@ -581,7 +625,7 @@ abstract class base_form_creator {
      * @param bool $withtitle True: also create title field
      */
     protected function add_test_weight_option(&$testoptions, $prefix, $defaultweight, $withtitle = false) {
-        $mform = $this->form;
+        $mform = $this->_form;
         if ($withtitle) {
             $testoptions[] = $mform->createElement('text', $prefix . 'title',
                     get_string('testtitle', 'qtype_proforma'), array('size' => 60));
@@ -600,7 +644,7 @@ abstract class base_form_creator {
      * @param $options
      */
     public function save_question_options(&$options) {
-        $formdata = $this->form;
+        $formdata = $this->_form;
         $context = $formdata->context;
 
         // Save files from draft area into proforma areas (modelsolution, downloads, templates)

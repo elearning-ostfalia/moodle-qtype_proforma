@@ -82,9 +82,12 @@ class qtype_proforma extends question_type {
      * Question is created in Moodle Form Editor.
      * Taskfile could be created on the fly and is only stored for caching purposes.
      */
-    const VOLATILE_TASKFILE = 3;
+    const VOLATILE_TASKFILE = 3; // Depricated: Use JAVA_TASKFILE instead.
+    /* Java task file */
     const JAVA_TASKFILE = 3;
+    /* SetlX task file */
     const SETLX_TASKFILE = 4;
+    /* task file that is not yet completed */
     const SELECT_TASKFILE = 0;
 
     // How is the mark calculated?
@@ -293,6 +296,10 @@ class qtype_proforma extends question_type {
                 $editor = new select_form_creator($formdata);
                 $editor->save_question_options($options);
                 break;
+            case self::SETLX_TASKFILE:
+                $editor = new setlx_form_creator($formdata);
+                $editor->save_question_options($options);
+                break;            
             case self::REPOSITORY:
             default:
                 throw new coding_exception('proforma: unsupported taskstorage ' . $formdata->taskstorage);

@@ -60,20 +60,20 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         // $xw->createAttribute('xsi:schemaLocation', 'urn:proforma:v2.0 schema.xsd');
 
         // task
-        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE or
-                $question->taskstorage == qtype_proforma::VOLATILE_TASKFILE) { // do not use === here!
+//        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE or
+//                $question->taskstorage == qtype_proforma::VOLATILE_TASKFILE) { // do not use === here!
             // external task in http field
             $xw->startElement('external-task');
             $xw->create_attribute('uuid', $question->uuid);
-            $xw->text('http-file:'.$question->taskfilename);
+            $xw->text('http-file:' . $question->taskfilename);
             // $xw->text('http-file:task-file');
             $xw->endElement(); // lms
             //
             // $xw->createChildElementWithText('inline-task-zip', $question->taskfiletask-file = {stored_file} [4]name);
-        } else {
-            throw new coding_exception('tasks stored outside Moodle are not supported');
+//        } else {
+//            throw new coding_exception('tasks stored outside Moodle are not supported');
             // external TODO???
-        }
+//        }
 
         if (isset($uri)) {
             // Version control system.
@@ -149,24 +149,22 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @throws coding_exception
      */
     protected function post_to_grader(&$postfields, qtype_proforma_question $question) {
-
-        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE or
-                $question->taskstorage == qtype_proforma::VOLATILE_TASKFILE) { // do not use === here!
-            $task = $question->get_task_file();
-            if (!$task instanceof stored_file) {
-                throw new coding_exception("task variable has wrong class");
-            }
-            // debugging($task->get_content());
-            $postfields['task-file'] = $task;
+        // Add task file.
+        $task = $question->get_task_file();  
+        if (!$task instanceof stored_file) {
+            throw new coding_exception("task variable has wrong class");
         }
+        // debugging($task->get_content());
+        $postfields['task-file'] = $task;
 
+        // Get URI.
         $protocolhost = get_config('qtype_proforma', 'graderuri_host');
-
         $path = get_config('qtype_proforma', 'graderuri_path');
         $uri = $protocolhost . $path;
 
         // return array($this->set_dummy_result3(), 200); // fake
 
+        // Send task and submission to grader with Curl with a configured timeout.
         $curl = new curl();
         $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'grading_timeout');
         $output = $curl->post($uri, $postfields, $options);

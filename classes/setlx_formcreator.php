@@ -31,27 +31,18 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 class setlx_form_creator extends base_form_creator {
 
-    // Property name for model solution manager.
-    // Must be name of associated filearea!!.
-    const MODELSOLMANAGER = qtype_proforma::FILEAREA_MODELSOL;
-
-    protected $_newquestion = false;
-
     /**
-     * java_form_creator constructor.
+     * setlx_form_creator constructor.
      *
      * @param $form
      * @param null $newquestion new question indicator
      */
     public function __construct($form, $newquestion = null) {
-        $ro = qtype_proforma::response_formats();        
         // Only allow editor as reponse format.
+        $ro = qtype_proforma::response_formats();        
         $responseoptions = [qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR]];
         
-        parent::__construct($form, $responseoptions);
-        if (isset($newquestion) && $newquestion) {
-            $this->_newquestion = $newquestion;
-        }
+        parent::__construct($form, $responseoptions, 'setlx');
     }
 
     // override
@@ -62,73 +53,11 @@ class setlx_form_creator extends base_form_creator {
      */
     public function add_hidden_fields() {
         parent::add_hidden_fields();
-        $mform = $this->form;
-
+        // Store setlx.
+        $mform = $this->_form;
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::SETLX_TASKFILE);
         $mform->setType('taskstorage', PARAM_RAW);
     }
-
-    /**
-     * Add something to select the programming language.
-     *
-     * @param $question
-     */
-    /*
-    public function add_proglang_selection($question) {
-        $mform = $this->form;
-
-        $mform->addElement('text', 'proglang',
-                get_string('proglang', 'qtype_proforma'), 'Java');
-        $mform->disabledIf('proglang', 'responseformat', 'neq', 'alwaysdisabled');
-        $mform->setType('proglang', PARAM_TEXT);
-        $mform->setDefault('proglang', 'Java');
-
-        $javaversion = get_config('qtype_proforma', 'javaversion');
-        $proglangversions = array();
-        if (!$this->_newquestion) {
-            // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
-            // In case no other value can be selected this is chosen by default.
-            $proglangversions[0] = get_string('choose');
-        }
-        foreach (explode(',', $javaversion) as $version) {
-            $proglangversions[trim($version)] = trim($version);
-        }
-        $mform->addElement('select', 'proglangversion',
-                get_string('proglangversion', 'qtype_proforma'), $proglangversions);
-        $mform->addHelpButton('proglangversion', 'proglangversion_hint', 'qtype_proforma');
-
-        $mform->addRule('proglangversion', get_string('error'), 'nonzero', null, 'client', false, false);
-    }
-     */
-
-    /**
-     * Add model solution as edit field for editor response format or
-     * as fielmanager for filepicker response format.
-     *
-     * @param $question
-     */
-    public function add_modelsolution($question) {
-        $mform = $this->form;
-        // Model Solution files
-        $mform->addElement('textarea', 'modelsolution', get_string('modelsolution', 'qtype_proforma'), 'rows="20" cols="80"');
-        if (get_config('qtype_proforma', 'usecodemirror')) {
-            qtype_proforma\lib\as_codemirror('id_modelsolution', 'java');
-            global $PAGE;
-            $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
-                    array('id_programminglanguage', 'id_modelsolution'));
-        }
-        $mform->addHelpButton('modelsolution', 'modelsolution', 'qtype_proforma');
-        $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
-
-        // Add Filemanager for model solution in case of using the filepicker.
-        // Remove hidden element in base class.
-        $mform->removeElement(self::MODELSOLMANAGER);
-        $mform->addElement('filemanager', self::MODELSOLMANAGER, get_string('modelsolfiles', 'qtype_proforma'), null,
-                array('subdirs' => true));
-
-        $mform->hideIf(self::MODELSOLMANAGER, 'responseformat', 'neq', 'filepicker');
-    }
-
 
     /**
      * Add grader options/information.
@@ -140,7 +69,7 @@ class setlx_form_creator extends base_form_creator {
             // allow admin to see the created task.xml (for debugging purposes)
             parent::add_grader_settings($question);
             // ProFormA fields
-            $mform = $this->form;
+            $mform = $this->_form;
             $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
         }
     }
@@ -160,66 +89,11 @@ class setlx_form_creator extends base_form_creator {
      * @param $repeatarray
      */
     protected function modify_test_repeatarray(&$repeatarray) {
-        $mform = $this->form;
+        $mform = $this->_form;
         // Add textarea for unit test code.
         $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
     }
     
-    /**
-     * Add compilation options.
-     */
-    private function add_compilation() {
-        $mform = $this->form;
-        $compilegroup = array();
-        $compilegroup[] =& $mform->createElement('advcheckbox', 'compile', '', '');
-        $this->add_test_weight_option($compilegroup, 'compile', '0');
-        $mform->addGroup($compilegroup, 'compilegroup', get_string('compile', 'qtype_proforma'), ' ', false);
-        $mform->addGroupRule('compilegroup', array(
-                'compileweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
-        $mform->hideIf('compileweight', 'compile');
-        $mform->setDefault('compile', 1);
-    }
-
-    /**
-     * Add Checkstyle options.
-     */
-    private function add_checkstyle() {
-        $mform = $this->form;
-        // Create a Checkstyle test (not part of the repeat group).
-        $testoptions = array();
-        // Add checkbox.
-        $testoptions[] =& $mform->createElement('advcheckbox', 'checkstyle', '', '');
-        // Add Checkstyle version.
-        $csversion = get_config('qtype_proforma', 'checkstyleversion');
-        $versions = array();
-        if (!$this->_newquestion) {
-            // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
-            // In case no other value can be selected this is chosen by default.
-            $versions[0] = get_string('choose');
-        }
-        foreach (explode(',', $csversion) as $version) {
-            $versions[trim($version)] = trim($version);
-        }
-        $testoptions[] =& $mform->createElement('select', 'checkstyleversion',
-                get_string('version', 'qtype_proforma'), $versions);
-        // Add weight.
-        $this->add_test_weight_option($testoptions, 'checkstyle', '0.2');
-        $mform->addGroup($testoptions, 'checkstyleoptions', 'Checkstyle',
-                array(' '), false);
-        $mform->addGroupRule('checkstyleoptions', array(
-                'checkstyleweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
-        // is checked even if checkstyle is not visible!
-        // $mform->addGroupRule('checkstyleoptions', array(
-        // 'checkstyleversion' => array(array(get_string('error'), 'nonzero', '', 'client'))));
-        // Add textarea.
-        $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
-        qtype_proforma\lib\as_codemirror('id_checkstylecode', 'xml');
-        $mform->hideIf('checkstyleversion', 'checkstyle');
-        $mform->hideIf('checkstyleweight', 'checkstyle');
-        $mform->hideIf('checkstylecode', 'checkstyle');
-        // cannot use required rule because rule is checked even if control is hidden :-(
-        // $mform->addRule('checkstylecode', null, 'required', '', 'client', false, false);
-    }
 
     /**
      * returns the number of tests. Since the user can add tests the hidden
@@ -253,10 +127,10 @@ class setlx_form_creator extends base_form_creator {
      * @return int
      */
     public function add_tests($question, $questioneditform) {
-        $mform = $this->form;
-        $this->taskhandler = new qtype_proforma_setlx_task();
+        $mform = $this->_form;
+        $this->_taskhandler = new qtype_proforma_setlx_task();
         // add compilation
-        $this->add_compilation();
+        $this->add_compilation(get_string('syntaxcheck', 'qtype_proforma'));
         // add SetlX tests
         $repeats = parent::add_tests($question, $questioneditform);
         // Set CodeMirror for unit test code.
@@ -289,7 +163,7 @@ class setlx_form_creator extends base_form_creator {
      */
     public function validation($fromform, $files, $errors) {
         $errors = parent::validation($fromform, $files, $errors);
-        if ($fromform["checkstyle"]) {
+/*        if ($fromform["checkstyle"]) {
             // Check Checkstyle values:
             if (0 == strlen(trim($fromform["checkstylecode"]))) {
                 // Checkstyle code muse not be empty.
@@ -300,9 +174,9 @@ class setlx_form_creator extends base_form_creator {
                 // Unsupported version and no new choice.
                 $errors['checkstyleoptions'] = get_string('versionrequired', 'qtype_proforma');
             }
-        }
+        }*/
 
-        // Check Junit tests:
+        // Check SetlX tests:
         $repeats = $this->get_count_tests(null);
         for ($i = 0; $i < $repeats; $i++) {
             $title = $fromform["testtitle"][$i];
@@ -318,12 +192,12 @@ class setlx_form_creator extends base_form_creator {
                 // $errors['testweight['.$i.']'] = get_string('titleempty', 'qtype_proforma');
                 $errors['testoptions['.$i.']'] = get_string('titleempty', 'qtype_proforma');
             } else if ($lencode > 0 and $lentitle > 0) {
-                // check classname
+/*                // check classname
                 if (!qtype_proforma_java_task::get_java_file($code)) {
                     $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
                 } else if (!qtype_proforma_java_task::get_java_entrypoint($code)) {
                     $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
-                }
+                }*/
             }
 /*            if (0 == $fromform["testversion"][$i]) {
                 // Unsupported version and no new choice.
@@ -335,12 +209,12 @@ class setlx_form_creator extends base_form_creator {
             if (0 == strlen(trim($fromform["responsefilename"]))) {
                 $errors['responsefilename'] = get_string('required');
             }
-            if (0 < strlen(trim($fromform["modelsolution"]))) {
+/*            if (0 < strlen(trim($fromform["modelsolution"]))) {
                 $filename = qtype_proforma_java_task::get_java_file($fromform["modelsolution"]);
                 if ($filename != null and trim($filename) != trim($fromform["responsefilename"])) {
                     $errors['responsefilename'] = $filename . ' expected';
                 }
-            }
+            }*/
         }
 
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
@@ -412,7 +286,7 @@ class setlx_form_creator extends base_form_creator {
     public function save_question_options(&$options) {
         parent::save_question_options($options);
 
-        $formdata = $this->form;
+        $formdata = $this->_form;
         $instance = new qtype_proforma_setlx_task;
         $options->gradinghints = $instance->create_lms_grading_hints($formdata);
 
@@ -438,13 +312,4 @@ class setlx_form_creator extends base_form_creator {
             }
         }
     }
-    
-    /**
-     * polymorphy: get label for button adding new tests
-     * @return type
-     */
-    protected function get_add_test_label() {
-        return get_string('addsetlxtest', 'qtype_proforma');        
-    }
-    
 }
