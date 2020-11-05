@@ -76,10 +76,10 @@ $string['compile'] = 'Compilation';
 $string['syntaxcheck'] = 'Syntax Check';
 $string['code'] = 'Quellcode';
 
-// $string['addjunit'] = 'JUnit Test hinzufügen';
-// $string['addsetlxtest'] = 'SetlX Test hinzufügen';
 $string['addtest'] = '{$a} hinzufügen';
 
+$string['junit'] = 'JUnit Test';
+$string['setlx'] = 'SetlX Test';
 
 $string['codeempty'] = 'Code fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
@@ -162,6 +162,7 @@ $string['testtype'] = 'Typ';
 $string['testtitle'] = 'Titel';
 $string['weight'] = 'Gewicht';
 $string['filepickeroptions'] = 'Filepicker-Eintellungen';
+
 
 $string['all_or_nothing'] = 'alles oder nichts';
 $string['weighted_sum'] = 'gewichtete Summe';

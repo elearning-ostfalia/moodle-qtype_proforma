@@ -94,13 +94,11 @@ $string['syntaxcheck'] = 'Syntax Check';
 $string['code'] = 'Source Code';
 $string['code_help'] = 'Source Code for JUnit test';
 
-// $string['addjunit'] = 'Add JUnit test';
-// $string['addsetlxtest'] = 'Add Setlx test';
 $string['addtest'] = 'Add {$a}';
 
 
-$string['junit'] = 'JUnit Test';
-$string['setlx'] = 'SetlX Test';
+$string['junit'] = 'JUnit test';
+$string['setlx'] = 'SetlX test';
 
 
 $string['codeempty'] = 'Code required';
@@ -175,10 +173,6 @@ $string['testtype'] = 'Type';
 $string['testtitle'] = 'Title';
 $string['testlabel'] = 'Test';
 $string['testlabela'] = '{no}. {$a}';
-// $string['junittestlabel'] = '{no}. JUnit Test';
-$string['junittesttitle'] = 'JUnit Test';
-// $string['setlxtestlabel'] = '{no}. Setlx Test';
-$string['setlxtesttitle'] = 'Setlx Test';
 
 $string['weight'] = 'Weight';
 $string['filepickeroptions'] = 'Filepicker options';
@@ -202,7 +196,7 @@ $string['vcsuritemplate_help'] = 'location where the student\'s submission can b
 
 $string['groupname'] = 'Group';
 
-$string['vcslabel'] = 'Label for input field';
+$string['vcslabel'] = 'Label for {input} field';
 $string['vcslabel_help'] = 'only needed if  \'URI of repository\' contains {input}';
 
 
