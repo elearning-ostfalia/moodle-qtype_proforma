@@ -39,7 +39,7 @@ class select_form_creator extends base_form_creator {
      * @param null $newquestion new question indicator
      */
     public function __construct($form, $newquestion = null) {
-        parent::__construct($form);
+        parent::__construct($form, null);
         if (isset($newquestion) && $newquestion) {
             $this->_newquestion = $newquestion;
         }
@@ -142,4 +142,6 @@ class select_form_creator extends base_form_creator {
     public function save_question_options(&$options) {
         parent::save_question_options($options);
     }
+    
+  
 }

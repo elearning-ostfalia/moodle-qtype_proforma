@@ -25,9 +25,9 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/question/type/proforma/classes/proformatask.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_task.php');
 
-class qtype_proforma_java_task extends qtype_proforma_proforma_task {
+class qtype_proforma_setlx_task extends qtype_proforma_proforma_task {
 
     /**
      * is Checkstyle option enabled?

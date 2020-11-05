@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
-require_once($CFG->dirroot . '/question/type/proforma/classes/javatask.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/java_task.php');
 
 
 class qtype_proforma_java_task_test extends advanced_testcase {

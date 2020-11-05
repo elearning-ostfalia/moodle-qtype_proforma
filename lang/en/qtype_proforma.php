@@ -90,10 +90,19 @@ $string['proglangversion_hint'] = $string['proglangversion'];
 $string['proglangversion_hint_help'] = 'Version der Programmiersprache.';
 
 $string['compile'] = 'Compilation';
+$string['syntaxcheck'] = 'Syntax Check';
 $string['code'] = 'Source Code';
 $string['code_help'] = 'Source Code for JUnit test';
 
-$string['addjunit'] = 'Add JUnit test';
+// $string['addjunit'] = 'Add JUnit test';
+// $string['addsetlxtest'] = 'Add Setlx test';
+$string['addtest'] = 'Add {$a}';
+
+
+$string['junit'] = 'JUnit Test';
+$string['setlx'] = 'SetlX Test';
+
+
 $string['codeempty'] = 'Code required';
 $string['titleempty'] = 'Title required';
 $string['versionrequired'] = 'Version required.';
@@ -164,9 +173,13 @@ $string['notests'] = 'Tests are not available => use "all or nothing" ';
 $string['testdescription'] = 'Description';
 $string['testtype'] = 'Type';
 $string['testtitle'] = 'Title';
-$string['testlabel'] = '{no}. Test';
-$string['junittestlabel'] = '{no}. JUnit Test';
+$string['testlabel'] = 'Test';
+$string['testlabela'] = '{no}. {$a}';
+// $string['junittestlabel'] = '{no}. JUnit Test';
 $string['junittesttitle'] = 'JUnit Test';
+// $string['setlxtestlabel'] = '{no}. Setlx Test';
+$string['setlxtesttitle'] = 'Setlx Test';
+
 $string['weight'] = 'Weight';
 $string['filepickeroptions'] = 'Filepicker options';
 

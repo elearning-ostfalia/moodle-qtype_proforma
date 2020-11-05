@@ -73,9 +73,14 @@ $string['createdtask_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei. Achtung:
 
 
 $string['compile'] = 'Compilation';
+$string['syntaxcheck'] = 'Syntax Check';
 $string['code'] = 'Quellcode';
 
-$string['addjunit'] = 'JUnit Test hinzufügen';
+// $string['addjunit'] = 'JUnit Test hinzufügen';
+// $string['addsetlxtest'] = 'SetlX Test hinzufügen';
+$string['addtest'] = '{$a} hinzufügen';
+
+
 $string['codeempty'] = 'Code fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
 $string['versionrequired'] = 'Version ist nicht ausgewählt.';

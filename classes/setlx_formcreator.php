@@ -15,21 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * class for creating java question edit forms
+ * class for creating setlx questions edit forms
  *
  * @package    qtype
  * @subpackage proforma
- * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @copyright  2020 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
-require_once($CFG->dirroot . '/question/type/proforma/classes/java_task.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/setlx_task.php');
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
-class java_form_creator extends base_form_creator {
+class setlx_form_creator extends base_form_creator {
 
     // Property name for model solution manager.
     // Must be name of associated filearea!!.
@@ -44,7 +44,11 @@ class java_form_creator extends base_form_creator {
      * @param null $newquestion new question indicator
      */
     public function __construct($form, $newquestion = null) {
-        parent::__construct($form, qtype_proforma::response_formats());
+        $ro = qtype_proforma::response_formats();        
+        // Only allow editor as reponse format.
+        $responseoptions = [qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR]];
+        
+        parent::__construct($form, $responseoptions);
         if (isset($newquestion) && $newquestion) {
             $this->_newquestion = $newquestion;
         }
@@ -60,7 +64,7 @@ class java_form_creator extends base_form_creator {
         parent::add_hidden_fields();
         $mform = $this->form;
 
-        $mform->addElement('hidden', 'taskstorage', qtype_proforma::JAVA_TASKFILE);
+        $mform->addElement('hidden', 'taskstorage', qtype_proforma::SETLX_TASKFILE);
         $mform->setType('taskstorage', PARAM_RAW);
     }
 
@@ -69,6 +73,7 @@ class java_form_creator extends base_form_creator {
      *
      * @param $question
      */
+    /*
     public function add_proglang_selection($question) {
         $mform = $this->form;
 
@@ -77,14 +82,6 @@ class java_form_creator extends base_form_creator {
         $mform->disabledIf('proglang', 'responseformat', 'neq', 'alwaysdisabled');
         $mform->setType('proglang', PARAM_TEXT);
         $mform->setDefault('proglang', 'Java');
-
-        /*
-        $proglangooptions = array('Java'); // , get_string('other', 'qtype_proforma'));
-        $mform->addElement('select', 'proglang',
-                get_string('proglang', 'qtype_proforma'), $proglangooptions);
-        $mform->addHelpButton('proglang', 'proglang_hint', 'qtype_proforma');
-        $mform->setDefault('proglang', 'Java');
-        */
 
         $javaversion = get_config('qtype_proforma', 'javaversion');
         $proglangversions = array();
@@ -102,6 +99,7 @@ class java_form_creator extends base_form_creator {
 
         $mform->addRule('proglangversion', get_string('error'), 'nonzero', null, 'client', false, false);
     }
+     */
 
     /**
      * Add model solution as edit field for editor response format or
@@ -153,7 +151,7 @@ class java_form_creator extends base_form_creator {
      * @return string label of JUnit tests
      */
     protected function get_test_label() {
-        return get_string('junit', 'qtype_proforma'); // use different label
+        return get_string('setlx', 'qtype_proforma'); // use different label
     }
 
     /**
@@ -166,42 +164,7 @@ class java_form_creator extends base_form_creator {
         // Add textarea for unit test code.
         $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
     }
-
-    /**
-     * Modify testoptions in add_tests: add Junit version
-     *
-     * @param $testoptions
-     */
-    protected function modify_test_testoptions(&$testoptions) {
-        $mform = $this->form;
-        $csversion = get_config('qtype_proforma', 'junitversion');
-        $versions = array();
-        // force PHP to use strings as key even if the first key is an integer
-        $obj = new stdClass;
-
-        if (!$this->_newquestion) {
-            // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
-            // In case no other value can be selected this is chosen by default.
-            $obj->{'0'} = get_string('choose');
-        }
-        foreach (explode(',', $csversion) as $version) {
-            $strversion = trim($version);
-            $obj->{$strversion} = $strversion;
-        }
-        $versions = (array) $obj;
-
-        $testoptions[] = $mform->createElement('select', 'testversion',
-                get_string('version', 'qtype_proforma'), $versions);
-    }
-
-    /**
-     * Modify repeatoptions in add_tests
-     *
-     * @param $repeatoptions
-     */
-    protected function modify_test_repeatoptions(&$repeatoptions) {
-    }
-
+    
     /**
      * Add compilation options.
      */
@@ -283,7 +246,7 @@ class java_form_creator extends base_form_creator {
     }
 
     /**
-     * add Java specific test section
+     * add SetlX specific test section
      *
      * @param $question
      * @param $questioneditform
@@ -291,10 +254,10 @@ class java_form_creator extends base_form_creator {
      */
     public function add_tests($question, $questioneditform) {
         $mform = $this->form;
-        $this->taskhandler = new qtype_proforma_java_task();
+        $this->taskhandler = new qtype_proforma_setlx_task();
         // add compilation
         $this->add_compilation();
-        // add JUnit
+        // add SetlX tests
         $repeats = parent::add_tests($question, $questioneditform);
         // Set CodeMirror for unit test code.
         for ($i = 0; $i < $repeats; $i++) {
@@ -310,7 +273,7 @@ class java_form_creator extends base_form_creator {
         }
 
         // add checkstyle
-        $this->add_checkstyle();
+        // $this->add_checkstyle();
         // $this->form->addGroupRule('testoptions', array(
         // 'testversion' => array(array(get_string('error'), 'nonzero', '', 'client'))));
         return $repeats;
@@ -362,10 +325,10 @@ class java_form_creator extends base_form_creator {
                     $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
                 }
             }
-            if (0 == $fromform["testversion"][$i]) {
+/*            if (0 == $fromform["testversion"][$i]) {
                 // Unsupported version and no new choice.
                 $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
-            }
+            }*/
         }
 
         if ($fromform["responseformat"] == 'editor') {
@@ -418,8 +381,8 @@ class java_form_creator extends base_form_creator {
             $form = $editor->get_form();
             
             switch ($question->taskstorage) {
-                case qtype_proforma::JAVA_TASKFILE:
-                    $taskfilehandler = new qtype_proforma_java_task();
+                case qtype_proforma::SETLX_TASKFILE:
+                    $taskfilehandler = new qtype_proforma_setlx_task();
                     $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
                     $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
 
@@ -432,8 +395,8 @@ class java_form_creator extends base_form_creator {
                     }
                     break;
                 case qtype_proforma::SELECT_TASKFILE:
-                    // State transition from SELECT to JAVA.
-                    $question->taskstorage = qtype_proforma::JAVA_TASKFILE;
+                    // State transition from SELECT to SETLX.
+                    $question->taskstorage = qtype_proforma::SETLX_TASKFILE;
                     break;
                 default:
                     throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);                
@@ -450,7 +413,7 @@ class java_form_creator extends base_form_creator {
         parent::save_question_options($options);
 
         $formdata = $this->form;
-        $instance = new qtype_proforma_java_task;
+        $instance = new qtype_proforma_setlx_task;
         $options->gradinghints = $instance->create_lms_grading_hints($formdata);
 
         if (!isset($formdata->import_process) or !$formdata->import_process) {
@@ -474,6 +437,14 @@ class java_form_creator extends base_form_creator {
                         $formdata->responsefilename, isset($formdata->modelsolution) ? $formdata->modelsolution : '');
             }
         }
+    }
+    
+    /**
+     * polymorphy: get label for button adding new tests
+     * @return type
+     */
+    protected function get_add_test_label() {
+        return get_string('addsetlxtest', 'qtype_proforma');        
     }
     
 }

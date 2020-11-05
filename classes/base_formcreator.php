@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
+require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
 /**
  * Bases class for rendering the question editor form for teachers
@@ -35,6 +36,10 @@ abstract class base_form_creator {
      */
     protected $form = null;
     protected $taskhandler = null;
+    /** 
+     * response options
+     */
+    protected $responseformats = null;
 
     // Property name for download manager.
     const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
@@ -44,8 +49,9 @@ abstract class base_form_creator {
      *
      * @param $form
      */
-    protected function __construct($form) {
+    protected function __construct($form, $responseformats) {
         $this->form = $form;
+        $this->responseformats = $responseformats;
     }
 
     // override
@@ -152,7 +158,7 @@ abstract class base_form_creator {
      *
      * @param $question
      */
-    protected function add_responsefilename($question) {
+    protected function add_responsefilename() {
         $mform = $this->form;
         $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
         $mform->setType('responsefilename', PARAM_TEXT);
@@ -237,8 +243,8 @@ abstract class base_form_creator {
                 get_string('testdescription', 'qtype_proforma'), array('size' => 80));
         $this->modify_test_testoptions($testoptions);
 
-        $label = $this->get_test_label();
-
+        $label = get_string('testlabela', 'qtype_proforma', $this->get_test_label());
+        
         $repeatarray = array();
         $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
         $this->modify_test_repeatarray($repeatarray);
@@ -263,15 +269,17 @@ abstract class base_form_creator {
 
         // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
 
+        $buttonlabel = get_string('addtest', 'qtype_proforma', $this->get_test_label());
         $questioneditform->repeat_elements($repeatarray, $repeats,
                 $repeatoptions, 'option_repeats', 'option_add_fields',
-                1, get_string('addjunit', 'qtype_proforma'), true);
+                1, $buttonlabel, true);
 
         // $mform->addGroupRule('testoptions', array('testtitle' => array(null, 'required', null, 'client')));
 
         return $repeats;
     }
 
+    
     /**
      * get number of tests for repeat group
      * @param $question
@@ -286,6 +294,24 @@ abstract class base_form_creator {
         }
 
         return $repeats;
+    }
+    
+    protected function add_editor_options($qtype) {
+        $mform = $this->form;
+        $mform->addElement('select', 'responsefieldlines',
+                get_string('responsefieldlines', 'qtype_proforma'), $qtype->response_sizes());
+        $mform->setDefault('responsefieldlines', 15);
+        $mform->hideIf('responsefieldlines', 'responseformat', 'neq', 'editor');    
+        
+        // Programming Language.
+        $mform->addElement('select', 'programminglanguage',
+                get_string('highlight', 'qtype_proforma'), $qtype->get_proglang_options());
+        $mform->addHelpButton('programminglanguage', 'highlight_hint', 'qtype_proforma');
+        $mform->setDefault('programminglanguage', 'java');
+        // Show only if response format is editor
+        $mform->hideIf('programminglanguage', 'responseformat', 'neq', 'editor');
+        // Response filename.
+        $this->add_responsefilename();        
     }
 
     /**
@@ -305,61 +331,63 @@ abstract class base_form_creator {
         $mform->addElement('header', 'responseoptions', get_string('responseoptions', 'qtype_proforma'));
         $mform->setExpanded('responseoptions');
 
-        $mform->addElement('select', 'responseformat',
-                get_string('responseformat', 'qtype_proforma'), $qtype->response_formats());
-        $mform->setDefault('responseformat', 'editor');
-        // disable only if responseformat is filepicker!!
-        // $mform->disabledIf('responseformat', 'attachments', 'neq', '1');
-
+        switch (count($this->responseformats) >= 1) {
+            case 0:
+                break;
+            case 1:
+                $mform->addElement('hidden', 'responseformat', array_key_first($this->responseformats));
+                $mform->setType('responseformat', PARAM_RAW);                
+                break;
+            default:
+                $mform->addElement('select', 'responseformat',
+                    get_string('responseformat', 'qtype_proforma'), $this->responseformats);
+                break;
+        }
+        
         // EDITOR OPTIONS
-        $mform->addElement('select', 'responsefieldlines',
-                get_string('responsefieldlines', 'qtype_proforma'), $qtype->response_sizes());
-        $mform->setDefault('responsefieldlines', 15);
-        $mform->hideIf('responsefieldlines', 'responseformat', 'neq', 'editor');
+        if (array_key_exists(qtype_proforma::RESPONSE_EDITOR, $this->responseformats)) {
+            $mform->setDefault('responseformat', 'editor');
+            if ($this->responseformats) {
+                $this->add_editor_options($qtype);                
+            }            
+        }
 
         // FILEPICKER OPTIONS
-        $choices = get_max_upload_sizes($CFG->maxbytes, $COURSE->maxbytes,
-                get_config('qtype_proforma', 'maxbytes'));
+        if (array_key_exists(qtype_proforma::RESPONSE_FILEPICKER, $this->responseformats)) {
+            $choices = get_max_upload_sizes($CFG->maxbytes, $COURSE->maxbytes,
+                    get_config('qtype_proforma', 'maxbytes'));
 
-        $name1 = get_string('maximumsubmissionsize', 'qtype_proforma');
-        $name2 = get_string('acceptedfiletypes', 'qtype_proforma');
+            $name1 = get_string('maximumsubmissionsize', 'qtype_proforma');
+            $name2 = get_string('acceptedfiletypes', 'qtype_proforma');
 
-        $filepickeroptions = array();
-        $filepickeroptions[] = $mform->createElement('select', 'attachments',
-                get_string('allowattachments', 'qtype_proforma'), $qtype->attachment_options());
-        $filepickeroptions[] = $mform->createElement('select', 'maxbytes', $name1, $choices);
-        $filepickeroptions[] = $mform->createElement('text', 'filetypes', $name2);
-        $mform->addGroup($filepickeroptions, 'filepickergroup',  get_string('filepickeroptions', 'qtype_proforma'), array(' '), false);
-        $mform->hideIf('filepickergroup', 'responseformat', 'neq', 'filepicker');
-        $mform->addHelpButton('filepickergroup', 'acceptedfiletypes', 'qtype_proforma');
-
-        $mform->setType('filetypes', PARAM_RAW);
+            $filepickeroptions = array();
+            $filepickeroptions[] = $mform->createElement('select', 'attachments',
+                    get_string('allowattachments', 'qtype_proforma'), $qtype->attachment_options());
+            $filepickeroptions[] = $mform->createElement('select', 'maxbytes', $name1, $choices);
+            $filepickeroptions[] = $mform->createElement('text', 'filetypes', $name2);
+            $mform->addGroup($filepickeroptions, 'filepickergroup',  get_string('filepickeroptions', 'qtype_proforma'), array(' '), false);
+            $mform->hideIf('filepickergroup', 'responseformat', 'neq', 'filepicker');
+            $mform->addHelpButton('filepickergroup', 'acceptedfiletypes', 'qtype_proforma');            
+            $mform->setType('filetypes', PARAM_RAW);
+        }
 
         // VERSION CONTROL OPTIONS
-        $mform->addElement('text', 'vcsuritemplate', get_string('vcsuritemplate', 'qtype_proforma'), array('size' => '80'));
-        $mform->setDefault('vcsuritemplate', get_config('qtype_proforma', 'defaultvcsuri'));
-        $mform->setType('vcsuritemplate', PARAM_TEXT);
-        $mform->addHelpButton('vcsuritemplate', 'vcsuritemplate', 'qtype_proforma');
-        $mform->hideIf('vcsuritemplate', 'responseformat', 'neq', 'versioncontrol');
+        if (array_key_exists(qtype_proforma::RESPONSE_VERSION_CONTROL, $this->responseformats)) {
+            $mform->addElement('text', 'vcsuritemplate', get_string('vcsuritemplate', 'qtype_proforma'), array('size' => '80'));
+            $mform->setDefault('vcsuritemplate', get_config('qtype_proforma', 'defaultvcsuri'));
+            $mform->setType('vcsuritemplate', PARAM_TEXT);
+            $mform->addHelpButton('vcsuritemplate', 'vcsuritemplate', 'qtype_proforma');
+            $mform->hideIf('vcsuritemplate', 'responseformat', 'neq', 'versioncontrol');
 
-        $mform->addElement('text', 'vcslabel', get_string('vcslabel', 'qtype_proforma'), array('size' => '20'));
-        $mform->setDefault('vcslabel', get_config('qtype_proforma', 'vcslabeldefault'));
-        $mform->setType('vcslabel', PARAM_TEXT);
-        $mform->addHelpButton('vcslabel', 'vcslabel', 'qtype_proforma');
-        $mform->hideIf('vcslabel', 'responseformat', 'neq', 'versioncontrol');
-
-        // Programming Language.
-        $mform->addElement('select', 'programminglanguage',
-                get_string('highlight', 'qtype_proforma'), $qtype->get_proglang_options());
-        $mform->addHelpButton('programminglanguage', 'highlight_hint', 'qtype_proforma');
-        $mform->setDefault('programminglanguage', 'java');
-        // Show only if response format is editor
-        $mform->hideIf('programminglanguage', 'responseformat', 'neq', 'editor');
+            $mform->addElement('text', 'vcslabel', get_string('vcslabel', 'qtype_proforma'), array('size' => '20'));
+            $mform->setDefault('vcslabel', get_config('qtype_proforma', 'vcslabeldefault'));
+            $mform->setType('vcslabel', PARAM_TEXT);
+            $mform->addHelpButton('vcslabel', 'vcslabel', 'qtype_proforma');
+            $mform->hideIf('vcslabel', 'responseformat', 'neq', 'versioncontrol');
+        }
 
         // Response template.
         $this->add_responsetemplate($question);
-        // Response filename.
-        $this->add_responsefilename($question);
         // Model solution.
         $this->add_modelsolution($question);
     }

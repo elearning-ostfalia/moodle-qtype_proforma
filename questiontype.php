@@ -352,7 +352,7 @@ class qtype_proforma extends question_type {
      * @return array the different response formats that the question type supports.
      * internal name => human-readable name.
      */
-    public function response_formats() {
+    public static function response_formats() {
         return array(
             self::RESPONSE_EDITOR => get_string('formateditor', 'qtype_proforma'),
             self::RESPONSE_FILEPICKER => get_string('formatfilepicker', 'qtype_proforma'),
@@ -363,7 +363,7 @@ class qtype_proforma extends question_type {
     /**
      * @return array the supported programming languages
      */
-    public function get_proglang_options() {
+    public static function get_proglang_options() {
         return array(
                 'java' => "Java",
                 'python' => "Python",

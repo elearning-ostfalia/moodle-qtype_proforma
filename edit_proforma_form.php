@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/java_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/setlx_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/select_formcreator.php');
 
 /**
@@ -44,14 +45,17 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected function definition() {
         $removesubmit = FALSE;
         if (empty($this->question->options)) {
-            // New question => create select form creator.
+            // New question => create select form creator for selecting 
+            // a programming language.
             $this->formcreator = new select_form_creator($this->_form, true);
             $removesubmit = TRUE;
         }
         parent::definition();
         if ($removesubmit) {
-            // Do not show submit button.            
-            $this->_form->removeElement('buttonar' /*'submitbutton'*/);
+            // Do not show submit button.
+            $this->_form->removeElement('buttonar');
+            // Re-add cancel button.
+            $this->_form->addElement('cancel');
         }
     }
 
@@ -68,11 +72,11 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     public function validation($fromform, $files) {
         $errors = parent::validation($fromform, $files);
-        if (isset($this->formcreator)) {
+        /*if (!isset($this->formcreator)) {
             return $errors;            
-        } else {
+        } else { */
             return $this->formcreator->validation($fromform, $files, $errors);            
-        }
+        // }
     }
 
     /**
@@ -103,22 +107,23 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected function create_form_creator_in_definition($mform) {
         if (isset($this->question->options->taskstorage)) {
             switch ($this->question->options->taskstorage) {
+                case qtype_proforma::PERSISTENT_TASKFILE:
+                    $this->formcreator = new proforma_form_creator($this->_form);
+                    break;
                 case qtype_proforma::VOLATILE_TASKFILE:
                 case qtype_proforma::JAVA_TASKFILE:
                     // Question was created by form editor.
                     $this->formcreator = new java_form_creator($this->_form);
                     break;
+                case qtype_proforma::SETLX_TASKFILE:
+                    // Question was created by form editor.
+                    $this->formcreator = new setlx_form_creator($this->_form);
+                    break;                
                 case qtype_proforma::SELECT_TASKFILE:
                     // Question was created by form editor but not yet finished.
-                    switch ($this->question->options->programminglanguage) {
-                    case 'java':
-                        $this->formcreator = new java_form_creator($this->_form);
-                        break;
-                    default:
-                        throw new coding_exception('invalid programming language for editor ' . $this->question->options->programminglanguage);
-                    }
+                    $classname = $this->question->options->programminglanguage . '_form_creator';
+                    $this->formcreator = new $classname($this->_form);
                     break;
-
                 default:
                     throw new coding_exception('invalid taskstorage value ' . $this->question->options->taskstorage);
             }
@@ -177,15 +182,18 @@ class qtype_proforma_edit_form extends question_edit_form {
      *
      * different scenarios:
      * 1. edit:
-     * - $question->options->X are original values read from database (if record is already stored in database)
+     * - $question->options->X are original values read from database 
+     *  (if record is already stored in database)
      * - $question-X copy from $question->options->X (???)
      *
      * 2. submit:
-     * - $question->options->X are original values read from database (if record is already stored in database)
+     * - $question->options->X are original values read from database 
+     *  (if record is already stored in database)
      * - $question-X value from input (???)
      *
      * 3. duplicate:
-     * - $question->options->X are original values read from database (no record created, draft filearea must be created)
+     * - $question->options->X are original values read from database 
+     *  (no record created, draft filearea must be created)
      * - $question-X copy from $question->options->X (???)
      *
      * @param object $question the data being passed to the form.

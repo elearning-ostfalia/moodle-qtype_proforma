@@ -35,7 +35,7 @@ class proforma_form_creator extends base_form_creator {
      * @param $form
      */
     public function __construct($form) {
-        parent::__construct($form);
+        parent::__construct($form, qtype_proforma::response_formats());
     }
 
     /**
@@ -212,4 +212,12 @@ class proforma_form_creator extends base_form_creator {
         $instance = new qtype_proforma_proforma_task();
         $options->gradinghints = $instance->create_lms_grading_hints($formdata);
     }
+    
+    /**
+     * polymorphy: get label for button adding new tests
+     * @return type
+     */
+    protected function get_add_test_label() {
+        return get_string('addjunit', 'qtype_proforma');            
+    }    
 }
