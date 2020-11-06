@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/question/type/proforma/classes/grader2.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/grader_2.php');
 
 class qtype_proforma_testgrader extends  qtype_proforma_grader_2 {
     private function set_dummy_result() {
@@ -120,12 +120,12 @@ EOD;
     <separate-test-feedback>
         <submission-feedback-list>
             <student-feedback level="debug">
-                <title>title1</title>
-                <content format="html">Fake Result</content>
+                <title>General information 1</title>
+                <content format="html"><![CDATA[General Fake <b>HTML</b> Message for students. The text HTML should be in bold.]]></content>
             </student-feedback>
             <teacher-feedback level="debug">
-                <title>title1</title>
-                <content format="plaintext">content4</content>
+                <title>General information 2</title>
+                <content format="plaintext">General Fake plaintext Message for teachers.</content>
             </teacher-feedback>
         </submission-feedback-list>
         <tests-response>

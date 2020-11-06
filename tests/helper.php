@@ -43,6 +43,8 @@ class qtype_proforma_test_helper extends question_test_helper {
             'filepicker',
             // different settings for java junit tests
             'java1', 'java1unit', 'java2', 'java3', 'java_2junit', 'java5',
+            // different settings for setlx junit tests
+            'setlx0', 'setlx1', 'setlx1a', 'setlx2',
             // different grading approaches
             'weightedsum',
             // different values set in question
@@ -141,6 +143,22 @@ class qtype_proforma_test_helper extends question_test_helper {
     '</root>'.
     '</grading-hints>';
 
+    
+    const QUESTION_GRADINGHINTS_SETLX = '<grading-hints>'.
+    '<root function="sum">'.
+    '<test-ref ref="compiler" weight="0">
+        <title>Compiler Test</title>
+        <test-type>setlx</test-type>
+        <description>DESCRIPTION 1</description>
+    </test-ref>'.
+    '<test-ref ref="1" weight="3">
+        <title>Setlx Test 1</title>
+        <test-type>setlx</test-type>
+        <description>DESCRIPTION 2</description>
+    </test-ref>'.
+    '</root>'.
+    '</grading-hints>';    
+    
     private function attach_file_to_question($text, $filename, $filearea, $itemid, $contextid) {
         $fs = get_file_storage();
 
@@ -373,6 +391,8 @@ class qtype_proforma_test_helper extends question_test_helper {
         return $fromform;
     }
 
+    
+    // JAVA
 
     // used for behat tests
     public function get_proforma_question_form_data_java1() {
@@ -531,6 +551,118 @@ class qtype_proforma_test_helper extends question_test_helper {
         
         return $form;
     }    
+
+    // -------------------
+    // SetlX
+    // -------------------
+    
+    public function get_proforma_question_form_data_setlx_base() {
+        $form = new stdClass();
+
+//        $form->original_template = '';
+
+        // valid data for a task file in the repository!
+        $form->taskstorage = qtype_proforma::SETLX_TASKFILE;
+
+        $form->responsefilename = self::QUESTION_FILENAME;
+        $form->programminglanguage = 'setlx';
+        $form->proglangversion = '2.7';
+
+        // $container->modelsolution = self::QUESTION_MODELSOLUTION;
+        // set redundant :-( template
+        $form->responsetemplate = self::QUESTION_TEMPLATE;
+        $form->template = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->template, 'template.txt',
+                self::QUESTION_TEMPLATE);
+
+        $form->gradinghints = self::QUESTION_GRADINGHINTS_SETLX;
+        $form->aggregationstrategy = self::QUESTION_AGGREGATIONSTRATEGY;
+
+        $form->name = self::QUESTION_NAME;
+        //$form->questiontext = self::QUESTION_TEXT;
+        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        $form->defaultmark = 1.0;
+        $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
+        $form->penalty = 0.2;
+
+        $form->responseformat = 'editor';
+        $form->modelsolution = '// code for model solution';
+        $form->responsefieldlines = 10;
+        $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
+
+        $form->testcode[0] = 'some testcode';
+        $form->testtitle[0] = 'Setlx Test 1';
+        $form->testweight[0] = '3';
+        $form->testid[0] = '1';
+
+        $form->compile = 1;
+        $form->compileweight = 2;
+
+/*        $form->checkstyle = 1;
+        $form->checkstyleweight = 4;
+        $form->checkstyleversion = "8.23";
+        $form->checkstylecode = '<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<module name="Checker">
+  <property name="severity" value="warning"/>
+  <module name="TreeWalker">
+    <module name="NeedBraces">
+      <property name="severity" value="error"/>
+    </module>
+  </module>
+</module>';*/
+
+        // handle different line ending on different platforms
+//        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
+        $form->hint = array(
+                0 => array(
+                        'text' => 'hint 1<br>',
+                        'format' => '1',
+                        'itemid' => '83894244'),
+                1 => array(
+                        'text' => 'hint 2<br>',
+                        'format' => '1',
+                        'itemid' => '34635511'));
+
+        return $form;
+    }
+    
+    /**
+     * no test, only syntax check
+     */
+    public function get_proforma_question_form_data_setlx0() {
+        $form = $this->get_proforma_question_form_data_setlx_base();
+        // remove test[0]
+        unset($form->testcode[0]);
+        unset($form->testtitle[0]);
+        unset($form->testweight[0]);
+        unset($form->testid[0]);
+        return $form;
+    }    
+    
+    /** one test and syntax check */
+    public function get_proforma_question_form_data_setlx1() {
+        $form = $this->get_proforma_question_form_data_setlx_base();
+        return $form;
+    }     
+    
+    /** one test and no syntax check */
+    public function get_proforma_question_form_data_setlx1a() {
+        $form = $this->get_proforma_question_form_data_setlx_base();
+        $form->compile = 0;
+        return $form;
+    }    
+
+    /** two tests and syntax check */
+    public function get_proforma_question_form_data_setlx2() {
+        $form = $this->get_proforma_question_form_data_setlx_base();
+        $form->testcode[1] = 'some other testcode';
+        $form->testtitle[1] = 'Setlx Test 2';
+        $form->testweight[1] = '4';
+        $form->testid[1] = '2';        
+        return $form;
+    }    
+    
 
     /**
      * Creates an empty draft area for attachments.

@@ -375,7 +375,7 @@ abstract class base_form_creator {
         $mform->addElement('header', 'responseoptions', get_string('responseoptions', 'qtype_proforma'));
         $mform->setExpanded('responseoptions');
 
-        switch (count($this->_responseformats) >= 1) {
+        switch (count($this->_responseformats)) {
             case 0:
                 break;
             case 1:
