@@ -235,6 +235,11 @@ abstract class base_form_creator {
      * @param $repeatoptions
      */
     protected function modify_test_repeatoptions(&$repeatoptions) {
+        // Disable testtype and test identifier.
+        $repeatoptions['testid']['hideif'] = array('aggregationstrategy', 'neq', 111);
+        $repeatoptions['testtype']['hideif'] = array('aggregationstrategy', 'neq', 111);
+        // Hide weight for case of all-or-nothing.
+        $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);       
     }
 
     /**
@@ -252,6 +257,17 @@ abstract class base_form_creator {
      * @return int
      */
     public function add_tests($question, $questioneditform) {
+        $this->add_test_fields($question, $questioneditform, TRUE);
+    }
+    
+    /**
+     * Add tests as repeat group
+     * @param $question
+     * @param $questioneditform
+     * @return int
+     */    
+    protected function add_test_fields($question, $questioneditform, $changeable, $testtype) {
+    
         $mform = $this->_form;
         // Retrieve number of tests (resp. unit tests).
         $repeats = $this->get_count_tests($question);
@@ -282,8 +298,9 @@ abstract class base_form_creator {
         // $repeatoptions['testtitle']['default'] = get_string('junittesttitle', 'qtype_proforma');
         $repeatoptions['testdescription']['default'] = '';
         // $repeateloptions['testfilename']['default'] = '';
-        $repeatoptions['testtype']['default'] = 'unittest'; // JAVA-JUNIT
-        $repeatoptions['testid']['default'] = '{no}'; // JAVA-JUNIT
+        $repeatoptions['testtype']['default'] = $testtype;
+        // Autoincrement test identifier.
+        $repeatoptions['testid']['default'] = '{no}';
 
         // $repeateloptions['testweight']['rule'] = 'numeric';
         $this->modify_test_repeatoptions($repeatoptions);
@@ -296,18 +313,37 @@ abstract class base_form_creator {
         $mform->setType('testtype', PARAM_RAW);
         // $mform->setType('testfilename', PARAM_TEXT);
 
-        // $mform->disabledIf('testweight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
-
+        // $mform->addGroupRule('testoptions', array('testtitle' => array(null, 'required', null, 'client')));
+        // Add tests with button for adding tests.
         $buttonlabel = get_string('addtest', 'qtype_proforma', $this->get_test_label());
         $questioneditform->repeat_elements($repeatarray, $repeats,
                 $repeatoptions, 'option_repeats', 'option_add_fields',
                 1, $buttonlabel, true);
+            
+        if ($changeable) {
+            // Set CodeMirror for unit test code.        
+            for ($i = 0; $i < $repeats; $i++) {
+                qtype_proforma\lib\as_codemirror('id_testcode_' . $i);
+                // Hide testtype and test identifier for unit tests.
+                // So far (Moodle 3.6) hideif is not implemented for groups => quickhack.
+                // (needed from creating grading hints)
+                $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
+                $mform->hideif('testid[' . $i . ']', 'aggregationstrategy', 'neq', 111);
+                $mform->hideif('testweight[' . $i . ']', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
+                // does not work
+                // $repeatoptions['testtitle']['rule'] = 'required'; // array(null, 'required', null, 'client');
+                // $repeatoptions['testweight']['rule'] = 'required'; // array(get_string('err_numeric', 'form'), 'numeric', '', 'client');
+            }            
+        } else {
+            // There is no option not to create the button for
+            // adding new tests. Therefore the button must be removed.
+            $mform->removeElement('option_add_fields');            
+        }
 
-        // $mform->addGroupRule('testoptions', array('testtitle' => array(null, 'required', null, 'client')));
-
-        return $repeats;
+        return $repeats;   
     }
 
+    
     /**
      * Add compilation options.
      */
@@ -337,6 +373,18 @@ abstract class base_form_creator {
             $repeats = $this->_taskhandler->get_count_unit_tests($question->options->gradinghints);
         }
 
+        // In case of manually added unit tests we need to know how many tests are actually present:
+        // (unfortunately there is no function to get this from Moodle core)
+        $currentrepeats = optional_param('option_repeats', 1, PARAM_INT);
+        $addfields = optional_param('option_add_fields', '', PARAM_TEXT);
+        if (!empty($addfields)) {
+            $currentrepeats += 1;
+        }
+        if ($currentrepeats > $repeats) {
+            $repeats = $currentrepeats;
+        }
+        
+        
         return $repeats;
     }
     
@@ -636,6 +684,7 @@ abstract class base_form_creator {
                 get_string('weight', 'qtype_proforma'), array('size' => 2));
         $mform->setType($prefix . 'weight', PARAM_FLOAT);
         $mform->setDefault($prefix . 'weight', $defaultweight);
+        $mform->hideIf($prefix . 'weight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
     }
 
     /**

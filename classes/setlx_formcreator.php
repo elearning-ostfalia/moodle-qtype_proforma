@@ -94,31 +94,16 @@ class setlx_form_creator extends base_form_creator {
         $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
     }
     
-
     /**
-     * returns the number of tests. Since the user can add tests the hidden
-     * count field in the html output is also considered.
-     *
-     * @param $question
-     * @return int|mixed
+     *  Response filename is fixed to submission.stlx
+     * (does not depend on test or submission code)
      */
-    protected function get_count_tests($question) {
-        $repeats = parent::get_count_tests($question);
-
-        // In case of manually added unit tests we need to know how many tests are actually present:
-        // (unfortunately there is no function to get this from Moodle core)
-        $currentrepeats = optional_param('option_repeats', 1, PARAM_INT);
-        $addfields = optional_param('option_add_fields', '', PARAM_TEXT);
-        if (!empty($addfields)) {
-            $currentrepeats += 1;
-        }
-        if ($currentrepeats > $repeats) {
-            $repeats = $currentrepeats;
-        }
-
-        return $repeats;
-    }
-
+    protected function add_responsefilename() {
+        $mform = $this->_form;
+        $mform->addElement('hidden', 'responsefilename', 'submission.stlx');
+        $mform->setType('responsefilename', PARAM_RAW);
+    }    
+ 
     /**
      * add SetlX specific test section
      *
@@ -132,25 +117,7 @@ class setlx_form_creator extends base_form_creator {
         // add compilation
         $this->add_compilation(get_string('syntaxcheck', 'qtype_proforma'));
         // add SetlX tests
-        $repeats = parent::add_tests($question, $questioneditform);
-        // Set CodeMirror for unit test code.
-        for ($i = 0; $i < $repeats; $i++) {
-            qtype_proforma\lib\as_codemirror('id_testcode_' . $i);
-            // Hide testtype and test identifier for unit tests.
-            // So far (Moodle 3.6) hideif is not implemented for groups => quickhack.
-            // (needed from creating grading hints)
-            $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
-            $mform->hideif('testid[' . $i . ']', 'aggregationstrategy', 'neq', 111);
-            // does not work
-            // $repeatoptions['testtitle']['rule'] = 'required'; // array(null, 'required', null, 'client');
-            // $repeatoptions['testweight']['rule'] = 'required'; // array(get_string('err_numeric', 'form'), 'numeric', '', 'client');
-        }
-
-        // add checkstyle
-        // $this->add_checkstyle();
-        // $this->form->addGroupRule('testoptions', array(
-        // 'testversion' => array(array(get_string('error'), 'nonzero', '', 'client'))));
-        return $repeats;
+        return $this->add_test_fields($question, $questioneditform, TRUE, 'setlx');
     }
 
     /**
@@ -205,17 +172,17 @@ class setlx_form_creator extends base_form_creator {
             }*/
         }
 
-        if ($fromform["responseformat"] == 'editor') {
+/*        if ($fromform["responseformat"] == 'editor') {
             if (0 == strlen(trim($fromform["responsefilename"]))) {
                 $errors['responsefilename'] = get_string('required');
             }
-/*            if (0 < strlen(trim($fromform["modelsolution"]))) {
+            if (0 < strlen(trim($fromform["modelsolution"]))) {
                 $filename = qtype_proforma_java_task::get_java_file($fromform["modelsolution"]);
                 if ($filename != null and trim($filename) != trim($fromform["responsefilename"])) {
                     $errors['responsefilename'] = $filename . ' expected';
                 }
-            }*/
-        }
+            }
+        }*/
 
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
             $repeats = count($fromform["testweight"]);
@@ -223,9 +190,9 @@ class setlx_form_creator extends base_form_creator {
             for ($i = 0; $i < $repeats; $i++) {
                 $sumweight += $fromform["testweight"][$i];
             }
-            if ($fromform["checkstyle"]) {
+/*            if ($fromform["checkstyle"]) {
                 $sumweight += $fromform["checkstyleweight"];
-            }
+            }*/
             if ($fromform["compile"]) {
                 $sumweight += $fromform["compileweight"];
             }

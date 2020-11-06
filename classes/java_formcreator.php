@@ -217,6 +217,7 @@ class java_form_creator extends base_form_creator {
      * @param $question
      * @return int|mixed
      */
+    /*
     protected function get_count_tests($question) {
         $repeats = parent::get_count_tests($question);
 
@@ -233,6 +234,7 @@ class java_form_creator extends base_form_creator {
 
         return $repeats;
     }
+     */
 
     /**
      * add Java specific test section
@@ -247,21 +249,9 @@ class java_form_creator extends base_form_creator {
         // add compilation
         $this->add_compilation(get_string('compile', 'qtype_proforma'));
         // add JUnit
-        $repeats = parent::add_tests($question, $questioneditform);
-        // Set CodeMirror for unit test code.
-        for ($i = 0; $i < $repeats; $i++) {
-            qtype_proforma\lib\as_codemirror('id_testcode_' . $i);
-            // Hide testtype and test identifier for unit tests.
-            // So far (Moodle 3.6) hideif is not implemented for groups => quickhack.
-            // (needed from creating grading hints)
-            $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
-            $mform->hideif('testid[' . $i . ']', 'aggregationstrategy', 'neq', 111);
-            // does not work
-            // $repeatoptions['testtitle']['rule'] = 'required'; // array(null, 'required', null, 'client');
-            // $repeatoptions['testweight']['rule'] = 'required'; // array(get_string('err_numeric', 'form'), 'numeric', '', 'client');
-        }
+        $repeats = $this->add_test_fields($question, $questioneditform, TRUE, 'unittest');
 
-        // add checkstyle
+        // Add checkstyle.
         $this->add_checkstyle();
         // $this->form->addGroupRule('testoptions', array(
         // 'testversion' => array(array(get_string('error'), 'nonzero', '', 'client'))));

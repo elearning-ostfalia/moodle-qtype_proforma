@@ -134,6 +134,9 @@ class proforma_form_creator extends base_form_creator {
         // disable testtype and test identifier for imported tasks
         $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         $repeatoptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
+        // Hide weight for case of all-or-nothing.
+        $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);       
+        
     }
 
     /**
@@ -145,11 +148,7 @@ class proforma_form_creator extends base_form_creator {
      */
     public function add_tests($question, $questioneditform) {
         $this->_taskhandler = new qtype_proforma_proforma_task();
-        $repeats = parent::add_tests($question, $questioneditform);
-        // Remove button for adding new test elements.
-        $mform = $this->_form;
-        $mform->removeElement('option_add_fields');
-        return $repeats;
+        return $this->add_test_fields($question, $questioneditform, FALSE, 'unittest');
     }
 
     /**
