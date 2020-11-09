@@ -2,13 +2,14 @@ language: php
 
 # change distribution due to:
 # https://moodle.org/mod/forum/discuss.php?d=389744
+os: linux
 dist: bionic
 sudo: required
 
 addons:
   firefox: "47.0.1"
-  postgresql: "9.5"
-#  postgresql: "9.4"
+  postgresql: "9.6"
+
   apt:
     sources:
       - google-chrome
@@ -19,7 +20,8 @@ addons:
 
 services:
   - mysql
-  - postgresql
+  - docker
+#  - postgresql
 
 cache:
   directories:
@@ -40,7 +42,7 @@ jobs:
       php: 7.4
       env:
         - MOODLE_BRANCH=MOODLE_39_STABLE
-        - DB=mysqli
+        - DB=pgsql
 
     - name: 'Moodle 3.8 (Postgres)'
       php: 7.3
@@ -49,7 +51,7 @@ jobs:
         - DB=pgsql
 
     - name: 'Moodle 3.8 (MySQL)'
-      php: 7.3
+      php: 7.1
       env:
         - MOODLE_BRANCH=MOODLE_38_STABLE
         - DB=mysqli
@@ -74,13 +76,14 @@ before_install:
   # This disables XDebug which should speed up the build.
   - phpenv config-rm xdebug.ini
   # This installs NodeJS which is used by Grunt, etc.
-  - nvm install 14.3
-  - nvm use 14.3
+  # - nvm install 14.3
+  # - nvm use 14.3
   # Currently we are inside of the clone of your repository.  We move up two
   # directories to build the project.
   - cd ../..
   # Install this project into a directory called "ci".
-  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
+  - composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
+  # - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   # Update the $PATH so scripts from this project can be called easily.
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
@@ -102,7 +105,7 @@ install:
 #    - If your plugin has unit tests, then PHPUnit will be setup.
   - moodle-plugin-ci install
 # timeout must be increased for import feature
-  - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 3;'
+  - moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 2;'
 #  - moodle-plugin-ci add-config "$CFG->behat_profiles = [
 #                                     'firefox_no_marionette' => [
 #                                         'browser' => 'firefox',
@@ -181,10 +184,14 @@ script:
 #     not specified, the default theme is used, EG usage: --suite boost
 #
 
-# Behat tests fail (import.feature and backup_and_restore.feature)
-# https://github.com/blackboard-open-source/moodle-plugin-ci/issues/70
+  # This step runs Moodle PHPDoc checker on your plugin.
+  #  - moodle-plugin-ci phpdoc
+  # This step runs the PHPUnit tests of your plugin.  If your plugin has
+  # PHPUnit tests, then it is highly recommended that you keep this step.
+  - moodle-plugin-ci phpunit
+
+  # run behat tests
   - moodle-plugin-ci behat --auto-rerun 0
-#  - moodle-plugin-ci behat --profile chrome --auto-rerun 0
 
   # This step lints your PHP files to check for syntax errors.
   - moodle-plugin-ci phplint
@@ -215,15 +222,11 @@ script:
   # (disabled because of claiming stale javascript files)
 
 
-  # This step runs Moodle PHPDoc checker on your plugin.
-  #  - moodle-plugin-ci phpdoc
-  # This step runs the PHPUnit tests of your plugin.  If your plugin has
-  # PHPUnit tests, then it is highly recommended that you keep this step.
-  - moodle-plugin-ci phpunit
 
 
-after_script:
+
+#after_script:
 # See: https://github.com/moodlerooms/moodle-plugin-ci/issues/32
-  - killall -9 php
-  - killall -9 java
-  - killall -9 Xvfb
+#  - killall -9 php
+#  - killall -9 java
+#  - killall -9 Xvfb
