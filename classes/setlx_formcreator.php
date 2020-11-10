@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
-
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/setlx_task.php');
@@ -39,13 +38,13 @@ class setlx_form_creator extends base_form_creator {
      */
     public function __construct($form, $newquestion = null) {
         // Only allow editor as reponse format.
-        $ro = qtype_proforma::response_formats();        
+        $ro = qtype_proforma::response_formats();
         $responseoptions = [qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR]];
-        
+
         parent::__construct($form, new qtype_proforma_setlx_task(), $responseoptions, 'setlx');
     }
 
-    // override
+    // Override.
 
     /**
      * create task class instance belonging to form creator
@@ -53,8 +52,7 @@ class setlx_form_creator extends base_form_creator {
     protected function create_task_instance() {
         return new qtype_proforma_proforma_task();
     }
-    
-    
+
     /**
      * Add hidden fields for question attributes that are not part of the edit form.
      * @throws coding_exception
@@ -99,9 +97,9 @@ class setlx_form_creator extends base_form_creator {
     protected function modify_test_repeatarray(&$repeatarray) {
         $mform = $this->_form;
         // Add textarea for unit test code.
-        $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
+        $repeatarray[] = $mform->createElement('textarea', 'testcode', '', 'rows="20" cols="80"');
     }
-    
+
     /**
      *  Response filename is fixed to submission.stlx
      * (does not depend on test or submission code)
@@ -110,8 +108,8 @@ class setlx_form_creator extends base_form_creator {
         $mform = $this->_form;
         $mform->addElement('hidden', 'responsefilename', 'submission.stlx');
         $mform->setType('responsefilename', PARAM_RAW);
-    }    
- 
+    }
+
     /**
      * add SetlX specific test section
      *
@@ -121,7 +119,6 @@ class setlx_form_creator extends base_form_creator {
      */
     public function add_tests($question, $questioneditform) {
         $mform = $this->_form;
-        // $this->_taskhandler = new qtype_proforma_setlx_task();
         // add compilation
         $this->add_compilation(get_string('syntaxcheck', 'qtype_proforma'));
         // add SetlX tests
@@ -138,18 +135,18 @@ class setlx_form_creator extends base_form_creator {
      */
     public function validation($fromform, $files, $errors) {
         $errors = parent::validation($fromform, $files, $errors);
-/*        if ($fromform["checkstyle"]) {
-            // Check Checkstyle values:
-            if (0 == strlen(trim($fromform["checkstylecode"]))) {
-                // Checkstyle code muse not be empty.
-                // $errors['checkstylecode'] = get_string('required');
-                $errors['checkstylecode'] = get_string('codeempty', 'qtype_proforma');
-            }
-            if (0 == $fromform["checkstyleversion"]) {
-                // Unsupported version and no new choice.
-                $errors['checkstyleoptions'] = get_string('versionrequired', 'qtype_proforma');
-            }
-        }*/
+        /*        if ($fromform["checkstyle"]) {
+          // Check Checkstyle values:
+          if (0 == strlen(trim($fromform["checkstylecode"]))) {
+          // Checkstyle code muse not be empty.
+          // $errors['checkstylecode'] = get_string('required');
+          $errors['checkstylecode'] = get_string('codeempty', 'qtype_proforma');
+          }
+          if (0 == $fromform["checkstyleversion"]) {
+          // Unsupported version and no new choice.
+          $errors['checkstyleoptions'] = get_string('versionrequired', 'qtype_proforma');
+          }
+          } */
 
         // Check SetlX tests:
         $repeats = $this->get_count_tests(null);
@@ -160,37 +157,37 @@ class setlx_form_creator extends base_form_creator {
             $lentitle = strlen(trim($title));
             if (0 < $lentitle and 0 == $lencode) {
                 // Title is set but code is missing.
-                $errors['testcode['.$i.']'] = get_string('codeempty', 'qtype_proforma');
+                $errors['testcode[' . $i . ']'] = get_string('codeempty', 'qtype_proforma');
             } else if (0 == $lentitle and 0 < $lencode) {
                 // Title is missing
                 // error message must be attached to testoptions group
                 // $errors['testweight['.$i.']'] = get_string('titleempty', 'qtype_proforma');
-                $errors['testoptions['.$i.']'] = get_string('titleempty', 'qtype_proforma');
+                $errors['testoptions[' . $i . ']'] = get_string('titleempty', 'qtype_proforma');
             } else if ($lencode > 0 and $lentitle > 0) {
-/*                // check classname
-                if (!qtype_proforma_java_task::get_java_file($code)) {
-                    $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
-                } else if (!qtype_proforma_java_task::get_java_entrypoint($code)) {
-                    $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
-                }*/
+                /*                // check classname
+                  if (!qtype_proforma_java_task::get_java_file($code)) {
+                  $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
+                  } else if (!qtype_proforma_java_task::get_java_entrypoint($code)) {
+                  $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
+                  } */
             }
-/*            if (0 == $fromform["testversion"][$i]) {
-                // Unsupported version and no new choice.
-                $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
-            }*/
+            /*            if (0 == $fromform["testversion"][$i]) {
+              // Unsupported version and no new choice.
+              $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
+              } */
         }
 
-/*        if ($fromform["responseformat"] == 'editor') {
-            if (0 == strlen(trim($fromform["responsefilename"]))) {
-                $errors['responsefilename'] = get_string('required');
-            }
-            if (0 < strlen(trim($fromform["modelsolution"]))) {
-                $filename = qtype_proforma_java_task::get_java_file($fromform["modelsolution"]);
-                if ($filename != null and trim($filename) != trim($fromform["responsefilename"])) {
-                    $errors['responsefilename'] = $filename . ' expected';
-                }
-            }
-        }*/
+        /*        if ($fromform["responseformat"] == 'editor') {
+          if (0 == strlen(trim($fromform["responsefilename"]))) {
+          $errors['responsefilename'] = get_string('required');
+          }
+          if (0 < strlen(trim($fromform["modelsolution"]))) {
+          $filename = qtype_proforma_java_task::get_java_file($fromform["modelsolution"]);
+          if ($filename != null and trim($filename) != trim($fromform["responsefilename"])) {
+          $errors['responsefilename'] = $filename . ' expected';
+          }
+          }
+          } */
 
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
             $repeats = count($fromform["testweight"]);
@@ -198,9 +195,9 @@ class setlx_form_creator extends base_form_creator {
             for ($i = 0; $i < $repeats; $i++) {
                 $sumweight += $fromform["testweight"][$i];
             }
-/*            if ($fromform["checkstyle"]) {
-                $sumweight += $fromform["checkstyleweight"];
-            }*/
+            /*            if ($fromform["checkstyle"]) {
+              $sumweight += $fromform["checkstyleweight"];
+              } */
             if ($fromform["compile"]) {
                 $sumweight += $fromform["compileweight"];
             }
@@ -228,10 +225,9 @@ class setlx_form_creator extends base_form_creator {
         if (isset($question->id)) {
             // preset data if question already exists
             $form = $editor->get_form();
-            
+
             switch ($question->taskstorage) {
                 case qtype_proforma::SETLX_TASKFILE:
-                    // $taskfilehandler = new qtype_proforma_setlx_task();
                     $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
                     $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
 
@@ -248,8 +244,9 @@ class setlx_form_creator extends base_form_creator {
                     $question->taskstorage = qtype_proforma::SETLX_TASKFILE;
                     break;
                 default:
-                    throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);                
+                    throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }
         }
     }
+
 }

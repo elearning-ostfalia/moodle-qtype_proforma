@@ -34,11 +34,11 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
  * Note that this class is stateless i.e. has no member variables.
  */
 class qtype_proforma_proforma_task extends qtype_proforma_base_task {
-    
-    /** 
+
+    /**
      * returns false if the task is imported and cannot be modified,
      * returns true if the task is created and can be modified inside Moodle.
-     * 
+     *
      * @return boolean
      */
     public function create_in_moodle() {
@@ -52,6 +52,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
      * @param $ref test ref
      * @param $weight test weight
      * @return bool true if handled otherweise false
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)*      *
      */
     protected function set_formdata_from_gradinghints($question, $ref, $weight) {
         return false;
@@ -66,9 +67,9 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
      */
     protected function is_test_set($formdata, $index) {
         // return isset($formdata->testcode[$index]) && strlen(trim($formdata->testcode[$index]));
-	return true;
-    }     
-    
+        return true;
+    }
+
     /**
      * Get number of tests from grading hints.
      *
@@ -104,16 +105,15 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
         return $this->get_count_tests($gradinghints);
     }
 
-  
     /**
      * override: task file must not be created.
-     * 
+     *
      * @param type $formdata
      * @throws coding_exception
      */
     public function create_task_file($formdata) {
         throw new coding_exception("create_task_file must not be called");
-    }  
+    }
 }
 
 

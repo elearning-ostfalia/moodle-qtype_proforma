@@ -219,10 +219,9 @@ class java_form_creator extends base_form_creator {
      */
     public function add_tests($question, $questioneditform) {
         $mform = $this->_form;
-        // $this->_taskhandler = new qtype_proforma_java_task();
-        // add compilation
+        // Add compilation.
         $this->add_compilation(get_string('compile', 'qtype_proforma'));
-        // add JUnit
+        // Add JUnit.
         $repeats = $this->add_test_fields($question, $questioneditform, 'unittest');
 
         // Add checkstyle.
@@ -332,10 +331,9 @@ class java_form_creator extends base_form_creator {
         if (isset($question->id)) {
             // preset data if question already exists
             $form = $editor->get_form();
-            
+
             switch ($question->taskstorage) {
                 case qtype_proforma::JAVA_TASKFILE:
-                    // $taskfilehandler = new qtype_proforma_java_task();
                     $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
                     $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
 
@@ -352,9 +350,8 @@ class java_form_creator extends base_form_creator {
                     $question->taskstorage = qtype_proforma::JAVA_TASKFILE;
                     break;
                 default:
-                    throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);                
+                    throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }
         }
     }
-  
 }

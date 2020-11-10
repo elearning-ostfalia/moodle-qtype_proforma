@@ -24,7 +24,6 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-
 /**
  * Define a custom exception class
  */
@@ -33,7 +32,7 @@ class feedback_exception extends Exception
     // Redefine the exception so message isn't optional
     public function __construct($message, $code = 0, Exception $previous = null) {
         // some code
-    
+
         // make sure everything is assigned properly
         parent::__construct($message, $code, $previous);
     }
@@ -212,7 +211,7 @@ class feedback_renderer {
      * @param $allcorrect
      * @throws feedback_exception
      */
-    private function render_test_title($test, $score, $internalerror, &$result, &$allcorrect) {      
+    private function render_test_title($test, $score, $internalerror, &$result, &$allcorrect) {
         $id = (string) $test['id'];
         $ghtest = $this->gradinghints->xpath("//test-ref[@ref='" . $id . "']");
         if (count($ghtest) == 0) {
@@ -224,7 +223,7 @@ class feedback_renderer {
         if (!isset($testtitle)) {
             $testtitle = 'Test ' . $id;
         }
-           
+
         // Create unique identifier for each region
         // since there can be multiple regions per page!
         $collid = $this->mainrenderer->create_collapsible_region_id($this->qa);
@@ -247,7 +246,7 @@ class feedback_renderer {
             $allcorrect = false;
             $result .= print_collapsible_region_start('', $collid,
                     $exclamation . ' ' . $testtitle . $visiblescore,
-                    '', true, true);           
+                    '', true, true);
         } else if ($score === 1.0) {
             $successimg = $this->mainrenderer->feedback_image((int) 1);
             $result .= print_collapsible_region_start('', $collid,
@@ -273,7 +272,7 @@ class feedback_renderer {
 
         if ($internalerror) {
             // $csscontent = array('class' => 'proforma_testlog');
-            $result .= html_writer::tag('p', get_string('testinternalerror', 'qtype_proforma'), 
+            $result .= html_writer::tag('p', get_string('testinternalerror', 'qtype_proforma'),
                 array('class' => 'proforma_testlog_description'));
         }
     }
@@ -301,13 +300,13 @@ class feedback_renderer {
         $containsinternalerror = false;
         $allcorrect = true;
         if (count($testresponse->{'subtests-response'}) == 0) {
-            // Handle test with score.            
+            // Handle test with score.
             try {
                 $testresult = $testresponse->{'test-result'}->result;
                 if (!isset($testresult)) {
                     // format error: no test result found
                     throw new feedback_exception('Response format error: no test result available');
-                }                
+                }
                 $internalerror = ((string) $testresult['is-internal-error'] === 'true');
                 if ($internalerror) {
                     $containsinternalerror = true;
@@ -316,15 +315,15 @@ class feedback_renderer {
                 if (!isset($score)) {
                     // format error: no score found
                     throw new feedback_exception('Response format error: no score available');
-                }                
+                }
                 $this->render_test_title($testresponse, $score, $internalerror, $result, $allcorrect);
                 $this->render_feedback_list($testresponse->{'test-result'}->{'feedback-list'}, $result);
             } catch (Exception $ex) {
-                // display format errors (as much information as possible in order to 
+                // display format errors (as much information as possible in order to
                 // fix the bug)
                 $containsinternalerror = true;
                 $allcorrect = false;
-                $this->render_test_title($testresponse, null, true, $result, $allcorrect); 
+                $this->render_test_title($testresponse, null, true, $result, $allcorrect);
                 $result .= html_writer::tag('pre', $ex->getMessage(), array('class' => 'proforma_testlog'));
             }
         } else {

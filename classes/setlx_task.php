@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
 class qtype_proforma_setlx_task extends qtype_proforma_base_task {
-  
+
     /**
      * is Checkstyle option enabled?
      *
@@ -66,7 +66,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
      * @param $formdata
      */
     protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
-        if (self::has_compiler($formdata)) {        
+        if (self::has_compiler($formdata)) {
             $xw->startElement('file');
             $xw->create_attribute('id', 'compiler');
             $xw->create_attribute('used-by-grader', 'true');
@@ -108,7 +108,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
             $xw->create_attribute('filename', 'checkstyle.xml');
             $xw->text($formdata->checkstylecode);
             $xw->endElement(); // embedded-txt-file
-            $xw->endElement(); // file 
+            $xw->endElement(); // file
 
         }*/
     }
@@ -132,7 +132,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
             $xw->create_attribute('refid', 'compiler');
             $xw->endElement(); // fileref
             $xw->endElement(); // filerefs
-            $xw->endElement(); // test-configuration            
+            $xw->endElement(); // test-configuration
             $xw->endElement(); // test
         }
 
@@ -318,6 +318,4 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         }
         return $count;
     }
-
-
 }

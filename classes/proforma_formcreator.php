@@ -40,9 +40,9 @@ class proforma_form_creator extends base_form_creator {
      */
     public function __construct($form) {
         parent::__construct($form, new qtype_proforma_proforma_task(), qtype_proforma::response_formats());
-        echo $this->_taskhandler->create_in_moodle();        
+        echo $this->_taskhandler->create_in_moodle();
     }
-   
+
     /**
      * validate field values
      *
@@ -138,8 +138,8 @@ class proforma_form_creator extends base_form_creator {
         $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         $repeatoptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         // Hide weight for case of all-or-nothing.
-        $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);       
-        
+        $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
+
     }
 
     /**
@@ -150,12 +150,9 @@ class proforma_form_creator extends base_form_creator {
      * @return int
      */
     public function add_tests($question, $questioneditform) {
-        // $this->_taskhandler = new qtype_proforma_proforma_task();
         return $this->add_test_fields($question, $questioneditform, 'unittest');
     }
 
-  
-    
     /**
      * Prepare question to fit form field names and values.
      *
@@ -190,7 +187,6 @@ class proforma_form_creator extends base_form_creator {
         // $downloadfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_DOWNLOAD);
         // $question->downloadlinks = $downloadfilearea->get_files_as_links($question->contextid, $question->id);
 
-        // $taskfilehandler = new qtype_proforma_proforma_task;
         $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
     }
 
@@ -216,5 +212,5 @@ class proforma_form_creator extends base_form_creator {
         // $instance = new qtype_proforma_proforma_task();
         // $options->gradinghints = $this->_taskhandler->create_lms_grading_hints($formdata);
     }
- 
+
 }

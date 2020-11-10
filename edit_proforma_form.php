@@ -43,12 +43,12 @@ class qtype_proforma_edit_form extends question_edit_form {
      * overloaded definition detects that a new question will be created.
      */
     protected function definition() {
-        $removesubmit = FALSE;
+        $removesubmit = false;
         if (empty($this->question->options)) {
-            // New question => create select form creator for selecting 
+            // New question => create select form creator for selecting
             // a programming language.
             $this->formcreator = new select_form_creator($this->_form, true);
-            $removesubmit = TRUE;
+            $removesubmit = true;
         }
         parent::definition();
         if ($removesubmit) {
@@ -73,9 +73,9 @@ class qtype_proforma_edit_form extends question_edit_form {
     public function validation($fromform, $files) {
         $errors = parent::validation($fromform, $files);
         /*if (!isset($this->formcreator)) {
-            return $errors;            
+            return $errors;
         } else { */
-            return $this->formcreator->validation($fromform, $files, $errors);            
+            return $this->formcreator->validation($fromform, $files, $errors);
         // }
     }
 
@@ -118,7 +118,7 @@ class qtype_proforma_edit_form extends question_edit_form {
                 case qtype_proforma::SETLX_TASKFILE:
                     // Question was created by form editor.
                     $this->formcreator = new setlx_form_creator($this->_form);
-                    break;                
+                    break;
                 case qtype_proforma::SELECT_TASKFILE:
                     // Question was created by form editor but not yet finished.
                     $classname = $this->question->options->programminglanguage . '_form_creator';
@@ -131,9 +131,9 @@ class qtype_proforma_edit_form extends question_edit_form {
         if ($this->formcreator == null) {
             // Question was imported.
             $this->formcreator = new proforma_form_creator($this->_form);
-        }      
+        }
     }
-    
+
     /**
      * Add any question-type specific form fields.
      *
@@ -182,17 +182,17 @@ class qtype_proforma_edit_form extends question_edit_form {
      *
      * different scenarios:
      * 1. edit:
-     * - $question->options->X are original values read from database 
+     * - $question->options->X are original values read from database
      *  (if record is already stored in database)
      * - $question-X copy from $question->options->X (???)
      *
      * 2. submit:
-     * - $question->options->X are original values read from database 
+     * - $question->options->X are original values read from database
      *  (if record is already stored in database)
      * - $question-X value from input (???)
      *
      * 3. duplicate:
-     * - $question->options->X are original values read from database 
+     * - $question->options->X are original values read from database
      *  (no record created, draft filearea must be created)
      * - $question-X copy from $question->options->X (???)
      *

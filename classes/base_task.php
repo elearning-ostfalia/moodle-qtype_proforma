@@ -23,8 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
-
 defined('MOODLE_INTERNAL') || die();
+
 // require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.php');
 
 /*
@@ -34,16 +34,16 @@ defined('MOODLE_INTERNAL') || die();
 
 abstract class qtype_proforma_base_task {
 
-    /** 
+    /**
      * returns false if the task is imported and cannot be modified,
      * returns true if the task is created and can be modified inside Moodle.
-     * 
+     *
      * @return boolean
      */
     public function create_in_moodle() {
         return true;
-    }    
-    
+    }
+
     /**
      * Create UUID
      *
@@ -56,8 +56,8 @@ abstract class qtype_proforma_base_task {
         $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
         $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-    }    
-    
+    }
+
     /**
      * is testcode for given test index set?
      *
@@ -68,16 +68,17 @@ abstract class qtype_proforma_base_task {
     protected function is_test_set($formdata, $index) {
         return isset($formdata->testcode[$index]) && strlen(trim($formdata->testcode[$index]));
     }
-    
-    // override for creating task
-    
+
+    // Override for creating task.
+
     /**
      * Add extra namespaces
      * @param $xw
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)*
      */
     protected function add_namespace_to_xml(SimpleXmlWriter $xw) {
     }
-    
+
     /**
      * Add test specific data to LMS internal grading hints
      *
@@ -101,8 +102,8 @@ abstract class qtype_proforma_base_task {
                 $xw->endElement(); // test-ref
             }
         }
-    }   
-    
+    }
+
     /** create task.xml from formdata
      *
      * @param $formdata
@@ -183,7 +184,7 @@ abstract class qtype_proforma_base_task {
         $taskfile = $xw->outputMemory();
         return $taskfile;
     }
-    
+
     /**
      * Create LMS internal grading hints.
      *
@@ -191,7 +192,7 @@ abstract class qtype_proforma_base_task {
      * @param bool $withprolog
      * @return string
      */
-    public function create_lms_grading_hints($formdata, $withprolog = true) {
+    public function create_lms_grading_hints($formdata) {
 
         if (!empty($formdata->gradinghints)) {
             return $formdata->gradinghints;
@@ -202,11 +203,7 @@ abstract class qtype_proforma_base_task {
         $xw->setIndent(1);
         $xw->setIndentString(' ');
 
-        if ($withprolog) {
-            $xw->startDocument('1.0', 'UTF-8');
-        } else {
-            $xw->startDocument();
-        }
+        $xw->startDocument('1.0', 'UTF-8');
 
         $xw->startElement('grading-hints');
         // $xw->createAttribute('xmlns', 'urn:proforma:v2.0');
@@ -225,7 +222,7 @@ abstract class qtype_proforma_base_task {
 
         return $gradinghints;
     }
-    
+
     /**
      * Store task file in Moodle.
      *
@@ -243,19 +240,19 @@ abstract class qtype_proforma_base_task {
         // Prepare file record object
 
         $fileinfo = array(
-                'contextid' => $contextid, // category id
-                'component' => 'qtype_proforma',
-                'filearea' => qtype_proforma::FILEAREA_TASK,
-                'itemid' => $questionid,           // question id
-                'filepath' => '/',
-                'filename' => $filename);
+            'contextid' => $contextid, // category id
+            'component' => 'qtype_proforma',
+            'filearea' => qtype_proforma::FILEAREA_TASK,
+            'itemid' => $questionid, // question id
+            'filepath' => '/',
+            'filename' => $filename);
 
         // delete old file if any
         $fs->delete_area_files($contextid, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $questionid);
-        /*$storedfile = */
+        /* $storedfile = */
         $fs->create_file_from_string($fileinfo, $content);
-    }    
-    
+    }
+
     /**
      * extract form data from LMS internal grading hints
      * @param $question
@@ -316,19 +313,19 @@ abstract class qtype_proforma_base_task {
             }
 
             /*
-            // from edit_numerical_form
-            // See comment in the parent method about this hack:
-            // Evil hack alert. Formslib can store defaults in two ways for
-            // repeat elements:
-            //   ->_defaultValues['fraction[0]'] and
-            //   ->_defaultValues['fraction'][0].
-            // The $repeatedoptions['fraction']['default'] = 0 bit above means
-            // that ->_defaultValues['fraction[0]'] has already been set, but we
-            // are using object notation here, so we will be setting
-            // ->_defaultValues['fraction'][0]. That does not work, so we have
-            // to unset ->_defaultValues['fraction[0]'].
-            unset($this->_form->_defaultValues["testtitle[{$key}]"]);
-            */
+              // from edit_numerical_form
+              // See comment in the parent method about this hack:
+              // Evil hack alert. Formslib can store defaults in two ways for
+              // repeat elements:
+              //   ->_defaultValues['fraction[0]'] and
+              //   ->_defaultValues['fraction'][0].
+              // The $repeatedoptions['fraction']['default'] = 0 bit above means
+              // that ->_defaultValues['fraction[0]'] has already been set, but we
+              // are using object notation here, so we will be setting
+              // ->_defaultValues['fraction'][0]. That does not work, so we have
+              // to unset ->_defaultValues['fraction[0]'].
+              unset($this->_form->_defaultValues["testtitle[{$key}]"]);
+             */
             unset($mform->_defaultValues["testtitle[{$key}]"]);
             unset($mform->_defaultValues["testid[{$key}]"]);
             unset($mform->_defaultValues["testweight[{$key}]"]);
@@ -344,8 +341,7 @@ abstract class qtype_proforma_base_task {
             $key++;
         }
     }
-    
-    
+
     /**
      * returns the task.xml
      *
@@ -357,11 +353,12 @@ abstract class qtype_proforma_base_task {
     protected function get_task_xml($category, $question) {
         $fs = get_file_storage();
         $file = $fs->get_file($category, 'qtype_proforma', qtype_proforma::FILEAREA_TASK,
-                $question->id, '/' , $question->taskfilename);
+        $question->id, '/', $question->taskfilename);
         if (!$file) {
             throw new moodle_exception("proforma task not found");
         }
 
         return $file->get_content();
-    }    
+    }
+
 }

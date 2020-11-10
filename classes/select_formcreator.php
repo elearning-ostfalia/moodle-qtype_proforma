@@ -53,15 +53,13 @@ class select_form_creator extends base_form_creator {
 
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::SELECT_TASKFILE);
         $mform->setType('taskstorage', PARAM_INT);
-        
+
         // Add hidden default values for missing fields.
         $mform->addElement('hidden', 'responseformat', qtype_proforma::RESPONSE_EDITOR);
         $mform->setType('responseformat', PARAM_RAW);
 
         $mform->addElement('hidden', 'responsetemplate', '');
         $mform->setType('responsetemplate', PARAM_TEXT);
-        
-        
     }
 
     /**
@@ -71,7 +69,7 @@ class select_form_creator extends base_form_creator {
      */
     public function add_proglang_selection($question) {
         $mform = $this->_form;
-      
+
         $programminglangs = array('java' => 'Java', 'setlx' => 'SetlX');
         $mform->addElement('select', 'programminglanguage',
                 get_string('proglang', 'qtype_proforma'), $programminglangs);
@@ -83,24 +81,24 @@ class select_form_creator extends base_form_creator {
      * Remove attachments for question text.
      */
     public function add_questiontext_attachments() {
-    }    
-    
+    }
+
     /**
      * Remove grader options/information.
      *
      * @param $question
      */
     public function add_grader_settings($question) {
-    }    
+    }
 
     /**
      * Remove response options.
      *
      * @param $question
      * @param $qtype
-     */   
+     */
     public function add_response_options($question, $qtype) {
-    }    
+    }
 
     /**
      * Remove test settings.
@@ -108,9 +106,9 @@ class select_form_creator extends base_form_creator {
      * @param $question
      * @param $questioneditform
      */
-    public function add_test_settings($question, $questioneditform) {        
-    }    
-    
+    public function add_test_settings($question, $questioneditform) {
+    }
+
     /**
      * Prepare question to fit form field names and values.
      *
@@ -138,5 +136,5 @@ class select_form_creator extends base_form_creator {
         parent::save_question_options($options);
     }
     */
-  
+
 }

@@ -42,7 +42,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      */
     private function create_submission_xml($code, $files, $filename, $uri, qtype_proforma_question $question) {
         global $CFG;
-       
+
         $xw = new SimpleXmlWriter();
         $xw->openMemory();
 
@@ -59,21 +59,12 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         // $xw->createAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
         // $xw->createAttribute('xsi:schemaLocation', 'urn:proforma:v2.0 schema.xsd');
 
-        // task
-//        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE or
-//                $question->taskstorage == qtype_proforma::VOLATILE_TASKFILE) { // do not use === here!
-            // external task in http field
-            $xw->startElement('external-task');
-            $xw->create_attribute('uuid', $question->uuid);
-            $xw->text('http-file:' . $question->taskfilename);
-            // $xw->text('http-file:task-file');
-            $xw->endElement(); // lms
-            //
-            // $xw->createChildElementWithText('inline-task-zip', $question->taskfiletask-file = {stored_file} [4]name);
-//        } else {
-//            throw new coding_exception('tasks stored outside Moodle are not supported');
-            // external TODO???
-//        }
+        // Task as external task in http field.
+        $xw->startElement('external-task');
+        $xw->create_attribute('uuid', $question->uuid);
+        $xw->text('http-file:' . $question->taskfilename);
+        // $xw->text('http-file:task-file');
+        $xw->endElement(); // lms
 
         if (isset($uri)) {
             // Version control system.
@@ -99,11 +90,11 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             $xw->startElement('files');
                 $xw->startElement('file');
                     // Code is sent as base64 encoded text because it might contain illegal
-                    // characters which could lead to some problems otherwise. 
+                    // characters which could lead to some problems otherwise.
                     $xw->startElement('embedded-bin-file');
                     $xw->create_attribute('filename', $filename);
                     $xw->text(base64_encode($code));
-                    $xw->endElement(); // embedded-bin-file                    
+                    $xw->endElement(); // embedded-bin-file
                 $xw->endElement(); // file
             $xw->endElement(); // files
         } else {
@@ -150,7 +141,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      */
     protected function post_to_grader(&$postfields, qtype_proforma_question $question) {
         // Add task file.
-        $task = $question->get_task_file();  
+        $task = $question->get_task_file();
         if (!$task instanceof stored_file) {
             throw new coding_exception("task variable has wrong class");
         }
