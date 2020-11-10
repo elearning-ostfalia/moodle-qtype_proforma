@@ -38,7 +38,7 @@ class select_form_creator extends base_form_creator {
      * @param null $newquestion new question indicator
      */
     public function __construct($form, $newquestion = null) {
-        parent::__construct($form, null, null);
+        parent::__construct($form, null, null, null);
     }
 
     // override
@@ -135,9 +135,10 @@ class select_form_creator extends base_form_creator {
      * @param $formdata
      * @param $options
      */
+    /*
     public function save_question_options(&$options) {
         parent::save_question_options($options);
     }
-    
+    */
   
 }

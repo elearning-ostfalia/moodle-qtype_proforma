@@ -284,27 +284,25 @@ class qtype_proforma extends question_type {
         switch ($formdata->taskstorage) {
             case self::PERSISTENT_TASKFILE:
                 $editor = new proforma_form_creator($formdata);
-                $editor->save_question_options($options);
                 break;
             case self::VOLATILE_TASKFILE:
             case self::JAVA_TASKFILE:                
                 // handle 'save' from editor
                 $editor = new java_form_creator($formdata);
-                $editor->save_question_options($options);
                 break;
             case self::SELECT_TASKFILE:
                 $editor = new select_form_creator($formdata);
-                $editor->save_question_options($options);
                 break;
             case self::SETLX_TASKFILE:
                 $editor = new setlx_form_creator($formdata);
-                $editor->save_question_options($options);
                 break;            
             case self::REPOSITORY:
             default:
                 throw new coding_exception('proforma: unsupported taskstorage ' . $formdata->taskstorage);
         }
 
+        $editor->save_question_options($options);       
+        
         // we need a different handling for different variable structure for comment:
         // - array with comment (text, format)
         // - comment contains only flat text with seperate variable 'commentformat'

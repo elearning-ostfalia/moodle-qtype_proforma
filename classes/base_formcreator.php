@@ -39,6 +39,8 @@ abstract class base_form_creator {
      * @var MoodleQuickForm The form object that must be filled with input fields.
      */
     protected $_form = null;
+    
+    /* task class instance for doing the task related work. */
     protected $_taskhandler = null;
     /** 
      * response options
@@ -55,20 +57,24 @@ abstract class base_form_creator {
      *
      * @param $form
      */
-    protected function __construct($form, $responseformats = null, $syntaxhighlight = null) {
+    protected function __construct($form, qtype_proforma_proforma_task $taskhandler, $responseformats = null, $syntaxhighlight = null) {
         $this->_form = $form;
         $this->_responseformats = $responseformats;
         $this->_syntaxhighlighting = $syntaxhighlight;
+        $this->_taskhandler = $taskhandler;
     }
 
     // override
-
+ 
+    
     /**
      * validate field values
      * @param $fromform Validation argument
      * @param $files Validation argument
      * @param $errors Array with error messages (so far)
      * @return array with error messages
+     * 
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function validation($fromform, $files, $errors) {
         return $errors;
@@ -78,6 +84,8 @@ abstract class base_form_creator {
      * Add something to select the programming language.
      *
      * @param $question
+     * 
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function add_proglang_selection($question) {
     }
@@ -225,6 +233,8 @@ abstract class base_form_creator {
      * Modify repeatarray in add_tests.
      *
      * @param $repeatarray
+     * 
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function modify_test_repeatarray(&$repeatarray) {
     }
@@ -246,6 +256,8 @@ abstract class base_form_creator {
      * Modify testoptions in add_tests
      *
      * @param $testoptions
+     * 
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function modify_test_testoptions(&$testoptions) {
     }
@@ -722,6 +734,35 @@ abstract class base_form_creator {
             // Store empty file for filepicker or version control system (= delete file if any)
             $templfilearea->save_textfile($context->id, $formdata->id, 'dummy.txt', '');
             $options->templates = $formdata->templates = '';
+        }
+        
+        if (isset($this->_taskhandler)) {
+            // Extract grading hints.
+            $options->gradinghints = $this->_taskhandler->create_lms_grading_hints($formdata);
+            if ($this->_taskhandler->create_in_moodle()) {
+                if (!isset($formdata->import_process) or !$formdata->import_process) {
+                    // When importing a moodle xml question the preprocessing step is missing and
+                    // we have no actual form data.
+                    // So we must skip creating task because the task.xml already exists
+                    // and some data needed to create task.xml does not.
+
+                    // Otherwise we create the task.xml from the input data
+                    $taskfile = $this->_taskhandler->create_task_file($formdata);
+                    $options->taskfilename = 'task.xml';
+                    qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
+                            $formdata->context->id, $formdata->id);
+                    if ($formdata->responseformat == qtype_proforma::RESPONSE_EDITOR) { // Editor.
+                        // Store model solution text as file.
+                        // Property 'modelsolution' exists only if the form editor was used.
+                        // So if we come from import we cannot evalute 'modelsolution'.
+                        // Filearea object for handling model solution files.
+                        $msfilearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
+                        $msfilearea->save_textfile($formdata->context->id, $formdata->id,
+                                $formdata->responsefilename, isset($formdata->modelsolution) ? $formdata->modelsolution : '');
+                    }
+                }
+                
+            }
         }
     }
 }

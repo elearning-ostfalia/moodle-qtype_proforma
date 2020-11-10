@@ -42,11 +42,20 @@ class setlx_form_creator extends base_form_creator {
         $ro = qtype_proforma::response_formats();        
         $responseoptions = [qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR]];
         
-        parent::__construct($form, $responseoptions, 'setlx');
+        parent::__construct($form, new qtype_proforma_setlx_task(), $responseoptions, 'setlx');
+        echo $this->_taskhandler->create_in_moodle();
     }
 
     // override
 
+    /**
+     * create task class instance belonging to form creator
+     */
+    protected function create_task_instance() {
+        return new qtype_proforma_proforma_task();
+    }
+    
+    
     /**
      * Add hidden fields for question attributes that are not part of the edit form.
      * @throws coding_exception
@@ -113,7 +122,7 @@ class setlx_form_creator extends base_form_creator {
      */
     public function add_tests($question, $questioneditform) {
         $mform = $this->_form;
-        $this->_taskhandler = new qtype_proforma_setlx_task();
+        // $this->_taskhandler = new qtype_proforma_setlx_task();
         // add compilation
         $this->add_compilation(get_string('syntaxcheck', 'qtype_proforma'));
         // add SetlX tests
@@ -223,9 +232,9 @@ class setlx_form_creator extends base_form_creator {
             
             switch ($question->taskstorage) {
                 case qtype_proforma::SETLX_TASKFILE:
-                    $taskfilehandler = new qtype_proforma_setlx_task();
-                    $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
-                    $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
+                    // $taskfilehandler = new qtype_proforma_setlx_task();
+                    $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
+                    $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
 
                     // Model solution files can be uploaded with a file manager
                     // or entered as text in editor.
@@ -250,12 +259,13 @@ class setlx_form_creator extends base_form_creator {
      * @param $formdata
      * @param $options
      */
+    /*
     public function save_question_options(&$options) {
         parent::save_question_options($options);
 
         $formdata = $this->_form;
-        $instance = new qtype_proforma_setlx_task;
-        $options->gradinghints = $instance->create_lms_grading_hints($formdata);
+        // $this->_taskhandler = new qtype_proforma_setlx_task;
+        // $options->gradinghints = $this->_taskhandler->create_lms_grading_hints($formdata);
 
         if (!isset($formdata->import_process) or !$formdata->import_process) {
             // When importing a moodle xml question the preprocessing step is missing and
@@ -264,7 +274,7 @@ class setlx_form_creator extends base_form_creator {
             // and some data needed to create task.xml does not.
 
             // Otherwise we create the task.xml from the input data
-            $taskfile = $instance->create_task_file($formdata);
+            $taskfile = $this->_taskhandler->create_task_file($formdata);
             $options->taskfilename = 'task.xml';
             qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
                     $formdata->context->id, $formdata->id);
@@ -278,5 +288,5 @@ class setlx_form_creator extends base_form_creator {
                         $formdata->responsefilename, isset($formdata->modelsolution) ? $formdata->modelsolution : '');
             }
         }
-    }
+    }*/
 }

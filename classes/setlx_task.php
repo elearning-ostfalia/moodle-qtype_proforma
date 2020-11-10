@@ -29,6 +29,16 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_task.php'
 
 class qtype_proforma_setlx_task extends qtype_proforma_proforma_task {
 
+    /** 
+     * returns false if the task is imported and cannot be modified,
+     * returns true if the task is created and can be modified inside Moodle.
+     * 
+     * @return boolean
+     */
+    public function create_in_moodle() {
+        return true;
+    }    
+    
     /**
      * is Checkstyle option enabled?
      *

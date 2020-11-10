@@ -35,9 +35,10 @@ class proforma_form_creator extends base_form_creator {
      * @param $form
      */
     public function __construct($form) {
-        parent::__construct($form, qtype_proforma::response_formats());
+        parent::__construct($form, new qtype_proforma_proforma_task(), qtype_proforma::response_formats());
+        echo $this->_taskhandler->create_in_moodle();        
     }
-
+   
     /**
      * validate field values
      *
@@ -147,7 +148,7 @@ class proforma_form_creator extends base_form_creator {
      * @return int
      */
     public function add_tests($question, $questioneditform) {
-        $this->_taskhandler = new qtype_proforma_proforma_task();
+        // $this->_taskhandler = new qtype_proforma_proforma_task();
         return $this->add_test_fields($question, $questioneditform, FALSE, 'unittest');
     }
 
@@ -185,8 +186,8 @@ class proforma_form_creator extends base_form_creator {
         // $downloadfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_DOWNLOAD);
         // $question->downloadlinks = $downloadfilearea->get_files_as_links($question->contextid, $question->id);
 
-        $taskfilehandler = new qtype_proforma_proforma_task;
-        $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
+        // $taskfilehandler = new qtype_proforma_proforma_task;
+        $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
     }
 
     /**
@@ -208,8 +209,8 @@ class proforma_form_creator extends base_form_creator {
         }
         parent::save_question_options($options);
 
-        $instance = new qtype_proforma_proforma_task();
-        $options->gradinghints = $instance->create_lms_grading_hints($formdata);
+        // $instance = new qtype_proforma_proforma_task();
+        // $options->gradinghints = $this->_taskhandler->create_lms_grading_hints($formdata);
     }
  
 }

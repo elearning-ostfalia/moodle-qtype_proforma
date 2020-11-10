@@ -40,7 +40,7 @@ class java_form_creator extends base_form_creator {
      * @param null $newquestion new question indicator
      */
     public function __construct($form, $newquestion = null) {
-        parent::__construct($form, qtype_proforma::response_formats(), 'java');
+        parent::__construct($form, new qtype_proforma_java_task(), qtype_proforma::response_formats(), 'java');
         if (isset($newquestion) && $newquestion) {
             $this->_newquestion = $newquestion;
         }
@@ -245,7 +245,7 @@ class java_form_creator extends base_form_creator {
      */
     public function add_tests($question, $questioneditform) {
         $mform = $this->_form;
-        $this->_taskhandler = new qtype_proforma_java_task();
+        // $this->_taskhandler = new qtype_proforma_java_task();
         // add compilation
         $this->add_compilation(get_string('compile', 'qtype_proforma'));
         // add JUnit
@@ -361,9 +361,9 @@ class java_form_creator extends base_form_creator {
             
             switch ($question->taskstorage) {
                 case qtype_proforma::JAVA_TASKFILE:
-                    $taskfilehandler = new qtype_proforma_java_task();
-                    $taskfilehandler->extract_formdata_from_taskfile($cat, $question);
-                    $taskfilehandler->extract_formdata_from_gradinghints($question, $form);
+                    // $taskfilehandler = new qtype_proforma_java_task();
+                    $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
+                    $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
 
                     // Model solution files can be uploaded with a file manager
                     // or entered as text in editor.
@@ -388,12 +388,13 @@ class java_form_creator extends base_form_creator {
      * @param $formdata
      * @param $options
      */
+    /*
     public function save_question_options(&$options) {
         parent::save_question_options($options);
 
         $formdata = $this->_form;
-        $instance = new qtype_proforma_java_task;
-        $options->gradinghints = $instance->create_lms_grading_hints($formdata);
+        // $$this->_taskhandler = new qtype_proforma_java_task;
+        // $options->gradinghints = $$this->_taskhandler->create_lms_grading_hints($formdata);
 
         if (!isset($formdata->import_process) or !$formdata->import_process) {
             // When importing a moodle xml question the preprocessing step is missing and
@@ -402,7 +403,7 @@ class java_form_creator extends base_form_creator {
             // and some data needed to create task.xml does not.
 
             // Otherwise we create the task.xml from the input data
-            $taskfile = $instance->create_task_file($formdata);
+            $taskfile = $$this->_taskhandler->create_task_file($formdata);
             $options->taskfilename = 'task.xml';
             qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
                     $formdata->context->id, $formdata->id);
@@ -416,6 +417,6 @@ class java_form_creator extends base_form_creator {
                         $formdata->responsefilename, isset($formdata->modelsolution) ? $formdata->modelsolution : '');
             }
         }
-    }
+    }*/
     
 }

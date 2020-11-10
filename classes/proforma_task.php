@@ -30,8 +30,19 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.ph
 /*
  * (class for handling ProFormA tasks for differnt programming languages
  * (i.e. create task and extract data for editor)
+ * Note that this class is stateless i.e. has no member variables.
  */
 class qtype_proforma_proforma_task {
+    
+    /** 
+     * returns false if the task is imported and cannot be modified,
+     * returns true if the task is created and can be modified inside Moodle.
+     * 
+     * @return boolean
+     */
+    public function create_in_moodle() {
+        return false;
+    }
 
     /**
      * Create UUID
