@@ -57,7 +57,7 @@ abstract class base_form_creator {
      *
      * @param $form
      */
-    protected function __construct($form, qtype_proforma_proforma_task $taskhandler, $responseformats = null, $syntaxhighlight = null) {
+    protected function __construct($form, $taskhandler, $responseformats = null, $syntaxhighlight = null) {
         $this->_form = $form;
         $this->_responseformats = $responseformats;
         $this->_syntaxhighlighting = $syntaxhighlight;
@@ -80,6 +80,17 @@ abstract class base_form_creator {
         return $errors;
     }
 
+    /**
+     * is testcode for given test index set?
+     *
+     * @param $formdata
+     * @param $index
+     * @return bool
+     */
+    protected function is_test_set($formdata, $index) {
+        return isset($formdata->testcode[$index]) && strlen(trim($formdata->testcode[$index]));
+    }    
+    
     /**
      * Add something to select the programming language.
      *
@@ -135,10 +146,8 @@ abstract class base_form_creator {
 
     /**
      * Add downloads for question text.
-     *
-     * @param $question
      */
-    public function add_questiontext_attachments($question) {
+    public function add_questiontext_attachments() {
         $mform = $this->_form;
 
         // Add Filemanager for download links associated with question text.
@@ -193,10 +202,8 @@ abstract class base_form_creator {
     /**
      * Add model solution as edit field for editor response format or
      * as fielmanager for filepicker response format.
-     *
-     * @param $question
      */
-    public function add_modelsolution($question) {
+    public function add_modelsolution() {
         $mform = $this->_form;
         // Model Solution files
         $mform->addElement('textarea', 'modelsolution', get_string('modelsolution', 'qtype_proforma'), 'rows="20" cols="80"');
@@ -269,7 +276,7 @@ abstract class base_form_creator {
      * @return int
      */
     public function add_tests($question, $questioneditform) {
-        $this->add_test_fields($question, $questioneditform, TRUE);
+        $this->add_test_fields($question, $questioneditform);
     }
     
     /**
@@ -278,7 +285,7 @@ abstract class base_form_creator {
      * @param $questioneditform
      * @return int
      */    
-    protected function add_test_fields($question, $questioneditform, $changeable, $testtype) {
+    protected function add_test_fields($question, $questioneditform, $testtype) {
     
         $mform = $this->_form;
         // Retrieve number of tests (resp. unit tests).
@@ -332,7 +339,7 @@ abstract class base_form_creator {
                 $repeatoptions, 'option_repeats', 'option_add_fields',
                 1, $buttonlabel, true);
             
-        if ($changeable) {
+        if ($this->_taskhandler->create_in_moodle()) {
             // Set CodeMirror for unit test code.        
             for ($i = 0; $i < $repeats; $i++) {
                 qtype_proforma\lib\as_codemirror('id_testcode_' . $i);
@@ -493,7 +500,7 @@ abstract class base_form_creator {
         // Response template.
         $this->add_responsetemplate($question);
         // Model solution.
-        $this->add_modelsolution($question);
+        $this->add_modelsolution();
     }
 
     /**
@@ -749,7 +756,7 @@ abstract class base_form_creator {
                     // Otherwise we create the task.xml from the input data
                     $taskfile = $this->_taskhandler->create_task_file($formdata);
                     $options->taskfilename = 'task.xml';
-                    qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
+                    qtype_proforma_base_task::store_task_file($taskfile, $options->taskfilename,
                             $formdata->context->id, $formdata->id);
                     if ($formdata->responseformat == qtype_proforma::RESPONSE_EDITOR) { // Editor.
                         // Store model solution text as file.

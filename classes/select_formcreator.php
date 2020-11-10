@@ -52,7 +52,7 @@ class select_form_creator extends base_form_creator {
         $mform = $this->_form;
 
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::SELECT_TASKFILE);
-        $mform->setType('taskstorage', PARAM_RAW);
+        $mform->setType('taskstorage', PARAM_INT);
         
         // Add hidden default values for missing fields.
         $mform->addElement('hidden', 'responseformat', qtype_proforma::RESPONSE_EDITOR);
@@ -81,10 +81,8 @@ class select_form_creator extends base_form_creator {
 
     /**
      * Remove attachments for question text.
-     *
-     * @param $question
      */
-    public function add_questiontext_attachments($question) {
+    public function add_questiontext_attachments() {
     }    
     
     /**

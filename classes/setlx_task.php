@@ -25,20 +25,10 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_task.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
-class qtype_proforma_setlx_task extends qtype_proforma_proforma_task {
-
-    /** 
-     * returns false if the task is imported and cannot be modified,
-     * returns true if the task is created and can be modified inside Moodle.
-     * 
-     * @return boolean
-     */
-    public function create_in_moodle() {
-        return true;
-    }    
-    
+class qtype_proforma_setlx_task extends qtype_proforma_base_task {
+  
     /**
      * is Checkstyle option enabled?
      *
@@ -57,27 +47,6 @@ class qtype_proforma_setlx_task extends qtype_proforma_proforma_task {
      */
     private static function has_compiler($formdata) {
         return isset($formdata->compile) && $formdata->compile;
-    }
-
-    /**
-     * is testcode for given test index set?
-     *
-     * @param $formdata
-     * @param $index
-     * @return bool
-     */
-    private static function has_test($formdata, $index) {
-        return isset($formdata->testcode[$index]) && strlen(trim($formdata->testcode[$index]));
-    }
-
-    /**
-     * add extra namespaces to XML
-     *
-     * @param $xw
-     */
-    protected function add_namespace_to_xml(SimpleXmlWriter $xw) {
-        /*$xw->create_attribute('xmlns:unit', 'urn:proforma:tests:unittest:v1.1');
-        $xw->create_attribute('xmlns:cs', 'urn:proforma:tests:java-checkstyle:v1.1');*/
     }
 
     /**
@@ -109,12 +78,11 @@ class qtype_proforma_setlx_task extends qtype_proforma_proforma_task {
             $xw->endElement(); // embedded-txt-file
             $xw->endElement(); // file
         }
-        
-        
+
         // Setlx files
         for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
             $id = $formdata->testid[$index];
-            if ($id !== '' && self::has_test($formdata, $index)) {
+            if ($id !== '' && $this->is_test_set($formdata, $index)) {
                 $xw->startElement('file');
                 $xw->create_attribute('id', $formdata->testid[$index]);
                 $xw->create_attribute('used-by-grader', 'true');
@@ -171,7 +139,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_proforma_task {
         // SetlX tests
         for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
             $id = $formdata->testid[$index];
-            if ($id !== '' && self::has_test($formdata, $index)) {
+            if ($id !== '' && $this->is_test_set($formdata, $index)) {
                 $xw->startElement('test');
                 $xw->create_attribute('id', $formdata->testid[$index]); // $id);
                 $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
@@ -230,22 +198,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_proforma_task {
             $xw->endElement(); // test-ref
         }
 
-        for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
-            $id = $formdata->testid[$index];
-            if ($id !== '' && self::has_test($formdata, $index)) {
-                $xw->startElement('test-ref');
-                $xw->create_attribute('ref', $formdata->testid[$index]);
-                if (array_key_exists($index, $formdata->testweight)) {
-                    $xw->create_attribute('weight', $formdata->testweight[$index]);
-                } else {
-                    $xw->create_attribute('weight', '-1');
-                }
-                $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
-                $xw->create_childelement_with_text('description', $formdata->testdescription[$index]);
-                $xw->create_childelement_with_text('test-type', $formdata->testtype[$index]);
-                $xw->endElement(); // test-ref
-            }
-        }
+        parent::add_tests_to_lms_grading_hints($xw, $formdata);
 /*
         if (self::has_checkstyle($formdata)) {
             $xw->startElement('test-ref');

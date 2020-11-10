@@ -43,7 +43,6 @@ class setlx_form_creator extends base_form_creator {
         $responseoptions = [qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR]];
         
         parent::__construct($form, new qtype_proforma_setlx_task(), $responseoptions, 'setlx');
-        echo $this->_taskhandler->create_in_moodle();
     }
 
     // override
@@ -65,7 +64,7 @@ class setlx_form_creator extends base_form_creator {
         // Store setlx.
         $mform = $this->_form;
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::SETLX_TASKFILE);
-        $mform->setType('taskstorage', PARAM_RAW);
+        $mform->setType('taskstorage', PARAM_INT);
     }
 
     /**
@@ -126,7 +125,7 @@ class setlx_form_creator extends base_form_creator {
         // add compilation
         $this->add_compilation(get_string('syntaxcheck', 'qtype_proforma'));
         // add SetlX tests
-        return $this->add_test_fields($question, $questioneditform, TRUE, 'setlx');
+        return $this->add_test_fields($question, $questioneditform, 'setlx');
     }
 
     /**
@@ -253,40 +252,4 @@ class setlx_form_creator extends base_form_creator {
             }
         }
     }
-
-    /**
-     * handle polymorphic behaviour when saving a question
-     * @param $formdata
-     * @param $options
-     */
-    /*
-    public function save_question_options(&$options) {
-        parent::save_question_options($options);
-
-        $formdata = $this->_form;
-        // $this->_taskhandler = new qtype_proforma_setlx_task;
-        // $options->gradinghints = $this->_taskhandler->create_lms_grading_hints($formdata);
-
-        if (!isset($formdata->import_process) or !$formdata->import_process) {
-            // When importing a moodle xml question the preprocessing step is missing and
-            // we have no actual form data.
-            // So we must skip creating task because the task.xml already exists
-            // and some data needed to create task.xml does not.
-
-            // Otherwise we create the task.xml from the input data
-            $taskfile = $this->_taskhandler->create_task_file($formdata);
-            $options->taskfilename = 'task.xml';
-            qtype_proforma_proforma_task::store_task_file($taskfile, $options->taskfilename,
-                    $formdata->context->id, $formdata->id);
-            if ($formdata->responseformat == qtype_proforma::RESPONSE_EDITOR) { // Editor.
-                // Store model solution text as file.
-                // Property 'modelsolution' exists only if the form editor was used.
-                // So if we come from import we cannot evalute 'modelsolution'.
-                // Filearea object for handling model solution files.
-                $msfilearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
-                $msfilearea->save_textfile($formdata->context->id, $formdata->id,
-                        $formdata->responsefilename, isset($formdata->modelsolution) ? $formdata->modelsolution : '');
-            }
-        }
-    }*/
 }

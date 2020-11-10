@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * class for creating edit forms for importedd tasks
+ * class for creating edit forms for imported ProFormA tasks
  *
  * @package    qtype
  * @subpackage proforma
@@ -27,6 +27,10 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
 
+/**
+ * This class creates the edit form fields for imported ProFormA tasks.
+ * It is also the base class for other edit forms.
+ */
 class proforma_form_creator extends base_form_creator {
 
     /**
@@ -75,7 +79,7 @@ class proforma_form_creator extends base_form_creator {
 
         $mform = $this->_form;
         $mform->addElement('hidden', 'taskstorage', qtype_proforma::PERSISTENT_TASKFILE);
-        $mform->setType('taskstorage', PARAM_RAW);
+        $mform->setType('taskstorage', PARAM_INT);
 
         // Attachments for Question Text (Downloads)
         // $mform->addElement('static', 'downloadlinks', get_string('downloads', 'qtype_proforma'), '');
@@ -84,10 +88,8 @@ class proforma_form_creator extends base_form_creator {
 
     /**
      * Create links for model solution files.
-     *
-     * @param $question
      */
-    public function add_modelsolution($question) {
+    public function add_modelsolution() {
         $mform = $this->_form;
         // Model Solution files (instead of modelsollist we show links)
         $mform->addElement('static', 'mslinks', get_string('modelsolfiles', 'qtype_proforma'), '');
@@ -149,9 +151,11 @@ class proforma_form_creator extends base_form_creator {
      */
     public function add_tests($question, $questioneditform) {
         // $this->_taskhandler = new qtype_proforma_proforma_task();
-        return $this->add_test_fields($question, $questioneditform, FALSE, 'unittest');
+        return $this->add_test_fields($question, $questioneditform, 'unittest');
     }
 
+  
+    
     /**
      * Prepare question to fit form field names and values.
      *

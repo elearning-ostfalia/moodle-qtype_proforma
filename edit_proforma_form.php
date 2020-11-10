@@ -148,7 +148,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
 
         $this->formcreator->add_hidden_fields();
-        $this->formcreator->add_questiontext_attachments($this->question);
+        $this->formcreator->add_questiontext_attachments();
         $this->formcreator->add_proglang_selection($this->question);
 
         $this->formcreator->add_response_options($this->question, $qtype);

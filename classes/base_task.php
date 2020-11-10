@@ -1,0 +1,367 @@
+<?php
+// This file is part of ProFormA Question Type for Moodle
+//
+// ProFormA Question Type for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// ProFormA Question Type for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * ProFormA task file
+ *
+ * @package    qtype
+ * @subpackage proforma
+ * @copyright  2020 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author     K.Borm <k.borm[at]ostfalia.de>
+ */
+
+defined('MOODLE_INTERNAL') || die();
+// require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.php');
+
+/*
+ * abstract class for creating and reading ProFormA task files.
+ * Note that this class is stateless i.e. has no member variables.
+ */
+
+abstract class qtype_proforma_base_task {
+
+    /** 
+     * returns false if the task is imported and cannot be modified,
+     * returns true if the task is created and can be modified inside Moodle.
+     * 
+     * @return boolean
+     */
+    public function create_in_moodle() {
+        return true;
+    }    
+    
+    /**
+     * Create UUID
+     *
+     * http://www.seanbehan.com/how-to-generate-a-uuid-in-php/
+     *
+     * @return string
+     */
+    private static function uuid() {
+        $data = random_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }    
+    
+    /**
+     * is testcode for given test index set?
+     *
+     * @param $formdata
+     * @param $index
+     * @return bool
+     */
+    protected function is_test_set($formdata, $index) {
+        return isset($formdata->testcode[$index]) && strlen(trim($formdata->testcode[$index]));
+    }
+    
+    // override for creating task
+    
+    /**
+     * Add extra namespaces
+     * @param $xw
+     */
+    protected function add_namespace_to_xml(SimpleXmlWriter $xw) {
+    }
+    
+    /**
+     * Add test specific data to LMS internal grading hints
+     *
+     * @param $xw
+     * @param $formdata
+     */
+    protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
+        for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
+            $id = $formdata->testid[$index];
+            if ($id !== '' && $this->is_test_set($formdata, $index)) {
+                $xw->startElement('test-ref');
+                $xw->create_attribute('ref', $formdata->testid[$index]);
+                if (array_key_exists($index, $formdata->testweight)) {
+                    $xw->create_attribute('weight', $formdata->testweight[$index]);
+                } else {
+                    $xw->create_attribute('weight', '-1');
+                }
+                $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
+                $xw->create_childelement_with_text('description', $formdata->testdescription[$index]);
+                $xw->create_childelement_with_text('test-type', $formdata->testtype[$index]);
+                $xw->endElement(); // test-ref
+            }
+        }
+    }   
+    
+    /** create task.xml from formdata
+     *
+     * @param $formdata
+     * @return string
+     */
+    public function create_task_file($formdata) {
+        $xw = new SimpleXmlWriter();
+        $xw->openMemory();
+
+        $xw->setIndent(true);
+        $xw->setIndentString('    ');
+
+        $xw->startDocument('1.0', 'UTF-8');
+
+        $xw->startElement('task');
+        $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
+        $xw->create_attribute('lang', 'de'); // TODO
+        $xw->create_attribute('uuid', self::uuid());
+        // override
+        $this->add_namespace_to_xml($xw);
+
+        $xw->create_childelement_with_text('title', $formdata->name);
+        if (is_string($formdata->questiontext)) {
+            $xw->create_childelement_with_text('description', $formdata->questiontext);
+        } else {
+            $xw->create_childelement_with_text('description', $formdata->questiontext['text']);
+        }
+        $xw->startElement('proglang'); // not needed for grader
+        $this->add_programming_language_to_xml($xw, $formdata);
+        $xw->endElement(); // submission-restrictions
+
+        $xw->startElement('submission-restrictions'); // not needed for grader
+        $xw->endElement(); // submission-restrictions
+
+        $xw->startElement('files');
+        $this->add_testfiles_to_xml($xw, $formdata);
+
+        // create dummy model solution file
+        $xw->startElement('file');
+        $xw->create_attribute('id', 'MS'); // $id);
+        $xw->create_attribute('used-by-grader', 'false');
+        $xw->create_attribute('visible', 'no');
+        $xw->startElement('embedded-txt-file');
+        $xw->create_attribute('filename', 'modelsolution.java');
+        $xw->text('// no model solution available '); // write at least one byte in order to avoid problems with empty files
+        $xw->endElement(); // embedded-txt-file
+        $xw->endElement(); // file
+
+        $xw->endElement(); // files
+
+        $xw->startElement('model-solutions');
+        $xw->startElement('model-solution');
+        $xw->create_attribute('id', '1');
+        $xw->startElement('filerefs');
+        $xw->startElement('fileref');
+        $xw->create_attribute('refid', 'MS');
+        $xw->endElement(); // fileref
+        $xw->endElement(); // filerefs
+        $xw->endElement(); // model-solution
+        $xw->endElement(); // model-solutions
+
+        $xw->startElement('tests');
+        $this->add_tests_to_xml($xw, $formdata);
+        $xw->endElement(); // tests
+
+        $xw->startElement('grading-hints');
+        $xw->startElement('root'); // not needed for grader
+        $xw->endElement(); // root
+        $xw->endElement(); // grading-hints
+
+        $xw->startElement('meta-data');
+        $xw->endElement(); // meta-data
+
+        $xw->endElement(); // task
+
+        $xw->endDocument();
+
+        $taskfile = $xw->outputMemory();
+        return $taskfile;
+    }
+    
+    /**
+     * Create LMS internal grading hints.
+     *
+     * @param $formdata
+     * @param bool $withprolog
+     * @return string
+     */
+    public function create_lms_grading_hints($formdata, $withprolog = true) {
+
+        if (!empty($formdata->gradinghints)) {
+            return $formdata->gradinghints;
+        }
+        $xw = new SimpleXmlWriter();
+        $xw->openMemory();
+
+        $xw->setIndent(1);
+        $xw->setIndentString(' ');
+
+        if ($withprolog) {
+            $xw->startDocument('1.0', 'UTF-8');
+        } else {
+            $xw->startDocument();
+        }
+
+        $xw->startElement('grading-hints');
+        // $xw->createAttribute('xmlns', 'urn:proforma:v2.0');
+
+        $xw->startElement('root');
+        $xw->create_attribute('function', 'sum');
+
+        $this->add_tests_to_lms_grading_hints($xw, $formdata);
+
+        $xw->endElement(); // root
+        $xw->endElement(); // grading-hints
+
+        $xw->endDocument();
+        $gradinghints = $xw->outputMemory();
+        // debugging($gradinghints);
+
+        return $gradinghints;
+    }
+    
+    /**
+     * Store task file in Moodle.
+     *
+     * @param $content task file (xml)
+     * @param $filename task filename
+     * @param $draftitemid draftid
+     * @throws coding_exception
+     */
+    public static function store_task_file($content, $filename, $contextid, $questionid) {
+        if ($filename == null) {
+            throw new coding_exception('cannot create task file because of missing filename');
+        }
+
+        $fs = get_file_storage();
+        // Prepare file record object
+
+        $fileinfo = array(
+                'contextid' => $contextid, // category id
+                'component' => 'qtype_proforma',
+                'filearea' => qtype_proforma::FILEAREA_TASK,
+                'itemid' => $questionid,           // question id
+                'filepath' => '/',
+                'filename' => $filename);
+
+        // delete old file if any
+        $fs->delete_area_files($contextid, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $questionid);
+        /*$storedfile = */
+        $fs->create_file_from_string($fileinfo, $content);
+    }    
+    
+    /**
+     * extract form data from LMS internal grading hints
+     * @param $question
+     * @param $mform
+     */
+    public function extract_formdata_from_gradinghints($question, $mform) {
+        $question->testtitle = array();
+        $question->testdescription = array();
+        $question->testtype = array();
+        $question->testweight = array();
+        $question->testid = array();
+
+        if (empty($question->gradinghints)) {
+            // nothing to be done
+            return;
+        }
+
+        $xmldoc = new DOMDocument;
+
+        if (!$xmldoc->loadXML($question->gradinghints)) {
+            debugging('gradinghints is not valid XML');
+            return; // 'INTERNAL ERROR: $taskresult is not XML';
+        }
+
+        $xpath = new DOMXPath($xmldoc);
+        // $xpath->registerNamespace('dns','urn:proforma:v2.0');
+        $xpathresult = $xpath->query('//grading-hints/root/test-ref');
+        $key = 0;
+        if ($xpathresult->length == 0) {
+            debugging('no tests in gradinghints found');
+            return;
+        }
+
+        // preset compile and checkstyle checkboxes as not checked
+        $question->compile = 0;
+        $question->checkstyle = 0;
+
+        foreach ($xpathresult as $testgrading) {
+            $ref = $testgrading->getAttribute('ref');
+            $weight = $testgrading->getAttribute('weight');
+            $titles = $xpath->query('title', $testgrading);
+            if ($titles->length > 0) {
+                $title = $titles->item(0)->textContent;
+            } else {
+                $title = 'Title ' . $ref;
+            }
+            $descriptions = $xpath->query('description', $testgrading);
+            if ($descriptions->length > 0) {
+                $description = $descriptions->item(0)->textContent;
+            } else {
+                $description = '';
+            }
+            $testtypes = $xpath->query('test-type', $testgrading);
+            if ($testtypes->length > 0) {
+                $testtype = $testtypes->item(0)->textContent;
+            } else {
+                $testtype = '';
+            }
+
+            /*
+            // from edit_numerical_form
+            // See comment in the parent method about this hack:
+            // Evil hack alert. Formslib can store defaults in two ways for
+            // repeat elements:
+            //   ->_defaultValues['fraction[0]'] and
+            //   ->_defaultValues['fraction'][0].
+            // The $repeatedoptions['fraction']['default'] = 0 bit above means
+            // that ->_defaultValues['fraction[0]'] has already been set, but we
+            // are using object notation here, so we will be setting
+            // ->_defaultValues['fraction'][0]. That does not work, so we have
+            // to unset ->_defaultValues['fraction[0]'].
+            unset($this->_form->_defaultValues["testtitle[{$key}]"]);
+            */
+            unset($mform->_defaultValues["testtitle[{$key}]"]);
+            unset($mform->_defaultValues["testid[{$key}]"]);
+            unset($mform->_defaultValues["testweight[{$key}]"]);
+            unset($mform->_defaultValues["testdescription[{$key}]"]);
+            unset($mform->_defaultValues["testtype[{$key}]"]);
+            if (!$this->set_formdata_from_gradinghints($question, $ref, $weight)) {
+                $question->testid[] = $ref;
+                $question->testtitle[] = $title;
+                $question->testdescription[] = $description;
+                $question->testtype[] = $testtype;
+                $question->testweight[] = $weight;
+            }
+            $key++;
+        }
+    }
+    
+    
+    /**
+     * returns the task.xml
+     *
+     * @param $category
+     * @param $question
+     * @return string
+     * @throws moodle_exception
+     */
+    protected function get_task_xml($category, $question) {
+        $fs = get_file_storage();
+        $file = $fs->get_file($category, 'qtype_proforma', qtype_proforma::FILEAREA_TASK,
+                $question->id, '/' , $question->taskfilename);
+        if (!$file) {
+            throw new moodle_exception("proforma task not found");
+        }
+
+        return $file->get_content();
+    }    
+}
