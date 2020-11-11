@@ -34,6 +34,7 @@ defined('MOODLE_INTERNAL') || die();
 
 abstract class qtype_proforma_base_task {
 
+
     /**
      * returns false if the task is imported and cannot be modified,
      * returns true if the task is created and can be modified inside Moodle.

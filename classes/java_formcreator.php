@@ -49,15 +49,10 @@ class java_form_creator extends base_form_creator {
     // override
 
     /**
-     * Add hidden fields for question attributes that are not part of the edit form.
-     * @throws coding_exception
+     * the numeric type of task
      */
-    public function add_hidden_fields() {
-        parent::add_hidden_fields();
-        $mform = $this->_form;
-
-        $mform->addElement('hidden', 'taskstorage', qtype_proforma::JAVA_TASKFILE);
-        $mform->setType('taskstorage', PARAM_INT);
+    public function get_task_storage() {
+        return qtype_proforma::JAVA_TASKFILE;
     }
 
     /**

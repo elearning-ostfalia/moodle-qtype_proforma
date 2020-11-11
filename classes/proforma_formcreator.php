@@ -44,6 +44,13 @@ class proforma_form_creator extends base_form_creator {
     }
 
     /**
+     * the numeric type of task
+     */
+    public function get_task_storage() {
+        return qtype_proforma::PERSISTENT_TASKFILE;
+    }
+
+    /**
      * validate field values
      *
      * @param $fromform Validation argument
@@ -74,6 +81,7 @@ class proforma_form_creator extends base_form_creator {
      * Add hidden fields for question attributes that are not part of the edit form.
      * @throws coding_exception
      */
+    /*
     public function add_hidden_fields() {
         parent::add_hidden_fields();
 
@@ -85,7 +93,7 @@ class proforma_form_creator extends base_form_creator {
         // $mform->addElement('static', 'downloadlinks', get_string('downloads', 'qtype_proforma'), '');
         // $mform->addHelpButton('downloadlinks', 'downloads_hint', 'qtype_proforma');
     }
-
+*/
     /**
      * Create links for model solution files.
      */

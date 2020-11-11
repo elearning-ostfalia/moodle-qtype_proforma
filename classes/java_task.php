@@ -29,6 +29,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
 class qtype_proforma_java_task extends qtype_proforma_base_task {
 
+
     /**
      * is Checkstyle option enabled?
      *

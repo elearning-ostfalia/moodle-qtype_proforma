@@ -44,11 +44,42 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     protected function definition() {
         $removesubmit = false;
+
         if (empty($this->question->options)) {
-            // New question => create select form creator for selecting
-            // a programming language.
-            $this->formcreator = new select_form_creator($this->_form, true);
-            $removesubmit = true;
+            $proglang = optional_param('proglang', 0, PARAM_TEXT);
+            if ($proglang == "") { // empty($this->question->options)) {
+                // New question => create select form creator for selecting
+                // a programming language.
+                $this->formcreator = new select_form_creator($this->_form, true);
+                $removesubmit = true;
+
+                $originalreturnurl = optional_param('returnurl', 0, PARAM_LOCALURL);
+
+                global $PAGE;
+                $var = $PAGE->requires->js_call_amd('qtype_proforma/selectlang', 'select_lang', array($originalreturnurl));
+            } else {
+                switch ($proglang) {
+                    case qtype_proforma::PERSISTENT_TASKFILE:
+                        $this->formcreator = new proforma_form_creator($this->_form);
+                        break;
+                    case qtype_proforma::VOLATILE_TASKFILE:
+                    case qtype_proforma::JAVA_TASKFILE:
+                        // Question was created by form editor.
+                        $this->formcreator = new java_form_creator($this->_form);
+                        break;
+                    case qtype_proforma::SETLX_TASKFILE:
+                        // Question was created by form editor.
+                        $this->formcreator = new setlx_form_creator($this->_form);
+                        break;
+                    case qtype_proforma::SELECT_TASKFILE:
+                        // Question was created by form editor but not yet finished.
+                        $classname = $this->question->options->programminglanguage . '_form_creator';
+                        $this->formcreator = new $classname($this->_form);
+                        break;
+                    default:
+                        throw new coding_exception('invalid taskstorage value ' . $this->question->options->taskstorage);
+                }
+            }
         }
         parent::definition();
         if ($removesubmit) {
@@ -105,6 +136,7 @@ class qtype_proforma_edit_form extends question_edit_form {
     */
 
     protected function create_form_creator_in_definition($mform) {
+
         if (isset($this->question->options->taskstorage)) {
             switch ($this->question->options->taskstorage) {
                 case qtype_proforma::PERSISTENT_TASKFILE:
@@ -141,6 +173,15 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     protected function definition_inner($mform) {
         $qtype = question_bank::get_qtype('proforma');
+
+/*            $hiddenparams = null;
+            global $CFG;
+            require_once($CFG->dirroot . '/question/editlib.php');
+            $this->_form->addElement('html', '<b>Karin</b>');
+            $this->_form->addElement('html', print_choose_qtype_to_add_form($hiddenparams, null, false));
+*/
+
+
 
         if ($this->formcreator == null) {
             // Use case: edit existing question:

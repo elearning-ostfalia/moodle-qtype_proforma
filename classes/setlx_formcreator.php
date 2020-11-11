@@ -30,6 +30,7 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 class setlx_form_creator extends base_form_creator {
 
+
     /**
      * setlx_form_creator constructor.
      *
@@ -47,22 +48,17 @@ class setlx_form_creator extends base_form_creator {
     // Override.
 
     /**
+     * the numeric type of task
+     */
+    public function get_task_storage() {
+        return qtype_proforma::SETLX_TASKFILE;
+    }
+
+    /**
      * create task class instance belonging to form creator
      */
     protected function create_task_instance() {
         return new qtype_proforma_proforma_task();
-    }
-
-    /**
-     * Add hidden fields for question attributes that are not part of the edit form.
-     * @throws coding_exception
-     */
-    public function add_hidden_fields() {
-        parent::add_hidden_fields();
-        // Store setlx.
-        $mform = $this->_form;
-        $mform->addElement('hidden', 'taskstorage', qtype_proforma::SETLX_TASKFILE);
-        $mform->setType('taskstorage', PARAM_INT);
     }
 
     /**

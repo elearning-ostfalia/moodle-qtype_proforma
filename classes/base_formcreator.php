@@ -70,6 +70,11 @@ abstract class base_form_creator {
     // override
 
     /**
+     * the numeric type of task
+     */
+    abstract public function get_task_storage();
+
+    /**
      * validate field values
      * @param $fromform Validation argument
      * @param $files Validation argument
@@ -131,10 +136,6 @@ abstract class base_form_creator {
     public function add_hidden_fields() {
         $mform = $this->_form;
 
-        $hiddenfields = array('taskfilename', 'taskpath', // 'templates', 'modelsolfiles', 'downloads'
-        // , 'gradinghints' // values for grading hints are redundant
-        );
-
         // add hidden fields for filearea draft ids (if any)
         foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
             $hiddenfields[] = $filearea;
@@ -145,6 +146,9 @@ abstract class base_form_creator {
             // $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
             $mform->setType($field, PARAM_RAW);
         }
+
+        $mform->addElement('text', 'taskstorage', $this->get_task_storage());
+        $mform->setType('taskstorage', PARAM_INT);
     }
 
     /**

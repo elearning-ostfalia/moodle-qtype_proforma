@@ -44,6 +44,13 @@ class select_form_creator extends base_form_creator {
     // override
 
     /**
+     * the numeric type of task
+     */
+    public function get_task_storage() {
+        return qtype_proforma::SELECT_TASKFILE;
+    }
+
+    /**
      * Add hidden fields for question attributes that are not part of the edit form.
      * @throws coding_exception
      */
@@ -51,8 +58,8 @@ class select_form_creator extends base_form_creator {
         parent::add_hidden_fields();
         $mform = $this->_form;
 
-        $mform->addElement('hidden', 'taskstorage', qtype_proforma::SELECT_TASKFILE);
-        $mform->setType('taskstorage', PARAM_INT);
+        /*$mform->addElement('hidden', 'taskstorage', qtype_proforma::SELECT_TASKFILE);
+        $mform->setType('taskstorage', PARAM_INT);*/
 
         // Add hidden default values for missing fields.
         $mform->addElement('hidden', 'responseformat', qtype_proforma::RESPONSE_EDITOR);
