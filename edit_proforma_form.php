@@ -46,39 +46,37 @@ class qtype_proforma_edit_form extends question_edit_form {
         $removesubmit = false;
 
         if (empty($this->question->options)) {
-            $proglang = optional_param('proglang', 0, PARAM_TEXT);
-            if ($proglang == "") { // empty($this->question->options)) {
-                // New question => create select form creator for selecting
-                // a programming language.
-                $this->formcreator = new select_form_creator($this->_form, true);
-                $removesubmit = true;
-
-                $originalreturnurl = optional_param('returnurl', 0, PARAM_LOCALURL);
-
+            // New question!
+            // Because the form fields depend on the programming language
+            // we must know what programming language is required.
+            // For choosing the programming language a simple Javascript
+            // popup window is used. The selected value is appended as proglang
+            // to the URI and a redirection is triggered (all in Javascript).
+            // Therefore we need to check for the existance of the 'proglang' value.
+            $proglang = optional_param('proglang', 0, PARAM_INTEGER);
+            if ($proglang == "") {
+                // Value 'proglang' does not exist =>
+                // call Javascript function for selection.
+                // Create 2-dimensional array with available programming languages.
+                $proglangs = [
+                    [qtype_proforma::JAVA_TASKFILE, 'Java'],
+                    [qtype_proforma::SETLX_TASKFILE, 'SetlX']
+                ];
+                global $CFG;
                 global $PAGE;
-                $var = $PAGE->requires->js_call_amd('qtype_proforma/selectlang', 'select_lang', array($originalreturnurl));
+                // Pass returnurl for cancel action.
+                $originalreturnurl = $CFG->wwwroot . optional_param('returnurl', 0, PARAM_LOCALURL);
+                $PAGE->requires->js_call_amd('qtype_proforma/selectlang', 'select_lang',
+                    array($proglangs, $originalreturnurl));
+
+                // Create a dummy form selector.
+                $this->formcreator = new select_form_creator($this->_form, true);
+                // Remove submit button.
+                $removesubmit = true;
             } else {
-                switch ($proglang) {
-                    case qtype_proforma::PERSISTENT_TASKFILE:
-                        $this->formcreator = new proforma_form_creator($this->_form);
-                        break;
-                    case qtype_proforma::VOLATILE_TASKFILE:
-                    case qtype_proforma::JAVA_TASKFILE:
-                        // Question was created by form editor.
-                        $this->formcreator = new java_form_creator($this->_form);
-                        break;
-                    case qtype_proforma::SETLX_TASKFILE:
-                        // Question was created by form editor.
-                        $this->formcreator = new setlx_form_creator($this->_form);
-                        break;
-                    case qtype_proforma::SELECT_TASKFILE:
-                        // Question was created by form editor but not yet finished.
-                        $classname = $this->question->options->programminglanguage . '_form_creator';
-                        $this->formcreator = new $classname($this->_form);
-                        break;
-                    default:
-                        throw new coding_exception('invalid taskstorage value ' . $this->question->options->taskstorage);
-                }
+                // Value 'proglang' exists (user has choosen a programming language)
+                // => create form.
+                $this->create_form_creator($proglang);
             }
         }
         parent::definition();
@@ -135,10 +133,9 @@ class qtype_proforma_edit_form extends question_edit_form {
     }
     */
 
-    protected function create_form_creator_in_definition($mform) {
-
-        if (isset($this->question->options->taskstorage)) {
-            switch ($this->question->options->taskstorage) {
+    protected function create_form_creator($taskstorage) {
+        if (isset($taskstorage)) {
+            switch ($taskstorage) {
                 case qtype_proforma::PERSISTENT_TASKFILE:
                     $this->formcreator = new proforma_form_creator($this->_form);
                     break;
@@ -157,14 +154,10 @@ class qtype_proforma_edit_form extends question_edit_form {
                     $this->formcreator = new $classname($this->_form);
                     break;
                 default:
-                    throw new coding_exception('invalid taskstorage value ' . $this->question->options->taskstorage);
+                    throw new coding_exception('invalid taskstorage value ' . $taskstorage);
             }
         }
-        if ($this->formcreator == null) {
-            // Question was imported.
-            $this->formcreator = new proforma_form_creator($this->_form);
-        }
-    }
+     }
 
     /**
      * Add any question-type specific form fields.
@@ -185,7 +178,14 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         if ($this->formcreator == null) {
             // Use case: edit existing question:
-            $this->create_form_creator_in_definition($mform);
+            if (isset($this->question->options->taskstorage)) {
+                $this->create_form_creator($this->question->options->taskstorage);
+            }
+            if ($this->formcreator == null) {
+                // Question was imported.
+                $this->formcreator = new proforma_form_creator($this->_form);
+            }
+            // $this->create_form_creator_in_definition($mform);
         }
 
         $this->formcreator->add_hidden_fields();

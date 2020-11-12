@@ -16,7 +16,7 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The ProFormA Question CodeMirror support functions
+ * Modal dialog for selecting a programming language.
  *
  * @package    qtype
  * @subpackage proforma
@@ -25,41 +25,63 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-define(['jquery'], function($) {
+define(['jquery', 'core/modal_factory', 'core/modal_events'], function($,  ModalFactory, ModalEvents) {
+    function create_body(proglangs) {
+        let body = "<form>";
+        body += '<fieldset>';
+        console.log(proglangs);
+        proglangs.forEach(function(item, index) {
+            body += '<p><input type="radio" name="lang" value="' + item[0] + '"'; 
+            if (index == 0) {
+                // Check first element
+                body +=  'checked'; 
+            }
+            body += '> ' +  item[1] +'</input></p>';
+        });
+        
+        body += '<br>';
+        body += '</fieldset>';
+        body += '</form>';
+        return body;        
+    }
+    
     return {
-        select_lang: function(returnurl) {
+        select_lang: function(proglangs, returnurl) {
             try {
-                function show_popup() {
-                    var txt;
-                    var lang = prompt("Select Programming lanuage:", "java");
-                    if (lang == null || lang == "") {
-                        lang = "";
-                    }
-
-                    return lang;
+                function doModal() {
+                    ModalFactory.create({
+                        type: ModalFactory.types.SAVE_CANCEL,
+                        title: 'Select Programming Language',
+                        body: create_body(proglangs),
+                        large: false
+                    })
+                    .then(function(modal) {
+                        modal.setSaveButtonText('Select');
+                        modal.getRoot().on(ModalEvents.save, function() {
+                            // Check which radio button is checked.
+                            let radioButtons = modal.getRoot().find('input');
+                            for (var i = 0; i < radioButtons.length; i++)
+                            {
+                                if(radioButtons[i].checked == true)
+                                {
+                                    // Append language value to URI and
+                                    // reload page.
+                                    let language = radioButtons[i].value;
+                                    let uri = window.location.href;
+                                    uri += '&proglang=' + language;
+                                    window.location.assign(uri);
+                                    return;
+                                }
+                            }
+                        });
+                        modal.getRoot().on(ModalEvents.cancel, function() {
+                            // Cancel was pressed => redirect to returnurl.
+                            window.location.assign(returnurl); 
+                        });                        
+                        modal.show();
+                    }).catch(Notification.exception);
                 }
-                
-                language = show_popup();
-                if (language != "") {
-                    // programming language was selected:
-                    switch (language) {
-                        case 'java': language = 3; break;
-                        case 'setlx': language = 4; break;
-                        default: 
-                            alert('unbekannt');
-                            language = 0;
-                            break;
-                    }
-                    document.getElementById("id_taskstorage").setAttribute('value', language);
-                    let uri = window.location.href;
-                    uri += '&proglang=' + language;
-                    window.location.assign(uri);                    
-                } else {
-                    // Cancel was pressed.
-                    // => redirect to returnurl
-                    alert(returnurl);
-                    window.location.assign(returnurl); 
-                }
+                doModal();
             } catch(err) {
                 console.error("Exception caught in select-lang.js function select_lang\n " + err.toString());
             }

@@ -58,9 +58,6 @@ class select_form_creator extends base_form_creator {
         parent::add_hidden_fields();
         $mform = $this->_form;
 
-        /*$mform->addElement('hidden', 'taskstorage', qtype_proforma::SELECT_TASKFILE);
-        $mform->setType('taskstorage', PARAM_INT);*/
-
         // Add hidden default values for missing fields.
         $mform->addElement('hidden', 'responseformat', qtype_proforma::RESPONSE_EDITOR);
         $mform->setType('responseformat', PARAM_RAW);
@@ -82,6 +79,15 @@ class select_form_creator extends base_form_creator {
                 get_string('proglang', 'qtype_proforma'), $programminglangs);
         $mform->setType('programminglanguage', PARAM_TEXT);
         $mform->setDefault('programminglanguage', 'Java');
+
+
+        $modaldialog = '<div id="proglangdialog" class="modal">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Some text in the Modal..</p>
+        </div>
+        </div>';
+        $mform->addElement('html', $modaldialog);
     }
 
     /**
@@ -132,16 +138,5 @@ class select_form_creator extends base_form_creator {
             $form = $editor->get_form();
         }
     }
-
-    /**
-     * handle polymorphic behaviour when saving a question
-     * @param $formdata
-     * @param $options
-     */
-    /*
-    public function save_question_options(&$options) {
-        parent::save_question_options($options);
-    }
-    */
 
 }
