@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// Options for connection to Praktomat/Middleware
+// Grader (Praktomat) settings.
 $settings->add(new admin_setting_heading('grader',
         get_string('grader_heading', 'qtype_proforma'), ''));
 
@@ -45,7 +45,7 @@ $settings->add(new admin_setting_configtext('qtype_proforma/grading_timeout',
         get_string('grading_timeout_desc', 'qtype_proforma'), 40,
         PARAM_INT, 3));
 
-// Use CodeMirror
+// Use CodeMirror.
 $settings->add(new admin_setting_heading('CodeMirror',
         'CodeMirror', ''));
 
@@ -53,8 +53,7 @@ $settings->add(new admin_setting_configcheckbox('qtype_proforma/usecodemirror',
         get_string('usecodemirror', 'qtype_proforma'),
         get_string('usecodemirror_desc', 'qtype_proforma'), 1));
 
-// Misc
-
+// Misc.
 $settings->add(new admin_setting_heading('misc',
         get_string('questiondefaults', 'qtype_proforma'), ''));
 
@@ -62,7 +61,6 @@ $settings->add(new admin_setting_heading('misc',
 $settings->add(new admin_setting_configtext('qtype_proforma/defaultpenalty',
         get_string('defaultpenalty', 'qtype_proforma'),
         get_string('defaultpenalty_desc', 'qtype_proforma'), 0.1));
-
 
 
 // can we use this??? because float format is depending on language (. or ,)
@@ -74,7 +72,6 @@ $settings->add(new admin_setting_configtext_with_advanced('qtype_proforma/defaul
 */
 
 if (isset($CFG->maxbytes)) {
-
     $name = new lang_string('maximumsubmissionsize', 'qtype_proforma');
     $description = new lang_string('configmaxbytes', 'qtype_proforma');
 
@@ -86,7 +83,6 @@ if (isset($CFG->maxbytes)) {
             get_max_upload_sizes($CFG->maxbytes, 0, 0, $maxbytes));
     $settings->add($element);
 }
-
 
 $settings->add(new admin_setting_heading('vcs',
         get_string('vcs_header', 'qtype_proforma'),
@@ -102,15 +98,16 @@ $settings->add(new admin_setting_configtext('qtype_proforma/vcslabeldefault',
         get_string('vcslabeldefault_desc', 'qtype_proforma'),
         '', PARAM_TEXT, 20));
 
-/*
-$settings->add(new admin_setting_configtextarea('qtype_proforma/vcsfunction',
-        get_string('vcsfunction', 'qtype_proforma'),
-        get_string('vcsfunction_desc', 'qtype_proforma'),
-        '', PARAM_RAW, 80, 3));
-*/
+// Programming languages.
+$settings->add(new admin_setting_heading('proglangs',
+        get_string('proglang_hdr', 'qtype_proforma'),
+        get_string('proglang_hdr_info', 'qtype_proforma')));
 
-// Java - JUnit - Checkstyle
 
+$settings->add(new admin_setting_configcheckbox('qtype_proforma/setlx',
+        'SetlX', '', 0));
+
+// Java - JUnit - Checkstyle.
 $settings->add(new admin_setting_heading('java',
         get_string('javasettings_header', 'qtype_proforma'), ''));
 

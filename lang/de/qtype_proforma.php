@@ -198,11 +198,14 @@ $string['vcslabeldefault'] = 'Standard-Label für das Eingabefeld';
 $string['vcslabeldefault_desc'] = 'wird benötigt für das Eingabefeld {input}';
 
 $string['vcs_header'] = 'Version control system';
-$string['vcs_info'] = 'Für Einreichungen, die sich in einem Versionskontrollsystem (z.B. SVN, git o.ä.) befinden. 
+$string['vcs_info'] = 'Für Einreichungen, die sich in einem Versionskontrollsystem (z.B. SVN, git o.ä.) befinden.
 Die tatsächliche URI einer studentischen Einreichung wird aus dem URI-Template durch Ersetzen des Platzhalters ermittelt:<br>
 {group}: Name der Gruppe, zu der der Studierende gehört<br>
 {input}: erzeugt ein Eingabefeld, in dem der Studierende einen Identifier eingeben muss';
 // * {username}: takes the student\'s username in Moodle<br>
 // * {func}: return value of configured helper function';
 
+$string['proglang_hdr'] = 'Programmiersprachen';
+$string['proglang_hdr_info'] = 'Java wird standardmäßig unterstützt. '
+. 'Andere Programmiersprachen, die nicht benötigt werden, können hier abgeschaltet werden.';
 

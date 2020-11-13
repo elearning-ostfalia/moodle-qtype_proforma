@@ -101,6 +101,7 @@ $string['junit'] = 'JUnit test';
 $string['setlx'] = 'SetlX test';
 
 
+
 $string['codeempty'] = 'Code required';
 $string['titleempty'] = 'Title required';
 $string['versionrequired'] = 'Version required.';
@@ -209,8 +210,11 @@ $string['vcslabeldefault'] = 'Default label for input field';
 $string['vcslabeldefault_desc'] = 'only needed if actual URI templates contain {input}';
 
 $string['vcs_header'] = 'Version control system';
-$string['vcs_info'] = 'For use of a version control system that stores the students\' code. 
+$string['vcs_info'] = 'For use of a version control system that stores the students\' code.
 The actual URI to locate the submission is compiled by replacing the placeholder in the URI template:<br>
 {group}: name of group that the student belongs to<br>
 {input}: generates an input field';
 // * {username}: takes the student\'s username in Moodle<br>
+
+$string['proglang_hdr'] = 'Programming languages';
+$string['proglang_hdr_info'] = 'Java is enabled by default. Opt out programming languages that are not used at yout site.';
