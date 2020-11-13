@@ -32,7 +32,7 @@ class select_form_creator extends base_form_creator {
 
 
     /**
-     * select_form_creator constructor.
+     * java_form_creator constructor.
      *
      * @param $form
      * @param null $newquestion new question indicator
@@ -67,11 +67,27 @@ class select_form_creator extends base_form_creator {
     }
 
     /**
-     * No programming language field.
+     * Add something to select the programming language.
      *
      * @param $question
      */
     public function add_proglang_selection($question) {
+        $mform = $this->_form;
+
+        $programminglangs = array('java' => 'Java', 'setlx' => 'SetlX');
+        $mform->addElement('select', 'programminglanguage',
+                get_string('proglang', 'qtype_proforma'), $programminglangs);
+        $mform->setType('programminglanguage', PARAM_TEXT);
+        $mform->setDefault('programminglanguage', 'Java');
+
+
+        $modaldialog = '<div id="proglangdialog" class="modal">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Some text in the Modal..</p>
+        </div>
+        </div>';
+        $mform->addElement('html', $modaldialog);
     }
 
     /**

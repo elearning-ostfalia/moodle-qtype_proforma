@@ -64,9 +64,11 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($,  Modal
                             {
                                 if(radioButtons[i].checked == true)
                                 {
-                                    // Append language value to URI and
-                                    // reload page.
                                     let language = radioButtons[i].value;
+                                    // Preset task storage.
+                                    document.getElementById("id_taskstorage").setAttribute('value', language);
+                                    // Append language value to URI and
+                                    // reload page.                                    
                                     let uri = window.location.href;
                                     uri += '&proglang=' + language;
                                     window.location.assign(uri);

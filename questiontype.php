@@ -280,7 +280,7 @@ class qtype_proforma extends question_type {
             throw new coding_exception('proforma: save_question_options no database record available');
         }
 
-        // polymorphic behaviour
+        // Polymorphic behaviour.
         switch ($formdata->taskstorage) {
             case self::PERSISTENT_TASKFILE:
                 $editor = new proforma_form_creator($formdata);
@@ -290,9 +290,9 @@ class qtype_proforma extends question_type {
                 // handle 'save' from editor
                 $editor = new java_form_creator($formdata);
                 break;
-            case self::SELECT_TASKFILE:
-                $editor = new select_form_creator($formdata);
-                break;
+            // case self::SELECT_TASKFILE:
+            //     $editor = new select_form_creator($formdata);
+            //     break;
             case self::SETLX_TASKFILE:
                 $editor = new setlx_form_creator($formdata);
                 break;

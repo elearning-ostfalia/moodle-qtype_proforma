@@ -39,37 +39,6 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     protected $formcreator = null;
 
-    private function get_new_creator() {
-        // Check how many programming languages are available at this site.
-        $proglangs = [
-            [qtype_proforma::JAVA_TASKFILE, 'Java'],
-        ];
-        if (get_config('qtype_proforma', 'setlx')) {
-            array_push($proglangs, [qtype_proforma::SETLX_TASKFILE, 'SetlX']);
-        }
-        if (count($proglangs) > 1) {
-            // More than one programming language:
-            // user has to choose.
-            global $CFG;
-            global $PAGE;
-            // Pass returnurl for cancel action.
-            $originalreturnurl = $CFG->wwwroot . optional_param('returnurl', 0, PARAM_LOCALURL);
-            // Call Javascript function for selection.
-            // (Create 2-dimensional array with available programming languages
-            // because it is easier to handle in Javascript).
-            $PAGE->requires->js_call_amd('qtype_proforma/selectlang', 'select_lang',
-                array($proglangs, $originalreturnurl));
-
-            // Create a dummy form selector.
-            return new select_form_creator($this->_form, true);
-
-        } else {
-            // Only Java is available:
-            // Create Java edit form.
-            return new java_form_creator($this->_form, true);
-        }
-    }
-
     /**
      * overloaded definition detects that a new question will be created.
      */
@@ -85,13 +54,36 @@ class qtype_proforma_edit_form extends question_edit_form {
             // to the URI and a redirection is triggered (all in Javascript).
             // Therefore we need to check for the existance of the 'proglang' value.
             $proglang = optional_param('proglang', 0, PARAM_INTEGER);
+            if (!isset($proglang) or $proglang == 0) {
+                // Hack: We need to know what taskstorage is submitted right now!
+                // Otherwise we cannot create the appropriate instance
+                // and all submitted data belonging to the right subclass
+                // is not evaluated.
+                if (isset($_POST['taskstorage'])) {
+                    $proglang = $_POST['taskstorage'];
+                }
+            }
+
             if ($proglang == "") {
+
                 // Value 'proglang' does not exist =>
-                // evaluate creator.
-                $this->formcreator = $this->get_new_creator();
+                // call Javascript function for selection.
+                // Create 2-dimensional array with available programming languages.
+                $proglangs = [
+                    [qtype_proforma::JAVA_TASKFILE, 'Java'],
+                    [qtype_proforma::SETLX_TASKFILE, 'SetlX']
+                ];
+                global $CFG;
+                global $PAGE;
+                // Pass returnurl for cancel action.
+                $originalreturnurl = $CFG->wwwroot . optional_param('returnurl', 0, PARAM_LOCALURL);
+                $PAGE->requires->js_call_amd('qtype_proforma/selectlang', 'select_lang',
+                    array($proglangs, $originalreturnurl));
+
+                // Create a dummy form selector.
+                $this->formcreator = new select_form_creator($this->_form, true);
                 // Remove submit button.
-                // Only for select form creator
-                // $removesubmit = true;
+                $removesubmit = true;
             } else {
                 // Value 'proglang' exists (user has choosen a programming language)
                 // => create form.
@@ -120,7 +112,11 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     public function validation($fromform, $files) {
         $errors = parent::validation($fromform, $files);
-        return $this->formcreator->validation($fromform, $files, $errors);
+        /*if (!isset($this->formcreator)) {
+            return $errors;
+        } else { */
+            return $this->formcreator->validation($fromform, $files, $errors);
+        // }
     }
 
     /**
@@ -131,6 +127,22 @@ class qtype_proforma_edit_form extends question_edit_form {
     public function qtype() {
         return 'proforma';
     }
+
+    /**
+     * Get the type sets passed.
+     *
+     * @param string $types The space , ; separated list of types
+     * @return array('groupname', 'mime/type', ...)
+     */
+    /*
+     private function get_typesets($types) {
+        $sets = array();
+        if (!empty($types)) {
+            $sets = preg_split('/[\s,;:"\']+/', $types, null, PREG_SPLIT_NO_EMPTY);
+        }
+        return $sets;
+    }
+    */
 
     protected function create_form_creator($taskstorage) {
         if (isset($taskstorage)) {
@@ -156,7 +168,7 @@ class qtype_proforma_edit_form extends question_edit_form {
                     throw new coding_exception('invalid taskstorage value ' . $taskstorage);
             }
         }
-    }
+     }
 
     /**
      * Add any question-type specific form fields.
@@ -166,8 +178,17 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected function definition_inner($mform) {
         $qtype = question_bank::get_qtype('proforma');
 
+/*            $hiddenparams = null;
+            global $CFG;
+            require_once($CFG->dirroot . '/question/editlib.php');
+            $this->_form->addElement('html', '<b>Karin</b>');
+            $this->_form->addElement('html', print_choose_qtype_to_add_form($hiddenparams, null, false));
+*/
+
+
+
         if ($this->formcreator == null) {
-            // Use case: edit existing question.
+            // Use case: edit existing question:
             if (isset($this->question->options->taskstorage)) {
                 $this->create_form_creator($this->question->options->taskstorage);
             }
@@ -175,6 +196,7 @@ class qtype_proforma_edit_form extends question_edit_form {
                 // Question was imported.
                 $this->formcreator = new proforma_form_creator($this->_form);
             }
+            // $this->create_form_creator_in_definition($mform);
         }
 
         $this->formcreator->add_hidden_fields();
@@ -187,8 +209,9 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         $this->formcreator->add_grader_settings($this->question);
 
-        // Internal description (Comment).
+        // Internal description (Comment)
         $mform->addElement('header', 'commentheader', get_string('commentheader', 'qtype_proforma'));
+        // $mform->setExpanded('commentheader');
         $mform->addElement('editor', 'comment', get_string('comment', 'qtype_proforma'),
                 array('rows' => 10), $this->editoroptions);
 
@@ -199,8 +222,8 @@ class qtype_proforma_edit_form extends question_edit_form {
             if (empty($values['filetypes'])) {
                 return true;
             }
-            // Extension .py is not recognised => do not check extensions!
-            // TODO: check valid format: ; separated + . with extension.
+            // .py is not recognised => do not check extensions!
+            // TODO: check valid format: ; separated + . with extension
             return true;
         });
     }
@@ -230,10 +253,28 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     protected function data_preprocessing($question) {
         $question = parent::data_preprocessing($question);
-        $question = $this->data_preprocessing_hints($question);
+        $question = $this->data_preprocessing_hints($question); // TODO das muss ohne gehen
 
         // Remember that data comes from user input.
         $question->edit_form = true;
+        /*
+        $cat = $question->category;
+        $found = false;
+        foreach (explode(',', $question->category) as $category) {
+            $cat = $category;
+            if ($question->contextid == $category) {
+                $found = true;
+            }
+        }
+        // Can we use $question->contextid instead of $question->category?
+        // Check if the debugging message is visible...
+        if (!$found) {
+            debugging('$question->contextid not found in $question->category');
+        } else {
+            $cat = $question->contextid;
+        }
+        */
+        // $cat = $question->contextid;
         $cat = $this->context->id;
         if ($this->formcreator == null) {
             throw new coding_exception('formcreator does not exist in data_preprocessing');

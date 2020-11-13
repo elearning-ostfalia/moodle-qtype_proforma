@@ -147,8 +147,11 @@ abstract class base_form_creator {
             $mform->setType($field, PARAM_RAW);
         }
 
-        $mform->addElement('text', 'taskstorage', $this->get_task_storage());
-        $mform->setType('taskstorage', PARAM_INT);
+        // $mform->addElement('hidden', 'taskstorage', $this->get_task_storage());
+        $mform->addElement('text', 'taskstorage', 'taskstorage'); // $this->get_task_storage());
+        $mform->setDefault('taskstorage', $this->get_task_storage());
+        $mform->setType('taskstorage', PARAM_RAW);
+        // $mform->hideif('taskstorage', 'responseformat', 'neq', '12345');
     }
 
     /**
@@ -746,6 +749,9 @@ abstract class base_form_creator {
             $options->templates = $formdata->templates = '';
         }
 
+        if (!isset($this->_taskhandler)) {
+            throw new coding_exception('where is the taskhandler??');
+        }
         if (isset($this->_taskhandler)) {
             // Extract grading hints.
             $options->gradinghints = $this->_taskhandler->create_lms_grading_hints($formdata);
