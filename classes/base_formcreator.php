@@ -147,10 +147,13 @@ abstract class base_form_creator {
             $mform->setType($field, PARAM_RAW);
         }
 
-        // $mform->addElement('hidden', 'taskstorage', $this->get_task_storage());
+        $mform->addElement('hidden', 'taskstorage', $this->get_task_storage());
+        $mform->setType('taskstorage', PARAM_RAW);
+
+        /*
         $mform->addElement('text', 'taskstorage', 'taskstorage'); // $this->get_task_storage());
         $mform->setDefault('taskstorage', $this->get_task_storage());
-        $mform->setType('taskstorage', PARAM_RAW);
+        $mform->setType('taskstorage', PARAM_RAW);*/
         // $mform->hideif('taskstorage', 'responseformat', 'neq', '12345');
     }
 
@@ -226,7 +229,7 @@ abstract class base_form_creator {
         $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
 
         // Add Filemanager for model solution in case of using the filepicker.
-        // Remove hidden element in base class.
+        // Replace hidden element by actual filepicker.
         $mform->removeElement(self::MODELSOLMANAGER);
         $mform->addElement('filemanager', self::MODELSOLMANAGER, get_string('modelsolfiles', 'qtype_proforma'), null,
         array('subdirs' => true));

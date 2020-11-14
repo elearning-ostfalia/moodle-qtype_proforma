@@ -32,7 +32,7 @@ class select_form_creator extends base_form_creator {
 
 
     /**
-     * java_form_creator constructor.
+     * select_form_creator constructor.
      *
      * @param $form
      * @param null $newquestion new question indicator
@@ -79,15 +79,6 @@ class select_form_creator extends base_form_creator {
                 get_string('proglang', 'qtype_proforma'), $programminglangs);
         $mform->setType('programminglanguage', PARAM_TEXT);
         $mform->setDefault('programminglanguage', 'Java');
-
-
-        $modaldialog = '<div id="proglangdialog" class="modal">
-          <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>Some text in the Modal..</p>
-        </div>
-        </div>';
-        $mform->addElement('html', $modaldialog);
     }
 
     /**
@@ -130,6 +121,7 @@ class select_form_creator extends base_form_creator {
      * @param MoodleQuickForm $form
      * @param qtype_proforma_edit_form $editor
      */
+    /*
     public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
         parent::data_preprocessing($question, $cat, $editor);
 
@@ -137,6 +129,6 @@ class select_form_creator extends base_form_creator {
             // preset data if question already exists
             $form = $editor->get_form();
         }
-    }
+    }*/
 
 }

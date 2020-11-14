@@ -213,7 +213,6 @@ class java_form_creator extends base_form_creator {
      * @return int
      */
     public function add_tests($question, $questioneditform) {
-        $mform = $this->_form;
         // Add compilation.
         $this->add_compilation(get_string('compile', 'qtype_proforma'));
         // Add JUnit.

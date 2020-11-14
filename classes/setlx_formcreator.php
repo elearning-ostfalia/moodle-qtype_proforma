@@ -159,14 +159,14 @@ class setlx_form_creator extends base_form_creator {
                 // error message must be attached to testoptions group
                 // $errors['testweight['.$i.']'] = get_string('titleempty', 'qtype_proforma');
                 $errors['testoptions[' . $i . ']'] = get_string('titleempty', 'qtype_proforma');
-            } else if ($lencode > 0 and $lentitle > 0) {
-                /*                // check classname
+            } /* else if ($lencode > 0 and $lentitle > 0) {
+                                // check classname
                   if (!qtype_proforma_java_task::get_java_file($code)) {
                   $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
                   } else if (!qtype_proforma_java_task::get_java_entrypoint($code)) {
                   $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
-                  } */
-            }
+                  }
+            } */
             /*            if (0 == $fromform["testversion"][$i]) {
               // Unsupported version and no new choice.
               $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');

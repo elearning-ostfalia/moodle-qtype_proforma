@@ -66,7 +66,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($,  Modal
                                 {
                                     let language = radioButtons[i].value;
                                     // Preset task storage.
-                                    document.getElementById("id_taskstorage").setAttribute('value', language);
+                                    // document.getElementById("id_taskstorage").setAttribute('value', language);
                                     // Append language value to URI and
                                     // reload page.                                    
                                     let uri = window.location.href;
