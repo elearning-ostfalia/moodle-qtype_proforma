@@ -39,7 +39,15 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     protected $formcreator = null;
 
-    private function get_new_creator() {
+    /**
+     * creates a formcreator for generating a new question.
+     * return true: if programming language will be selected.
+     * Otherwise false.
+     *
+     * @global type $CFG
+     * @global type $PAGE
+     */
+    private function create_creator_for_new_question() {
         // Check how many programming languages are available at this site.
         $proglangs = [
             [qtype_proforma::JAVA_TASKFILE, 'Java'],
@@ -62,12 +70,13 @@ class qtype_proforma_edit_form extends question_edit_form {
                 array($title, $proglangs, $originalreturnurl));
 
             // Create a dummy form selector.
-            return new select_form_creator($this->_form, true);
-
+            $this->formcreator = new select_form_creator($this->_form, true);
+            return true;
         } else {
             // Only Java is available:
             // Create Java edit form.
-            return new java_form_creator($this->_form, true);
+            $this->formcreator = new java_form_creator($this->_form, true);
+            return false;
         }
     }
 
@@ -76,45 +85,46 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     protected function definition() {
 
-        if (empty($this->question->options)) {
-            // New question!
-            // Because the form fields depend on the programming language
-            // we must know what programming language is required.
-            // For choosing the programming language a simple Javascript
-            // popup window is used. The selected value is appended as proglang
-            // to the URI and a redirection is triggered (all in Javascript).
-            // Therefore we need to check for the existance of the 'proglang' value.
-            $proglang = optional_param('proglang', 0, PARAM_INTEGER);
-            if (empty($proglang)) {
-                // Hack: We need to know what taskstorage is submitted right now!
-                // Otherwise we cannot create the appropriate instance
-                // and all submitted data belonging to the right subclass
-                // is not evaluated.
-                if (isset($_POST['taskstorage'])) {
-                    $proglang = $_POST['taskstorage'];
-                }
-            }
+        if (!empty($this->question->options)) {
+            // Existing question is opened => default handling.
+            parent::definition();
+            return;
+        }
 
-            if (empty($proglang)) {
-                // Value 'proglang' does not exist =>
-                // evaluate creator.
-                $this->formcreator = $this->get_new_creator();
-                parent::definition();
+        // New question!
+        // Because the form fields depend on the programming language
+        // we must know what programming language is required.
+        // For choosing the programming language a simple Javascript
+        // popup window is used. The selected value is appended as proglang
+        // to the URI and a redirection is triggered (all in Javascript).
+        // Therefore we need to check for the existance of the 'proglang' value.
+        $proglang = optional_param('proglang', 0, PARAM_INTEGER);
+        if (empty($proglang)) {
+            // Hack: We need to know what taskstorage is submitted right now!
+            // Otherwise we cannot create the appropriate instance
+            // and all submitted data belonging to the right subclass
+            // is not evaluated.
+            if (isset($_POST['taskstorage'])) {
+                $proglang = $_POST['taskstorage'];
+            }
+        }
+
+        if (empty($proglang)) {
+            // Value 'proglang' does not exist => evaluate creator.
+            $select = $this->create_creator_for_new_question();
+            parent::definition();
+            if ($select) {
                 // Do not show submit button.
                 $this->_form->removeElement('buttonar');
                 // Re-add cancel button.
                 $this->_form->addElement('cancel');
-            } else {
-                // Value 'proglang' exists (user has choosen a programming language)
-                // => create form.
-                $this->create_form_creator($proglang);
-                parent::definition();
             }
         } else {
-            // Existing question is opened.
+            // Value 'proglang' exists (user has choosen a programming language)
+            // => create form.
+            $this->create_form_creator($proglang);
             parent::definition();
         }
-
     }
 
     public function get_form() {
