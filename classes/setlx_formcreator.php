@@ -68,9 +68,9 @@ class setlx_form_creator extends base_form_creator {
      */
     public function add_grader_settings($question) {
         if (qtype_proforma\lib\is_admin()) {
-            // allow admin to see the created task.xml (for debugging purposes)
+            // Allow admin to see the created task.xml (for debugging purposes).
             parent::add_grader_settings($question);
-            // ProFormA fields
+            // ProFormA fields.
             $mform = $this->_form;
             $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
         }
@@ -82,7 +82,7 @@ class setlx_form_creator extends base_form_creator {
      * @return string label of JUnit tests
      */
     protected function get_test_label() {
-        return get_string('setlx', 'qtype_proforma'); // use different label
+        return get_string('setlx', 'qtype_proforma');
     }
 
     /**
@@ -115,9 +115,9 @@ class setlx_form_creator extends base_form_creator {
      */
     public function add_tests($question, $questioneditform) {
         $mform = $this->_form;
-        // add compilation
+        // Add compilation = Setlx Syntax check.
         $this->add_compilation(get_string('syntaxcheck', 'qtype_proforma'));
-        // add SetlX tests
+        // Add SetlX tests.
         return $this->add_test_fields($question, $questioneditform, 'setlx');
     }
 
@@ -146,7 +146,7 @@ class setlx_form_creator extends base_form_creator {
     public function validation($fromform, $files, $errors) {
         $errors = parent::validation($fromform, $files, $errors);
 
-        // Check SetlX tests:
+        // Check SetlX tests.
         $repeats = $this->get_count_tests(null);
         for ($i = 0; $i < $repeats; $i++) {
             $title = $fromform["testtitle"][$i];
@@ -157,22 +157,10 @@ class setlx_form_creator extends base_form_creator {
                 // Title is set but code is missing.
                 $errors['testcode[' . $i . ']'] = get_string('codeempty', 'qtype_proforma');
             } else if (0 == $lentitle and 0 < $lencode) {
-                // Title is missing
-                // error message must be attached to testoptions group
-                // $errors['testweight['.$i.']'] = get_string('titleempty', 'qtype_proforma');
+                // Title is missing.
+                // (Error message must be attached to testoptions group).
                 $errors['testoptions[' . $i . ']'] = get_string('titleempty', 'qtype_proforma');
-            } /* else if ($lencode > 0 and $lentitle > 0) {
-                                // check classname
-                  if (!qtype_proforma_java_task::get_java_file($code)) {
-                  $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
-                  } else if (!qtype_proforma_java_task::get_java_entrypoint($code)) {
-                  $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
-                  }
-            } */
-            /*            if (0 == $fromform["testversion"][$i]) {
-              // Unsupported version and no new choice.
-              $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
-              } */
+            }
         }
 
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
@@ -185,8 +173,8 @@ class setlx_form_creator extends base_form_creator {
                 $sumweight += $fromform["compileweight"];
             }
             if ($repeats > 0 && $sumweight == 0) {
-                // error message must be attached to testoptions group
-                // otherwise it is not visible
+                // Error message must be attached to testoptions group.
+                // Otherwise it is not visible.
                 $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
             }
         }
@@ -206,7 +194,7 @@ class setlx_form_creator extends base_form_creator {
         parent::data_preprocessing($question, $cat, $editor);
 
         if (isset($question->id)) {
-            // preset data if question already exists.
+            // Preset data if question already exists.
             $form = $editor->get_form();
 
             switch ($question->taskstorage) {
@@ -222,7 +210,8 @@ class setlx_form_creator extends base_form_creator {
                         $question->modelsolution = $files[0]->get_content();
                     }
                     break;
-/*                case qtype_proforma::SELECT_TASKFILE:
+                /*
+                case qtype_proforma::SELECT_TASKFILE:
                     // State transition from SELECT to SETLX.
                     $question->taskstorage = qtype_proforma::SETLX_TASKFILE;
                     break;*/

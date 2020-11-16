@@ -93,7 +93,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
         return $xpathresult->length;
     }
 
-    // override
+    // Override.
 
     /**
      * get number of unit tests (if any), to be overriden

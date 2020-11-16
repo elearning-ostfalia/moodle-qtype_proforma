@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/moodlelib.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/java_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/setlx_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/question.php');
 

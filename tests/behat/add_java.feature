@@ -168,8 +168,6 @@ Feature: ADD JAVA QUESTION
     And following "template.txt" should download file with between "69" and "73" bytes
     And I switch to the main window
 
-
-
 ##########################################################################
   Scenario: Create, save and open a ProFormA java question with compilation and two Junit tests
 ##########################################################################

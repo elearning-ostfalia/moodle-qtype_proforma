@@ -68,8 +68,8 @@ class proforma_form_creator extends base_form_creator {
                 $sumweight += $fromform["testweight"][$i];
             }
             if ($repeats > 0 && $sumweight == 0) {
-                // error message must be attached to testoptions group
-                // otherwise it is not visible
+                // Error message must be attached to testoptions group.
+                // Otherwise it is not visible.
                 $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
             }
         }
@@ -82,7 +82,7 @@ class proforma_form_creator extends base_form_creator {
      */
     public function add_modelsolution() {
         $mform = $this->_form;
-        // Model Solution files (instead of modelsollist we show links)
+        // Model Solution files (instead of modelsollist we show links).
         $mform->addElement('static', 'mslinks', get_string('modelsolfiles', 'qtype_proforma'), '');
         $mform->addHelpButton('mslinks', 'modelsolfiles_hint', 'qtype_proforma');
     }
@@ -95,7 +95,7 @@ class proforma_form_creator extends base_form_creator {
     protected function add_responsetemplate($question) {
         $mform = $this->_form;
         parent::add_responsetemplate($question);
-        // Further templates (there should be no other templates)
+        // Further templates (there should be no other templates).
         $this->add_static_text($question, 'furtherTemplates', get_string('templates', 'qtype_proforma'),
                 'templates');
         $mform->addHelpButton('furtherTemplates', 'templates_hint', 'qtype_proforma');
@@ -110,12 +110,11 @@ class proforma_form_creator extends base_form_creator {
     public function add_grader_settings($question) {
         $mform = $this->_form;
         parent::add_grader_settings($question);
-        // UUID
+        // UUID.
         $this->add_static_field($question, 'uuid', get_string('uuid', 'qtype_proforma'), 40);
-        // $mform->setType('uuid', PARAM_TEXT);
         $mform->addHelpButton('uuid', 'uuid_hint', 'qtype_proforma');
 
-        // Proforma version
+        // Show Proforma version.
         $this->add_static_field($question, 'proformaversion', 'ProFormA Version', 6);
     }
 
@@ -125,7 +124,7 @@ class proforma_form_creator extends base_form_creator {
      * @param $repeatoptions
      */
     protected function modify_test_repeatoptions(&$repeatoptions) {
-        // disable testtype and test identifier for imported tasks
+        // Disable testtype and test identifier for imported tasks.
         $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         $repeatoptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         // Hide weight for case of all-or-nothing.
@@ -161,9 +160,9 @@ class proforma_form_creator extends base_form_creator {
             $question->firstTemplate = '';
         }
 
-        // create template list with all template files without the first one
+        // Create template list with all template files without the first one
         // which gets its own editor
-        // (normally there should be only one template if no filepicker is used)
+        // (normally there should be only one template if no filepicker is used).
         $alltemplates = explode(',', $question->templates);
         $question->firstTemplate = array_shift($alltemplates);
         $question->furtherTemplates = implode(',', $alltemplates);
@@ -171,7 +170,7 @@ class proforma_form_creator extends base_form_creator {
             $form->removeElement('furtherTemplates');
         }
 
-        // Create links for model solution and download files
+        // Create links for model solution and download files.
         $msfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
         $question->mslinks = $msfilearea->get_files_as_links($question->contextid,
                 $question->id);
@@ -190,8 +189,8 @@ class proforma_form_creator extends base_form_creator {
     public function save_question_options(&$options) {
         $formdata = $this->_form;
         if (isset($formdata->taskfiledraftid)) {
-            // special handling for proforma import (interim solution):
-            // rename draftid property
+            // Special handling for proforma import (interim solution):
+            // rename draftid property.
             throw new moodle_exception('your qformat_proforma plugin is outdated, please upgrade!');
             $formdata->task = $formdata->taskfiledraftid;
             $formdata->modelsol = $formdata->modelsolid;
@@ -199,9 +198,5 @@ class proforma_form_creator extends base_form_creator {
             $formdata->template = $formdata->templateid;
         }
         parent::save_question_options($options);
-
-        // $instance = new qtype_proforma_proforma_task();
-        // $options->gradinghints = $this->_taskhandler->create_lms_grading_hints($formdata);
     }
-
 }

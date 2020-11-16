@@ -86,7 +86,6 @@ Feature: ADD SETLX QUESTION
 
     And I press "Cancel"
 
-
 ##########################################################################
   @javascript
   Scenario: Create, save and open a ProFormA setlx question with compilation, one SetlX test
@@ -134,4 +133,3 @@ Feature: ADD SETLX QUESTION
     And the field "testcode[0]" matches value "some test code"
     # Cancel (form is not modified)
     And I press "Cancel"
-

@@ -41,7 +41,7 @@ class select_form_creator extends base_form_creator {
         parent::__construct($form, null, null, null);
     }
 
-    // override
+    // Override.
 
     /**
      * the numeric type of task
