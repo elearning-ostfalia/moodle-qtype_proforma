@@ -143,7 +143,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     '</root>'.
     '</grading-hints>';
 
-    
+
     const QUESTION_GRADINGHINTS_SETLX = '<grading-hints>'.
     '<root function="sum">'.
     '<test-ref ref="compiler" weight="0">
@@ -157,8 +157,28 @@ class qtype_proforma_test_helper extends question_test_helper {
         <description>DESCRIPTION 2</description>
     </test-ref>'.
     '</root>'.
-    '</grading-hints>';    
-    
+    '</grading-hints>';
+
+    const QUESTION_GRADINGHINTS_SETLX2= '<grading-hints>'.
+    '<root function="sum">'.
+    '<test-ref ref="compiler" weight="2">
+        <title>Compiler Test</title>
+        <test-type>setlx</test-type>
+        <description>DESCRIPTION OF Syntax Check</description>
+    </test-ref>'.
+    '<test-ref ref="1" weight="3">
+        <title>Setlx Test 1</title>
+        <test-type>setlx</test-type>
+        <description>DESCRIPTION 1</description>
+    </test-ref>'.
+    '<test-ref ref="2" weight="6">
+        <title>Setlx Test 2</title>
+        <test-type>setlx</test-type>
+        <description>DESCRIPTION 2</description>
+    </test-ref>'.
+    '</root>'.
+    '</grading-hints>';
+
     private function attach_file_to_question($text, $filename, $filearea, $itemid, $contextid) {
         $fs = get_file_storage();
 
@@ -391,7 +411,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         return $fromform;
     }
 
-    
+
     // JAVA
 
     // used for behat tests
@@ -548,14 +568,14 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testtitle[0] = '';
         $form->testweight[0] = '1';
         $form->testid[0] = '1';
-        
+
         return $form;
-    }    
+    }
 
     // -------------------
     // SetlX
     // -------------------
-    
+
     public function get_proforma_question_form_data_setlx_base() {
         $form = new stdClass();
 
@@ -576,12 +596,12 @@ class qtype_proforma_test_helper extends question_test_helper {
                 self::QUESTION_TEMPLATE);
 
         $form->gradinghints = self::QUESTION_GRADINGHINTS_SETLX;
-        $form->aggregationstrategy = self::QUESTION_AGGREGATIONSTRATEGY;
+        $form->aggregationstrategy = qtype_proforma::ALL_OR_NOTHING;
 
         $form->name = self::QUESTION_NAME;
         //$form->questiontext = self::QUESTION_TEXT;
         $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
-        $form->defaultmark = 1.0;
+        $form->defaultmark = 3.0;
         $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
         $form->penalty = 0.2;
 
@@ -590,27 +610,16 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->responsefieldlines = 10;
         $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
 
+        $form->compile = 1;
+        $form->compileweight = 2;
+
+        // test weight, title and description are taken from grading hints.
+        // They must also exist as test variables.
         $form->testcode[0] = 'some testcode';
         $form->testtitle[0] = 'Setlx Test 1';
         $form->testweight[0] = '3';
         $form->testid[0] = '1';
 
-        $form->compile = 1;
-        $form->compileweight = 2;
-
-/*        $form->checkstyle = 1;
-        $form->checkstyleweight = 4;
-        $form->checkstyleversion = "8.23";
-        $form->checkstylecode = '<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
-<module name="Checker">
-  <property name="severity" value="warning"/>
-  <module name="TreeWalker">
-    <module name="NeedBraces">
-      <property name="severity" value="error"/>
-    </module>
-  </module>
-</module>';*/
 
         // handle different line ending on different platforms
 //        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
@@ -626,7 +635,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         return $form;
     }
-    
+
     /**
      * no test, only syntax check
      */
@@ -638,31 +647,34 @@ class qtype_proforma_test_helper extends question_test_helper {
         unset($form->testweight[0]);
         unset($form->testid[0]);
         return $form;
-    }    
-    
+    }
+
     /** one test and syntax check */
     public function get_proforma_question_form_data_setlx1() {
         $form = $this->get_proforma_question_form_data_setlx_base();
         return $form;
-    }     
-    
+    }
+
     /** one test and no syntax check */
     public function get_proforma_question_form_data_setlx1a() {
         $form = $this->get_proforma_question_form_data_setlx_base();
         $form->compile = 0;
         return $form;
-    }    
+    }
 
     /** two tests and syntax check */
     public function get_proforma_question_form_data_setlx2() {
         $form = $this->get_proforma_question_form_data_setlx_base();
         $form->testcode[1] = 'some other testcode';
-        $form->testtitle[1] = 'Setlx Test 2';
-        $form->testweight[1] = '4';
-        $form->testid[1] = '2';        
+        $form->testtitle[1] = '-';
+        $form->testweight[1] = '-';
+        $form->testid[1] = '-';
+
+        // Title, weight and description come from grading hints
+        $form->gradinghints = self::QUESTION_GRADINGHINTS_SETLX2;
         return $form;
-    }    
-    
+    }
+
 
     /**
      * Creates an empty draft area for attachments.
