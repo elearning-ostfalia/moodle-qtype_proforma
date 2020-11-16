@@ -253,16 +253,10 @@ class qtype_proforma extends question_type {
      * @throws coding_exception
      */
     public function save_question_options($formdata) {
-        /* if ($formdata->taskstorage == self::SELECT_TASKFILE) {
-            parent::save_question_options($formdata);
-            return;
-        }*/
-
         global $DB;
-        $context = $formdata->context;
 
         if (isset($formdata->original_template)) {
-            // workaround for a bug (?) in the behat test environment in Moodle 3.6:
+            // Workaround for a bug (?) in the behat test environment in Moodle 3.6:
             $formdata->behat_template = $formdata->template;
             $formdata->template = $formdata->original_template;
             if (empty($formdata->template)) {
@@ -290,9 +284,6 @@ class qtype_proforma extends question_type {
                 // handle 'save' from editor
                 $editor = new java_form_creator($formdata);
                 break;
-            // case self::SELECT_TASKFILE:
-            //     $editor = new select_form_creator($formdata);
-            //     break;
             case self::SETLX_TASKFILE:
                 $editor = new setlx_form_creator($formdata);
                 break;
@@ -303,10 +294,10 @@ class qtype_proforma extends question_type {
 
         $editor->save_question_options($options);
 
-        // we need a different handling for different variable structure for comment:
-        // - array with comment (text, format)
-        // - comment contains only flat text with seperate variable 'commentformat'
-        // (The handling is kept here because import_or_save_files is protected)
+        /* we need a different handling for comment:
+         *  - array with comment (text, format)
+         *  - comment contains only flat text with seperate variable 'commentformat'
+         *  (The handling is kept here because import_or_save_files is protected)*/
         if (!empty($formdata->comment['format'])) {
             // $formdata->comment is array (when data comes from form input)
             $options->comment = $this->import_or_save_files($formdata->comment,
@@ -543,7 +534,6 @@ class qtype_proforma extends question_type {
      * @return string
      */
     public function export_to_xml($question, qformat_xml $format, $extra = null) {
-        global $COURSE;
         // shall vcsuritemplate and vcslabel be deleted from extra field array because
         // they belong to the course and not to the question???
 

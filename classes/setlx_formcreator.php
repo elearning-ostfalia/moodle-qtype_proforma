@@ -121,6 +121,20 @@ class setlx_form_creator extends base_form_creator {
         return $this->add_test_fields($question, $questioneditform, 'setlx');
     }
 
+
+    /**
+     * Add test settings.
+     *
+     * @param $question
+     * @param $questioneditform
+     */
+    public function add_test_settings($question, $questioneditform) {
+        parent::add_test_settings($question, $questioneditform);
+
+        // Set aggregation strategy to 'all-or-nothing'.
+        $this->_form->setDefault('aggregationstrategy', qtype_proforma::ALL_OR_NOTHING);
+    }
+
     /**
      * Validate form fields.
      *
@@ -131,18 +145,6 @@ class setlx_form_creator extends base_form_creator {
      */
     public function validation($fromform, $files, $errors) {
         $errors = parent::validation($fromform, $files, $errors);
-        /*        if ($fromform["checkstyle"]) {
-          // Check Checkstyle values:
-          if (0 == strlen(trim($fromform["checkstylecode"]))) {
-          // Checkstyle code muse not be empty.
-          // $errors['checkstylecode'] = get_string('required');
-          $errors['checkstylecode'] = get_string('codeempty', 'qtype_proforma');
-          }
-          if (0 == $fromform["checkstyleversion"]) {
-          // Unsupported version and no new choice.
-          $errors['checkstyleoptions'] = get_string('versionrequired', 'qtype_proforma');
-          }
-          } */
 
         // Check SetlX tests:
         $repeats = $this->get_count_tests(null);
@@ -173,27 +175,12 @@ class setlx_form_creator extends base_form_creator {
               } */
         }
 
-        /*        if ($fromform["responseformat"] == 'editor') {
-          if (0 == strlen(trim($fromform["responsefilename"]))) {
-          $errors['responsefilename'] = get_string('required');
-          }
-          if (0 < strlen(trim($fromform["modelsolution"]))) {
-          $filename = qtype_proforma_java_task::get_java_file($fromform["modelsolution"]);
-          if ($filename != null and trim($filename) != trim($fromform["responsefilename"])) {
-          $errors['responsefilename'] = $filename . ' expected';
-          }
-          }
-          } */
-
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
             $repeats = count($fromform["testweight"]);
             $sumweight = 0;
             for ($i = 0; $i < $repeats; $i++) {
                 $sumweight += $fromform["testweight"][$i];
             }
-            /*            if ($fromform["checkstyle"]) {
-              $sumweight += $fromform["checkstyleweight"];
-              } */
             if ($fromform["compile"]) {
                 $sumweight += $fromform["compileweight"];
             }
@@ -219,7 +206,7 @@ class setlx_form_creator extends base_form_creator {
         parent::data_preprocessing($question, $cat, $editor);
 
         if (isset($question->id)) {
-            // preset data if question already exists
+            // preset data if question already exists.
             $form = $editor->get_form();
 
             switch ($question->taskstorage) {
@@ -235,10 +222,10 @@ class setlx_form_creator extends base_form_creator {
                         $question->modelsolution = $files[0]->get_content();
                     }
                     break;
-                case qtype_proforma::SELECT_TASKFILE:
+/*                case qtype_proforma::SELECT_TASKFILE:
                     // State transition from SELECT to SETLX.
                     $question->taskstorage = qtype_proforma::SETLX_TASKFILE;
-                    break;
+                    break;*/
                 default:
                     throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }

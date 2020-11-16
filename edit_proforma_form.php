@@ -57,8 +57,9 @@ class qtype_proforma_edit_form extends question_edit_form {
             // Call Javascript function for selection.
             // (Create 2-dimensional array with available programming languages
             // because it is easier to handle in Javascript).
+            $title = get_string('selectlangtitle', 'qtype_proforma');
             $PAGE->requires->js_call_amd('qtype_proforma/selectlang', 'select_lang',
-                array($proglangs, $originalreturnurl));
+                array($title, $proglangs, $originalreturnurl));
 
             // Create a dummy form selector.
             return new select_form_creator($this->_form, true);
@@ -74,7 +75,6 @@ class qtype_proforma_edit_form extends question_edit_form {
      * overloaded definition detects that a new question will be created.
      */
     protected function definition() {
-        $removesubmit = false;
 
         if (empty($this->question->options)) {
             // New question!
@@ -85,7 +85,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             // to the URI and a redirection is triggered (all in Javascript).
             // Therefore we need to check for the existance of the 'proglang' value.
             $proglang = optional_param('proglang', 0, PARAM_INTEGER);
-            if (!isset($proglang) or $proglang == 0) {
+            if (empty($proglang)) {
                 // Hack: We need to know what taskstorage is submitted right now!
                 // Otherwise we cannot create the appropriate instance
                 // and all submitted data belonging to the right subclass
@@ -95,27 +95,26 @@ class qtype_proforma_edit_form extends question_edit_form {
                 }
             }
 
-            if ($proglang == "") {
-
+            if (empty($proglang)) {
                 // Value 'proglang' does not exist =>
                 // evaluate creator.
                 $this->formcreator = $this->get_new_creator();
-                // Remove submit button.
-                // Only for select form creator
-                // $removesubmit = true;
+                parent::definition();
+                // Do not show submit button.
+                $this->_form->removeElement('buttonar');
+                // Re-add cancel button.
+                $this->_form->addElement('cancel');
             } else {
                 // Value 'proglang' exists (user has choosen a programming language)
                 // => create form.
                 $this->create_form_creator($proglang);
+                parent::definition();
             }
+        } else {
+            // Existing question is opened.
+            parent::definition();
         }
-        parent::definition();
-        if ($removesubmit) {
-            // Do not show submit button.
-            $this->_form->removeElement('buttonar');
-            // Re-add cancel button.
-            $this->_form->addElement('cancel');
-        }
+
     }
 
     public function get_form() {
@@ -167,7 +166,7 @@ class qtype_proforma_edit_form extends question_edit_form {
                     throw new coding_exception('invalid taskstorage value ' . $taskstorage);
             }
         }
-     }
+    }
 
     /**
      * Add any question-type specific form fields.

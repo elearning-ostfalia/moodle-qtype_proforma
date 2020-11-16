@@ -25,13 +25,14 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-define(['jquery', 'core/modal_factory', 'core/modal_events'], function($,  ModalFactory, ModalEvents) {
+define(['core/modal_factory', 'core/modal_events'], function(ModalFactory, ModalEvents) {
     function create_body(proglangs) {
         let body = "<form>";
         body += '<fieldset>';
         console.log(proglangs);
         proglangs.forEach(function(item, index) {
-            body += '<p><input type="radio" name="lang" value="' + item[0] + '"'; 
+            // We add a human readable identifier for testing access.
+            body += '<p><input id="item_' + item[1].toLowerCase() + '" type="radio" name="lang" value="' + item[0] + '"'; 
             if (index == 0) {
                 // Check first element
                 body +=  'checked'; 
@@ -46,17 +47,17 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($,  Modal
     }
     
     return {
-        select_lang: function(proglangs, returnurl) {
+        select_lang: function(title, proglangs, returnurl) {
             try {
                 function doModal() {
                     ModalFactory.create({
                         type: ModalFactory.types.SAVE_CANCEL,
-                        title: 'Select Programming Language',
+                        title: title,
                         body: create_body(proglangs),
                         large: false
                     })
                     .then(function(modal) {
-                        modal.setSaveButtonText('Select');
+                        modal.setSaveButtonText('Ok');
                         modal.getRoot().on(ModalEvents.save, function() {
                             // Check which radio button is checked.
                             let radioButtons = modal.getRoot().find('input');

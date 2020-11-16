@@ -209,3 +209,4 @@ $string['proglang_hdr'] = 'Programmiersprachen';
 $string['proglang_hdr_info'] = 'Java wird standardmäßig unterstützt. '
 . 'Andere Programmiersprachen, die nicht benötigt werden, können hier abgeschaltet werden.';
 
+$string['selectlangtitle'] = 'Markieren Sie die gewünschte Programmiersprache';

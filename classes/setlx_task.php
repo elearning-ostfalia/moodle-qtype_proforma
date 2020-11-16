@@ -97,20 +97,6 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
                 $xw->endElement(); // file
             }
         }
-/*
-        // create checkstyle file
-        if (self::has_checkstyle($formdata)) {
-            $xw->startElement('file');
-            $xw->create_attribute('id', 'checkstyle'); // $id);
-            $xw->create_attribute('used-by-grader', 'true');
-            $xw->create_attribute('visible', 'no');
-            $xw->startElement('embedded-txt-file');
-            $xw->create_attribute('filename', 'checkstyle.xml');
-            $xw->text($formdata->checkstylecode);
-            $xw->endElement(); // embedded-txt-file
-            $xw->endElement(); // file
-
-        }*/
     }
 
     /**
@@ -156,29 +142,6 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
                 $xw->endElement(); // test
             }
         }
-/*
-        // create checkstyle test
-        if (self::has_checkstyle($formdata)) {
-            $xw->startElement('test');
-            $xw->create_attribute('id', 'checkstyle');
-            $xw->create_childelement_with_text('title', 'CheckStyle Test');
-            $xw->create_childelement_with_text('test-type', 'java-checkstyle');
-            $xw->startElement('test-configuration');
-
-            $xw->startElement('filerefs');
-            $xw->startElement('fileref');
-            $xw->create_attribute('refid', 'checkstyle');
-            $xw->endElement(); // fileref
-            $xw->endElement(); // filerefs
-            $xw->startElement('cs:java-checkstyle');
-
-            $checkstyleversion = $formdata->checkstyleversion;
-            $xw->create_attribute('version', $checkstyleversion);
-            $xw->create_childelement_with_text('cs:max-checkstyle-warnings', '4');
-            $xw->endElement(); // cs:java-checkstyle
-            $xw->endElement(); // test-configuration
-            $xw->endElement(); // test
-        }*/
     }
 
     /**
@@ -199,16 +162,6 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         }
 
         parent::add_tests_to_lms_grading_hints($xw, $formdata);
-/*
-        if (self::has_checkstyle($formdata)) {
-            $xw->startElement('test-ref');
-            $xw->create_attribute('ref', 'checkstyle');
-            $xw->create_attribute('weight', $formdata->checkstyleweight);
-            $xw->create_childelement_with_text('title', 'CheckStyle Test');
-            $xw->create_childelement_with_text('description', '');
-            $xw->create_childelement_with_text('test-type', 'java-checkstyle');
-            $xw->endElement(); // test-ref
-        }*/
     }
 
     /**
@@ -225,10 +178,6 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
                 $question->compileweight = $weight;
                 $question->compile = 1;
                 return true;
-/*            case 'checkstyle':
-                $question->checkstyleweight = $weight;
-                $question->checkstyle = 1;
-                return true;*/
             default:
                 break;
         }
@@ -252,8 +201,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         foreach ($task->files->file as $file) {
             $fileobject = array();
             $fileobject['id'] = (string)$file['id'];
-            $code = $file->{'embedded-txt-file'}; // //$xpath->query('./dn2:embedded-txt-file', $file);
-
+            $code = $file->{'embedded-txt-file'};
             $fileobject['filename'] = (string)$code['filename'];
             $fileobject['code'] = (string)$code;
             $files[$fileobject['id']] = $fileobject;
@@ -264,30 +212,17 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
             $code = null;
             foreach ($test->{'test-configuration'}->filerefs as $filerefs) {
                 foreach ($filerefs->fileref as $fileref) {
-                    // assume that we have only one file belonging to each test
+                    // Assume that we have only one file belonging to each test.
                     $refid = (string) $fileref['refid'];
                     $fileobject = $files[$refid];
                     $code = (string) $fileobject['code'];
                 }
                 switch ($test['id']) {
-/*                    case 'checkstyle':
-                        $question->checkstylecode = $code;
-                        $config = $test->{'test-configuration'};
-                        // Switch to namespace 'cs'.
-                        $cs = $config->children('cs', true);
-                        $question->checkstyleversion = (string)$cs->attributes()->version;
-                        // debugging('$question->checkstyleversion = ' . $question->checkstyleversion);
-                        break;*/
                     case 'compiler': // assert(false);
                         break;
                     default: // SetlX test
-                        // $id = (string)$test['id'];
                         $question->testcode[$index] = $code;
                         $config = $test->{'test-configuration'};
-/*                        // Switch to namespace 'unit'.
-                        $unittest = $config->children('unit', true)->{'unittest'};
-                        $question->testversion[$index] = (string)$unittest->attributes()->version;*/
-                        // debugging('$question->testversion[$index] = ' . $question->testversion[$index]);
                         $index++;
                         break;
                 }

@@ -218,3 +218,5 @@ The actual URI to locate the submission is compiled by replacing the placeholder
 
 $string['proglang_hdr'] = 'Programming languages';
 $string['proglang_hdr_info'] = 'Java is enabled by default. Opt out programming languages that are not used at yout site.';
+
+$string['selectlangtitle'] = 'Select programming language';

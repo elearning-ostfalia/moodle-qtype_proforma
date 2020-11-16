@@ -25,8 +25,6 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-// require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.php');
-
 /*
  * abstract class for creating and reading ProFormA task files.
  * Note that this class is stateless i.e. has no member variables.
@@ -87,7 +85,7 @@ abstract class qtype_proforma_base_task {
      * @param $formdata
      */
     protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
-        for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
+        for ($index = 0; $index < count($formdata->testid); $index++) {
             $id = $formdata->testid[$index];
             if ($id !== '' && $this->is_test_set($formdata, $index)) {
                 $xw->startElement('test-ref');
@@ -100,7 +98,7 @@ abstract class qtype_proforma_base_task {
                 $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
                 $xw->create_childelement_with_text('description', $formdata->testdescription[$index]);
                 $xw->create_childelement_with_text('test-type', $formdata->testtype[$index]);
-                $xw->endElement(); // test-ref
+                $xw->endElement(); // End tag test-ref.
             }
         }
     }
@@ -121,9 +119,9 @@ abstract class qtype_proforma_base_task {
 
         $xw->startElement('task');
         $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
-        $xw->create_attribute('lang', 'de'); // TODO
+        $xw->create_attribute('lang', 'de'); // TODO.
         $xw->create_attribute('uuid', self::uuid());
-        // override
+        // Override!
         $this->add_namespace_to_xml($xw);
 
         $xw->create_childelement_with_text('title', $formdata->name);
@@ -132,28 +130,29 @@ abstract class qtype_proforma_base_task {
         } else {
             $xw->create_childelement_with_text('description', $formdata->questiontext['text']);
         }
-        $xw->startElement('proglang'); // not needed for grader
+        $xw->startElement('proglang'); // Not needed for grader.
         $this->add_programming_language_to_xml($xw, $formdata);
-        $xw->endElement(); // submission-restrictions
+        $xw->endElement(); // End tag submission-restrictions.
 
-        $xw->startElement('submission-restrictions'); // not needed for grader
-        $xw->endElement(); // submission-restrictions
+        $xw->startElement('submission-restrictions'); // Not needed for grader.
+        $xw->endElement(); // End tag submission-restrictions.
 
         $xw->startElement('files');
         $this->add_testfiles_to_xml($xw, $formdata);
 
-        // create dummy model solution file
+        // Create dummy model solution file.
         $xw->startElement('file');
-        $xw->create_attribute('id', 'MS'); // $id);
+        $xw->create_attribute('id', 'MS');
         $xw->create_attribute('used-by-grader', 'false');
         $xw->create_attribute('visible', 'no');
         $xw->startElement('embedded-txt-file');
         $xw->create_attribute('filename', 'modelsolution.java');
-        $xw->text('// no model solution available '); // write at least one byte in order to avoid problems with empty files
-        $xw->endElement(); // embedded-txt-file
-        $xw->endElement(); // file
+        // Write at least one byte into model solution in order to avoid problems with empty files.
+        $xw->text('// no model solution available ');
+        $xw->endElement(); // End tag embedded-txt-file.
+        $xw->endElement(); // End tag file.
 
-        $xw->endElement(); // files
+        $xw->endElement(); // End tag files.
 
         $xw->startElement('model-solutions');
         $xw->startElement('model-solution');
@@ -161,24 +160,24 @@ abstract class qtype_proforma_base_task {
         $xw->startElement('filerefs');
         $xw->startElement('fileref');
         $xw->create_attribute('refid', 'MS');
-        $xw->endElement(); // fileref
-        $xw->endElement(); // filerefs
-        $xw->endElement(); // model-solution
-        $xw->endElement(); // model-solutions
+        $xw->endElement(); // End tag fileref.
+        $xw->endElement(); // End tag filerefs.
+        $xw->endElement(); // End tag model-solution.
+        $xw->endElement(); // End tag model-solutions.
 
         $xw->startElement('tests');
         $this->add_tests_to_xml($xw, $formdata);
-        $xw->endElement(); // tests
+        $xw->endElement(); // End tag tests.
 
         $xw->startElement('grading-hints');
-        $xw->startElement('root'); // not needed for grader
-        $xw->endElement(); // root
-        $xw->endElement(); // grading-hints
+        $xw->startElement('root'); // Not needed for grader.
+        $xw->endElement(); // End tag root.
+        $xw->endElement(); // End tag grading-hints.
 
         $xw->startElement('meta-data');
-        $xw->endElement(); // meta-data
+        $xw->endElement(); // End tag meta-data.
 
-        $xw->endElement(); // task
+        $xw->endElement(); // End tag task.
 
         $xw->endDocument();
 
@@ -214,12 +213,11 @@ abstract class qtype_proforma_base_task {
 
         $this->add_tests_to_lms_grading_hints($xw, $formdata);
 
-        $xw->endElement(); // root
-        $xw->endElement(); // grading-hints
+        $xw->endElement(); // End tag root.
+        $xw->endElement(); // End tag grading-hints.
 
         $xw->endDocument();
         $gradinghints = $xw->outputMemory();
-        // debugging($gradinghints);
 
         return $gradinghints;
     }
@@ -238,17 +236,17 @@ abstract class qtype_proforma_base_task {
         }
 
         $fs = get_file_storage();
-        // Prepare file record object
+        // Prepare file record object.
 
         $fileinfo = array(
-            'contextid' => $contextid, // category id
+            'contextid' => $contextid, // Category id.
             'component' => 'qtype_proforma',
             'filearea' => qtype_proforma::FILEAREA_TASK,
-            'itemid' => $questionid, // question id
+            'itemid' => $questionid,
             'filepath' => '/',
             'filename' => $filename);
 
-        // delete old file if any
+        // Delete old file if any.
         $fs->delete_area_files($contextid, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $questionid);
         /* $storedfile = */
         $fs->create_file_from_string($fileinfo, $content);
@@ -267,7 +265,7 @@ abstract class qtype_proforma_base_task {
         $question->testid = array();
 
         if (empty($question->gradinghints)) {
-            // nothing to be done
+            // Nothing to be done.
             return;
         }
 
@@ -287,7 +285,7 @@ abstract class qtype_proforma_base_task {
             return;
         }
 
-        // preset compile and checkstyle checkboxes as not checked
+        // Preset compile and checkstyle checkboxes as not checked.
         $question->compile = 0;
         $question->checkstyle = 0;
 

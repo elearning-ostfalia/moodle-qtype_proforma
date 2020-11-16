@@ -112,23 +112,4 @@ class select_form_creator extends base_form_creator {
      */
     public function add_test_settings($question, $questioneditform) {
     }
-
-    /**
-     * Prepare question to fit form field names and values.
-     *
-     * @param $question
-     * @param category $cat
-     * @param MoodleQuickForm $form
-     * @param qtype_proforma_edit_form $editor
-     */
-    /*
-    public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
-        parent::data_preprocessing($question, $cat, $editor);
-
-        if (isset($question->id)) {
-            // preset data if question already exists
-            $form = $editor->get_form();
-        }
-    }*/
-
 }
