@@ -206,13 +206,9 @@ abstract class qtype_proforma_base_task {
         $xw->startDocument('1.0', 'UTF-8');
 
         $xw->startElement('grading-hints');
-        // $xw->createAttribute('xmlns', 'urn:proforma:v2.0');
-
         $xw->startElement('root');
         $xw->create_attribute('function', 'sum');
-
         $this->add_tests_to_lms_grading_hints($xw, $formdata);
-
         $xw->endElement(); // End tag root.
         $xw->endElement(); // End tag grading-hints.
 
@@ -272,12 +268,12 @@ abstract class qtype_proforma_base_task {
         $xmldoc = new DOMDocument;
 
         if (!$xmldoc->loadXML($question->gradinghints)) {
+            // Fatal error: grading hints cannot be loaded!
             debugging('gradinghints is not valid XML');
-            return; // 'INTERNAL ERROR: $taskresult is not XML';
+            return;
         }
 
         $xpath = new DOMXPath($xmldoc);
-        // $xpath->registerNamespace('dns','urn:proforma:v2.0');
         $xpathresult = $xpath->query('//grading-hints/root/test-ref');
         $key = 0;
         if ($xpathresult->length == 0) {

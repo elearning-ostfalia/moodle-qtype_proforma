@@ -30,16 +30,6 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 class qtype_proforma_setlx_task extends qtype_proforma_base_task {
 
     /**
-     * is Checkstyle option enabled?
-     *
-     * @param $formdata
-     * @return bool
-     */
-    private static function has_checkstyle($formdata) {
-        return isset($formdata->checkstyle) && $formdata->checkstyle;
-    }
-
-    /**
      * is compiler option enabled?
      *
      * @param $formdata
@@ -81,7 +71,8 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         }
 
         // Setlx files.
-        for ($index = 0; $index < count($formdata->testid); $index++) {
+        $count = count($formdata->testid);
+        for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];
             if ($id !== '' && $this->is_test_set($formdata, $index)) {
                 $xw->startElement('file');
@@ -123,7 +114,8 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         }
 
         // SetlX tests.
-        for ($index = 0; $index < count($formdata->testid); $index++) {
+        $count = count($formdata->testid);
+        for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];
             if ($id !== '' && $this->is_test_set($formdata, $index)) {
                 $xw->startElement('test');
@@ -222,7 +214,6 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
                         break;
                     default: // SetlX test.
                         $question->testcode[$index] = $code;
-                        $config = $test->{'test-configuration'};
                         $index++;
                         break;
                 }

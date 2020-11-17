@@ -121,9 +121,6 @@ abstract class base_form_creator {
 
         // Task Filename.
         $this->add_static_text($question, 'link', 'taskfilename', 'qtype_proforma');
-
-        /* $mform->addElement('static', 'link', get_string('taskfilename', 'qtype_proforma'), '');
-         * $mform->setType('link', PARAM_TEXT); */
         $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
     }
 
@@ -143,7 +140,6 @@ abstract class base_form_creator {
 
         foreach ($hiddenfields as $field) {
             $mform->addElement('hidden', $field, null, array('size' => '30'));
-            // $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
             $mform->setType($field, PARAM_RAW);
         }
 
@@ -268,7 +264,6 @@ abstract class base_form_creator {
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function modify_test_testoptions(&$testoptions) {
-
     }
 
     /**
@@ -316,24 +311,18 @@ abstract class base_form_creator {
         $this->modify_test_repeatarray($repeatarray);
         $repeatoptions = array();
         $repeatoptions['testweight']['default'] = 1;
-        // $repeatoptions['testtitle']['default'] = get_string('junittesttitle', 'qtype_proforma');
         $repeatoptions['testdescription']['default'] = '';
-        // $repeateloptions['testfilename']['default'] = '';
         $repeatoptions['testtype']['default'] = $testtype;
         // Autoincrement test identifier.
         $repeatoptions['testid']['default'] = '{no}';
 
-        // $repeateloptions['testweight']['rule'] = 'numeric';
         $this->modify_test_repeatoptions($repeatoptions);
 
-        // $repeateloptions['testweight']['helpbutton'] = 'Hilfetext';
         $mform->setType('testdescription', PARAM_TEXT);
         $mform->setType('testtitle', PARAM_TEXT);
         $mform->setType('testweight', PARAM_FLOAT);
         $mform->setType('testid', PARAM_RAW);
         $mform->setType('testtype', PARAM_RAW);
-        // $mform->setType('testfilename', PARAM_TEXT);
-        // $mform->addGroupRule('testoptions', array('testtitle' => array(null, 'required', null, 'client')));
         // Add tests with button for adding tests.
         $buttonlabel = get_string('addtest', 'qtype_proforma', $this->get_test_label());
         $questioneditform->repeat_elements($repeatarray, $repeats,
@@ -350,9 +339,8 @@ abstract class base_form_creator {
                 $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
                 $mform->hideif('testid[' . $i . ']', 'aggregationstrategy', 'neq', 111);
                 $mform->hideif('testweight[' . $i . ']', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
-                // Does not work:
-                // $repeatoptions['testtitle']['rule'] = 'required';
-                // $repeatoptions['testweight']['rule'] = 'required';
+                // Setting title and weight as required does not work
+                // as there sometime hidden or missing if a test shall be deleted.
             }
         } else {
             // There is no option not to create the button for
@@ -639,15 +627,6 @@ abstract class base_form_creator {
         $mform->addElement('text', $field, $label, array('size' => $size));
         $mform->disabledIf($field, 'responseformat', 'neq', 'alwaysdisabled');
         $mform->setType($field, PARAM_TEXT);
-
-        /* $textelement = $field;
-          $mform->addElement('static', $textelement, $label);
-          debugging('static text: ' . $field);
-          $mform->setType($textelement, PARAM_TEXT);
-
-          $mform->addElement('text', $field, ' should be hidden ' . $field, array('size' => '30'));
-          $mform->setType($field, PARAM_TEXT);
-         */
     }
 
     /**

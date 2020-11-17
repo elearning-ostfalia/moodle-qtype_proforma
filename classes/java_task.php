@@ -78,7 +78,8 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      */
     protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
         // Create Junit files.
-        for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
+        $count = count($formdata->testid);
+        for ($index = 0; $index < $count; $index++) { // $formdata->testid as $id) {
             $id = $formdata->testid[$index];
             if ($id !== '' && $this->is_test_set($formdata, $index)) {
                 $xw->startElement('file');
@@ -128,7 +129,8 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         }
 
         // Junit tests
-        for ($index = 0; $index < count($formdata->testid); $index++) { // $formdata->testid as $id) {
+        $count = count($formdata->testid);
+        for ($index = 0; $index < $count; $index++) { // $formdata->testid as $id) {
             $id = $formdata->testid[$index];
             if ($id !== '' && $this->is_test_set($formdata, $index)) {
                 $xw->startElement('test');
@@ -338,8 +340,6 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      */
     private static function get_java_classname($code) {
         $matches = array();
-        // $classname = preg_match('/class\s+([\S]+?)\s*(\{|extends|implements)/', $code, $matches); // without Generic
-        // $classname = preg_match('/class\s+([\S]+\s*(\<.*\>)?)\s(\{|extends|implements)', $code, $matches);
         $classnamematch = preg_match('/class\s+([\S]+\s*(?:\<(?:.|\R)+\>)?)\s(?:\{|extends|implements)/', $code, $matches);
         if ($classnamematch === 0) {
             return "";
