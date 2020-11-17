@@ -666,11 +666,12 @@ class qtype_proforma_test_helper extends question_test_helper {
     public function get_proforma_question_form_data_setlx2() {
         $form = $this->get_proforma_question_form_data_setlx_base();
         $form->testcode[1] = 'some other testcode';
-        $form->testtitle[1] = '-';
+        // Must be set correctly (=> grading hints) for PhpUnit test!
+        $form->testid[1] = '2';
+        $form->testtitle[1] = 'Setlx Test 2';
         $form->testweight[1] = '-';
-        $form->testid[1] = '-';
 
-        // Title, weight and description come from grading hints
+        // Behat: Title, weight and description come from grading hints
         $form->gradinghints = self::QUESTION_GRADINGHINTS_SETLX2;
         return $form;
     }
