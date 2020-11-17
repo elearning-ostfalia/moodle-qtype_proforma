@@ -1,8 +1,5 @@
-##########################################################################
-# DOES NOT WORK (PROBABELY BECAUSE OF TEST ENVIRONMENT)
 @qtype @qtype_proforma
 Feature: EXPORT
-##########################################################################
   Test exporting ProFormA questions
   As a teacher
   In order to be able to reuse my ProFormA questions
@@ -35,9 +32,6 @@ Feature: EXPORT
     When I navigate to "Question bank > Export" in current page administration
     And I set the field "id_format_xml" to "1"
     And I press "Export questions to file"
-    # Moodle 3.6.4
-    # Then following "click here" should download file with between "12220" and "12230" bytes
-    # Moodle 3.6.8
     Then following "click here" should download file with between "12145" and "12155" bytes
   
     # If the download step is the last in the scenario then we can sometimes run

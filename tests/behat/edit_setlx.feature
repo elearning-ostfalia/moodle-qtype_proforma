@@ -4,7 +4,7 @@ Feature: EDIT SETLX
   As a teacher
   In order to be able to update my SetlX question
   I need to edit them
-  
+
   Background:
     Given the following "users" exist:
       | username | firstname | lastname | email                |

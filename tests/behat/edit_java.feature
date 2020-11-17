@@ -151,9 +151,6 @@ Feature: EDIT JAVA
 
     And I press "Cancel"
 
-
-
-
 ##########################################################################
   @javascript @_file_upload
   Scenario: Edit a ProFormA question (simply edit all values)
@@ -362,5 +359,3 @@ Feature: EDIT JAVA
     """
 
     And I press "Cancel"
-
-

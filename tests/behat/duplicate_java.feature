@@ -98,8 +98,6 @@ Feature: DUPLICATE JAVA
     </module>
     """
 
-
-
     # save without changing any values
     And I press "id_submitbutton"
     Then I should see "proforma-java"
@@ -159,7 +157,6 @@ Feature: DUPLICATE JAVA
 #    And I should see "MyString.java"
     # grader settings
     # And I should see "task.xml"
-
 
 # editing a duplicated question needs not to be tested here
 
@@ -223,8 +220,6 @@ Feature: DUPLICATE JAVA
     # grader settings
     # And I should see "task.xml"
 
-
-
     # save without changing any values
     And I press "id_submitbutton"
     Then I should see "proforma-java"
@@ -287,6 +282,5 @@ Feature: DUPLICATE JAVA
 #    And I should see "MyString.java"
     # grader settings
     # And I should see "task.xml"
-
 
 # editing a duplicated question needs not to be tested here
