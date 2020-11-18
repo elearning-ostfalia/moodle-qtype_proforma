@@ -4,7 +4,7 @@
 
 /* no space after pre text */
 .specificfeedback pre {
-  margin-bottom: 0.1rem; /* instead of 1rm */
+    margin-bottom: 0.1rem; /* instead of 1rm */
 }
 
 

@@ -172,7 +172,7 @@ EOD;
                         <student-feedback level="error">
                             <title>Inline cannot be resolved</title>
                             <content format="plaintext">Sample.java	line 56</content>
-                        </student-feedback>            
+                        </student-feedback>
                         <teacher-feedback level="debug">
                             <title>Java-Compilation (teacher)</title>
                             <content format="html"><![CDATA[content11 <b>sample</b>]]></content>
@@ -269,7 +269,7 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
                             </feedback-list>
                         </test-result>
                     </subtest-response>
-                </subtests-response>    
+                </subtests-response>
              </test-response>
          </tests-response>
     </separate-test-feedback>
@@ -349,7 +349,7 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
         </submission-feedback-list>
         <tests-response>
             <test-response id="1">
-                <test-result>                
+                <test-result>
                     <result >
                         <score>1</score>
                     </result>
@@ -360,14 +360,14 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
                     </feedback-list>
                 </test-result>
             </test-response>
-        
+
             <test-response id="2">
-                <test-result>                
+                <test-result>
                     <result >
                         <score>0</score>
                     </result>
                     <feedback-list>
-                        
+
                         <student-feedback level="info">
                             <title>JUnit Test: Junit Test de/ostfalia/DoSomethingTest</title>
                             <content format="html"><![CDATA[<pre>
@@ -386,7 +386,7 @@ xx errors
 </pre>
 ]]></content>
                         </student-feedback>
-                        
+
                     </feedback-list>
                 </test-result>
             </test-response>
@@ -396,7 +396,7 @@ xx errors
     </files>
     <response-meta-data>
     </response-meta-data>
-</response>    
+</response>
 EOD;
 
     const LOGS_3_1 = array(array('JUnit Test: Junit Test #1', null));
@@ -427,7 +427,7 @@ xx errors
         </submission-feedback-list>
         <tests-response>
             <test-response id="1">
-                <test-result>                
+                <test-result>
                     <result> >
                         <score>0</score>
                     </result>
@@ -455,7 +455,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
                 </test-result>
             </test-response>
             <test-response id="2">
-                <test-result>                
+                <test-result>
                     <result> >
                         <score>0</score>
                     </result>
@@ -484,7 +484,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
             </test-response>
         </tests-response>
     </separate-test-feedback>
-    
+
     <files>
     </files>
     <response-meta-data>
@@ -516,7 +516,7 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
     );
     const LOGS_4_2 = self::LOGS_4_1;
 
-    
+
 
 
     const RESPONSE_EMPTY = <<<'EOD'
@@ -553,10 +553,10 @@ Pr&#252;fung beendet.
       <praktomat:version-control-system name="SVN" submission-uri="https://svn.ostfalia.de/src" submission-revision="1234"/>
     </praktomat:response-meta-data>
   </response-meta-data>
-</response>    
-EOD;    
+</response>
+EOD;
 
-    
+
     const LOGS_EMPTY_1 = array(
             array('', 'Beginne Prüfung...
 Prüfung beendet.
@@ -564,8 +564,8 @@ Prüfung beendet.
     );
     const LOGS_EMPTY_2 = array(
             array(null, ['Response format error: no test result available', 'plaintext']),
-    );  
-    
+    );
+
     private function assert_same_xml($expectedxml, $xml) {
         // remove comments
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
@@ -580,10 +580,10 @@ Prüfung beendet.
 
     private function render_log($log, $format = 'plaintext') {
         switch ($format) {
-            case 'html':         
+            case 'html':
                 return '<p class="proforma_testlog proforma_html">' . $log .'</p>';
             case 'plaintext':
-                return '<pre class="proforma_testlog">' . $log .'</pre>';            
+                return '<pre class="proforma_testlog">' . $log .'</pre>';
             default:
                 throw new Exception('invalid format: "' . $format . '"');
         }
@@ -591,15 +591,15 @@ Prüfung beendet.
 
     private function render_general_log($log, $format = 'plaintext') {
         switch ($format) {
-            case 'html':         
+            case 'html':
                 return '<p class="proforma_general proforma_html">' . $log .'</p>';
             case 'plaintext':
-                return '<pre class="proforma_general">' . $log .'</pre>';            
+                return '<pre class="proforma_general">' . $log .'</pre>';
             default:
                 throw new Exception('invalid format: "' . $format . '"');
         }
-    }    
-    
+    }
+
     /**
      * Generate expected grader info
      * @param $number number for collapsible region (sequence)
@@ -650,38 +650,38 @@ Prüfung beendet.
         $iconpassed = 'class="icon fa fa-check text-success fa-fw "  title="Correct" aria-label="Correct"';
         $iconfailed = 'class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"';
         $iconinternalerror = 'class="icon fa fa-exclamation text-warning fa-fw " title="info" aria-label="info"';
-                  
+
         if (isset($total)) {
             // with subtests
             $icon = $iconpassed;
             if ($internalerror) {
-                $icon = $iconinternalerror;                                
+                $icon = $iconinternalerror;
             } else if (($score/$total) < 1) {
-                $icon = $iconfailed;                
+                $icon = $iconfailed;
             }
             $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">
 <i ' . $icon . '></i> '.$title;
             if ($internalerror and !isset($score)) {
-                $output .= ' ( ? /'.($total*100).' %)';                
+                $output .= ' ( ? /'.($total*100).' %)';
             } else {
-                $output .= ' ('.($score*100) .'/'.($total*100).' %)';                
+                $output .= ' ('.($score*100) .'/'.($total*100).' %)';
             }
         } else {
             // without subtests
             $icon = $iconpassed;
             if ($internalerror) {
-                $icon = $iconinternalerror;                                
+                $icon = $iconinternalerror;
             } else if ($score < 1) {
-                $icon = $iconfailed;                
+                $icon = $iconfailed;
             }
-          
+
             $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">
 <i ' . $icon . '></i> '.$title;
         }
-             
-        
+
+
         $output .= ' </div>
 <div id="'.$id.'_inner" class="collapsibleregioninner">';
 
@@ -700,7 +700,7 @@ Prüfung beendet.
                     // Log with format infomation:
                     $output .= $this->render_log($content[0], $content[1]);
                 } else {
-                    $output .= $this->render_log($content);                    
+                    $output .= $this->render_log($content);
                 }
             }
         }
@@ -999,13 +999,13 @@ Prüfung beendet.
         $expected =
                 $this->render_collapsible_region_score(1, 0.4, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_EMPTY_1).
                 $this->render_collapsible_region_score(2, null, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_EMPTY_2, true).
-                $this->render_graderinfo(3, 'praktomat Version 4.5.1 | 20200803', self::RESPONSE_EMPTY, 
+                $this->render_graderinfo(3, 'praktomat Version 4.5.1 | 20200803', self::RESPONSE_EMPTY,
                      'SVN: https://svn.ostfalia.de/src Revision 1234') .
                 '<p></p>
 <p>Your answer could not be graded due to an internal error in the grading system.</p>';
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_EMPTY, '', self::GRADINGHINTS_1, $expected);
-    }    
-    
+    }
+
 }

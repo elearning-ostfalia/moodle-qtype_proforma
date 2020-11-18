@@ -66,8 +66,6 @@ Feature: DUPLICATE SetlX
     # grader settings
     # And I should see "task.xml"
 
-
-
     # save without changing any values
     And I press "id_submitbutton"
     Then I should see "proforma-setlx"

@@ -433,7 +433,8 @@ abstract class base_form_creator {
             case 0:
                 break;
             case 1:
-                $mform->addElement('hidden', 'responseformat', array_key_first($this->_responseformats));
+                $firstelement = reset($this->_responseformats);
+                $mform->addElement('hidden', 'responseformat', $firstelement);
                 $mform->setType('responseformat', PARAM_RAW);
                 break;
             default:

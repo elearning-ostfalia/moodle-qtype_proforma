@@ -4,7 +4,7 @@ Feature: EDIT JAVA
   As a teacher
   In order to be able to update my Java question
   I need to edit them
-  
+
   Background:
     Given the following "users" exist:
       | username | firstname | lastname | email                |
@@ -261,7 +261,6 @@ Feature: EDIT JAVA
     #And following "lib.txt" should download file with between "9" and "12" bytes
     And following "template.txt" should download file with between "69" and "73" bytes
     And I switch to the main window
-
 
 ##########################################################################
   Scenario: Edit a ProFormA question (remove and add Junit)
