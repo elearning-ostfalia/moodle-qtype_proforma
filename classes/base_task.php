@@ -85,7 +85,8 @@ abstract class qtype_proforma_base_task {
      * @param $formdata
      */
     protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
-        for ($index = 0; $index < count($formdata->testid); $index++) {
+        $count = count($formdata->testid);
+        for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];
             if ($id !== '' && $this->is_test_set($formdata, $index)) {
                 $xw->startElement('test-ref');

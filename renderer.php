@@ -48,7 +48,7 @@ class qtype_proforma_renderer extends qtype_renderer {
     private $collapseid = 0;
 
     /**
-     * make feedback_image because we have no friend feature in PHP :-(
+     * make feedback_image public because we have no friend feature in PHP
      */
     public function feedback_image($fraction, $selected = true) {
         return parent::feedback_image($fraction, $selected);
@@ -91,18 +91,18 @@ class qtype_proforma_renderer extends qtype_renderer {
         }
 
         if (empty($options->readonly)) {
-            // student view for input
+            // Student view for input.
             $answer = $renderer->response_area_input($qa, $step, $options->context);
         } else {
-            // readonly for review
+            // Readonly for review
             // => we cannot use default renderer from question settings
             // since the teacher could have changed it in the meantime!!
-            // => try and figure out what renderer to use
+            // => try and figure out what renderer to use.
             list($step, $renderer) = $this->determine_renderer($qa, $step, $renderer);
             $answer = $renderer->response_area_read_only($qa, $step, $options->context);
         }
 
-        // Show file upload area resp. uploaded files
+        // Show file upload area resp. uploaded files.
         $files = '';
         if ($renderer->can_have_attachments() && $question->attachments) {
             if (empty($options->readonly)) {
@@ -159,7 +159,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             }
         }
 
-        // prefix
+        // Prefix.
         if (!empty($result)) {
             return html_writer::tag('p', html_writer::tag('div',
                     get_string('attachments', 'qtype_proforma') . ' '. $result,
@@ -229,18 +229,16 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @return string
      */
     public function feedback(question_attempt $qa, question_display_options $options) {
-        $output = ''; // 'feedback: ';
+        $output = '';
 
-        // always show error message (if any) even if no specific feedback shall be reported!
+        // Always show error message (if any) even if no specific feedback shall be reported!
         $error = $qa->get_last_qt_var('_errormsg');
         $format = $qa->get_last_qt_var('_feedbackformat');
 
         if (!empty($error)) {
-            $output .= ''; // 'Error occured: ';
+            $output .= '';
             switch ($format) {
                 case qtype_proforma_grader::FEEDBACK_FORMAT_INVALID:
-                    // $output .= $this->notification($error, 'error');
-                    // break;
                 case qtype_proforma_grader::FEEDBACK_FORMAT_ERROR:
                 case qtype_proforma_grader::FEEDBACK_FORMAT_NONE:
                 case qtype_proforma_grader::FEEDBACK_FORMAT_HTTP_ERROR:
@@ -249,7 +247,7 @@ class qtype_proforma_renderer extends qtype_renderer {
                     if (qtype_proforma\lib\is_teacher()) {
                         $options->feedback = true;
                     } else {
-                        // the student shall not see any error text!
+                        // The student shall not see any error text!
                         $options->feedback = false;
                     }
                     break;
@@ -257,8 +255,8 @@ class qtype_proforma_renderer extends qtype_renderer {
         } else {
             // $output .= 'No error occured: ';
             if (!empty($format) && qtype_proforma\lib\is_teacher()) {
-                // force feedback to true for teachers so that they can see the actual feedback
-                // (deferred feedback still needs no feedback for students)
+                // Force feedback to true for teachers so that they can see the actual feedback
+                // (deferred feedback still needs no feedback for students).
                 $options->feedback = true;
             }
 
@@ -282,10 +280,10 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         list($feedback, $errormsg, $feedbackformat) = $this->get_feedback_for_last_answer($qa);
         switch ($feedbackformat) {
-            case qtype_proforma_grader::FEEDBACK_FORMAT_ERROR: // no feedback
-            case qtype_proforma_grader::FEEDBACK_FORMAT_INVALID: // no feedback
-            case qtype_proforma_grader::FEEDBACK_FORMAT_NONE: // no feedback
-            case qtype_proforma_grader::FEEDBACK_FORMAT_HTTP_ERROR: // no feedback
+            case qtype_proforma_grader::FEEDBACK_FORMAT_ERROR: // No feedback.
+            case qtype_proforma_grader::FEEDBACK_FORMAT_INVALID: // No feedback.
+            case qtype_proforma_grader::FEEDBACK_FORMAT_NONE: // No feedback.
+            case qtype_proforma_grader::FEEDBACK_FORMAT_HTTP_ERROR: // No feedback.
                 if (!empty($feedback) && qtype_proforma\lib\is_teacher()) {
                     return html_writer::tag('xmp', $feedback, array('class' => 'proforma_testlog'));
                 } else {
@@ -314,14 +312,14 @@ class qtype_proforma_renderer extends qtype_renderer {
         foreach ($qa->get_reverse_step_iterator() as $step) {
             $answerresponse = $step->get_qt_data();
             if (array_key_exists('answer', $answerresponse)) {
-                // last answer found!
-                // check if feedback for last answer is present
+                // Last answer found!
+                // check if feedback for last answer is present.
                 if (!array_key_exists('_feedback', $answerresponse)) {
-                    // no feedback yet
+                    // No feedback yet.
                     return array("", '', qtype_proforma_grader::FEEDBACK_FORMAT_NONE);
                 }
             }
-            // feedback found (answer may be in current or previous steps)
+            // Feedback found (answer may be in current or previous steps).
             if (array_key_exists('_feedback', $answerresponse)) {
                 if (!array_key_exists('_feedbackformat', $answerresponse)) {
                     throw new coding_exception("feedback format is missing");
@@ -392,15 +390,12 @@ class qtype_proforma_renderer extends qtype_renderer {
                 get_string('modelsolution', 'qtype_proforma'),
                 '', true, true);
 
-        // read model solution from file(s)
+        // Read model solution from file(s).
         foreach (explode(',', $question->modelsolfiles) as $ms) {
-            // $output .= $this->get_download_uri($question, qtype_proforma::FILEAREA_MODELSOL, $ms);
-
             // Note! The model solution files are made inline in order to
             // avoid offering a download link for them.
             // Access rules for Downloads must ensure that the student cannot see the
             // model solution before he or she should see it!!! This can be difficult.
-
             $output .= html_writer::tag('div',
                     get_string('msfilename', 'qtype_proforma') . ': ' .$ms,
                     array('class' => 'proforma_testlog_title'));
@@ -410,8 +405,6 @@ class qtype_proforma_renderer extends qtype_renderer {
                     $msarea->read_file_content($question->contextid, $ms, $question->id) .
                     '</xmp>', array('class' => 'proforma_testlog'));
         }
-
-        // $output .= html_writer::tag('div', '<pre>'. $question->modelsolution .'</pre>', array('class' => 'proforma_testlog'));
 
         $output .= print_collapsible_region_end(true);
 

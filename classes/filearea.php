@@ -190,7 +190,8 @@ class qtype_proforma_filearea {
         $attribute = $this->_name;
         if (isset($formdata->$attribute)) {
             // Save draft files in filearea.
-            // subdirs must be set to true because the Java (model solution) files might be stored in subdirs (packaga path)
+            // 'subdirs' must be set to true because the Java (model solution)
+            // files might be stored in subfolders (package path).
             $saveoptions = array();
             $saveoptions['subdirs'] = true;
             file_save_draft_area_files($formdata->$attribute, $formdata->context->id,

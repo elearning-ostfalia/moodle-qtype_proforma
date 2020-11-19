@@ -30,6 +30,7 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
 /*
  * base class for graders (and this one is for LON-CAPA feedback)
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class qtype_proforma_grader {
 

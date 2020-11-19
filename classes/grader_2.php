@@ -51,10 +51,9 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         $xw->startDocument('1.0', 'UTF-8');
 
-        // ----------------
         $xw->startElement('submission');
 
-        // Attributes for submission
+        // Attributes for submission.
         $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
         // $xw->createAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
         // $xw->createAttribute('xsi:schemaLocation', 'urn:proforma:v2.0 schema.xsd');
@@ -63,8 +62,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $xw->startElement('external-task');
         $xw->create_attribute('uuid', $question->uuid);
         $xw->text('http-file:' . $question->taskfilename);
-        // $xw->text('http-file:task-file');
-        $xw->endElement(); // lms
+        $xw->endElement(); // End tag external-task.
 
         if (isset($uri)) {
             // Version control system.
@@ -94,14 +92,14 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                     $xw->startElement('embedded-bin-file');
                     $xw->create_attribute('filename', $filename);
                     $xw->text(base64_encode($code));
-                    $xw->endElement(); // embedded-bin-file
-                $xw->endElement(); // file
-            $xw->endElement(); // files
+                    $xw->endElement(); // End tag embedded-bin-file.
+                $xw->endElement(); // End tag file.
+            $xw->endElement(); // End tag files.
         } else {
             debugging('got neither code nor file for submission.xml');
         }
 
-        // lms
+        // Tag lms.
         $xw->startElement('lms');
         $xw->create_attribute('url', $CFG->wwwroot);
 
@@ -109,21 +107,19 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $xw->create_childelement_with_text('user-id', $this->get_user());
         $xw->create_childelement_with_text('course-id', $this->get_course());
 
-        $xw->endElement(); // lms
+        $xw->endElement(); // End tag lms.
 
-        // result-spec
+        // Tag result-spec.
         $xw->startElement('result-spec');
-        // Attributes for submission
+        // Attributes for submission.
         $xw->create_attribute('format', 'xml');
         $xw->create_attribute('structure', 'separate-test-feedback');
         $xw->create_attribute('lang', 'de');
-
         $xw->create_childelement_with_text('student-feedback-level', 'debug' /*'info'*/);
         $xw->create_childelement_with_text('teacher-feedback-level', 'debug');
+        $xw->endElement(); // End tag result-spec.
 
-        $xw->endElement(); // result-spec
-
-        $xw->endElement(); // submission
+        $xw->endElement(); // End tag submission.
 
         $xw->endDocument();
         $submission = $xw->outputMemory();
@@ -145,7 +141,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         if (!$task instanceof stored_file) {
             throw new coding_exception("task variable has wrong class");
         }
-        // debugging($task->get_content());
         $postfields['task-file'] = $task;
 
         // Get URI.
@@ -173,7 +168,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @throws coding_exception
      */
     public function send_files_to_grader($files, qtype_proforma_question $question) {
-        // check files
+        // Check files.
         foreach ($files as $file) {
             if (!$file instanceof stored_file) {
                 throw new coding_exception("wrong class for file");
@@ -181,7 +176,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         }
 
         $submission = $this->create_submission_xml(null, $files, $question->responsefilename, null, $question);
-
         // debugging($submission);
 
         $postfields = array('submission.xml' => $submission);
@@ -211,12 +205,20 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         $postfields = array(
                 'submission.xml' => $submissionxml,
-                $filename => $code // ????
+                $filename => $code
         );
 
         return $this->post_to_grader($postfields, $question);
     }
 
+    /**
+     * send external code (from Source Control) to grader
+     *
+     * @param type $uri
+     * @param qtype_proforma_question $question
+     * @return type
+     * @throws coding_exception
+     */
     public function send_external_submission_to_grader($uri, qtype_proforma_question $question) {
         if (empty($uri)) {
             throw new coding_exception('send_external_submission_to_grader with empty $uri');
@@ -255,8 +257,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
                 $ghtest = $ghtest[0];
                 $weight = floatval((string)$ghtest['weight']) / $totalweight;
-
-                // $weightscore = number_format($score * $weight, 2);
                 $weightscore = $score * $weight;
                 $gradecalc += $weightscore;
                 break;
@@ -294,11 +294,12 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             if ((string)$testresult['is-internal-error'] === 'true') {
                 $internalerror = true;
             }
-            $score += floatval((string)$testresult->score); // 0.0 or 1.0
+            $score += floatval((string)$testresult->score);
+            // Note: $testresult-score is 0.0 or 1.0.
             $counttests ++;
         }
 
-        // avoid division by zero
+        // Avoid division by zero.
         if (!$testsfound) {
             return array(0.0, $internalerror);
         }
@@ -316,11 +317,10 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      */
     public function extract_grade($result, $httpcode, qtype_proforma_question $question) {
         $questionstate = question_state::$needsgrading;
-                // question_state::$invalid; // $needsgrading; // $invalid;
-        // needsgrading is an inactive state that does not allow the
+        // State 'needsgrading' is an inactive state that does not allow the
         // student to change his or her submission
-        // => the question behaviour converts the state to invalid during attempt
-        // (when finishing the state it is kept)
+        // => the question behaviour converts the state to 'invalid' during attempt
+        // (when finishing the state it is kept).
         $grade = null;
 
         if (isset($httpcode) && $httpcode != 200) {
@@ -338,14 +338,12 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         try {
             $response = new SimpleXMLElement($result);
         } catch (Exception $e) {
-            // echo 'NO XML: ' . $result . '<br>';
             return array($questionstate, $grade, 'Unsupported feedback from grader, no valid XML: ' . $e->getMessage(),
                     $result, self::FEEDBACK_FORMAT_ERROR);
         }
 
         if (!isset($response->{'separate-test-feedback'})) {
-            // invalid response format
-            // echo 'NO PROFORMA: ' . $result . '<br>';
+            // Invalid response format.
             return array($questionstate, $grade, 'Unsupported feedback format', $result, self::FEEDBACK_FORMAT_INVALID);
         }
 
@@ -358,7 +356,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             $gradingtests = null;
             switch ($question->aggregationstrategy) {
                 case qtype_proforma::WEIGHTED_SUM:
-                    // evaluate total weight
+                    // Evaluate total weight.
                     $gh = new SimpleXMLElement($question->gradinghints);
                     $gradingtests = $gh->root;
                     foreach ($gradingtests->{'test-ref'} as $test) {
@@ -366,32 +364,30 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                     }
                     break;
                 case qtype_proforma::ALL_OR_NOTHING:
-                    // default: everything is ok
+                    // Default: everything is ok.
                     $gradecalc = 1;
                     break;
             }
 
             foreach ($response->{'separate-test-feedback'}->{'tests-response'}->{'test-response'} as $test) {
-                // handle test with score
+                // Handle test with score.
                 if (count($test->{'test-result'}) > 0) {
                     $testresult = $test->{'test-result'}->result;
                     $internalerror = ((string)$testresult['is-internal-error'] === 'true');
                     if ($internalerror) {
-                        // in case of an internal error do not calculate an actual grade
+                        // In case of an internal error do not calculate an actual grade
                         // todo: what do we do with internal error in test?
                         $testswithinternalerror = true;
-                        // throw new moodle_exception('Internal error during grading in test');
                     }
                     $score = floatval((string)$testresult->score);
 
                     $gradecalc = $this->update_grade($test, $score, $question, $totalweight, $gradingtests, $gradecalc);
 
                 } else {
-                    // handle test with subtest scores => calculate total score
+                    // Handle test with subtest scores => calculate total score.
                     list($score, $internalerror) = self::calc_score_for_test($test);
                     if ($internalerror) {
                         $testswithinternalerror = true;
-                        // throw new moodle_exception('Internal error in subtest');
                     }
 
                     $gradecalc = $this->update_grade($test, $score, $question, $totalweight, $gradingtests, $gradecalc);
@@ -401,7 +397,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             return array($questionstate, $grade, $e->getMessage(), $result, $feedbackformat);
         }
 
-        // convert grade fraction to state, make sure approx. 1.0 is exactely 1.0
+        // Convert grade fraction to state, make sure approx. 1.0 is exactely 1.0.
         if (abs($gradecalc - 1.0) < 0.001) {
             $grade = 1.0;
             $questionstate = question_state::$gradedright;
@@ -409,20 +405,20 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                 $grade = 0.0;
                 $questionstate = question_state::$gradedwrong;
         } else {
-            // exact value does not matter since it is always not right
+            // Exact value does not matter since it is always not right.
             $grade = $gradecalc;
             if ($question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) { // do not use === !!!
-                // only use weighted mean in case of appropriate aggregation strategy
+                // Only use weighted mean in case of appropriate aggregation strategy.
                 $questionstate = question_state::$gradedpartial;
             } else {
-                // sorry
+                // Sorry.
                 $grade = 0.0;
                 $questionstate = question_state::$gradedwrong;
             }
         }
 
         if ($testswithinternalerror) {
-            // TODO: get language string on display not here
+            // TODO: get language string on display not here.
             return array(question_state::$needsgrading, null,
                     get_string('internaltesterror', 'qtype_proforma'), $result, $feedbackformat);
         }

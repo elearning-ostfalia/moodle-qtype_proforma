@@ -134,7 +134,7 @@ abstract class base_form_creator {
         $mform = $this->_form;
 
         // Add hidden fields for filearea draft ids (if any).
-        foreach (qtype_proforma::proforma_fileareas() as $filearea => $value) {
+        foreach (array_keys(qtype_proforma::proforma_fileareas()) as $filearea) {
             $hiddenfields[] = $filearea;
         }
 
@@ -643,10 +643,8 @@ abstract class base_form_creator {
         $mform = $this->_form;
         if (isset($sizefield)) {
             if (isset($this->question->options->$sizefield)) {
-                $value = $question->options->$sizefield;
                 $attributes = array('size' => strlen($question->options->$sizefield));
             } else if (isset($this->question->$sizefield)) {
-                $value = $question->$sizefield;
                 $attributes = array('size' => strlen($question->$sizefield));
             }
         } // else {

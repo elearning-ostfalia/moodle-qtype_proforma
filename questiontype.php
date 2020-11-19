@@ -101,21 +101,13 @@ class qtype_proforma extends question_type {
      */
     const WEIGHTED_SUM = 2;
 
-    // Response Options:
-    /**
-     * File upload.
-     */
+    // Response Options.
+    /** File upload. */
     const RESPONSE_FILEPICKER = 'filepicker';
-    /**
-     * Editor.
-     */
+    /** Editor. */
     const RESPONSE_EDITOR = 'editor';
-
-    /**
-     * Get submission from version control.
-     */
+    /** Get submission from version control. */
     const RESPONSE_VERSION_CONTROL = 'versioncontrol';
-
 
     /**
      * Function returns array with fileareas containing files visible to students.
@@ -130,9 +122,9 @@ class qtype_proforma extends question_type {
                         "formlist" => "templatelist",
                 ),
                 self::FILEAREA_DOWNLOAD => array(
-                        "files" => "downloadfiles", // tag in xml export
-                        "dbcolumn" => "downloads", // name of question attribute resp. database column
-                        "formlist" => "downloadlist", // name of bound input in edit form
+                        "files" => "downloadfiles", // Tag in xml export.
+                        "dbcolumn" => "downloads", // Name of question attribute resp. database column.
+                        "formlist" => "downloadlist", // Name of bound input in edit form.
                 )
         );
     }
@@ -167,21 +159,6 @@ class qtype_proforma extends question_type {
         return $fileareas;
     }
 
-
-    /**
-     * Returns all fileareas.
-     *
-     * @return array
-     */
-    /*
-    public static function all_fileareas() {
-        $fileareas = self::fileareas_with_model_solutions();
-        $fileareas[self::FILEAREA_TASK] = array();
-        $fileareas[self::FILEAREA_COMMENT] = array();
-        return $fileareas;
-    }
-    */
-
     /**
      * Defines the table which extends the question table. This allows the base questiontype
      * to automatically save, backup and restore the extra fields.
@@ -213,8 +190,7 @@ class qtype_proforma extends question_type {
 
                 'vcsuritemplate',
                 'vcslabel'
-                // 'comment', // is an array => do not add
-                // 'commentformat',
+                // Attributes 'comment' and 'commentformat' build an array => do not add.
         );
 
         foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
@@ -257,11 +233,15 @@ class qtype_proforma extends question_type {
         global $DB;
 
         if (isset($formdata->original_template)) {
-            // Workaround for a bug (?) in the behat test environment in Moodle 3.6:
+            // Workaround for a bug (?) in the BEHAT test environment in Moodle 3.6 and later:
+            // The Moodle test environment also uses a property
+            // named template. So we have problems with a name clash
+            // which is handled with an extra property original_template
+            // that holds the correct value.
             $formdata->behat_template = $formdata->template;
             $formdata->template = $formdata->original_template;
             if (empty($formdata->template)) {
-                // unset variable if empty in order to avoid problems.
+                // Unset variable if empty in order to avoid problems.
                 unset($formdata->template);
             }
         }
@@ -282,7 +262,7 @@ class qtype_proforma extends question_type {
                 break;
             case self::VOLATILE_TASKFILE:
             case self::JAVA_TASKFILE:
-                // handle 'save' from editor
+                // Handle 'save' from editor.
                 $editor = new java_form_creator($formdata);
                 break;
             case self::SETLX_TASKFILE:
@@ -300,12 +280,12 @@ class qtype_proforma extends question_type {
          *  - comment contains only flat text with seperate variable 'commentformat'
          *  (The handling is kept here because import_or_save_files is protected)*/
         if (!empty($formdata->comment['format'])) {
-            // $formdata->comment is array (when data comes from form input)
+            // Option 'comment' is array (when data comes from form input).
             $options->comment = $this->import_or_save_files($formdata->comment,
                     $formdata->context, 'qtype_proforma', 'comment', $formdata->id);
             $options->commentformat = $formdata->comment['format'];
         } else {
-            // data comes from file import, different internal structure :-(
+            // Data comes from file import, different internal structure.
             $options->comment = $formdata->comment;
             $options->commentformat = $formdata->commentformat;
         }
@@ -313,7 +293,8 @@ class qtype_proforma extends question_type {
         $DB->update_record('qtype_proforma_options', $options);
 
         if (isset($formdata->original_template)) {
-            // workaround for a bug (?) in the behat test environment in Moodle 3.6:
+            // Workaround for a bug (?) in the BEHAT test environment.
+            // See above.
             $formdata->template = $formdata->behat_template;
         }
     }
@@ -385,13 +366,13 @@ class qtype_proforma extends question_type {
      */
     public function attachment_options() {
         return array(
-            // 0 => get_string('no'),
                 1 => '1',
                 2 => '2',
                 3 => '3',
                 4 => '4',
                 5 => '5',
-            // -1 => get_string('unlimited'),
+            // Currently unlimited is disabled.
+            // To enable set -1 => get_string('unlimited').
         );
     }
 
@@ -452,7 +433,7 @@ class qtype_proforma extends question_type {
 
     /******************** IMPORT/EXPORT FUNCTIONS ***************************/
 
-    // the Moodle Core only supports export for XML and gift format for plugins.
+    // The Moodle Core only supports export for XML and gift format for plugins.
     // The gift format is so simple that it does not make sense to support it.
     // Import is only supported for plugins for XML (?). I have not checked all import formats
     // but gift is not supported so I assume that the others are not supported either.
@@ -473,31 +454,32 @@ class qtype_proforma extends question_type {
             throw new coding_exception("proforma:import_from_xml: invalid 'extra' parameter");
         }
 
-        $data['#']['answer'] = array(); // set empty answer array in order to prevent error message
-        // in call of base class function
+        // Set empty answer array in order to prevent error message
+        // in call of base class function.
+        $data['#']['answer'] = array();
         $qo = parent::import_from_xml($data, $question, $format, $extra);
-        // Remember that we come from import
+        // Remember that we come from import.
         $qo->import_process = true;
 
-        // import hints (is unfortunately not imported by base function)
+        // Import hints (is unfortunately not imported by base function).
         $format->import_hints($qo, $data, true, false);
-        // $format->get_format($question->questiontextformat));
 
-        // Restore files in grader info
+        // Restore files in grader info.
         $comment = $format->import_text_with_files($data,
-                array('#', 'comment', 0)); // $qo->comment, $format->get_format($qo->commentformat));
+                array('#', 'comment', 0));
         $qo->comment = $comment['text'];
         $qo->commentformat = $comment['format'];
         // todo: restore $comment['itemid']
         // if (!empty($comment['itemid'])) {
         // $qo->commentitemid = $comment['itemid'];
 
-        // import files
+        // Import files.
         foreach (self::proforma_fileareas() as $filearea => $value) {
             $datafiles = $format->getpath($data,
                     array('#', $value["files"], 0, '#', 'file'), array());
-            if (is_array($datafiles)) { // Seems like a non-array does occur in some versions of PHP!
-                // check for import with old style filenames
+            if (is_array($datafiles)) {
+                // Seems like a non-array does occur in some versions of PHP!
+                // check for import with old style filenames.
                 $dbcolumn = $value['dbcolumn'];
                 foreach (explode(',', $qo->$dbcolumn) as $filename) {
                     $filename = trim($filename);
@@ -506,7 +488,7 @@ class qtype_proforma extends question_type {
                         foreach ($datafiles as &$file) { // Note: use reference here!
                             $originalfilename = $format->getpath($file, array('@', 'name'), '', true);
                             if ($originalfilename == $oldfilename) {
-                                // Modify filename and path
+                                // Modify filename and path.
                                 $pathparts = pathinfo('/'. $filename);
                                 $dirname = trim($pathparts['dirname']);
                                 $basename = trim($pathparts['basename']);
@@ -535,7 +517,7 @@ class qtype_proforma extends question_type {
      * @return string
      */
     public function export_to_xml($question, qformat_xml $format, $extra = null) {
-        // shall vcsuritemplate and vcslabel be deleted from extra field array because
+        // Shall vcsuritemplate and vcslabel be deleted from extra field array because
         // they belong to the course and not to the question???
 
         // Copy the question so we can modify it for export
@@ -550,7 +532,7 @@ class qtype_proforma extends question_type {
         // $expout .= $format->write_files($questiontoexport->options->questiontextfiles);
         $expout .= "    </comment>\n";
 
-        // export files
+        // Export files.
         $fs = get_file_storage();
         $contextid = $question->contextid;
 

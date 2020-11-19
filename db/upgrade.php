@@ -49,14 +49,14 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018010500) {
-        // rename taskfilename to responsefilename
+        // rename taskfilename to responsefilename.
         $field = new xmldb_field('taskfilename', XMLDB_TYPE_TEXT, null, null, null, null, null, 'taskpath');
 
         if ($dbman->field_exists($table, $field)) {
             $dbman->rename_field($table, $field, 'responsefilename');
         }
 
-        // add new fields taskfilename (with different meaning) and downloads
+        // add new fields taskfilename (with different meaning) and downloads.
         $field = new xmldb_field('taskfilename', XMLDB_TYPE_TEXT, null, null, null, null, null, 'programminglanguage');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -71,7 +71,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018011000) {
-        // rename taskfilename to responsefilename
+        // Rename taskfilename to responsefilename.
         $field = new xmldb_field('taskfilename', XMLDB_TYPE_TEXT, null, null, null, null, null, 'taskpath');
 
         if ($dbman->field_exists($table, $field)) {
@@ -83,7 +83,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018011700) {
-        // rename taskfilename to responsefilename
+        // rename taskfilename to responsefilename.
         $field = new xmldb_field('taskfilename', XMLDB_TYPE_TEXT, null, null, null, null, null, 'taskpath');
 
         if ($dbman->field_exists($table, $field)) {
@@ -95,7 +95,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018012300) {
-        // split downloads into seperate fields
+        // split downloads into seperate fields.
         $field = new xmldb_field('downloads', XMLDB_TYPE_TEXT, null, null, null, null, null, 'programminglanguage');
 
         if ($dbman->field_exists($table, $field)) {
@@ -120,7 +120,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018041200) {
-        // split downloads into seperate fields
+        // split downloads into seperate fields.
         $field = new xmldb_field('modelsolfiles', XMLDB_TYPE_TEXT, null, null, null, null, null, 'libraries');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -164,7 +164,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
 
     if ($oldversion < 2018051101) {
 
-        // INTERNAL
+        // INTERNAL.
         $field = new xmldb_field('inputwithfile');
         if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field);
@@ -196,7 +196,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // merge columns instructions and libraries to downloads
+        // merge columns instructions and libraries to downloads.
         $DB->execute('UPDATE {qtype_proforma_options} '.
                 'SET downloads = ' .
                 $DB->sql_concat(' instructions ', '","' , 'libraries') .
@@ -213,7 +213,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018122107) {
-        // proformaversion
+        // proformaversion.
 
         // maybe default values are not set!!
         $field = new xmldb_field('proformaversion', XMLDB_TYPE_TEXT, null, null, null, null, null, 'gradinghints');
@@ -235,7 +235,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
 
     if ($oldversion < 2018122701) {
         require_once(__DIR__ . '/upgradelib.php');
-        // merge fileareas to download
+        // merge fileareas to download.
         update_proforma_download_filearea();
         // DO NOT DO THIS unless the hash for the files is converted!
         // $DB->execute('UPDATE {files} '.
@@ -257,7 +257,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
 
     if ($oldversion < 2018122706) {
         require_once(__DIR__ . '/upgradelib.php');
-        // get grading hints form file
+        // Get grading hints form file.
         initialise_proforma_gradinghints();
 
         // ProFormA savepoint reached.
@@ -265,7 +265,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2019111901) {
-        // do not force taskrepository and taskpath to have a value.
+        // Do not force taskrepository and taskpath to have a value.
         $field = new xmldb_field('taskrepository', XMLDB_TYPE_TEXT, null, null, null, null, null, 'responsetemplate');
         if ($dbman->field_exists($table, $field)) {
             $dbman->change_field_notnull($table, $field);
@@ -281,7 +281,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
 
     // Version control access
     if ($oldversion < 2020021100) {
-        // version control fields
+        // version control fields.
         $field = new xmldb_field('vcsuritemplate', XMLDB_TYPE_TEXT, null, null, null, null, null, 'responsetemplate');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -296,7 +296,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
 
     if ($oldversion < 2020042006) {
         require_once(__DIR__ . '/upgradelib.php');
-        // extract filepath from filename and store separately
+        // Extract filepath from filename and store separately.
         update_filenames();
 
         // ProFormA savepoint reached.
