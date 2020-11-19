@@ -88,7 +88,7 @@ CodeMirror specific styles
     font-family: monospace;
     height: 350px;
     direction: ltr;
-    border: solid 1px #ced4da;; /* NEW TODO: should be derived from Moodle!!  form-control */
+    border: solid 1px #ced4da; /* NEW TODO: should be derived from Moodle!!  form-control */
     /*resize: vertical;*/
 }
 

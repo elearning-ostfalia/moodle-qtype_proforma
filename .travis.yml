@@ -40,16 +40,16 @@ jobs:
       php: 7.4
       env:
         - MOODLE_BRANCH=MOODLE_310_STABLE
-        - DB=mysqli
+        - DB=pgsql
 
     - name: 'Moodle 3.9'
-      php: 7.4
+      php: 7.3
       env:
         - MOODLE_BRANCH=MOODLE_39_STABLE
         - DB=mysqli
 
     - name: 'Moodle 3.8 (Postgres)'
-      php: 7.3
+      php: 7.2
       env:
         - MOODLE_BRANCH=MOODLE_38_STABLE
         - DB=pgsql

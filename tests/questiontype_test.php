@@ -37,6 +37,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     protected $qtype;
 
     protected function setUp() {
+        parent::setUp();
         $this->qtype = new qtype_proforma();
     }
 
@@ -313,11 +314,11 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <defaultgrade>1</defaultgrade>
     <penalty>0.2</penalty>
     <hidden></hidden>
-    <idnumber></idnumber>    
+    <idnumber></idnumber>
     <uuid>UUID 1</uuid>
     <taskrepository>'.qtype_proforma_test_helper::QUESTION_REPOSITORY.'</taskrepository>
     <taskpath>'.qtype_proforma_test_helper::QUESTION_PATH.'</taskpath>
-    <taskfilename>taskfile.zip</taskfilename>    
+    <taskfilename>taskfile.zip</taskfilename>
     <responsefilename>'.qtype_proforma_test_helper::QUESTION_FILENAME.'</responsefilename>
     <programminglanguage>java</programminglanguage>
     <responsetemplate>'.qtype_proforma_test_helper::QUESTION_TEMPLATE.'</responsetemplate>
@@ -329,7 +330,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <taskstorage>'.qtype_proforma_test_helper::QUESTION_TASKSTORAGE.'</taskstorage>
     <aggregationstrategy>2</aggregationstrategy>
     <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
-    <proformaversion>2.0</proformaversion>    
+    <proformaversion>2.0</proformaversion>
     <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES.'</templates>
     <downloads>instruction.txt, test/lib/lib.txt</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
@@ -346,7 +347,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
 <file name="ms2.txt" path="/" encoding="base64">TVMyLUR1bW15</file>
 </modelsolutionfiles>
 <task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
-</task> 
+</task>
 <commentfiles></commentfiles>
     <hint format="html">
       <text><![CDATA[hint 1<br>]]></text>
@@ -459,11 +460,11 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <defaultgrade>1</defaultgrade>
     <penalty>0.2</penalty>
     <hidden></hidden>
-    <idnumber></idnumber>    
+    <idnumber></idnumber>
     <uuid>UUID 1</uuid>
     <taskrepository>'.qtype_proforma_test_helper::QUESTION_REPOSITORY.'</taskrepository>
     <taskpath>'.qtype_proforma_test_helper::QUESTION_PATH.'</taskpath>
-    <taskfilename>taskfile.zip</taskfilename>    
+    <taskfilename>taskfile.zip</taskfilename>
     <responsefilename>'.qtype_proforma_test_helper::QUESTION_FILENAME.'</responsefilename>
     <programminglanguage>java</programminglanguage>
     <responsetemplate>'.qtype_proforma_test_helper::QUESTION_TEMPLATE.'</responsetemplate>
@@ -475,7 +476,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <taskstorage>'.qtype_proforma_test_helper::QUESTION_TASKSTORAGE.'</taskstorage>
     <aggregationstrategy>2</aggregationstrategy>
     <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
-    <proformaversion>2.0</proformaversion>    
+    <proformaversion>2.0</proformaversion>
     <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES.'</templates>
     <downloads>instruction.txt, test/lib/lib.txt</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
@@ -492,7 +493,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
 <file name="ms2.txt" path="/" encoding="base64">TVMyLUR1bW15</file>
 </modelsolutionfiles>
 <task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
-</task> 
+</task>
 <commentfiles></commentfiles>
     <hint format="html">
       <text><![CDATA[hint 1<br>]]></text>

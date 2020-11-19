@@ -165,13 +165,10 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
      * @return bool
      */
     protected function set_formdata_from_gradinghints($question, $ref, $weight) {
-        switch($ref) {
-            case 'compiler':
-                $question->compileweight = $weight;
-                $question->compile = 1;
-                return true;
-            default:
-                break;
+        if ($ref == 'compiler') {
+            $question->compileweight = $weight;
+            $question->compile = 1;
+            return true;
         }
         return false;
     }
