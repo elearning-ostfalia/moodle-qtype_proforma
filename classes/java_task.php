@@ -236,60 +236,34 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     }
 
     /**
-     * extract formdata from taskfile
+     * called by extract_formdata_from_taskfile in order to
+     * extract form data from task test.
      *
-     * @param $category
-     * @param $question
+     * @param type $question: return instance
+     * @param type $test: test entity from task
+     * @param type $code: code from referenced file
+     * @param type $index: index variable
      */
-    public function extract_formdata_from_taskfile($category, $question) {
-        $content = $this->get_task_xml($category, $question);
-
-        $task = new SimpleXMLElement($content, LIBXML_PARSEHUGE);
-        // Read java version.
-        $question->proglangversion = (string)$task->proglang['version'];
-
-        // Read files.
-        foreach ($task->files->file as $file) {
-            $fileobject = array();
-            $fileobject['id'] = (string)$file['id'];
-            $code = $file->{'embedded-txt-file'}; // //$xpath->query('./dn2:embedded-txt-file', $file);
-
-            $fileobject['filename'] = (string)$code['filename'];
-            $fileobject['code'] = (string)$code;
-            $files[$fileobject['id']] = $fileobject;
-        }
-        // Read tests.
-        $index = 0;
-        foreach ($task->tests->test as $test) {
-            $code = null;
-            foreach ($test->{'test-configuration'}->filerefs as $filerefs) {
-                foreach ($filerefs->fileref as $fileref) {
-                    // assume that we have only one file belonging to each test
-                    $refid = (string) $fileref['refid'];
-                    $fileobject = $files[$refid];
-                    $code = (string) $fileobject['code'];
-                }
-                switch ($test['id']) {
-                    case 'checkstyle':
-                        $question->checkstylecode = $code;
-                        $config = $test->{'test-configuration'};
-                        // Switch to namespace 'cs'.
-                        $cs = $config->children('cs', true);
-                        $question->checkstyleversion = (string)$cs->attributes()->version;
-                        // debugging('$question->checkstyleversion = ' . $question->checkstyleversion);
-                        break;
-                    case 'compiler': // assert(false);
-                        break;
-                    default: // JUNIT test
-                        $question->testcode[$index] = $code;
-                        $config = $test->{'test-configuration'};
-                        // Switch to namespace 'unit'.
-                        $unittest = $config->children('unit', true)->{'unittest'};
-                        $question->testversion[$index] = (string)$unittest->attributes()->version;
-                        $index++;
-                        break;
-                }
-            }
+    protected function extract_formdata_from_test($question, $test, $code, &$index) {
+        switch ($test['id']) {
+            case 'checkstyle':
+                $question->checkstylecode = $code;
+                $config = $test->{'test-configuration'};
+                // Switch to namespace 'cs'.
+                $cs = $config->children('cs', true);
+                $question->checkstyleversion = (string)$cs->attributes()->version;
+                // debugging('$question->checkstyleversion = ' . $question->checkstyleversion);
+                break;
+            case 'compiler': // assert(false);
+                break;
+            default: // JUNIT test
+                $question->testcode[$index] = $code;
+                $config = $test->{'test-configuration'};
+                // Switch to namespace 'unit'.
+                $unittest = $config->children('unit', true)->{'unittest'};
+                $question->testversion[$index] = (string)$unittest->attributes()->version;
+                $index++;
+                break;
         }
     }
 

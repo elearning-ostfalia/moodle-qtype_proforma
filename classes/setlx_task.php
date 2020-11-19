@@ -174,51 +174,6 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
     }
 
     /**
-     * extract formdata from taskfile
-     *
-     * @param $category
-     * @param $question
-     */
-    public function extract_formdata_from_taskfile($category, $question) {
-        $content = $this->get_task_xml($category, $question);
-
-        $task = new SimpleXMLElement($content, LIBXML_PARSEHUGE);
-        // Read java version.
-        $question->proglangversion = (string)$task->proglang['version'];
-
-        // Read files.
-        foreach ($task->files->file as $file) {
-            $fileobject = array();
-            $fileobject['id'] = (string)$file['id'];
-            $code = $file->{'embedded-txt-file'};
-            $fileobject['filename'] = (string)$code['filename'];
-            $fileobject['code'] = (string)$code;
-            $files[$fileobject['id']] = $fileobject;
-        }
-        // Read tests.
-        $index = 0;
-        foreach ($task->tests->test as $test) {
-            $code = null;
-            foreach ($test->{'test-configuration'}->filerefs as $filerefs) {
-                foreach ($filerefs->fileref as $fileref) {
-                    // Assume that we have only one file belonging to each test.
-                    $refid = (string) $fileref['refid'];
-                    $fileobject = $files[$refid];
-                    $code = (string) $fileobject['code'];
-                }
-                switch ($test['id']) {
-                    case 'compiler':
-                        break;
-                    default: // SetlX test.
-                        $question->testcode[$index] = $code;
-                        $index++;
-                        break;
-                }
-            }
-        }
-    }
-
-    /**
      * get number of SetlX tests.
      *
      * @param $gradinghints
