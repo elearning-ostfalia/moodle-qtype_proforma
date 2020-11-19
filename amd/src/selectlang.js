@@ -29,61 +29,61 @@ define(['core/modal_factory', 'core/modal_events'], function(ModalFactory, Modal
     function create_body(proglangs) {
         let body = "<form>";
         body += '<fieldset>';
-        console.log(proglangs);
+        // console.log(proglangs);
         proglangs.forEach(function(item, index) {
             // We add a human readable identifier for testing access.
-            body += '<p><input id="item_' + item[1].toLowerCase() + '" type="radio" name="lang" value="' + item[0] + '"'; 
+            body += '<p><input id="item_' + item[1].toLowerCase() + '" type="radio" name="lang" value="' + item[0] + '"';
             if (index == 0) {
                 // Check first element
-                body +=  'checked'; 
+                body +=  'checked';
             }
             body += '> ' +  item[1] +'</input></p>';
         });
-        
+
         body += '<br>';
         body += '</fieldset>';
         body += '</form>';
-        return body;        
+        return body;
     }
-    
+
     return {
         select_lang: function(title, proglangs, returnurl) {
-            try {
-                function doModal() {
-                    ModalFactory.create({
-                        type: ModalFactory.types.SAVE_CANCEL,
-                        title: title,
-                        body: create_body(proglangs),
-                        large: false
-                    })
-                    .then(function(modal) {
-                        modal.setSaveButtonText('Ok');
-                        modal.getRoot().on(ModalEvents.save, function() {
-                            // Check which radio button is checked.
-                            let radioButtons = modal.getRoot().find('input');
-                            for (var i = 0; i < radioButtons.length; i++)
+            function doModal() {
+                ModalFactory.create({
+                    type: ModalFactory.types.SAVE_CANCEL,
+                    title: title,
+                    body: create_body(proglangs),
+                    large: false
+                })
+                .then(function(modal) {
+                    modal.setSaveButtonText('Ok');
+                    modal.getRoot().on(ModalEvents.save, function() {
+                        // Check which radio button is checked.
+                        let radioButtons = modal.getRoot().find('input');
+                        for (var i = 0; i < radioButtons.length; i++)
+                        {
+                            if(radioButtons[i].checked == true)
                             {
-                                if(radioButtons[i].checked == true)
-                                {
-                                    let language = radioButtons[i].value;
-                                    // Preset task storage.
-                                    // document.getElementById("id_taskstorage").setAttribute('value', language);
-                                    // Append language value to URI and
-                                    // reload page.                                    
-                                    let uri = window.location.href;
-                                    uri += '&proglang=' + language;
-                                    window.location.assign(uri);
-                                    return;
-                                }
+                                let language = radioButtons[i].value;
+                                // Preset task storage.
+                                // document.getElementById("id_taskstorage").setAttribute('value', language);
+                                // Append language value to URI and
+                                // reload page.
+                                let uri = window.location.href;
+                                uri += '&proglang=' + language;
+                                window.location.assign(uri);
+                                return;
                             }
-                        });
-                        modal.getRoot().on(ModalEvents.cancel, function() {
-                            // Cancel was pressed => redirect to returnurl.
-                            window.location.assign(returnurl); 
-                        });                        
-                        modal.show();
-                    }).catch(Notification.exception);
-                }
+                        }
+                    });
+                    modal.getRoot().on(ModalEvents.cancel, function() {
+                        // Cancel was pressed => redirect to returnurl.
+                        window.location.assign(returnurl);
+                    });
+                    modal.show();
+                }).catch(Notification.exception);
+            }
+            try {
                 doModal();
             } catch(err) {
                 console.error("Exception caught in select-lang.js function select_lang\n " + err.toString());
