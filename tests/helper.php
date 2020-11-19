@@ -24,6 +24,15 @@
  */
 
 
+/*
+ * in Moodle 3.6 and later the property 'template' is overridden by the test environment
+   which results in failing Behat tests.
+   Workaround: we use a copy of the value named 'original_template'.
+   Even if no template is used we must set this variable (to ''). Otherwise
+   the proforma code thinks that there is a template. :-(
+ */
+
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
@@ -216,8 +225,8 @@ class qtype_proforma_test_helper extends question_test_helper {
         $container->aggregationstrategy = self::QUESTION_AGGREGATIONSTRATEGY;
         $container->proformaversion = self::QUESTION_PROFORMAVERSION;
 
-        // in Moodle 3.6 the property 'template' is overridden by the test environment
-        // which results in failing tests.
+        // in Moodle 3.6 and later the property 'template' is overridden by the test environment
+        // which results in failing Behat tests.
         // Workaround: we use a copy of the value named 'original_template'.
         // Even if no template is used we must set this variable. Otherwise
         // the proforma code thinks that there is a template.
@@ -388,11 +397,6 @@ class qtype_proforma_test_helper extends question_test_helper {
         $fromform->$property = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
                 '#code snippet for python');
-
-        // in Moodle 3.6 the property 'template' is overridden by the test environment
-        // which results in failing tests.
-        // Workaround: we use a copy of the value named 'original_template'
-        $fromform->original_template = $fromform->template;
 
         $fromform->programminglanguage = 'python';
         //$fromform->responsetemplate = '';
@@ -579,7 +583,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     public function get_proforma_question_form_data_setlx_base() {
         $form = new stdClass();
 
-//        $form->original_template = '';
+        $form->original_template = '';
 
         // valid data for a task file in the repository!
         $form->taskstorage = qtype_proforma::SETLX_TASKFILE;
@@ -665,11 +669,12 @@ class qtype_proforma_test_helper extends question_test_helper {
     /** two tests and syntax check */
     public function get_proforma_question_form_data_setlx2() {
         $form = $this->get_proforma_question_form_data_setlx_base();
+
         $form->testcode[1] = 'some other testcode';
         // Must be set correctly (=> grading hints) for PhpUnit test!
         $form->testid[1] = '2';
         $form->testtitle[1] = 'Setlx Test 2';
-        $form->testweight[1] = '-';
+        $form->testweight[1] = '6'; // '-';
 
         // Behat: Title, weight and description come from grading hints
         $form->gradinghints = self::QUESTION_GRADINGHINTS_SETLX2;
