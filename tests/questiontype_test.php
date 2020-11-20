@@ -41,8 +41,9 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $this->qtype = new qtype_proforma();
     }
 
-    protected function tearDown() {
+    protected function tearDown(): void {
         $this->qtype = null;
+        parent::tearDown();
     }
 
     protected function get_test_question_data() {
