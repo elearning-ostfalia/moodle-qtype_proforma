@@ -25,7 +25,7 @@
  *             (The Open University for essay base)
  */
 
-// load JQuery for CodeMirror resizing. This cannot be done
+// Load JQuery for CodeMirror resizing. This cannot be done
 // inside a function.
 
 defined('MOODLE_INTERNAL') || die();
@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
 global $PAGE;
 if (!$PAGE->requires->is_head_done()) {
-    // this is_head_done check avoids a debugging error message telling us
+    // This is_head_done check avoids a debugging error message telling us
     // that we cannot add jquery after starting page output.
 
     // But: if the jquery calls are missing then Codemirror resizing does not work.
@@ -107,7 +107,7 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
      * @return string: returns the name of the answer step field
      */
     public function answerfieldname() {
-        return ANSWER; // attachments are not stored here
+        return ANSWER; // Attachments are not stored here.
     }
 }
 
@@ -142,7 +142,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
         $input = html_writer::tag('textarea', s($step->get_qt_var($name)), $attributes);
         $input .= html_writer::empty_tag('input', array('type' => 'hidden',
                 'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
-        // convert textarea to codemirror editor
+        // Convert textarea to codemirror editor.
         qtype_proforma\lib\as_codemirror($id, $mode, null, false, false);
         return $input;
     }
@@ -185,7 +185,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
 
         $input = html_writer::tag('textarea', s($step->get_qt_var($name)), $attributes);
 
-        // convert textarea to codemirror editor
+        // Convert textarea to codemirror editor.
         qtype_proforma\lib\as_codemirror($id, $mode, null, true, false);
         return $input;
     }

@@ -26,11 +26,12 @@ cache:
     - $HOME/.composer/cache
     - $HOME/.npm
 
-# moodle 3.7 and moodle 3.8 require at least PHP 7.1
+# 3.8 require at least PHP 7.1-7.4 (since 3.8.3)
+# 3.9, 3.10: 7.2-7.4
 
 jobs:
   include:
-    - name: 'Moodle 4.0'
+    - name: 'master'
       php: 7.4
       env:
         - MOODLE_BRANCH=master

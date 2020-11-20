@@ -46,7 +46,7 @@ class java_form_creator extends base_form_creator {
         }
     }
 
-    // override
+    // Override.
 
     /**
      * the numeric type of task
@@ -68,14 +68,6 @@ class java_form_creator extends base_form_creator {
         $mform->disabledIf('proglang', 'responseformat', 'neq', 'alwaysdisabled');
         $mform->setType('proglang', PARAM_TEXT);
         $mform->setDefault('proglang', 'Java');
-
-        /*
-        $proglangooptions = array('Java'); // , get_string('other', 'qtype_proforma'));
-        $mform->addElement('select', 'proglang',
-                get_string('proglang', 'qtype_proforma'), $proglangooptions);
-        $mform->addHelpButton('proglang', 'proglang_hint', 'qtype_proforma');
-        $mform->setDefault('proglang', 'Java');
-        */
 
         $javaversion = get_config('qtype_proforma', 'javaversion');
         $proglangversions = array();
@@ -101,9 +93,9 @@ class java_form_creator extends base_form_creator {
      */
     public function add_grader_settings($question) {
         if (qtype_proforma\lib\is_admin()) {
-            // allow admin to see the created task.xml (for debugging purposes)
+            // Allow admin to see the created task.xml (for debugging purposes).
             parent::add_grader_settings($question);
-            // ProFormA fields
+            // ProFormA fields.
             $mform = $this->_form;
             $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
         }
@@ -138,7 +130,7 @@ class java_form_creator extends base_form_creator {
         $mform = $this->_form;
         $csversion = get_config('qtype_proforma', 'junitversion');
         $versions = array();
-        // force PHP to use strings as key even if the first key is an integer
+        // Force PHP to use strings as key even if the first key is an integer.
         $obj = new stdClass;
 
         if (!$this->_newquestion) {
@@ -201,8 +193,7 @@ class java_form_creator extends base_form_creator {
         $mform->hideIf('checkstyleversion', 'checkstyle');
         $mform->hideIf('checkstyleweight', 'checkstyle');
         $mform->hideIf('checkstylecode', 'checkstyle');
-        // cannot use required rule because rule is checked even if control is hidden :-(
-        // $mform->addRule('checkstylecode', null, 'required', '', 'client', false, false);
+        // Cannot use required rule because rule is checked even if control is hidden.
     }
 
     /**
@@ -220,8 +211,6 @@ class java_form_creator extends base_form_creator {
 
         // Add checkstyle.
         $this->add_checkstyle();
-        // $this->form->addGroupRule('testoptions', array(
-        // 'testversion' => array(array(get_string('error'), 'nonzero', '', 'client'))));
         return $repeats;
     }
 
@@ -260,11 +249,10 @@ class java_form_creator extends base_form_creator {
                 $errors['testcode['.$i.']'] = get_string('codeempty', 'qtype_proforma');
             } else if (0 == $lentitle and 0 < $lencode) {
                 // Title is missing
-                // error message must be attached to testoptions group
-                // $errors['testweight['.$i.']'] = get_string('titleempty', 'qtype_proforma');
+                // error message must be attached to testoptions group.
                 $errors['testoptions['.$i.']'] = get_string('titleempty', 'qtype_proforma');
             } else if ($lencode > 0 and $lentitle > 0) {
-                // check classname
+                // Check classname.
                 if (!qtype_proforma_java_task::get_java_file($code)) {
                     $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
                 } else if (!qtype_proforma_java_task::get_java_entrypoint($code)) {
@@ -302,8 +290,8 @@ class java_form_creator extends base_form_creator {
                 $sumweight += $fromform["compileweight"];
             }
             if ($repeats > 0 && $sumweight == 0) {
-                // error message must be attached to testoptions group
-                // otherwise it is not visible
+                // Error message must be attached to testoptions group
+                // otherwise it is not visible.
                 $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
             }
         }
@@ -323,7 +311,7 @@ class java_form_creator extends base_form_creator {
         parent::data_preprocessing($question, $cat, $editor);
 
         if (isset($question->id)) {
-            // preset data if question already exists
+            // Preset data if question already exists.
             $form = $editor->get_form();
 
             switch ($question->taskstorage) {
