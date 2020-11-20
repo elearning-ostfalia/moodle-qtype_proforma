@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/question/format/xml/format.php');
 class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_base {
     protected $qtype;
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         $this->qtype = new qtype_proforma();
     }
