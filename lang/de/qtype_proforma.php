@@ -28,7 +28,7 @@ $string['pluginname'] = 'ProFormA-Aufgabe';
 $string['pluginname_help'] = 'Programmieraufgabe basierend auf einer ProFormA-Aufgabendatei mit automatischer Bewertung. Der Studierende kann entweder seine Lösung als Datei hochladen oder sie direkt in einem Editor eingeben. Dazu kann eine Code-Vorlage vorgegeben werden. ';
 $string['pluginnameadding'] = 'ProFormA-Aufgabe hinzufügen';
 $string['pluginnameediting'] = 'ProFormA-Aufgabe ändern';
-$string['pluginnamesummary'] = 'Automatisch bewertete Java-Programmieraufgabe.';
+$string['pluginnamesummary'] = 'Automatisch bewertete Programmieraufgabe.';
 $string['allowattachments'] = 'Max. Anzahl Dateien';
 $string['comment'] = 'Kommentar';
 $string['commentheader'] = 'Kommentar';
@@ -174,7 +174,7 @@ $string['internaltesterror'] = 'Während des Testlaufs wurde ein interner Fehler
 $string['privacy:metadata'] = 'Das ProFormA Frageformat Plugin speichert keine personenbezogenen Daten.';
 
 
-// version control system
+// Version control system.
 
 $string['versioncontrol'] = 'Version Control System';
 $string['vcsuritemplate'] = 'URI des Repository (Template)';

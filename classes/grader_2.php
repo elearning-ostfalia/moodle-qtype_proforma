@@ -149,14 +149,19 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $uri = $protocolhost . $path;
 
         // return array($this->set_dummy_result3(), 200); // fake
-
         // Send task and submission to grader with Curl with a configured timeout.
         $curl = new curl();
         $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'grading_timeout');
         $output = $curl->post($uri, $postfields, $options);
         $info = $curl->get_info();
         $httpcode = $info["http_code"];
-        return array($output, $httpcode);
+        if ($output === false) {
+            // In case of a curl error get the erro number.
+            $msg = 'curl request failed: Errno = ' . $curl->get_errno() . ', error = "' . $curl->error . '"';
+            return array($msg, $httpcode);
+        } else {
+            return array($output, $httpcode);
+        }
     }
 
     /**
