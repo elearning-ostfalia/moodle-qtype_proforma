@@ -29,7 +29,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.ph
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
 /*
- * (class for handling ProFormA tasks for differnt programming languages
+ * (class for handling ProFormA tasks for different programming languages
  * (i.e. create task and extract data for editor)
  * Note that this class is stateless i.e. has no member variables.
  */

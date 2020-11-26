@@ -52,6 +52,9 @@ abstract class base_form_creator {
     /** Syntax highlighting mode */
     protected $_syntaxhighlighting = 'java';
 
+    /** Programming language */
+    protected $_proglang = null;
+
     // Property name for download manager.
     const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
 
@@ -60,11 +63,13 @@ abstract class base_form_creator {
      *
      * @param $form
      */
-    protected function __construct($form, $taskhandler, $responseformats = null, $syntaxhighlight = null) {
+    protected function __construct($form, $taskhandler, $responseformats = null,
+        $syntaxhighlight = null, $proglang = null) {
         $this->_form = $form;
         $this->_responseformats = $responseformats;
         $this->_syntaxhighlighting = $syntaxhighlight;
         $this->_taskhandler = $taskhandler;
+        $this->_proglang = $proglang;
     }
 
     // Override.
@@ -106,7 +111,14 @@ abstract class base_form_creator {
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function add_proglang_selection($question) {
-
+        if (isset($this->_proglang)) {
+            $mform = $this->_form;
+            $mform->addElement('text', 'proglang',
+                    get_string('proglang', 'qtype_proforma'), $this->_proglang);
+            $mform->disabledIf('proglang', 'responseformat', 'neq', 'alwaysdisabled');
+            $mform->setType('proglang', PARAM_TEXT);
+            $mform->setDefault('proglang', $this->_proglang);
+        }
     }
 
     /**
@@ -172,10 +184,10 @@ abstract class base_form_creator {
         get_string('responsetemplate', 'qtype_proforma'), 'rows="20" cols="80"');
         if (get_config('qtype_proforma', 'usecodemirror')) {
             qtype_proforma\lib\as_codemirror('id_responsetemplate',
-            $this->_syntaxhighlighting, 'id_responsetemplateheader');
+                $this->_syntaxhighlighting, 'id_responsetemplateheader');
             global $PAGE;
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
-            array('id_programminglanguage', 'id_responsetemplate'));
+                array('id_programminglanguage', 'id_responsetemplate'));
         }
         $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_proforma');
         // Show only if response format is editor.

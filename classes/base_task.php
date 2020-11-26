@@ -339,7 +339,8 @@ abstract class qtype_proforma_base_task {
     }
 
     /**
-     * returns the task.xml
+     * returns the task.xml.
+     * Does not work for zipped task files!
      *
      * @param $category
      * @param $question
@@ -367,14 +368,16 @@ abstract class qtype_proforma_base_task {
         $content = $this->get_task_xml($category, $question);
 
         $task = new SimpleXMLElement($content, LIBXML_PARSEHUGE);
-        // Read java version.
+        // Read programming language version.
         $question->proglangversion = (string)$task->proglang['version'];
+        // Read programming language.
+        $question->proglang = (string)$task->proglang;
 
         // Read files.
         foreach ($task->files->file as $file) {
             $fileobject = array();
             $fileobject['id'] = (string)$file['id'];
-            $code = $file->{'embedded-txt-file'}; // //$xpath->query('./dn2:embedded-txt-file', $file);
+            $code = $file->{'embedded-txt-file'};
 
             $fileobject['filename'] = (string)$code['filename'];
             $fileobject['code'] = (string)$code;

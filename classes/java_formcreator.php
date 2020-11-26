@@ -40,7 +40,8 @@ class java_form_creator extends base_form_creator {
      * @param null $newquestion new question indicator
      */
     public function __construct($form, $newquestion = null) {
-        parent::__construct($form, new qtype_proforma_java_task(), qtype_proforma::response_formats(), 'java');
+        parent::__construct($form, new qtype_proforma_java_task(),
+            qtype_proforma::response_formats(), 'java', 'Java');
         if (isset($newquestion) && $newquestion) {
             $this->_newquestion = $newquestion;
         }
@@ -61,14 +62,9 @@ class java_form_creator extends base_form_creator {
      * @param $question
      */
     public function add_proglang_selection($question) {
+        parent::add_proglang_selection($question);
+
         $mform = $this->_form;
-
-        $mform->addElement('text', 'proglang',
-                get_string('proglang', 'qtype_proforma'), 'Java');
-        $mform->disabledIf('proglang', 'responseformat', 'neq', 'alwaysdisabled');
-        $mform->setType('proglang', PARAM_TEXT);
-        $mform->setDefault('proglang', 'Java');
-
         $javaversion = get_config('qtype_proforma', 'javaversion');
         $proglangversions = array();
         if (!$this->_newquestion) {
@@ -327,10 +323,10 @@ class java_form_creator extends base_form_creator {
                         $question->modelsolution = $files[0]->get_content();
                     }
                     break;
-                case qtype_proforma::SELECT_TASKFILE:
+/*                case qtype_proforma::SELECT_TASKFILE:
                     // State transition from SELECT to JAVA.
                     $question->taskstorage = qtype_proforma::JAVA_TASKFILE;
-                    break;
+                    break;*/
                 default:
                     throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }

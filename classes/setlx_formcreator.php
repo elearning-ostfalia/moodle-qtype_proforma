@@ -42,7 +42,8 @@ class setlx_form_creator extends base_form_creator {
         $ro = qtype_proforma::response_formats();
         $responseoptions = [qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR]];
 
-        parent::__construct($form, new qtype_proforma_setlx_task(), $responseoptions, 'setlx');
+        parent::__construct($form, new qtype_proforma_setlx_task(), $responseoptions,
+            'setlx', 'SetlX');
     }
 
     // Override.
@@ -210,11 +211,6 @@ class setlx_form_creator extends base_form_creator {
                         $question->modelsolution = $files[0]->get_content();
                     }
                     break;
-                /*
-                case qtype_proforma::SELECT_TASKFILE:
-                    // State transition from SELECT to SETLX.
-                    $question->taskstorage = qtype_proforma::SETLX_TASKFILE;
-                    break;*/
                 default:
                     throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }

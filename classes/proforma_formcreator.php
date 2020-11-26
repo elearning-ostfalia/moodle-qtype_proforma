@@ -29,7 +29,6 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.p
 
 /**
  * This class creates the edit form fields for imported ProFormA tasks.
- * It is also the base class for other edit forms.
  */
 class proforma_form_creator extends base_form_creator {
 
@@ -99,8 +98,19 @@ class proforma_form_creator extends base_form_creator {
         $this->add_static_text($question, 'furtherTemplates', get_string('templates', 'qtype_proforma'),
                 'templates');
         $mform->addHelpButton('furtherTemplates', 'templates_hint', 'qtype_proforma');
-
     }
+
+    /**
+     * Add something to select the programming language.
+     *
+     * @param $question
+     */
+    /*
+    public function add_proglang_selection($question) {
+        $this->_proglang = $question->proglang;
+        parent::add_proglang_selection($question);
+    }
+     */
 
     /**
      * Display grader settings.
