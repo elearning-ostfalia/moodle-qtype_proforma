@@ -78,13 +78,11 @@ function get_groupname() {
 
     switch ($count) {
         case 0:
-            // no group found
-            return 'N/A';
+            return 'N/A'; // No group found.
         case 1:
-            return $groupname;
+            return $groupname; // Exactly one group found.
         default:
-            // more than one group found
-            break;
+            break; // More than one group found.
     }
 
     return 'NOT UIQUE';
@@ -104,23 +102,23 @@ function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = 
     if (get_config('qtype_proforma', 'usecodemirror')) {
         global $PAGE, $CFG;
         require_once($CFG->dirroot . '/config.php');
-        // load jquery css file for resizable
+        require_login(); // Is inserted here because of Codechecker warning.
+        // Load jquery css file for resizable.
         if ($loadjquery) {
             $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin('ui');
             $PAGE->requires->jquery_plugin('ui-css');
         }
 
+        // Different handling for different moodle versions.
         $moodleversion = $CFG->version;
-        // debugging('Moodle Version is ' . $moodleversion);
-
         if ($moodleversion > 2018051700) {
-            // starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
+            // Starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
             // so this must be explicitly be done in Javascript.
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
                     array($textareaid, $readonly, $mode, $header, 1));
         } else {
-            // In 3.4 resizing must be prohinited because the window is too small
+            // In 3.4 resizing must be prohinited because the window is too small.
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
                     array($textareaid, $readonly, $mode, $header));
         }
@@ -128,4 +126,98 @@ function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = 
 }
 
 
+require_once($CFG->dirroot . '/lib/adminlib.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/grader_2.php');
+/**
+ * Helper class for setting the grader URI with connection test
+ */
+class admin_setting_configproformagrader extends \admin_setting_configtext {
+    /* grader instance */
+    private $_grader = null;
+    /* connection test result */
+    private $_graderoutput = null;
+    /* HTTP code of test response */
+    private $_httpcode = null;
+
+    /**
+     * Constructor
+     * @param string $name unique ascii name, either 'mysetting' for settings
+     * that in config, or 'myplugin/mysetting' for ones in config_plugins.
+     * @param string $visiblename localised
+     * @param string $description long localised info
+     * @param string $defaultdirectory default directory location
+     */
+    public function __construct($name, $visiblename, $description, $defaultdirectory) {
+        parent::__construct($name, $visiblename, $description, $defaultdirectory, PARAM_RAW, 50);
+        $this->_grader = new \qtype_proforma_grader_2();
+    }
+
+    /**
+     * Returns XHTML for the field
+     *
+     * Returns XHTML for the field and also checks whether the URI
+     * specified in $data is a valid ProFormA grader
+     *
+     * @param string $data Uri of grader. Is not used. (Connection
+     * data is retrieved from actual configuration data.)
+     * @param string $query
+     * @return string XHTML field
+     */
+    public function output_html($data, $query='') {
+        global $CFG, $OUTPUT;
+
+        $default = $this->get_defaultsetting();
+        $context = (object) [
+            'id' => $this->get_id(),
+            'name' => $this->get_full_name(),
+            'size' => $this->size,
+            'value' => $data,
+            'showvalidity' => !empty($data),
+            'valid' => $data && $this->is_proforma_grader(),
+            'forceltr' => $this->get_force_ltr(),
+            'response' => $this->get_grader_response(),
+        ];
+
+        $element = $OUTPUT->render_from_template('qtype_proforma/setting_configproformagrader', $context);
+
+        return format_admin_setting($this, $this->visiblename, $element, $this->description, true, '', $default, $query);
+    }
+
+    /**
+     * returns a text mesage to be displayed in case of an error
+     * when testing the grader connection.
+     *
+     * @return string
+     */
+    protected function get_grader_response() {
+        if (!isset($this->_result)) {
+            list($this->_graderoutput, $this->_httpcode) = $this->_grader->test_connection();
+        }
+
+        switch ($this->_httpcode) {
+            case 0:
+                return $this->_graderoutput;
+            case 200:
+                return '';
+            case 404:
+                return 'HTTP status code 404, check URI';
+            default:
+                return 'HTTP status code ' . $this->_httpcode;
+        }
+    }
+
+    /**
+     * tests the connection to the grader and returns true
+     * if ok other wise false.
+     *
+     * @return bool
+     */
+    protected function is_proforma_grader() : bool {
+        if (!isset($this->_result)) {
+            list($this->_graderoutput, $this->_httpcode) = $this->_grader->test_connection();
+        }
+        // Test for HTTP OK.
+        return $this->_httpcode == 200;
+    }
+}
 

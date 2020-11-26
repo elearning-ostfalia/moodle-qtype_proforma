@@ -26,11 +26,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+
+require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
+
 // Grader (Praktomat) settings.
 $settings->add(new admin_setting_heading('grader',
         get_string('grader_heading', 'qtype_proforma'), ''));
 
-$settings->add(new admin_setting_configtext('qtype_proforma/graderuri_host',
+$settings->add(new qtype_proforma\lib\admin_setting_configproformagrader('qtype_proforma/graderuri_host',
         get_string('graderuri_host', 'qtype_proforma'),
         get_string('graderuri_host_desc', 'qtype_proforma'),
         'http://localhost:8010'));
@@ -62,14 +65,6 @@ $settings->add(new admin_setting_configtext('qtype_proforma/defaultpenalty',
         get_string('defaultpenalty', 'qtype_proforma'),
         get_string('defaultpenalty_desc', 'qtype_proforma'), 0.1));
 
-
-// can we use this??? because float format is depending on language (. or ,)
-/*
-$settings->add(new admin_setting_configtext_with_advanced('qtype_proforma/defaultpenalty',
-    get_string('defaultpenalty', 'qtype_proforma'),
-    get_string('defaultpenalty_desc', 'qtype_proforma'), 0.1,
-    PARAM_FLOAT));
-*/
 
 if (isset($CFG->maxbytes)) {
     $name = new lang_string('maximumsubmissionsize', 'qtype_proforma');

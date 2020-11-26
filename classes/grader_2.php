@@ -40,7 +40,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @return string submission.xml string
      * @throws coding_exception
      */
-    private function create_submission_xml($code, $files, $filename, $uri, qtype_proforma_question $question) {
+    private function create_submission_xml($code, $files, $filename, $uri, $question, $taskfile = null) {
         global $CFG;
 
         $xw = new SimpleXmlWriter();
@@ -60,8 +60,13 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         // Task as external task in http field.
         $xw->startElement('external-task');
-        $xw->create_attribute('uuid', $question->uuid);
-        $xw->text('http-file:' . $question->taskfilename);
+        if (isset($taskfile)) {
+            $xw->create_attribute('uuid', 'x-y-z');
+            $xw->text('http-file:' . $taskfile->get_filename());
+        } else {
+            $xw->create_attribute('uuid', $question->uuid);
+            $xw->text('http-file:' . $question->taskfilename);
+        }
         $xw->endElement(); // End tag external-task.
 
         if (isset($uri)) {
@@ -123,7 +128,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         $xw->endDocument();
         $submission = $xw->outputMemory();
-        // debugging($submission);
         return $submission;
     }
 
@@ -135,20 +139,32 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @return array
      * @throws coding_exception
      */
-    protected function post_to_grader(&$postfields, qtype_proforma_question $question) {
+    protected function post_to_grader(&$postfields, $question, $taskfile = null) {
         // Add task file.
-        $task = $question->get_task_file();
-        if (!$task instanceof stored_file) {
-            throw new coding_exception("task variable has wrong class");
+        if (isset($question)) {
+            $task = $question->get_task_file();
+            if (!$task instanceof stored_file) {
+                throw new coding_exception("task variable has wrong class");
+            }
+            $postfields['task-file'] = $task;
+        } else {
+            if (!isset($taskfile)) {
+                throw new coding_exception('task is missing');
+            }
+            if (!$taskfile instanceof stored_file) {
+                throw new coding_exception("task variable has wrong class");
+            }
+            $postfields['task-file'] = $taskfile;
+
         }
-        $postfields['task-file'] = $task;
 
         // Get URI.
         $protocolhost = get_config('qtype_proforma', 'graderuri_host');
         $path = get_config('qtype_proforma', 'graderuri_path');
         $uri = $protocolhost . $path;
 
-        // return array($this->set_dummy_result3(), 200); // fake
+        // return array($this->set_dummy_result3(), 200); // Fake.
+
         // Send task and submission to grader with Curl with a configured timeout.
         $curl = new curl();
         $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'grading_timeout');
@@ -173,22 +189,21 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @throws coding_exception
      */
     public function send_files_to_grader($files, qtype_proforma_question $question) {
-        // Check files.
+        // Check file classes.
         foreach ($files as $file) {
             if (!$file instanceof stored_file) {
                 throw new coding_exception("wrong class for file");
             }
         }
 
+        // Create submission.
         $submission = $this->create_submission_xml(null, $files, $question->responsefilename, null, $question);
-        // debugging($submission);
-
         $postfields = array('submission.xml' => $submission);
-
         foreach ($files as $file) {
             $postfields[$file->get_filename()] = $file;
         }
 
+        // Send POST request to grader.
         return $this->post_to_grader($postfields, $question);
     }
 
@@ -214,6 +229,72 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         );
 
         return $this->post_to_grader($postfields, $question);
+    }
+
+    /**
+     * checks if the connection to the grader is valid.
+     * This is done by sending a simple task with some piece of code.
+     *
+     * @return http code and grader message, in case of http code = 0
+     * a curl error message might be returned instead of the grader message.
+     */
+    public function test_connection() {
+        $task = '<?xml version="1.0" encoding="UTF-8"?>
+<task xmlns="urn:proforma:v2.0" lang="de" uuid="bbbf6679-0226-4fb3-8da0-4f370dd027cb">
+    <title>ProFormA question</title>
+    <description>description</description>
+    <proglang version="1.8">java</proglang>
+    <submission-restrictions/>
+    <files>
+        <file id="MS" used-by-grader="false" visible="no">
+            <embedded-txt-file filename="modelsolution.java">// no model solution available </embedded-txt-file>
+        </file>
+    </files>
+    <model-solutions>
+        <model-solution id="1">
+            <filerefs>
+                <fileref refid="MS"/>
+            </filerefs>
+        </model-solution>
+    </model-solutions>
+    <tests>
+        <test id="compiler">
+            <title>Compiler</title>
+            <test-type>java-compilation</test-type>
+            <test-configuration/>
+        </test>
+    </tests>
+    <grading-hints>
+        <root/>
+    </grading-hints>
+    <meta-data/>
+</task>
+';
+
+        // Create task file in draft area.
+        global $USER;
+        $fs = get_file_storage();
+        $itemid = file_get_unused_draft_itemid();
+        $filerecord = array(
+                'contextid' => context_user::instance($USER->id)->id,
+                'component' => 'user',
+                'filearea' => 'draft',
+                'itemid' => $itemid,
+                'filepath' => '/',
+                'filename' => 'task.xml',
+        );
+        $taskfile = $fs->create_file_from_string($filerecord, $task);
+
+        $code = "class X {};";
+        $filename = "X.java";
+        $submissionxml = $this->create_submission_xml($code, null, $filename, null, null, $taskfile);
+
+        $postfields = array(
+                'submission.xml' => $submissionxml,
+                $filename => $code
+        );
+
+        return $this->post_to_grader($postfields, null, $taskfile);
     }
 
     /**
@@ -336,8 +417,9 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             // TODO: improve error handling with returning array with multible values
             // - return only error text and calling function must convert???
             // - or throw exception??
-            // - or use if-else
-            return array($questionstate, $grade, 'No result from grader (maybe grader is unreachable)', '', self::FEEDBACK_FORMAT_ERROR);
+            // - or use if-else.
+            return array($questionstate, $grade, 'No result from grader (maybe grader is unreachable)', '',
+                self::FEEDBACK_FORMAT_ERROR);
         }
         $response = '';
         try {
@@ -349,7 +431,8 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         if (!isset($response->{'separate-test-feedback'})) {
             // Invalid response format.
-            return array($questionstate, $grade, 'Unsupported feedback format', $result, self::FEEDBACK_FORMAT_INVALID);
+            return array($questionstate, $grade, 'Unsupported feedback format',
+                $result, self::FEEDBACK_FORMAT_INVALID);
         }
 
         $feedbackformat = self::FEEDBACK_FORMAT_PROFORMA2;
@@ -412,7 +495,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         } else {
             // Exact value does not matter since it is always not right.
             $grade = $gradecalc;
-            if ($question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) { // do not use === !!!
+            if ($question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) { // Do not use === here.
                 // Only use weighted mean in case of appropriate aggregation strategy.
                 $questionstate = question_state::$gradedpartial;
             } else {

@@ -51,7 +51,7 @@ class qtype_proforma_question extends question_graded_automatically {
     // Defines the maximum number of char shown in the response summary.
     const SUMMARY_LENGTH = 500;
 
-    /** @var  text The UUID of the associated ProFormA task. */
+    /** @var  text The UUID of the associated ProFormA task (could be extracted from file). */
     public $uuid;
     public $taskrepository;
     public $taskpath;
@@ -69,6 +69,7 @@ class qtype_proforma_question extends question_graded_automatically {
 
     public $responsefilename;
 
+    /** Syntax highlighting, not actual programming language */
     public $programminglanguage;
     /** @var  string Initial text in response editor */
     public $responsetemplate;

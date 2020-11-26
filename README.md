@@ -4,7 +4,8 @@ The ProForma Moodle Question Type is a Moodle Plugin that is used for
 automatically grading programming questions in Moodle quizzes. Questions are 
 internally stored in the ProFormA format (https://github.com/ProFormA/proformaxml). 
 
-Tests are run on an back-end system (test runner) that also conforms to the ProFormA standard (https://github.com/ProFormA/proformaxml) version 2: Praktomat (https://github.com/elearning-ostfalia/Proforma-Praktomat).
+Tests are run on a back-end system (test runner) that also conforms to the 
+ProFormA standard (https://github.com/ProFormA/proformaxml) version 2: Praktomat (https://github.com/elearning-ostfalia/Proforma-Praktomat).
 
 
 ![system architecture](doc/architecture.png "System architecture")
@@ -15,7 +16,7 @@ Standard test frameworks are used for specifying tests. Currently the following 
 - Python: Doctest
 - Setlx: Test, Syntax Check
 
-Any other  programming language resp. test framework can be used as long as the Praktomat (or any other ProFormA compatible test runner used as back-end) supports it. Since all code is open source, it can be easily extended to other languages and frameworks.
+Any other  programming language resp. test framework can be used as long as Praktomat (or any other ProFormA compatible test runner used as back-end) supports it. Since all code is open source, it can be easily extended to other languages and frameworks.
 
 The plugin comes with a built-in Java question form editor. Simple Java questions can be created diretly in Moodle with that editor. Simple means: only one file per JUnit test and only one Checkstyle test. More complex questions must be created outside of the system with a stand-alone editor (https://media.elan-ev.de/proforma/editor/releases.html) or by other means (e.g. script). These questions can be imported by use of another Moodle plugin. 
 
@@ -30,7 +31,7 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
     
     * editor with programming language support such as syntax highlighting or automatic indentation
     * file upload (for more than one file)
-    * external repository (version control system) 
+    * external repository (SVN in case of using Praktomat) 
 - code snippet as starting point for student
 - immediate feedback for students (optional) 
 - supported programming languages are only limited by the available grader back-ends 
@@ -62,19 +63,20 @@ question engine adaptation and
 - a ProFromA grading back-end to run the tests.  
 `ProFormA-Praktomat` (https://github.com/elearning-ostfalia/Proforma-Praktomat) is recommended.
 
-Currently only simple Java questions can be directly created inside Moodle. 
+Currently only simple Java and SetlX (https://randoom.org/Software/SetlX/) questions can be created straight in Moodle. Note that SetlX is disabled by default.
+
 For importing questions from an external source an import plugin is available (optional):   
 
 - Moodle-Plugin `qformat_proforma` (import for ProFormA questions)
 
 We have a separate Javascript editor for creating tasks (https://github.com/ProFormA/formatEditor). An online version is available at 
-https://media.elan-ev.de/proforma/editor/releases/3.0.5/proformaEditor.html
+https://proforma.github.io/formatEditor/proformaEditor.html
        
 Of course ProFormA tasks can be created by different other external tools as well.
 
 
 In order to download all students' submissions for e.g. checking for plagiats 
-the plugin `proformasubmexport` is also avaliable (https://github.com/elearning-ostfalia/moodle-proformasubmexport).
+the plugin `responsedownload` is avaliable (https://github.com/elearning-ostfalia/moodle-responsedownload).
 
 
 
@@ -92,20 +94,27 @@ At least the following settings must be made:
 
 * set grader URI to IP address and port number of your 'ProFormA-Praktomat server'
 
+
 and for the built-in Java question generator: 
 
 * set Java version
 * set Checkstyle version
 * set JUnit version
 
-### Communication test / Sample
+There is a simple test for the connection between Moodle and Praktomat in the settings page where the grader URI is set. If you press the `save changes` button the connection is checked and in case of an error the error message is displayed. 
 
-In order to test if the communication between Moodle and Praktomat is ok you should create a simple question and check the result. 
+![connectiontest](doc/connection_test.png "connection test")
+
+
+### Sample
+
+The following steps describe how you can create a simple Java question. You should always test your question by actually sending a correct submission to the grader. 
 
 * Go to an existing course (or create one)
 * Go to the question back
 * press `Create a new question...`
 * select `ProFormA Task`
+* If a selection dialog is visible then select Java and press 'ok'
 * Fill in: `Question name` =`Test Question`, `Question text` = `test`
 * Go to `1. JUnit Test` and enter `Title` = `JUnit`
 * Enter the following code into the JUnit Test editor: 
