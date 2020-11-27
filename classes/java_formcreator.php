@@ -323,10 +323,6 @@ class java_form_creator extends base_form_creator {
                         $question->modelsolution = $files[0]->get_content();
                     }
                     break;
-/*                case qtype_proforma::SELECT_TASKFILE:
-                    // State transition from SELECT to JAVA.
-                    $question->taskstorage = qtype_proforma::JAVA_TASKFILE;
-                    break;*/
                 default:
                     throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }

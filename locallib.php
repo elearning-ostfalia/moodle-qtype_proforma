@@ -59,6 +59,25 @@ function is_teacher() {
 }
 
 /**
+ * get name of first group or '' if no groups exist.
+ * 
+ * @global type $COURSE
+ * @return string
+ */
+function get_groupname_sample() {
+    global $COURSE;
+    // Get all groupings.
+    $groups = groups_get_all_groups($COURSE->id);
+    if (isset($groups) and count($groups) > 0) {
+        // Return name of first group.
+        $group = reset($groups);
+        return $group->name;
+    }
+
+    // No groups available.
+    return '';
+}
+/**
  * @return string returns the name of the group that the current user belongs to
  */
 function get_groupname() {
@@ -85,7 +104,7 @@ function get_groupname() {
             break; // More than one group found.
     }
 
-    return 'NOT UIQUE';
+    return 'NOT UNIQUE';
 }
 
 
@@ -101,12 +120,10 @@ function get_groupname() {
 function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = false, $loadjquery = true) {
     if (get_config('qtype_proforma', 'usecodemirror')) {
         global $PAGE, $CFG;
-        require_once($CFG->dirroot . '/config.php');
-        require_login(); // Is inserted here because of Codechecker warning.
-        // Load jquery css file for resizable.
         if ($loadjquery) {
             $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin('ui');
+            // Load jquery css file for resizable.
             $PAGE->requires->jquery_plugin('ui-css');
         }
 
@@ -114,11 +131,11 @@ function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = 
         $moodleversion = $CFG->version;
         if ($moodleversion > 2018051700) {
             // Starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
-            // so this must be explicitly be done in Javascript.
+            // so this must be done explicitly in Javascript.
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
                     array($textareaid, $readonly, $mode, $header, 1));
         } else {
-            // In 3.4 resizing must be prohinited because the window is too small.
+            // In 3.4 resizing must be prohibited because the window is too small.
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
                     array($textareaid, $readonly, $mode, $header));
         }

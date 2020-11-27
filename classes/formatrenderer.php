@@ -297,6 +297,19 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
                 $attributes['size'] = 10;
                 $input = html_writer::tag('label', get_string('groupname', 'qtype_proforma') . ': ', array('for' => $inputname));
                 $input .= html_writer::tag('input', '', $attributes);
+                try {
+                    // Get actual groupname if any.
+                    $samplename = qtype_proforma\lib\get_groupname_sample();
+                    if (!empty($samplename)) {
+                        // Display URI with sample groupname in order to avoid problems
+                        // with groups named 'group1' and URI template expecting '1' as
+                        // group name. 
+                        $uri = str_replace('{group}', '<b>' . $samplename . '</b>', $question->vcsuritemplate);
+                        $input .= '<br>' . html_writer::tag('small', 'Sample URI: ' . $uri);
+                    }
+                } catch (Exception $ex) {
+                    debugging('exception occured when getting groupname sample');
+                }
             } else {
                 $attributes['type'] = 'hidden';
                 $input = get_string('groupname', 'qtype_proforma') . ': ' . $groupname;
