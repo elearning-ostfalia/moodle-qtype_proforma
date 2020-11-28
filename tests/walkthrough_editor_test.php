@@ -590,9 +590,7 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
             $this->check_step_count(1);
 
             // Test for the hash of an empty file area.
-            $this->assertNotContains('d41d8cd98f00b204e9800998ecf8427e', $this->currentoutput);
+            $this->assertStringNotContainsStringIgnoringCase('d41d8cd98f00b204e9800998ecf8427e', $this->currentoutput);
         });
     }
-
-
 }

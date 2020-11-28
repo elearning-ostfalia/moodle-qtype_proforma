@@ -60,7 +60,7 @@ function is_teacher() {
 
 /**
  * get name of first group or '' if no groups exist.
- * 
+ *
  * @global type $COURSE
  * @return string
  */

@@ -303,7 +303,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
                     if (!empty($samplename)) {
                         // Display URI with sample groupname in order to avoid problems
                         // with groups named 'group1' and URI template expecting '1' as
-                        // group name. 
+                        // group name.
                         $uri = str_replace('{group}', '<b>' . $samplename . '</b>', $question->vcsuritemplate);
                         $input .= '<br>' . html_writer::tag('small', 'Sample URI: ' . $uri);
                     }
