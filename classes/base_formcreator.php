@@ -496,7 +496,10 @@ abstract class base_form_creator {
             $mform->setDefault('vcslabel', get_config('qtype_proforma', 'vcslabeldefault'));
             $mform->setType('vcslabel', PARAM_TEXT);
             $mform->addHelpButton('vcslabel', 'vcslabel', 'qtype_proforma');
-            $mform->hideIf('vcslabel', 'responseformat', 'neq', 'versioncontrol');
+            // $mform->hideIf('vcslabel', 'responseformat', 'neq', 'versioncontrol');
+            global $PAGE;
+            $PAGE->requires->js_call_amd('qtype_proforma/formhelper', 'showif', array('id_vcslabel',
+                'id_vcsuritemplate', '{input}', 'id_responseformat', 'versioncontrol'));
         }
 
         // Response template.
