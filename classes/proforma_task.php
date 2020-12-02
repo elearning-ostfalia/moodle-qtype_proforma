@@ -114,6 +114,29 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
     public function create_task_file($formdata) {
         throw new coding_exception("create_task_file must not be called");
     }
+
+
+    /**
+     * extract formdata from taskfile
+     *
+     * @param $category
+     * @param $question
+     */
+    static public function extract_validation_data_from_taskfile($taskfile) {
+        $task = new SimpleXMLElement($taskfile, LIBXML_PARSEHUGE);
+        $question = new stdClass();
+        // Read programming language.
+        $question->proglang = (string)$task->proglang;
+
+        // Read tests.
+        $index = 0;
+        $question->test = array();
+        foreach ($task->tests->test as $test) {
+            $question->test[$index] = $test->{'test-type'};
+            $index++;
+        }
+        return $question;
+    }
 }
 
 

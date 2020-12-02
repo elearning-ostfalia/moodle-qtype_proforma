@@ -36,6 +36,9 @@ abstract class base_form_creator {
     // Must be name of associated filearea!!.
     const MODELSOLMANAGER = qtype_proforma::FILEAREA_MODELSOL;
 
+    // Property name for download manager.
+    const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
+
     /**
      * @var MoodleQuickForm The form object that must be filled with input fields.
      */
@@ -55,8 +58,7 @@ abstract class base_form_creator {
     /** Programming language */
     protected $_proglang = null;
 
-    // Property name for download manager.
-    const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
+
 
     /**
      * base_form_creator constructor.
@@ -81,6 +83,8 @@ abstract class base_form_creator {
 
     /**
      * validate field values
+     *
+     * @param qtype_proforma_edit_form $editor actual editor instance
      * @param $fromform Validation argument
      * @param $files Validation argument
      * @param $errors Array with error messages (so far)
@@ -88,7 +92,7 @@ abstract class base_form_creator {
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function validation($fromform, $files, $errors) {
+    public function validation(qtype_proforma_edit_form $editor, $fromform, $files, $errors) {
         return $errors;
     }
 

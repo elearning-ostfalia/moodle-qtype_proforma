@@ -213,13 +213,14 @@ class java_form_creator extends base_form_creator {
     /**
      * Validate form fields.
      *
+     * @param qtype_proforma_edit_form $editor actual editor instance
      * @param Validation $fromform
      * @param Validation $files
      * @param array $errors
      * @return array
      */
-    public function validation($fromform, $files, $errors) {
-        $errors = parent::validation($fromform, $files, $errors);
+    public function validation(qtype_proforma_edit_form $editor, $fromform, $files, $errors) {
+        $errors = parent::validation($editor, $fromform, $files, $errors);
         if ($fromform["checkstyle"]) {
             // Check Checkstyle values:
             if (0 == strlen(trim($fromform["checkstylecode"]))) {

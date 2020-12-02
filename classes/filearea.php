@@ -101,9 +101,9 @@ class qtype_proforma_filearea {
      */
     public function get_files($contextid, $questionid) {
         $fs = get_file_storage();
-        $draftfiles = $fs->get_area_files($contextid, 'qtype_proforma', $this->_name, $questionid);
+        $proformafiles = $fs->get_area_files($contextid, 'qtype_proforma', $this->_name, $questionid);
         $files = array();
-        foreach ($draftfiles as $file) {
+        foreach ($proformafiles as $file) {
             if ($file->get_filename() != '.' and $file->get_filename() != '..') {
                 $files[] = $file;
             }

@@ -140,7 +140,7 @@ class qtype_proforma_edit_form extends question_edit_form {
      */
     public function validation($fromform, $files) {
         $errors = parent::validation($fromform, $files);
-        return $this->formcreator->validation($fromform, $files, $errors);
+        return $this->formcreator->validation($this, $fromform, $files, $errors);
     }
 
     /**
