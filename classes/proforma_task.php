@@ -117,25 +117,60 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
 
 
     /**
-     * extract formdata from taskfile
+     * extract data for validating new taskfile
      *
-     * @param $category
-     * @param $question
+     * @param $taskfile taskfile to extract data from
      */
     static public function extract_validation_data_from_taskfile($taskfile) {
-        $task = new SimpleXMLElement($taskfile, LIBXML_PARSEHUGE);
-        $question = new stdClass();
-        // Read programming language.
-        $question->proglang = (string)$task->proglang;
+        try {
+            $task = new SimpleXMLElement($taskfile, LIBXML_PARSEHUGE | LIBXML_NOERROR);
+            $question = new stdClass();
+            // Read programming language.
+            $question->proglang = (string)$task->proglang;
 
-        // Read tests.
-        $index = 0;
-        $question->test = array();
-        foreach ($task->tests->test as $test) {
-            $question->test[$index] = $test->{'test-type'};
-            $index++;
+            // Read tests.
+            $question->test = array();
+            foreach ($task->tests->test as $test) {
+                $question->test[(string)$test['id']] = $test->{'test-type'};
+            }
+            return $question;
+        } catch (Exception $ex) {
+            // Ignore errors.
+            debugging($ex);
+            return false;
         }
-        return $question;
+    }
+
+    /**
+     * extract data for validating new taskfile from internal grading hints
+     *
+     * @param $gradinghints gradinghints to extract data from
+     */
+    static public function extract_validation_data_from_gradinghints($gradinghints) {
+        try {
+            debugging($gradinghints);
+            $gh = new SimpleXMLElement($gradinghints, LIBXML_NOERROR);
+            $question = new stdClass();
+
+            // Read tests.
+            $question->test = array();
+            foreach ($gh->root->{'test-ref'} as $test) {
+                $testtype = $test->{'test-type'};
+                if (!isset($testtype)) {
+                    // Workaround for bug:
+                    $testtype = $test->description->{'test-type'};
+                }
+                $testtype = (string)$testtype;
+                $id = (string)$test['ref'];
+                // debugging($id . ' => '. $testtype);
+                $question->test[$id] = (string)$testtype;
+            }
+            return $question;
+        } catch (Exception $ex) {
+            // Ignore errors.
+            debugging($ex);
+            return false;
+        }
     }
 }
 

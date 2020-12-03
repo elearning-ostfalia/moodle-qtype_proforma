@@ -66,11 +66,18 @@ $string['filename'] = 'Response filename';
 $string['filename_hint'] = $string['filename'];
 $string['filename_hint_help'] = 'filename used for submitted source code (if necessary consider package name)';
 
-$string['taskfilename'] = 'Task file';
+$string['taskfilename'] = 'ProFormA Task file';
 $string['taskfilename_hint'] = $string['taskfilename'];
 $string['taskfilename_hint_help'] = 'Corresponding ProFormA task file';
 $string['createdtask_hint'] = $string['taskfilename'];
 $string['createdtask_hint_help'] = 'Corresponding ProFormA task file. Question must be saved in order to generate ProFormA task file!';
+$string['task_hint'] = $string['taskfilename'];
+$string['task_hint_help'] = 'Corresponding ProFormA task file. '
+. 'In order to update this file please consider that a new file must be compatible with the old one. '
+. 'That means: <br>'
+. '- same programming language<br>'
+. '- same number of tests<br>'
+. '- same test types in same order';
 
 
 $string['highlight'] = 'Syntax highlighting';
@@ -222,3 +229,11 @@ $string['proglang_hdr'] = 'Programming languages';
 $string['proglang_hdr_info'] = 'Java is enabled by default. Opt out programming languages that are not used at yout site.';
 
 $string['selectlangtitle'] = 'Select programming language';
+
+$string['infotaskupdate'] = 'Please check task or use ProFormA import.';
+
+$string['errinvalidtask'] = 'File is no ProFormA task file.';
+$string['errinvalidproglang'] = 'Programming language in new task is not \'{$a}\'.';
+$string['errcounttest'] = 'Number of tests has been changed: {$a}.';
+$string['errtestsincompatible'] = 'Test types or order do not match.';
+$string['errtaskinvalid'] = 'ProFormA file may be corrupt.';

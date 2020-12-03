@@ -70,7 +70,13 @@ $string['taskfilename'] = 'ProFormA-Aufgabendatei';
 $string['taskfilename_hint'] = $string['taskfilename'];
 $string['taskfilename_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei';
 $string['createdtask_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei. Achtung: Aufgabe muss erst gespeichert werden, damit die entsprechende ProFormA-Datei erzeugt wird.';
-
+$string['task_hint'] = $string['taskfilename'];
+$string['task_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei. '
+. 'Wenn diese ersetzt werden soll, bitte beachten, dass die neue Datei kompatibel zur alten ist. '
+. 'Das bedeutet: <br>'
+. '- gleiche Programmiersprache<br>'
+. '- gleiche Anzahl Tests<br>'
+. '- gleiche Testtypen in gleicher Reihenfolge';
 
 $string['compile'] = 'Compilation';
 $string['syntaxcheck'] = 'Syntax Check';
@@ -210,3 +216,11 @@ $string['proglang_hdr_info'] = 'Java wird standardmäßig unterstützt. '
 . 'Andere Programmiersprachen, die nicht benötigt werden, können hier abgeschaltet werden.';
 
 $string['selectlangtitle'] = 'Markieren Sie die gewünschte Programmiersprache';
+
+$string['infotaskupdate'] = 'Bitte Datei überarbeiten oder ProFormA-Dateiimport nutzen.';
+
+$string['errinvalidtask'] = 'Datei ist keine ProFormA-Aufgabendatei.';
+$string['errinvalidproglang'] = 'Programmiersprache ist nicht \'{$a}\'.';
+$string['errcounttest'] = 'Anzahl der Tests wurde geändert: {$a}.';
+$string['errtestsincompatible'] = 'Testtypen oder -reihenfolge stimmen nicht überein.';
+$string['errtaskinvalid'] = 'ProFormA-Datei kann nicht gelesen werden.';

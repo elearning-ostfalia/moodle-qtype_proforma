@@ -152,6 +152,14 @@ class qtype_proforma_edit_form extends question_edit_form {
         return 'proforma';
     }
 
+    /**
+     * returns the protected member variable question
+     * @return type protected question
+     */
+    public function get_question() {
+        return $this->question;
+    }
+
     protected function create_form_creator($taskstorage) {
         if (isset($taskstorage)) {
             switch ($taskstorage) {

@@ -86,13 +86,14 @@ class proforma_form_creator extends base_form_creator {
      * @param type $fromform
      * @param type $files
      * @param type $errors
+     * @return updated error array
      */
     protected function validate_taskfile(qtype_proforma_edit_form $editor, $fromform, $files, $errors) {
         // Get Taskfile from draft area.
         $draftid = $fromform[qtype_proforma::FILEAREA_TASK];
-        $fs = get_file_storage();
         global $USER;
         $context = context_user::instance($USER->id);
+        $fs = get_file_storage();
         $draftfiles = $fs->get_area_files($context->id, 'user', 'draft', $draftid, 'itemid', false);
         if (count($draftfiles) != 1) {
             // Must not be more than 1! Should be guaranteed by filemanager.
@@ -101,82 +102,116 @@ class proforma_form_creator extends base_form_creator {
         }
         $draftfile = reset($draftfiles);
 
-        // Has taskfile changed?
-        // Compare content hash.
-        $taskfiles = $fs->get_area_files($editor->context->id, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $fromform['id'],
-            false, false);
+        // Has taskfile changed (different content hash)?
+        // Get old file.
+        $taskfiles = $fs->get_area_files($editor->context->id, 'qtype_proforma',
+            qtype_proforma::FILEAREA_TASK, $fromform['id'], false, false);
         if (count($taskfiles) == 1) {
             // There is an old taskfile. Check if it is compatible.
-            $taskfile = reset($taskfiles);
+            $taskfile = reset($taskfiles); // Get first item in array.
             if ($taskfile->get_contenthash() != $draftfile->get_contenthash()) {
                 // File has been changed => check if content is compatible.
-                debugging('geändert: id = ' . $fromform['id'] . ', context = ' . $editor->context->id);
-                return $this->check_if_taskfiles_are_compatible($draftfile, $taskfile, $errors);
-            } else {
-                debugging('nicht geändert');
+                // debugging('geändert: id = ' . $fromform['id'] . ', context = ' . $editor->context->id);
+                return $this->check_if_taskfiles_are_compatible($editor, $draftfile, $taskfile, $errors);
             }
         } else {
             if (count($taskfiles) > 1) {
                 debugging('old taskfile not unique => cannot validate');
-            } else {
-                debugging('old taskfile not found');
             }
         }
 
         return $errors;
     }
 
-
     /**
      * checks if two task files are compatble
      *
+     * @param qtype_proforma_edit_form $editor actual editor instance
      * @param type $draftfile
      * @param type $taskfile
      * @param type $errors
-     * @return boolean
+     * @return updated error array
      */
-    protected function check_if_taskfiles_are_compatible($draftfile, $taskfile, $errors) {
+    protected function check_if_taskfiles_are_compatible(qtype_proforma_edit_form $editor, $draftfile, $taskfile, $errors) {
         // Extract task xml for both files.
+        // Get task.xml from draft file.
         $taskfiledraft = $this->get_task_xml($draftfile);
         if (!isset($taskfiledraft)) {
-            $errors[qtype_proforma::FILEAREA_TASK] = 'invalid file format: ' . $extension;
+            $errors[qtype_proforma::FILEAREA_TASK] = get_string('errinvalidtask', 'qtype_proforma');
             return $errors;
         }
 
+        // Get task.xml from old file.
         $taskfileold = $this->get_task_xml($taskfile);
         if (!isset($taskfileold)) {
-            debugging('old taskfile has invalid format');
+            debugging('old taskfile has invalid format. Cannot check for compatibility.');
             return $errors;
         }
 
+        // Extract relevant data for validation checks.
         $datadraft = qtype_proforma_proforma_task::extract_validation_data_from_taskfile($taskfiledraft);
-        $dataold = qtype_proforma_proforma_task::extract_validation_data_from_taskfile($taskfileold);
+        if (empty($datadraft)) {
+            $message[] = get_string('errtaskinvalid', 'qtype_proforma');
+            return $errors;
+        }
 
-        // Mandatory:
-        // - programming language
-        // - number of tests
-        // - test congiguration and id of all tests
-        // Todo: optional:
-        // - title should be equal, otherwise warning
+        // Extract test data from internal grading hints.
+        $gradinghints = $editor->get_question()->options->gradinghints;
+        $datagh = qtype_proforma_proforma_task::extract_validation_data_from_gradinghints($gradinghints);
+        if (empty($datagh)) {
+            debugging('cannot extract data from grading hints');
+        }
+
+
         $message = array();
-        if ($datadraft->proglang != $dataold->proglang) {
-            $message[] = 'Programming language in new task is not ' . $dataold->proglang . '.';
-        }
-        if ($datadraft->test != $dataold->test) {
-            $message[] = 'Tests in new task are not compatible with old one.';
+        $dataold = qtype_proforma_proforma_task::extract_validation_data_from_taskfile($taskfileold);
+        if (!empty($dataold)) {
+            // Compare programming language.
+            if ($datadraft->proglang != $dataold->proglang) {
+                $message[] = get_string('errinvalidproglang', 'qtype_proforma', $dataold->proglang);
+            }
+            if (!empty(array_diff($datagh->test, $dataold->test))) {
+                debugging('old task does not fit grading hints');
+            }
+        } else {
+            // Cannot read old task.
+            debugging('cannot read old task');
         }
 
+/*        $message[] = 'Grading-Hints-Data:';
+        foreach ($datagh->test as $key => $value) {
+            $message[] = 'Test [' . $key . '] => \'' . $value . '\'';
+        }
+*/
+
+        // Compare number of tests.
+        if (count($datadraft->test) != count($datagh->test)) {
+            $message[] = get_string('errcounttest', 'qtype_proforma', count($datadraft->test));
+            foreach ($datadraft->test as $key => $value) {
+                $message[] = 'Test [' . $key . '] => \'' . $value . '\'';
+            }
+        } else {
+            // Compare test id and test type.
+            if (!empty(array_diff($datadraft->test, $datagh->test))) {
+                $message[] = get_string('errtestsincompatible', 'qtype_proforma');
+                foreach ($datadraft->test as $key => $value) {
+                    $message[] = 'Test [' . $key . '] => \'' . $value . '\'';
+                }
+            } else {
+                debugging('array_diff empty');
+            }
+        }
 
         if (count($message) > 0) {
-            $message[] = 'Please check task or use ProFormA import.';
+            // Add more information.
+            $message[] = get_string('infotaskupdate', 'qtype_proforma');
             $errors[qtype_proforma::FILEAREA_TASK] = implode('<br>', $message);
-
         }
         return $errors;
     }
 
     /**
-     * gets the task.xml file from a task file stored in in Moodle
+     * gets the task.xml file from a task file stored in Moodle
      *
      * @param type $moodlefile
      * @return type
@@ -194,25 +229,28 @@ class proforma_form_creator extends base_form_creator {
         return null;
     }
 
+    /**
+     * gets the task.xml file from a task file stored as draft in Moodle
+     * @param type $draftfile
+     * @return boolean
+     * @throws Exception
+     */
     protected function get_task_xml_from_zip($draftfile) {
-        // $drafttmpfile = $draftfile->copy_content_to_temp();
         $filename = $draftfile->get_filename();
 
         // Create temporary folder for extracted zip file.
         $uniquecode = time();
-        $this->tempdir = make_temp_directory('proforma_import/' . $uniquecode);
-        debugging('TMP: ' . $this->tempdir);
+        $tempdir = make_temp_directory('proforma_import/' . $uniquecode);
 
         try {
-            // We have got a ZIP file.
             $taskfiles = array();
-            // Extract zip content to $this->tempdir.
+            // Extract zip content to temporary folder.
             $packer = get_file_packer('application/zip');
-            if (!$packer->extract_to_pathname($draftfile, $this->tempdir)) {
+            if (!$packer->extract_to_pathname($draftfile, $tempdir)) {
                 throw new Exception(get_string('cannotunzip', 'question'));
             }
             // Look for task.xml.
-            $iterator = new DirectoryIterator($this->tempdir);
+            $iterator = new DirectoryIterator($tempdir);
             foreach ($iterator as $fileinfo) {
                 if ($fileinfo->isFile() &&
                     strtolower(pathinfo($fileinfo->getFilename(), PATHINFO_BASENAME)) == 'task.xml') {
@@ -220,16 +258,21 @@ class proforma_form_creator extends base_form_creator {
                 }
             }
 
-            if (count($taskfiles) == 1) {
-                // We have got a zippd task file.
-                // Return full path of task.xml file.
-                return file_get_contents($this->tempdir . '/' . $taskfiles[0]);
-            } else {
-                debugging('no taskfile found');
+            switch (count($taskfiles)) {
+                case 1:
+                    // We have got a zippd task file.
+                    // Return full path of task.xml file.
+                    return file_get_contents($tempdir . '/' . $taskfiles[0]);
+                case 0:
+                    debugging('no taskfile found');
+                    return false;
+                default:
+                    debugging('more than 1 taskfile found');
+                    return false;
             }
         } finally {
-            debugging('delete tempdir');
-            fulldelete($this->tempdir);
+            // Delete all content in temporary folder.
+            fulldelete($tempdir);
         }
     }
 
@@ -286,7 +329,7 @@ class proforma_form_creator extends base_form_creator {
             get_string('taskfilename', 'qtype_proforma'), null,
             array('subdirs' => false, 'maxfiles' => 1, 'accepted_types' => array('.zip', '.xml')));
         // $this->add_static_text($question, 'link', 'taskfilename', 'qtype_proforma');
-        // $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
+        $mform->addHelpButton(qtype_proforma::FILEAREA_TASK, 'task_hint', 'qtype_proforma');
 
         // UUID.
         $this->add_static_field($question, 'uuid', get_string('uuid', 'qtype_proforma'), 40);
