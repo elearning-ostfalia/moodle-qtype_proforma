@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_task.php');
 
 /**
  * This class creates the edit form fields for imported ProFormA tasks.
@@ -134,55 +135,50 @@ class proforma_form_creator extends base_form_creator {
      */
     protected function check_if_taskfiles_are_compatible(qtype_proforma_edit_form $editor, $draftfile, $taskfile, $errors) {
         // Extract task xml for both files.
-        // Get task.xml from draft file.
-        $taskfiledraft = $this->get_task_xml($draftfile);
-        if (!isset($taskfiledraft)) {
-            $errors[qtype_proforma::FILEAREA_TASK] = get_string('errinvalidtask', 'qtype_proforma');
+
+        try {
+            // Get task.xml from draft file.
+            $taskfiledraft = $this->get_task_xml($draftfile);
+            // Extract relevant data for validation checks.
+            $datadraft = qtype_proforma_proforma_task::extract_validation_data_from_taskfile($taskfiledraft);
+        } catch (invalid_task_exception $ex) {
+            $errors[qtype_proforma::FILEAREA_TASK] = $ex->getMessage();
+            return $errors;
+        } catch (Exception $ex) {
+            $errors[qtype_proforma::FILEAREA_TASK] = $ex;
             return $errors;
         }
 
         // Get task.xml from old file.
-        $taskfileold = $this->get_task_xml($taskfile);
-        if (!isset($taskfileold)) {
-            debugging('old taskfile has invalid format. Cannot check for compatibility.');
-            return $errors;
-        }
-
-        // Extract relevant data for validation checks.
-        $datadraft = qtype_proforma_proforma_task::extract_validation_data_from_taskfile($taskfiledraft);
-        if (empty($datadraft)) {
-            $message[] = get_string('errtaskinvalid', 'qtype_proforma');
-            return $errors;
-        }
-
-        // Extract test data from internal grading hints.
-        $gradinghints = $editor->get_question()->options->gradinghints;
-        $datagh = qtype_proforma_proforma_task::extract_validation_data_from_gradinghints($gradinghints);
-        if (empty($datagh)) {
-            debugging('cannot extract data from grading hints');
-        }
-
-
-        $message = array();
-        $dataold = qtype_proforma_proforma_task::extract_validation_data_from_taskfile($taskfileold);
-        if (!empty($dataold)) {
-            // Compare programming language.
-            if ($datadraft->proglang != $dataold->proglang) {
-                $message[] = get_string('errinvalidproglang', 'qtype_proforma', $dataold->proglang);
-            }
+        try {
+            $taskfileold = $this->get_task_xml($taskfile);
+            // Extract test data from internal grading hints.
+            $gradinghints = $editor->get_question()->options->gradinghints;
+            $datagh = qtype_proforma_proforma_task::extract_validation_data_from_gradinghints($gradinghints);
+            // Extract test data from old task
+            $dataold = qtype_proforma_proforma_task::extract_validation_data_from_taskfile($taskfileold);
             if (!empty(array_diff($datagh->test, $dataold->test))) {
                 debugging('old task does not fit grading hints');
             }
-        } else {
-            // Cannot read old task.
-            debugging('cannot read old task');
+        } catch (Exception $ex) {
+            // Errors handling old task are converted to one single message.
+            // No details.
+            $errors[qtype_proforma::FILEAREA_TASK] = get_string('erroldtask', 'qtype_proforma');
+            debugging($ex);
+            return $errors;
+        }
+
+        $message = array();
+        // Compare programming language.
+        if ($datadraft->proglang != $dataold->proglang) {
+            $message[] = get_string('errinvalidproglang', 'qtype_proforma', $dataold->proglang);
         }
 
 /*        $message[] = 'Grading-Hints-Data:';
         foreach ($datagh->test as $key => $value) {
             $message[] = 'Test [' . $key . '] => \'' . $value . '\'';
-        }
-*/
+        }*/
+
 
         // Compare number of tests.
         if (count($datadraft->test) != count($datagh->test)) {
@@ -192,13 +188,11 @@ class proforma_form_creator extends base_form_creator {
             }
         } else {
             // Compare test id and test type.
-            if (!empty(array_diff($datadraft->test, $datagh->test))) {
+            if (!empty(array_diff_assoc($datadraft->test, $datagh->test))) {
                 $message[] = get_string('errtestsincompatible', 'qtype_proforma');
                 foreach ($datadraft->test as $key => $value) {
                     $message[] = 'Test [' . $key . '] => \'' . $value . '\'';
                 }
-            } else {
-                debugging('array_diff empty');
             }
         }
 
@@ -224,9 +218,10 @@ class proforma_form_creator extends base_form_creator {
                 return $moodlefile->get_content();
             case 'zip': // Zip file.
                 return $this->get_task_xml_from_zip($moodlefile);
+            default:
+                // Unsupported file format.
+                throw new invalid_task_exception(get_string('errinvalidtask', 'qtype_proforma'));
         }
-        // Unsupported file format.
-        return null;
     }
 
     /**
@@ -243,13 +238,13 @@ class proforma_form_creator extends base_form_creator {
         $tempdir = make_temp_directory('proforma_import/' . $uniquecode);
 
         try {
-            $taskfiles = array();
             // Extract zip content to temporary folder.
             $packer = get_file_packer('application/zip');
             if (!$packer->extract_to_pathname($draftfile, $tempdir)) {
                 throw new Exception(get_string('cannotunzip', 'question'));
             }
             // Look for task.xml.
+            $taskfiles = array();
             $iterator = new DirectoryIterator($tempdir);
             foreach ($iterator as $fileinfo) {
                 if ($fileinfo->isFile() &&
@@ -264,11 +259,9 @@ class proforma_form_creator extends base_form_creator {
                     // Return full path of task.xml file.
                     return file_get_contents($tempdir . '/' . $taskfiles[0]);
                 case 0:
-                    debugging('no taskfile found');
-                    return false;
+                    throw new invalid_task_exception(get_string('errnotask', 'qtype_proforma'));
                 default:
-                    debugging('more than 1 taskfile found');
-                    return false;
+                    throw new invalid_task_exception(get_string('errtasknotunique', 'qtype_proforma'));
             }
         } finally {
             // Delete all content in temporary folder.

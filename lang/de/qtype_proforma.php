@@ -224,3 +224,7 @@ $string['errinvalidproglang'] = 'Programmiersprache ist nicht \'{$a}\'.';
 $string['errcounttest'] = 'Anzahl der Tests wurde geändert: {$a}.';
 $string['errtestsincompatible'] = 'Testtypen oder -reihenfolge stimmen nicht überein.';
 $string['errtaskinvalid'] = 'ProFormA-Datei kann nicht gelesen werden.';
+$string['errnotask'] = 'ProFormA-Task.xml nicht gefunden.';
+$string['erroldtask'] = 'Original-ProFormA-Datei kann nicht geprüft werden.';
+$string['errtasknotunique'] = 'ProFormA-task.xml ist nicht eindeutig.';
+$string['errinvalidtaskxml'] = 'Task.xml in ProFormA-Datei ist ungültig.';

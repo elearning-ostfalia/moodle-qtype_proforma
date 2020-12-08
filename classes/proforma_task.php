@@ -28,6 +28,9 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
+class invalid_task_exception extends Exception {
+}
+
 /*
  * (class for handling ProFormA tasks for different programming languages
  * (i.e. create task and extract data for editor)
@@ -115,7 +118,6 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
         throw new coding_exception("create_task_file must not be called");
     }
 
-
     /**
      * extract data for validating new taskfile
      *
@@ -136,8 +138,9 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
             return $question;
         } catch (Exception $ex) {
             // Ignore errors.
-            debugging($ex);
-            return false;
+            // debugging($ex);
+            // Convert exception.
+            throw new invalid_task_exception(get_string('errinvalidtaskxml', 'qtype_proforma'));
         }
     }
 
@@ -147,30 +150,23 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
      * @param $gradinghints gradinghints to extract data from
      */
     static public function extract_validation_data_from_gradinghints($gradinghints) {
-        try {
-            debugging($gradinghints);
-            $gh = new SimpleXMLElement($gradinghints, LIBXML_NOERROR);
-            $question = new stdClass();
+        $gh = new SimpleXMLElement($gradinghints, LIBXML_NOERROR);
+        $question = new stdClass();
 
-            // Read tests.
-            $question->test = array();
-            foreach ($gh->root->{'test-ref'} as $test) {
-                $testtype = $test->{'test-type'};
-                if (!isset($testtype)) {
-                    // Workaround for bug:
-                    $testtype = $test->description->{'test-type'};
-                }
-                $testtype = (string)$testtype;
-                $id = (string)$test['ref'];
-                // debugging($id . ' => '. $testtype);
-                $question->test[$id] = (string)$testtype;
+        // Read tests.
+        $question->test = array();
+        foreach ($gh->root->{'test-ref'} as $test) {
+            $testtype = $test->{'test-type'};
+            if (!isset($testtype)) {
+                // Workaround for bug:
+                $testtype = $test->description->{'test-type'};
             }
-            return $question;
-        } catch (Exception $ex) {
-            // Ignore errors.
-            debugging($ex);
-            return false;
+            $testtype = (string)$testtype;
+            $id = (string)$test['ref'];
+            // debugging($id . ' => '. $testtype);
+            $question->test[$id] = (string)$testtype;
         }
+        return $question;
     }
 }
 
