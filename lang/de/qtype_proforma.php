@@ -193,7 +193,7 @@ $string['groupname'] = 'Gruppe';
 
 $string['vcslabel'] = 'Name des Eingabefelds';
 $string['vcslabel_help'] = 'Name des Eingabefelds {input} in der Anzeige';
-
+$string['sampleuri'] = 'Beispiel-URI';
 
 $string['defaultvcsuri'] = 'Standard-URI-Template';
 $string['defaultvcsuri_desc'] = 'sollte Platzhalter enthalten';

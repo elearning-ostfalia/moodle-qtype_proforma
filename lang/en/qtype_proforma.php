@@ -208,7 +208,7 @@ $string['groupname'] = 'Group';
 
 $string['vcslabel'] = 'Label for {input} field';
 $string['vcslabel_help'] = 'only needed if  \'URI of repository\' contains {input}';
-
+$string['sampleuri'] = 'Sample URI';
 
 $string['defaultvcsuri'] = 'Default URI template';
 $string['defaultvcsuri_desc'] = 'should contain place holders';

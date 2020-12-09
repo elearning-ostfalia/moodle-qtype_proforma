@@ -305,7 +305,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
                         // with groups named 'group1' and URI template expecting '1' as
                         // group name.
                         $uri = str_replace('{group}', '<b>' . $samplename . '</b>', $question->vcsuritemplate);
-                        $input .= '<br>' . html_writer::tag('small', 'Sample URI: ' . $uri);
+                        $input .= '<br>' . html_writer::tag('small', get_string('sampleuri', 'qtype_proforma') . ': ' . $uri);
                     }
                 } catch (Exception $ex) {
                     debugging('exception occured when getting groupname sample');
