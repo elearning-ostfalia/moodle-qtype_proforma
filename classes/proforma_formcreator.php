@@ -75,7 +75,7 @@ class proforma_form_creator extends base_form_creator {
             }
         }
 
-        $errors = $this->validate_taskfile($editor, $fromform, $files, $errors);
+        $errors = $this->validate_taskfile($editor, $fromform, $errors);
 
         return $errors;
     }
@@ -85,11 +85,10 @@ class proforma_form_creator extends base_form_creator {
      *
      * @param qtype_proforma_edit_form $editor actual editor instance
      * @param type $fromform
-     * @param type $files
      * @param type $errors
      * @return updated error array
      */
-    protected function validate_taskfile(qtype_proforma_edit_form $editor, $fromform, $files, $errors) {
+    protected function validate_taskfile(qtype_proforma_edit_form $editor, $fromform, $errors) {
         // Get Taskfile from draft area.
         $draftid = $fromform[qtype_proforma::FILEAREA_TASK];
         global $USER;
@@ -112,7 +111,6 @@ class proforma_form_creator extends base_form_creator {
             $taskfile = reset($taskfiles); // Get first item in array.
             if ($taskfile->get_contenthash() != $draftfile->get_contenthash()) {
                 // File has been changed => check if content is compatible.
-                // debugging('geändert: id = ' . $fromform['id'] . ', context = ' . $editor->context->id);
                 return $this->check_if_taskfiles_are_compatible($editor, $draftfile, $taskfile, $errors);
             }
         } else {
@@ -134,7 +132,7 @@ class proforma_form_creator extends base_form_creator {
      * @return updated error array
      */
     protected function check_if_taskfiles_are_compatible(qtype_proforma_edit_form $editor, $draftfile, $taskfile, $errors) {
-        // Extract task xml for both files.
+        // Extract relevent data for both files.
 
         try {
             // Get task.xml from draft file.
@@ -149,13 +147,13 @@ class proforma_form_creator extends base_form_creator {
             return $errors;
         }
 
-        // Get task.xml from old file.
         try {
+            // Get task.xml from old file.
             $taskfileold = $this->get_task_xml($taskfile);
             // Extract test data from internal grading hints.
             $gradinghints = $editor->get_question()->options->gradinghints;
             $datagh = qtype_proforma_proforma_task::extract_validation_data_from_gradinghints($gradinghints);
-            // Extract test data from old task
+            // Extract test data from old task.
             $dataold = qtype_proforma_proforma_task::extract_validation_data_from_taskfile($taskfileold);
             if (!empty(array_diff($datagh->test, $dataold->test))) {
                 debugging('old task does not fit grading hints');
@@ -174,12 +172,11 @@ class proforma_form_creator extends base_form_creator {
             $message[] = get_string('errinvalidproglang', 'qtype_proforma', $dataold->proglang);
         }
 
-/*        $message[] = 'Grading-Hints-Data:';
+        /*
+        $message[] = 'Grading-Hints-Data:';
         foreach ($datagh->test as $key => $value) {
             $message[] = 'Test [' . $key . '] => \'' . $value . '\'';
-        }*/
-
-
+        } */
         // Compare number of tests.
         if (count($datadraft->test) != count($datagh->test)) {
             $message[] = get_string('errcounttest', 'qtype_proforma', count($datadraft->test));
@@ -231,8 +228,6 @@ class proforma_form_creator extends base_form_creator {
      * @throws Exception
      */
     protected function get_task_xml_from_zip($draftfile) {
-        $filename = $draftfile->get_filename();
-
         // Create temporary folder for extracted zip file.
         $uniquecode = time();
         $tempdir = make_temp_directory('proforma_import/' . $uniquecode);
@@ -255,8 +250,7 @@ class proforma_form_creator extends base_form_creator {
 
             switch (count($taskfiles)) {
                 case 1:
-                    // We have got a zippd task file.
-                    // Return full path of task.xml file.
+                    // Return content of task.xml.
                     return file_get_contents($tempdir . '/' . $taskfiles[0]);
                 case 0:
                     throw new invalid_task_exception(get_string('errnotask', 'qtype_proforma'));
@@ -294,18 +288,6 @@ class proforma_form_creator extends base_form_creator {
     }
 
     /**
-     * Add something to select the programming language.
-     *
-     * @param $question
-     */
-    /*
-    public function add_proglang_selection($question) {
-        $this->_proglang = $question->proglang;
-        parent::add_proglang_selection($question);
-    }
-     */
-
-    /**
      * Display grader settings.
      *
      * @param $question
@@ -321,7 +303,6 @@ class proforma_form_creator extends base_form_creator {
         $mform->addElement('filemanager', qtype_proforma::FILEAREA_TASK,
             get_string('taskfilename', 'qtype_proforma'), null,
             array('subdirs' => false, 'maxfiles' => 1, 'accepted_types' => array('.zip', '.xml')));
-        // $this->add_static_text($question, 'link', 'taskfilename', 'qtype_proforma');
         $mform->addHelpButton(qtype_proforma::FILEAREA_TASK, 'task_hint', 'qtype_proforma');
 
         // UUID.
@@ -384,13 +365,11 @@ class proforma_form_creator extends base_form_creator {
             $form->removeElement('furtherTemplates');
         }
 
-        // Create links for model solution and download files.
+        // Create links for model solution.
         $msfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
         $question->mslinks = $msfilearea->get_files_as_links($question->contextid,
                 $question->id);
-        // $downloadfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_DOWNLOAD);
-        // $question->downloadlinks = $downloadfilearea->get_files_as_links($question->contextid, $question->id);
-
+        // Extract internal grading hints.
         $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
     }
 

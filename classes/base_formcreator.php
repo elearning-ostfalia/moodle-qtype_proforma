@@ -500,7 +500,7 @@ abstract class base_form_creator {
             $mform->setDefault('vcslabel', get_config('qtype_proforma', 'vcslabeldefault'));
             $mform->setType('vcslabel', PARAM_TEXT);
             $mform->addHelpButton('vcslabel', 'vcslabel', 'qtype_proforma');
-            // $mform->hideIf('vcslabel', 'responseformat', 'neq', 'versioncontrol');
+            // Hide label if not used. Done with JavaScript.
             global $PAGE;
             $PAGE->requires->js_call_amd('qtype_proforma/formhelper', 'showif', array('id_vcslabel',
                 'id_vcsuritemplate', '{input}', 'id_responseformat', 'versioncontrol'));
@@ -608,13 +608,13 @@ abstract class base_form_creator {
         $draftid = file_get_submitted_draft_itemid(qtype_proforma::FILEAREA_COMMENT);
         $question->comment = array();
         $question->comment['text'] = file_prepare_draft_area(
-        $draftid, // Draftid
-        $editor->context->id, // context
-        'qtype_proforma', // component
-        qtype_proforma::FILEAREA_COMMENT, // filarea
-        !empty($question->id) ? (int) $question->id : null, // itemid
-        $editor->fileoptions, // options
-        $commenttext
+            $draftid, // Draftid.
+            $editor->context->id, // Context id.
+            'qtype_proforma', // Component.
+            qtype_proforma::FILEAREA_COMMENT, // Filarea.
+            !empty($question->id) ? (int) $question->id : null, // Item id.
+            $editor->fileoptions, // Options.
+            $commenttext
         );
         $question->comment['format'] = $commentformat;
         $question->comment['itemid'] = $draftid;
@@ -666,9 +666,7 @@ abstract class base_form_creator {
             } else if (isset($this->question->$sizefield)) {
                 $attributes = array('size' => strlen($question->$sizefield));
             }
-        } // else {
-        // $attributes = array('size' => strlen($question->options->$field));
-        // }
+        }
 
         if (isset($attributes) && count($attributes) > 0) {
             $mform->addElement('static', $field, $label, $attributes, '');
@@ -676,7 +674,6 @@ abstract class base_form_creator {
             $mform->addElement('static', $field, $label);
         }
 
-        // debugging('static field: ' . $field);
         $mform->setType($field, PARAM_TEXT);
     }
 
@@ -727,7 +724,7 @@ abstract class base_form_creator {
         // TODO: remove redundancy.
         $templfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_TEMPLATE);
         if ($formdata->responseformat == qtype_proforma::RESPONSE_EDITOR) { // Editor.
-            $options->templates = $formdata->templates = 'template.txt'; /* $formdata->responsefilename */
+            $options->templates = $formdata->templates = 'template.txt';
             $templfilearea->save_textfile($context->id, $formdata->id, $options->templates,
             $formdata->responsetemplate);
             if (empty($formdata->responsetemplate)) {

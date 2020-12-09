@@ -29,15 +29,13 @@ defined('MOODLE_INTERNAL') || die();
  */
 class feedback_exception extends Exception
 {
-    // Redefine the exception so message isn't optional
+    // Redefine the exception so message isn't optional.
     public function __construct($message, $code = 0, Exception $previous = null) {
-        // some code
-
-        // make sure everything is assigned properly
+        // Call parent constructor.
         parent::__construct($message, $code, $previous);
     }
 
-    // custom string representation of object
+    // Custom string representation of object.
     public function __toString() {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
     }
@@ -304,7 +302,7 @@ class feedback_renderer {
             try {
                 $testresult = $testresponse->{'test-result'}->result;
                 if (!isset($testresult)) {
-                    // format error: no test result found
+                    // Format error: no test result found.
                     throw new feedback_exception('Response format error: no test result available');
                 }
                 $internalerror = ((string) $testresult['is-internal-error'] === 'true');
@@ -313,14 +311,14 @@ class feedback_renderer {
                 }
                 $score = floatval((string) $testresult->score);
                 if (!isset($score)) {
-                    // format error: no score found
+                    // Format error: no score found.
                     throw new feedback_exception('Response format error: no score available');
                 }
                 $this->render_test_title($testresponse, $score, $internalerror, $result, $allcorrect);
                 $this->render_feedback_list($testresponse->{'test-result'}->{'feedback-list'}, $result);
             } catch (Exception $ex) {
-                // display format errors (as much information as possible in order to
-                // fix the bug)
+                // Display format errors (as much information as possible in order to
+                // fix the bug).
                 $containsinternalerror = true;
                 $allcorrect = false;
                 $this->render_test_title($testresponse, null, true, $result, $allcorrect);

@@ -82,7 +82,7 @@ class qtype_proforma_filearea {
         if (!is_numeric($contextid)) {
             throw new coding_exception('qtype_proforma_filearea: invalid $contextid');
         } */
-        // for new questions the question id is undefined
+        // For new questions the question id is undefined.
         $questionid = isset($question->id) ? $question->id : null;
 
         file_prepare_draft_area($draftid, $contextid, 'qtype_proforma', $this->_name,
@@ -120,17 +120,16 @@ class qtype_proforma_filearea {
         $filename = $file->get_filename();
         $path = $file->get_filepath();
         if ($path == '/') {
-            // debugging('filename: ' . $filename);
             return $filename;
         }
 
-        // remove starting slash
+        // Remove leading slash.
         if ($path[0] == '/') {
             $path = substr($path, 1);
         }
-        // debugging('filename: ' .  $path . $filename);
         return $path . $filename;
     }
+
     /**
      * get string with filename list
      *
@@ -169,7 +168,6 @@ class qtype_proforma_filearea {
                 $filename = self::get_visible_filename($file);
                 $url = moodle_url::make_pluginfile_url($contextid, 'qtype_proforma',
                         $this->_name, $questionid, $file->get_filepath(), $file->get_filename());
-                // $this->_name, $questionid, '/', $filename);
                 $link = '<a href=' . $url->out() . '>' . $filename . '</a>';
                 $links[] = $link;
             }
@@ -203,17 +201,6 @@ class qtype_proforma_filearea {
             }
         }
     }
-    /** save text as file with given filename in filearea
-     *
-     * @param $contextid
-     * @param $questionid
-     * @param string $filename
-     * @param string $text
-     * @throws coding_exception
-     */
-    /*public function save_textfile($contextid, $itemid, string $filename, string $content) {
-        $this->save_as_file($contextid, $filename, $content, $itemid);
-    }*/
 
     /** save text as file with given filename in filearea
      *
@@ -230,14 +217,14 @@ class qtype_proforma_filearea {
         $filearea = $this->_name;
         $cleanfilearea = true;
         $fs = get_file_storage();
-        // delete old file
+        // Delete old file.
         if (!is_null($itemid)) {
             $fs = get_file_storage();
             if ($files = $fs->get_area_files($contextid, 'qtype_proforma', $filearea, $itemid)) {
                 $cleanfilename = clean_param($filename, PARAM_FILE);
                 foreach ($files as $file) {
                     if ($cleanfilearea) {
-                        // clean all files for this question in this filearea
+                        // Clean all files for this question in this filearea.
                         $file->delete();
                     } else {
                         if ($cleanfilename === $file->get_filename()) {
@@ -273,24 +260,6 @@ class qtype_proforma_filearea {
      * @return string file content
      */
     public function read_file_content($contextid, $filename, $itemid) {
-        /*
-        $filearea = $this->_name;
-        $fs = get_file_storage();
-
-        list($filepath, $basename) = self::split_filename($filename);
-        // Prepare file record object
-        $fileinfo = array(
-                'contextid' => $contextid,
-                'component' => 'qtype_proforma',
-                'filearea' => $filearea,
-                'itemid' => $itemid,
-                'filepath' => $filepath,
-                'filename' => $basename,
-        );
-        // Get file
-        $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
-                $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
-        */
         $file = $this->get_file($contextid, $filename, $itemid);
         if (!$file) {
             return 'file not found';
@@ -309,7 +278,7 @@ class qtype_proforma_filearea {
         $fs = get_file_storage();
 
         list($filepath, $basename) = self::split_filename($filename);
-        // Prepare file record object
+        // Prepare file record object.
         $fileinfo = array(
                 'contextid' => $contextid,
                 'component' => 'qtype_proforma',
@@ -318,7 +287,7 @@ class qtype_proforma_filearea {
                 'filepath' => $filepath,
                 'filename' => $basename,
         );
-        // Get file
+        // Get file.
         $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
                 $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
         return $file;

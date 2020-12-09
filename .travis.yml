@@ -84,6 +84,7 @@ before_install:
 install:
   # plugin requires special behaviour to run unit and behat tests
   - moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading
+  - moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qformat_proforma
 
 
 # Run the default install.  The overview of what this does:

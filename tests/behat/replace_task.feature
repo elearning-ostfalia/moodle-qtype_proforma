@@ -1,5 +1,5 @@
-@qformat @qtype_proforma @qformat_proforma
-Feature: REPLACE TASK 
+@qtype_proforma @qtype @qformat_proforma @javascript @_file_upload
+Feature: REPLACE TASK
   Replace task file after import
   As a teacher
   In order to update imported ProFormA questions
@@ -16,11 +16,8 @@ Feature: REPLACE TASK
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
     And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-
-  @javascript @_file_upload
-  Scenario: import Java question.
-    When I navigate to "Question bank > Import" in current page administration
+    And I am on "Course 1" course homepage 
+    And I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_proforma" to "1"
     And I upload "question/type/proforma/tests/fixtures/isPalindrom.zip" file to "Import" filemanager
     And I press "id_submitbutton"
@@ -29,9 +26,11 @@ Feature: REPLACE TASK
     And I should see "1. Palindrom"
     And I press "Continue"
     And I should see "isPalindrom"
+    And I choose "Edit question" action for "isPalindrom" in the question bank
+    And I expand all fieldsets
 
-    # When I click on "Edit" "link" in the "isPalindrom" "table_row"
-    When I choose "Edit question" action for "isPalindrom" in the question bank
+  @_file_upload
+  Scenario: Check default values.
     Then the following fields match these values:
       | Question name            | isPalindrom              |
       | Question text            | Palindrom |
@@ -70,72 +69,67 @@ Feature: REPLACE TASK
 
 ### Replace task file
 
-    # replace task with OTHER PROGRAMMING LANGUAGE => error message
-    And I delete "isPalindrom.zip" from "ProFormA task file" filemanager
+  @_file_upload
+  Scenario: replace task with OTHER PROGRAMMING LANGUAGE => error message.
+    When I delete "isPalindrom.zip" from "ProFormA task file" filemanager
     And I upload "question/type/proforma/tests/fixtures/isPalindromErrPython.zip" file to "ProFormA task file" filemanager
     And I press "Save changes"
-    And I should see "Programming language in new task is not 'java'."
+    Then I should see "Programming language in new task is not 'java'."
     And I should see "Please check task or use ProFormA import."
     # undo changes
     And I press "Cancel"
 
-    # replace task with CHANGED TEST ID => error message
-    When I choose "Edit question" action for "isPalindrom" in the question bank
-    And I expand all fieldsets
-    And I delete "isPalindrom.zip" from "ProFormA task file" filemanager
+  @_file_upload
+  Scenario: replace task with CHANGED TEST ID => error message.
+    When I delete "isPalindrom.zip" from "ProFormA task file" filemanager
     And I upload "question/type/proforma/tests/fixtures/isPalindromIdChanged.zip" file to "ProFormA task file" filemanager
     And I press "Save changes"
-    And I should see "Test types or order do not match."
+    Then I should see "Test types or order do not match."
     And I should see "Please check task or use ProFormA import."
     # undo changes
     And I press "Cancel"
 
-    # replace task with DIFFERENT TEST TYPES => error message
-    When I choose "Edit question" action for "isPalindrom" in the question bank
-    And I expand all fieldsets
-    And I delete "isPalindrom.zip" from "ProFormA task file" filemanager
+  @_file_upload
+  Scenario: replace task with DIFFERENT TEST TYPES => error message.
+    When I delete "isPalindrom.zip" from "ProFormA task file" filemanager
     And I upload "question/type/proforma/tests/fixtures/isPalindromCheckstyleInsteadOfCompilertest.zip" file to "ProFormA task file" filemanager
     And I press "Save changes"
-    And I should see "Test types or order do not match."
+    Then I should see "Test types or order do not match."
     And I should see "Please check task or use ProFormA import."
     # undo changes
     And I press "Cancel"
 
-    # replace task with MORE TESTS => error message
-    When I choose "Edit question" action for "isPalindrom" in the question bank
-    And I expand all fieldsets
-    And I delete "isPalindrom.zip" from "ProFormA task file" filemanager
+  @_file_upload
+  Scenario: replace task with MORE TESTS => error message.
+    When I delete "isPalindrom.zip" from "ProFormA task file" filemanager
     And I upload "question/type/proforma/tests/fixtures/isPalindromWithCheckstyle.zip" file to "ProFormA task file" filemanager
     And I press "Save changes"
-    And I should see "Number of tests has been changed: 3."
+    Then I should see "Number of tests has been changed: 3."
     And I should see "Please check task or use ProFormA import."
     # undo changes
     And I press "Cancel"
 
-    # replace task with MISSING TASK.XML => error message
-    When I choose "Edit question" action for "isPalindrom" in the question bank
-    And I expand all fieldsets
-    And I delete "isPalindrom.zip" from "ProFormA task file" filemanager
+  @_file_upload
+  Scenario: replace task with MISSING TASK.XML => error message.
+    When I delete "isPalindrom.zip" from "ProFormA task file" filemanager
     And I upload "question/type/proforma/tests/fixtures/isPalindromErrTaskMissing.zip" file to "ProFormA task file" filemanager
     And I press "Save changes"
-    And I should see "ProFormA task file is missing."
+    Then I should see "ProFormA task file is missing."
     # undo changes
     And I press "Cancel"
 
-    # replace task with INVALID TASK.XML => error message
-    When I choose "Edit question" action for "isPalindrom" in the question bank
-    And I expand all fieldsets
-    And I delete "isPalindrom.zip" from "ProFormA task file" filemanager
+  @_file_upload
+  Scenario: replace task with INVALID TASK.XML => error message.
+    When I delete "isPalindrom.zip" from "ProFormA task file" filemanager
     And I upload "question/type/proforma/tests/fixtures/isPalindromErrTaskInvalid.zip" file to "ProFormA task file" filemanager
     And I press "Save changes"
-    And I should see "Task.xml within ProFormA file is invalid."
+    Then I should see "Task.xml within ProFormA file is invalid."
     # undo changes
     And I press "Cancel"
 
-    # replace task with TASK WITH MIXED TESTS => error message
-    When I choose "Edit question" action for "isPalindrom" in the question bank
-    And I expand all fieldsets
-    And I delete "isPalindrom.zip" from "ProFormA task file" filemanager
+  @_file_upload
+  Scenario: replace task with TASK WITH MIXED TESTS => error message.
+    When I delete "isPalindrom.zip" from "ProFormA task file" filemanager
     And I upload "question/type/proforma/tests/fixtures/isPalindromTestsuiteInverted.zip" file to "ProFormA task file" filemanager
     And I press "id_submitbutton"
     Then I should see "isPalindrom"
@@ -143,7 +137,3 @@ Feature: REPLACE TASK
     And I expand all fieldsets
     And I delete "isPalindromTestsuiteInverted.zip" from "ProFormA task file" filemanager
     And I press "Cancel"
-
-
-
-

@@ -195,14 +195,14 @@ $string['aggregationstrategy_help'] = 'Aggregation strategy used for grading thi
 $string['internaltesterror'] = 'Internal error in a test';
 $string['privacy:metadata'] = 'The ProFormA question type plugin does not store any personal data.';
 
-// version control system
+// Version control system.
 
 $string['versioncontrol'] = 'Version control system';
 $string['vcsuritemplate'] = 'URI of repository';
 $string['vcsuritemplate_help'] = 'location where the student\'s submission can be found. Must contain exactly one placeholder:<br>
 {group} = groupname of the group that the student belongs to<br>
 {input} = identifier to be entered by student';
-// {username} = student\'s login name in Moodle';
+// Maybe for future use: '{username} = student\'s login name in Moodle'.
 
 $string['groupname'] = 'Group';
 
@@ -223,7 +223,7 @@ $string['vcs_info'] = 'For use of a version control system that stores the stude
 The actual URI to locate the submission is compiled by replacing the placeholder in the URI template:<br>
 {group}: name of group that the student belongs to<br>
 {input}: generates an input field';
-// * {username}: takes the student\'s username in Moodle<br>
+// Maybe for future use: '{username}: takes the student\'s username in Moodle'.
 
 $string['proglang_hdr'] = 'Programming languages';
 $string['proglang_hdr_info'] = 'Java is enabled by default. Opt out programming languages that are not used at yout site.';
@@ -232,6 +232,7 @@ $string['selectlangtitle'] = 'Select programming language';
 
 $string['infotaskupdate'] = 'Please check task or use ProFormA import.';
 
+// Errors.
 $string['errinvalidtask'] = 'File is no ProFormA task file.';
 $string['errinvalidproglang'] = 'Programming language in new task is not \'{$a}\'.';
 $string['errcounttest'] = 'Number of tests has been changed: {$a}.';

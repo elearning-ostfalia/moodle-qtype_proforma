@@ -115,6 +115,8 @@ class qtype_proforma_question extends question_graded_automatically {
     private function get_grader() {
         if ($this->grader == null) {
             $this->grader = new qtype_proforma_grader_2();
+            // For using fake results use the following code:
+            // (for testing renderer).
             /* global $CFG;
             require_once($CFG->dirroot . '/question/type/proforma/tests/testgrader.php');
             $this->grader = new qtype_proforma_testgrader();*/
@@ -147,7 +149,6 @@ class qtype_proforma_question extends question_graded_automatically {
         }
     }
 
-
     /**
      * In situations where is_gradable_response() returns false, this method
      * should generate a description of what the problem is.
@@ -160,7 +161,6 @@ class qtype_proforma_question extends question_graded_automatically {
         return "TODO: get_validation_error";
     }
 
-
     /**
      * @param moodle_page the page we are outputting to.
      * @return qtype_proforma_format_renderer_base the response-format-specific renderer.
@@ -168,7 +168,6 @@ class qtype_proforma_question extends question_graded_automatically {
     public function get_format_renderer(moodle_page $page) {
         return $page->get_renderer('qtype_proforma', 'format_' . $this->responseformat);
     }
-
 
     /** base comment from question_definition (abstract)
      * What data may be included in the form submission when a student submits
@@ -200,7 +199,7 @@ class qtype_proforma_question extends question_graded_automatically {
         return $expecteddata;
     }
 
-    // für question_with_responses (interface question_manually_gradable)
+    // For question_with_responses (interface question_manually_gradable.
     /**
      * Produce a plain text summary of a response.
      * @param $response a response, as might be passed to {@link grade_response()}.
@@ -278,7 +277,7 @@ class qtype_proforma_question extends question_graded_automatically {
         }
     }
 
-    /** BASIS KOMMENTAR AUS question_definition (abstract)
+    /** Base comment from question_definition (abstract)
      * What data would need to be submitted to get this question correct.
      * If there is more than one correct answer, this method should just
      * return one possibility. If it is not possible to compute a correct
@@ -290,7 +289,7 @@ class qtype_proforma_question extends question_graded_automatically {
         return null;
     }
 
-    // für question_with_responses (interface question_manually_gradable)
+    // For question_with_responses (interface question_manually_gradable).
     /**
      * Used by many of the behaviours, to work out whether the student's
      * response to the question is complete. That is, whether the question attempt
@@ -405,7 +404,7 @@ class qtype_proforma_question extends question_graded_automatically {
             throw new coding_exception('complete response expected');
         }
 
-        // create grader
+        // Create grader.
         $grader = $this->get_grader();
 
         if ($this->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL) {
@@ -418,8 +417,8 @@ class qtype_proforma_question extends question_graded_automatically {
             }
             list($graderoutput, $httpcode) = $grader->send_external_submission_to_grader($uri, $this);
         } else {
-            // quite complex determination of grading function
-            // (we might simply use the response format)
+            // Quite complex determination of grading function,
+            // we might simply use the response format.
             $hasinlinetext = array_key_exists(ANSWER, $response) && ($response[ANSWER] !== '');
             $hasattachments = array_key_exists(ATTACHMENTS, $response)
                     && $response[ATTACHMENTS] instanceof question_response_files;
@@ -451,7 +450,7 @@ class qtype_proforma_question extends question_graded_automatically {
                     throw new coding_exception("no files attached");
                 }
 
-                // get first file
+                // Get first file.
                 $file = array_values($files)[0];
                 if (!$file instanceof stored_file) {
                     throw new coding_exception("wrong class");

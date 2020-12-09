@@ -69,7 +69,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
      * @return bool
      */
     protected function is_test_set($formdata, $index) {
-        // return isset($formdata->testcode[$index]) && strlen(trim($formdata->testcode[$index]));
+        // No test code in editor available.
         return true;
     }
 
@@ -86,12 +86,12 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
         $xmldoc = new DOMDocument;
 
         if (!$xmldoc->loadXML($gradinghints )) {
-            debugging('gradinghints is not valid XML');
-            return 0; // 'INTERNAL ERROR: $taskresult is not XML';
+            debugging('variable gradinghints is not valid XML');
+            return 0; // INTERNAL ERROR: $taskresult is not XML!
         }
 
         $xpath = new DOMXPath($xmldoc);
-        // $xpath->registerNamespace('dns','urn:proforma:v2.0');
+        // We do not use the ProFormA namespace.
         $xpathresult = $xpath->query('//grading-hints/root/test-ref');
         return $xpathresult->length;
     }
@@ -137,8 +137,6 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
             }
             return $question;
         } catch (Exception $ex) {
-            // Ignore errors.
-            // debugging($ex);
             // Convert exception.
             throw new invalid_task_exception(get_string('errinvalidtaskxml', 'qtype_proforma'));
         }
@@ -158,12 +156,12 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
         foreach ($gh->root->{'test-ref'} as $test) {
             $testtype = $test->{'test-type'};
             if (!isset($testtype)) {
-                // Workaround for bug:
+                // Workaround for bug in grading extraction:
+                // data struction is not coorect. Test type is subelement of desctiption.
                 $testtype = $test->description->{'test-type'};
             }
             $testtype = (string)$testtype;
             $id = (string)$test['ref'];
-            // debugging($id . ' => '. $testtype);
             $question->test[$id] = (string)$testtype;
         }
         return $question;

@@ -103,7 +103,7 @@ class java_form_creator extends base_form_creator {
      * @return string label of JUnit tests
      */
     protected function get_test_label() {
-        return get_string('junit', 'qtype_proforma'); // use different label
+        return get_string('junit', 'qtype_proforma');
     }
 
     /**
@@ -180,9 +180,6 @@ class java_form_creator extends base_form_creator {
                 array(' '), false);
         $mform->addGroupRule('checkstyleoptions', array(
                 'checkstyleweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
-        // is checked even if checkstyle is not visible!
-        // $mform->addGroupRule('checkstyleoptions', array(
-        // 'checkstyleversion' => array(array(get_string('error'), 'nonzero', '', 'client'))));
         // Add textarea.
         $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
         qtype_proforma\lib\as_codemirror('id_checkstylecode', 'xml');
@@ -222,10 +219,9 @@ class java_form_creator extends base_form_creator {
     public function validation(qtype_proforma_edit_form $editor, $fromform, $files, $errors) {
         $errors = parent::validation($editor, $fromform, $files, $errors);
         if ($fromform["checkstyle"]) {
-            // Check Checkstyle values:
+            // Check Checkstyle values.
             if (0 == strlen(trim($fromform["checkstylecode"]))) {
                 // Checkstyle code muse not be empty.
-                // $errors['checkstylecode'] = get_string('required');
                 $errors['checkstylecode'] = get_string('codeempty', 'qtype_proforma');
             }
             if (0 == $fromform["checkstyleversion"]) {
@@ -234,7 +230,7 @@ class java_form_creator extends base_form_creator {
             }
         }
 
-        // Check Junit tests:
+        // Check Junit tests.
         $repeats = $this->get_count_tests(null);
         for ($i = 0; $i < $repeats; $i++) {
             $title = $fromform["testtitle"][$i];

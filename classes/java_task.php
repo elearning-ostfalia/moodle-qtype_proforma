@@ -96,7 +96,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
             }
         }
 
-        // create checkstyle file
+        // Create checkstyle file.
         if (self::has_checkstyle($formdata)) {
             $xw->startElement('file');
             $xw->create_attribute('id', 'checkstyle');
@@ -252,11 +252,10 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                 // Switch to namespace 'cs'.
                 $cs = $config->children('cs', true);
                 $question->checkstyleversion = (string)$cs->attributes()->version;
-                // debugging('$question->checkstyleversion = ' . $question->checkstyleversion);
                 break;
-            case 'compiler': // assert(false);
+            case 'compiler':
                 break;
-            default: // JUNIT test
+            default: // JUNIT test.
                 $question->testcode[$index] = $code;
                 $config = $test->{'test-configuration'};
                 // Switch to namespace 'unit'.
@@ -323,13 +322,13 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         $classname = "";
         switch (count($matches)) {
             case 0:
-                return ""; // no className found???
+                return ""; // No className found!
             case 1:
-                $classname = trim($matches[0]); // unclear what it is, deliver everything
+                $classname = trim($matches[0]); // Unclear what it is, deliver everything.
                 break;
             default:
                 // There should be only one match.
-                $classname = trim($matches[1]); // found, expect className name as 2nd
+                $classname = trim($matches[1]); // Found, expect className name as 2nd.
                 break;
         }
         // Remove whitespace characters.
@@ -344,22 +343,22 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      */
     private static function get_java_packagename($code) {
         $matches = array();
-        $classname = preg_match('/package([\s\S]*?);/', $code, $matches);
-        if ($classname === 0) {
+        $package = preg_match('/package([\s\S]*?);/', $code, $matches);
+        if ($package === 0) {
             return "";
         }
-        if ($classname === false) {
+        if ($package === false) {
             debugging('preg_match failed in get_java_packagename');
             return "";
         }
 
         switch (count($matches)) {
             case 0:
-                return ""; // no className found???
+                return ""; // No package found!
             case 1:
-                return $matches[0]; // unclear what it is, deliver everything
+                return $matches[0]; // Unclear what it is, deliver everything.
             default:
-                return trim($matches[1]); // found, expect className name as 2nd
+                return trim($matches[1]); // Found, expect package name as 2nd.
         }
     }
 
@@ -374,7 +373,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         self::remove_java_comment($code);
         $package = self::get_java_packagename($code);
         $classname = self::get_java_classname($code);
-        // handle Java Generics
+        // Handle Java Generics.
         $index1 = strpos($classname, '<');
         if ($index1 > 0) {
             $index2 = strpos($classname, '>');
