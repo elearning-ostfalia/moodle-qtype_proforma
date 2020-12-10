@@ -37,6 +37,12 @@ jobs:
         - MOODLE_BRANCH=master
         - DB=mysqli
 
+    - name: 'Moodle 3.11'
+      php: 7.4
+      env:
+        - MOODLE_BRANCH=MOODLE_311_STABLE
+        - DB=pgsql
+
     - name: 'Moodle 3.10'
       php: 7.4
       env:
