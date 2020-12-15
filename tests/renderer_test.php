@@ -773,7 +773,7 @@ Prüfung beendet.
         $qa = $this->get_question_attempt();
         global $PAGE;
         $renderer = $PAGE->get_renderer('qtype_proforma');
-        $output = $renderer->render_proforma2_message($response, $errormsg, $qa);
+        $output = $renderer->render_proforma2_message($response, $errormsg, $qa->get_question());
 
         // pretty print for comparison
         $dom = new DOMDocument();

@@ -226,7 +226,7 @@ class feedback_renderer {
         // since there can be multiple regions per page!
         $collid = $this->mainrenderer->create_collapsible_region_id($this->qa);
         $visiblescore = '';
-        if ($this->qa->get_question()->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
+        if ($this->question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
             $weight = floatval((string) $ghtest['weight']) / $this->totalweight;
             if ($weight > 0.0) {
                 // Only display percentage if this test counts more than 0.
@@ -345,7 +345,7 @@ class feedback_renderer {
      * @param question_attempt $qa
      * @return string
      */
-    public function render_proforma2_message($message, question_attempt $qa) {
+    public function render_proforma2_message($message, $question) {
         $result = '';
         // Check type of response.
         try {
@@ -360,9 +360,10 @@ class feedback_renderer {
         }
 
         // Preset member variables.
-        $this->qa = $qa;
-        $gh = new SimpleXMLElement($qa->get_question()->gradinghints);
+        // $this->qa = null; // $qa;
+        $gh = new SimpleXMLElement($question->gradinghints);
         $this->gradinghints = $gh->root;
+        $this->question = $question;
 
         // Calculate total weight.
         $this->totalweight = 0;
@@ -471,7 +472,7 @@ class feedback_renderer {
             $result .= '<p></p>' . '[' . $gradertext . ']';
 
             // Debugging: show raw response.
-            $qaid = $this->mainrenderer->create_collapsible_region_id($this->qa);
+            $qaid = $this->mainrenderer->create_collapsible_region_id(null);
             $result .= print_collapsible_region_start('', $qaid,
                     'raw response', '', true, true);
             $result .= html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));

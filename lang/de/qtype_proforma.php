@@ -217,6 +217,26 @@ $string['selectlangtitle'] = 'Markieren Sie die gewünschte Programmiersprache';
 
 $string['infotaskupdate'] = 'Bitte Datei überarbeiten oder ProFormA-Dateiimport nutzen.';
 
+// Bulk test.
+$string['bulktestnomodelsolution'] = 'Diese Frage besitzt keine Musterlösung.';
+$string['bulktestnofile'] = 'Diese Frage besitzt keine ProFormA-Task-Datei.';
+$string['replacedollarscount'] = 'Diese Kategorie enthält {$a} ProFormA-Fragen.';
+$string['testpassesandfails'] = '{$a->passes} Passes und {$a->fails} Fehler.';
+$string['proformaInstall_testsuite_notests'] = 'Fragen ohne ProFormA-Task-Datei!';
+$string['proformaInstall_testsuite_nomodelsolution'] = 'Fragen ohne Musterlösung: bitte eine Musterlösung hinzufügen!';
+$string['proformaInstall_testsuite_failingtests'] = 'Fehlgeschlagene Tests';
+$string['proformaInstall_testsuite_fail'] = 'Nicht alle Tests wurden bestanden!';
+$string['proformaInstall_testsuite_pass'] = 'Alle Tests wurden bestanden!';
+$string['bulktesttitle'] = 'Starten aller Fragen in {$a}';
+$string['replacedollarsindex'] = 'Kurse und Kursbereiche mit ProFormA-Fragen';
+$string['bulktestrun'] = 'Starten aller Tests aller Fragen im System (langsam, nur für Administratoren)';
+$string['bulktestindextitle'] = 'Bulk - Test';
+$string['overallresult'] = 'Zusammenfassung';
+$string['passed'] = 'OK';
+$string['failed'] = 'Fehler';
+$string['bulktestcontinuefromhere'] = 'Nochmal starten oder fortsetzen, beginnend ab hier';
+
+
 $string['errinvalidtask'] = 'Datei ist keine ProFormA-Aufgabendatei.';
 $string['errinvalidproglang'] = 'Programmiersprache ist nicht \'{$a}\'.';
 $string['errcounttest'] = 'Anzahl der Tests wurde geändert: {$a}.';

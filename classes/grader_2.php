@@ -207,6 +207,35 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         return $this->post_to_grader($postfields, $question);
     }
 
+    /**
+     * send file upload submission to grader
+     *
+     * @param $files
+     * @param qtype_proforma_question $question
+     * @return array
+     * @throws coding_exception
+     */
+    public function send_files_with_task_to_grader($files, $task) {
+        // Check file classes.
+        foreach ($files as $file) {
+            if (!$file instanceof stored_file) {
+                throw new coding_exception("wrong class for file");
+            }
+        }
+
+        // Create submission.
+        $submission = $this->create_submission_xml(null, $files, null, null, null, $task);
+        $postfields = array('submission.xml' => $submission);
+        foreach ($files as $file) {
+            // debugging(print_r($file));
+            $postfields[$file->get_filename()] = $file;
+        }
+
+        // debugging($submission);
+        // Send POST request to grader.
+        return $this->post_to_grader($postfields, null, $task);
+    }
+
 
     /** sends the sudent's submitted source code to the grader
      *

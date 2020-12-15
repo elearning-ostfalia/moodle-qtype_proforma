@@ -293,7 +293,9 @@ class qtype_proforma_renderer extends qtype_renderer {
                 if (empty($feedback)) {
                     return $result . '<no feedback, maybe internal error>';
                 }
-                return $result . $this->render_proforma2_message($feedback, $errormsg, $qa);
+
+                return $result . $this->render_proforma2_message($feedback, $errormsg,
+                    $qa->get_question());
             default:
                 return $result . "INTERNAL ERROR: unsupported feedback format: " . $feedbackformat;
         }
@@ -341,13 +343,14 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @return string
      */
     public function create_collapsible_region_id(question_attempt $qa = null) {
-        if ($qa != null) {
+/*        if ($qa != null) {
             $qaid = (empty($qa->get_database_id()) ? 'x' : $qa->get_database_id()) . '-' .
                     (empty($qa->get_usage_id()) ? 'y' : $qa->get_usage_id());
         } else {
             $qaid = '0';
-        }
+        } */
 
+        $qaid = mt_rand();
         $this->collapseid++;
         return 'm-id-test-proforma-' . $qaid . '-' . $this->collapseid;
     }
@@ -440,9 +443,9 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @param question_attempt $qa
      * @return string
      */
-    public function render_proforma2_message($message, $errormsg, question_attempt $qa) {
+    public function render_proforma2_message($message, $errormsg, $question) {
         // Delegate.
         $renderer = new feedback_renderer($this);
-        return $renderer->render_proforma2_message($message, $qa);
+        return $renderer->render_proforma2_message($message, $question);
     }
 }

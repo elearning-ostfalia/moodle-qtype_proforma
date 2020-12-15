@@ -71,6 +71,12 @@
     white-space: pre-wrap;
 }
 
+.fail {
+    color: #f00;
+}
+.pass {
+    color: #080;
+}
 
 /*
 .que.proforma textarea.qtype_proforma_response {

@@ -232,6 +232,25 @@ $string['selectlangtitle'] = 'Select programming language';
 
 $string['infotaskupdate'] = 'Please check task or use ProFormA import.';
 
+// Bulk test.
+$string['bulktestnomodelsolution'] = 'This question does not have a model solution.';
+$string['bulktestnofile'] = 'This question does not have a ProFormA file.';
+$string['replacedollarscount'] = 'This category contains {$a} ProFormA questions.';
+$string['testpassesandfails'] = '{$a->passes} passes and {$a->fails} failures.';
+$string['proformaInstall_testsuite_notests'] = 'Questions with ProFormA file!';
+$string['proformaInstall_testsuite_nomodelsolution'] = 'Questions without a model solution: please add one!';
+$string['proformaInstall_testsuite_failingtests'] = 'Tests that failed';
+$string['proformaInstall_testsuite_fail'] = 'Not all tests passed!';
+$string['proformaInstall_testsuite_pass'] = 'All tests passed!';
+$string['bulktesttitle'] = 'Running all the question tests in {$a}';
+$string['replacedollarsindex'] = 'Contexts with ProFormA questions';
+$string['bulktestrun'] = 'Run all the question tests for all the questions in the system (slow, admin only)';
+$string['bulktestindextitle'] = 'Run the question tests in bulk';
+$string['overallresult'] = 'Summary';
+$string['passed'] = 'passed';
+$string['failed'] = 'failed';
+$string['bulktestcontinuefromhere'] = 'Run again or resume, starting from here';
+
 // Errors.
 $string['errinvalidtask'] = 'File is no ProFormA task file.';
 $string['errinvalidproglang'] = 'Programming language in new task is not \'{$a}\'.';
