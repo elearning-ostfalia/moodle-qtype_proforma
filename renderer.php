@@ -253,7 +253,6 @@ class qtype_proforma_renderer extends qtype_renderer {
                     break;
             }
         } else {
-            // $output .= 'No error occured: ';
             if (!empty($format) && qtype_proforma\lib\is_teacher()) {
                 // Force feedback to true for teachers so that they can see the actual feedback
                 // (deferred feedback still needs no feedback for students).
@@ -276,7 +275,7 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @return string HTML fragment.
      */
     public function specific_feedback(question_attempt $qa) {
-        $result = ''; // 'specific feedback: ';
+        $result = '';
 
         list($feedback, $errormsg, $feedbackformat) = $this->get_feedback_for_last_answer($qa);
         switch ($feedbackformat) {
@@ -343,16 +342,9 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @return string
      */
     public function create_collapsible_region_id(question_attempt $qa = null) {
-/*        if ($qa != null) {
-            $qaid = (empty($qa->get_database_id()) ? 'x' : $qa->get_database_id()) . '-' .
-                    (empty($qa->get_usage_id()) ? 'y' : $qa->get_usage_id());
-        } else {
-            $qaid = '0';
-        } */
-
-        $qaid = mt_rand();
+        $rand = mt_rand();
         $this->collapseid++;
-        return 'm-id-test-proforma-' . $qaid . '-' . $this->collapseid;
+        return 'm-id-test-proforma-' . $rand . '-' . $this->collapseid;
     }
 
     /**

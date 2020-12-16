@@ -809,9 +809,7 @@ Prüfung beendet.
             $this->render_general_log('Fake Message', 'html').
             '</p>'.
             $this->render_collapsible_region_score(1, 0.0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1).
-            $this->render_collapsible_region_score(2, 0.0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2, true).
-'<p></p>
-<p>Your answer could not be graded due to an internal error in the grading system.</p>';
+            $this->render_collapsible_region_score(2, 0.0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2, true);
 
         $this->assert_same_feedback(self::RESPONSE_1, '', null, $expected);
     }
@@ -827,9 +825,7 @@ Prüfung beendet.
                 $this->render_general_log('Fake Result', 'html').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1).
-                $this->render_collapsible_region_subtests(2, 0.5, null, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1).
-                '<p></p>
-<p>Your answer is not completely correct.</p>';
+                $this->render_collapsible_region_subtests(2, 0.5, null, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1);
 
         $this->assert_same_feedback(self::RESPONSE_2, '', null, $expected);
     }
@@ -841,9 +837,7 @@ Prüfung beendet.
     public function test_specific_feedback_log_error_AON() {
         $expected =
                 $this->render_collapsible_region_score(1, 1, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_3_1).
-                $this->render_collapsible_region_score(2, 0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_3_2).
-                '<p></p>
-<p>Your answer is not completely correct.</p>';
+                $this->render_collapsible_region_score(2, 0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_3_2);
 
         $this->assert_same_feedback(self::RESPONSE_3, '', null, $expected);
     }
@@ -859,9 +853,7 @@ Prüfung beendet.
                 $this->render_general_log('Fake Message', 'html').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0.0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1).
-                $this->render_collapsible_region_score(2, 0.0, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2, true).
-                '<p></p>
-<p>Your answer could not be graded due to an internal error in the grading system.</p>';
+                $this->render_collapsible_region_score(2, 0.0, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2, true);
 
         $this->assert_same_feedback(self::RESPONSE_1, '', self::GRADINGHINTS_1, $expected);
     }
@@ -877,9 +869,7 @@ Prüfung beendet.
                 $this->render_general_log('Fake Result', 'html').
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1).
-                $this->render_collapsible_region_subtests(2, 0.45, 0.6, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1).
-                '<p></p>
-<p>Your answer is not completely correct.</p>';
+                $this->render_collapsible_region_subtests(2, 0.45, 0.6, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1);
 
         // $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_2, '', self::GRADINGHINTS_1, $expected);
@@ -900,9 +890,7 @@ Prüfung beendet.
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0.0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1_TEACHER).
                 $this->render_collapsible_region_score(2, 0.0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2_TEACHER, true).
-                $this->render_graderinfo(3, 'praktomat 1.2.3', self::RESPONSE_1) .
-                '<p></p>
-<p>Your answer could not be graded due to an internal error in the grading system.</p>';
+                $this->render_graderinfo(3, 'praktomat 1.2.3', self::RESPONSE_1) ;
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_1, '', null, $expected);
@@ -923,9 +911,7 @@ Prüfung beendet.
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1_TEACHER).
                 $this->render_collapsible_region_subtests(2, 0.5, null, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1_TEACHER).
-                $this->render_graderinfo(3, 'praktomat 5.6.7', self::RESPONSE_2) .
-                '<p></p>
-<p>Your answer is not completely correct.</p>';
+                $this->render_graderinfo(3, 'praktomat 5.6.7', self::RESPONSE_2);
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_2, '', null, $expected);
@@ -946,9 +932,7 @@ Prüfung beendet.
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0.0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1_TEACHER).
                 $this->render_collapsible_region_score(2, 0.0, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2_TEACHER, true).
-                $this->render_graderinfo(3, 'praktomat 1.2.3', self::RESPONSE_1) .
-                '<p></p>
-<p>Your answer could not be graded due to an internal error in the grading system.</p>';
+                $this->render_graderinfo(3, 'praktomat 1.2.3', self::RESPONSE_1);
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_1, '', self::GRADINGHINTS_1, $expected);
@@ -969,9 +953,7 @@ Prüfung beendet.
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1_TEACHER).
                 $this->render_collapsible_region_subtests(2, 0.45, 0.6, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1_TEACHER).
-                $this->render_graderinfo(3, 'praktomat 5.6.7', self::RESPONSE_2) .
-                '<p></p>
-<p>Your answer is not completely correct.</p>';
+                $this->render_graderinfo(3, 'praktomat 5.6.7', self::RESPONSE_2);
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_2, '', self::GRADINGHINTS_1, $expected);
@@ -984,9 +966,7 @@ Prüfung beendet.
         $expected =
                 $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_4_1).
                 $this->render_collapsible_region_score(2, 0, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_4_2).
-                $this->render_graderinfo(3, 'praktomat Version 4.5.1 | 20200803', self::RESPONSE_4) .
-                '<p></p>
-<p>Your answer is not completely correct.</p>';
+                $this->render_graderinfo(3, 'praktomat Version 4.5.1 | 20200803', self::RESPONSE_4);
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_4, '', self::GRADINGHINTS_1, $expected);
@@ -1000,9 +980,7 @@ Prüfung beendet.
                 $this->render_collapsible_region_score(1, 0.4, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_EMPTY_1).
                 $this->render_collapsible_region_score(2, null, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_EMPTY_2, true).
                 $this->render_graderinfo(3, 'praktomat Version 4.5.1 | 20200803', self::RESPONSE_EMPTY,
-                     'SVN: https://svn.ostfalia.de/src Revision 1234') .
-                '<p></p>
-<p>Your answer could not be graded due to an internal error in the grading system.</p>';
+                     'SVN: https://svn.ostfalia.de/src Revision 1234');
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_EMPTY, '', self::GRADINGHINTS_1, $expected);

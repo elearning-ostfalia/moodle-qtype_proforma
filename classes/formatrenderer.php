@@ -38,7 +38,7 @@ if (!$PAGE->requires->is_head_done()) {
     // that we cannot add jquery after starting page output.
 
     // But: if the jquery calls are missing then Codemirror resizing does not work.
-    // This happens for the preview window for a specific step in the grades history :-(
+    // This happens for the preview window for a specific step in the grades history :-(.
     $PAGE->requires->jquery();
     $PAGE->requires->jquery_plugin('ui');
     $PAGE->requires->jquery_plugin('ui-css');

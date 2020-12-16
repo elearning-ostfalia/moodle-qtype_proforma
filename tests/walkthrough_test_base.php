@@ -41,9 +41,9 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
     const CORRECT_RESPONSE = 'public class MyString
 {
 	static public String flip( String aString)
-	{	
+	{
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (int i = 0; i < aString.length(); i++)
 			sb.append(aString.charAt(aString.length()-1-i));
 
@@ -89,7 +89,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
               <content format="plaintext">Sample.java	line 56</content>
               <filerefs>
               </filerefs>
-            </student-feedback>            
+            </student-feedback>
             <teacher-feedback level="debug">
               <title>Java-Compilation (teacher)</title>
               <content format="html">content11</content>
@@ -653,7 +653,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
                 $this->get_contains_question_text_expectation($this->question),
                 //            $this->get_contains_general_feedback_expectation($q),
                 $this->get_contains_specific_feedback_expectation());
-        $this->check_specific_feedback_text('Your answer is correct.');
+        // $this->check_specific_feedback_text('Your answer is correct.');
         $this->check_remaining_tries(self::STATE_CORRECT);
     }
 
@@ -707,7 +707,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
                 $this->get_contains_question_text_expectation($this->question),
                 // $this->get_contains_general_feedback_expectation($q),
                 $this->get_contains_specific_feedback_expectation());
-        $this->check_specific_feedback_text('Your answer is not completely correct.');
+        // $this->check_specific_feedback_text('Your answer is not completely correct.');
         $remainingtries = null;
 
         if (!$this->is_finished && $this->remainingtries) {

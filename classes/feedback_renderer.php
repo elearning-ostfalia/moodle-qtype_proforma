@@ -30,10 +30,10 @@ defined('MOODLE_INTERNAL') || die();
 class feedback_exception extends Exception
 {
     // Redefine the exception so message isn't optional.
-    public function __construct($message, $code = 0, Exception $previous = null) {
+    /* public function __construct($message, $code = 0, Exception $previous = null) {
         // Call parent constructor.
         parent::__construct($message, $code, $previous);
-    }
+    } */
 
     // Custom string representation of object.
     public function __toString() {
@@ -108,9 +108,6 @@ class feedback_renderer {
             if ($printpassedinfo) {
                 $truefeedbackimg = $this->mainrenderer->feedback_image((int) 1);
                 $falsefeedbackimg = $this->mainrenderer->feedback_image((int) 0);
-                // Smaller font?
-                // $cssicon = array('class' => 'proforma_subtest_title', 'style' => 'font-size: 10%; background-size:10px');
-                // $result .= html_writer::tag('div', ($passed?$truefeedbackimg:$falsefeedbackimg), $cssicon);
                 $title = ($passed ? $truefeedbackimg : $falsefeedbackimg) . $title;
             } else {
                 // Adjust left space.
@@ -269,7 +266,6 @@ class feedback_renderer {
         }
 
         if ($internalerror) {
-            // $csscontent = array('class' => 'proforma_testlog');
             $result .= html_writer::tag('p', get_string('testinternalerror', 'qtype_proforma'),
                 array('class' => 'proforma_testlog_description'));
         }
@@ -360,7 +356,6 @@ class feedback_renderer {
         }
 
         // Preset member variables.
-        // $this->qa = null; // $qa;
         $gh = new SimpleXMLElement($question->gradinghints);
         $this->gradinghints = $gh->root;
         $this->question = $question;
@@ -398,7 +393,7 @@ class feedback_renderer {
             $result .= '<p><b>INTERNAL ERROR</b>: unknown response namespace</p>';
         } else {
         */
-        // iterate through all tests in the grading hints instead of
+        // Iterate through all tests in the grading hints instead of
         // iterating through all tests in the response.
         // This guarantees that we detect missing tests in the response and
         // we can reorder the result.
@@ -436,16 +431,6 @@ class feedback_renderer {
         $result = $this->render_vcs_information($response, $result);
         // Render grading information.
         $result = $this->render_grader_info($message, $response, $result);
-        // Render passed/failed.
-        if ($allcorrect) {
-            $result .= '<p></p>' . html_writer::tag('p', get_string('gradepassed', 'qtype_proforma'));
-        } else {
-            if ($containsinternalerror) {
-                $result .= '<p></p>' . html_writer::tag('p', get_string('gradeinternalerror', 'qtype_proforma'));
-            } else {
-                $result .= '<p></p>' . html_writer::tag('p', get_string('gradefailed', 'qtype_proforma'));
-            }
-        }
 
         return $result;
     }
