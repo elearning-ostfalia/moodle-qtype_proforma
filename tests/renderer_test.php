@@ -567,9 +567,12 @@ Prüfung beendet.
     );
 
     private function assert_same_xml($expectedxml, $xml) {
-        // remove comments
+        // Remove comments.
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
         $expectedxml = preg_replace('/<!--(.|\s)*?-->/', '', $expectedxml);
+        // Remove random number for collapsible region.
+        $xml = preg_replace('/(m-id-test-proforma-[\d]+)/', 'm-id-test-proforma-XXX', $xml);
+        $expectedxml = preg_replace('/(m-id-test-proforma-[\d]+)/', 'm-id-test-proforma-XXX', $expectedxml);
         $this->assertEquals(str_replace("\r\n", "\n", $expectedxml),
                 str_replace("\r\n", "\n", $xml));
     }
@@ -625,7 +628,7 @@ Prüfung beendet.
         $output .= '<div id="'.$id.'_caption" class="collapsibleregioncaption">raw response </div>
 <div id="'.$id.'_inner" class="collapsibleregioninner"><xmp class="proforma_testlog"><?xml version="1.0" encoding="utf-8"?>
 ';
-        // strip prolog
+        //Strip prolog.
         //$response = str_replace('\r\n', '\n', $response);
         $response = substr($response, 39);
         $output .= $response . '</xmp></div>
@@ -652,7 +655,7 @@ Prüfung beendet.
         $iconinternalerror = 'class="icon fa fa-exclamation text-warning fa-fw " title="info" aria-label="info"';
 
         if (isset($total)) {
-            // with subtests
+            // With subtests.
             $icon = $iconpassed;
             if ($internalerror) {
                 $icon = $iconinternalerror;
@@ -668,7 +671,7 @@ Prüfung beendet.
                 $output .= ' ('.($score*100) .'/'.($total*100).' %)';
             }
         } else {
-            // without subtests
+            // Without subtests.
             $icon = $iconpassed;
             if ($internalerror) {
                 $icon = $iconinternalerror;
@@ -775,16 +778,14 @@ Prüfung beendet.
         $renderer = $PAGE->get_renderer('qtype_proforma');
         $output = $renderer->render_proforma2_message($response, $errormsg, $qa->get_question());
 
-        // pretty print for comparison
+        // Pretty print for comparison.
         $dom = new DOMDocument();
-        // Initial block (must before load xml string)
+        // Initial block (must before load xml string).
         $dom->preserveWhiteSpace = true;
         $dom->formatOutput = true;
-        // End initial block
+        // End initial block.
 
-        $qaid = (empty($qa->get_database_id()) ? 'x' : $qa->get_database_id()) . '-' .
-                (empty($qa->get_usage_id()) ? 'y' : $qa->get_usage_id());
-        $expected = str_replace('{COLLAPSE_ID}', 'm-id-test-proforma-' . $qaid, $expected);
+        $expected = str_replace('{COLLAPSE_ID}', 'm-id-test-proforma-0000', $expected);
 
         //$dom->loadHTML($output);
         $dom->loadHTML($output, LIBXML_NOERROR | LIBXML_NOXMLDECL | LIBXML_NOWARNING);
@@ -793,7 +794,6 @@ Prüfung beendet.
         $expected_pretty = $dom->saveHTML();
 
         $this->assert_same_xml($expected_pretty, $output_pretty);
-        // $this->assert_same_xml($expected, $output);
     }
 
 
