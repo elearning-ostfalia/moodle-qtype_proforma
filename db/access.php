@@ -15,26 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The ProFormA Question version information
+ * Capability definitions for the qtype_proforma plugin.
  *
- * @package    qtype
- * @subpackage proforma
- * @copyright  2018 Ostfalia University of Applied Sciences
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author     K.Borm <k.borm[at]ostfalia.de>
+ * @package   qtype_proforma
+ * @copyright 2021 Ostfalia University of Applied Sciences
+ * based on same file for STACK (the Open University)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'qtype_proforma';
-$plugin->version   = 2021011100;
+$capabilities = array(
 
-$plugin->requires  = 2017111300;
-$plugin->release = '2.3.1';
-
-$plugin->maturity  = MATURITY_STABLE;
-
-$plugin->dependencies = array(
-        'qbehaviour_adaptiveexternalgrading' => 2019061201
+    // Users with this in the system context can use the bulk test.
+    'qtype/proforma:usediagnostictools' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+        ),
+    ),
 );
 

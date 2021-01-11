@@ -19,7 +19,7 @@
  *
  * @package    qtype
  * @subpackage proforma
- * @copyright  2017 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @copyright  2017 Ostfalia University of Applied Sciences
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>*
  */
@@ -29,6 +29,11 @@ $string['pluginname_help'] = 'Programmieraufgabe basierend auf einer ProFormA-Au
 $string['pluginnameadding'] = 'ProFormA-Aufgabe hinzufügen';
 $string['pluginnameediting'] = 'ProFormA-Aufgabe ändern';
 $string['pluginnamesummary'] = 'Automatisch bewertete Programmieraufgabe.';
+
+// Capability names.
+$string['proforma:usediagnostictools'] = 'Benutzen von ProFormA-Werkzeugen (Bulktest)';
+
+
 $string['allowattachments'] = 'Max. Anzahl Dateien';
 $string['comment'] = 'Kommentar';
 $string['commentheader'] = 'Kommentar';
@@ -49,10 +54,10 @@ $string['msfilename'] = 'Datei ';
 
 
 $string['taskpath'] = 'Verzeichnis';
-$string['taskpath_hint'] = $string['taskpath'];
+$string['taskpath_hint'] = 'Verzeichnis';
 $string['taskpath_hint_help'] = 'Verzeichnis der ProFormA-Aufgabendatei im Repository';
 $string['repository'] = 'Repository';
-$string['repository_hint'] = $string['repository'];
+$string['repository_hint'] = 'Repository';
 $string['repository_hint_help'] = 'URI des ProFormA-Repository';
 
 $string['repositoryhost'] = 'Host des Repository';
@@ -62,15 +67,15 @@ $string['repositorypath_desc'] = 'Verzeichnis einer ProFormA-Aufgabe im Reposito
 
 
 $string['filename'] = 'Dateiname';
-$string['filename_hint'] = $string['filename'];
+$string['filename_hint'] = 'Dateiname';
 $string['filename_hint_help'] = 'Da bei Nutzung des Editors als Eingabeform kein Dateiname zum Kompilieren vorhanden ist, muss dieser fest vorgegeben werden.
 Bitte beachten, dass u.U. auch das Package im Namen enthalten sein muss.';
 
 $string['taskfilename'] = 'ProFormA-Aufgabendatei';
-$string['taskfilename_hint'] = $string['taskfilename'];
+$string['taskfilename_hint'] = 'ProFormA-Aufgabendatei';
 $string['taskfilename_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei';
 $string['createdtask_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei. Achtung: Aufgabe muss erst gespeichert werden, damit die entsprechende ProFormA-Datei erzeugt wird.';
-$string['task_hint'] = $string['taskfilename'];
+$string['task_hint'] = 'ProFormA-Aufgabendatei';
 $string['task_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei. '
 . 'Wenn diese ersetzt werden soll, bitte beachten, dass die neue Datei kompatibel zur alten ist. '
 . 'Das bedeutet: <br>'
@@ -96,14 +101,14 @@ $string['sumweightzero'] = 'Die Summe aller Gewichte darf nicht 0 sein.';
 
 
 $string['highlight'] = 'Syntax Highlighting';
-$string['highlight_hint'] = $string['proglang'];
+$string['highlight_hint'] = 'Programmiersprache';
 $string['highlight_hint_help'] = 'Programmiersprache, die für das Syntax Highlighting genutzt werden soll';
 
 $string['proglang'] = 'Programmiersprache';
-$string['proglang_hint'] = $string['proglang'];
+$string['proglang_hint'] = 'Programmiersprache';
 $string['proglang_hint_help'] = 'Verwendete Programmiersprache der Aufgabe. Zur Zeit können nur Java-Aufgaben erstellt werden.';
 $string['proglangversion'] = 'Version der Programmiersprache';
-$string['proglangversion_hint'] = $string['proglangversion'];
+$string['proglangversion_hint'] = 'Version der Programmiersprache';
 $string['proglangversion_hint_help'] = 'Version der Programmiersprache.';
 $string['other'] = 'andere';
 
@@ -220,7 +225,7 @@ $string['infotaskupdate'] = 'Bitte Datei überarbeiten oder ProFormA-Dateiimport
 // Bulk test.
 $string['bulktestnomodelsolution'] = 'Diese Frage besitzt keine Musterlösung.';
 $string['bulktestnofile'] = 'Diese Frage besitzt keine ProFormA-Task-Datei.';
-$string['replacedollarscount'] = 'Diese Kategorie enthält {$a} ProFormA-Fragen.';
+$string['replacedollarscount'] = 'Diese Kategorie enthält {$a} ProFormA-Frage(n).';
 $string['testpassesandfails'] = '{$a->passes} Passes und {$a->fails} Fehler.';
 $string['proformaInstall_testsuite_notests'] = 'Fragen ohne ProFormA-Task-Datei!';
 $string['proformaInstall_testsuite_nomodelsolution'] = 'Fragen ohne Musterlösung: bitte eine Musterlösung hinzufügen!';

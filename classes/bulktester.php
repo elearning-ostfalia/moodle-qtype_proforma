@@ -18,7 +18,7 @@
  * This script provdies an index for running the question tests in bulk.
  *
  * @package   qtype_proforma
- * @copyright 2020 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @copyright 2021 Ostfalia University of Applied Sciences
  * based on same file for STACK (the Open University)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -69,7 +69,6 @@ class proforma_bulk_tester  {
         $categories = question_category_options(array($context));
         $categories = reset($categories);
         $questiontestsurl = new moodle_url('/question/question.php');
-        // $questiontestsurl = new moodle_url('/question/type/proforma/questiontestrun.php');
         switch ($context->contextlevel) {
             case CONTEXT_COURSE:
             case CONTEXT_COURSECAT:
@@ -80,9 +79,6 @@ class proforma_bulk_tester  {
                 break;
             default:
                 debugging('unexpected contextlevel: ' . $context->contextlevel);
-        }
-        if ($context->contextlevel == CONTEXT_COURSE) {
-        } else if ($context->contextlevel == CONTEXT_MODULE) {
         }
         $allpassed = true;
         $failingtests = array();
@@ -104,15 +100,11 @@ class proforma_bulk_tester  {
             // Write number of questions found.
             echo html_writer::tag('p', get_string('replacedollarscount', 'qtype_proforma', count($questionids)));
 
-
             foreach ($questionids as $questionid => $name) {
 
                 $question = question_bank::load_question($questionid);
-
                 $questionname = format_string($name);
-
                 $questionnamelink = html_writer::link(new moodle_url($questiontestsurl,
- //                       array('questionid' => $questionid)), format_string($name));
                         array('id' => $questionid)), format_string($name));
 
                 $questionproblems = array();
@@ -133,7 +125,7 @@ class proforma_bulk_tester  {
                 if ($questionproblems !== array()) {
                     // Cannot run tests.
                     echo $OUTPUT->heading($questionnamelink, 5);
-                    echo html_writer::tag('ul', implode($questionproblems, "\n"));
+                    echo html_writer::tag('ul', implode("\n", $questionproblems));
                 } else {
                     // Run tests.
                     $previewurl = new moodle_url($questiontestsurl, array('id' => $questionid));
@@ -151,11 +143,9 @@ class proforma_bulk_tester  {
                     // Do not write specific feedback here.
                     // It is not rendered properly while waiting for further
                     // responses of grader.
-                    // echo html_writer::tag('div', $message);
                     flush(); // Force output to prevent timeouts and to make progress clear.
                 }
             }
-
         }
         $failing = array(
             'failingtests'      => $failingtests,
@@ -195,12 +185,10 @@ class proforma_bulk_tester  {
                 if ($feedbackformat != qtype_proforma_grader::FEEDBACK_FORMAT_PROFORMA2) {
                     $result .= html_writer::tag('xmp', $feedback, array('class' => 'proforma_testlog'));
                 } else {
-                    // Problem with this code:
-                    // delay of output (solution: hide and press button to show?)
                     global $PAGE;
                     $renderer = new qtype_proforma_renderer($PAGE, null);
-                    $feedback_renderer = new feedback_renderer($renderer);
-                    $feedback = $feedback_renderer->render_proforma2_message($feedback, $question);
+                    $fbrenderer = new feedback_renderer($renderer);
+                    $feedback = $fbrenderer->render_proforma2_message($feedback, $question);
                 }
             } else {
                 $class = 'pass';
@@ -213,59 +201,6 @@ class proforma_bulk_tester  {
         }
 
         return array($ok, $message, $feedback);
-
-
-
-        flush(); // Force output to prevent timeouts and to make progress clear.
-        gc_collect_cycles(); // Because PHP's default memory management is rubbish.
-
-        // Prepare the question and a usage.
-        $question = clone($question);
-        $quba = question_engine::make_questions_usage_by_activity('qtype_proforma', context_system::instance());
-        $quba->set_preferred_behaviour('adaptive');
-
-        // Execute the tests.
-        $passes = 0;
-        $fails = 0;
-/*
-        foreach ($proformafile as $key => $testcase) {
-            $testresults[$key] = $testcase->test_question($quba, $question, $seed);
-            if ($testresults[$key]->passed()) {
-                $passes += 1;
-            } else {
-                $fails += 1;
-            }
-        }
-*/
-        $fails = 1;
-        $message = get_string('testpassesandfails', 'qtype_proforma', array('passes' => $passes, 'fails' => $fails));
-        $ok = ($fails === 0);
-
-        // These lines are to seed the cache and to generate any runtime errors.
-//        $notused = $question->get_question_summary();
-//        $generalfeedback = $question->get_generalfeedback_castext();
-//        $notused = $generalfeedback->get_display_castext();
-
-        if (!empty($question->runtimeerrors)) {
-            $ok = false;
-            $message .= html_writer::tag('br',
-                    get_string('proformaInstall_testsuite_errors'), 'qtype_proforma') . implode(' ', array_keys($question->runtimeerrors));
-        }
-
-        $flag = '';
-        if ($ok === false) {
-            $class = 'fail';
-        } else {
-            $class = 'pass';
-            $flag = '* ';
-        }
-        if (!$quiet) {
-            echo html_writer::tag('p', $flag.$message, array('class' => $class));
-        }
-
-        flush(); // Force output to prevent timeouts and to make progress clear.
-
-        return array($ok, $message);
     }
 
     /**

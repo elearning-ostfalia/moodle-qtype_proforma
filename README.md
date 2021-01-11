@@ -22,7 +22,7 @@ The plugin comes with a built-in Java question form editor. Simple Java question
 
 Copyright note: The renderer code partly bases upon the renderer from essay question type (Moodle core).
 Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copied from Coderunner 
-(https://moodle.org/plugins/qtype_coderunner).
+(https://moodle.org/plugins/qtype_coderunner). The bulktester code bases on same part in Stack.
   
 ## Features
 

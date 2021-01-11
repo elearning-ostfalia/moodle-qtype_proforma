@@ -19,7 +19,7 @@
  * @package    qtype
  * @subpackage proforma
  * @copyright  1999 onwards Martin Dougiamas {@link http://moodle.com}
- * @copyright  2018 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @copyright  2017 Ostfalia University of Applied Sciences
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,9 +29,14 @@ $string['pluginname_link'] = 'question/type/proforma';
 $string['pluginnameadding'] = 'Adding a ProFormA question';
 $string['pluginnameediting'] = 'Editing a ProFormA question';
 $string['pluginnamesummary'] = 'Programming question that will be graded automatically.';
+
+// Capability names.
+$string['proforma:usediagnostictools'] = 'Use the ProFormA tools';
+
 $string['allowattachments'] = 'Max. number of uploaded files';
 $string['formateditor'] = 'Editor';
 $string['formatfilepicker'] = 'File picker';
+
 
 $string['comment'] = 'Comment';
 $string['commentheader'] = 'Comment';

@@ -18,7 +18,7 @@
  * This script provdies an index for running the question tests in bulk.
  *
  * @package   qtype_proforma
- * @copyright 2020 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @copyright 2021 Ostfalia University of Applied Sciences
  * based on same file for STACK (the Open University)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,14 +28,15 @@ define('NO_OUTPUT_BUFFERING', true);
 require_once(__DIR__.'/../../../config.php');
 
 require_once($CFG->libdir . '/questionlib.php');
-// require_once(__DIR__ . '/locallib.php');
-// require_once(__DIR__ . '/proforma/utils.class.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/bulktester.php');
 
 // Login and check permissions.
 $context = context_system::instance();
 require_login();
-// TODO: require_capability('qtype/proforma:usediagnostictools', $context);
+// Do not check access rights for system context here in order to allow
+// managers or even teachers to check all questions within
+// their course context or course.
+// require_capability('qtype/proforma:usediagnostictools', $context);
 $PAGE->set_url('/question/type/proforma/bulktestindex.php');
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('bulktestindextitle', 'qtype_proforma'));
@@ -49,14 +50,27 @@ $bulktester = new proforma_bulk_tester();
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('replacedollarsindex', 'qtype_proforma'));
 
+// Print link for courses with required capabilities.
 echo html_writer::start_tag('ul');
 foreach ($bulktester->get_proforma_questions_by_context() as $contextid => $numproformaquestions) {
-    echo html_writer::tag('li', html_writer::link(
-            new moodle_url('/question/type/proforma/bulktest.php', array('contextid' => $contextid)),
-            context::instance_by_id($contextid)->get_context_name(true, true) . ' (' . $numproformaquestions . ')'));
+    // Check capability for course resp. course context.
+    $coursecontext = context::instance_by_id($contextid);
+    if (has_capability('qtype/proforma:usediagnostictools', $coursecontext)) {
+        echo html_writer::tag('li', html_writer::link(
+                new moodle_url('/question/type/proforma/bulktest.php', array('contextid' => $contextid)),
+                context::instance_by_id($contextid)->get_context_name(true, true) . ' (' . $numproformaquestions . ')'));
+    } else {
+        // No access rights.
+        if (qtype_proforma\lib\is_admin()) {
+            // Print course context name only if user is admin.
+            echo html_writer::tag('li',
+                context::instance_by_id($contextid)->get_context_name(true, true) . ' NOT ENOUGH CAP');
+        }
+    }
 }
 echo html_writer::end_tag('ul');
 
+// Print link for all questions in the system.
 if (has_capability('moodle/site:config', context_system::instance())) {
     echo html_writer::tag('p', html_writer::link(
             new moodle_url('/question/type/proforma/bulktestall.php'), get_string('bulktestrun', 'qtype_proforma')));

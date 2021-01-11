@@ -18,7 +18,7 @@
  * This script provdies an index for running the question tests in bulk.
  *
  * @package   qtype_proforma
- * @copyright 2020 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @copyright 2020 Ostfalia University of Applied Sciences
  * based on same file for STACK (the Open University)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,9 +28,7 @@ define('NO_OUTPUT_BUFFERING', true);
 require_once(__DIR__ . '/../../../config.php');
 
 require_once($CFG->libdir . '/questionlib.php');
-// require_once(__DIR__ . '/locallib.php');
 require_once(__DIR__ . '/classes/bulktester.php');
-
 
 // Get the parameters from the URL.
 $contextid = required_param('contextid', PARAM_INT);
@@ -38,7 +36,7 @@ $contextid = required_param('contextid', PARAM_INT);
 // Login and check permissions.
 $context = context::instance_by_id($contextid);
 require_login();
-// TODO: require_capability('qtype/proforma:usediagnostictools', $context);
+require_capability('qtype/proforma:usediagnostictools', $context);
 
 $PAGE->set_url('/question/type/proforma/bulktest.php', array('contextid' => $context->id));
 $PAGE->set_context($context);
