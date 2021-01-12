@@ -31,7 +31,8 @@ $string['pluginnameediting'] = 'ProFormA-Aufgabe ändern';
 $string['pluginnamesummary'] = 'Automatisch bewertete Programmieraufgabe.';
 
 // Capability names.
-$string['proforma:usediagnostictools'] = 'Benutzen von ProFormA-Werkzeugen (Bulktest)';
+$string['proforma:runbulktest'] = 'Starten des ProFormA-Bulktests';
+$string['proforma:viewsysteminfo'] = 'ProFormA-Systeminformationen sehen';
 
 
 $string['allowattachments'] = 'Max. Anzahl Dateien';
@@ -236,7 +237,7 @@ $string['bulktesttitle'] = 'Starten aller Fragen in {$a}';
 $string['replacedollarsindex'] = 'Kurse und Kursbereiche mit ProFormA-Fragen';
 $string['bulktestrun'] = 'Starten aller Tests aller Fragen im System (langsam, nur für Administratoren)';
 $string['bulktestindextitle'] = 'Bulk - Test';
-$string['overallresult'] = 'Zusammenfassung';
+$string['overallresult'] = 'Gesamtergebnis';
 $string['passed'] = 'OK';
 $string['failed'] = 'Fehler';
 $string['bulktestcontinuefromhere'] = 'Nochmal starten oder fortsetzen, beginnend ab hier';

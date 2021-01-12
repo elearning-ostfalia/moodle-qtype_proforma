@@ -36,7 +36,7 @@ require_login();
 // Do not check access rights for system context here in order to allow
 // managers or even teachers to check all questions within
 // their course context or course.
-// require_capability('qtype/proforma:usediagnostictools', $context);
+// require_capability('qtype/proforma:runbulktest', $context);
 $PAGE->set_url('/question/type/proforma/bulktestindex.php');
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('bulktestindextitle', 'qtype_proforma'));
@@ -55,13 +55,13 @@ echo html_writer::start_tag('ul');
 foreach ($bulktester->get_proforma_questions_by_context() as $contextid => $numproformaquestions) {
     // Check capability for course resp. course context.
     $coursecontext = context::instance_by_id($contextid);
-    if (has_capability('qtype/proforma:usediagnostictools', $coursecontext)) {
+    if (has_capability('qtype/proforma:runbulktest', $coursecontext)) {
         echo html_writer::tag('li', html_writer::link(
                 new moodle_url('/question/type/proforma/bulktest.php', array('contextid' => $contextid)),
                 context::instance_by_id($contextid)->get_context_name(true, true) . ' (' . $numproformaquestions . ')'));
     } else {
         // No access rights.
-        if (qtype_proforma\lib\is_admin()) {
+        if (has_capability('moodle/site:config', context_system::instance())) {
             // Print course context name only if user is admin.
             echo html_writer::tag('li',
                 context::instance_by_id($contextid)->get_context_name(true, true) . ' NOT ENOUGH CAP');

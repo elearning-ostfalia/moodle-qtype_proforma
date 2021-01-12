@@ -92,7 +92,7 @@ class select_form_creator extends base_form_creator {
      *
      * @param $question
      */
-    public function add_grader_settings($question) {
+    public function add_grader_settings($question, $context) {
     }
 
     /**

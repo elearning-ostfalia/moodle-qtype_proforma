@@ -87,10 +87,10 @@ class java_form_creator extends base_form_creator {
      *
      * @param $question
      */
-    public function add_grader_settings($question) {
-        if (qtype_proforma\lib\is_admin()) {
+    public function add_grader_settings($question, $context) {
+        if (qtype_proforma\lib\can_view_systeminfo($context->id)) {
             // Allow admin to see the created task.xml (for debugging purposes).
-            parent::add_grader_settings($question);
+            parent::add_grader_settings($question, $context);
             // ProFormA fields.
             $mform = $this->_form;
             $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');

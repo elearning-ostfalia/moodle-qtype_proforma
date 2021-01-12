@@ -36,7 +36,7 @@ $contextid = required_param('contextid', PARAM_INT);
 // Login and check permissions.
 $context = context::instance_by_id($contextid);
 require_login();
-require_capability('qtype/proforma:usediagnostictools', $context);
+require_capability('qtype/proforma:runbulktest', $context);
 
 $PAGE->set_url('/question/type/proforma/bulktest.php', array('contextid' => $context->id));
 $PAGE->set_context($context);

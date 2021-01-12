@@ -213,7 +213,7 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         $this->formcreator->add_test_settings($this->question, $this);
 
-        $this->formcreator->add_grader_settings($this->question);
+        $this->formcreator->add_grader_settings($this->question, $this->context);
 
         // Internal description (Comment).
         $mform->addElement('header', 'commentheader', get_string('commentheader', 'qtype_proforma'));

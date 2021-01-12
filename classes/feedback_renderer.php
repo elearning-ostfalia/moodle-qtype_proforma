@@ -430,7 +430,7 @@ class feedback_renderer {
         // Render version control information.
         $result = $this->render_vcs_information($response, $result);
         // Render grading information.
-        $result = $this->render_grader_info($message, $response, $result);
+        $result = $this->_render_grader_info($message, $response, $result, $question->contextid);
 
         return $result;
     }
@@ -442,8 +442,8 @@ class feedback_renderer {
      * @param string $result
      * @return string
      */
-    private function render_grader_info($message, SimpleXMLElement $response, string $result): string {
-        if (qtype_proforma\lib\is_admin()) {
+    private function _render_grader_info($message, SimpleXMLElement $response, string $result, $contextid): string {
+        if (qtype_proforma\lib\can_view_systeminfo($contextid)) {
             // Infos for admins are displayed as smaller text.
             $result .= html_writer::start_tag('small', null);
             // Show grader info.

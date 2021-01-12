@@ -27,13 +27,22 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
-    // Users with this in the system context can use the bulk test.
-    'qtype/proforma:usediagnostictools' => array(
+    // Users can run the bulk test.
+    'qtype/proforma:runbulktest' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'manager' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
+        ),
+    ),
+
+    // Users can see Praktomat version number and other diagnostic information
+    'qtype/proforma:viewsysteminfo' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
         ),
     ),
 );

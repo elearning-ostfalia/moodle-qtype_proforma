@@ -41,6 +41,17 @@ function is_admin() {
     return is_siteadmin($USER);
 }
 
+
+/**
+ * checks if the current user is allowed to see ProFormA system information
+ * @param type $contextid: current course
+ * @return bool
+ */
+function can_view_systeminfo($contextid) {
+    $coursecontext = \context::instance_by_id($contextid);
+    return has_capability('qtype/proforma:viewsysteminfo', $coursecontext);
+}
+
 /**
  * checks if the current user is a teacher (can see more than the student)
  *

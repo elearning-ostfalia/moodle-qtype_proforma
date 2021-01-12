@@ -31,7 +31,8 @@ $string['pluginnameediting'] = 'Editing a ProFormA question';
 $string['pluginnamesummary'] = 'Programming question that will be graded automatically.';
 
 // Capability names.
-$string['proforma:usediagnostictools'] = 'Use the ProFormA tools';
+$string['proforma:runbulktest'] = 'Run the ProFormA bulk test';
+$string['proforma:viewsysteminfo'] = 'View ProFormA system information';
 
 $string['allowattachments'] = 'Max. number of uploaded files';
 $string['formateditor'] = 'Editor';
@@ -251,7 +252,7 @@ $string['bulktesttitle'] = 'Running all the question tests in {$a}';
 $string['replacedollarsindex'] = 'Contexts with ProFormA questions';
 $string['bulktestrun'] = 'Run all the question tests for all the questions in the system (slow, admin only)';
 $string['bulktestindextitle'] = 'Run the question tests in bulk';
-$string['overallresult'] = 'Summary';
+$string['overallresult'] = 'Overall result';
 $string['passed'] = 'passed';
 $string['failed'] = 'failed';
 $string['bulktestcontinuefromhere'] = 'Run again or resume, starting from here';
