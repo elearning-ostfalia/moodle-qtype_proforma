@@ -273,7 +273,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
     protected $files = []; // could be static??
 
 
-    protected function prepare_test($preferredbehaviour, $q,
+    protected function prepare_test($preferredbehaviour, &$q,
             $responsetemplate = qtype_proforma_test_helper::QUESTION_TEMPLATE) {
         $this->expected_step_counter = 1;
 
@@ -303,6 +303,9 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
             default: $this->remainingtries = 1; break;
         }
         $this->question = $q;
+        // Create question category.
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $q->contextid = $generator->create_question_category(array())->contextid;
 
         // check the behaviour is changed
         $this->assertEquals(self::EXPECTED_BEHAVIOUR,

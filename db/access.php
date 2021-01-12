@@ -37,7 +37,7 @@ $capabilities = array(
         ),
     ),
 
-    // Users can see Praktomat version number and other diagnostic information
+    // Users can see Praktomat version number and other diagnostic information.
     'qtype/proforma:viewsysteminfo' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_COURSE,

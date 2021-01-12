@@ -161,3 +161,11 @@ options in your Moodle quiz:
 * Review Options: opt out `Right Answer` if you do not want to show the model solution
 
 
+### Miscellaneous
+
+You can run tests in bulk with the following script:
+
+        http(s)://<path/to/your/moodle>/question/type/proforma/bulktestindex.php
+
+
+
