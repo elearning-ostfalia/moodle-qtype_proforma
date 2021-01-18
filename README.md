@@ -163,9 +163,16 @@ options in your Moodle quiz:
 
 ### Miscellaneous
 
-You can run tests in bulk with the following script:
+#### Bulktest 
 
-        http(s)://<path/to/your/moodle>/question/type/proforma/bulktestindex.php
+With the bulktest index you get a list of all courses using ProFormA questions. 
+
+        <your moodle site>/question/type/proforma/bulktestindex.php
+
+By clicking on a course you run a bulk test of all ProFormA questions in this course using the associated model solution.
+
+This script can also be used by a teacher or manager. He or she only gets a list of his or her course(s). 
+
 
 
 

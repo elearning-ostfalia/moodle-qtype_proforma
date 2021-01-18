@@ -71,9 +71,19 @@ def runTest(String moodle_version, String php_version, String db_type) {
     }
     dir('moodle/question/behaviour/adaptiveexternalgrading') {
         git url: 'https://github.com/elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading.git'
-    }                
-    echo 'Initialising test...'
+    }
+    dir('moodle-docker') {
+        git url: 'https://github.com/moodlehq/moodle-docker.git'
+    }
+    dir('moodle/question/type/proforma/tests/jenkins') {
+        echo 'Initialising test...'
+        sh('jenkins_init.sh')
+        echo 'Starting tests...'
+        sh('jenkins_run.sh')
+    }
+    /* echo 'Initialising test...'
     sh('/home/jenkins/jenkins_init.sh')
     echo 'Starting tests...'
-    sh('/home/jenkins/jenkins_run.sh')
+    sh('/home/jenkins/jenkins_run.sh')    
+    */
 }
