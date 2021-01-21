@@ -40,7 +40,7 @@ class proforma_form_creator extends base_form_creator {
      */
     public function __construct($form) {
         parent::__construct($form, new qtype_proforma_proforma_task(), qtype_proforma::response_formats());
-        echo $this->_taskhandler->create_in_moodle();
+        echo $this->_taskhandler->can_be_edited();
     }
 
     /**
@@ -318,13 +318,13 @@ class proforma_form_creator extends base_form_creator {
      *
      * @param $repeatoptions
      */
-    protected function modify_test_repeatoptions(&$repeatoptions) {
-        // Disable testtype and test identifier for imported tasks.
+    protected function adjust_test_repeatoptions(&$repeatoptions) {
+        // DISABLE testtype and test identifier for imported tasks.
+        // Do not hide as in base class!
         $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         $repeatoptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
         // Hide weight for case of all-or-nothing.
         $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
-
     }
 
     /**
@@ -391,5 +391,26 @@ class proforma_form_creator extends base_form_creator {
             $formdata->template = $formdata->templateid;
         }
         parent::save_question_options($options);
+    }
+
+    /**
+     * Do form definitions things that need to be done when data is set
+     */
+    public function definition_after_data() {
+        // Resize disabled fields to fit value.
+        $i = 0;
+        while ($this->_form->elementExists('testoptions[' . $i . ']')) {
+            $group = $this->_form->getElement('testoptions[' . $i . ']');
+            $elements = $group->getElements();
+            // There seems to be no simple solution for finding a field.
+            foreach ($elements as $element) {
+                $name = $element->getName();
+                if (($name == 'testid[' . $i . ']') || ($name == 'testtype[' . $i . ']')) {
+                    $value = $element->getValue();
+                    $element->setSize(strlen($value));
+                }
+            }
+            $i ++;
+        }
     }
 }

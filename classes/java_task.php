@@ -70,6 +70,23 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         $xw->text($formdata->programminglanguage);
     }
 
+
+    /**
+     * return the testfile from draft area
+     *
+     * @global type $USER
+     * @param type $formdata
+     * @param type $testindex
+     * @return type
+     */
+    private function _get_draft_testfiles($formdata, $testindex) {
+        global $USER;
+        $usercontext = context_user::instance($USER->id);
+
+        $draftitemid = $formdata->testfiles[$testindex];
+        $fs = get_file_storage();
+        return $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id', false);
+    }
     /**
      * add test files to XML.
      *
@@ -82,17 +99,35 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];
             if ($id !== '' && $this->is_test_set($formdata, $index)) {
-                $xw->startElement('file');
-                $xw->create_attribute('id', $formdata->testid[$index]);
-                $xw->create_attribute('used-by-grader', 'true');
-                $xw->create_attribute('visible', 'no');
-                $xw->startElement('embedded-txt-file');
-                $code = $formdata->testcode[$index];
-                $filename = self::get_java_file($code);
-                $xw->create_attribute('filename', $filename);
-                $xw->text($formdata->testcode[$index]);
-                $xw->endElement(); // End tag embedded-txt-file.
-                $xw->endElement(); // End tag file.
+                if ($formdata->testcodeformat[$index] == base_form_creator::EDITORTESTINPUT) {
+                    $xw->startElement('file');
+                    $xw->create_attribute('id', $formdata->testid[$index]);
+                    $xw->create_attribute('used-by-grader', 'true');
+                    $xw->create_attribute('visible', 'no');
+
+                    $xw->startElement('embedded-txt-file');
+                    $code = $formdata->testcode[$index];
+                    $filename = self::get_java_file($code);
+                    $xw->create_attribute('filename', $filename);
+                    $xw->text($formdata->testcode[$index]);
+                    $xw->endElement(); // End tag embedded-txt-file.
+                    $xw->endElement(); // End tag file.
+                } else {
+                    // Handle uploaded test files.
+                    $counter = 1;
+                    foreach ($this->_get_draft_testfiles($formdata, $index)  as $draftfile) {
+                        $xw->startElement('file');
+                        $xw->create_attribute('id', $formdata->testid[$index] . '-' . $counter);
+                        $xw->create_attribute('used-by-grader', 'true');
+                        $xw->create_attribute('visible', 'no');
+                        $xw->startElement('embedded-bin-file');
+                        $xw->create_attribute('filename', $draftfile->get_filename());
+                        $xw->text(base64_encode($draftfile->get_content()));
+                        $xw->endElement(); // End tag embedded-bin-file.
+                        $xw->endElement(); // End tag file.
+                        $counter++;
+                    }
+               }
             }
         }
 
@@ -136,19 +171,33 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                 $xw->create_attribute('id', $formdata->testid[$index]);
                 $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
                 $xw->create_childelement_with_text('test-type', 'unittest');
-
                 $xw->startElement('test-configuration');
                 $xw->startElement('filerefs');
-                $xw->startElement('fileref');
-                $xw->create_attribute('refid', $formdata->testid[$index]);
-                $xw->endElement(); // End tag fileref.
+                if ($formdata->testcodeformat[$index] == base_form_creator::EDITORTESTINPUT) {
+                    $xw->startElement('fileref');
+                    $xw->create_attribute('refid', $formdata->testid[$index]);
+                    $xw->endElement(); // End tag fileref.
+                } else {
+                    $counter = 1;
+                    foreach ($this->_get_draft_testfiles($formdata, $index) as $draftfile) {
+                        $xw->startElement('fileref');
+                        $xw->create_attribute('refid', $formdata->testid[$index] . '-' . $counter);
+                        $xw->endElement(); // End tag fileref.
+                        $counter++;
+                    }
+                }
+
                 $xw->endElement(); // End tag filerefs.
                 $xw->startElement('unit:unittest');
                 $xw->create_attribute('framework', 'JUnit');
                 $junitversion = $formdata->testversion[$index];
                 $xw->create_attribute('version', $junitversion);
-                $code = $formdata->testcode[$index];
-                $entrypoint = self::get_java_entrypoint($code);
+                if ($formdata->testcodeformat[$index] == base_form_creator::EDITORTESTINPUT) {
+                    $code = $formdata->testcode[$index];
+                    $entrypoint = self::get_java_entrypoint($code);
+                } else {
+                    $entrypoint = 'MISSING';
+                }
                 $xw->create_childelement_with_text('unit:entry-point', $entrypoint);
                 $xw->endElement(); // End tag unit:unittest.
                 $xw->endElement(); // End tag test-configuration.

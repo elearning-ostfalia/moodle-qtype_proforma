@@ -44,7 +44,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
      *
      * @return boolean
      */
-    public function create_in_moodle() {
+    public function can_be_edited() {
         return false;
     }
 

@@ -238,6 +238,10 @@ $string['selectlangtitle'] = 'Select programming language';
 
 $string['infotaskupdate'] = 'Please check task or use ProFormA import.';
 
+$string['editorinput'] = 'Editor';
+$string['fileinput'] = 'Files';
+
+
 // Bulk test.
 $string['bulktestnomodelsolution'] = 'This question does not have a model solution.';
 $string['bulktestnofile'] = 'This question does not have a ProFormA file.';

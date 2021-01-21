@@ -111,10 +111,24 @@ class java_form_creator extends base_form_creator {
      *
      * @param $repeatarray
      */
-    protected function modify_test_repeatarray(&$repeatarray) {
+    protected function adjust_test_repeatarray(&$repeatarray) {
         $mform = $this->_form;
+
+        // Add choice for test code input: editor or filemanager
+        $radioarray = array();
+        $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
+            get_string('editorinput', 'qtype_proforma'), self::EDITORTESTINPUT);
+        $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
+            get_string('fileinput', 'qtype_proforma'), self::FILETESTINPUT);
+        $repeatarray[] = $mform->createElement('group', 'testcodearray', '',
+            $radioarray, null, false);
+        // $mform->setDefault('testcodeformat', 0); // set editor as default input
         // Add textarea for unit test code.
         $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
+        // add filemanager
+        $repeatarray[] = $mform->createElement('filemanager', 'testfiles', '', null,
+                    array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 50,
+                          'return_types'=> FILE_INTERNAL | FILE_EXTERNAL));
     }
 
     /**
@@ -122,7 +136,7 @@ class java_form_creator extends base_form_creator {
      *
      * @param $testoptions
      */
-    protected function modify_test_testoptions(&$testoptions) {
+    protected function adjust_test_testoptions(&$testoptions) {
         $mform = $this->_form;
         $csversion = get_config('qtype_proforma', 'junitversion');
         $versions = array();
@@ -144,13 +158,6 @@ class java_form_creator extends base_form_creator {
                 get_string('version', 'qtype_proforma'), $versions);
     }
 
-    /**
-     * Modify repeatoptions in add_tests
-     *
-     * @param $repeatoptions
-     */
-    protected function modify_test_repeatoptions(&$repeatoptions) {
-    }
 
     /**
      * Add Checkstyle options.
@@ -207,6 +214,60 @@ class java_form_creator extends base_form_creator {
         return $repeats;
     }
 
+    private function _validate_junit(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
+        $title = $fromform["testtitle"][$i];
+        $format = $fromform["testcodeformat"][$i];
+        $codeavailable = false;
+        $lentitle = strlen(trim($title));
+        switch ($format) {
+            case self::EDITORTESTINPUT: // Editor.
+                $code = $fromform["testcode"][$i];
+                $codeavailable = (strlen(trim($code)) > 0);
+                if ($codeavailable) {
+                    if (!qtype_proforma_java_task::get_java_file($code)) {
+                        // Cannot determine filename from test code.
+                        $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
+                    } else if (!qtype_proforma_java_task::get_java_entrypoint($code)) {
+                        // Cannot determine entrypoint from test code.
+                        $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
+                    }
+                } else {
+                    if (0 < $lentitle ) {
+                        // Title is set but code is missing.
+                        $errors['testcode['.$i.']'] = get_string('codeempty', 'qtype_proforma');
+                    }
+                }
+                break;
+            case self::FILETESTINPUT: // Filemanager.
+                global $USER;
+                $usercontext = context_user::instance($USER->id);
+                $draftitemid = $fromform["testfiles"][$i];
+                $fs = get_file_storage();
+                $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
+                $codeavailable = (count($draftfiles) > 1);
+                if (0 < $lentitle and !$codeavailable) {
+                    // Title is set but code is missing.
+                    $errors['testfiles['.$i.']'] = get_string('codeempty', 'qtype_proforma');
+                }
+                break;
+            default:
+                throw new coding_exception('unexpected value ' . $format);
+        }
+
+        if (0 == $lentitle and $codeavailable) {
+            // Title is missing:
+            // error message must be attached to testoptions group.
+            $errors['testoptions['.$i.']'] = get_string('titleempty', 'qtype_proforma');
+        }
+        if (0 == $fromform["testversion"][$i]) {
+            // Unsupported version and no new choice.
+            $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
+        }
+
+        return $errors;
+    }
+
+
     /**
      * Validate form fields.
      *
@@ -233,32 +294,11 @@ class java_form_creator extends base_form_creator {
         // Check Junit tests.
         $repeats = $this->get_count_tests(null);
         for ($i = 0; $i < $repeats; $i++) {
-            $title = $fromform["testtitle"][$i];
-            $code = $fromform["testcode"][$i];
-            $lencode = strlen(trim($code));
-            $lentitle = strlen(trim($title));
-            if (0 < $lentitle and 0 == $lencode) {
-                // Title is set but code is missing.
-                $errors['testcode['.$i.']'] = get_string('codeempty', 'qtype_proforma');
-            } else if (0 == $lentitle and 0 < $lencode) {
-                // Title is missing
-                // error message must be attached to testoptions group.
-                $errors['testoptions['.$i.']'] = get_string('titleempty', 'qtype_proforma');
-            } else if ($lencode > 0 and $lentitle > 0) {
-                // Check classname.
-                if (!qtype_proforma_java_task::get_java_file($code)) {
-                    $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
-                } else if (!qtype_proforma_java_task::get_java_entrypoint($code)) {
-                    $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
-                }
-            }
-            if (0 == $fromform["testversion"][$i]) {
-                // Unsupported version and no new choice.
-                $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
-            }
+            $errors = $this->_validate_junit($editor, $fromform, $files, $i, $errors);
         }
 
         if ($fromform["responseformat"] == 'editor') {
+            // Missing response filename.
             if (0 == strlen(trim($fromform["responsefilename"]))) {
                 $errors['responsefilename'] = get_string('required');
             }

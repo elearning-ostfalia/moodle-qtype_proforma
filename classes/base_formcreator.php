@@ -39,6 +39,10 @@ abstract class base_form_creator {
     // Property name for download manager.
     const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
 
+    // Radio button value for editor test code.
+    const EDITORTESTINPUT = 0;
+    // Radio button value for file uploaded test code.
+    const FILETESTINPUT = 1;
     /**
      * @var MoodleQuickForm The form object that must be filled with input fields.
      */
@@ -77,6 +81,13 @@ abstract class base_form_creator {
     // Override.
 
     /**
+     * override if you need to setup the form depending on current
+     * values
+     */
+    public function definition_after_data() {
+    }
+
+    /**
      * the numeric type of task
      */
     abstract public function get_task_storage();
@@ -103,9 +114,31 @@ abstract class base_form_creator {
      * @param $index
      * @return bool
      */
+    /*
     protected function is_test_set($formdata, $index) {
-        return isset($formdata->testcode[$index]) && strlen(trim($formdata->testcode[$index]));
+        $format = $formdata->testcodeformat[$index];
+        debugging($format);
+        switch ($format) {
+            case 0:
+                debugging('Editor: ' . isset($formdata->testcode[$index]) &&
+                    strlen(trim($formdata->testcode[$index])));
+                // Editor for testcode input.
+                return isset($formdata->testcode[$index]) &&
+                    strlen(trim($formdata->testcode[$index]));
+            case 1:
+                // Filemanager for testcode input.
+                global $USER;
+                $usercontext = context_user::instance($USER->id);
+                $data = $formdata->get_data();
+                $draftitemid = $data->testfiles[$index];
+                $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
+                debugging('Draftfiles: ' . count($draftfiles));
+                return count($draftfiles) > 1;
+            default:
+                throw new coding_exception('unexpected value ' . $format);
+        }
     }
+     */
 
     /**
      * Add something to select the programming language.
@@ -255,7 +288,7 @@ abstract class base_form_creator {
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function modify_test_repeatarray(&$repeatarray) {
+    protected function adjust_test_repeatarray(&$repeatarray) {
 
     }
 
@@ -264,14 +297,17 @@ abstract class base_form_creator {
      *
      * @param $repeatoptions
      */
-    protected function modify_test_repeatoptions(&$repeatoptions) {
-        // Disable testtype and test identifier.
+    protected function adjust_test_repeatoptions(&$repeatoptions) {
+        // Always HIDE testtype and test identifier.
         $repeatoptions['testid']['hideif'] = array('aggregationstrategy', 'neq', 111);
         $repeatoptions['testtype']['hideif'] = array('aggregationstrategy', 'neq', 111);
         // Hide weight for case of all-or-nothing.
         $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
-    }
 
+        // Show testcode editor/filemanager depending on radio button.
+        $repeatoptions['testcode']['hideif'] = array('testcodeformat', 'eq', self::FILETESTINPUT);
+        $repeatoptions['testfiles']['hideif'] = array('testcodeformat', 'eq', self::EDITORTESTINPUT);
+    }
     /**
      * Modify testoptions in add_tests
      *
@@ -279,7 +315,7 @@ abstract class base_form_creator {
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function modify_test_testoptions(&$testoptions) {
+    protected function adjust_test_testoptions(&$testoptions) {
     }
 
     /**
@@ -312,19 +348,19 @@ abstract class base_form_creator {
         // Unit tests resp. tests from imported task.
         // Create test group.
         $testoptions = array();
-        $this->add_test_weight_option($testoptions, 'test', '1', true);
         $testoptions[] = $mform->createElement('text', 'testid', 'Id', array('size' => 3));
+        $this->add_test_weight_option($testoptions, 'test', '1', true);
         $testoptions[] = $mform->createElement('text', 'testtype',
         get_string('testtype', 'qtype_proforma'), array('size' => 80));
         $testoptions[] = $mform->createElement('text', 'testdescription',
         get_string('testdescription', 'qtype_proforma'), array('size' => 80));
-        $this->modify_test_testoptions($testoptions);
+        $this->adjust_test_testoptions($testoptions);
 
         $label = get_string('testlabela', 'qtype_proforma', $this->get_test_label());
 
         $repeatarray = array();
         $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
-        $this->modify_test_repeatarray($repeatarray);
+        $this->adjust_test_repeatarray($repeatarray);
         $repeatoptions = array();
         $repeatoptions['testweight']['default'] = 1;
         $repeatoptions['testdescription']['default'] = '';
@@ -332,7 +368,7 @@ abstract class base_form_creator {
         // Autoincrement test identifier.
         $repeatoptions['testid']['default'] = '{no}';
 
-        $this->modify_test_repeatoptions($repeatoptions);
+        $this->adjust_test_repeatoptions($repeatoptions);
 
         $mform->setType('testdescription', PARAM_TEXT);
         $mform->setType('testtitle', PARAM_TEXT);
@@ -345,18 +381,14 @@ abstract class base_form_creator {
         $repeatoptions, 'option_repeats', 'option_add_fields',
         1, $buttonlabel, true);
 
-        if ($this->_taskhandler->create_in_moodle()) {
+        if ($this->_taskhandler->can_be_edited()) {
             // Set CodeMirror for unit test code.
             for ($i = 0; $i < $repeats; $i++) {
                 qtype_proforma\lib\as_codemirror('id_testcode_' . $i);
-                // Hide testtype and test identifier for unit tests.
-                // So far (Moodle 3.6) hideif is not implemented for groups => quickhack.
-                // (needed from creating grading hints).
-                $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
-                $mform->hideif('testid[' . $i . ']', 'aggregationstrategy', 'neq', 111);
-                $mform->hideif('testweight[' . $i . ']', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
-                // Setting title and weight as required does not work
-                // as there sometime hidden or missing if a test shall be deleted.
+                // Here you can add other element handling that cannot be done in
+                // adjust_test_repeatoptions which is the preferred solution.
+                // This can be done as e.g.
+                // $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
             }
         } else {
             // There is no option not to create the button for
@@ -743,7 +775,7 @@ abstract class base_form_creator {
         if (isset($this->_taskhandler)) {
             // Extract grading hints.
             $options->gradinghints = $this->_taskhandler->create_lms_grading_hints($formdata);
-            if ($this->_taskhandler->create_in_moodle()) {
+            if ($this->_taskhandler->can_be_edited()) {
                 if (!isset($formdata->import_process) or!$formdata->import_process) {
                     // When importing a moodle xml question the preprocessing step is missing and
                     // we have no actual form data.

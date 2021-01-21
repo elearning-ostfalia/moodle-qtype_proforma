@@ -271,4 +271,12 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         return $question;
     }
+
+    /**
+     * Do form definitions things that need to be done when data is set
+     */
+    public function definition_after_data() {
+        parent::definition_after_data();
+        $this->formcreator->definition_after_data();
+    }
 }

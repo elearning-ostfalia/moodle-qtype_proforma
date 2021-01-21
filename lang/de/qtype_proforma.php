@@ -173,7 +173,7 @@ $string['testdescription'] = 'Beschreibung';
 $string['testtype'] = 'Typ';
 $string['testtitle'] = 'Titel';
 $string['weight'] = 'Gewicht';
-$string['filepickeroptions'] = 'Filepicker-Eintellungen';
+$string['filepickeroptions'] = 'Filepicker-Einstellungen';
 
 
 $string['all_or_nothing'] = 'alles oder nichts';
@@ -222,6 +222,10 @@ $string['proglang_hdr_info'] = 'Java wird standardmäßig unterstützt. '
 $string['selectlangtitle'] = 'Markieren Sie die gewünschte Programmiersprache';
 
 $string['infotaskupdate'] = 'Bitte Datei überarbeiten oder ProFormA-Dateiimport nutzen.';
+
+$string['editorinput'] = 'Editor';
+$string['fileinput'] = 'Dateien';
+
 
 // Bulk test.
 $string['bulktestnomodelsolution'] = 'Diese Frage besitzt keine Musterlösung.';
