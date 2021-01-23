@@ -108,39 +108,6 @@ abstract class base_form_creator {
     }
 
     /**
-     * is testcode for given test index set?
-     *
-     * @param $formdata
-     * @param $index
-     * @return bool
-     */
-    /*
-    protected function is_test_set($formdata, $index) {
-        $format = $formdata->testcodeformat[$index];
-        debugging($format);
-        switch ($format) {
-            case 0:
-                debugging('Editor: ' . isset($formdata->testcode[$index]) &&
-                    strlen(trim($formdata->testcode[$index])));
-                // Editor for testcode input.
-                return isset($formdata->testcode[$index]) &&
-                    strlen(trim($formdata->testcode[$index]));
-            case 1:
-                // Filemanager for testcode input.
-                global $USER;
-                $usercontext = context_user::instance($USER->id);
-                $data = $formdata->get_data();
-                $draftitemid = $data->testfiles[$index];
-                $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
-                debugging('Draftfiles: ' . count($draftfiles));
-                return count($draftfiles) > 1;
-            default:
-                throw new coding_exception('unexpected value ' . $format);
-        }
-    }
-     */
-
-    /**
      * Add something to select the programming language.
      *
      * @param $question

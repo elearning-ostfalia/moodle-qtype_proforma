@@ -77,7 +77,6 @@ abstract class qtype_proforma_base_task {
                 // Check if at least one file is uploaded.
                 global $USER;
                 $usercontext = context_user::instance($USER->id);
-                debugging('is_test_set: contextid = ' . $usercontext->id);
                 $draftitemid = $formdata->testfiles[$index];
                 $fs = get_file_storage();
                 $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
@@ -386,7 +385,6 @@ abstract class qtype_proforma_base_task {
     public function extract_formdata_from_taskfile($category, $question) {
         $content = $this->get_task_xml($category, $question);
 
-        debugging('$category ' . $category);
         $task = new SimpleXMLElement($content, LIBXML_PARSEHUGE);
         // Read programming language version.
         $question->proglangversion = (string)$task->proglang['version'];
@@ -397,65 +395,27 @@ abstract class qtype_proforma_base_task {
         foreach ($task->files->file as $file) {
             $fileobject = array();
             $fileobject['id'] = (string)$file['id'];
-            if(isset($file->{'embedded-txt-file'})) {
+            if (isset($file->{'embedded-txt-file'})) {
                 $code = $file->{'embedded-txt-file'};
                 $fileobject['filename'] = (string)$code['filename'];
                 $fileobject['code'] = (string)$code;
-            } elseif(isset($file->{'embedded-bin-file'})) {
-                // Create file in draft area.
-                $binaryfile = $file->{'embedded-bin-file'};
-                $fileobject['filename'] = (string)$binaryfile['filename'];
-                // Remember SimpleXmlElement node for later use (draft are storage).
-                $fileobject['xmlelement'] = $binaryfile;
             } else {
-                // Invalid task file!
+                if (isset($file->{'embedded-bin-file'})) {
+                    // Create file in draft area.
+                    $binaryfile = $file->{'embedded-bin-file'};
+                    $fileobject['filename'] = (string)$binaryfile['filename'];
+                    // Remember SimpleXmlElement node for later use (draft are storage).
+                    $fileobject['xmlelement'] = $binaryfile;
+                }
             }
+
             $files[$fileobject['id']] = $fileobject;
         }
 
         // Read tests.
+        $index = 0;
         foreach ($task->tests->test as $test) {
-            $code = null;
-            $filearea = null;
-            $index = 0;
-            $filetype = null;
-            foreach ($test->{'test-configuration'}->filerefs as $filerefs) {
-                foreach ($filerefs->fileref as $fileref) {
-                    $refid = (string) $fileref['refid'];
-                    $fileobject = $files[$refid];
-                    if (isset($fileobject['code'])) {
-                        if (isset($filetype)) {
-                            debugging('inconsistent task file: embedded-txt-file and embedded-bin-file mixed');
-                        }
-                        $filetype = base_form_creator::EDITORTESTINPUT;
-                        if (isset($code)) {
-                            // We must not have more than one embedded text file belonging to a test.
-                            debugging('inconsistent task file: embedded-txt-file is used more than once');
-                        }
-                        $code = (string) $fileobject['code'];
-                    } else {
-                        // Binary file:
-                        if (isset($filetype)) {
-                            debugging('inconsistent task file: embedded-txt-file and embedded-bin-file mixed');
-                        }
-                        $filetype = base_form_creator::FILETESTINPUT;
-                        // store in draft area.
-                        $attribute = 'testfiles[' . $index . ']';
-                        global $USER;
-                        $contextid = context_user::instance($USER->id)->id;
-                        if (!isset($filearea)) {
-                            // Prepare draft file area for this test.
-                            $filearea = new qtype_proforma_filearea($attribute);
-                            $filearea->prepare_draft($contextid, $question);
-                        }
-                        $text = base64_decode($fileobject['xmlelement']);
-                        $filearea->save_text_to_draft($contextid, $question->$attribute,
-                            $fileobject['filename'], $text);
-                    }
-                }
-            }
-            $question->testcodeformat[$index] = $filetype;
-            $this->extract_formdata_from_test($question, $test, $files, $code, $index);
+            $this->extract_formdata_from_test($question, $test, $files, $index);
         }
     }
 
@@ -466,13 +426,54 @@ abstract class qtype_proforma_base_task {
      *
      * @param type $question: return instance
      * @param type $test: test entity from task
-     * @param type $code: code from referenced file
+     * @param type $files: files array
      * @param type $index: index of next unit test (in/out)
      */
-    protected function extract_formdata_from_test($question, $test, $files, $code, &$index) {
+    protected function extract_formdata_from_test($question, $test, $files, &$index) {
         // Default implementation:
         // only unit tests are available. No other test.
-        $question->testcode[$index] = $code;
+        $code = null;
+        $filearea = null;
+        $filetype = null;
+        foreach ($test->{'test-configuration'}->filerefs as $filerefs) {
+            foreach ($filerefs->fileref as $fileref) {
+                $refid = (string) $fileref['refid'];
+                $fileobject = $files[$refid];
+                if (isset($fileobject['code'])) {
+                    if (isset($filetype)) {
+                        debugging('inconsistent task file: embedded-txt-file and embedded-bin-file mixed');
+                    }
+                    $filetype = base_form_creator::EDITORTESTINPUT;
+                    if (isset($code)) {
+                        // We must not have more than one embedded text file belonging to a test.
+                        debugging('inconsistent task file: embedded-txt-file is used more than once');
+                    }
+                    $code = (string) $fileobject['code'];
+                } else {
+                    // Binary file.
+                    if (isset($filetype)) {
+                        debugging('inconsistent task file: embedded-txt-file and embedded-bin-file mixed');
+                    }
+                    $filetype = base_form_creator::FILETESTINPUT;
+                    // Store in draft area.
+                    $attribute = 'testfiles[' . $index . ']';
+                    global $USER;
+                    $contextid = context_user::instance($USER->id)->id;
+                    if (!isset($filearea)) {
+                        // Prepare draft file area for this test.
+                        $filearea = new qtype_proforma_filearea($attribute);
+                        $filearea->prepare_draft($contextid, $question);
+                    }
+                    $text = base64_decode($fileobject['xmlelement']);
+                    $filearea->save_text_to_draft($contextid, $question->$attribute,
+                        $fileobject['filename'], $text);
+                }
+            }
+        }
+        $question->testcodeformat[$index] = $filetype;
+        if (isset($code)) {
+            $question->testcode[$index] = $code;
+        }
         $index++;
     }
 }

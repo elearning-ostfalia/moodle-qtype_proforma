@@ -204,16 +204,15 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
      *
      * @param type $question: return instance
      * @param type $test: test entity from task
-     * @param type $code: code from referenced file
+     * @param type $files: files array
+     * @param type $index: index of next unit test (in/out)
      */
-    protected function extract_formdata_from_test($question, $test, $files, $code, &$index) {
+    protected function extract_formdata_from_test($question, $test, $files, &$index) {
         switch ($test['id']) {
             case 'compiler':
                 break;
             default:
-                $question->testcode[$index] = $code;
-                // Increment index only in case of an actual unit test.
-                $index++;
+                parent::extract_formdata_from_test($question, $test, $files, $index);
                 break;
         }
     }

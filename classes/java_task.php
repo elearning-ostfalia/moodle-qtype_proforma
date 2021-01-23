@@ -84,7 +84,6 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         $usercontext = context_user::instance($USER->id);
 
         $draftitemid = $formdata->testfiles[$testindex];
-        debugging('get draft files: context ' . $usercontext->id . ' draftitemid ' . $draftitemid);
         $fs = get_file_storage();
         return $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id', false);
     }
@@ -116,7 +115,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                 } else {
                     // Handle uploaded test files.
                     $counter = 1;
-                    foreach ($this->_get_draft_testfiles($formdata, $index)  as $draftfile) {
+                    foreach ($this->_get_draft_testfiles($formdata, $index) as $draftfile) {
                         $xw->startElement('file');
                         $xw->create_attribute('id', $formdata->testid[$index] . '-' . $counter);
                         $xw->create_attribute('used-by-grader', 'true');
@@ -128,7 +127,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                         $xw->endElement(); // End tag file.
                         $counter++;
                     }
-               }
+                }
             }
         }
 
@@ -291,30 +290,37 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      *
      * @param type $question: return instance
      * @param type $test: test entity from task
-     * @param type $code: code from referenced file
+     * @param type $files: files array
      * @param type $index: index of next unit test (in/out)
      */
-    protected function extract_formdata_from_test($question, $test, $files, $code, &$index) {
+    protected function extract_formdata_from_test($question, $test, $files, &$index) {
         switch ($test['id']) {
             case 'checkstyle':
-                $question->checkstylecode = $code;
                 $config = $test->{'test-configuration'};
+                // Get code (currently exactly one textfile is expected!!).
+                foreach ($config->filerefs as $filerefs) {
+                    foreach ($filerefs->fileref as $fileref) {
+                        $refid = (string) $fileref['refid'];
+                        $fileobject = $files[$refid];
+                        $question->checkstylecode = (string) $fileobject['code'];
+                    }
+                }
                 // Switch to namespace 'cs'.
                 $cs = $config->children('cs', true);
                 $question->checkstyleversion = (string)$cs->attributes()->version;
                 break;
             case 'compiler':
+                // Nothing to be done for compiler.
                 break;
             default: // JUNIT test.
-                if (isset($code)) {
-                    $question->testcode[$index] = $code;
-                }
                 $config = $test->{'test-configuration'};
                 // Switch to namespace 'unit'.
                 $unittest = $config->children('unit', true)->{'unittest'};
                 $question->testversion[$index] = (string)$unittest->attributes()->version;
                 $question->testentrypoint[$index] = $unittest->{'entry-point'};
-                $index++;
+                // Call parent function at last position because
+                // index is incremented there!
+                parent::extract_formdata_from_test($question, $test, $files, $index);
                 break;
         }
     }
@@ -344,8 +350,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     }
 
 
-    // parse Java code
-    // ---------------------
+    // Parse Java code.
 
     /**
      * remove Java comments from code string
