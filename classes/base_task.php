@@ -387,7 +387,6 @@ abstract class qtype_proforma_base_task {
         $content = $this->get_task_xml($category, $question);
 
         debugging('$category ' . $category);
-        debugging('$question->id ' . $question->id);
         $task = new SimpleXMLElement($content, LIBXML_PARSEHUGE);
         // Read programming language version.
         $question->proglangversion = (string)$task->proglang['version'];
@@ -408,8 +407,6 @@ abstract class qtype_proforma_base_task {
                 $fileobject['filename'] = (string)$binaryfile['filename'];
                 // Remember SimpleXmlElement node for later use (draft are storage).
                 $fileobject['xmlelement'] = $binaryfile;
-                debugging('embedded-bin-file:' . $fileobject['id']);
-
             } else {
                 // Invalid task file!
             }
@@ -444,17 +441,16 @@ abstract class qtype_proforma_base_task {
                         $filetype = base_form_creator::FILETESTINPUT;
                         // store in draft area.
                         $attribute = 'testfiles[' . $index . ']';
+                        global $USER;
+                        $contextid = context_user::instance($USER->id)->id;
                         if (!isset($filearea)) {
                             // Prepare draft file area for this test.
-                            debugging('prepare draft area ' . $category . ' attribute ' . $attribute);
                             $filearea = new qtype_proforma_filearea($attribute);
-                            $filearea->prepare_draft($category, $question);
+                            $filearea->prepare_draft($contextid, $question);
                         }
-                        $text = (string)$fileobject['xmlelement'];
-                        debugging('filname ' . $fileobject['filename'] . ' $text ' . $text);
-                        $filearea->save_text_to_draft($category, $question->$attribute,
-                            $fileobject['filename'], (string)$fileobject['xmlelement']);
-                        debugging('question ' . $question->$attribute);
+                        $text = base64_decode($fileobject['xmlelement']);
+                        $filearea->save_text_to_draft($contextid, $question->$attribute,
+                            $fileobject['filename'], $text);
                     }
                 }
             }

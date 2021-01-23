@@ -84,6 +84,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         $usercontext = context_user::instance($USER->id);
 
         $draftitemid = $formdata->testfiles[$testindex];
+        debugging('get draft files: context ' . $usercontext->id . ' draftitemid ' . $draftitemid);
         $fs = get_file_storage();
         return $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id', false);
     }
