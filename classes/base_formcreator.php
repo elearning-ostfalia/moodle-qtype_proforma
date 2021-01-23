@@ -93,6 +93,14 @@ abstract class base_form_creator {
     abstract public function get_task_storage();
 
     /**
+     * Add tests as repeat group
+     * @param $question
+     * @param $questioneditform
+     * @return int
+     */
+    abstract public function add_tests($question, $questioneditform);
+
+    /**
      * validate field values
      *
      * @param qtype_proforma_edit_form $editor actual editor instance
@@ -252,11 +260,23 @@ abstract class base_form_creator {
      * Modify repeatarray in add_tests.
      *
      * @param $repeatarray
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function adjust_test_repeatarray(&$repeatarray) {
+        $mform = $this->_form;
 
+        // Add choice for test code input: editor or filemanager.
+        $radioarray = array();
+        $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
+            get_string('editorinput', 'qtype_proforma'), self::EDITORTESTINPUT);
+        $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
+            get_string('fileinput', 'qtype_proforma'), self::FILETESTINPUT);
+        $repeatarray[] = $mform->createElement('group', 'testcodearray', '',
+            $radioarray, null, false);
+        // Add textarea for unit test code.
+        $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
+        // Add filemanager.
+        $repeatarray[] = $mform->createElement('filemanager', 'testfiles', '', null,
+                    array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 15));
     }
 
     /**
@@ -291,16 +311,6 @@ abstract class base_form_creator {
      * @param $questioneditform
      * @return int
      */
-    public function add_tests($question, $questioneditform) {
-        $this->add_test_fields($question, $questioneditform);
-    }
-
-    /**
-     * Add tests as repeat group
-     * @param $question
-     * @param $questioneditform
-     * @return int
-     */
     protected function add_test_fields($question, $questioneditform, $testtype) {
 
         $mform = $this->_form;
@@ -322,6 +332,7 @@ abstract class base_form_creator {
         $testoptions[] = $mform->createElement('text', 'testdescription',
             get_string('testdescription', 'qtype_proforma'), array('size' => 80));
 
+        // Derived class could modify test options.
         $this->adjust_test_testoptions($testoptions);
 
         $label = get_string('testlabela', 'qtype_proforma', $this->get_test_label());
@@ -329,6 +340,7 @@ abstract class base_form_creator {
         $repeatarray = array();
         $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
 
+        // Derived class could modify array.
         $this->adjust_test_repeatarray($repeatarray);
 
         $repeatoptions = array();
@@ -338,6 +350,7 @@ abstract class base_form_creator {
         // Autoincrement test identifier.
         $repeatoptions['testid']['default'] = '{no}';
 
+        // Derived class could modify array options.
         $this->adjust_test_repeatoptions($repeatoptions);
 
         $mform->setType('testdescription', PARAM_TEXT);
@@ -355,10 +368,11 @@ abstract class base_form_creator {
             // Set CodeMirror for unit test code.
             for ($i = 0; $i < $repeats; $i++) {
                 qtype_proforma\lib\as_codemirror('id_testcode_' . $i);
-                // Here you can add other element handling that cannot be done in
-                // adjust_test_repeatoptions which is the preferred solution.
-                // This can be done as e.g.
-                // $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
+                /* Here you can add further element handling that cannot be done in
+                 * adjust_test_repeatoptions which is the preferred solution.
+                 * This can be done as e.g.
+                 * $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
+                 */
             }
         } else {
             // There is no option not to create the button for
@@ -594,7 +608,6 @@ abstract class base_form_creator {
             $commentformat = $question->options->commentformat;
         }
 
-        // debugging('$editor->context->id: ' . $editor->context->id);
         // Prepare all fileareas.
         foreach (qtype_proforma::proforma_fileareas() as $fileareaname => $value) {
             // Create draft area.

@@ -114,21 +114,8 @@ class java_form_creator extends base_form_creator {
     protected function adjust_test_repeatarray(&$repeatarray) {
         $mform = $this->_form;
 
-        // Add choice for test code input: editor or filemanager
-        $radioarray = array();
-        $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
-            get_string('editorinput', 'qtype_proforma'), self::EDITORTESTINPUT);
-        $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
-            get_string('fileinput', 'qtype_proforma'), self::FILETESTINPUT);
-        $repeatarray[] = $mform->createElement('group', 'testcodearray', '',
-            $radioarray, null, false);
-        // $mform->setDefault('testcodeformat', 0); // set editor as default input
-        // Add textarea for unit test code.
-        $repeatarray[] = $mform->createElement('textarea', 'testcode', '' , 'rows="20" cols="80"');
-        // add filemanager
-        $repeatarray[] = $mform->createElement('filemanager', 'testfiles', '', null,
-                    array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 50,
-                          'return_types'=> FILE_INTERNAL | FILE_EXTERNAL));
+        parent::adjust_test_repeatarray($repeatarray);
+        // Add JUnit entry point.
         $testfileoptions = array();
         $testfileoptions[] = $mform->createElement('text', 'testentrypoint',
             get_string('entrypoint', 'qtype_proforma'), array('size' => 50));

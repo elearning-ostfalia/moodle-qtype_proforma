@@ -65,25 +65,28 @@ abstract class qtype_proforma_base_task {
      * @return bool
      */
     protected function is_test_set($formdata, $index) {
-        $format = $formdata->testcodeformat[$index];
-        switch ($format) {
-            case base_form_creator::EDITORTESTINPUT:
-                // Editor for testcode input.
-                // Check if editor test is not empty.
-                return isset($formdata->testcode[$index]) &&
-                    strlen(trim($formdata->testcode[$index]));
-            case base_form_creator::FILETESTINPUT:
-                // Filemanager for testcode input:
-                // Check if at least one file is uploaded.
-                global $USER;
-                $usercontext = context_user::instance($USER->id);
-                $draftitemid = $formdata->testfiles[$index];
-                $fs = get_file_storage();
-                $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
-                return count($draftfiles) > 1;
-            default:
-                throw new coding_exception('unexpected value ' . $format);
+        // Check format: editor or filemanager?
+        $editor = true;
+        if (isset($formdata->testcodeformat[$index]) and
+            $formdata->testcodeformat[$index] == base_form_creator::FILETESTINPUT) {
+                $editor = false;
         }
+
+        if ($editor) {
+            // Editor for testcode input.
+            // Check if editor test is not empty.
+            return isset($formdata->testcode[$index]) &&
+                strlen(trim($formdata->testcode[$index]));
+        }
+
+        // Filemanager for testcode input:
+        // Check if at least one file is uploaded.
+        global $USER;
+        $usercontext = context_user::instance($USER->id);
+        $draftitemid = $formdata->testfiles[$index];
+        $fs = get_file_storage();
+        $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
+        return count($draftfiles) > 1;
     }
 
     // Override for creating task.

@@ -327,6 +327,16 @@ class proforma_form_creator extends base_form_creator {
         $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
     }
 
+
+    /**
+     * Modify repeatarray in add_tests.
+     *
+     * @param $repeatarray
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function adjust_test_repeatarray(&$repeatarray) {
+    }
     /**
      * Add test section
      *

@@ -460,6 +460,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         //$form->maxbytes = 10240;
         //$form->filetypes = '.java';
 
+        $form->testcodeformat[0] = base_form_creator::EDITORTESTINPUT;
         $form->testcode[0] = 'class XTest {}';
         $form->testtitle[0] = 'JUnit Test 1';
         $form->testweight[0] = '3';
@@ -540,6 +541,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // Behat: values are set from grading hints!!
         // Junit #2
+        $form->testcodeformat[1] = base_form_creator::EDITORTESTINPUT;
         $form->testcode[1] = 'class YTest {}';
         $form->testtitle[1] = 'JUnit Test 2';
         $form->testweight[1] = '1';
@@ -547,6 +549,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testversion[1] = "4.12";
 
         // Junit #3 with empty fields
+        $form->testcodeformat[2] = base_form_creator::EDITORTESTINPUT;
         $form->testcode[2] = '';
         $form->testtitle[2] = '';
         $form->testweight[2] = '6';
@@ -567,6 +570,7 @@ class qtype_proforma_test_helper extends question_test_helper {
      */
     public function get_proforma_question_form_data_java5() {
         $form = $this->get_proforma_question_form_data_java1unit();
+
 
         $form->testcode[0] = '';
         $form->testtitle[0] = '';

@@ -93,7 +93,7 @@ class setlx_form_creator extends base_form_creator {
      */
     protected function adjust_test_repeatarray(&$repeatarray) {
         $mform = $this->_form;
-        // Add textarea for unit test code.
+        // Simply use textarea for unit test code.
         $repeatarray[] = $mform->createElement('textarea', 'testcode', '', 'rows="20" cols="80"');
     }
 

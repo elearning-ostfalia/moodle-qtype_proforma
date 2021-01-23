@@ -96,10 +96,22 @@ class select_form_creator extends base_form_creator {
     }
 
     /**
+     * Add tests as repeat group
+     * @param $question
+     * @param $questioneditform
+     * @return int
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function add_tests($question, $questioneditform) {
+    }
+
+    /**
      * Remove response options.
      *
      * @param $question
      * @param $qtype
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function add_response_options($question, $qtype) {
     }
