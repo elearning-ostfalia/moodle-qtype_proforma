@@ -114,7 +114,7 @@ class setlx_form_creator extends base_form_creator {
      * @param $questioneditform
      * @return int
      */
-    public function add_tests($question, $questioneditform) {
+    protected function add_tests($question, $questioneditform) {
         $mform = $this->_form;
         // Add compilation = Setlx Syntax check.
         $this->add_compilation(get_string('syntaxcheck', 'qtype_proforma'));

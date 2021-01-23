@@ -68,10 +68,8 @@ class select_form_creator extends base_form_creator {
 
     /**
      * Add something to select the programming language.
-     *
-     * @param $question
      */
-    public function add_proglang_selection($question) {
+    public function add_proglang_selection() {
         $mform = $this->_form;
 
         $programminglangs = array('java' => 'Java', 'setlx' => 'SetlX');
@@ -103,7 +101,7 @@ class select_form_creator extends base_form_creator {
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function add_tests($question, $questioneditform) {
+    protected function add_tests($question, $questioneditform) {
     }
 
     /**

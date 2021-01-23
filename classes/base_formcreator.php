@@ -98,7 +98,7 @@ abstract class base_form_creator {
      * @param $questioneditform
      * @return int
      */
-    abstract public function add_tests($question, $questioneditform);
+    abstract protected function add_tests($question, $questioneditform);
 
     /**
      * validate field values
@@ -117,12 +117,8 @@ abstract class base_form_creator {
 
     /**
      * Add something to select the programming language.
-     *
-     * @param $question
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function add_proglang_selection($question) {
+    public function add_proglang_selection() {
         if (isset($this->_proglang)) {
             $mform = $this->_form;
             $mform->addElement('text', 'proglang',
@@ -225,7 +221,7 @@ abstract class base_form_creator {
      * Add model solution as edit field for editor response format or
      * as fielmanager for filepicker response format.
      */
-    public function add_modelsolution() {
+    protected function add_modelsolution() {
         $mform = $this->_form;
         // Model Solution files.
         $mform->addElement('textarea', 'modelsolution', get_string('modelsolution', 'qtype_proforma'), 'rows="20" cols="80"');
@@ -425,6 +421,11 @@ abstract class base_form_creator {
         return $repeats;
     }
 
+    /**
+     * Add response options for editor
+     *
+     * @param type $qtype
+     */
     protected function add_editor_options($qtype) {
         $mform = $this->_form;
         $mform->addElement('select', 'responsefieldlines',
@@ -448,6 +449,8 @@ abstract class base_form_creator {
      *
      * @param $question
      * @param $qtype
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function add_response_options($question, $qtype) {
         global $CFG, $COURSE;
@@ -760,7 +763,7 @@ abstract class base_form_creator {
             // Extract grading hints.
             $options->gradinghints = $this->_taskhandler->create_lms_grading_hints($formdata);
             if ($this->_taskhandler->can_be_edited()) {
-                if (!isset($formdata->import_process) or!$formdata->import_process) {
+                if (!isset($formdata->import_process) or !$formdata->import_process) {
                     // When importing a moodle xml question the preprocessing step is missing and
                     // we have no actual form data.
                     // So we must skip creating task because the task.xml already exists

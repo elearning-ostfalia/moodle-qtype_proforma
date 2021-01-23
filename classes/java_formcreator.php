@@ -58,11 +58,9 @@ class java_form_creator extends base_form_creator {
 
     /**
      * Add something to select the programming language.
-     *
-     * @param $question
      */
-    public function add_proglang_selection($question) {
-        parent::add_proglang_selection($question);
+    public function add_proglang_selection() {
+        parent::add_proglang_selection();
 
         $mform = $this->_form;
         $javaversion = get_config('qtype_proforma', 'javaversion');
@@ -206,7 +204,7 @@ class java_form_creator extends base_form_creator {
      * @param $questioneditform
      * @return int
      */
-    public function add_tests($question, $questioneditform) {
+    protected function add_tests($question, $questioneditform) {
         // Add compilation.
         $this->add_compilation(get_string('compile', 'qtype_proforma'));
         // Add JUnit.

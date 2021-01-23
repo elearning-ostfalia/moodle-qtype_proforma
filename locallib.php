@@ -192,7 +192,7 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
      * @return string XHTML field
      */
     public function output_html($data, $query='') {
-        global $CFG, $OUTPUT;
+        global $OUTPUT;
 
         $default = $this->get_defaultsetting();
         $context = (object) [

@@ -266,7 +266,7 @@ class proforma_form_creator extends base_form_creator {
     /**
      * Create links for model solution files.
      */
-    public function add_modelsolution() {
+    protected function add_modelsolution() {
         $mform = $this->_form;
         // Model Solution files (instead of modelsollist we show links).
         $mform->addElement('static', 'mslinks', get_string('modelsolfiles', 'qtype_proforma'), '');
@@ -344,7 +344,7 @@ class proforma_form_creator extends base_form_creator {
      * @param $questioneditform
      * @return int
      */
-    public function add_tests($question, $questioneditform) {
+    protected function add_tests($question, $questioneditform) {
         return $this->add_test_fields($question, $questioneditform, 'unittest');
     }
 
