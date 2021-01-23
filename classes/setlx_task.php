@@ -196,4 +196,25 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         }
         return $count;
     }
+
+    /**
+     * called by extract_formdata_from_taskfile in order to
+     * extract form data from task test.
+     * Override if needed!
+     *
+     * @param type $question: return instance
+     * @param type $test: test entity from task
+     * @param type $code: code from referenced file
+     */
+    protected function extract_formdata_from_test($question, $test, $files, $code, &$index) {
+        switch ($test['id']) {
+            case 'compiler':
+                break;
+            default:
+                $question->testcode[$index] = $code;
+                // Increment index only in case of an actual unit test.
+                $index++;
+                break;
+        }
+    }
 }

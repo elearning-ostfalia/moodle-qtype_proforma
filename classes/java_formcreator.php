@@ -129,6 +129,22 @@ class java_form_creator extends base_form_creator {
         $repeatarray[] = $mform->createElement('filemanager', 'testfiles', '', null,
                     array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 50,
                           'return_types'=> FILE_INTERNAL | FILE_EXTERNAL));
+        $testfileoptions = array();
+        $testfileoptions[] = $mform->createElement('text', 'testentrypoint',
+            get_string('entrypoint', 'qtype_proforma'), array('size' => 50));
+        $repeatarray[] = $mform->createElement('group', 'testfileoptions', '', $testfileoptions, null, false);
+    }
+
+    /**
+     * Modify repeatoptions in add_tests
+     *
+     * @param $repeatoptions
+     */
+    protected function adjust_test_repeatoptions(&$repeatoptions) {
+        parent::adjust_test_repeatoptions($repeatoptions);
+
+        $repeatoptions['testentrypoint']['hideif'] = array('testcodeformat', 'eq', self::EDITORTESTINPUT);
+        $this->_form->setType('testentrypoint', PARAM_TEXT);
     }
 
     /**

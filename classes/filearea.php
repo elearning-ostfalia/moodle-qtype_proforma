@@ -202,6 +202,24 @@ class qtype_proforma_filearea {
         }
     }
 
+    public function save_text_to_draft($contextid, $itemid, string $filename, string $content) {
+        $fs = get_file_storage();
+        if (!empty($content)) {
+            list($filepath, $basename) = self::split_filename($filename);
+            $filerecord = array(
+                    'contextid' => $contextid,
+                    'component' => 'user',
+                    'filearea' => 'draft',
+                    'itemid' => $itemid,
+                    'filepath' => $filepath,
+                    'filename' => $basename,
+            );
+            $fs->create_file_from_string($filerecord, $content);
+            return true;
+        }
+        return false;
+    }
+
     /** save text as file with given filename in filearea
      *
      * @param $contextid
@@ -217,9 +235,8 @@ class qtype_proforma_filearea {
         $filearea = $this->_name;
         $cleanfilearea = true;
         $fs = get_file_storage();
-        // Delete old file.
+        // Delete old file (i.e. delete file in same filearea with same name).
         if (!is_null($itemid)) {
-            $fs = get_file_storage();
             if ($files = $fs->get_area_files($contextid, 'qtype_proforma', $filearea, $itemid)) {
                 $cleanfilename = clean_param($filename, PARAM_FILE);
                 foreach ($files as $file) {

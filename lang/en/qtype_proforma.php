@@ -189,6 +189,8 @@ $string['testtype'] = 'Type';
 $string['testtitle'] = 'Title';
 $string['testlabel'] = 'Test';
 $string['testlabela'] = '{no}. {$a}';
+$string['entrypoint'] = 'Entrypoint';
+
 
 $string['weight'] = 'Weight';
 $string['filepickeroptions'] = 'Filepicker options';

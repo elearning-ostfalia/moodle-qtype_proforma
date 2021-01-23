@@ -351,16 +351,19 @@ abstract class base_form_creator {
         $testoptions[] = $mform->createElement('text', 'testid', 'Id', array('size' => 3));
         $this->add_test_weight_option($testoptions, 'test', '1', true);
         $testoptions[] = $mform->createElement('text', 'testtype',
-        get_string('testtype', 'qtype_proforma'), array('size' => 80));
+            get_string('testtype', 'qtype_proforma'), array('size' => 80));
         $testoptions[] = $mform->createElement('text', 'testdescription',
-        get_string('testdescription', 'qtype_proforma'), array('size' => 80));
+            get_string('testdescription', 'qtype_proforma'), array('size' => 80));
+
         $this->adjust_test_testoptions($testoptions);
 
         $label = get_string('testlabela', 'qtype_proforma', $this->get_test_label());
 
         $repeatarray = array();
         $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
+
         $this->adjust_test_repeatarray($repeatarray);
+
         $repeatoptions = array();
         $repeatoptions['testweight']['default'] = 1;
         $repeatoptions['testdescription']['default'] = '';
@@ -378,8 +381,8 @@ abstract class base_form_creator {
         // Add tests with button for adding tests.
         $buttonlabel = get_string('addtest', 'qtype_proforma', $this->get_test_label());
         $questioneditform->repeat_elements($repeatarray, $repeats,
-        $repeatoptions, 'option_repeats', 'option_add_fields',
-        1, $buttonlabel, true);
+            $repeatoptions, 'option_repeats', 'option_add_fields',
+            1, $buttonlabel, true);
 
         if ($this->_taskhandler->can_be_edited()) {
             // Set CodeMirror for unit test code.
@@ -624,6 +627,7 @@ abstract class base_form_creator {
             $commentformat = $question->options->commentformat;
         }
 
+        // debugging('$editor->context->id: ' . $editor->context->id);
         // Prepare all fileareas.
         foreach (qtype_proforma::proforma_fileareas() as $fileareaname => $value) {
             // Create draft area.

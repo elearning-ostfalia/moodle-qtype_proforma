@@ -196,7 +196,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                     $code = $formdata->testcode[$index];
                     $entrypoint = self::get_java_entrypoint($code);
                 } else {
-                    $entrypoint = 'MISSING';
+                    $entrypoint = $formdata->testentrypoint[$index];
                 }
                 $xw->create_childelement_with_text('unit:entry-point', $entrypoint);
                 $xw->endElement(); // End tag unit:unittest.
@@ -291,9 +291,9 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      * @param type $question: return instance
      * @param type $test: test entity from task
      * @param type $code: code from referenced file
-     * @param type $index: index variable
+     * @param type $index: index of next unit test (in/out)
      */
-    protected function extract_formdata_from_test($question, $test, $code, &$index) {
+    protected function extract_formdata_from_test($question, $test, $files, $code, &$index) {
         switch ($test['id']) {
             case 'checkstyle':
                 $question->checkstylecode = $code;
@@ -305,11 +305,14 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
             case 'compiler':
                 break;
             default: // JUNIT test.
-                $question->testcode[$index] = $code;
+                if (isset($code)) {
+                    $question->testcode[$index] = $code;
+                }
                 $config = $test->{'test-configuration'};
                 // Switch to namespace 'unit'.
                 $unittest = $config->children('unit', true)->{'unittest'};
                 $question->testversion[$index] = (string)$unittest->attributes()->version;
+                $question->testentrypoint[$index] = $unittest->{'entry-point'};
                 $index++;
                 break;
         }

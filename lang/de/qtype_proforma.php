@@ -173,6 +173,8 @@ $string['testdescription'] = 'Beschreibung';
 $string['testtype'] = 'Typ';
 $string['testtitle'] = 'Titel';
 $string['weight'] = 'Gewicht';
+$string['entrypoint'] = 'Entrypoint';
+
 $string['filepickeroptions'] = 'Filepicker-Einstellungen';
 
 
