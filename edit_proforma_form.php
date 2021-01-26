@@ -86,7 +86,6 @@ class qtype_proforma_edit_form extends question_edit_form {
     protected function definition() {
 
         if (!empty($this->question->options)) {
-            // Existing question is opened => default handling.
             parent::definition();
             return;
         }
@@ -127,6 +126,10 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
     }
 
+    /**
+     * enable access to form variable for formcreator
+     * @return type
+     */
     public function get_form() {
         return $this->_form;
     }
@@ -192,6 +195,7 @@ class qtype_proforma_edit_form extends question_edit_form {
      * @param object $mform the form being built.
      */
     protected function definition_inner($mform) {
+
         $qtype = question_bank::get_qtype('proforma');
 
         if ($this->formcreator == null) {

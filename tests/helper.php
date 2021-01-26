@@ -47,16 +47,23 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 class qtype_proforma_test_helper extends question_test_helper {
     public function get_test_questions() {
         return array(
-            // different response formats
+            // Different response formats.
             'editor',
             'filepicker',
-            // different settings for java junit tests
-            'java1', 'java1unit', 'java2', 'java3', 'java_2junit', 'java5',
-            // different settings for setlx junit tests
+            // Java.
+            'java1',// One JUnit test, checkstyle, compilation.
+            'java1unit', // Like java, different question text.
+            'java2', // Like java1unit, no Checkstyle.
+            'java3', // Like java1unit, no compilation.
+            'java_2junit', // Like java1unit with 2 JUnit tests, default mark=3.
+            'java5', // Like java1unit, no JUnit.
+            'javafile1', // Like java1unit, with test code as uploaded file.
+            'java_2junit_file', // Like java_2junit, with test code as uploaded file.
+            // Setlx.
             'setlx0', 'setlx1', 'setlx1a', 'setlx2',
-            // different grading approaches
+            // Different grading approaches.
             'weightedsum',
-            // different values set in question
+            // Different values set in question.
             'downloads',
             'responsetemplate', 'modelsolution', 'penalty', // different values
             'gradecorrect', 'gradeincorrect', 'wronggraderfilename');
@@ -579,6 +586,50 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         return $form;
     }
+
+    /** with junit test as uploaded file
+     * @return stdClass
+     */
+    public function get_proforma_question_form_data_javafile1() {
+        $form = $this->get_proforma_question_form_data_java1unit();
+
+        $form->testcodeformat[0] = base_form_creator::FILETESTINPUT;
+        $form->testentrypoint[0] = 'entrypoint';
+        $form->testfiles = array();
+        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest.java',
+                'class Junittest {}');
+
+        return $form;
+    }
+
+    /** with 2nd junit test as uploaded file
+     * @return stdClass
+     */
+    public function get_proforma_question_form_data_java_2junit_file() {
+        $form = $this->get_proforma_question_form_data_java_2junit();
+
+        $form->testcodeformat[0] = base_form_creator::FILETESTINPUT;
+        $form->testentrypoint[0] = 'entrypoint1';
+        $form->testfiles = array();
+        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest1.java',
+                'class XTest1 {}');
+        $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest2.java',
+                'class XTest2 {}');
+
+
+        $form->testcodeformat[1] = base_form_creator::FILETESTINPUT;
+        $form->testentrypoint[1] = 'entrypoint2';
+        $form->testfiles[1] = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->testfiles[1], 'junittest.java',
+                'class Junittest {}');
+
+        return $form;
+    }
+
+
+
 
     // -------------------
     // SetlX
