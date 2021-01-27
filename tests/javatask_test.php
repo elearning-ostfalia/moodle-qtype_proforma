@@ -404,7 +404,7 @@ class qtype_proforma_java_task_test extends advanced_testcase {
                 <filerefs>
                     <fileref refid="2"/>
                 </filerefs>
-                <unit:unittest framework="JUnit" version="4.12">
+                <unit:unittest framework="JUnit" version="5">
                     <unit:entry-point>YTest</unit:entry-point>
                 </unit:unittest>
             </test-configuration>
@@ -589,7 +589,7 @@ class qtype_proforma_java_task_test extends advanced_testcase {
                 <filerefs>
                     <fileref refid="2-1"/>
                 </filerefs>
-                <unit:unittest framework="JUnit" version="4.12">
+                <unit:unittest framework="JUnit" version="5">
                     <unit:entry-point>entrypoint2</unit:entry-point>
                 </unit:unittest>
             </test-configuration>
@@ -617,6 +617,123 @@ class qtype_proforma_java_task_test extends advanced_testcase {
         $this->assert_same_xml($expectedxml, $taskfile);
     }
 
+
+
+    public function test_create_java_3junit_file() {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        // Create sample form data
+        $formdata = test_question_maker::get_question_form_data('proforma', 'java_3junit_file');
+        $instance = new qtype_proforma_java_task;
+        $taskfile = $instance->create_task_file($formdata);
+
+        $expectedxml = '<?xml version="1.0" encoding="UTF-8"?>
+<task xmlns="urn:proforma:v2.0" lang="de" uuid="bbbf6679-0226-4fb3-8da0-4f370dd027cb" xmlns:unit="urn:proforma:tests:unittest:v1.1" xmlns:cs="urn:proforma:tests:java-checkstyle:v1.1">
+    <title>ProFormA question (äöüß)</title>
+    <description>Please code the reverse string function not using a library function.(äöüß)</description>
+    <proglang version="1.8">java</proglang>
+    <submission-restrictions/>
+    <files>
+        <file id="1-1" used-by-grader="true" visible="no">
+            <embedded-bin-file filename="junittest1.java">' . base64_encode('class XTest1 {}') . '</embedded-bin-file>
+        </file>
+        <file id="1-2" used-by-grader="true" visible="no">
+            <embedded-bin-file filename="junittest2.java">' . base64_encode('class XTest2 {}') . '</embedded-bin-file>
+        </file>
+        <file id="2-1" used-by-grader="true" visible="no">
+            <embedded-bin-file filename="junittest.java">' . base64_encode('class Junittest {}') . '</embedded-bin-file>
+        </file>
+        <file id="3" used-by-grader="true" visible="no">
+            <embedded-txt-file filename="ZTest.java">class ZTest {}</embedded-txt-file>
+        </file>
+        <file id="checkstyle" used-by-grader="true" visible="no">
+            <embedded-txt-file filename="checkstyle.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE module PUBLIC &quot;-//Puppy Crawl//DTD Check Configuration 1.3//EN&quot; &quot;http://www.puppycrawl.com/dtds/configuration_1_3.dtd&quot;&gt;
+&lt;module name=&quot;Checker&quot;&gt;
+  &lt;property name=&quot;severity&quot; value=&quot;warning&quot;/&gt;
+  &lt;module name=&quot;TreeWalker&quot;&gt;
+    &lt;module name=&quot;NeedBraces&quot;&gt;
+      &lt;property name=&quot;severity&quot; value=&quot;error&quot;/&gt;
+    &lt;/module&gt;
+  &lt;/module&gt;
+&lt;/module&gt;</embedded-txt-file>
+        </file>
+        <file id="MS" used-by-grader="false" visible="no">
+            <embedded-txt-file filename="modelsolution.java">// no model solution available </embedded-txt-file>
+        </file>
+    </files>
+    <model-solutions>
+        <model-solution id="1">
+            <filerefs>
+                <fileref refid="MS"/>
+            </filerefs>
+        </model-solution>
+    </model-solutions>
+    <tests>
+        <test id="compiler">
+            <title>Compiler</title>
+            <test-type>java-compilation</test-type>
+            <test-configuration/>
+        </test>
+        <test id="1">
+            <title>JUnit Test 1</title>
+            <test-type>unittest</test-type>
+            <test-configuration>
+                <filerefs>
+                    <fileref refid="1-1"/>
+                    <fileref refid="1-2"/>
+                </filerefs>
+                <unit:unittest framework="JUnit" version="4.12">
+                    <unit:entry-point>entrypoint1</unit:entry-point>
+                </unit:unittest>
+            </test-configuration>
+        </test>
+        <test id="2">
+            <title>JUnit Test 2</title>
+            <test-type>unittest</test-type>
+            <test-configuration>
+                <filerefs>
+                    <fileref refid="2-1"/>
+                </filerefs>
+                <unit:unittest framework="JUnit" version="5">
+                    <unit:entry-point>entrypoint2</unit:entry-point>
+                </unit:unittest>
+            </test-configuration>
+        </test>
+        <test id="3">
+            <title>JUnit Test 3</title>
+            <test-type>unittest</test-type>
+            <test-configuration>
+                <filerefs>
+                    <fileref refid="3"/>
+                </filerefs>
+                <unit:unittest framework="JUnit" version="5">
+                    <unit:entry-point>ZTest</unit:entry-point>
+                </unit:unittest>
+            </test-configuration>
+        </test>
+        <test id="checkstyle">
+            <title>CheckStyle Test</title>
+            <test-type>java-checkstyle</test-type>
+            <test-configuration>
+                <filerefs>
+                    <fileref refid="checkstyle"/>
+                </filerefs>
+                <cs:java-checkstyle version="8.23">
+                    <cs:max-checkstyle-warnings>4</cs:max-checkstyle-warnings>
+                </cs:java-checkstyle>
+            </test-configuration>
+        </test>
+    </tests>
+    <grading-hints>
+        <root/>
+    </grading-hints>
+    <meta-data/>
+</task>
+';
+
+        $this->assert_same_xml($expectedxml, $taskfile);
+    }
 
 
 

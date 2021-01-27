@@ -59,6 +59,7 @@ class qtype_proforma_test_helper extends question_test_helper {
             'java5', // Like java1unit, no JUnit.
             'javafile1', // Like java1unit, with test code as uploaded file.
             'java_2junit_file', // Like java_2junit, with test code as uploaded file.
+            'java_3junit_file', // Like java_2junit_file with 3 tests
             // Setlx.
             'setlx0', 'setlx1', 'setlx1a', 'setlx2',
             // Different grading approaches.
@@ -553,7 +554,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testtitle[1] = 'JUnit Test 2';
         $form->testweight[1] = '1';
         $form->testid[1] = '2';
-        $form->testversion[1] = "4.12";
+        $form->testversion[1] = "5";
 
         // Junit #3 with empty fields
         $form->testcodeformat[2] = base_form_creator::EDITORTESTINPUT;
@@ -624,6 +625,39 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testfiles[1] = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($form->testfiles[1], 'junittest.java',
                 'class Junittest {}');
+
+        return $form;
+    }
+
+    /** with 2nd junit test as uploaded file
+     * @return stdClass
+     */
+    public function get_proforma_question_form_data_java_3junit_file() {
+        $form = $this->get_proforma_question_form_data_java_2junit_file();
+
+        $form->testcodeformat[0] = base_form_creator::FILETESTINPUT;
+        $form->testentrypoint[0] = 'entrypoint1';
+        $form->testfiles = array();
+        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest1.java',
+                'class XTest1 {}');
+        $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest2.java',
+                'class XTest2 {}');
+
+
+        $form->testcodeformat[1] = base_form_creator::FILETESTINPUT;
+        $form->testentrypoint[1] = 'entrypoint2';
+        $form->testfiles[1] = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->testfiles[1], 'junittest.java',
+                'class Junittest {}');
+
+        // Junit #3
+        $form->testcodeformat[2] = base_form_creator::EDITORTESTINPUT;
+        $form->testcode[2] = 'class ZTest {}';
+        $form->testtitle[2] = 'JUnit Test 3';
+        $form->testweight[2] = '4';
+        $form->testid[2] = '3';
+        $form->testversion[2] = "5";
 
         return $form;
     }
