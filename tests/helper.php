@@ -51,7 +51,7 @@ class qtype_proforma_test_helper extends question_test_helper {
             'editor',
             'filepicker',
             // Java.
-            'java1',// One JUnit test, checkstyle, compilation.
+            'java1', // One JUnit test, checkstyle, compilation.
             'java1unit', // Like java, different question text.
             'java2', // Like java1unit, no Checkstyle.
             'java3', // Like java1unit, no compilation.
@@ -66,21 +66,21 @@ class qtype_proforma_test_helper extends question_test_helper {
             'weightedsum',
             // Different values set in question.
             'downloads',
-            'responsetemplate', 'modelsolution', 'penalty', // different values
+            'responsetemplate', 'modelsolution', 'penalty', // Different values.
             'gradecorrect', 'gradeincorrect', 'wronggraderfilename');
     }
 
     const QUESTION_NAME = 'ProFormA question (äöüß)';
 
-    // this string is also used in behat tests. Behat obviously does not support HTML tags.
-    // So they are not used here though supported
+    // This string is also used in behat tests. Behat obviously does not support HTML tags.
+    // So they are not used here though supported.
     const QUESTION_TEXT = 'Please code the reverse string function not using a library function.(äöüß)';
-//    const QUESTION_TEXT = '<p>Please code the reverse string function <b>not</b> using a library function.(äöüß)</p>';
+    // const QUESTION_TEXT = '<p>Please code the reverse string function <b>not</b> using a library function.(äöüß)</p>';
 
     const QUESTION_GENERAL_FEEDBACK = '<p>You must not use a library function.</p>';
     const QUESTION_COMMENT = '<p>Check if the code uses a library function.</p>';
-    const QUESTION_REPOSITORY = ''; //'https://repository.ostfalia.de';
-    const QUESTION_PATH = ''; // '/path/to/reversestring.zip';
+    const QUESTION_REPOSITORY = '';
+    const QUESTION_PATH = '';
     const QUESTION_FILENAME = 'MyString.java';
     //const QUESTION_MODELSOLUTION = '//text in modelsolution (äöüß)';
     const QUESTION_TEMPLATE = '//text in responsetemplate';

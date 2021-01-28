@@ -22,8 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// require_once(__DIR__ . '/../../questiontype.php');
-
 use Behat\Mink\Exception\ExpectationException as ExpectationException;
 use Behat\Gherkin\Node\PyStringNode as PyStringNode;
 
@@ -262,7 +260,6 @@ class behat_proforma extends behat_base {
         $this->getSession()->getDriver()->evaluateScript($command);
     }
 
-
     /**
      * Check codemirror text with javascript in *Javascript* testcases.
      *
@@ -279,5 +276,4 @@ class behat_proforma extends behat_base {
             );
         }
     }
-
 }
