@@ -454,8 +454,8 @@ abstract class qtype_proforma_base_task {
                     $code = (string) $fileobject['code'];
                 } else {
                     // Binary file.
-                    if (isset($filetype)) {
-                        debugging('inconsistent task file: embedded-txt-file and embedded-bin-file mixed');
+                    if (isset($code)) {
+                        debugging('inconsistent task file: embedded-txt-file and embedded-bin-file mixed for ' . (string)$test['id']);
                     }
                     $filetype = base_form_creator::FILETESTINPUT;
                     // Store in draft area.
