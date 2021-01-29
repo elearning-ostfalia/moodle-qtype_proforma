@@ -118,6 +118,7 @@ $string['setlx'] = 'SetlX test';
 $string['codeempty'] = 'Code required';
 $string['titleempty'] = 'Title required';
 $string['versionrequired'] = 'Version required.';
+$string['entrypointrequired'] = 'JUnit entrypoint required.';
 $string['filenameerror'] = 'Cannot determine classname (filename)';
 $string['entrypointerror'] = 'Cannot determine classname (entrypoint)';
 $string['sumweightzero'] = 'The sum of all weights must not be zero.';

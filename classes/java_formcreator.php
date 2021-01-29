@@ -250,6 +250,11 @@ class java_form_creator extends base_form_creator {
                     // Title is set but code is missing.
                     $errors['testfiles['.$i.']'] = get_string('codeempty', 'qtype_proforma');
                 }
+                $entrypoint = $fromform["testentrypoint"][$i];
+                if (0 == strlen(trim($entrypoint))) {
+                    // Entrypoint missing.
+                    $errors['testfileoptions['.$i.']'] = get_string('entrypointrequired', 'qtype_proforma');
+                }
                 break;
             default:
                 throw new coding_exception('unexpected value ' . $format);

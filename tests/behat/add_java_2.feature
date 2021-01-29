@@ -51,6 +51,10 @@ Feature: ADD JAVA QUESTION
     And I set the field "compileweight" to "5"
 
     And I press "id_submitbutton"
+    Then I should see "JUnit entrypoint required"
+    And I set the field "testentrypoint[0]" to "XClass"
+
+    And I press "id_submitbutton"
     Then I should see "java-question"
 
     When I choose "Edit question" action for "java-question" in the question bank
@@ -75,6 +79,13 @@ Feature: ADD JAVA QUESTION
     And the field "testweight[0]" matches value "10"
     And the field "testversion[0]" matches value "4.12"
     And the field "testdescription[0]" matches value "first JUnit test"
+    # check test file(s)
+    And "reverseJUnit.java" "link" should exist
+    # there seems to be no step out of the box for downloading a file from filemanager :-(
+    And I click on "reverseJUnit.java" "link"
+    And I should see "2KB" in the "Edit reverseJUnit.java" "dialogue"
+    # And I pause
+    And I click on "Cancel" "button" in the "Edit reverseJUnit.java" "dialogue"
 
     # JUnit #2
     And the field "testtitle[1]" matches value "Junit #2"

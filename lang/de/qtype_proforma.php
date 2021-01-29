@@ -96,6 +96,7 @@ $string['setlx'] = 'SetlX Test';
 $string['codeempty'] = 'Code fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
 $string['versionrequired'] = 'Version ist nicht ausgewählt.';
+$string['entrypointrequired'] = 'JUnit Entrypoint muss angegeben werde.';
 $string['filenameerror'] = 'Kann Klassennamen nicht ermitteln (Dateiname).';
 $string['entrypointerror'] = 'Kann Klassennamen nicht ermitteln (Entrypoint).';
 $string['sumweightzero'] = 'Die Summe aller Gewichte darf nicht 0 sein.';
