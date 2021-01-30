@@ -1,5 +1,5 @@
 @qtype @qtype_proforma
-Feature: ADD JAVA QUESTION
+Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
   Test creating a ProFormA java question
   As a teacher
   In order to test my students

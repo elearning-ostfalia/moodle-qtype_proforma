@@ -27,6 +27,9 @@ require_once(__DIR__ . '/../../../../../repository/upload/tests/behat/behat_repo
 use Behat\Mink\Exception\ExpectationException as ExpectationException;
 
 class behat_proforma_upload extends behat_repository_upload {
+
+    /** indicator for changing filepicker node evaluation */
+    protected $defaultfilepicker = true;
     /**
      * Try to get the filemanager node specified by the element
      *
@@ -35,8 +38,10 @@ class behat_proforma_upload extends behat_repository_upload {
      * @throws ExpectationException
      */
     protected function get_filepicker_node($filepickerelement) {
-
-        // $filepickerelement = 'id_testfiles_0';
+        if ($this->defaultfilepicker) {
+            // call default function.
+            return parent::get_filepicker_node($filepickerelement);
+        }
 
         // More info about the problem (in case there is a problem).
         $exception = new ExpectationException('"' . $filepickerelement . '" filepicker can not be found', $this->getSession());
@@ -67,6 +72,12 @@ class behat_proforma_upload extends behat_repository_upload {
      * @param string $filemanagerelement
      */
     public function i_upload_to_filemanager_by_name($filepath, $filemanagerelement) {
-        $this->i_upload_file_to_filemanager($filepath, $filemanagerelement);
+        // Change behaviour when filepicker node must be found..
+        $this->defaultfilepicker = false;
+        try {
+            $this->i_upload_file_to_filemanager($filepath, $filemanagerelement);
+        } finally {
+            $this->defaultfilepicker = true;
+        }
     }
 }

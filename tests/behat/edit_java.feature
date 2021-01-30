@@ -62,7 +62,7 @@ Feature: EDIT JAVA
     And the field "testtype[1]" matches value "unittest"
     And the field "testweight[1]" matches value "6"
     And the field "testid[1]" matches value "2"
-    And the field "testversion[1]" matches value "4.12"
+    And the field "testversion[1]" matches value "5"
     # Checkstyle
     And the "checkstyle" checkbox is "checked"
     And the field "checkstyleweight" matches value "4"
