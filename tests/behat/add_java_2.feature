@@ -111,13 +111,9 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     And "reverseJUnit2.java" "link" should exist
     And "reverseJUnit1.java" "link" should exist
     # there seems to be no step out of the box for downloading a file from filemanager :-(
-    And I click on "reverseJUnit2.java" "link"
-    And I should see "708 bytes" in the "Edit reverseJUnit2.java" "dialogue"
-    And I click on "Cancel" "button" in the "Edit reverseJUnit2.java" "dialogue"
-
-    And I click on "reverseJUnit1.java" "link"
-    And I should see "1.8KB" in the "Edit reverseJUnit1.java" "dialogue"
-    And I click on "Cancel" "button" in the "Edit reverseJUnit1.java" "dialogue"
+    #And I pause
+    And the size of file "reverseJUnit2.java" is between "700" and "720" bytes
+    And the size of file "reverseJUnit1.java" is between "1800" and "1900" bytes
 
     And the field "testentrypoint[0]" matches value "XClass"
 
