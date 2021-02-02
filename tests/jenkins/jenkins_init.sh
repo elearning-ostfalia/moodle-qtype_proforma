@@ -23,6 +23,9 @@ export MOODLE_DOCKER_SELENIUM_VNC_PORT=5900
 
 export MOODLE_DOCKER_PHP_VERSION=$PHP
 
+# chrome is faster than firefox
+export MOODLE_DOCKER_BROWSER=chrome
+
 echo "PHP is $MOODLE_DOCKER_PHP_VERSION"
 echo "DATABASE is $MOODLE_DOCKER_DB"
 

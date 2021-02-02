@@ -234,13 +234,13 @@ abstract class base_form_creator {
         $mform->addHelpButton('modelsolution', 'modelsolution', 'qtype_proforma');
         $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
 
-        // Add Filemanager for model solution in case of using the filepicker.
-        // Replace hidden element by actual filepicker.
+        // Add Filemanager for model solution in case of not using the editor.
+        // Replace hidden element by actual model solution filemanager.
         $mform->removeElement(self::MODELSOLMANAGER);
         $mform->addElement('filemanager', self::MODELSOLMANAGER, get_string('modelsolfiles', 'qtype_proforma'), null,
         array('subdirs' => true));
 
-        $mform->hideIf(self::MODELSOLMANAGER, 'responseformat', 'neq', 'filepicker');
+        $mform->hideIf(self::MODELSOLMANAGER, 'responseformat', 'eq', 'editor');
     }
 
     /**

@@ -99,7 +99,6 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];
             if ($id !== '' && $this->is_test_set($formdata, $index)) {
-                // debugging('Test set');
                 if ($formdata->testcodeformat[$index] == base_form_creator::EDITORTESTINPUT) {
                     $xw->startElement('file');
                     $xw->create_attribute('id', $formdata->testid[$index]);
@@ -114,8 +113,6 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                     $xw->endElement(); // End tag embedded-txt-file.
                     $xw->endElement(); // End tag file.
                 } else {
-                    // debugging('files');
-
                     // Handle uploaded test files.
                     $counter = 1;
                     foreach ($this->_get_draft_testfiles($formdata, $index) as $draftfile) {

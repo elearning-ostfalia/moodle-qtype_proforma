@@ -172,11 +172,6 @@ class proforma_form_creator extends base_form_creator {
             $message[] = get_string('errinvalidproglang', 'qtype_proforma', $dataold->proglang);
         }
 
-        /*
-        $message[] = 'Grading-Hints-Data:';
-        foreach ($datagh->test as $key => $value) {
-            $message[] = 'Test [' . $key . '] => \'' . $value . '\'';
-        } */
         // Compare number of tests.
         if (count($datadraft->test) != count($datagh->test)) {
             $message[] = get_string('errcounttest', 'qtype_proforma', count($datadraft->test));

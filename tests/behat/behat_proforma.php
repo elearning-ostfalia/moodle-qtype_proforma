@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Behat extensions for proforma
@@ -31,12 +31,12 @@ class behat_proforma extends behat_base {
     /**
      * @When /^I select "([^"]*)" radio button$/
      */
-    public function iSelectRadioButton($name) {
+    public function i_select_radio_button($name) {
         $page = $this->getSession()->getPage();
-        $radioButton = $page->find('named', ['radio', $name]);
-        if ($radioButton) {
-            $locator = $radioButton->getAttribute('name');
-            $option = $radioButton->getAttribute('value');
+        $radiobutton = $page->find('named', ['radio', $name]);
+        if ($radiobutton) {
+            $locator = $radiobutton->getAttribute('name');
+            $option = $radiobutton->getAttribute('value');
             $page->selectFieldOption($locator, $option);
             return;
         }
@@ -115,7 +115,7 @@ class behat_proforma extends behat_base {
 
         // Download the URL and check the size.
         $session = $this->getSession()->getCookie('MoodleSession');
-        // download twice
+        // Download twice.
         download_file_content($url, array('Cookie' => 'MoodleSession=' . $session),
                 null, false, 300, 20, false, $this->downloadfile);
         return download_file_content($url, array('Cookie' => 'MoodleSession=' . $session));
@@ -158,10 +158,8 @@ class behat_proforma extends behat_base {
         $formfield = behat_field_manager::get_form_field_from_label($label, $this);
         $fieldvalue = $formfield->get_value();
         // Checks if the provided value matches the current field value.
-        $value = str_replace("\t","    ", (string)$value);
-        $fieldvalue = str_replace("\t","    ", $fieldvalue);
-        //$value = str_replace(" ","*", (string)$value);
-        //$fieldvalue = str_replace(" ","*", $fieldvalue);
+        $value = str_replace("\t", "    ", (string)$value);
+        $fieldvalue = str_replace("\t", "    ", $fieldvalue);
 
         if ($fieldvalue != $value) {
             throw new ExpectationException(
@@ -184,9 +182,6 @@ class behat_proforma extends behat_base {
         $formfield = behat_field_manager::get_form_field_from_label($label, $this);
         $fieldvalue = $formfield->get_value();
         // Checks if the provided value matches the current field value.
-        //$value = str_replace("\t","    ", (string)$value);
-        //$fieldvalue = str_replace("\t","    ", $fieldvalue);
-
         $length = strlen($value);
         if (substr($fieldvalue, 0, $length) != $value) {
             throw new ExpectationException(
@@ -236,7 +231,7 @@ class behat_proforma extends behat_base {
      *
      * @When /^I check the "([^"]*)" checkbox$/
      */
-    public function iCheckCheckbox($name) {
+    public function i_checkc_checkbox($name) {
         $this->getSession()->getPage()->checkField($name);
     }
 
@@ -245,7 +240,7 @@ class behat_proforma extends behat_base {
      *
      * @When /^I uncheck the "([^"]*)" checkbox$/
      */
-    public function iUncheckCheckbox($name) {
+    public function i_uncheck_checkbox($name) {
         $this->getSession()->getPage()->uncheckField($name);
     }
 

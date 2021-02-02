@@ -84,8 +84,8 @@ class qtype_proforma_edit_form extends question_edit_form {
      * overloaded definition detects that a new question will be created.
      */
     protected function definition() {
-
         if (!empty($this->question->options)) {
+            // Edit existing question.
             parent::definition();
             return;
         }
@@ -121,7 +121,8 @@ class qtype_proforma_edit_form extends question_edit_form {
         } else {
             // Value 'proglang' exists (user has choosen a programming language)
             // => create form.
-            $this->create_form_creator($proglang);
+            // New question!
+            $this->create_form_creator($proglang, true);
             parent::definition();
         }
     }
@@ -163,29 +164,31 @@ class qtype_proforma_edit_form extends question_edit_form {
         return $this->question;
     }
 
-    protected function create_form_creator($taskstorage) {
-        if (isset($taskstorage)) {
-            switch ($taskstorage) {
-                case qtype_proforma::PERSISTENT_TASKFILE:
-                    $this->formcreator = new proforma_form_creator($this->_form);
-                    break;
-                case qtype_proforma::VOLATILE_TASKFILE:
-                case qtype_proforma::JAVA_TASKFILE:
-                    // Question was created by form editor.
-                    $this->formcreator = new java_form_creator($this->_form);
-                    break;
-                case qtype_proforma::SETLX_TASKFILE:
-                    // Question was created by form editor.
-                    $this->formcreator = new setlx_form_creator($this->_form);
-                    break;
-                case qtype_proforma::SELECT_TASKFILE:
-                    // Question was created by form editor but not yet finished.
-                    $classname = $this->question->options->programminglanguage . '_form_creator';
-                    $this->formcreator = new $classname($this->_form);
-                    break;
-                default:
-                    throw new coding_exception('invalid taskstorage value ' . $taskstorage);
-            }
+    protected function create_form_creator($taskstorage, bool $newquestion) {
+        if (!isset($taskstorage)) {
+            throw new coding_exception('do not know what edit form to create');
+        }
+
+        switch ($taskstorage) {
+            case qtype_proforma::PERSISTENT_TASKFILE:
+                $this->formcreator = new proforma_form_creator($this->_form);
+                break;
+            case qtype_proforma::VOLATILE_TASKFILE:
+            case qtype_proforma::JAVA_TASKFILE:
+                // Question was created by form editor.
+                $this->formcreator = new java_form_creator($this->_form, $newquestion);
+                break;
+            case qtype_proforma::SETLX_TASKFILE:
+                // Question was created by form editor.
+                $this->formcreator = new setlx_form_creator($this->_form, $newquestion);
+                break;
+            case qtype_proforma::SELECT_TASKFILE:
+                // Question was created by form editor but not yet finished.
+                $classname = $this->question->options->programminglanguage . '_form_creator';
+                $this->formcreator = new $classname($this->_form);
+                break;
+            default:
+                throw new coding_exception('invalid taskstorage value ' . $taskstorage);
         }
     }
 
@@ -201,7 +204,7 @@ class qtype_proforma_edit_form extends question_edit_form {
         if ($this->formcreator == null) {
             // Use case: edit existing question.
             if (isset($this->question->options->taskstorage)) {
-                $this->create_form_creator($this->question->options->taskstorage);
+                $this->create_form_creator($this->question->options->taskstorage, false);
             }
             if ($this->formcreator == null) {
                 // Question was imported.

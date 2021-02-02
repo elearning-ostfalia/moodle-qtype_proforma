@@ -37,7 +37,7 @@ class setlx_form_creator extends base_form_creator {
      * @param $form
      * @param null $newquestion new question indicator
      */
-    public function __construct($form, $newquestion = null) {
+    public function __construct($form, bool $newquestion = false) {
         // Only allow editor as reponse format.
         $ro = qtype_proforma::response_formats();
         $responseoptions = [qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR]];
@@ -115,7 +115,6 @@ class setlx_form_creator extends base_form_creator {
      * @return int
      */
     protected function add_tests($question, $questioneditform) {
-        $mform = $this->_form;
         // Add compilation = Setlx Syntax check.
         $this->add_compilation(get_string('syntaxcheck', 'qtype_proforma'));
         // Add SetlX tests.

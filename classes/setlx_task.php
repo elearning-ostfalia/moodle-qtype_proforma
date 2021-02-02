@@ -80,7 +80,6 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
                 $xw->create_attribute('used-by-grader', 'true');
                 $xw->create_attribute('visible', 'no');
                 $xw->startElement('embedded-txt-file');
-                $code = $formdata->testcode[$index];
                 $filename = 'test' . $id . '.stlx';
                 $xw->create_attribute('filename', $filename);
                 $xw->text($formdata->testcode[$index]);

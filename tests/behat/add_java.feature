@@ -28,8 +28,9 @@ Feature: ADD JAVA QUESTION
       | Response format          | editor                         |
       | Response filename        | MyClass.java                   |
       | Title                    | JUnit test title               |
-    And I press "id_submitbutton"
-    Then I should see "Code required"
+    # Step is automatically finished with: I press "id_submitbutton"
+    Then I should see "Testcode required"
+    And I should not see "Model solution files "
     # JUnit
     When I set the field "testcode[0]" to "class XClass {}"
     And I press "id_submitbutton"
@@ -49,7 +50,8 @@ Feature: ADD JAVA QUESTION
       | Title                    | JUnit test title               |
       | Description              |                                |
       | Penalty for each incorrect try  | 10%                     |
-      | Programming language version  | 1.8                       |
+      | Programming language version  | 11                       |
+      | Model solution           |    |
     # compile
       | compileweight              |      0                       |
     #And the field "compileweight" matches value "0"
@@ -60,6 +62,8 @@ Feature: ADD JAVA QUESTION
     And the field "testversion[0]" matches value "4.12"
     # Checkstyle
     And the "checkstyle" checkbox is "not checked"
+    # No model solution files
+    And I should not see "Model solution files "
     # Finish
     And I press "Cancel"
 
@@ -84,7 +88,8 @@ Feature: ADD JAVA QUESTION
       | Programming language version  | 1.8     |
     And I set the codemirror "responsetemplate" to "// type your code here"
     And I set the codemirror "modelsolution" to "// code for model solution"
-    Then I should see "Code required"
+    And I press "id_submitbutton"
+    Then I should see "Testcode required"
 
     When I set the following fields to these values:
       | Question name   | new java-question |
@@ -179,7 +184,7 @@ Feature: ADD JAVA QUESTION
       | Response template        | // type your code here         |
       | Model solution           | // code for model solution     |
       | Title                    | JUnit #1                       |
-    Then I should see "Code required"
+    Then I should see "Testcode required"
     # add new Junit
     When I press "id_option_add_fields"
     And I set the field "testcode[0]" to "class XClass {}"

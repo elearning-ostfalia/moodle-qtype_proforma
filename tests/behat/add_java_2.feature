@@ -89,7 +89,7 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
       | Response template        |                                |
       | Comment                  |                                |
       | Penalty for each incorrect try  | 10%                     |
-      | Programming language version  | 1.8                       |
+      | Programming language version  | 11                       |
 
     # compilation
     And the field "compileweight" matches value "5"
@@ -111,9 +111,8 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     And "reverseJUnit2.java" "link" should exist
     And "reverseJUnit1.java" "link" should exist
     # there seems to be no step out of the box for downloading a file from filemanager :-(
-    #And I pause
-    And the size of file "reverseJUnit2.java" is between "700" and "720" bytes
-    And the size of file "reverseJUnit1.java" is between "1800" and "1900" bytes
+    And the size of file "reverseJUnit2.java" is between "680" and "690" bytes
+    And the size of file "reverseJUnit1.java" is between "1700" and "1800" bytes
 
     And the field "testentrypoint[0]" matches value "XClass"
 
@@ -185,7 +184,7 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
       | Response template        |                                |
       | Comment                  |                                |
       | Penalty for each incorrect try  | 10%                     |
-      | Programming language version  | 1.8                       |
+      | Programming language version  | 11                       |
 
     # compilation
     And the field "compileweight" matches value "5"
@@ -199,10 +198,7 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     # check test file(s)
     And "reverseJUnit.java" "link" should exist
     # there seems to be no step out of the box for downloading a file from filemanager :-(
-    And I click on "reverseJUnit.java" "link"
-    And I should see "2KB" in the "Edit reverseJUnit.java" "dialogue"
-    # And I pause
-    And I click on "Cancel" "button" in the "Edit reverseJUnit.java" "dialogue"
+    And the size of file "reverseJUnit.java" is between "1900" and "2000" bytes
 
     # JUnit #2
     And the field "testtitle[1]" matches value "Junit #2"

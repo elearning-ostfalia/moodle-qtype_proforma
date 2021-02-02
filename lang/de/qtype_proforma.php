@@ -93,7 +93,7 @@ $string['addtest'] = '{$a} hinzufügen';
 $string['junit'] = 'JUnit Test';
 $string['setlx'] = 'SetlX Test';
 
-$string['codeempty'] = 'Code fehlt.';
+$string['codeempty'] = 'Testcode fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
 $string['versionrequired'] = 'Version ist nicht ausgewählt.';
 $string['entrypointrequired'] = 'JUnit Entrypoint muss angegeben werde.';

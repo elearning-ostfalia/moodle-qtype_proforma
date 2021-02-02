@@ -37,14 +37,12 @@ class java_form_creator extends base_form_creator {
      * java_form_creator constructor.
      *
      * @param $form
-     * @param null $newquestion new question indicator
+     * @param bool $newquestion new question indicator
      */
-    public function __construct($form, $newquestion = null) {
+    public function __construct($form, bool $newquestion = false) {
         parent::__construct($form, new qtype_proforma_java_task(),
             qtype_proforma::response_formats(), 'java', 'Java');
-        if (isset($newquestion) && $newquestion) {
-            $this->_newquestion = $newquestion;
-        }
+        $this->_newquestion = $newquestion;
     }
 
     // Override.
@@ -63,14 +61,14 @@ class java_form_creator extends base_form_creator {
         parent::add_proglang_selection();
 
         $mform = $this->_form;
-        $javaversion = get_config('qtype_proforma', 'javaversion');
+        $javaversions = get_config('qtype_proforma', 'javaversion');
         $proglangversions = array();
         if (!$this->_newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
             // In case no other value can be selected this is chosen by default.
             $proglangversions[0] = get_string('choose');
         }
-        foreach (explode(',', $javaversion) as $version) {
+        foreach (explode(',', $javaversions) as $version) {
             $proglangversions[trim($version)] = trim($version);
         }
         $mform->addElement('select', 'proglangversion',
@@ -169,7 +167,7 @@ class java_form_creator extends base_form_creator {
         $testoptions = array();
         // Add checkbox.
         $testoptions[] =& $mform->createElement('advcheckbox', 'checkstyle', '', '');
-        // Add Checkstyle version.
+        // Add Checkstyle versions.
         $csversion = get_config('qtype_proforma', 'checkstyleversion');
         $versions = array();
         if (!$this->_newquestion) {
@@ -219,7 +217,7 @@ class java_form_creator extends base_form_creator {
         $title = $fromform["testtitle"][$i];
         $format = $fromform["testcodeformat"][$i];
         $codeavailable = false;
-        $lentitle = strlen(trim($title));
+        $titleavailable = strlen(trim($title)) > 0;
         switch ($format) {
             case self::EDITORTESTINPUT: // Editor.
                 $code = $fromform["testcode"][$i];
@@ -233,7 +231,7 @@ class java_form_creator extends base_form_creator {
                         $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
                     }
                 } else {
-                    if (0 < $lentitle ) {
+                    if ($titleavailable) {
                         // Title is set but code is missing.
                         $errors['testcode['.$i.']'] = get_string('codeempty', 'qtype_proforma');
                     }
@@ -246,28 +244,36 @@ class java_form_creator extends base_form_creator {
                 $fs = get_file_storage();
                 $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
                 $codeavailable = (count($draftfiles) > 1);
-                if (0 < $lentitle and !$codeavailable) {
-                    // Title is set but code is missing.
-                    $errors['testfiles['.$i.']'] = get_string('codeempty', 'qtype_proforma');
-                }
-                $entrypoint = $fromform["testentrypoint"][$i];
-                if (0 == strlen(trim($entrypoint))) {
-                    // Entrypoint missing.
-                    $errors['testfileoptions['.$i.']'] = get_string('entrypointrequired', 'qtype_proforma');
+                if ($codeavailable) {
+                    $entrypoint = $fromform["testentrypoint"][$i];
+                    if (0 == strlen(trim($entrypoint))) {
+                        // Entrypoint missing.
+                        $errors['testfileoptions['.$i.']'] = get_string('entrypointrequired', 'qtype_proforma');
+                    }
+                } else {
+                    // No test files.
+                    if ($titleavailable) {
+                        // Title is set but code is missing.
+                        $errors['testfiles['.$i.']'] = get_string('codeempty', 'qtype_proforma');
+                    }
                 }
                 break;
             default:
                 throw new coding_exception('unexpected value ' . $format);
         }
 
-        if (0 == $lentitle and $codeavailable) {
-            // Title is missing:
-            // error message must be attached to testoptions group.
-            $errors['testoptions['.$i.']'] = get_string('titleempty', 'qtype_proforma');
-        }
-        if (0 == $fromform["testversion"][$i]) {
-            // Unsupported version and no new choice.
-            $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
+        if ($codeavailable) {
+            if ($titleavailable) {
+                // Code and title are set.
+                if (0 == $fromform["testversion"][$i]) {
+                    // Unsupported version and no new choice.
+                    $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
+                }
+            } else {
+                // Title is missing:
+                // error message must be attached to testoptions group.
+                $errors['testoptions['.$i.']'] = get_string('titleempty', 'qtype_proforma');
+            }
         }
 
         return $errors;

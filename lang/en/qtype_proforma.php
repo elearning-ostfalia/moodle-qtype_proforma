@@ -115,7 +115,7 @@ $string['setlx'] = 'SetlX test';
 
 
 
-$string['codeempty'] = 'Code required';
+$string['codeempty'] = 'Testcode required';
 $string['titleempty'] = 'Title required';
 $string['versionrequired'] = 'Version required.';
 $string['entrypointrequired'] = 'JUnit entrypoint required.';
@@ -235,7 +235,7 @@ The actual URI to locate the submission is compiled by replacing the placeholder
 // Maybe for future use: '{username}: takes the student\'s username in Moodle'.
 
 $string['proglang_hdr'] = 'Programming languages';
-$string['proglang_hdr_info'] = 'Java is enabled by default. Opt out programming languages that are not used at yout site.';
+$string['proglang_hdr_info'] = 'Java is enabled by default. Opt out programming languages that are not used at your site.';
 
 $string['selectlangtitle'] = 'Select programming language';
 

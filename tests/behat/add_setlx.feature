@@ -43,7 +43,7 @@ Feature: ADD SETLX QUESTION
     And I set the codemirror "responsetemplate" to "// type your code here"
     And I set the codemirror "modelsolution" to "// code for model solution"
 
-    # Then I should see "Code required"
+    # Then I should see "Testcode required"
     # add new Setlx Test
     When I press "id_option_add_fields"
     And I set the codemirror "testcode_0" to "some test code"
@@ -103,7 +103,7 @@ Feature: ADD SETLX QUESTION
       | Question text            | write a setlx program that..... |
       | Title                    | Setlx test  |
     And I press "id_submitbutton"
-    Then I should see "Code required"
+    Then I should see "Testcode required"
     # SetlX test
     When I set the codemirror "testcode_0" to "some test code"
     And I press "id_submitbutton"
