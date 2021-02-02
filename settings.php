@@ -108,7 +108,7 @@ $settings->add(new admin_setting_heading('java',
 
 $settings->add(new admin_setting_configtext('qtype_proforma/javaversion',
         get_string('javaversion', 'qtype_proforma'),
-        get_string('javaversion_desc', 'qtype_proforma'), '1.8' ));
+        get_string('javaversion_desc', 'qtype_proforma'), '11, 1.8' ));
 
 
 $settings->add(new admin_setting_configtext('qtype_proforma/junitversion',
