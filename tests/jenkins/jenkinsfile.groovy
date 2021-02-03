@@ -31,9 +31,16 @@ pipeline {
                         // use predefined combinations
                         for (combination in combinations) {
                             stage("Moodle " + combination[0] + " PHP " + combination[1] + " " + combination[2]){
-                                runTest(params.SOURCE_ORIGIN, combination[0], combination[1], combination[2])
-                            }                    
-                        }
+                                try {
+                                    echo "run test catching exceptions"
+                                    runTest(params.SOURCE_ORIGIN, combination[0], combination[1], combination[2])
+                                } catch (Exception err) {
+                                    currentBuild.result = 'SUCCESS'
+                                    // change visualisation of stage to yellow
+                                    unstable('STEP FAILED')
+                                }
+                            } // stage
+                        } // for
                     } else {
                         echo "run specific combination"
                         // use specific versions
