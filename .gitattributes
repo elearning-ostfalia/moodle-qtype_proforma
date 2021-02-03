@@ -2,3 +2,4 @@
 *.js eol=lf
 *.feature eol=lf
 *.java eol=lf
+*.sh eol=lf
