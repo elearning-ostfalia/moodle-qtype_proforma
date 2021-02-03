@@ -94,20 +94,14 @@ def runTest(String source_origin, String moodle_version, String php_version, Str
             sh('rsync -rv --delete-before -q --exclude=.git ' + proforma_path + 'question/behaviour/adaptiveexternalgrading question/behaviour')
             sh('rsync -rv --delete-before -q --exclude=.git ' + proforma_path + 'question/type/proforma question/type')
             sh('rsync -rv --delete-before -q --exclude=.git ' + proforma_path + 'question/format/proforma question/format')
-            // Start from local path
-            sh('cp ' + proforma_path + 'question/type/proforma/tests/jenkins/jenkins_init.sh /home/jenkins/jenkins_init_p.sh')
-            sh('cp ' + proforma_path + 'question/type/proforma/tests/jenkins/jenkins_run.sh /home/jenkins/jenkins_run_p.sh')
+            // Copy scripts to home directory in order to avoid relative paths
+            // (and starting from outside WSL)
+            sh('cp ' + proforma_path + 'question/type/proforma/tests/jenkins/jenkins_init.sh /home/jenkins')
+            sh('cp ' + proforma_path + 'question/type/proforma/tests/jenkins/jenkins_run.sh /home/jenkins')
         }            
-        echo 'Starting test:'
         echo 'Initialising test...'
-        sh('/home/jenkins/jenkins_init_p.sh')
+        sh('/home/jenkins/jenkins_init.sh')
         echo 'Starting tests...'
-        sh('/home/jenkins/jenkins_run_p.sh')    
+        sh('/home/jenkins/jenkins_run.sh')    
     }
-
-    /* echo 'Initialising test...'
-    sh('/home/jenkins/jenkins_init.sh')
-    echo 'Starting tests...'
-    sh('/home/jenkins/jenkins_run.sh')    
-    */
 }
