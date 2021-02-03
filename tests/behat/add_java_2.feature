@@ -50,6 +50,8 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     # change JUnit code format to 'files'
     # select "Files" radio button
     And I set the field "id_testcodeformat_1_1" to "1"
+    And I press "id_submitbutton"
+    Then I should see "Testcode is missing"
     # upload JUnit test file
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit2.java" to "testfiles[1]" filemanager by name
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit1.java" to "testfiles[1]" filemanager by name
