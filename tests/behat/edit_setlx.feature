@@ -218,7 +218,7 @@ Feature: EDIT SETLX
     And the field "testweight[0]" matches value "3"
     And the field "testcode[0]" matches value "some testcode"
     # SetlX 2 is not visible
-    And I should not see "2. SetlX test"
+    And I should not see "SetlX test 2"
 
     And I press "id_submitbutton"
     Then I should see "proforma-setlx"
@@ -226,8 +226,8 @@ Feature: EDIT SETLX
     When I choose "Edit question" action for "proforma-setlx" in the question bank
     # add Setlx 2
     And I press "Add SetlX test"
-    Then I should not see "3. SetlX test"
-    And I should see "2. SetlX test"
+    Then I should not see "SetlX test 3"
+    And I should see "SetlX test 2"
     # add SetlX 2
     And I set the field "testtitle[1]" to "new Setlx Test 2"
     And I set the field "testdescription[1]" to "new Description Setlx 2"

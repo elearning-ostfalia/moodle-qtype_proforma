@@ -112,10 +112,8 @@ class java_form_creator extends base_form_creator {
 
         parent::adjust_test_repeatarray($repeatarray);
         // Add JUnit entry point.
-        // $testfileoptions = array();
         $repeatarray[] = $mform->createElement('text', 'testentrypoint',
             get_string('entrypoint', 'qtype_proforma'), array('size' => 50));
-        // $repeatarray[] = $mform->createElement('group', 'testfileoptions', '', $testfileoptions, null, false);
     }
 
     /**
@@ -248,7 +246,7 @@ class java_form_creator extends base_form_creator {
                     $entrypoint = $fromform["testentrypoint"][$i];
                     if (0 == strlen(trim($entrypoint))) {
                         // Entrypoint missing.
-                        $errors['testfileoptions['.$i.']'] = get_string('entrypointrequired', 'qtype_proforma');
+                        $errors['testentrypoint['.$i.']'] = get_string('entrypointrequired', 'qtype_proforma');
                     }
                 } else {
                     // No test files.

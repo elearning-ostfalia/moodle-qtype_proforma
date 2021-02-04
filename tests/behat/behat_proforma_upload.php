@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Behat extensions for proforma
@@ -39,7 +39,7 @@ class behat_proforma_upload extends behat_repository_upload {
      */
     protected function get_filepicker_node($filepickerelement) {
         if ($this->defaultfilepicker) {
-            // call default function.
+            // Call default function.
             return parent::get_filepicker_node($filepickerelement);
         }
 
@@ -101,8 +101,6 @@ class behat_proforma_upload extends behat_repository_upload {
                 $exception = 'Cannot evaluate unit: ' . $text;
                 throw new ExpectationException($exception, $this->getSession());
         }
-        // fwrite(STDOUT, 'value +' . $value . '+');
-        // fwrite(STDOUT, 'unit +' . $matches['unit'] . '+');
         if ($value < $min or $min > $max) {
             $exception = 'Filesize of $filename does not match: ' . $text;
             throw new ExpectationException($exception, $this->getSession());
@@ -123,7 +121,7 @@ class behat_proforma_upload extends behat_repository_upload {
 
         // Check for existing filename link.
         $generalcontext->should_exist($filename, 'link');
-        // Open dialog window
+        // Open dialog window.
         $generalcontext->i_click_on($filename, 'link');
 
         // More info about the problem (in case there is a problem).
@@ -137,8 +135,6 @@ class behat_proforma_upload extends behat_repository_upload {
                 $exception
         );
 
-        // fwrite(STDOUT, 'Found ' . count($nodes)) . ' ';
-
         // Close dialogue window.
         foreach ($nodes as $node) {
             $text = trim($node->getText());
@@ -149,6 +145,5 @@ class behat_proforma_upload extends behat_repository_upload {
             $this->check_range($text, $min, $max);
         }
         $generalcontext->i_click_on_in_the('Cancel', 'button', 'Edit ' . $filename, 'dialogue');
-        // $generalcontext->i_click_on_dismissing_the_dialogue('Cancel', 'button');
     }
 }

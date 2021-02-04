@@ -185,8 +185,9 @@ class behat_proforma extends behat_base {
         $length = strlen($value);
         if (substr($fieldvalue, 0, $length) != $value) {
             throw new ExpectationException(
-                    'The field "' . $label . '"" value is \'' . substr($fieldvalue, 0, $length) . '\', \'' . $value . '\' expected' ,
-                    $this->getSession()
+                    'The field "' . $label . '"" value is \'' .
+                        substr($fieldvalue, 0, $length) . '\', \'' . $value . '\' expected' ,
+                        $this->getSession()
             );
         }
     }
@@ -250,7 +251,8 @@ class behat_proforma extends behat_base {
      * @When /^I set the codemirror "(?P<name_string>(?:[^"]|\\")*)" to "(?P<value_string>(?:[^"]|\\")*)"$/
      */
     public function set_the_codemirror_to($name, $value) {
-        $command = 'return (function() { $("#id_' . $name . '").next(".CodeMirror").get(0).CodeMirror.setValue("'. $value. '"); })();';
+        $command = 'return (function() { $("#id_' . $name .
+            '").next(".CodeMirror").get(0).CodeMirror.setValue("'. $value. '"); })();';
         // fwrite(STDOUT, $command);
         $this->getSession()->getDriver()->evaluateScript($command);
     }

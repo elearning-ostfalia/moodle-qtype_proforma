@@ -285,7 +285,7 @@ Feature: EDIT JAVA
     And the field "testcode[0]" matches value "class XTest {}"
     And the field "testversion[0]" matches value "4.12"
     # JUnit 2 is not visible
-    And I should not see "2. JUnit test"
+    And I should not see "JUnit test 2"
 
     And I press "id_submitbutton"
     Then I should see "proforma-java"
@@ -293,8 +293,8 @@ Feature: EDIT JAVA
     When I choose "Edit question" action for "proforma-java" in the question bank
     # add Junit 2
     And I press "Add JUnit test"
-    Then I should not see "3. JUnit test"
-    And I should see "2. JUnit test"
+    Then I should not see "JUnit test 3"
+    And I should see "JUnit test 2"
     # add JUnit 2
     And I set the field "testtitle[1]" to "new Junit Test 2"
     And I set the field "testdescription[1]" to "new Description Junit 2"

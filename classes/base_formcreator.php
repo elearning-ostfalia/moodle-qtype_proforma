@@ -260,9 +260,6 @@ abstract class base_form_creator {
     protected function adjust_test_repeatarray(&$repeatarray) {
         $mform = $this->_form;
 
-        $classes = array();
-        $classes['class'] = 'proforma-unittest';
-
         // Add choice for test code input: editor or filemanager.
         $radioarray = array();
         $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
@@ -274,12 +271,10 @@ abstract class base_form_creator {
             $radioarray, null, false);
         // Add textarea for unit test code.
         $repeatarray[] = $mform->createElement('textarea', 'testcode', '',
-            array('rows' => 20, 'cols' => 80, 'class' => 'proforma-unittest'));
+            array('rows' => 20, 'cols' => 80));
         // Add filemanager.
-        $repeatarray[] = $mform->createElement('filemanager', 'testfiles',
-            '' /*get_string('testcodefiles', 'qtype_proforma')*/, null,
-            array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 15,
-                'class' => 'proforma-unittest'));
+        $repeatarray[] = $mform->createElement('filemanager', 'testfiles', '', null,
+            array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 15));
     }
 
     /**
@@ -325,13 +320,10 @@ abstract class base_form_creator {
             return $repeats;
         }
 
-        $classes = array();
-        $classes['class'] = 'proforma-unittest';
-
-        // Create test group.
+        // Create test group with 'small' elements.
         $testoptions = array();
         // Test id.
-        $testoptions[] = $mform->createElement('text', 'testid', '', ); // , array('size' => 3));
+        $testoptions[] = $mform->createElement('text', 'testid', '');
         // Test type.
         $testoptions[] = $mform->createElement('text', 'testtype',
             get_string('testtype', 'qtype_proforma'), array('size' => 80));
@@ -340,17 +332,16 @@ abstract class base_form_creator {
         // Weight.
         $this->add_test_weight_option($testoptions, 'test', '1', false);
 
-        $label = get_string('testlabela', 'qtype_proforma', $this->get_test_label());
-
         $repeatarray = array();
+        $label = get_string('testlabela', 'qtype_proforma', $this->get_test_label());
         $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
         // Title.
         $repeatarray[] = $mform->createElement('text', 'testtitle',
-            get_string('testtitle', 'qtype_proforma'), array('size' => 60, 'class' => 'proforma-unittest'));
+            get_string('testtitle', 'qtype_proforma'), array('size' => 60));
         $mform->setType('testtitle', PARAM_TEXT);
         // Description.
         $repeatarray[] = $mform->createElement('text', 'testdescription',
-            get_string('testdescription', 'qtype_proforma'), array('size' => 120, 'class' => 'proforma-unittest'));
+            get_string('testdescription', 'qtype_proforma'), array('size' => 120));
 
         // Derived class could modify array.
         $this->adjust_test_repeatarray($repeatarray);
