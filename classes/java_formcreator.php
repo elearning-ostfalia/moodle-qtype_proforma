@@ -17,8 +17,7 @@
 /**
  * class for creating java question edit forms
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
@@ -29,14 +28,20 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.p
 require_once($CFG->dirroot . '/question/type/proforma/classes/java_task.php');
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
+/**
+ * Edit form for creating Java questions.
+ */
 class java_form_creator extends base_form_creator {
 
+    /**
+     * flag indicates if a new question is to be created
+     * @var type
+     */
     protected $_newquestion = false;
 
     /**
      * java_form_creator constructor.
-     *
-     * @param $form
+     * @param type $form
      * @param bool $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
@@ -80,8 +85,8 @@ class java_form_creator extends base_form_creator {
 
     /**
      * Add grader options/information.
-     *
-     * @param $question
+     * @param type $question question instance
+     * @param type $context question context
      */
     public function add_grader_settings($question, $context) {
         if (qtype_proforma\lib\can_view_systeminfo($context->id)) {
@@ -211,6 +216,17 @@ class java_form_creator extends base_form_creator {
         return $repeats;
     }
 
+    /**
+     * validate JUnit test input
+     *
+     * @param qtype_proforma_edit_form $editor main editor instance
+     * @param type $fromform  input data
+     * @param type $files file array
+     * @param type $i index
+     * @param type $errors errors array
+     * @return type
+     * @throws coding_exception
+     */
     private function _validate_junit(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
         $title = $fromform["testtitle"][$i];
         $format = $fromform["testcodeformat"][$i];
@@ -373,6 +389,47 @@ class java_form_creator extends base_form_creator {
                 default:
                     throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }
+        }
+    }
+
+    /**
+     * Do form definitions things that need to be done when data is set
+     */
+    public function definition_after_data() {
+         // Try and remove 'Choose' option from JUnit version field.
+        $i = 0;
+        while ($this->_form->elementExists('testoptions[' . $i . ']')) {
+            $group = &$this->_form->getElement('testoptions[' . $i . ']');
+            $elements = &$group->getElements();
+            $selection = null;
+            // There seems to be no simple solution for finding a field.
+            foreach ($elements as $element) {
+                // Get version element and current selection.
+                if ($element->getName() == 'testversion[' . $i . ']') {
+                    $value = $element->getValue();
+                    if (isset($value) and is_array($value) and count($value) == 1) {
+                        $selection = $value[0];
+                    }
+                    $versionelement = $element;
+                }
+            }
+            // Get title.
+            $titlelement = $this->_form->getElement('testtitle[' . $i . ']');
+            $value = $titlelement->getValue();
+            $titleset = !empty($value);
+
+            if (isset($titleset) and isset($versionelement) and $selection != '0') {
+                // Current selection must not be '0'
+                // in order to handle situations where an unsupported
+                // version is imported.
+                $options = $versionelement->_options;
+                if (isset($options) and is_array($options) and count($options) > 1) {
+                    // Remove first option.
+                    array_shift($options);
+                }
+                $versionelement->_options = $options;
+            }
+            $i ++;
         }
     }
 }

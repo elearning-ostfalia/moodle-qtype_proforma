@@ -317,10 +317,13 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                 // Switch to namespace 'unit'.
                 $unittest = $config->children('unit', true)->{'unittest'};
                 $question->testversion[$index] = (string)$unittest->attributes()->version;
-                $question->testentrypoint[$index] = $unittest->{'entry-point'};
                 // Call parent function at last position because
                 // index is incremented there!
                 parent::extract_formdata_from_test($question, $test, $files, $index);
+                if (!isset($question->testcode[$index])) {
+                    // Only set entrypoint if code for editor is set.
+                    $question->testentrypoint[$index] = $unittest->{'entry-point'};
+                }
                 break;
         }
     }
