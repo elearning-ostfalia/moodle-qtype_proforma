@@ -51,27 +51,28 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     # select "Files" radio button
     And I set the field "id_testcodeformat_1_1" to "1"
     And I press "id_submitbutton"
-    Then I should see "Testcode is missing"
+    Then I should see "Testcode required"
     # upload JUnit test file
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit2.java" to "testfiles[1]" filemanager by name
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit1.java" to "testfiles[1]" filemanager by name
     And I set the field "testentrypoint[1]" to "XClass"
 
-    # There seems to be a bug in the test environment uploading test files for 
-    # another JUnit test. 
-    # Therefore the test is commented out.
+    # There seems to be a bug in the test environment uploading files 
+    # into a second filemenager. So we close and reopen.
+    And I press "id_submitbutton"
+    And I choose "Edit question" action for "java-question" in the question bank
+
     # Junit #3: one file
-    # And I press "id_option_add_fields"
-    # And I set the field "testtitle[2]" to "Junit #3"
-    # And I set the field "testweight[2]" to "30"
-    # And I set the field "testversion[2]" to "5"
-    # And I set the field "testdescription[2]" to "third JUnit test"
-    ## change JUnit code format to 'files'
-    ## select "Files" radio button
-    # And I set the field "id_testcodeformat_2_1" to "1"
-    ## upload JUnit test file
-    # And I upload "question/type/proforma/tests/fixtures/reverseJUnit.java" to "testfiles[2]" filemanager by name
-    # And I set the field "testentrypoint[2]" to "YClass"
+    And I press "id_option_add_fields"
+    And I set the field "testtitle[2]" to "Junit #3"
+    And I set the field "testweight[2]" to "30"
+    And I set the field "testversion[2]" to "5"
+    And I set the field "testdescription[2]" to "third JUnit test"
+    # change JUnit code format to 'files'
+    And I set the field "id_testcodeformat_2_1" to "1"
+    # upload JUnit test file
+    And I upload "question/type/proforma/tests/fixtures/reverseJUnit.java" to "testfiles[2]" filemanager by name
+    And I set the field "testentrypoint[2]" to "YClass"
 
     # compilation
     And I set the field "compileweight" to "5"
@@ -116,20 +117,17 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     And the size of file "reverseJUnit2.java" is between "680" and "690" bytes
     And the size of file "reverseJUnit1.java" is between "1700" and "1800" bytes
 
-    And the field "testentrypoint[0]" matches value "XClass"
+    And the field "testentrypoint[1]" matches value "XClass"
 
     # Junit #3: one file
-    # And the field "testtitle[2]" matches value "Junit #3"
-    # And the field "testweight[2]" matches value "30"
-    # And the field "testdescription[2]" matches value "third JUnit test"
-    # And the field "testversion[2]" matches value "5"
-    ## check test file(s)
-    # And "reverseJUnit.java" "link" should exist
-    ## there seems to be no step out of the box for downloading a file from filemanager :-(
-    # And I click on "reverseJUnit.java" "link"
-    # And I should see "2KB" in the "Edit reverseJUnit.java" "dialogue"
-    # And I click on "Cancel" "button" in the "Edit reverseJUnit.java" "dialogue"
-    # And the field "testentrypoint[1]" matches value "YClass"
+    And the field "testtitle[2]" matches value "Junit #3"
+    And the field "testweight[2]" matches value "30"
+    And the field "testdescription[2]" matches value "third JUnit test"
+    And the field "testversion[2]" matches value "5"
+    # check test file(s)
+    And "reverseJUnit.java" "link" should exist
+    And the size of file "reverseJUnit.java" is between "1900" and "2000" bytes
+    And the field "testentrypoint[2]" matches value "YClass"
 
     # Checkstyle
     And the "checkstyle" checkbox is "not checked"
