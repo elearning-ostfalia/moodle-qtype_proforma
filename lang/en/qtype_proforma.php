@@ -188,8 +188,10 @@ $string['notests'] = 'Tests are not available => use "all or nothing" ';
 $string['testdescription'] = 'Description';
 $string['testtype'] = 'Type';
 $string['testtitle'] = 'Title';
+$string['testcode'] = 'Testcode';
+$string['testcodefiles'] = 'Testcode files';
 $string['testlabel'] = 'Test';
-$string['testlabela'] = '{no}. {$a}';
+$string['testlabela'] = '{$a} {no}';
 $string['entrypoint'] = 'Entrypoint';
 
 

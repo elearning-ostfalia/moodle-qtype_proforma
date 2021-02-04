@@ -112,10 +112,10 @@ class java_form_creator extends base_form_creator {
 
         parent::adjust_test_repeatarray($repeatarray);
         // Add JUnit entry point.
-        $testfileoptions = array();
-        $testfileoptions[] = $mform->createElement('text', 'testentrypoint',
+        // $testfileoptions = array();
+        $repeatarray[] = $mform->createElement('text', 'testentrypoint',
             get_string('entrypoint', 'qtype_proforma'), array('size' => 50));
-        $repeatarray[] = $mform->createElement('group', 'testfileoptions', '', $testfileoptions, null, false);
+        // $repeatarray[] = $mform->createElement('group', 'testfileoptions', '', $testfileoptions, null, false);
     }
 
     /**

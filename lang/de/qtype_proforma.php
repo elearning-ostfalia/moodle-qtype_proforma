@@ -173,6 +173,9 @@ $string['notests'] = 'Keine Tests gefunden => benutze "all or nothing"';
 $string['testdescription'] = 'Beschreibung';
 $string['testtype'] = 'Typ';
 $string['testtitle'] = 'Titel';
+$string['testcode'] = 'Testcode';
+$string['testcodefiles'] = 'Testcode-Dateien';
+
 $string['weight'] = 'Gewicht';
 $string['entrypoint'] = 'Entrypoint';
 
