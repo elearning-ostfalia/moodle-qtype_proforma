@@ -51,7 +51,7 @@ define("DEBUG", 0);
 class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthrough_test_base {
 
 
-    private $behaviours_multiple_tries = array(
+    private $behavmultipletries = array(
             array('interactive', self::interactive_tries),
             array('adaptive', self::interactive_tries),
             array('adaptivenopenalty', self::adaptivenopenalty_tries)
@@ -59,35 +59,40 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
 
 
     protected function run_on_all_behaviours($testfunction) {
-        // easier for debugging:
-        if (DEBUG)
+        if (DEBUG) {
             print('adaptivenopenalty' .PHP_EOL);flush();
+        }
         $testfunction('adaptivenopenalty');
-        if (DEBUG)
+        if (DEBUG) {
             print('adaptive'.PHP_EOL);flush();
+        }
         $testfunction('adaptive');
-        if (DEBUG)
+        if (DEBUG) {
             print('immediatefeedback'.PHP_EOL);flush();
+        }
         $testfunction('immediatefeedback');
 
-        if (DEBUG)
+        if (DEBUG) {
             print('interactive'.PHP_EOL);flush();
+        }
         $testfunction('interactive');
-        if (DEBUG)
+        if (DEBUG) {
             print('interactivecountback'.PHP_EOL);flush();
+        }
         $testfunction('interactivecountback');
-        if (DEBUG)
+        if (DEBUG) {
             print('immediatecbm'.PHP_EOL);
+        }
         $testfunction('immediatecbm');
 
-        if (DEBUG)
+        if (DEBUG) {
             print('deferredfeedback'.PHP_EOL);flush();
+        }
         $testfunction('deferredfeedback');
 
     }
 
     protected function run_on_mulitiple_tries_behaviours($testfunction) {
-        // easier for debugging:
         $testfunction('adaptivenopenalty', self::adaptivenopenalty_tries);
         $testfunction('adaptive', self::interactive_tries);
         $testfunction('interactive', self::interactive_tries);
@@ -153,16 +158,15 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
             $this->press_submit(self::WRONG_RESPONSE);
             $this->check_graded_wrong();
 
-            // Finish the attempt
+            // Finish the attempt.
             $this->finish_attempt();
 
-            // Verify  => response is graded
+            // Verify  => response is graded.
             $this->check_graded_wrong();
 
             //        $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
         });
     }
-
 
     public function test_correct_but_internal_grading_error() {
         $this->run_on_all_behaviours(function($preferredbehaviour) {
@@ -312,7 +316,6 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
         });
     }
 
-
     /* tests a wrong answer using weighted sum  */
     public function test__weighted_sum_wrong() {
         $this->run_on_all_behaviours(function($preferredbehaviour) {
@@ -334,7 +337,6 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
             //        $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
         });
     }
-
 
     /* tests a completely wrong answer with finishing attempt  */
     public function test_weighted_sum_completely_wrong() {
@@ -469,7 +471,6 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
         }*/
     }
 
-
     /**
      * - try again button
      * - multiple tries possible
@@ -499,7 +500,6 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
             $this->check_graded_right($preferredbehaviour != 'adaptivenopenalty'?0.8:1.0); // , true);
         });
     }
-
 
     /**
      * save correct, submit, save wrong answer, finish
