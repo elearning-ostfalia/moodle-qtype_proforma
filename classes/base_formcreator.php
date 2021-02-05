@@ -189,7 +189,7 @@ abstract class base_form_creator {
     protected function add_responsetemplate($question) {
         $mform = $this->_form;
         $mform->addElement('textarea', 'responsetemplate',
-        get_string('responsetemplate', 'qtype_proforma'), 'rows="20" cols="80"');
+            get_string('responsetemplate', 'qtype_proforma'), 'rows="5" cols="80"');
         if (get_config('qtype_proforma', 'usecodemirror')) {
             qtype_proforma\lib\as_codemirror('id_responsetemplate',
                 $this->_syntaxhighlighting, 'id_responsetemplateheader');
@@ -224,7 +224,7 @@ abstract class base_form_creator {
     protected function add_modelsolution() {
         $mform = $this->_form;
         // Model Solution files.
-        $mform->addElement('textarea', 'modelsolution', get_string('modelsolution', 'qtype_proforma'), 'rows="20" cols="80"');
+        $mform->addElement('textarea', 'modelsolution', get_string('modelsolution', 'qtype_proforma'), 'rows="10" cols="80"');
         if (get_config('qtype_proforma', 'usecodemirror')) {
             qtype_proforma\lib\as_codemirror('id_modelsolution', $this->_syntaxhighlighting);
             global $PAGE;

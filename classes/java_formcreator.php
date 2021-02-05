@@ -33,11 +33,15 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
  */
 class java_form_creator extends base_form_creator {
 
+    // Key for Choose option in version selection.
+    const CHOOSE_OPTION = '0';
+
     /**
      * flag indicates if a new question is to be created
      * @var type
      */
     protected $_newquestion = false;
+
 
     /**
      * java_form_creator constructor.
@@ -71,7 +75,7 @@ class java_form_creator extends base_form_creator {
         if (!$this->_newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
             // In case no other value can be selected this is chosen by default.
-            $proglangversions[0] = get_string('choose');
+            $proglangversions[self::CHOOSE_OPTION] = get_string('choose');
         }
         foreach (explode(',', $javaversions) as $version) {
             $proglangversions[trim($version)] = trim($version);
@@ -118,7 +122,7 @@ class java_form_creator extends base_form_creator {
         parent::adjust_test_repeatarray($repeatarray);
         // Add JUnit entry point.
         $repeatarray[] = $mform->createElement('text', 'testentrypoint',
-            get_string('entrypoint', 'qtype_proforma'), array('size' => 50));
+            get_string('entrypoint', 'qtype_proforma'), array('size' => 80));
     }
 
     /**
@@ -148,7 +152,7 @@ class java_form_creator extends base_form_creator {
         if (!$this->_newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
             // In case no other value can be selected this is chosen by default.
-            $obj->{'0'} = get_string('choose');
+            $obj->{self::CHOOSE_OPTION} = get_string('choose');
         }
         foreach (explode(',', $csversion) as $version) {
             $strversion = trim($version);
@@ -176,7 +180,7 @@ class java_form_creator extends base_form_creator {
         if (!$this->_newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
             // In case no other value can be selected this is chosen by default.
-            $versions[0] = get_string('choose');
+            $versions[self::CHOOSE_OPTION] = get_string('choose');
         }
         foreach (explode(',', $csversion) as $version) {
             $versions[trim($version)] = trim($version);
@@ -393,6 +397,49 @@ class java_form_creator extends base_form_creator {
     }
 
     /**
+     * checks if the first option can be removed in unit test version
+     *
+     * @param type $versionelement
+     * @return boolean
+     */
+    protected function remove_choose_option($versionelement) {
+        if (!isset($versionelement)) {
+            debugging('version element not found');
+            return false;
+        }
+        // Get options.
+        $options = $versionelement->_options;
+        if (!isset($options) or !is_array($options) or count($options) <= 1) {
+            debugging('no options found');
+            return false;
+        }
+
+        $firstoption = array_shift($options);
+        if ($firstoption['text'] != get_string('choose')) {
+            // Choose option is already removed => nothing to be done.
+            return false;
+        }
+        // Get current selection.
+        $value = $versionelement->getValue();
+        if (!isset($value)) {
+            // No selection => first option can be removed.
+            return true;
+        }
+
+        if (is_array($value) and count($value) == 1) {
+            $selection = $value[0];
+            if ($selection != get_string('choose')) {
+                // If 'choose' option is NOT selected then first option can be removed.
+                return true;
+            }
+            // If 'choose' option is selected then do NOT remove first option.
+        }
+
+        // Default.
+        return false;
+    }
+
+    /**
      * Do form definitions things that need to be done when data is set
      */
     public function definition_after_data() {
@@ -401,34 +448,22 @@ class java_form_creator extends base_form_creator {
         while ($this->_form->elementExists('testoptions[' . $i . ']')) {
             $group = &$this->_form->getElement('testoptions[' . $i . ']');
             $elements = &$group->getElements();
-            $selection = null;
+            // Find element with version.
             // There seems to be no simple solution for finding a field.
             foreach ($elements as $element) {
-                // Get version element and current selection.
+                // Find version element.
                 if ($element->getName() == 'testversion[' . $i . ']') {
-                    $value = $element->getValue();
-                    if (isset($value) and is_array($value) and count($value) == 1) {
-                        $selection = $value[0];
-                    }
                     $versionelement = $element;
+                    break;
                 }
             }
-            // Get title.
-            $titlelement = $this->_form->getElement('testtitle[' . $i . ']');
-            $value = $titlelement->getValue();
-            $titleset = !empty($value);
 
-            if (isset($titleset) and isset($versionelement) and $selection != '0') {
-                // Current selection must not be '0'
-                // in order to handle situations where an unsupported
-                // version is imported.
+            if ($this->remove_choose_option($versionelement)) {
                 $options = $versionelement->_options;
-                if (isset($options) and is_array($options) and count($options) > 1) {
-                    // Remove first option.
-                    array_shift($options);
-                }
+                $firstoption = array_shift($options);
                 $versionelement->_options = $options;
             }
+
             $i ++;
         }
     }
