@@ -76,7 +76,8 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
 
     # compilation
     And I set the field "compileweight" to "5"
-
+    
+    # save question and check values.
     And I press "id_submitbutton"
     Then I should see "java-question"
 
