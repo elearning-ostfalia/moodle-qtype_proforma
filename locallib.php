@@ -17,8 +17,7 @@
 /**
  * Plugin library
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2020 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
@@ -160,11 +159,17 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/grader_2.php');
  * Helper class for setting the grader URI with connection test
  */
 class admin_setting_configproformagrader extends \admin_setting_configtext {
-    /* grader instance */
+    /**
+     * @var type grader instance
+     */
     private $_grader = null;
-    /* connection test result */
+    /**
+     * @var XML string connection test result
+     */
     private $_graderoutput = null;
-    /* HTTP code of test response */
+    /**
+     * @var int HTTP code of test response
+     */
     private $_httpcode = null;
 
     /**
@@ -226,7 +231,15 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
             case 0:
                 return $this->_graderoutput;
             case 200:
-                return '';
+                // Show grader info if available.
+                try {
+                    $response = new \SimpleXMLElement($this->_graderoutput, LIBXML_PARSEHUGE);
+                    $graderinfo = $response->{'response-meta-data'}->{'grader-engine'};
+                    return $graderinfo['name'] . ' ' . $graderinfo['version'];
+                } catch (Exception $e) {
+                    // Ignore exception.
+                    return '';
+                 }
             case 404:
                 return 'HTTP status code 404, check URI';
             default:
