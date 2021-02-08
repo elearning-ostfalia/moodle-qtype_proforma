@@ -59,7 +59,7 @@ class proforma_form_creator extends base_form_creator {
      * @param $errors Array with error messages (so far)
      * @return array with error messages
      */
-    public function validation(qtype_proforma_edit_form $editor, $fromform, $files, $errors) {
+    public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
         $errors = parent::validation($editor, $fromform, $files, $errors);
 
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
@@ -88,7 +88,7 @@ class proforma_form_creator extends base_form_creator {
      * @param type $errors
      * @return updated error array
      */
-    protected function validate_taskfile(qtype_proforma_edit_form $editor, $fromform, $errors) {
+    protected function validate_taskfile(qtype_proforma_edit_form &$editor, $fromform, $errors) {
         // Get Taskfile from draft area.
         $draftid = $fromform[qtype_proforma::FILEAREA_TASK];
         global $USER;
@@ -131,7 +131,7 @@ class proforma_form_creator extends base_form_creator {
      * @param type $errors
      * @return updated error array
      */
-    protected function check_if_taskfiles_are_compatible(qtype_proforma_edit_form $editor, $draftfile, $taskfile, $errors) {
+    protected function check_if_taskfiles_are_compatible(qtype_proforma_edit_form &$editor, $draftfile, $taskfile, $errors) {
         // Extract relevent data for both files.
 
         try {
@@ -192,7 +192,15 @@ class proforma_form_creator extends base_form_creator {
             // Add more information.
             $message[] = get_string('infotaskupdate', 'qtype_proforma');
             $errors[qtype_proforma::FILEAREA_TASK] = implode('<br>', $message);
+        } else {
+            // Update ProFormA data from draft zip file.
+            // Data will be discarded if errors occure!
+            $uuid =&$editor->get_form()->getElement('uuid');
+            $uuid->_attributes['value'] = $datadraft->uuid;
+            $proformaversion =&$editor->get_form()->getElement('proformaversion');
+            $proformaversion->_attributes['value'] = $datadraft->proformaversion;
         }
+
         return $errors;
     }
 

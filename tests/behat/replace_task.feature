@@ -70,13 +70,36 @@ Feature: REPLACE TASK
 ### Replace task file
 
   @_file_upload
+  Scenario: replace task with TASK WITH MIXED TESTS => error message.
+    When I delete "isPalindrom.zip" from "ProFormA task file" filemanager
+    And I upload "question/type/proforma/tests/fixtures/isPalindromTestsuiteInverted.zip" file to "ProFormA task file" filemanager
+    And I press "id_submitbutton"
+    Then I should see "isPalindrom"
+    When I choose "Edit question" action for "isPalindrom" in the question bank
+    And I expand all fieldsets
+    # UUID should have been changed
+    And the field "UUID" matches value "27a11e4d-f538-4673-8b0b-24d710b0cad5"
+    And "isPalindromTestsuiteInverted.zip" "link" should exist
+    And I press "Cancel"
+
+### Error messages
+
+  @_file_upload
   Scenario: replace task with OTHER PROGRAMMING LANGUAGE => error message.
     When I delete "isPalindrom.zip" from "ProFormA task file" filemanager
     And I upload "question/type/proforma/tests/fixtures/isPalindromErrPython.zip" file to "ProFormA task file" filemanager
     And I press "Save changes"
     Then I should see "Programming language in new task is not 'java'."
     And I should see "Please check task or use ProFormA import."
+    And the field "UUID" matches value "ebbfec1c-81f0-4446-9031-d4b92ec33333"
     # undo changes
+    And I press "Cancel"
+    When I choose "Edit question" action for "isPalindrom" in the question bank
+    And I expand all fieldsets
+    # UUID should been old values
+    And the field "UUID" matches value "ebbfec1c-81f0-4446-9031-d4b92ec33333"
+    And "isPalindrom.zip" "link" should exist
+    And "isPalindromErrPython.zip" "link" should not exist
     And I press "Cancel"
 
   @_file_upload
@@ -86,6 +109,7 @@ Feature: REPLACE TASK
     And I press "Save changes"
     Then I should see "Test types or order do not match."
     And I should see "Please check task or use ProFormA import."
+    And the field "UUID" matches value "ebbfec1c-81f0-4446-9031-d4b92ec33333"
     # undo changes
     And I press "Cancel"
 
@@ -96,6 +120,7 @@ Feature: REPLACE TASK
     And I press "Save changes"
     Then I should see "Test types or order do not match."
     And I should see "Please check task or use ProFormA import."
+    And the field "UUID" matches value "ebbfec1c-81f0-4446-9031-d4b92ec33333"
     # undo changes
     And I press "Cancel"
 
@@ -106,6 +131,7 @@ Feature: REPLACE TASK
     And I press "Save changes"
     Then I should see "Number of tests has been changed: 3."
     And I should see "Please check task or use ProFormA import."
+    And the field "UUID" matches value "ebbfec1c-81f0-4446-9031-d4b92ec33333"
     # undo changes
     And I press "Cancel"
 
@@ -127,13 +153,14 @@ Feature: REPLACE TASK
     # undo changes
     And I press "Cancel"
 
+
+
+### Delete task
+
   @_file_upload
-  Scenario: replace task with TASK WITH MIXED TESTS => error message.
+  Scenario: delete task => error message.
     When I delete "isPalindrom.zip" from "ProFormA task file" filemanager
-    And I upload "question/type/proforma/tests/fixtures/isPalindromTestsuiteInverted.zip" file to "ProFormA task file" filemanager
     And I press "id_submitbutton"
-    Then I should see "isPalindrom"
-    When I choose "Edit question" action for "isPalindrom" in the question bank
-    And I expand all fieldsets
-    And I delete "isPalindromTestsuiteInverted.zip" from "ProFormA task file" filemanager
-    And I press "Cancel"
+    Then I should see "Required"
+    And I upload "question/type/proforma/tests/fixtures/isPalindrom.zip" file to "ProFormA task file" filemanager
+    And I press "id_submitbutton"

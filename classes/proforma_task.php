@@ -135,6 +135,21 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
             foreach ($task->tests->test as $test) {
                 $question->test[(string)$test['id']] = $test->{'test-type'};
             }
+            // Read UUID.
+            $question->uuid = (string)$task['uuid'];
+            // Read ProFormA version.
+            $namespaces = $task->getNamespaces();
+            $version = '???';
+            foreach ($namespaces as $namespace) {
+                if (strpos(trim($namespace), 'urn:proforma') === 0) {
+                    $version = trim($namespace);
+                }
+            }
+            $version = str_replace('urn:proforma:task:v', '', $version);
+            $version = str_replace('urn:proforma:v', '', $version);
+            $version = str_replace(' ', '', $version);
+            $question->proformaversion = $version;
+
             return $question;
         } catch (Exception $ex) {
             // Convert exception.

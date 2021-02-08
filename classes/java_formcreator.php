@@ -307,7 +307,7 @@ class java_form_creator extends base_form_creator {
      * @param array $errors
      * @return array
      */
-    public function validation(qtype_proforma_edit_form $editor, $fromform, $files, $errors) {
+    public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
         $errors = parent::validation($editor, $fromform, $files, $errors);
         if ($fromform["checkstyle"]) {
             // Check Checkstyle values.

@@ -131,7 +131,7 @@ class qtype_proforma_edit_form extends question_edit_form {
      * enable access to form variable for formcreator
      * @return type
      */
-    public function get_form() {
+    public function &get_form() {
         return $this->_form;
     }
 

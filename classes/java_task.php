@@ -198,7 +198,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                 } else {
                     $entrypoint = $formdata->testentrypoint[$index];
                 }
-                $xw->create_childelement_with_text('unit:entry-point', $entrypoint);
+                $xw->create_childelement_with_text('unit:entry-point', trim($entrypoint));
                 $xw->endElement(); // End tag unit:unittest.
                 $xw->endElement(); // End tag test-configuration.
 

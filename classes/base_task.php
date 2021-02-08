@@ -17,8 +17,7 @@
 /**
  * ProFormA task file
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2020 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>

@@ -111,7 +111,7 @@ abstract class base_form_creator {
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function validation(qtype_proforma_edit_form $editor, $fromform, $files, $errors) {
+    public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
         return $errors;
     }
 

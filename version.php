@@ -17,8 +17,7 @@
 /**
  * The ProFormA Question version information
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2018 Ostfalia University of Applied Sciences
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
@@ -27,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_proforma';
-$plugin->version   = 2021020500;
+$plugin->version   = 2021020800;
 
 $plugin->requires  = 2017111300;
 $plugin->release = '2.4.0';

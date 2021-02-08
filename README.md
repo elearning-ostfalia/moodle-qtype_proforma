@@ -1,4 +1,4 @@
-Requires at least Praktomat Version 4.7!!
+Requires at least Praktomat Version 4.8!!
 
 The ProForma Moodle Question Type is a Moodle Plugin that is used for 
 automatically grading programming questions in Moodle quizzes. Questions are 
@@ -103,7 +103,7 @@ and for the built-in Java question generator:
 
 There is a simple test for the connection between Moodle and Praktomat in the settings page where the grader URI is set. If you press the `save changes` button the connection is checked and in case of an error the error message is displayed. 
 
-![connectiontest](doc/connection_test.png "connection test")
+![connectiontest](doc/connection_test.PNG "connection test")
 
 
 ### Sample
