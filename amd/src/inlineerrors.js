@@ -30,6 +30,21 @@ import CodeMirror from "./codemirror";
 
 var widgets = [];
 
+
+function hideErrors(editor) {
+    try {
+        editor.operation(function() {
+            console.log('remove old widgets');
+            for (var i = 0; i < widgets.length; ++i) {
+                editor.removeLineWidget(widgets[i]);
+            }
+            widgets.length = 0;
+        });
+    } catch(e) {
+        console.error('error occured ' + e);
+    }
+}
+
 function showErrors(editor, errors) {
     try {
         editor.operation(function(){
@@ -163,19 +178,26 @@ export const embedError = (cmid, collapsregion, regexp) => {
         return;
     }
 
+    const SHOW = 'Show inline';
+    const HIDE = 'Hide inline';
     // Create button.
     console.log('create button');
     var button = document.createElement("button");
     button.type = "button";
-    button.innerText = "Show inline";
+    button.innerText = SHOW;
     let a_element = region.querySelector('a');
     a_element.insertAdjacentElement("afterend", button);
+    cmid = CSS.escape(cmid);
     button.addEventListener('click',
         function () {
-            cmid = CSS.escape(cmid);
             var editor = getCodeMirror('#' + cmid);
-            showErrors(editor, messages);
-            button.disabled = true;
+            if (button.innerText == SHOW) {
+                showErrors(editor, messages);
+                button.innerText = HIDE;
+            } else {
+                hideErrors(editor, messages);
+                button.innerText = SHOW;
+            }
     });
 };
 
