@@ -214,6 +214,7 @@ class feedback_renderer {
         }
 
         $ghtest = $ghtest[0];
+        $testtype = (string)$ghtest->{'test-type'};
         $testtitle = $ghtest->title;
         if (!isset($testtitle)) {
             $testtitle = 'Test ' . $id;
@@ -247,44 +248,52 @@ class feedback_renderer {
         );
 
 
+        $icon = '';
         if ($internalerror) {
-            $exclamation = $this->mainrenderer->pix_icon('i/caution', 'info');
+            // Exclamation mark.
+            $icon = $this->mainrenderer->pix_icon('i/caution', 'info');
             $allcorrect = false;
-            $result .= print_collapsible_region_start('', $collid,
-                    $exclamation . ' ' . $testtitle . $visiblescore,
-                    '', true, true);
         } else if ($score === 1.0) {
-            $successimg = $this->mainrenderer->feedback_image((int) 1);
-            $result .= print_collapsible_region_start('', $collid,
-                    $successimg . ' ' . $testtitle . $visiblescore,
-                    '', true, true);
-            $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
+            // Success.
+            $icon = $this->mainrenderer->feedback_image((int) 1);
+            // $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
         } else if ($score === 0.0) {
-            $failimg = $this->mainrenderer->feedback_image((int) 0);
+            // Failing.
+            $icon = $this->mainrenderer->feedback_image((int) 0);
             $allcorrect = false;
-            $result .= print_collapsible_region_start('', $collid,
-                    $failimg . ' ' . $testtitle . $visiblescore,
-                    '', true, true);
-            $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
+            // $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
         } else {
-            $partimg = $this->mainrenderer->feedback_image(0.1);
+            // Partial correct.
+            $icon = $this->mainrenderer->feedback_image(0.1);
             $allcorrect = false;
-            $result .= print_collapsible_region_start('', $collid,
-                    $partimg . ' ' . $testtitle . $visiblescore,
-                    '', true, true);
-            $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
+            // $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
         }
 
+        $result .= print_collapsible_region_start('', $collid,
+                    $icon . ' ' . $testtitle . $visiblescore,
+                    '', true, true);
+        $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
+
+
         if (!$internalerror) {
-            // Todo.
-            $region = null;
-            // Regular expression for Checkstyle messages.
-            $regexp = '(?<msgtype>\[[A-Z]+\])\s(?<filename>\/?(.+\/)*(.+)\.(.+)):' .
-                '(?<line>[0-9]+):(?<column>[0-9]+):\s(?<text>.+\.)\s\[(?<short>\w+)\]';
-            global $PAGE;
-            $PAGE->requires->js_call_amd('qtype_proforma/inlineerrors', 'embedError',
-                array(qtype_proforma_format_renderer_base::$cm_editor_id, $buttonid,
-                    $collid, $regexp));
+            // Add button for inline errors.
+            // Todo: regular expression should be sent by grader!
+            switch ($testtype) {
+                case 'java-compilation':
+                    // Regular expression for Java compilation.
+                    $regexp = '(?<filename>\/?(.+\/)*(.+)\.([^\s:]+)):(?<line>[0-9]+)(:(?<column>[0-9]+))?:\s(?<msgtype>[a-z]+):\s(?<text>.+)';
+                    break;
+                case 'java-checkstyle':
+                    // Regular expression for Checkstyle messages.
+                    $regexp = '\[(?<msgtype>[A-Z]+)\]\s(?<filename>\/?(.+\/)*(.+)\.([^\s:]+)):(?<line>[0-9]+)(:(?<column>[0-9]+))?:\s(?<text>.+\.)\s\[(?<short>\w+)\]';
+                    break;
+            }
+            if (isset($regexp)) {
+                global $PAGE;
+                $PAGE->requires->js_call_amd('qtype_proforma/inlineerrors', 'embedError',
+                    array(qtype_proforma_format_renderer_base::$cm_editor_id, $buttonid,
+                        $collid, $regexp));
+            }
         }
 
         if (isset($ghtest->description) and strlen($ghtest->description) > 0) {

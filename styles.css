@@ -1,11 +1,14 @@
 /* Styles for feedback errors */
 
-.inline-error {
+.inline-error, .inline-warning, .inline-info {
     font-family: arial; 
     font-size: 70%; 
     background: #ffa; 
-    color: #a00; 
     padding: 2px 5px 3px; 
+}
+
+.inline-error {
+    color: #a00; 
 }
 .inline-error-icon {
     color: white; 
@@ -15,6 +18,31 @@
     padding: 0 3px; 
     margin-right: 7px;
 }
+
+.inline-warning {
+    color: #f0ad4e; 
+}
+.inline-warning-icon {
+    color: white; 
+    background-color: #f0ad4e; 
+    font-weight: bold; 
+    border-radius: 50%; 
+    padding: 0 3px; 
+    margin-right: 7px;
+}
+
+.inline-info {
+    color: black; 
+}
+.inline-info-icon {
+    color: white; 
+    background-color: black; 
+    font-weight: bold; 
+    border-radius: 50%; 
+    padding: 0 3px; 
+    margin-right: 7px;
+}
+
 
 
 /* Styles for the editing form. */
