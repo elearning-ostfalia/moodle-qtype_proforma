@@ -348,21 +348,6 @@ class qtype_proforma_renderer extends qtype_renderer {
     }
 
     /**
-     * creates a collapsible region identifier
-     *
-     * background: often more than one question is displayed per page. In this case
-     * the collapsible regions do not work if the identifier is not unique
-     *
-     * @param question_attempt|null $qa
-     * @return string
-     */
-    public function create_embedbutton_id() {
-        $rand = mt_rand();
-        $this->collapseid++;
-        return 'm-id-embederrors_button-' . $rand . '-' . $this->collapseid;
-    }
-
-    /**
      * returns the comment text
      *
      * @param question_attempt $qa

@@ -30,9 +30,6 @@ import CodeMirror from "./codemirror";
 
 var widgets = [];
 
-// Checkstyle
-// (?<type>\[[A-Z]+\])\s(?<file>\/?(.+\/)*(.+)\.(.+)):(?<line>[0-9]+):(?<column>[0-9]+):\s(?<text>.+\.)\s\[(?<short>\w+)\]
-
 function showErrors(editor, errors) {
     try {
         editor.operation(function(){
@@ -109,10 +106,16 @@ function getCodeMirror(target) {
 function getErrorsFromLog(collapsregion, regexp) {
     let region = document.getElementById(collapsregion);
     let testlogs = region.querySelectorAll('.proforma_testlog');
-    console.log(testlogs);
+    console.log('collapsregion ' + collapsregion);
     let innertext = '';
     for (let testlog of testlogs) {
-        innertext = innertext + '\n' + testlog.innerText;
+        console.log('testlog ' + testlog);
+        if (testlog.innerText.length == 0) {
+            // HtmlPreElement
+            innertext = innertext + '\n' + testlog.textContent;
+        } else {
+            innertext = innertext + '\n' + testlog.innerText;
+        }
     }
     console.log('text: ' + innertext);
     console.log('regexp is ' + regexp);
@@ -126,7 +129,7 @@ function getErrorsFromLog(collapsregion, regexp) {
     for (let result of results) {
         let {msgtype, filename, line, text} = result.groups;
 
-        alert(`${msgtype}.${filename}.${line}.${text}`);
+        // alert(`${msgtype}.${filename}.${line}.${text}`);
         var error = {
           line: line,
           text: text,
@@ -140,27 +143,39 @@ function getErrorsFromLog(collapsregion, regexp) {
 
 
 /**
- * embeds erros message found in log area using regexp
+ * embeds error messages found in log area using regexp
+ *
  * @param {type} cmid Codemirror identifier
- * @param {type} buttonid button identifier
+ * @param {type} collapsregion collapsible region with error messages
+ * @param {type} regexp regulare expression for finding messages
  * @returns {undefined}
  */
-export const embedError = (cmid, buttonid, collapsregion, regexp) => {
-    if (!document.getElementById(buttonid)) {
-       console.error('button ' + buttonid + ' not found');
-       return;
-    }
-    if (!document.getElementById(collapsregion)) {
+export const embedError = (cmid, collapsregion, regexp) => {
+    let region = document.getElementById(collapsregion);
+    if (!region) {
        console.error('region ' + collapsregion + ' not found');
        return;
     }
-    // console.log('region id is ' + collapsregion);
-    document.getElementById(buttonid).addEventListener('click',
+
+    let messages = getErrorsFromLog(collapsregion, regexp);
+    if (messages.length == 0) {
+        console.log('no messages found');
+        return;
+    }
+
+    // Create button.
+    console.log('create button');
+    var button = document.createElement("button");
+    button.type = "button";
+    button.innerText = "Show inline";
+    let a_element = region.querySelector('a');
+    a_element.insertAdjacentElement("afterend", button);
+    button.addEventListener('click',
         function () {
-            let messages = getErrorsFromLog(collapsregion, regexp);
             cmid = CSS.escape(cmid);
             var editor = getCodeMirror('#' + cmid);
             showErrors(editor, messages);
+            button.disabled = true;
     });
 };
 

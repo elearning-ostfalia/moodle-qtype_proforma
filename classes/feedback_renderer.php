@@ -237,17 +237,6 @@ class feedback_renderer {
             }
         }
 
-        // Create button for embedding messages
-        $buttonid = $this->mainrenderer->create_embedbutton_id();
-        $buttonoptions = array(
-            'type'  => 'button',
-            'name'  => 'embederrors',
-            'id'    => $buttonid,
-            'value' => '1234567',
-            'class' => 'btn btn-secondary'
-        );
-
-
         $icon = '';
         if ($internalerror) {
             // Exclamation mark.
@@ -256,24 +245,19 @@ class feedback_renderer {
         } else if ($score === 1.0) {
             // Success.
             $icon = $this->mainrenderer->feedback_image((int) 1);
-            // $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
         } else if ($score === 0.0) {
             // Failing.
             $icon = $this->mainrenderer->feedback_image((int) 0);
             $allcorrect = false;
-            // $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
         } else {
             // Partial correct.
             $icon = $this->mainrenderer->feedback_image(0.1);
             $allcorrect = false;
-            // $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
         }
 
         $result .= print_collapsible_region_start('', $collid,
                     $icon . ' ' . $testtitle . $visiblescore,
                     '', true, true);
-        $result .= html_writer::tag('button', 'embed errors', $buttonoptions);
-
 
         if (!$internalerror) {
             // Add button for inline errors.
@@ -291,7 +275,7 @@ class feedback_renderer {
             if (isset($regexp)) {
                 global $PAGE;
                 $PAGE->requires->js_call_amd('qtype_proforma/inlineerrors', 'embedError',
-                    array(qtype_proforma_format_renderer_base::$cm_editor_id, $buttonid,
+                    array(qtype_proforma_format_renderer_base::$cm_editor_id,
                         $collid, $regexp));
             }
         }
@@ -318,7 +302,6 @@ class feedback_renderer {
             }
         }
     }
-
 
     /**
      * @param $testresponse
