@@ -48,6 +48,25 @@ $string['responsetemplate'] = 'Codevorlage';
 $string['responsetemplate_help'] = 'Text wird bei Beginn eines neuen Versuchs im Editor für den Studierenden angezeigt (bzw. als Download angeboten). Wenn mehr als eine Vorlage existiert, ist nur die erste hier änderbar.';
 $string['templateeditor'] = '';
 
+$string['feedbackoptions_heading'] = 'Feedback';
+
+$string['collapse'] = 'Ein-/Ausklappen';
+$string['collapse_help'] = 'Das Feedback einiger Tests wird als sog. "Collapsible Region" dargestellt. '
+. 'Diese Einstellung gibt an, ob die Region initial eingeklappt (collapsed) oder ausgeklappt (expanded) ist.';
+$string['always_collapse'] = 'immer einklappen';
+$string['always_expand'] = 'immer ausklappen';
+$string['expand_student'] = 'nur für Studierende ausklappen';
+$string['expand_teacher'] = 'nur für Lehrende ausklappen';
+$string['expand_small'] = 'für kleine Regionen ausklappen';
+
+$string['embedmessages'] = 'Meldungen in Editor anzeigen';
+$string['useembeddedmessages'] = 'verwenden';
+$string['embedmessages_help'] = 'Meldungen von z.B. Compiler or statischen Analysewerkzeugen können in den Editor eingeblendet werden.';
+
+$string['initallyembedded'] = 'sofort anzeigen';
+$string['initallyembedded_help'] = 'Wenn gesetzt, dann werden die Meldungen sofort im Editor angezeigt, sobald sie verfügbar sind.';
+
+
 $string['modelsolution'] = 'Musterlösung';
 $string['modelsolutionheader'] = 'Musterlösung';
 $string['modelsolution_help'] = 'Beispiellösung für die Aufgabe, wie sie dem Studierenden angezeigt werden soll, falls die Option "Richtige Antwort" in den Überprüfungsoptionen des Tests angeschaltet ist.';

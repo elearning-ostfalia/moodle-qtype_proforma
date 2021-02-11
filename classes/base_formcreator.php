@@ -90,7 +90,7 @@ abstract class base_form_creator {
     /**
      * the numeric type of task
      */
-    abstract public function get_task_storage();
+    abstract protected function get_task_type();
 
     /**
      * Add tests as repeat group
@@ -163,7 +163,7 @@ abstract class base_form_creator {
             $mform->setType($field, PARAM_RAW);
         }
 
-        $mform->addElement('hidden', 'taskstorage', $this->get_task_storage());
+        $mform->addElement('hidden', 'taskstorage', $this->get_task_type());
         $mform->setType('taskstorage', PARAM_RAW);
     }
 
@@ -557,7 +557,7 @@ abstract class base_form_creator {
             qtype_proforma::WEIGHTED_SUM => get_string('weighted_sum', 'qtype_proforma')
         );
         $mform->addElement('select', 'aggregationstrategy',
-        get_string('aggregationstrategy', 'qtype_proforma'), $aggregationstrategy);
+            get_string('aggregationstrategy', 'qtype_proforma'), $aggregationstrategy);
         $mform->addHelpButton('aggregationstrategy', 'aggregationstrategy', 'qtype_proforma');
         $mform->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
 
@@ -588,6 +588,47 @@ abstract class base_form_creator {
         get_string('penaltyforeachincorrecttry', 'question'), $penaltyoptions);
         $mform->addHelpButton('penalty', 'penaltyforeachincorrecttry', 'question');
         $mform->setDefault('penalty', get_config('qtype_proforma', 'defaultpenalty'));
+    }
+
+    public function add_feedback_options($question, $questioneditform) {
+        $mform = $this->_form;
+
+        // Header.
+        $mform->addElement('header', 'feedbackoptions', get_string('feedbackoptions_heading', 'qtype_proforma'));
+
+        // Collapse/Expand.
+        $collapse = array(
+            qtype_proforma::ALWAYS_COLLPASE => get_string('always_collapse', 'qtype_proforma'),
+            qtype_proforma::ALWAYS_EXPAND => get_string('always_expand', 'qtype_proforma'),
+            qtype_proforma::EXPAND_STUDENT => get_string('expand_student', 'qtype_proforma'),
+            qtype_proforma::EXPAND_TEACHER => get_string('expand_teacher', 'qtype_proforma'),
+            qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),
+        );
+        $mform->addElement('select', 'collapse',
+            get_string('collapse', 'qtype_proforma'), $collapse);
+        $mform->addHelpButton('collapse', 'collapse', 'qtype_proforma');
+        $mform->setDefault('collapse', qtype_proforma::ALWAYS_COLLPASE);
+
+        // Editor embedded messages (group).
+        $embedmessageoptions = array();
+        // Switch on/off.
+        $embedmessageoptions[] = $mform->createElement('advcheckbox', 'embedmessages',
+            get_string('useembeddedmessages', 'qtype_proforma'), null, array(0, 1));
+        // Initial state.
+        $embedmessageoptions[] = $mform->createElement('advcheckbox', 'initallyembedded',
+            get_string('initallyembedded', 'qtype_proforma'));
+
+
+        $mform->addElement('group', 'embed', get_string('embedmessages', 'qtype_proforma'), $embedmessageoptions, null, false);
+        $mform->addHelpButton('embed', 'embedmessages', 'qtype_proforma');
+        // Help messages cannot be added that way!
+        // $mform->addHelpButton('initallyembedded', 'initallyembedded', 'qtype_proforma');
+        // Disable group if editor is not selected.
+        $mform->disabledIf('embed', 'responseformat', 'neq', 'editor');
+
+        // Disable initial state if feature is not used.
+        $mform->disabledIf('initallyembedded', 'embedmessages', 'neq', '1');
+        $mform->setDefault('embedmessages', 1);
     }
 
     /**

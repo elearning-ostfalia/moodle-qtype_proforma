@@ -59,7 +59,7 @@ class java_form_creator extends base_form_creator {
     /**
      * the numeric type of task
      */
-    public function get_task_storage() {
+    protected function get_task_type() {
         return qtype_proforma::JAVA_TASKFILE;
     }
 

@@ -137,6 +137,28 @@ $string['graderuri_host_desc'] = 'Protocol and Server Part of Grader URI';
 $string['graderuri_path'] = 'URI: Path';
 $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 
+$string['feedbackoptions_heading'] = 'Feedback';
+
+$string['collapse'] = 'Collapse/Expand';
+$string['collapse_help'] = 'Some test feedback will be presented as collapsible regions. '
+. 'This setting defines the initial state of this region, i.e. if it is visible (expanded) or not (collapsed).';
+$string['always_collapse'] = 'always collapse';
+$string['always_expand'] = 'always expand';
+$string['expand_student'] = 'expand for students only';
+$string['expand_teacher'] = 'expand for teachers only';
+$string['expand_small'] = 'expand for small regions';
+
+$string['embedmessages'] = 'Editor embedded messages';
+$string['useembeddedmessages'] = 'Use';
+$string['embedmessages_help'] = 'Messages from compiler or static code analysis tools can be embedded into editor. ';
+
+$string['initallyembedded'] = 'Initially embedded';
+$string['initallyembedded_help'] = 'If set the messages are already embedded when feedback is available.';
+
+
+
+
+
 $string['javasettings_header'] = 'Java Settings for Java questions created with Moodle';
 $string['checkstyleversion'] = 'Checkstyle version';
 $string['checkstyleversion_desc'] = 'Comma separated list with Checkstyle versions that are supported by the grader. First one is default.';

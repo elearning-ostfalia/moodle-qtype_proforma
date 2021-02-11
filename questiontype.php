@@ -17,10 +17,9 @@
 /**
  * The ProFormA Question definition
  *
- * @package    qtype
- * @subpackage proforma
- * @copyright  2005 Mark Nielsen
+ * @package    qtype_proforma
  * @copyright  2017 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @copyright  2005 Mark Nielsen for ???
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     Mark Nielsen, K.Borm <k.borm[at]ostfalia.de>
  */
@@ -84,12 +83,36 @@ class qtype_proforma extends question_type {
      * Taskfile could be created on the fly and is only stored for caching purposes.
      */
     const VOLATILE_TASKFILE = 3; // Depricated: Use JAVA_TASKFILE instead.
-    /* Java task file */
-    const JAVA_TASKFILE = 3;
-    /* SetlX task file */
+    /** Java task file */
+    const JAVA_TASKFILE = self::VOLATILE_TASKFILE;
+    /** SetlX task file */
     const SETLX_TASKFILE = 4;
-    /* task file that is not yet completed */
+    /** task file that is not yet completed */
     const SELECT_TASKFILE = 0;
+
+    // Collapse options
+    /**
+     * always collapse feedback
+     */
+    const ALWAYS_COLLPASE = 0;
+    /**
+     * always expand feedback (for simple tests)
+     */
+    const ALWAYS_EXPAND = 1;
+    /**
+     * expand feedback only for students view, collapse for teacher view
+     */
+    const EXPAND_STUDENT = 2;
+    /**
+     * expand feedback only for teacher view, collapse for student view
+     */
+    const EXPAND_TEACHER = 3;
+    /**
+     * expand feedback only for small content of collapsible region
+     * (what is small?)
+     */
+    const EXPAND_SMALL = 4;
+
 
     // How is the mark calculated?
     /**
@@ -260,7 +283,6 @@ class qtype_proforma extends question_type {
             case self::PERSISTENT_TASKFILE:
                 $editor = new proforma_form_creator($formdata);
                 break;
-            case self::VOLATILE_TASKFILE:
             case self::JAVA_TASKFILE:
                 // Handle 'save' from editor.
                 $editor = new java_form_creator($formdata);

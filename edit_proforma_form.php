@@ -173,7 +173,6 @@ class qtype_proforma_edit_form extends question_edit_form {
             case qtype_proforma::PERSISTENT_TASKFILE:
                 $this->formcreator = new proforma_form_creator($this->_form);
                 break;
-            case qtype_proforma::VOLATILE_TASKFILE:
             case qtype_proforma::JAVA_TASKFILE:
                 // Question was created by form editor.
                 $this->formcreator = new java_form_creator($this->_form, $newquestion);
@@ -219,6 +218,8 @@ class qtype_proforma_edit_form extends question_edit_form {
         $this->formcreator->add_response_options($this->question, $qtype);
 
         $this->formcreator->add_test_settings($this->question, $this);
+
+        $this->formcreator->add_feedback_options($this->question, $this);
 
         $this->formcreator->add_grader_settings($this->question, $this->context);
 
