@@ -239,7 +239,7 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
                 } catch (Exception $e) {
                     // Ignore exception.
                     return '';
-                 }
+                }
             case 404:
                 return 'HTTP status code 404, check URI';
             default:

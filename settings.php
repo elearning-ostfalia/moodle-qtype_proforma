@@ -79,6 +79,27 @@ if (isset($CFG->maxbytes)) {
     $settings->add($element);
 }
 
+$collapses = array(
+    qtype_proforma::ALWAYS_COLLPASE => get_string('always_collapse', 'qtype_proforma'),
+    qtype_proforma::ALWAYS_EXPAND => get_string('always_expand', 'qtype_proforma'),
+    qtype_proforma::EXPAND_STUDENT => get_string('expand_student', 'qtype_proforma'),
+    qtype_proforma::EXPAND_TEACHER => get_string('expand_teacher', 'qtype_proforma'),
+    qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),
+);
+$settings->add(new admin_setting_configselect('qtype_proforma/expandcollapse',
+            get_string('admincollapse', 'qtype_proforma'),
+            get_string('collapse_help', 'qtype_proforma'),
+            0,
+            $collapses));
+
+$settings->add(new admin_setting_configcheckbox('qtype_proforma/embedmessages',
+        get_string('embedmessages', 'qtype_proforma'),
+        get_string('embedmessages_desc', 'qtype_proforma'), 1));
+
+$settings->add(new admin_setting_configcheckbox('qtype_proforma/initiallyembedded',
+        get_string('admininitiallyembedded', 'qtype_proforma'),
+        get_string('initiallyembedded_help', 'qtype_proforma'), 0));
+
 $settings->add(new admin_setting_heading('vcs',
         get_string('vcs_header', 'qtype_proforma'),
         get_string('vcs_info', 'qtype_proforma')));

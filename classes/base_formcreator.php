@@ -602,33 +602,35 @@ abstract class base_form_creator {
             qtype_proforma::ALWAYS_EXPAND => get_string('always_expand', 'qtype_proforma'),
             qtype_proforma::EXPAND_STUDENT => get_string('expand_student', 'qtype_proforma'),
             qtype_proforma::EXPAND_TEACHER => get_string('expand_teacher', 'qtype_proforma'),
-            qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),
+            // qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),
         );
         $mform->addElement('select', 'expandcollapse',
             get_string('collapse', 'qtype_proforma'), $collapse);
         $mform->addHelpButton('expandcollapse', 'collapse', 'qtype_proforma');
-        $mform->setDefault('expandcollapse', qtype_proforma::ALWAYS_COLLPASE);
+        $mform->setDefault('expandcollapse', get_config('qtype_proforma', 'expandcollapse'));
 
-        // Editor embedded messages (group).
         $embedmessageoptions = array();
         // Switch on/off.
         $embedmessageoptions[] = $mform->createElement('advcheckbox', 'embedmessages',
             get_string('useembeddedmessages', 'qtype_proforma'), null, array(0, 1));
         // Initial state.
-        $embedmessageoptions[] = $mform->createElement('advcheckbox', 'initallyembedded',
-            get_string('initallyembedded', 'qtype_proforma'));
-
+        $embedmessageoptions[] = $mform->createElement('advcheckbox', 'initiallyembedded',
+            get_string('initiallyembedded', 'qtype_proforma'), null, array(0, 1));
 
         $mform->addElement('group', 'embed', get_string('embedmessages', 'qtype_proforma'), $embedmessageoptions, null, false);
         $mform->addHelpButton('embed', 'embedmessages', 'qtype_proforma');
-        // Help messages cannot be added that way!
-        // $mform->addHelpButton('initallyembedded', 'initallyembedded', 'qtype_proforma');
+        // Editor embedded messages (group).
+        if (!get_config('qtype_proforma', 'usecodemirror')) {
+            $mform->addElement('static', 'nocodemirror', '', get_string('nocodemirror', 'qtype_proforma'));
+        }
+
         // Disable group if editor is not selected.
         $mform->disabledIf('embed', 'responseformat', 'neq', 'editor');
 
         // Disable initial state if feature is not used.
-        $mform->disabledIf('initallyembedded', 'embedmessages', 'neq', '1');
-        $mform->setDefault('embedmessages', 1);
+        $mform->disabledIf('initiallyembedded', 'embedmessages', 'neq', '1');
+        $mform->setDefault('embedmessages', get_config('qtype_proforma', 'embedmessages'));
+        $mform->setDefault('initiallyembedded', get_config('qtype_proforma', 'initiallyembedded'));
     }
 
     /**

@@ -50,21 +50,25 @@ $string['templateeditor'] = '';
 
 $string['feedbackoptions_heading'] = 'Feedback';
 
-$string['collapse'] = 'Ein-/Ausklappen';
+$string['collapse'] = 'Initial Ein-/Ausklappen';
+$string['admincollapse'] = 'Feedback initial ein-/ausklappen';
 $string['collapse_help'] = 'Das Feedback einiger Tests wird als sog. "Collapsible Region" dargestellt. '
 . 'Diese Einstellung gibt an, ob die Region initial eingeklappt (collapsed) oder ausgeklappt (expanded) ist.';
-$string['always_collapse'] = 'immer einklappen';
-$string['always_expand'] = 'immer ausklappen';
-$string['expand_student'] = 'nur für Studierende ausklappen';
-$string['expand_teacher'] = 'nur für Lehrende ausklappen';
+$string['always_collapse'] = 'einklappen';
+$string['always_expand'] = 'ausklappen';
+$string['expand_student'] = 'für Studierende ausklappen';
+$string['expand_teacher'] = 'für Lehrende ausklappen';
 $string['expand_small'] = 'für kleine Regionen ausklappen';
 
 $string['embedmessages'] = 'Meldungen in Editor anzeigen';
 $string['useembeddedmessages'] = 'verwenden';
-$string['embedmessages_help'] = 'Meldungen von z.B. Compiler or statischen Analysewerkzeugen können in den Editor eingeblendet werden.';
+$string['embedmessages_help'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können in den Editor eingeblendet werden.';
+$string['embedmessages_desc'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können in den Editor eingeblendet werden. Erfordert die Nutzung von CodeMirror.';
+$string['nocodemirror'] = 'CodeMirror ist deaktiviert. Daher kann das Anzeigen von Meldungen im Editor nicht genutzt werden.';
 
-$string['initallyembedded'] = 'sofort anzeigen';
-$string['initallyembedded_help'] = 'Wenn gesetzt, dann werden die Meldungen sofort im Editor angezeigt, sobald sie verfügbar sind.';
+$string['admininitiallyembedded'] = 'Meldungen sofort im Editor anzeigen';
+$string['initiallyembedded'] = 'sofort anzeigen';
+$string['initiallyembedded_help'] = 'Wenn gesetzt, dann werden die Meldungen sofort im Editor angezeigt, sobald sie verfügbar sind.';
 
 
 $string['modelsolution'] = 'Musterlösung';

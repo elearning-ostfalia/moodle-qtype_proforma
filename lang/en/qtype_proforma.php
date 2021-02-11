@@ -139,21 +139,25 @@ $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 
 $string['feedbackoptions_heading'] = 'Feedback';
 
-$string['collapse'] = 'Collapse/Expand';
+$string['collapse'] = 'Initial Collapse/Expand';
+$string['admincollapse'] = 'Feedback collapse/expand';
 $string['collapse_help'] = 'Some test feedback will be presented as collapsible regions. '
 . 'This setting defines the initial state of this region, i.e. if it is visible (expanded) or not (collapsed).';
-$string['always_collapse'] = 'always collapse';
-$string['always_expand'] = 'always expand';
-$string['expand_student'] = 'expand for students only';
-$string['expand_teacher'] = 'expand for teachers only';
+$string['always_collapse'] = 'collapse';
+$string['always_expand'] = 'expand';
+$string['expand_student'] = 'expand for students';
+$string['expand_teacher'] = 'expand for teachers';
 $string['expand_small'] = 'expand for small regions';
 
 $string['embedmessages'] = 'Editor embedded messages';
 $string['useembeddedmessages'] = 'Use';
 $string['embedmessages_help'] = 'Messages from compiler or static code analysis tools can be embedded into editor. ';
+$string['embedmessages_desc'] = 'Messages from compiler or static code analysis tools can be embedded into editor. Requires CodeMirror. ';
+$string['nocodemirror'] = 'CodeMirror is disabled. So embedding messages into editor will not work.';
 
-$string['initallyembedded'] = 'Initially embedded';
-$string['initallyembedded_help'] = 'If set the messages are already embedded when feedback is available.';
+$string['admininitiallyembedded'] = 'Initially show messages in editor';
+$string['initiallyembedded'] = 'Initially embedded';
+$string['initiallyembedded_help'] = 'If set the messages are already embedded when feedback is available.';
 
 
 

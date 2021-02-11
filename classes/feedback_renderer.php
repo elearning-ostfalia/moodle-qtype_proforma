@@ -29,12 +29,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 class feedback_exception extends Exception
 {
-    // Redefine the exception so message isn't optional.
-    /* public function __construct($message, $code = 0, Exception $previous = null) {
-        // Call parent constructor.
-        parent::__construct($message, $code, $previous);
-    } */
-
     // Custom string representation of object.
     public function __toString() {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
@@ -49,27 +43,23 @@ class feedback_renderer {
      * reference to qtype_proforma_renderer (main renderer)
      * @var qtype_proforma_renderer|null
      */
-    private $mainrenderer = null;
+    private $_mainrenderer = null;
 
     /** @var int sum of all weights */
-    private $totalweight = 0;
+    private $_totalweight = 0;
 
     /**
      * @var null Grading hints of (Moodle not ProformA) question.
      */
-    private $gradinghints = null;
+    private $_gradinghints = null;
 
-    /**
-     * @var null reference to question attempt
-     */
-    private $qa = null;
     /**
      * feedback_renderer constructor.
      *
      * @param qtype_proforma_renderer $renderer
      */
     public function __construct(qtype_proforma_renderer $renderer) {
-        $this->mainrenderer = $renderer;
+        $this->_mainrenderer = $renderer;
     }
 
     /**
@@ -106,8 +96,8 @@ class feedback_renderer {
             $csstitle = array('class' => 'proforma_subtest_title');
             $csscontent = array('class' => 'proforma_subtest_testlog');
             if ($printpassedinfo) {
-                $truefeedbackimg = $this->mainrenderer->feedback_image((int) 1);
-                $falsefeedbackimg = $this->mainrenderer->feedback_image((int) 0);
+                $truefeedbackimg = $this->_mainrenderer->feedback_image((int) 1);
+                $falsefeedbackimg = $this->_mainrenderer->feedback_image((int) 0);
                 $title = ($passed ? $truefeedbackimg : $falsefeedbackimg) . $title;
             } else {
                 // Adjust left space.
@@ -208,7 +198,7 @@ class feedback_renderer {
      */
     private function render_test_title($test, $score, $internalerror, &$result, &$allcorrect) {
         $id = (string) $test['id'];
-        $ghtest = $this->gradinghints->xpath("//test-ref[@ref='" . $id . "']");
+        $ghtest = $this->_gradinghints->xpath("//test-ref[@ref='" . $id . "']");
         if (count($ghtest) == 0) {
             throw new feedback_exception('cannot find appropriate grading hints for test "' . $id . '""');
         }
@@ -222,10 +212,10 @@ class feedback_renderer {
 
         // Create unique identifier for each region
         // since there can be multiple regions per page!
-        $collid = $this->mainrenderer->create_collapsible_region_id($this->qa);
+        $collid = $this->_mainrenderer->create_collapsible_region_id();
         $visiblescore = '';
         if ($this->question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
-            $weight = floatval((string) $ghtest['weight']) / $this->totalweight;
+            $weight = floatval((string) $ghtest['weight']) / $this->_totalweight;
             if ($weight > 0.0) {
                 // Only display percentage if this test counts more than 0.
                 if (isset($score)) {
@@ -240,24 +230,48 @@ class feedback_renderer {
         $icon = '';
         if ($internalerror) {
             // Exclamation mark.
-            $icon = $this->mainrenderer->pix_icon('i/caution', 'info');
+            $icon = $this->_mainrenderer->pix_icon('i/caution', 'info');
             $allcorrect = false;
         } else if ($score === 1.0) {
             // Success.
-            $icon = $this->mainrenderer->feedback_image((int) 1);
+            $icon = $this->_mainrenderer->feedback_image((int) 1);
         } else if ($score === 0.0) {
             // Failing.
-            $icon = $this->mainrenderer->feedback_image((int) 0);
+            $icon = $this->_mainrenderer->feedback_image((int) 0);
             $allcorrect = false;
         } else {
             // Partial correct.
-            $icon = $this->mainrenderer->feedback_image(0.1);
+            $icon = $this->_mainrenderer->feedback_image(0.1);
             $allcorrect = false;
         }
 
+        $expand = false;
+        switch ($this->question->expandcollapse) {
+            case qtype_proforma::ALWAYS_COLLPASE:
+                break;
+            case qtype_proforma::ALWAYS_EXPAND:
+                $expand = true;
+                break;
+            case qtype_proforma::EXPAND_STUDENT:
+                if (!qtype_proforma\lib\is_teacher()) {
+                    $expand = true;
+                }
+                break;
+            case qtype_proforma::EXPAND_TEACHER:
+                if (qtype_proforma\lib\is_teacher()) {
+                    $expand = true;
+                }
+                break;
+            case qtype_proforma::EXPAND_SMALL:
+                // Todo.
+                break;
+            default:
+                debugging('invalid value for expandcollapse ' . $this->question->$expandcollapse);
+                break;
+        }
         $result .= print_collapsible_region_start('', $collid,
                     $icon . ' ' . $testtitle . $visiblescore,
-                    '', true, true);
+                    '', !$expand, true);
 
         if (!$internalerror) {
             // Add button for inline errors.
@@ -273,9 +287,8 @@ class feedback_renderer {
                     break;
             }
             if (isset($regexp)) {
-                global $PAGE;
-                $PAGE->requires->js_call_amd('qtype_proforma/inlineerrors', 'embedError',
-                    array(qtype_proforma_format_renderer_base::$cm_editor_id,
+                $this->_mainrenderer->get_page()->requires->js_call_amd('qtype_proforma/inlineerrors',
+                    'embedError', array(qtype_proforma_format_renderer_base::$codemirrorid,
                         $collid, $regexp));
             }
         }
@@ -375,13 +388,13 @@ class feedback_renderer {
 
         // Preset member variables.
         $gh = new SimpleXMLElement($question->gradinghints);
-        $this->gradinghints = $gh->root;
+        $this->_gradinghints = $gh->root;
         $this->question = $question;
 
         // Calculate total weight.
-        $this->totalweight = 0;
-        foreach ($this->gradinghints->{'test-ref'} as $testresponse) {
-            $this->totalweight += floatval((string) $testresponse['weight']);
+        $this->_totalweight = 0;
+        foreach ($this->_gradinghints->{'test-ref'} as $testresponse) {
+            $this->_totalweight += floatval((string) $testresponse['weight']);
         }
 
         // $xpath = new DOMXPath($xmldoc);
@@ -415,7 +428,7 @@ class feedback_renderer {
         // iterating through all tests in the response.
         // This guarantees that we detect missing tests in the response and
         // we can reorder the result.
-        foreach ($this->gradinghints->{'test-ref'} as $ghtest) {
+        foreach ($this->_gradinghints->{'test-ref'} as $ghtest) {
             $testid = (string)$ghtest['ref'];
             // Look for test in message:
             // Using xpath is more elagant but requires registering the default namespace.
@@ -475,7 +488,7 @@ class feedback_renderer {
             $result .= '<p></p>' . '[' . $gradertext . ']';
 
             // Debugging: show raw response.
-            $qaid = $this->mainrenderer->create_collapsible_region_id(null);
+            $qaid = $this->_mainrenderer->create_collapsible_region_id();
             $result .= print_collapsible_region_start('', $qaid,
                     'raw response', '', true, true);
             $result .= html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));

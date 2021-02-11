@@ -50,7 +50,7 @@ if (!$PAGE->requires->is_head_done()) {
 abstract class qtype_proforma_format_renderer_base extends plugin_renderer_base {
 
     // Hack.
-    public static $cm_editor_id = null;
+    public static $codemirrorid = null;
 
     abstract public function response_area_input($qa, $step, $context);
     abstract protected function class_name();
@@ -149,7 +149,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
         // Convert textarea to codemirror editor.
         qtype_proforma\lib\as_codemirror($id, $mode, null, false, false);
         // Remember Codemirror id.
-        self::$cm_editor_id = $id;
+        self::$codemirrorid = $id;
         return $input;
     }
 
@@ -194,7 +194,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
         // Convert textarea to codemirror editor.
         qtype_proforma\lib\as_codemirror($id, $mode, null, true, false);
         // Remember Codemirror id.
-        self::$cm_editor_id = $id;
+        self::$codemirrorid = $id;
         return $input;
     }
 
