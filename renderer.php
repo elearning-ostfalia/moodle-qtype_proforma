@@ -47,6 +47,15 @@ class qtype_proforma_renderer extends qtype_renderer {
      */
     private $collapseid = 0;
 
+
+    /**
+     * return protected member page for use in class feedback_renderer
+     * @return type
+     */
+    public function get_page() {
+        return $this->page;
+    }
+
     /**
      * make feedback_image public because we have no friend feature in PHP
      */
@@ -338,10 +347,9 @@ class qtype_proforma_renderer extends qtype_renderer {
      * background: often more than one question is displayed per page. In this case
      * the collapsible regions do not work if the identifier is not unique
      *
-     * @param question_attempt|null $qa
      * @return string
      */
-    public function create_collapsible_region_id(question_attempt $qa = null) {
+    public function create_collapsible_region_id() {
         $rand = mt_rand();
         $this->collapseid++;
         return 'm-id-test-proforma-' . $rand . '-' . $this->collapseid;
@@ -379,7 +387,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             return '';
         }
 
-        $qaid = $this->create_collapsible_region_id($qa);
+        $qaid = $this->create_collapsible_region_id();
 
         $output = print_collapsible_region_start('', $qaid,
                 get_string('modelsolution', 'qtype_proforma'),

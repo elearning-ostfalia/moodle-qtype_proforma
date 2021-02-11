@@ -212,7 +212,11 @@ class qtype_proforma extends question_type {
                 'gradinghints',
 
                 'vcsuritemplate',
-                'vcslabel'
+                'vcslabel',
+
+                'expandcollapse',
+                'embedmessages',
+                'initallyembedded'
                 // Attributes 'comment' and 'commentformat' build an array => do not add.
         );
 

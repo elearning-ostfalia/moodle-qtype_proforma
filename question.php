@@ -92,8 +92,7 @@ class qtype_proforma_question extends question_graded_automatically {
     public $gradinghints;
 
 
-    /** @var  int Whether the task is created by import of a task.zip file (default).
-     * And for Moodle egenerated questions: the programming language.
+    /** @var  int type of question (programming language resp. imported).
      */
     public $taskstorage;
 
@@ -106,6 +105,15 @@ class qtype_proforma_question extends question_graded_automatically {
     public $vcsuritemplate;
     /** @var string The label for an input field (if any). */
     public $vcslabel;
+
+    /** feedback option for collapsible regions */
+    public $expandcollapse;
+
+    /** feedback option: shall messages be embedded into editor code? */
+    public $embedmessages;
+    /** feedback option: shall messages be initially embedded into editor? */
+    public $initallyembedded;
+
 
     /**
      * creates the grader object (why function???)

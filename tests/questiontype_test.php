@@ -12,13 +12,12 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * This file contains unit tests for class qtype_proforma
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2010 The Open University (for parts from essay question type)
  * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -70,11 +69,10 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     public function test_get_possible_responses() {
         $q = $this->get_test_question_data();
         $this->assertEquals(array(), $this->qtype->get_possible_responses($q));
-
     }
 
     public function assert_same_xml($expectedxml, $xml) {
-        // remove comments
+        // Remove comments.
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
         $expectedxml = preg_replace('/<!--(.|\s)*?-->/', '', $expectedxml);
         $this->assertEquals(str_replace("\r\n", "\n", $expectedxml),
@@ -85,39 +83,33 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         global $CFG, $USER;
         $this->resetAfterTest(true);
         $this->setAdminUser();
-        //$usercontextid = context_user::instance($USER->id)->id;
 
         // Create a proforma question in the DB.
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
         $question = $generator->create_question('proforma', 'editor', array('category' => $cat->id));
-        $question->contextid = 1; // must be the same as in questiontype.save_question_options
-        // where do we get it? evaluated by debugging :-(
-        $question->hidden = null; // dummy
+        $question->contextid = 1; // Must be the same as in questiontype.save_question_options
+        // where do we get it? evaluated by debugging...
+        $question->hidden = null; // Dummy.
 
         $questiontype = new qtype_proforma();
         $exporter = new qformat_xml();
 
         $questiontype->get_question_options($question);
-
-        ////$question = test_question_maker::make_question('proforma', 'editor');
-        //$question = test_question_maker::get_question_data('proforma', 'editor');
-
-        //$export = $questiontype->export_to_xml($question, $exporter);
         $export1 = $exporter->writequestion($question);
 
         $xmldata = xmlize($export1);
 
-        // re-import
+        // Re-import.
         $importer = new qformat_xml();
         $importedq = $importer->try_importing_using_qtypes(
                 $xmldata['question'], null, null, 'proforma');
 
-        // problem:
+        // Problem:
         // - exported question contains values in 'options' member
         // - imported question contains values in 'normal' members
         // => we save the imported question and reload it, afterwards the data
-        // are in the 'options' member, too
+        // are in the 'options' member, too.
 
         $importedq->id = 333; // new
         $importedq->context = context_course::instance(1);
@@ -128,7 +120,6 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $importedq->hidden = null;
         $export2 = $exporter->writequestion($importedq);
 
-        //$export1->id = $export2->id; // in order to ignore question id
         $this->assert_same_xml($export1, $export2);
 
     }
@@ -187,6 +178,9 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
     <vcsuritemplate></vcsuritemplate>
     <vcslabel></vcslabel>
+    <expandcollapse>1</expandcollapse>
+    <embedmessages>1</embedmessages>
+    <initallyembedded>1</initallyembedded>
     <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES.'</templates>
     <downloads>'.qtype_proforma_test_helper::QUESTION_DOWNLOADS.'</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
@@ -228,9 +222,9 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
         $question = $generator->create_question('proforma', 'filepicker', array('category' => $cat->id));
-        $question->contextid = 1; // must be the same as in questiontype.save_question_options
+        $question->contextid = 1; // Must be the same as in questiontype.save_question_options
         // where do we get it? evaluated by debugging :-(
-        $question->hidden = null; // dummy
+        $question->hidden = null; // Dummy.
 
         $questiontype = new qtype_proforma();
         $questiontype->get_question_options($question);
@@ -271,6 +265,9 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
     <vcsuritemplate></vcsuritemplate>
     <vcslabel></vcslabel>
+    <expandcollapse>0</expandcollapse>
+    <embedmessages>0</embedmessages>
+    <initallyembedded>0</initallyembedded>
     <templates></templates>
     <downloads>'.qtype_proforma_test_helper::QUESTION_DOWNLOADS.'</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
@@ -359,7 +356,6 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
   </question>
 ';
 
-
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
@@ -406,6 +402,10 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $expectedq->downloads = 'instruction.txt, test/lib/lib.txt';
         $expectedq->modelsolfiles = qtype_proforma_test_helper::QUESTION_MODELSOLS;
 
+        $expectedq->expandcollapse = 0;
+        $expectedq->embedmessages = 0;
+        $expectedq->initallyembedded = 0;
+
         $expectedq->hint = array(
                 array('text' => 'hint 1<br>', 'format' => FORMAT_HTML),
                 array('text' => 'hint 2<br>', 'format' => FORMAT_HTML),
@@ -414,7 +414,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $this->assertEquals($expectedq->hint, $importedq->hint); // redundant but better feedback on fail
         $this->assert(new question_check_specified_fields_expectation($expectedq), $importedq);
 
-        // check for existing file id
+        // Check for existing file id.
         $this->assertEquals(true, isset($importedq->task));
         $this->assertEquals(true, isset($importedq->template));
         $this->assertEquals(true, isset($importedq->download));
@@ -429,7 +429,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
 
     private function assert_file_exists_in_draftarea($filename, $filepath, $draftid) {
         global $USER;
-        // Prepare file record object
+        // Prepare file record object.
         $fileinfo = array(
                 'contextid' => context_user::instance($USER->id)->id,
                 'component' => 'user',
@@ -438,7 +438,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
                 'filepath'  => $filepath,
                 'filename'  => $filename,
         );
-        // Get file
+        // Get file.
         $fs = get_file_storage();
         $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
                 $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
@@ -478,6 +478,9 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <aggregationstrategy>2</aggregationstrategy>
     <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
     <proformaversion>2.0</proformaversion>
+    <expandcollapse>1</expandcollapse>
+    <embedmessages>1</embedmessages>
+    <initallyembedded>1</initallyembedded>
     <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES.'</templates>
     <downloads>instruction.txt, test/lib/lib.txt</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
@@ -504,7 +507,6 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     </hint>
   </question>
 ';
-
 
         $this->resetAfterTest(true);
         $this->setAdminUser();
@@ -547,6 +549,11 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $expectedq->penalty = 0.20000;
         $expectedq->proformaversion = '2.0';
         $expectedq->aggregationstrategy = 2;
+
+        $expectedq->expandcollapse = 1;
+        $expectedq->embedmessages = 1;
+        $expectedq->initallyembedded = 1;
+
         $expectedq->gradinghints = qtype_proforma_test_helper::QUESTION_GRADINGHINTS;
 
         $expectedq->downloads = 'instruction.txt, test/lib/lib.txt';
@@ -560,7 +567,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $this->assertEquals($expectedq->hint, $importedq->hint); // redundant but better feedback on fail
         $this->assert(new question_check_specified_fields_expectation($expectedq), $importedq);
 
-        // check for existing file id
+        // Check for existing file id.
         $this->assertEquals(true, isset($importedq->task));
         $this->assertEquals(true, isset($importedq->template));
         $this->assertEquals(true, isset($importedq->download));
@@ -571,7 +578,6 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $this->assert_file_exists_in_draftarea('temp.txt', '/', $importedq->template);
         $this->assert_file_exists_in_draftarea('instruction.txt', '/', $importedq->download);
         $this->assert_file_exists_in_draftarea('lib.txt', '/test/lib/', $importedq->download);
-
     }
 
 }

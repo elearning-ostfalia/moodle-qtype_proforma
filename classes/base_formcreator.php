@@ -604,10 +604,10 @@ abstract class base_form_creator {
             qtype_proforma::EXPAND_TEACHER => get_string('expand_teacher', 'qtype_proforma'),
             qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),
         );
-        $mform->addElement('select', 'collapse',
+        $mform->addElement('select', 'expandcollapse',
             get_string('collapse', 'qtype_proforma'), $collapse);
-        $mform->addHelpButton('collapse', 'collapse', 'qtype_proforma');
-        $mform->setDefault('collapse', qtype_proforma::ALWAYS_COLLPASE);
+        $mform->addHelpButton('expandcollapse', 'collapse', 'qtype_proforma');
+        $mform->setDefault('expandcollapse', qtype_proforma::ALWAYS_COLLPASE);
 
         // Editor embedded messages (group).
         $embedmessageoptions = array();

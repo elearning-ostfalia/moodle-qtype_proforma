@@ -313,6 +313,11 @@ class qtype_proforma_test_helper extends question_test_helper {
         $q->maxbytes = 10240;
         $q->filetypes = '.java, .jar';
 
+        // feedback options
+        $q->expandcollapse = 1;
+        $q->embedmessages = 1;
+        $q->initallyembedded = 1;
+
 
         $q->hints = array(
                 new question_hint(1, 'hint 1', FORMAT_HTML),
@@ -381,6 +386,11 @@ class qtype_proforma_test_helper extends question_test_helper {
         $fromform->testtitle[0] = 'a tile 1';
         $fromform->testtitle[1] = 'a tile 2';
 
+        // feedback options
+        $fromform->expandcollapse = 1;
+        $fromform->embedmessages = 1;
+        $fromform->initallyembedded = 1;
+
         $fromform->template = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->template, self::QUESTION_TEMPLATES,
                 self::QUESTION_TEMPLATE);
@@ -438,7 +448,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->original_template = '';
 
         // valid data for a task file in the repository!
-        $form->taskstorage = qtype_proforma::VOLATILE_TASKFILE;
+        $form->taskstorage = qtype_proforma::JAVA_TASKFILE;
 
         $form->responsefilename = self::QUESTION_FILENAME;
         $form->programminglanguage = 'java';
