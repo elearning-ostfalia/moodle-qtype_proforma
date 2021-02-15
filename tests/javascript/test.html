@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Codemirror-Test</title>
+
+    <link rel="stylesheet" href="../../styles.css">    
+    <script src="../../amd/src/codemirror.js"></script>
+    <script src="../../tests/javascript/testimport.js"></script>
+
+</head>
+
+<body>
+
+<textarea id="editor" name="w3review" rows="20" cols="80">
+package de.ostfalia.zell.isPalindromTask;
+
+public class MyString 
+{
+	static public Boolean isPalindrom(String aString) 
+	{
+		String reverse = new StringBuilder(aString).reverse().toString();
+
+		return (aString.equalsIgnoreCase(reverse));
+	}
+}
+</textarea>
+
+
+<div id="m-id-test-proforma-2044604495-3" class="collapsibleregion" style="height: 123px;">
+    <div id="m-id-test-proforma-2044604495-3_sizer">
+        <div id="m-id-test-proforma-2044604495-3_caption" class="collapsibleregioncaption">
+            <a href="#" title="Zum Erweitern oder Einklappen tippen" id="yui_3_17_2_1_1613312798920_163">
+                <i class="icon fa fa-check text-success fa-fw " title="Richtig" aria-label="Richtig"></i> CheckStyle Test (17/17 %) 
+                </a>
+                <!-- <button type="button">Show inline</button> -->
+        </div>
+        <div id="m-id-test-proforma-2044604495-3_inner" class="collapsibleregioninner">
+            <div class="proforma_testlog_title"></div>
+            <pre class="proforma_testlog">Beginne Prüfung...
+    [INFO] de/ostfalia/gdp/ss19/s2/Schaltjahr.java:4:1: '{' an Position 1 sollte in der vorherigen Zeile stehen. [LeftCurly]
+    [INFO] de/ostfalia/gdp/ss19/s2/Schaltjahr.java:6:5: '{' an Position 5 sollte in der vorherigen Zeile stehen. [LeftCurly]
+    [INFO] de/ostfalia/gdp/ss19/s2/Schaltjahr.java:8:5: Fake Meldung. [LeftCurly]
+    Prüfung beendet.
+</pre>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>

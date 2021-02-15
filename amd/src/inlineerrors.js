@@ -25,13 +25,14 @@
  */
 
 // import './codemirror-global';
-import CodeMirror from "./codemirror";
+// import CodeMirror from "./codemirror.js";
+// MOODLE: import CodeMirror from "./codemirror";
 // import any mode
 
 var widgets = [];
 
 
-function hideErrors(editor) {
+function _hideErrors(editor) {
     try {
         editor.operation(function() {
             console.log('remove old widgets');
@@ -45,7 +46,7 @@ function hideErrors(editor) {
     }
 }
 
-function showErrors(editor, errors) {
+function _showErrors(editor, errors) {
     try {
         editor.operation(function(){
             console.log('remove old widgets');
@@ -101,7 +102,7 @@ function showErrors(editor, errors) {
 
 
 // Retrieve a CodeMirror Instance.
-function getCodeMirror(target) {
+function _getCodeMirror(target) {
     var _target = target;
     if (typeof _target === 'string') {
         _target = document.querySelector(_target);
@@ -118,7 +119,7 @@ function getCodeMirror(target) {
     return null;
 }
 
-function getErrorsFromLog(collapsregion, regexp) {
+function _getErrorsFromLog(collapsregion, regexp) {
     let region = document.getElementById(collapsregion);
     let testlogs = region.querySelectorAll('.proforma_testlog');
     console.log('collapsregion ' + collapsregion);
@@ -172,7 +173,7 @@ export const embedError = (cmid, collapsregion, regexp) => {
        return;
     }
 
-    let messages = getErrorsFromLog(collapsregion, regexp);
+    let messages = _getErrorsFromLog(collapsregion, regexp);
     if (messages.length == 0) {
         console.log('no messages found');
         return;
@@ -190,12 +191,12 @@ export const embedError = (cmid, collapsregion, regexp) => {
     cmid = CSS.escape(cmid);
     button.addEventListener('click',
         function () {
-            var editor = getCodeMirror('#' + cmid);
+            var editor = _getCodeMirror('#' + cmid);
             if (button.innerText == SHOW) {
-                showErrors(editor, messages);
+                _showErrors(editor, messages);
                 button.innerText = HIDE;
             } else {
-                hideErrors(editor, messages);
+                _hideErrors(editor, messages);
                 button.innerText = SHOW;
             }
     });
