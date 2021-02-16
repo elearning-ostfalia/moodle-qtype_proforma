@@ -218,26 +218,23 @@ export const embedError = (cmid, collapsregion, regexp) => {
     const infoLabel = '<i class="icon fa fa-info fa-fw" title="info" aria-label="info">' + infos + '</i>';
 */
     const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span>';
-    const warningLabel = warnings + '<span class="proforma-warn-icon proforma-warning"/></span>';
-//    const warningLabel = warnings + '<span class="proforma-dot-icon proforma-warn-icon">!</span>';
+    const warningLabel = warnings  + '<span class="proforma-warn-icon proforma-warning"/></span>';
     const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span>';
 
 
     const label = errorLabel + warningLabel + infoLabel;
 
-
-    // const label = errors + ' X ' + warnings + ' ! ' + infos + '<i class="icon fa fa-times text-danger fa-fw " title="info" aria-label="info"></i>';
     const SHOW = label; // 'Show inline';
     const HIDE = 'Hide inline';
     // Create button.
     console.log('create new button');
     var button = document.createElement("button");
     button.type = "button";
-    button.class="proforma-feedback-msg-btn";
+    button.className ="proforma-feedback-msg-btn";
     button.innerHTML  = SHOW;
 
     let showMsg = false;
-    
+
     let a_element = region.querySelector('a');
     a_element.insertAdjacentElement("afterend", button);
     cmid = CSS.escape(cmid);
@@ -246,11 +243,11 @@ export const embedError = (cmid, collapsregion, regexp) => {
             var editor = _getCodeMirror('#' + cmid);
             if (!showMsg) {
                 _showErrors(editor, messages);
-                // button.innerHTML = HIDE;
+                button.className ="proforma-feedback-msg-btn active";
                 showMsg = true;
             } else {
                 _hideErrors(editor, messages);
-                // button.innerHTML = SHOW;
+                button.className ="proforma-feedback-msg-btn";
                 showMsg = false;
             }
     });
