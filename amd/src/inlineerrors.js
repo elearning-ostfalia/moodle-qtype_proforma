@@ -26,7 +26,8 @@
 
 // import './codemirror-global';
 // import CodeMirror from "./codemirror.js";
-// MOODLE: import CodeMirror from "./codemirror";
+// Moodle import:
+// import CodeMirror from "./codemirror";
 // import any mode
 
 var widgets = [];
@@ -66,27 +67,28 @@ function _showErrors(editor, errors) {
                 switch (err.msgtype.toLowerCase()) {
                     case 'error':
                         var icon = msg.appendChild(document.createElement("span"));
-                        icon.innerHTML = "!!";
-                        icon.className = "inline-error-icon";
+                        icon.innerHTML = "x";
+                        icon.className = 'proforma-dot-icon proforma-error-icon';
                         msg.className = "inline-error";
                         break;
                     case 'warn':
                     case 'warning':
                         var icon = msg.appendChild(document.createElement("span"));
-                        icon.innerHTML = "!";
-                        icon.className = "inline-warning-icon";
+                        // icon.innerHTML = "";
+                        icon.className = "proforma-warn-icon proforma-warning";
                         msg.className = "inline-warning";
                         break;
                     case 'info':
-                        /*icon.innerHTML = "";
-                        icon.className = "inline-info-icon";*/
+                        var icon = msg.appendChild(document.createElement("span"));
+                        icon.innerHTML = "i";
+                        icon.className = 'proforma-dot-icon proforma-info-icon';
                         msg.className = "inline-info";
                         break;
                     default:
                         console.error('do not know message type ' + err.msgtype);
                         break;
                 }
-                msg.appendChild(document.createTextNode(err.text));
+                msg.appendChild(document.createTextNode(' ' + err.text));
                 widgets.push(editor.addLineWidget(err.line - 1, msg, {coverGutter: false, noHScroll: true}));
             }
           });
@@ -158,6 +160,34 @@ function _getErrorsFromLog(collapsregion, regexp) {
 }
 
 
+function _countMessages(messages) {
+    let errors = 0;
+    let warnings = 0;
+    let infos = 0;
+    for (var i = 0; i < messages.length; ++i) {
+        var msg = messages[i];
+        if (!msg) {
+            continue;
+        }
+        switch (msg.msgtype.toLowerCase()) {
+            case 'error':
+                errors++;
+                break;
+            case 'warn':
+            case 'warning':
+                warnings++;
+                break;
+            case 'info':
+                infos++;
+                break;
+            default:
+                console.error('do not know message type ' + err.msgtype);
+                break;
+        }
+    }
+    return [errors, warnings, infos];
+}
+
 /**
  * embeds error messages found in log area using regexp
  *
@@ -179,25 +209,49 @@ export const embedError = (cmid, collapsregion, regexp) => {
         return;
     }
 
-    const SHOW = 'Show inline';
+    const [errors, warnings, infos] = _countMessages(messages);
+
+    // const label = '<i class="fa fa-folder">TEXT</i>';
+    /* awsome fonts
+    const errorLabel = '<i class="icon fa fa-times text-danger fa-fw " title="error" aria-label="error">' + errors + '</i>';
+    const warningLabel = '<i class="icon fa fa-exclamation text-warning fa-fw" title="warning" aria-label="warning">' + warnings + '</i>';
+    const infoLabel = '<i class="icon fa fa-info fa-fw" title="info" aria-label="info">' + infos + '</i>';
+*/
+    const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span>';
+    const warningLabel = warnings + '<span class="proforma-warn-icon proforma-warning"/></span>';
+//    const warningLabel = warnings + '<span class="proforma-dot-icon proforma-warn-icon">!</span>';
+    const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span>';
+
+
+    const label = errorLabel + warningLabel + infoLabel;
+
+
+    // const label = errors + ' X ' + warnings + ' ! ' + infos + '<i class="icon fa fa-times text-danger fa-fw " title="info" aria-label="info"></i>';
+    const SHOW = label; // 'Show inline';
     const HIDE = 'Hide inline';
     // Create button.
-    console.log('create button');
+    console.log('create new button');
     var button = document.createElement("button");
     button.type = "button";
-    button.innerText = SHOW;
+    button.class="proforma-feedback-msg-btn";
+    button.innerHTML  = SHOW;
+
+    let showMsg = false;
+    
     let a_element = region.querySelector('a');
     a_element.insertAdjacentElement("afterend", button);
     cmid = CSS.escape(cmid);
     button.addEventListener('click',
         function () {
             var editor = _getCodeMirror('#' + cmid);
-            if (button.innerText == SHOW) {
+            if (!showMsg) {
                 _showErrors(editor, messages);
-                button.innerText = HIDE;
+                // button.innerHTML = HIDE;
+                showMsg = true;
             } else {
                 _hideErrors(editor, messages);
-                button.innerText = SHOW;
+                // button.innerHTML = SHOW;
+                showMsg = false;
             }
     });
 };

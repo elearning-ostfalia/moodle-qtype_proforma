@@ -8,6 +8,101 @@
     <link rel="stylesheet" href="../../styles.css">    
     <script src="../../amd/src/codemirror.js"></script>
     <script src="../../tests/javascript/testimport.js"></script>
+    <style>
+
+.proforma-dot-icon {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  display: inline-block;
+  text-align: center;
+  /* vertical-align: middle;*/
+  line-height: 15px;
+}
+
+.proforma-error-icon {
+  font-family: Helvetica, Arial, Sans-Serif;
+  background-color: red;
+  color: white;  
+}
+
+.proforma-info-icon {
+  background-color: blue;
+  color: white;  
+}
+
+/*
+.proforma-warn-icon::after {
+    content: "\26A0";
+}
+*/
+
+/* https://codepen.io/cksachdev/pen/YNPmqe */
+.proforma-warn-icon,
+.proforma-warn-icon::before,
+.proforma-warn-icon::after
+{
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.proforma-warn-icon {
+  font-size: 20px;
+  color: transparent;
+}
+
+.proforma-warn-icon.proforma-warning {
+  display: inline-block;
+
+  top: 0.225em;
+
+  width: 1.15em;
+  height: 1.15em;
+
+  overflow: hidden;
+  border: none;
+  background-color: transparent;
+  border-radius: 0.625em;
+}
+
+.proforma-warn-icon.proforma-warning::before {
+  content: "";
+  display: block;
+  top: -0.08em;
+  left: 0.0em;
+  position: absolute;
+  border: transparent 0.6em solid;
+  border-bottom-color: #fd3;
+  border-bottom-width: 1em;
+  border-top-width: 0;
+  box-shadow: #999 0 1px 1px;
+}
+
+.proforma-warn-icon.proforma-warning::after {
+  display: block;
+  position: absolute;
+  top: 0.3em;
+  left: 0;
+  width: 100%;
+  padding: 0 1px;
+  text-align: center;
+  font-family: "Garamond";
+  content: "!";
+  font-size: 0.65em;
+  font-weight: bold;
+  color: #333;
+}
+
+
+.proforma-feedback-msg-btn {
+  display:block;
+  height: 50px;
+  width: 50px;
+  border-radius: 20%;
+  /* border: 1px solid red; */
+}
+</style>
 
 </head>
 
@@ -27,6 +122,10 @@ public class MyString
 }
 </textarea>
 
+<div>
+<!-- <i class="fa fa-bicycle fa-5x circle-icon"/>-->
+TEXT
+</div>
 
 <div id="m-id-test-proforma-2044604495-3" class="collapsibleregion" style="height: 123px;">
     <div id="m-id-test-proforma-2044604495-3_sizer">
@@ -39,9 +138,9 @@ public class MyString
         <div id="m-id-test-proforma-2044604495-3_inner" class="collapsibleregioninner">
             <div class="proforma_testlog_title"></div>
             <pre class="proforma_testlog">Beginne Prüfung...
-    [INFO] de/ostfalia/gdp/ss19/s2/Schaltjahr.java:4:1: '{' an Position 1 sollte in der vorherigen Zeile stehen. [LeftCurly]
-    [INFO] de/ostfalia/gdp/ss19/s2/Schaltjahr.java:6:5: '{' an Position 5 sollte in der vorherigen Zeile stehen. [LeftCurly]
-    [INFO] de/ostfalia/gdp/ss19/s2/Schaltjahr.java:8:5: Fake Meldung. [LeftCurly]
+    [ERROR] de/ostfalia/MyString.java:4:1: '{' an Position 1 sollte in der vorherigen Zeile stehen. [LeftCurly]
+    [WARN] de/ostfalia/MyString.java:6:5: '{' an Position 5 sollte in der vorherigen Zeile stehen. [LeftCurly]
+    [INFO] de/ostfalia/MyString.java:8:5: Fake Meldung. [LeftCurly]
     Prüfung beendet.
 </pre>
         </div>

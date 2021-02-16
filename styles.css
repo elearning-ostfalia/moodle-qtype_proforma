@@ -1,4 +1,4 @@
-/* Styles for feedback errors */
+/* Styles for feedback messages */
 
 .inline-error, .inline-warning, .inline-info {
     font-family: arial; 
@@ -11,6 +11,9 @@
     color: #a00; 
 }
 .inline-error-icon {
+/*  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/qPKMDAwAADLZwf5rvm+LQAAAABJRU5ErkJggg==");
+*/
+    
     color: white; 
     background-color: red; 
     font-weight: bold; 
@@ -18,20 +21,35 @@
     padding: 0 3px; 
     margin-right: 7px;
 }
-
-.inline-warning {
-    color: #f0ad4e; 
-}
+/*
+.CodeMirror-lint-marker, 
+.inline-error-icon, 
 .inline-warning-icon {
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  vertical-align: middle;
+  position: relative;
+}
+*/
+
+ 
+.inline-warning-icon {
+/*  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJFhQXEbhTg7YAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAMklEQVQI12NkgIIvJ3QXMjAwdDN+OaEbysDA4MPAwNDNwMCwiOHLCd1zX07o6kBVGQEAKBANtobskNMAAAAASUVORK5CYII=");
+*/  
+
     color: white; 
     background-color: #f0ad4e; 
     font-weight: bold; 
     border-radius: 50%; 
     padding: 0 3px; 
-    margin-right: 7px;
+    margin-right: 7px; 
 }
 
-.inline-info {
+.inline-info, .inline-warning {
     color: black; 
 }
 .inline-info-icon {
