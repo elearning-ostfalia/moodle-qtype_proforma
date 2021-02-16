@@ -32,7 +32,6 @@
 
 var widgets = [];
 
-
 function _hideErrors(editor) {
     try {
         editor.operation(function() {
@@ -155,7 +154,6 @@ function _getErrorsFromLog(collapsregion, regexp) {
         };
         messages.push(error);
     }
-
     return messages;
 }
 
@@ -218,11 +216,11 @@ export const embedError = (cmid, collapsregion, regexp) => {
     const infoLabel = '<i class="icon fa fa-info fa-fw" title="info" aria-label="info">' + infos + '</i>';
 */
     const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span>';
-    const warningLabel = warnings  + '<span class="proforma-warn-icon proforma-warning"/></span>';
+    const warningLabel = warnings   + '<span class="proforma-warn-icon proforma-warning"/></span>';
     const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span>';
 
 
-    const label = errorLabel + warningLabel + infoLabel;
+    const label = errorLabel + ' ' + warningLabel + ' ' + infoLabel;
 
     const SHOW = label; // 'Show inline';
     const HIDE = 'Hide inline';
@@ -230,10 +228,11 @@ export const embedError = (cmid, collapsregion, regexp) => {
     console.log('create new button');
     var button = document.createElement("button");
     button.type = "button";
-    button.className ="proforma-feedback-msg-btn";
+    button.className = "proforma-feedback-msg-btn"; // "btn btn-secondary proforma-feedback-msg-btn"; //
     button.innerHTML  = SHOW;
 
     let showMsg = false;
+
 
     let a_element = region.querySelector('a');
     a_element.insertAdjacentElement("afterend", button);
@@ -252,5 +251,6 @@ export const embedError = (cmid, collapsregion, regexp) => {
             }
     });
 };
+
 
 

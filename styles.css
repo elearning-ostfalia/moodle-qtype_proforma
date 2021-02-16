@@ -1,5 +1,34 @@
 /* Styles for feedback messages */
 
+/* button */
+
+/*
+.proforma-feedback-msg-btn {
+    padding: 0
+}
+*/
+.proforma-feedback-msg-btn {
+    color:#212529;
+    background: #ced4da;
+    border: 1px solid #ccc;
+    /* padding: 10px 30px;*/
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .proforma-feedback-msg-btn.active {
+    background: #b8c1ca;
+    /*
+    -webkit-box-shadow: inset 0px 0px 5px #b1b1b1;
+       -moz-box-shadow: inset 0px 0px 5px #b1b1b1;
+            box-shadow: inset 0px 0px 5px #b1b1b1;
+     outline: none;            
+            */
+
+  }
+  /* icons */
+
+
 .inline-error, .inline-warning, .inline-info {
     font-family: arial; 
     font-size: 70%; 
@@ -12,29 +41,34 @@
 }
 
 .proforma-dot-icon {
-  height: 15px;
-  width: 15px;
-  border-radius: 50%;
-  display: inline-block;
-  text-align: center;
-  /* vertical-align: middle;*/
-  line-height: 15px;
-  box-shadow: #999 0 1px 1px; 
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    text-align: center;
+    /* vertical-align: middle;*/
+    line-height: 14px;
+    box-shadow: #999 0 1px 1px; 
 }
 
 .proforma-error-icon {
-  font-family: Helvetica, Arial, Sans-Serif;
-  background-color: rgb(165, 25, 25);
-  color: white;  
+    font-family: Helvetica, Arial, Sans-Serif;
+    background-color: rgb(165, 25, 25);
+    color: white;  
 }
 
 .proforma-info-icon {
-  background-color: blue;
-  color: white;  
+    font-family: "Times New Roman", "Garamond", serif;
+    font-size: 70%; 
+    background-color: blue;
+    color: white;  
+    position: relative;    
+    top: -0.14em;    
 }
 
 /* warning symbol 
 from https://codepen.io/cksachdev/pen/YNPmqe */
+/* http://www.karimnassar.com/code/web/css-icons/ */
 .proforma-warn-icon,
 .proforma-warn-icon::before,
 .proforma-warn-icon::after
@@ -45,8 +79,10 @@ from https://codepen.io/cksachdev/pen/YNPmqe */
 }
 
 .proforma-warn-icon {
-  font-size: 20px;
-  color: transparent;
+    height: 14px;
+    width: 14px;   
+   font-size: 12px;
+  color: green; /* transparent; */
 }
 
 .proforma-warn-icon.proforma-warning {
@@ -56,10 +92,7 @@ from https://codepen.io/cksachdev/pen/YNPmqe */
   width: 1.15em;
   height: 1.15em;*/
 
-  top: 0.3em;
-  width: 1.15em;
-  height: 1.15em;
-
+  top: 0.2em;
 
   overflow: hidden;
   border: none;
@@ -69,33 +102,32 @@ from https://codepen.io/cksachdev/pen/YNPmqe */
 
 
 .proforma-warn-icon.proforma-warning::before {
-  content: "";
-  display: block;
-  top: -0.08em;
-  left: 0.0em;
-  position: absolute;
-  border: transparent 0.6em solid;
-  border-bottom-color: #fd3;
-  border-bottom-width: 1em;
-  border-top-width: 0;
-  box-shadow: #999 0 1px 1px;
+    content: "";
+    display: block;
+    position: absolute;
+    top: -0.08em;
+    left: -0em;
+    border: transparent 0.6em solid;
+    border-bottom-color: #fd3;
+    border-bottom-width: 1em;
+    border-top-width: 0;
+    box-shadow: #999 0 1px 1px;
 }
 
 .proforma-warn-icon.proforma-warning::after {
-  display: block;
-  position: absolute;
-  top: 0.3em;
-  left: 0;
-  width: 100%;
-  padding: 0 1px;
-  text-align: center;
-  font-family: "Garamond";
-  content: "!";
-  font-size: 0.65em;
-  font-weight: bold;
-  color: #333;
+    content: "!";
+    display: block;
+    position: absolute;
+    top: 0.3em;
+    left: 0em;
+    width: 100%;
+    padding: 0 1px;
+    text-align: center;
+    font-family: "Garamond";
+    font-size: 0.65em;
+    font-weight: bold;
+    color: #333;
 }
-
 
 /* Styles for the editing form. */
 
