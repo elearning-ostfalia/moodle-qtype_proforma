@@ -25,43 +25,71 @@
  */
 
 // import './codemirror-global';
-// import CodeMirror from "./codemirror.js";
 // Moodle import:
 // import CodeMirror from "./codemirror";
 // import any mode
 
-var widgets = [];
+/* We store the widget handles for each editor because there is no
+interface for removing all widgets from an editor. 
+Using the DOM tree does not work because the widgets appear twice when readded.
+*/
 
-function _hideErrors(editor) {
+var editorWidgets; //  = {};
+
+
+/**
+ * returns all widgets for an editor
+ * @param {*} editor 
+ */
+function _getWidgets(editor) {
+    if (editorWidgets === undefined) {
+        console.log('editorWidgets undefined => create');   
+        editorWidgets = {};
+    }
+    console.log('editorWidgets found: ' + Object.keys(editorWidgets).length);   
+    let widgets = editorWidgets[editor];
+    if (widgets === undefined) {
+        console.log('widgets not found => add');        
+        let widgets = [];
+        editorWidgets[editor] = widgets;
+        return widgets;
+    }
+    console.log('widgets found: ' + widgets.length);        
+    return widgets;
+}
+
+/**
+ * removes all widgets from an editor
+ * @param {*} editor 
+ */
+function _hideWidgets(editor) {
     try {
         editor.operation(function() {
-            console.log('remove old widgets');
-            for (var i = 0; i < widgets.length; ++i) {
-                editor.removeLineWidget(widgets[i]);
+            let wigdets = _getWidgets(editor);
+            for (var i = 0; i < wigdets.length; ++i) {
+                editor.removeLineWidget(wigdets[i]);
             }
-            widgets.length = 0;
+            wigdets.length = 0;
         });
     } catch(e) {
         console.error('error occured ' + e);
     }
 }
 
-function _showErrors(editor, errors) {
-    try {
-        editor.operation(function(){
-            console.log('remove old widgets');
-            for (var i = 0; i < widgets.length; ++i) {
-                editor.removeLineWidget(widgets[i]);
-            }
-            widgets.length = 0;
 
-            console.log('add ' + errors.length.toString() + ' new widgets');
+function _showMessages(editor, errors) {
+    try {
+        editor.operation(function() {
+
+            _hideWidgets(editor);
+            let widgets = _getWidgets(editor);
+
+            console.log('add new widgets');            
             for (var i = 0; i < errors.length; ++i) {
                 var err = errors[i];
                 if (!err) {
                     continue;
                 }
-                console.log('create new widget');
                 var msg = document.createElement("div");
                 switch (err.msgtype.toLowerCase()) {
                     case 'error':
@@ -88,7 +116,8 @@ function _showErrors(editor, errors) {
                         break;
                 }
                 msg.appendChild(document.createTextNode(' ' + err.text));
-                widgets.push(editor.addLineWidget(err.line - 1, msg, {coverGutter: false, noHScroll: true}));
+                let widget = editor.addLineWidget(err.line - 1, msg, {coverGutter: true, noHScroll: true});
+                widgets.push(widget);
             }
           });
           var info = editor.getScrollInfo();
@@ -120,10 +149,10 @@ function _getCodeMirror(target) {
     return null;
 }
 
+
 function _getErrorsFromLog(collapsregion, regexp) {
     let region = document.getElementById(collapsregion);
     let testlogs = region.querySelectorAll('.proforma_testlog');
-    console.log('collapsregion ' + collapsregion);
     let innertext = '';
     for (let testlog of testlogs) {
         console.log('testlog ' + testlog);
@@ -135,18 +164,13 @@ function _getErrorsFromLog(collapsregion, regexp) {
         }
     }
     console.log('text: ' + innertext);
-    console.log('regexp is ' + regexp);
     // global match
-    var re = new RegExp(regexp, "mg");
-    console.log('re is ' + re);
-
+    let re = new RegExp(regexp, "mg");
     let results = innertext.matchAll(re);
     var messages = [];
 
     for (let result of results) {
         let {msgtype, filename, line, text} = result.groups;
-
-        // alert(`${msgtype}.${filename}.${line}.${text}`);
         var error = {
           line: line,
           text: text,
@@ -186,6 +210,7 @@ function _countMessages(messages) {
     return [errors, warnings, infos];
 }
 
+
 /**
  * embeds error messages found in log area using regexp
  *
@@ -195,6 +220,11 @@ function _countMessages(messages) {
  * @returns {undefined}
  */
 export const embedError = (cmid, collapsregion, regexp) => {
+    if (!cmid) {
+        console.error('cmid is invalid');
+        return;
+     }
+
     let region = document.getElementById(collapsregion);
     if (!region) {
        console.error('region ' + collapsregion + ' not found');
@@ -209,12 +239,6 @@ export const embedError = (cmid, collapsregion, regexp) => {
 
     const [errors, warnings, infos] = _countMessages(messages);
 
-    // const label = '<i class="fa fa-folder">TEXT</i>';
-    /* awsome fonts
-    const errorLabel = '<i class="icon fa fa-times text-danger fa-fw " title="error" aria-label="error">' + errors + '</i>';
-    const warningLabel = '<i class="icon fa fa-exclamation text-warning fa-fw" title="warning" aria-label="warning">' + warnings + '</i>';
-    const infoLabel = '<i class="icon fa fa-info fa-fw" title="info" aria-label="info">' + infos + '</i>';
-*/
     const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span>';
     const warningLabel = warnings   + '<span class="proforma-warn-icon proforma-warning"/></span>';
     const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span>';
@@ -225,10 +249,9 @@ export const embedError = (cmid, collapsregion, regexp) => {
     const SHOW = label; // 'Show inline';
     const HIDE = 'Hide inline';
     // Create button.
-    console.log('create new button');
     var button = document.createElement("button");
     button.type = "button";
-    button.className = "proforma-feedback-msg-btn"; // "btn btn-secondary proforma-feedback-msg-btn"; //
+    button.className = "proforma-feedback-msg-btn";
     button.innerHTML  = SHOW;
 
     let showMsg = false;
@@ -241,11 +264,11 @@ export const embedError = (cmid, collapsregion, regexp) => {
         function () {
             var editor = _getCodeMirror('#' + cmid);
             if (!showMsg) {
-                _showErrors(editor, messages);
+                _showMessages(editor, messages);
                 button.className ="proforma-feedback-msg-btn active";
                 showMsg = true;
             } else {
-                _hideErrors(editor, messages);
+                _hideWidgets(editor, messages);
                 button.className ="proforma-feedback-msg-btn";
                 showMsg = false;
             }

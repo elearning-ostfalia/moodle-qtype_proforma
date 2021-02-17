@@ -35,6 +35,18 @@ import('/amd/src/inlineerrors.js')
                     styleActiveLine: true, autoCloseBrackets: true,*/
                 });
                 module.embedError("editor", "m-id-test-proforma-2044604495-3", regexp); 
+
+
+                let editor2 = CodeMirror.fromTextArea(
+                    document.getElementById("editor2"), {
+                        lineNumbers: true,
+                    /*mode: "text/x-java",
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    tabMode: "shift",
+                    styleActiveLine: true, autoCloseBrackets: true,*/
+                });
+                module.embedError("editor2", "m-id-test-proforma-2044604495-4", regexp);                 
             });   
   });
 
