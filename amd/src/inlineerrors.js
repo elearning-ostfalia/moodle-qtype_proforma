@@ -26,7 +26,7 @@
 
 // import './codemirror-global';
 // Moodle import:
-// import CodeMirror from "./codemirror";
+import CodeMirror from "./codemirror";
 // import any mode
 
 /* We store the widget handles for each editor because there is no
@@ -34,106 +34,85 @@ interface for removing all widgets from an editor.
 Using the DOM tree does not work because the widgets appear twice when readded.
 */
 
-var editorWidgets; //  = {};
 
 
 /**
- * returns all widgets for an editor
+ * removes all widgets
  * @param {*} editor 
  */
-function _getWidgets(editor) {
-    if (editorWidgets === undefined) {
-        console.log('editorWidgets undefined => create');   
-        editorWidgets = {};
+function _hideWidgets(widgets) {
+    console.log('_hideWidgets: ' + widgets.length);   
+    console.log(widgets);   
+    for (let i = 0; i < widgets.length; ++i) {
+        widgets[i].clear();
+        // editor.removeLineWidget(widgets[i]);
     }
-    console.log('editorWidgets found: ' + Object.keys(editorWidgets).length);   
-    let widgets = editorWidgets[editor];
-    if (widgets === undefined) {
-        console.log('widgets not found => add');        
-        let widgets = [];
-        editorWidgets[editor] = widgets;
-        return widgets;
-    }
-    console.log('widgets found: ' + widgets.length);        
+    widgets.length = 0;
+    console.log('_hideWidgets: ' + widgets.length);   
+    console.log(widgets);   
     return widgets;
 }
 
-/**
- * removes all widgets from an editor
- * @param {*} editor 
- */
-function _hideWidgets(editor) {
-    try {
-        editor.operation(function() {
-            let wigdets = _getWidgets(editor);
-            for (var i = 0; i < wigdets.length; ++i) {
-                editor.removeLineWidget(wigdets[i]);
-            }
-            wigdets.length = 0;
-        });
-    } catch(e) {
-        console.error('error occured ' + e);
+
+function _showMessages(editor, errors, widgets) {
+    console.log('_showMessages');   
+
+    widgets = _hideWidgets(widgets);
+
+    console.log('add new widgets');            
+    for (let i = 0; i < errors.length; ++i) {
+        let err = errors[i];
+        if (!err) {
+            continue;
+        }
+        var msg = document.createElement("div");
+        var icon; 
+        switch (err.msgtype.toLowerCase()) {
+            case 'error':
+                icon = msg.appendChild(document.createElement("span"));
+                icon.innerHTML = "x";
+                icon.className = 'proforma-dot-icon proforma-error-icon';
+                msg.className = "inline-error";
+                break;
+            case 'warn':
+            case 'warning':
+                icon = msg.appendChild(document.createElement("span"));
+                // icon.innerHTML = "";
+                icon.className = "proforma-warn-icon proforma-warning";
+                msg.className = "inline-warning";
+                break;
+            case 'info':
+                icon = msg.appendChild(document.createElement("span"));
+                icon.innerHTML = "i";
+                icon.className = 'proforma-dot-icon proforma-info-icon';
+                msg.className = "inline-info";
+                break;
+            default:
+                console.error('do not know message type ' + err.msgtype);
+                break;
+        }
+        console.log('appendChild');                   
+        msg.appendChild(document.createTextNode(' ' + err.text));
+        console.log('addLineWidget');                   
+        var widget = editor.addLineWidget(err.line - 1, msg, {coverGutter: true, noHScroll: true});
+        console.log('push');                   
+        widgets.push(widget);
     }
-}
+    console.log(widgets);   
 
-
-function _showMessages(editor, errors) {
-    try {
-        editor.operation(function() {
-
-            _hideWidgets(editor);
-            let widgets = _getWidgets(editor);
-
-            console.log('add new widgets');            
-            for (var i = 0; i < errors.length; ++i) {
-                var err = errors[i];
-                if (!err) {
-                    continue;
-                }
-                var msg = document.createElement("div");
-                switch (err.msgtype.toLowerCase()) {
-                    case 'error':
-                        var icon = msg.appendChild(document.createElement("span"));
-                        icon.innerHTML = "x";
-                        icon.className = 'proforma-dot-icon proforma-error-icon';
-                        msg.className = "inline-error";
-                        break;
-                    case 'warn':
-                    case 'warning':
-                        var icon = msg.appendChild(document.createElement("span"));
-                        // icon.innerHTML = "";
-                        icon.className = "proforma-warn-icon proforma-warning";
-                        msg.className = "inline-warning";
-                        break;
-                    case 'info':
-                        var icon = msg.appendChild(document.createElement("span"));
-                        icon.innerHTML = "i";
-                        icon.className = 'proforma-dot-icon proforma-info-icon';
-                        msg.className = "inline-info";
-                        break;
-                    default:
-                        console.error('do not know message type ' + err.msgtype);
-                        break;
-                }
-                msg.appendChild(document.createTextNode(' ' + err.text));
-                let widget = editor.addLineWidget(err.line - 1, msg, {coverGutter: true, noHScroll: true});
-                widgets.push(widget);
-            }
-          });
-          var info = editor.getScrollInfo();
-          var after = editor.charCoords({line: editor.getCursor().line + 1, ch: 0}, "local").top;
-          if (info.top + info.clientHeight < after) {
-              editor.scrollTo(null, after - info.clientHeight + 3);
-          }
-    } catch(e) {
-        console.error('error occured ' + e);
+    let info = editor.getScrollInfo();
+    let after = editor.charCoords({line: editor.getCursor().line + 1, ch: 0}, "local").top;
+    if (info.top + info.clientHeight < after) {
+        editor.scrollTo(null, after - info.clientHeight + 3);
     }
+
+    return widgets;
 }
 
 
 // Retrieve a CodeMirror Instance.
 function _getCodeMirror(target) {
-    var _target = target;
+    let _target = target;
     if (typeof _target === 'string') {
         _target = document.querySelector(_target);
     }
@@ -167,11 +146,11 @@ function _getErrorsFromLog(collapsregion, regexp) {
     // global match
     let re = new RegExp(regexp, "mg");
     let results = innertext.matchAll(re);
-    var messages = [];
+    let messages = [];
 
     for (let result of results) {
         let {msgtype, filename, line, text} = result.groups;
-        var error = {
+        let error = {
           line: line,
           text: text,
           msgtype: msgtype,
@@ -186,8 +165,8 @@ function _countMessages(messages) {
     let errors = 0;
     let warnings = 0;
     let infos = 0;
-    for (var i = 0; i < messages.length; ++i) {
-        var msg = messages[i];
+    for (let i = 0; i < messages.length; ++i) {
+        let msg = messages[i];
         if (!msg) {
             continue;
         }
@@ -220,15 +199,20 @@ function _countMessages(messages) {
  * @returns {undefined}
  */
 export const embedError = (cmid, collapsregion, regexp) => {
+    var widgets = []; 
+
+    console.log('');   
+    console.log('   embedError');   
+
     if (!cmid) {
         console.error('cmid is invalid');
         return;
-     }
+        }
 
     let region = document.getElementById(collapsregion);
     if (!region) {
-       console.error('region ' + collapsregion + ' not found');
-       return;
+        console.error('region ' + collapsregion + ' not found');
+        return;
     }
 
     let messages = _getErrorsFromLog(collapsregion, regexp);
@@ -249,7 +233,7 @@ export const embedError = (cmid, collapsregion, regexp) => {
     const SHOW = label; // 'Show inline';
     const HIDE = 'Hide inline';
     // Create button.
-    var button = document.createElement("button");
+    let button = document.createElement("button");
     button.type = "button";
     button.className = "proforma-feedback-msg-btn";
     button.innerHTML  = SHOW;
@@ -262,17 +246,17 @@ export const embedError = (cmid, collapsregion, regexp) => {
     cmid = CSS.escape(cmid);
     button.addEventListener('click',
         function () {
-            var editor = _getCodeMirror('#' + cmid);
+            let editor = _getCodeMirror('#' + cmid);
             if (!showMsg) {
-                _showMessages(editor, messages);
+                widgets = _showMessages(editor, messages, widgets);
                 button.className ="proforma-feedback-msg-btn active";
                 showMsg = true;
             } else {
-                _hideWidgets(editor, messages);
+                widgets = _hideWidgets(widgets);
                 button.className ="proforma-feedback-msg-btn";
                 showMsg = false;
             }
-    });
+        });
 };
 
 

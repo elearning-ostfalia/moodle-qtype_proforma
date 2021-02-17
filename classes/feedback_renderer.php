@@ -273,7 +273,7 @@ class feedback_renderer {
                     $icon . ' ' . $testtitle . $visiblescore,
                     '', !$expand, true);
 
-        if (!$internalerror) {
+        if (!$internalerror and isset(qtype_proforma_format_renderer_base::$codemirrorid)) {
             // Add button for inline errors.
             // Todo: regular expression should be sent by grader!
             switch ($testtype) {

@@ -52,6 +52,19 @@ abstract class qtype_proforma_format_renderer_base extends plugin_renderer_base 
     // Hack.
     public static $codemirrorid = null;
 
+    /**
+     * Constructor method, calls the parent constructor
+     *
+     * @param moodle_page $page
+     * @param string $target one of rendering target constants
+     */
+    public function __construct(moodle_page $page, $target) {
+        // Reset codemirror variable because feedback renderer
+        // does not know formatrenderer instance.
+        self::$codemirrorid = null;
+        parent::__construct($page, $target);
+    }
+
     abstract public function response_area_input($qa, $step, $context);
     abstract protected function class_name();
     abstract public function response_area_read_only($qa, $step, $context);
