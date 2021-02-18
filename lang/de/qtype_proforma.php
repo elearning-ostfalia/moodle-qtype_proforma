@@ -62,8 +62,8 @@ $string['expand_small'] = 'für kleine Regionen ausklappen';
 
 $string['inlinemessages'] = 'Meldungen in Editor anzeigen';
 $string['useembeddedmessages'] = 'verwenden';
-$string['inlinemessages_help'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können in den Editor eingeblendet werden.';
-$string['inlinemessages_desc'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können in den Editor eingeblendet werden. Erfordert die Nutzung von CodeMirror.';
+$string['inlinemessages_help'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können direkt in den Editor eingeblendet werden. Dies ist u.U. nicht für alle Werkzeuge verfügbar.';
+$string['inlinemessages_desc'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können direkt in den Editor eingeblendet werden. Erfordert die Nutzung von CodeMirror.';
 $string['nocodemirror'] = 'CodeMirror ist deaktiviert. Daher kann das Anzeigen von Meldungen im Editor nicht genutzt werden.';
 
 /*

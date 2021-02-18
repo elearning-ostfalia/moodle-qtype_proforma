@@ -600,8 +600,8 @@ abstract class base_form_creator {
         $collapse = array(
             qtype_proforma::ALWAYS_COLLPASE => get_string('always_collapse', 'qtype_proforma'),
             qtype_proforma::ALWAYS_EXPAND => get_string('always_expand', 'qtype_proforma'),
-            qtype_proforma::EXPAND_STUDENT => get_string('expand_student', 'qtype_proforma'),
-            qtype_proforma::EXPAND_TEACHER => get_string('expand_teacher', 'qtype_proforma'),
+/*            qtype_proforma::EXPAND_STUDENT => get_string('expand_student', 'qtype_proforma'),
+            qtype_proforma::EXPAND_TEACHER => get_string('expand_teacher', 'qtype_proforma'),*/
             // qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),
         );
         $mform->addElement('select', 'expandcollapse',
@@ -612,7 +612,7 @@ abstract class base_form_creator {
         $embedmessageoptions = array();
         // Switch on/off.
         $embedmessageoptions[] = $mform->createElement('advcheckbox', 'inlinemessages',
-            get_string('useembeddedmessages', 'qtype_proforma'), null, array(0, 1));
+            '' /*get_string('useembeddedmessages', 'qtype_proforma')*/, null, array(0, 1));
         // Initial state.
         // $embedmessageoptions[] = $mform->createElement('advcheckbox', 'initiallyembedded',
         //     get_string('initiallyembedded', 'qtype_proforma'), null, array(0, 1));

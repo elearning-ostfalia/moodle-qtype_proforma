@@ -17,14 +17,14 @@
 
   /* icons */
 
-.inline-error, .inline-warning, .inline-info {
+.proforma-inline-error, .proforma-inline-warning, .proforma-inline-info {
     font-family: arial; 
     font-size: 70%; 
     background: #ffa; 
     padding: 2px 5px 3px; 
 }
 
-.inline-error {
+.proforma-inline-error {
     color: #a00; 
 }
 

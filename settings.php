@@ -82,9 +82,9 @@ if (isset($CFG->maxbytes)) {
 $collapses = array(
     qtype_proforma::ALWAYS_COLLPASE => get_string('always_collapse', 'qtype_proforma'),
     qtype_proforma::ALWAYS_EXPAND => get_string('always_expand', 'qtype_proforma'),
-    qtype_proforma::EXPAND_STUDENT => get_string('expand_student', 'qtype_proforma'),
+/*    qtype_proforma::EXPAND_STUDENT => get_string('expand_student', 'qtype_proforma'),
     qtype_proforma::EXPAND_TEACHER => get_string('expand_teacher', 'qtype_proforma'),
-    qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),
+    qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),*/
 );
 $settings->add(new admin_setting_configselect('qtype_proforma/expandcollapse',
             get_string('admincollapse', 'qtype_proforma'),

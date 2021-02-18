@@ -137,9 +137,9 @@ $string['graderuri_host_desc'] = 'Protocol and Server Part of Grader URI';
 $string['graderuri_path'] = 'URI: Path';
 $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 
-$string['feedbackoptions_heading'] = 'Feedback';
+$string['feedbackoptions_heading'] = 'Feedback Options';
 
-$string['collapse'] = 'Initial Collapse/Expand';
+$string['collapse'] = 'Initially collapse/ expand';
 $string['admincollapse'] = 'Feedback collapse/expand';
 $string['collapse_help'] = 'Some test feedback will be presented as collapsible regions. '
 . 'This setting defines the initial state of this region, i.e. if it is visible (expanded) or not (collapsed).';
@@ -149,10 +149,10 @@ $string['expand_student'] = 'expand for students';
 $string['expand_teacher'] = 'expand for teachers';
 $string['expand_small'] = 'expand for small regions';
 
-$string['inlinemessages'] = 'Editor embedded messages';
+$string['inlinemessages'] = 'Show messages in editor';
 $string['useembeddedmessages'] = 'Use';
-$string['inlinemessages_help'] = 'Messages from compiler or static code analysis tools can be embedded into editor. ';
-$string['inlinemessages_desc'] = 'Messages from compiler or static code analysis tools can be embedded into editor. Requires CodeMirror. ';
+$string['inlinemessages_help'] = 'Show Compiler messages or messages from static code analysis tools inline in editor. May not be possible for all messages.';
+$string['inlinemessages_desc'] = 'Show Compiler messages or messages from static code analysis tools inline in editor. Requires CodeMirror. ';
 $string['nocodemirror'] = 'CodeMirror is disabled. So embedding messages into editor will not work.';
 
 /*

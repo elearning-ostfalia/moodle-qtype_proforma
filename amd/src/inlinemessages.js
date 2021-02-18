@@ -57,22 +57,23 @@ function _showMessages(editor, errors, widgets) {
                 icon = msg.appendChild(document.createElement("span"));
                 icon.innerHTML = "x";
                 icon.className = 'proforma-dot-icon proforma-error-icon';
-                msg.className = "inline-error";
+                msg.className = "proforma-inline-error";
                 break;
             case 'warn':
             case 'warning':
                 icon = msg.appendChild(document.createElement("span"));
                 // icon.innerHTML = "";
                 icon.className = "proforma-warn-icon proforma-warning";
-                msg.className = "inline-warning";
+                msg.className = "proforma-inline-warning";
                 break;
             case 'info':
                 icon = msg.appendChild(document.createElement("span"));
                 icon.innerHTML = "i";
                 icon.className = 'proforma-dot-icon proforma-info-icon';
-                msg.className = "inline-info";
+                msg.className = "proforma-inline-info";
                 break;
             default:
+                msg.className = "proforma-inline-info";
                 console.error('do not know message type ' + err.msgtype);
                 break;
         }
