@@ -303,5 +303,28 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020042006, 'qtype', 'proforma');
     }
 
+    if ($oldversion < 2021021802) {
+        require_once(__DIR__ . '/upgradelib.php');
+
+        // Add fields for feedback options.
+        $field = new xmldb_field('expandcollapse', XMLDB_TYPE_INTEGER,  '4', null, XMLDB_NOTNULL, null, 0, 'proformaversion');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('inlinemessages', XMLDB_TYPE_INTEGER,  '4', null, XMLDB_NOTNULL, null, 1, 'expandcollapse');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        /* For future use:
+        $field = new xmldb_field('initiallyinline', XMLDB_TYPE_INTEGER,  '4', null, XMLDB_NOTNULL, null, 0, 'inlinemessages');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+         */
+
+        // ProFormA savepoint reached.
+        upgrade_plugin_savepoint(true, 2021021802, 'qtype', 'proforma');
+    }
+
     return true;
 }

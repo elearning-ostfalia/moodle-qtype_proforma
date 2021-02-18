@@ -278,7 +278,8 @@ class feedback_renderer {
 
         if (!$internalerror and isset(qtype_proforma_format_renderer_base::$codemirrorid)) {
             // Add button for inline errors.
-            // Todo: regular expression should be sent by grader!
+            // Todo: regular expression should be sent by grader
+            // when XML response format is updated to version 2.1.
             switch ($testtype) {
                 case 'java-compilation':
                     // Regular expression for Java compilation.
@@ -290,7 +291,7 @@ class feedback_renderer {
                     break;
             }
             if (isset($regexp)) {
-                $this->_mainrenderer->get_page()->requires->js_call_amd('qtype_proforma/inlineerrors',
+                $this->_mainrenderer->get_page()->requires->js_call_amd('qtype_proforma/inlinemessages',
                     'embedError', array(qtype_proforma_format_renderer_base::$codemirrorid,
                         $collid, $regexp));
             }

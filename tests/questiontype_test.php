@@ -179,8 +179,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <vcsuritemplate></vcsuritemplate>
     <vcslabel></vcslabel>
     <expandcollapse>1</expandcollapse>
-    <embedmessages>1</embedmessages>
-    <initallyembedded>1</initallyembedded>
+    <inlinemessages>1</inlinemessages>
     <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES.'</templates>
     <downloads>'.qtype_proforma_test_helper::QUESTION_DOWNLOADS.'</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
@@ -266,8 +265,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <vcsuritemplate></vcsuritemplate>
     <vcslabel></vcslabel>
     <expandcollapse>0</expandcollapse>
-    <embedmessages>0</embedmessages>
-    <initallyembedded>0</initallyembedded>
+    <inlinemessages>0</inlinemessages>
     <templates></templates>
     <downloads>'.qtype_proforma_test_helper::QUESTION_DOWNLOADS.'</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
@@ -403,8 +401,8 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $expectedq->modelsolfiles = qtype_proforma_test_helper::QUESTION_MODELSOLS;
 
         $expectedq->expandcollapse = 0;
-        $expectedq->embedmessages = 0;
-        $expectedq->initallyembedded = 0;
+        $expectedq->inlinemessages = 0;
+        // $expectedq->initiallyinline = 0;
 
         $expectedq->hint = array(
                 array('text' => 'hint 1<br>', 'format' => FORMAT_HTML),
@@ -479,8 +477,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
     <proformaversion>2.0</proformaversion>
     <expandcollapse>1</expandcollapse>
-    <embedmessages>1</embedmessages>
-    <initallyembedded>1</initallyembedded>
+    <inlinemessages>1</inlinemessages>
     <templates>'.qtype_proforma_test_helper::QUESTION_TEMPLATES.'</templates>
     <downloads>instruction.txt, test/lib/lib.txt</downloads>
     <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
@@ -551,8 +548,8 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $expectedq->aggregationstrategy = 2;
 
         $expectedq->expandcollapse = 1;
-        $expectedq->embedmessages = 1;
-        $expectedq->initallyembedded = 1;
+        $expectedq->inlinemessages = 1;
+        // $expectedq->initiallyinline = 1;
 
         $expectedq->gradinghints = qtype_proforma_test_helper::QUESTION_GRADINGHINTS;
 

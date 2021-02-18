@@ -92,9 +92,9 @@ $settings->add(new admin_setting_configselect('qtype_proforma/expandcollapse',
             0,
             $collapses));
 
-$settings->add(new admin_setting_configcheckbox('qtype_proforma/embedmessages',
-        get_string('embedmessages', 'qtype_proforma'),
-        get_string('embedmessages_desc', 'qtype_proforma'), 1));
+$settings->add(new admin_setting_configcheckbox('qtype_proforma/inlinemessages',
+        get_string('inlinemessages', 'qtype_proforma'),
+        get_string('inlinemessages_desc', 'qtype_proforma'), 1));
 
 // Not supported:
 /* $settings->add(new admin_setting_configcheckbox('qtype_proforma/initiallyembedded',

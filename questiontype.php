@@ -215,8 +215,8 @@ class qtype_proforma extends question_type {
                 'vcslabel',
 
                 'expandcollapse',
-                'embedmessages',
-                'initallyembedded'
+                'inlinemessages',
+                // 'initiallyinline'
                 // Attributes 'comment' and 'commentformat' build an array => do not add.
         );
 

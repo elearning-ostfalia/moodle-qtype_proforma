@@ -149,10 +149,10 @@ $string['expand_student'] = 'expand for students';
 $string['expand_teacher'] = 'expand for teachers';
 $string['expand_small'] = 'expand for small regions';
 
-$string['embedmessages'] = 'Editor embedded messages';
+$string['inlinemessages'] = 'Editor embedded messages';
 $string['useembeddedmessages'] = 'Use';
-$string['embedmessages_help'] = 'Messages from compiler or static code analysis tools can be embedded into editor. ';
-$string['embedmessages_desc'] = 'Messages from compiler or static code analysis tools can be embedded into editor. Requires CodeMirror. ';
+$string['inlinemessages_help'] = 'Messages from compiler or static code analysis tools can be embedded into editor. ';
+$string['inlinemessages_desc'] = 'Messages from compiler or static code analysis tools can be embedded into editor. Requires CodeMirror. ';
 $string['nocodemirror'] = 'CodeMirror is disabled. So embedding messages into editor will not work.';
 
 /*

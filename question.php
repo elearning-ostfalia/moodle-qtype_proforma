@@ -110,9 +110,9 @@ class qtype_proforma_question extends question_graded_automatically {
     public $expandcollapse;
 
     /** feedback option: shall messages be embedded into editor code? */
-    public $embedmessages;
+    public $inlinemessages;
     /** feedback option: shall messages be initially embedded into editor? */
-    public $initallyembedded;
+    // public $initiallyinline;
 
 
     /**

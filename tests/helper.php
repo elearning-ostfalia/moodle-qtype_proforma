@@ -315,8 +315,8 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // feedback options
         $q->expandcollapse = 1;
-        $q->embedmessages = 1;
-        $q->initallyembedded = 1;
+        $q->inlinemessages = 1;
+        // $q->initiallyinline = 1;
 
 
         $q->hints = array(
@@ -352,6 +352,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $q = $this->initialise_proforma_question();
         $q->responseformat = 'filepicker';
         $q->attachments = 3;
+        $q->inlinemessages = 0;
 
         $q->templates = self::QUESTION_TEMPLATES_2;
         $q->programminglanguage = 'python';
@@ -388,8 +389,8 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // feedback options
         $fromform->expandcollapse = 1;
-        $fromform->embedmessages = 1;
-        $fromform->initallyembedded = 1;
+        $fromform->inlinemessages = 1;
+        // $fromform->initiallyinline = 1;
 
         $fromform->template = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->template, self::QUESTION_TEMPLATES,
@@ -409,6 +410,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $this->get_form_data($fromform);
         $fromform->responseformat = 'filepicker';
         $fromform->attachments = 3;
+        $fromform->inlinemessages = 0;
 
         $fromform->templates = self::QUESTION_TEMPLATES_2;
         $property = qtype_proforma::FILEAREA_TEMPLATE;

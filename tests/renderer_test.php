@@ -646,7 +646,7 @@ Prüfung beendet.
      * @param bool $internalerror
      * @return string
      */
-    private function render_collapsible_region_score($number, $score, $total, $title, $description, $logs, $internalerror = false) {
+    private function render_collapsible_region_score($number, $score, $total, $title, $description, $logs, $internalerror = false, $collapsed = false) {
         $idprefix = '{COLLAPSE_ID}';
         $id = $idprefix.'-'.$number;
 
@@ -662,7 +662,7 @@ Prüfung beendet.
             } else if (($score/$total) < 1) {
                 $icon = $iconfailed;
             }
-            $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
+            $output = '<div id="'.$id.'" class="collapsibleregion ' . ($collapsed?' collapsed':'') . '"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">
 <i ' . $icon . '></i> '.$title;
             if ($internalerror and !isset($score)) {
@@ -679,7 +679,7 @@ Prüfung beendet.
                 $icon = $iconfailed;
             }
 
-            $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
+            $output = '<div id="'.$id.'" class="collapsibleregion ' . ($collapsed?' collapsed':'') . '"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">
 <i ' . $icon . '></i> '.$title;
         }
@@ -712,11 +712,12 @@ Prüfung beendet.
         return $output;
     }
 
-    private function render_collapsible_region_subtests($number, $score, $total, $title, $description, $subtests, $internalerror = false) {
+    private function render_collapsible_region_subtests($number, $score, $total,
+        $title, $description, $subtests, $internalerror = false, $collapsed = false) {
         $idprefix = '{COLLAPSE_ID}';
         $id = $idprefix.'-'.$number;
 
-        $output = '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
+        $output = '<div id="'.$id.'" class="collapsibleregion ' . ($collapsed?' collapsed':'') . '"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">';
 
         if ($score == 0) {
@@ -765,9 +766,12 @@ Prüfung beendet.
         return $output;
     }
 
-    private function assert_same_feedback($response, $errormsg, $gradinghints, $expected) {
+    private function assert_same_feedback($response, $errormsg, $gradinghints, $expected, $collapsed=false) {
         // create a question (grading hints are important)
         $q = test_question_maker::make_question('proforma', 'editor');
+        if ($collapsed) {
+            $q->expandcollapse = 0;
+        }
         if ($gradinghints != null) {
             $q->gradinghints = $gradinghints;
             $q->aggregationstrategy = qtype_proforma::WEIGHTED_SUM;
@@ -951,7 +955,7 @@ Prüfung beendet.
                 $this->render_title('title2').
                 $this->render_general_log('Teacher Message 1').
                 '</p>'.
-                $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1_TEACHER).
+                $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1_TEACHER, false, false).
                 $this->render_collapsible_region_subtests(2, 0.45, 0.6, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1_TEACHER).
                 $this->render_graderinfo(3, 'praktomat 5.6.7', self::RESPONSE_2);
 
@@ -970,6 +974,19 @@ Prüfung beendet.
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_4, '', self::GRADINGHINTS_1, $expected);
+    }
+
+    /**
+     * compilation error, collapsed feedback
+     */
+    public function test_compilation_error_expanded() {
+        $expected =
+                $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_4_1, false, true).
+                $this->render_collapsible_region_score(2, 0, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_4_2, false, true).
+                $this->render_graderinfo(3, 'praktomat Version 4.5.1 | 20200803', self::RESPONSE_4);
+
+        $this->setAdminUser();
+        $this->assert_same_feedback(self::RESPONSE_4, '', self::GRADINGHINTS_1, $expected, true);
     }
 
     /**

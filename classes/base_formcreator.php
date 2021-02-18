@@ -611,17 +611,17 @@ abstract class base_form_creator {
 
         $embedmessageoptions = array();
         // Switch on/off.
-        $embedmessageoptions[] = $mform->createElement('advcheckbox', 'embedmessages',
+        $embedmessageoptions[] = $mform->createElement('advcheckbox', 'inlinemessages',
             get_string('useembeddedmessages', 'qtype_proforma'), null, array(0, 1));
         // Initial state.
         // $embedmessageoptions[] = $mform->createElement('advcheckbox', 'initiallyembedded',
         //     get_string('initiallyembedded', 'qtype_proforma'), null, array(0, 1));
         // Disable initial state if feature is not used.
-        // $mform->disabledIf('initiallyembedded', 'embedmessages', 'neq', '1');
+        // $mform->disabledIf('initiallyembedded', 'inlinemessages', 'neq', '1');
         // $mform->setDefault('initiallyembedded', get_config('qtype_proforma', 'initiallyembedded'));
 
-        $mform->addElement('group', 'embed', get_string('embedmessages', 'qtype_proforma'), $embedmessageoptions, null, false);
-        $mform->addHelpButton('embed', 'embedmessages', 'qtype_proforma');
+        $mform->addElement('group', 'embed', get_string('inlinemessages', 'qtype_proforma'), $embedmessageoptions, null, false);
+        $mform->addHelpButton('embed', 'inlinemessages', 'qtype_proforma');
         // Editor embedded messages (group).
         if (!get_config('qtype_proforma', 'usecodemirror')) {
             $mform->addElement('static', 'nocodemirror', '', get_string('nocodemirror', 'qtype_proforma'));
@@ -629,7 +629,7 @@ abstract class base_form_creator {
 
         // Disable group if editor is not selected.
         $mform->disabledIf('embed', 'responseformat', 'neq', 'editor');
-        $mform->setDefault('embedmessages', get_config('qtype_proforma', 'embedmessages'));
+        $mform->setDefault('inlinemessages', get_config('qtype_proforma', 'inlinemessages'));
     }
 
     /**

@@ -32,6 +32,11 @@
         <FIELD NAME="aggregationstrategy" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="aggregation strategy, 1=all or nothing, 2=weighted mean"/>
         <FIELD NAME="gradinghints" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="editable grading hints"/>
         <FIELD NAME="proformaversion" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="version of ProFormA task"/>
+        <FIELD NAME="expandcollapse" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="feedback option for collapsible regions."/>
+        <FIELD NAME="inlinemessages" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="feedback option: shall messages be embedded into editor code?"/>
+        <!-- Future use:
+        <FIELD NAME="initiallyinline" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="shall messages be initially embedded into editor?"/>
+            -->
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

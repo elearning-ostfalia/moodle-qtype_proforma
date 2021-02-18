@@ -60,10 +60,10 @@ $string['expand_student'] = 'für Studierende ausklappen';
 $string['expand_teacher'] = 'für Lehrende ausklappen';
 $string['expand_small'] = 'für kleine Regionen ausklappen';
 
-$string['embedmessages'] = 'Meldungen in Editor anzeigen';
+$string['inlinemessages'] = 'Meldungen in Editor anzeigen';
 $string['useembeddedmessages'] = 'verwenden';
-$string['embedmessages_help'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können in den Editor eingeblendet werden.';
-$string['embedmessages_desc'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können in den Editor eingeblendet werden. Erfordert die Nutzung von CodeMirror.';
+$string['inlinemessages_help'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können in den Editor eingeblendet werden.';
+$string['inlinemessages_desc'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können in den Editor eingeblendet werden. Erfordert die Nutzung von CodeMirror.';
 $string['nocodemirror'] = 'CodeMirror ist deaktiviert. Daher kann das Anzeigen von Meldungen im Editor nicht genutzt werden.';
 
 /*
