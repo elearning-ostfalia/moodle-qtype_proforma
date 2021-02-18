@@ -53,13 +53,16 @@ class feedback_renderer {
      */
     private $_gradinghints = null;
 
+    private $_question = null;
+
     /**
      * feedback_renderer constructor.
      *
      * @param qtype_proforma_renderer $renderer
      */
-    public function __construct(qtype_proforma_renderer $renderer) {
+    public function __construct(qtype_proforma_renderer $renderer, $question) {
         $this->_mainrenderer = $renderer;
+        $this->_question = $question;
     }
 
     /**
@@ -214,7 +217,7 @@ class feedback_renderer {
         // since there can be multiple regions per page!
         $collid = $this->_mainrenderer->create_collapsible_region_id();
         $visiblescore = '';
-        if ($this->question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
+        if ($this->_question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
             $weight = floatval((string) $ghtest['weight']) / $this->_totalweight;
             if ($weight > 0.0) {
                 // Only display percentage if this test counts more than 0.
@@ -246,7 +249,7 @@ class feedback_renderer {
         }
 
         $expand = false;
-        switch ($this->question->expandcollapse) {
+        switch ($this->_question->expandcollapse) {
             case qtype_proforma::ALWAYS_COLLPASE:
                 break;
             case qtype_proforma::ALWAYS_EXPAND:
@@ -266,7 +269,7 @@ class feedback_renderer {
                 // Todo.
                 break;
             default:
-                debugging('invalid value for expandcollapse ' . $this->question->$expandcollapse);
+                debugging('invalid value for expandcollapse ' . $this->_question->$expandcollapse);
                 break;
         }
         $result .= print_collapsible_region_start('', $collid,
@@ -369,10 +372,9 @@ class feedback_renderer {
      * converts the ProFormA response to html
      *
      * @param $message
-     * @param question_attempt $qa
      * @return string
      */
-    public function render_proforma2_message($message, $question) {
+    public function render_proforma2_message($message) {
         $result = '';
         // Check type of response.
         try {
@@ -387,9 +389,8 @@ class feedback_renderer {
         }
 
         // Preset member variables.
-        $gh = new SimpleXMLElement($question->gradinghints);
+        $gh = new SimpleXMLElement($this->_question->gradinghints);
         $this->_gradinghints = $gh->root;
-        $this->question = $question;
 
         // Calculate total weight.
         $this->_totalweight = 0;
@@ -461,7 +462,7 @@ class feedback_renderer {
         // Render version control information.
         $result = $this->render_vcs_information($response, $result);
         // Render grading information.
-        $result = $this->_render_grader_info($message, $response, $result, $question->contextid);
+        $result = $this->_render_grader_info($message, $response, $result, $this->_question->contextid);
 
         return $result;
     }

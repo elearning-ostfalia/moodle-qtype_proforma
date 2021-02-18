@@ -34,7 +34,7 @@ import('/amd/src/inlineerrors.js')
                     tabMode: "shift",
                     styleActiveLine: true, autoCloseBrackets: true,*/
                 });
-                module.embedError("editor", "m-id-test-proforma-2044604495-3", regexp); 
+                module.embedError("editor", "m-id-test-proforma-2044604495-3", regexp, 1); 
 
 
                 let editor2 = CodeMirror.fromTextArea(

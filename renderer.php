@@ -445,7 +445,7 @@ class qtype_proforma_renderer extends qtype_renderer {
      */
     public function render_proforma2_message($message, $errormsg, $question) {
         // Delegate.
-        $renderer = new feedback_renderer($this);
-        return $renderer->render_proforma2_message($message, $question);
+        $renderer = new feedback_renderer($this, $question);
+        return $renderer->render_proforma2_message($message);
     }
 }

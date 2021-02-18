@@ -187,8 +187,8 @@ class proforma_bulk_tester  {
                 } else {
                     global $PAGE;
                     $renderer = new qtype_proforma_renderer($PAGE, null);
-                    $fbrenderer = new feedback_renderer($renderer);
-                    $feedback = $fbrenderer->render_proforma2_message($feedback, $question);
+                    $fbrenderer = new feedback_renderer($renderer, $question);
+                    $feedback = $fbrenderer->render_proforma2_message($feedback);
                 }
             } else {
                 $class = 'pass';

@@ -155,10 +155,11 @@ $string['embedmessages_help'] = 'Messages from compiler or static code analysis 
 $string['embedmessages_desc'] = 'Messages from compiler or static code analysis tools can be embedded into editor. Requires CodeMirror. ';
 $string['nocodemirror'] = 'CodeMirror is disabled. So embedding messages into editor will not work.';
 
+/*
 $string['admininitiallyembedded'] = 'Initially show messages in editor';
 $string['initiallyembedded'] = 'Initially embedded';
 $string['initiallyembedded_help'] = 'If set the messages are already embedded when feedback is available.';
-
+*/
 
 
 

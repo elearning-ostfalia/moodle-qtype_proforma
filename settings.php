@@ -96,9 +96,11 @@ $settings->add(new admin_setting_configcheckbox('qtype_proforma/embedmessages',
         get_string('embedmessages', 'qtype_proforma'),
         get_string('embedmessages_desc', 'qtype_proforma'), 1));
 
-$settings->add(new admin_setting_configcheckbox('qtype_proforma/initiallyembedded',
+// Not supported:
+/* $settings->add(new admin_setting_configcheckbox('qtype_proforma/initiallyembedded',
         get_string('admininitiallyembedded', 'qtype_proforma'),
         get_string('initiallyembedded_help', 'qtype_proforma'), 0));
+ */
 
 $settings->add(new admin_setting_heading('vcs',
         get_string('vcs_header', 'qtype_proforma'),

@@ -66,10 +66,11 @@ $string['embedmessages_help'] = 'Meldungen von z.B. Compiler oder statischen Ana
 $string['embedmessages_desc'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können in den Editor eingeblendet werden. Erfordert die Nutzung von CodeMirror.';
 $string['nocodemirror'] = 'CodeMirror ist deaktiviert. Daher kann das Anzeigen von Meldungen im Editor nicht genutzt werden.';
 
+/*
 $string['admininitiallyembedded'] = 'Meldungen sofort im Editor anzeigen';
 $string['initiallyembedded'] = 'sofort anzeigen';
 $string['initiallyembedded_help'] = 'Wenn gesetzt, dann werden die Meldungen sofort im Editor angezeigt, sobald sie verfügbar sind.';
-
+*/
 
 $string['modelsolution'] = 'Musterlösung';
 $string['modelsolutionheader'] = 'Musterlösung';

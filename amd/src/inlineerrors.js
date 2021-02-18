@@ -29,44 +29,29 @@
 import CodeMirror from "./codemirror";
 // import any mode
 
-/* We store the widget handles for each editor because there is no
-interface for removing all widgets from an editor. 
-Using the DOM tree does not work because the widgets appear twice when readded.
-*/
-
-
 
 /**
  * removes all widgets
- * @param {*} editor 
+ * @param {*} editor
  */
 function _hideWidgets(widgets) {
-    console.log('_hideWidgets: ' + widgets.length);   
-    console.log(widgets);   
     for (let i = 0; i < widgets.length; ++i) {
         widgets[i].clear();
-        // editor.removeLineWidget(widgets[i]);
     }
     widgets.length = 0;
-    console.log('_hideWidgets: ' + widgets.length);   
-    console.log(widgets);   
     return widgets;
 }
 
 
 function _showMessages(editor, errors, widgets) {
-    console.log('_showMessages');   
-
     widgets = _hideWidgets(widgets);
-
-    console.log('add new widgets');            
     for (let i = 0; i < errors.length; ++i) {
         let err = errors[i];
         if (!err) {
             continue;
         }
         var msg = document.createElement("div");
-        var icon; 
+        var icon;
         switch (err.msgtype.toLowerCase()) {
             case 'error':
                 icon = msg.appendChild(document.createElement("span"));
@@ -91,15 +76,10 @@ function _showMessages(editor, errors, widgets) {
                 console.error('do not know message type ' + err.msgtype);
                 break;
         }
-        console.log('appendChild');                   
         msg.appendChild(document.createTextNode(' ' + err.text));
-        console.log('addLineWidget');                   
         var widget = editor.addLineWidget(err.line - 1, msg, {coverGutter: true, noHScroll: true});
-        console.log('push');                   
         widgets.push(widget);
     }
-    console.log(widgets);   
-
     let info = editor.getScrollInfo();
     let after = editor.charCoords({line: editor.getCursor().line + 1, ch: 0}, "local").top;
     if (info.top + info.clientHeight < after) {
@@ -134,7 +114,6 @@ function _getErrorsFromLog(collapsregion, regexp) {
     let testlogs = region.querySelectorAll('.proforma_testlog');
     let innertext = '';
     for (let testlog of testlogs) {
-        console.log('testlog ' + testlog);
         if (testlog.innerText.length == 0) {
             // HtmlPreElement
             innertext = innertext + '\n' + testlog.textContent;
@@ -142,7 +121,6 @@ function _getErrorsFromLog(collapsregion, regexp) {
             innertext = innertext + '\n' + testlog.innerText;
         }
     }
-    console.log('text: ' + innertext);
     // global match
     let re = new RegExp(regexp, "mg");
     let results = innertext.matchAll(re);
@@ -190,24 +168,10 @@ function _countMessages(messages) {
 }
 
 
-/**
- * embeds error messages found in log area using regexp
- *
- * @param {type} cmid Codemirror identifier
- * @param {type} collapsregion collapsible region with error messages
- * @param {type} regexp regulare expression for finding messages
- * @returns {undefined}
- */
-export const embedError = (cmid, collapsregion, regexp) => {
-    var widgets = []; 
-
-    console.log('');   
-    console.log('   embedError');   
-
-    if (!cmid) {
-        console.error('cmid is invalid');
-        return;
-        }
+function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp) {
+    var widgets = [];
+    // Codemirror id must be escaped!
+    cmid = CSS.escape(cmid);
 
     let region = document.getElementById(collapsregion);
     if (!region) {
@@ -217,35 +181,41 @@ export const embedError = (cmid, collapsregion, regexp) => {
 
     let messages = _getErrorsFromLog(collapsregion, regexp);
     if (messages.length == 0) {
-        console.log('no messages found');
+        // console.log('no messages found');
         return;
     }
 
     const [errors, warnings, infos] = _countMessages(messages);
 
-    const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span>';
-    const warningLabel = warnings   + '<span class="proforma-warn-icon proforma-warning"/></span>';
-    const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span>';
+    const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span> ';
+    const warningLabel = warnings   + '<span class="proforma-warn-icon proforma-warning"/></span> ';
+    const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span> ';
 
+    let label = ' ';
+    if (errors > 0) {
+        label += errorLabel;
+    }
+    if (warnings > 0) {
+        label += warningLabel;
+    }
+    if (infos > 0) {
+        label += infoLabel;
+    }
 
-    const label = errorLabel + ' ' + warningLabel + ' ' + infoLabel;
-
-    const SHOW = label; // 'Show inline';
-    const HIDE = 'Hide inline';
     // Create button.
     let button = document.createElement("button");
     button.type = "button";
     button.className = "proforma-feedback-msg-btn";
-    button.innerHTML  = SHOW;
+    button.innerHTML  = label;
 
     let showMsg = false;
 
-
     let a_element = region.querySelector('a');
     a_element.insertAdjacentElement("afterend", button);
-    cmid = CSS.escape(cmid);
     button.addEventListener('click',
         function () {
+            // The editor is evaluated here and not before in order to avoid
+            // racing situations.
             let editor = _getCodeMirror('#' + cmid);
             if (!showMsg) {
                 widgets = _showMessages(editor, messages, widgets);
@@ -257,6 +227,33 @@ export const embedError = (cmid, collapsregion, regexp) => {
                 showMsg = false;
             }
         });
+}
+
+/**
+ * embeds error messages found in log area using regexp
+ *
+ * @param {type} cmid Codemirror identifier
+ * @param {type} collapsregion collapsible region with error messages
+ * @param {type} regexp regulare expression for finding messages
+ * @returns {undefined}
+ */
+export const embedError = (cmid, collapsregion, regexp) => {
+    if (!cmid) {
+        console.error('cmid is invalid');
+        return;
+    }
+
+    // We must wait for the document to be ready.
+    // Otherwise Codemirror and other controls might not yet be available.
+    // Note that Codemirror is created asynchronously after document ready.
+    // So this is not enough when something has to be done with Codemirror.
+    if( document.readyState !== 'loading' ) {
+        _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp);
+    } else {
+        document.addEventListener("DOMContentLoaded", function() {
+            _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp);
+      });
+    }
 };
 
 
