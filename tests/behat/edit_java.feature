@@ -45,6 +45,12 @@ Feature: EDIT JAVA
       | Aggregation strategy      | All or nothing                |
       | Penalty for each incorrect try  | 20%                     |
       | Response filename        | MyString.java                     |
+    And I expand all fieldsets
+    # feedback options
+    And the field "Initially collapse/expand" matches value "collapse"
+    # 'Show messages in editor'
+    And the "inlinemessages" checkbox is "1"
+    
     # compile
     And the "compile" checkbox is "checked"
     And the field "compileweight" matches value "2"
@@ -175,6 +181,11 @@ Feature: EDIT JAVA
     And I set the codemirror "responsetemplate" to "new code snippet that can be used as a starting point for the student"
     And I set the codemirror "modelsolution" to "// new code for model solution"
 
+    # feedback options
+    And I set the field "Initially collapse/expand" to "expand"
+    # 'Show messages in editor'
+    And I uncheck the "inlinemessages" checkbox
+
     # compile
     #And I set the field "compile" to "0"
     And I set the field "compileweight" to "2.5"
@@ -218,6 +229,10 @@ Feature: EDIT JAVA
       | Aggregation strategy      | Weighted sum                |
       | Penalty for each incorrect try  | 10%                     |
       | Response filename        | newMyString.java                     |
+    # feedback options
+    And the field "Initially collapse/expand" matches value "expand"
+    # 'Show messages in editor'
+    And the "inlinemessages" checkbox is "0"      
   # compile
     And the "compile" checkbox is "checked"
     And the field "compileweight" matches value "2.5"

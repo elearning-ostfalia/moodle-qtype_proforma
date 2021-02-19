@@ -139,7 +139,7 @@ $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 
 $string['feedbackoptions_heading'] = 'Feedback Options';
 
-$string['collapse'] = 'Initially collapse/ expand';
+$string['collapse'] = 'Initially collapse/expand';
 $string['admincollapse'] = 'Feedback collapse/expand';
 $string['collapse_help'] = 'Some test feedback will be presented as collapsible regions. '
 . 'This setting defines the initial state of this region, i.e. if it is visible (expanded) or not (collapsed).';

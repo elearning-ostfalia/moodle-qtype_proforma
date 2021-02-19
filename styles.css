@@ -54,6 +54,15 @@
     top: -0.14em;    
 }
 
+.proforma-else-icon {
+    font-family: "Times New Roman", "Garamond", serif;
+    font-size: 70%; 
+    background-color: black;
+    color: white;  
+    position: relative;    
+    top: -0.14em;    
+}
+
 /* warning symbol 
 from https://codepen.io/cksachdev/pen/YNPmqe */
 /* http://www.karimnassar.com/code/web/css-icons/ */

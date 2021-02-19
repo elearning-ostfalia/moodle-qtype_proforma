@@ -30,6 +30,13 @@ Feature: ADD JAVA QUESTION
       | Title                    | JUnit test title               |
     # Step is automatically finished with: I press "id_submitbutton"
     Then I should see "Testcode required"
+    
+    # feedback options
+    And I expand all fieldsets
+    And the field "Initially collapse/expand" matches value "collapse"
+    # 'Show messages in editor'
+    And the "inlinemessages" checkbox is "1"    
+    
     And I should not see "Model solution files "
     # JUnit
     When I set the field "testcode[0]" to "class XClass {}"

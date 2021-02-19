@@ -73,6 +73,9 @@ function _showMessages(editor, errors, widgets) {
                 msg.className = "proforma-inline-info";
                 break;
             default:
+                icon = msg.appendChild(document.createElement("span"));
+                icon.innerHTML = "?";
+                icon.className = 'proforma-dot-icon proforma-else-icon';
                 msg.className = "proforma-inline-info";
                 console.error('do not know message type ' + err.msgtype);
                 break;
@@ -144,6 +147,7 @@ function _countMessages(messages) {
     let errors = 0;
     let warnings = 0;
     let infos = 0;
+    let somethingelse = 0;
     for (let i = 0; i < messages.length; ++i) {
         let msg = messages[i];
         if (!msg) {
@@ -161,11 +165,12 @@ function _countMessages(messages) {
                 infos++;
                 break;
             default:
-                console.error('do not know message type ' + err.msgtype);
+                console.error('do not know message type ' + msg.msgtype);
+                somethingelse++;
                 break;
         }
     }
-    return [errors, warnings, infos];
+    return [errors, warnings, infos, somethingelse];
 }
 
 
@@ -186,11 +191,12 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp) {
         return;
     }
 
-    const [errors, warnings, infos] = _countMessages(messages);
+    const [errors, warnings, infos, somethingelse] = _countMessages(messages);
 
     const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span> ';
     const warningLabel = warnings   + '<span class="proforma-warn-icon proforma-warning"/></span> ';
     const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span> ';
+    const elseLabel = somethingelse + '<span class="proforma-dot-icon proforma-else-icon">?</span> ';
 
     let label = ' ';
     if (errors > 0) {
@@ -202,7 +208,9 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp) {
     if (infos > 0) {
         label += infoLabel;
     }
-
+    if (somethingelse > 0) {
+        label += elseLabel;
+    }
     // Create button.
     let button = document.createElement("button");
     button.type = "button";
