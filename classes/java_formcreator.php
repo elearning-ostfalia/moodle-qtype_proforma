@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
  */
 class java_form_creator extends base_form_creator {
 
-    // Key for Choose option in version selection.
+    /** Key for Choose option in version selection. */
     const CHOOSE_OPTION = '0';
 
     /**
@@ -45,7 +45,7 @@ class java_form_creator extends base_form_creator {
 
     /**
      * java_form_creator constructor.
-     * @param type $form
+     * @param type $form form instance OR formdata
      * @param bool $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
@@ -85,21 +85,6 @@ class java_form_creator extends base_form_creator {
         $mform->addHelpButton('proglangversion', 'proglangversion_hint', 'qtype_proforma');
 
         $mform->addRule('proglangversion', get_string('error'), 'nonzero', null, 'client', false, false);
-    }
-
-    /**
-     * Add grader options/information.
-     * @param type $question question instance
-     * @param type $context question context
-     */
-    public function add_grader_settings($question, $context) {
-        if (qtype_proforma\lib\can_view_systeminfo($context->id)) {
-            // Allow admin to see the created task.xml (for debugging purposes).
-            parent::add_grader_settings($question, $context);
-            // ProFormA fields.
-            $mform = $this->_form;
-            $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
-        }
     }
 
     /**

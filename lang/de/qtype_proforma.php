@@ -102,7 +102,7 @@ $string['taskfilename_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei';
 $string['createdtask_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei. Achtung: Aufgabe muss erst gespeichert werden, damit die entsprechende ProFormA-Datei erzeugt wird.';
 $string['task_hint'] = 'ProFormA-Aufgabendatei';
 $string['task_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei. '
-. 'Wenn diese ersetzt werden soll, bitte beachten, dass die neue Datei kompatibel zur alten ist. '
+. 'Wenn diese ersetzt werden soll, bitte beachten, dass die neue Datei \'kompatibel\' zur alten ist. '
 . 'Das bedeutet: <br>'
 . '- gleiche Programmiersprache<br>'
 . '- gleiche Anzahl Tests<br>'

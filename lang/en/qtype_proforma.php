@@ -79,7 +79,7 @@ $string['createdtask_hint'] = $string['taskfilename'];
 $string['createdtask_hint_help'] = 'Corresponding ProFormA task file. Question must be saved in order to generate ProFormA task file!';
 $string['task_hint'] = $string['taskfilename'];
 $string['task_hint_help'] = 'Corresponding ProFormA task file. '
-. 'In order to update this file please consider that a new file must be compatible with the old one. '
+. 'In order to update this file please consider that the updated file must be \'compatible\' with the old one. '
 . 'That means: <br>'
 . '- same programming language<br>'
 . '- same number of tests<br>'

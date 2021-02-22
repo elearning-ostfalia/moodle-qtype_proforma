@@ -3,29 +3,31 @@
 /* button */
 
 .proforma-feedback-msg-btn {
-    color:#212529;
+    color: #212529;
     background: #ced4da;
     border: 1px solid #ccc;
     /* padding: 10px 30px;*/
     border-radius: 3px;
     cursor: pointer;
-  }
-  
-  .proforma-feedback-msg-btn.active {
+}
+
+.proforma-feedback-msg-btn.active {
     background: #b8c1ca;
-  }
+}
 
-  /* icons */
+/* icons */
 
-.proforma-inline-error, .proforma-inline-warning, .proforma-inline-info {
-    font-family: arial; 
-    font-size: 70%; 
-    background: #ffa; 
-    padding: 2px 5px 3px; 
+.proforma-inline-error,
+.proforma-inline-warning,
+.proforma-inline-info {
+    font-family: arial;
+    font-size: 70%;
+    background: #ffa;
+    padding: 2px 5px 3px;
 }
 
 .proforma-inline-error {
-    color: #a00; 
+    color: #a00;
 }
 
 .proforma-dot-icon {
@@ -36,48 +38,47 @@
     text-align: center;
     /* vertical-align: middle;*/
     line-height: 14px;
-    box-shadow: #999 0 1px 1px; 
+    box-shadow: #999 0 1px 1px;
 }
 
 .proforma-error-icon {
     font-family: Helvetica, Arial, Sans-Serif;
     background-color: rgb(165, 25, 25);
-    color: white;  
+    color: white;
 }
 
 .proforma-info-icon {
     font-family: "Times New Roman", "Garamond", serif;
-    font-size: 70%; 
+    font-size: 70%;
     background-color: blue;
-    color: white;  
-    position: relative;    
-    top: -0.14em;    
+    color: white;
+    position: relative;
+    top: -0.14em;
 }
 
 .proforma-else-icon {
     font-family: "Times New Roman", "Garamond", serif;
-    font-size: 70%; 
+    font-size: 70%;
     background-color: black;
-    color: white;  
-    position: relative;    
-    top: -0.14em;    
+    color: white;
+    position: relative;
+    top: -0.14em;
 }
 
-/* warning symbol 
+/* warning symbol
 from https://codepen.io/cksachdev/pen/YNPmqe */
 /* http://www.karimnassar.com/code/web/css-icons/ */
 .proforma-warn-icon,
 .proforma-warn-icon::before,
-.proforma-warn-icon::after
-{
-  position: relative;
-  padding: 0;
-  margin: 0;
+.proforma-warn-icon::after {
+    position: relative;
+    padding: 0;
+    margin: 0;
 }
 
 .proforma-warn-icon {
     height: 14px;
-    width: 14px;   
+    width: 14px;
     font-size: 12px;
     color: transparent;
 }
@@ -98,7 +99,7 @@ from https://codepen.io/cksachdev/pen/YNPmqe */
     display: block;
     position: absolute;
     top: -0.08em;
-    left: -0em;
+    left: 0;
     border: transparent 0.6em solid;
     border-bottom-color: #fd3;
     border-bottom-width: 1em;
@@ -111,7 +112,7 @@ from https://codepen.io/cksachdev/pen/YNPmqe */
     display: block;
     position: absolute;
     top: 0.3em;
-    left: 0em;
+    left: 0;
     width: 100%;
     padding: 0 1px;
     text-align: center;
@@ -124,45 +125,40 @@ from https://codepen.io/cksachdev/pen/YNPmqe */
 /* Styles for the editing form. */
 
 /* first field */
-body#page-question-type-proforma div[id^=fgroup_id_testoptions_]
-{
+body#page-question-type-proforma div[id^=fgroup_id_testoptions_] {
     margin-top: 1em;
     background: #e9ecef;
     margin-bottom: 0;
-    padding-bottom: 0.1em;    
-    padding-top: 0.3em;    
+    padding-bottom: 0.1em;
+    padding-top: 0.3em;
 }
 
 /* mid field */
 body#page-question-type-proforma div[id^=fgroup_id_testcode] /*:not([id^=fgroup_id_testoptions_])*/,
-body#page-question-type-proforma div[id^=fitem_id_test]
-{
+body#page-question-type-proforma div[id^=fitem_id_test] {
     margin-top: 0;
     background: #e9ecef;
-    margin-bottom: 0;  
-    padding-bottom: 0.1em;    
+    margin-bottom: 0;
+    padding-bottom: 0.1em;
 }
 
 /* last field */
-body#page-question-type-proforma div[id^=fitem_id_testentrypoint], 
-body#page-question-type-proforma div[id^=fitem_id_testcode]
-{
+body#page-question-type-proforma div[id^=fitem_id_testentrypoint],
+body#page-question-type-proforma div[id^=fitem_id_testcode] {
     margin-top: 0;
     padding-bottom: 0.3em;
-    background: #e9ecef;    
-    margin-bottom: 1em;    
+    background: #e9ecef;
+    margin-bottom: 1em;
 }
 
 /* workaround for not detecting the last element */
-body#page-question-type-proforma div[id^=fitem_id_penalty]
-{
+body#page-question-type-proforma div[id^=fitem_id_penalty] {
     margin-top: 1em;
 }
 
 
 /* use bold font for unit test label */
-body#page-question-type-proforma p[id^=fgroup_id_testoptions_][id*=label]
-{
+body#page-question-type-proforma p[id^=fgroup_id_testoptions_][id*=label] {
     font-weight: bold;
 }
 

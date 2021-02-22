@@ -32,23 +32,28 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
  */
 abstract class base_form_creator {
 
-    // Property name for model solution manager.
-    // Must be name of associated filearea!!.
+    /**
+     * Property name for model solution manager.
+     * Must be name of associated filearea!!.
+     */
     const MODELSOLMANAGER = qtype_proforma::FILEAREA_MODELSOL;
 
-    // Property name for download manager.
+    /** Property name for download manager. */
     const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
 
-    // Radio button value for editor test code.
+    /** Radio button value for editor test code. */
     const EDITORTESTINPUT = 0;
-    // Radio button value for file uploaded test code.
+    /** Radio button value for file uploaded test code. */
     const FILETESTINPUT = 1;
     /**
      * @var MoodleQuickForm The form object that must be filled with input fields.
      */
     protected $_form = null;
 
-    /* task class instance for doing the task related work. */
+    /**
+     * class instance for doing the task related work.
+     * @var qtype_proforma_base_task task
+     */
     protected $_taskhandler = null;
 
     /**
@@ -65,9 +70,13 @@ abstract class base_form_creator {
 
 
     /**
-     * base_form_creator constructor.
+     * constructor
      *
-     * @param $form
+     * @param type $form form instance OR formdata
+     * @param type $taskhandler task handler instance
+     * @param type $responseformats available response formats
+     * @param type $syntaxhighlight syntax highleighting for editor
+     * @param type $proglang programming language if any
      */
     protected function __construct($form, $taskhandler, $responseformats = null,
         $syntaxhighlight = null, $proglang = null) {
@@ -130,10 +139,13 @@ abstract class base_form_creator {
     }
 
     /**
-     * Add grader options/information.
-     *
-     * @param $question
-     */
+
+     /**
+      * Add grader options/information.
+      *
+      * @param qtype_proforma_question $question question
+      * @param type $context
+      */
     public function add_grader_settings($question, $context) {
         // ProFormA fields.
         $mform = $this->_form;
@@ -141,7 +153,8 @@ abstract class base_form_creator {
 
         // Task Filename.
         $this->add_static_text($question, 'link', 'taskfilename', 'qtype_proforma');
-        $mform->addHelpButton('link', 'taskfilename_hint', 'qtype_proforma');
+        $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
+
     }
 
     /**
@@ -600,9 +613,11 @@ abstract class base_form_creator {
         $collapse = array(
             qtype_proforma::ALWAYS_COLLPASE => get_string('always_collapse', 'qtype_proforma'),
             qtype_proforma::ALWAYS_EXPAND => get_string('always_expand', 'qtype_proforma'),
-/*            qtype_proforma::EXPAND_STUDENT => get_string('expand_student', 'qtype_proforma'),
-            qtype_proforma::EXPAND_TEACHER => get_string('expand_teacher', 'qtype_proforma'),*/
-            // qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),
+            /* Maybe for future use:
+            qtype_proforma::EXPAND_STUDENT => get_string('expand_student', 'qtype_proforma'),
+            qtype_proforma::EXPAND_TEACHER => get_string('expand_teacher', 'qtype_proforma'),
+            qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),
+             */
         );
         $mform->addElement('select', 'expandcollapse',
             get_string('collapse', 'qtype_proforma'), $collapse);
@@ -612,10 +627,10 @@ abstract class base_form_creator {
         $embedmessageoptions = array();
         // Switch on/off.
         $embedmessageoptions[] = $mform->createElement('advcheckbox', 'inlinemessages',
-            '' /*get_string('useembeddedmessages', 'qtype_proforma')*/, null, array(0, 1));
+            '', null, array(0, 1));
         // Initial state.
         // $embedmessageoptions[] = $mform->createElement('advcheckbox', 'initiallyembedded',
-        //     get_string('initiallyembedded', 'qtype_proforma'), null, array(0, 1));
+        // get_string('initiallyembedded', 'qtype_proforma'), null, array(0, 1));
         // Disable initial state if feature is not used.
         // $mform->disabledIf('initiallyembedded', 'inlinemessages', 'neq', '1');
         // $mform->setDefault('initiallyembedded', get_config('qtype_proforma', 'initiallyembedded'));

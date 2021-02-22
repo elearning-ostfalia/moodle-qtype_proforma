@@ -62,20 +62,6 @@ class setlx_form_creator extends base_form_creator {
         return new qtype_proforma_proforma_task();
     }
 
-    /**
-     * Add grader options/information.
-     *
-     * @param $question
-     */
-    public function add_grader_settings($question, $context) {
-        if (qtype_proforma\lib\can_view_systeminfo($context->id)) {
-            // Allow admin to see the created task.xml (for debugging purposes).
-            parent::add_grader_settings($question, $context);
-            // ProFormA fields.
-            $mform = $this->_form;
-            $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
-        }
-    }
 
     /**
      * Get test label for add_tests.
