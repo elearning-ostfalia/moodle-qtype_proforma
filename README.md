@@ -52,11 +52,11 @@ Student feedback for Java question:
  
 Checkstyle messages in editor (press button):
 
-![checkstyle](doc/checkstyle_2.png "feedback")
+![checkstyle](doc/checkstyle_2.PNG "feedback")
 
 Compiler messages in editor (press button):
 
-![checkstyle](doc/compiler.png "feedback")
+![compiler](doc/compiler.PNG "feedback")
 
 ## Installation
 
