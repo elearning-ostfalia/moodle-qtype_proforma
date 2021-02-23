@@ -210,15 +210,13 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp) {
     waitForElementById(collapsregion)
         .then((region) => {
             // wait for collapsible region
-            console.log('collapse ready');
             return waitForElement(region, 'a');
         })
         .then((a_element) => {
-            console.log('a ready');
             // Get Messages
             let messages = _getErrorsFromLog(collapsregion, regexp);
             if (messages.length == 0) {
-                console.log('no messages found => ready');
+                // console.log('no messages found => ready');
                 return;
             }
 
@@ -230,6 +228,7 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp) {
             const infos = values[2];
             const somethingelse = values[3];
 
+            // Create button label
             const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span> ';
             const warningLabel = warnings   + '<span class="proforma-warn-icon proforma-warning"/></span> ';
             const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span> ';
@@ -254,11 +253,9 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp) {
             button.type = "button";
             button.className = "proforma-feedback-msg-btn";
             button.innerHTML  = label;
+            a_element.insertAdjacentElement("afterend", button);
 
             let showMsg = false;
-
-            // Create button.
-            a_element.insertAdjacentElement("afterend", button);
             button.addEventListener('click',
                 function () {
                     // The editor is evaluated here and not before in order to avoid
