@@ -114,6 +114,7 @@ function _getCodeMirror(target) {
 
 
 function _getErrorsFromLog(collapsregion, regexp) {
+    let messages = [];
     let region = document.getElementById(collapsregion);
     let testlogs = region.querySelectorAll('.proforma_testlog');
     let innertext = '';
@@ -128,7 +129,6 @@ function _getErrorsFromLog(collapsregion, regexp) {
     // global match
     let re = new RegExp(regexp, "mg");
     let results = innertext.matchAll(re);
-    let messages = [];
 
     for (let result of results) {
         let {msgtype, filename, line, text} = result.groups;
@@ -148,93 +148,135 @@ function _countMessages(messages) {
     let warnings = 0;
     let infos = 0;
     let somethingelse = 0;
-    for (let i = 0; i < messages.length; ++i) {
-        let msg = messages[i];
-        if (!msg) {
-            continue;
-        }
-        switch (msg.msgtype.toLowerCase()) {
-            case 'error':
-                errors++;
-                break;
-            case 'warn':
-            case 'warning':
-                warnings++;
-                break;
-            case 'info':
-                infos++;
-                break;
-            default:
-                console.error('do not know message type ' + msg.msgtype);
-                somethingelse++;
-                break;
+
+    if (messages) {
+        for (let i = 0; i < messages.length; ++i) {
+            let msg = messages[i];
+            if (!msg) {
+                continue;
+            }
+            switch (msg.msgtype.toLowerCase()) {
+                case 'error':
+                    errors++;
+                    break;
+                case 'warn':
+                case 'warning':
+                    warnings++;
+                    break;
+                case 'info':
+                    infos++;
+                    break;
+                default:
+                    console.error('do not know message type ' + msg.msgtype);
+                    somethingelse++;
+                    break;
+            }
         }
     }
     return [errors, warnings, infos, somethingelse];
 }
 
 
+const waitForElementById = id =>
+    new Promise(resolve => {
+        const wait = () => {
+            const element = document.getElementById(id);
+            if (element) {
+                resolve(element);
+            }
+            window.requestAnimationFrame(wait);
+        };
+        wait();
+    });
+
+
+const waitForElement = (node, selector) =>
+    new Promise(resolve => {
+        const wait = () => {
+            const element = node.querySelector(selector);
+            if (element) {
+                resolve(element);
+            }
+            window.requestAnimationFrame(wait);
+        };
+        wait();
+    });
+
 function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp) {
     var widgets = [];
     // Codemirror id must be escaped!
     cmid = CSS.escape(cmid);
 
-    let region = document.getElementById(collapsregion);
-    if (!region) {
-        console.error('region ' + collapsregion + ' not found');
-        return;
-    }
-
-    let messages = _getErrorsFromLog(collapsregion, regexp);
-    if (messages.length == 0) {
-        // console.log('no messages found');
-        return;
-    }
-
-    const [errors, warnings, infos, somethingelse] = _countMessages(messages);
-
-    const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span> ';
-    const warningLabel = warnings   + '<span class="proforma-warn-icon proforma-warning"/></span> ';
-    const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span> ';
-    const elseLabel = somethingelse + '<span class="proforma-dot-icon proforma-else-icon">?</span> ';
-
-    let label = ' ';
-    if (errors > 0) {
-        label += errorLabel;
-    }
-    if (warnings > 0) {
-        label += warningLabel;
-    }
-    if (infos > 0) {
-        label += infoLabel;
-    }
-    if (somethingelse > 0) {
-        label += elseLabel;
-    }
-    // Create button.
-    let button = document.createElement("button");
-    button.type = "button";
-    button.className = "proforma-feedback-msg-btn";
-    button.innerHTML  = label;
-
-    let showMsg = false;
-
-    let a_element = region.querySelector('a');
-    a_element.insertAdjacentElement("afterend", button);
-    button.addEventListener('click',
-        function () {
-            // The editor is evaluated here and not before in order to avoid
-            // racing situations.
-            let editor = _getCodeMirror('#' + cmid);
-            if (!showMsg) {
-                widgets = _showMessages(editor, messages, widgets);
-                button.className ="proforma-feedback-msg-btn active";
-                showMsg = true;
-            } else {
-                widgets = _hideWidgets(widgets);
-                button.className ="proforma-feedback-msg-btn";
-                showMsg = false;
+    waitForElementById(collapsregion)
+        .then((region) => {
+            // wait for collapsible region
+            console.log('collapse ready');
+            return waitForElement(region, 'a');
+        })
+        .then((a_element) => {
+            console.log('a ready');
+            // Get Messages
+            let messages = _getErrorsFromLog(collapsregion, regexp);
+            if (messages.length == 0) {
+                console.log('no messages found => ready');
+                return;
             }
+
+            // not translated correctly by Babel:
+            // const [errors, warnings, infos, somethingelse] = _countMessages(messages);
+            const values = _countMessages(messages);
+            const errors = values[0];
+            const warnings = values[1];
+            const infos = values[2];
+            const somethingelse = values[3];
+
+            const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span> ';
+            const warningLabel = warnings   + '<span class="proforma-warn-icon proforma-warning"/></span> ';
+            const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span> ';
+            const elseLabel = somethingelse + '<span class="proforma-dot-icon proforma-else-icon">?</span> ';
+
+            let label = ' ';
+            if (errors > 0) {
+                label += errorLabel;
+            }
+            if (warnings > 0) {
+                label += warningLabel;
+            }
+            if (infos > 0) {
+                label += infoLabel;
+            }
+            if (somethingelse > 0) {
+                label += elseLabel;
+            }
+
+            // Create button.
+            let button = document.createElement("button");
+            button.type = "button";
+            button.className = "proforma-feedback-msg-btn";
+            button.innerHTML  = label;
+
+            let showMsg = false;
+
+            // Create button.
+            a_element.insertAdjacentElement("afterend", button);
+            button.addEventListener('click',
+                function () {
+                    // The editor is evaluated here and not before in order to avoid
+                    // racing situations.
+                    let editor = _getCodeMirror('#' + cmid);
+                    if (!showMsg) {
+                        widgets = _showMessages(editor, messages, widgets);
+                        button.className ="proforma-feedback-msg-btn active";
+                        showMsg = true;
+                    } else {
+                        widgets = _hideWidgets(widgets);
+                        button.className ="proforma-feedback-msg-btn";
+                        showMsg = false;
+                    }
+                });
+        })
+        .catch((error) => {
+            console.error(error);
         });
 }
 

@@ -34,7 +34,6 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
     * external repository (SVN in case of using Praktomat) 
 - code snippet as starting point for student
 - immediate feedback for students (optional) 
-- display (Java) compiler and Checkstyle messages in editor
 - supported programming languages are only limited by the available grader back-ends 
 
 ## Screenshots
@@ -50,13 +49,9 @@ Student feedback for Java question:
 
 ![filepicker](doc/student_feedback_2.png "feedback")
  
-Checkstyle messages in editor (press button):
+Messages in editor:
 
 ![checkstyle](doc/checkstyle_2.PNG "feedback")
-
-Compiler messages in editor (press button):
-
-![compiler](doc/compiler.PNG "feedback")
 
 ## Installation
 
