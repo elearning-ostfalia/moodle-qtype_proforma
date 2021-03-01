@@ -1,3 +1,11 @@
+## v2.5.2
+
+* remove beginning and trailing spaces in responsefilename
+
+## v2.5.1
+
+* correction of release identifier
+
 ## v2.5.0
 
 * editor 'inline' messages for Checkstyle and Java compiler 

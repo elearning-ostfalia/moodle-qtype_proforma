@@ -220,7 +220,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $container->taskfilename = self::QUESTION_TASKFILENAME;
         $container->taskstorage = self::QUESTION_TASKSTORAGE;
 
-        $container->responsefilename = self::QUESTION_FILENAME;
+        $container->responsefilename = ' ' . self::QUESTION_FILENAME . ' ';
         $container->programminglanguage = 'java';
 
         // $container->modelsolution = self::QUESTION_MODELSOLUTION;
@@ -452,7 +452,8 @@ class qtype_proforma_test_helper extends question_test_helper {
         // valid data for a task file in the repository!
         $form->taskstorage = qtype_proforma::JAVA_TASKFILE;
 
-        $form->responsefilename = self::QUESTION_FILENAME;
+        // Add beginning and trailing space.
+        $form->responsefilename = ' ' . self::QUESTION_FILENAME . ' ';
         $form->programminglanguage = 'java';
         $form->proglangversion = '1.8';
 
