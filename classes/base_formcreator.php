@@ -795,8 +795,10 @@ abstract class base_form_creator {
         $context = $formdata->context;
 
         // Remove beginning and trailing spaces from response filename.
-        $formdata->responsefilename = trim($formdata->responsefilename);
-        $options->responsefilename = $formdata->responsefilename;
+        if (isset($formdata->responsefilename)) {
+            $formdata->responsefilename = trim($formdata->responsefilename);
+            $options->responsefilename = $formdata->responsefilename;
+        }
 
         // Save files from draft area into proforma areas (modelsolution, downloads, templates)
         // (needed for import and duplication).
