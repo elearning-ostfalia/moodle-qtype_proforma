@@ -90,16 +90,17 @@ function get_groupname_sample() {
 /**
  * @return string returns the name of the group that the current user belongs to
  */
-function get_groupname() {
-    global $USER, $COURSE;
-    // Get all groupings.
-    $groupings = groups_get_user_groups($COURSE->id, $USER->id);
+function get_groupname($courseid) {
+    global $USER;
+    // Get all groups.
+    $groups = groups_get_user_groups($courseid, $USER->id);
+    // var_dump($groups);
 
     // Count groups and fetch name.
     $count = 0;
     $groupname = '???';
-    foreach ($groupings as $grouping) {
-        foreach ($grouping as $group) {
+    if (count($groups) > 0) {
+        foreach ($groups[0] as $group) {
             $count++;
             $groupname = groups_get_group_name($group);
         }
@@ -109,12 +110,15 @@ function get_groupname() {
         case 0:
             return 'N/A'; // No group found.
         case 1:
-            return $groupname; // Exactly one group found.
+            // Exactly one group found.
+            break;
         default:
-            break; // More than one group found.
+            // More than one group found.
+            debugging('group is not unique');
+            break;
     }
 
-    return 'NOT UNIQUE';
+    return $groupname;
 }
 
 

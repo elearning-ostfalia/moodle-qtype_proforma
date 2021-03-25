@@ -1,3 +1,7 @@
+## v2.5.3
+
+* bugfix: VCS: getting groupname with groupings
+
 ## v2.5.2
 
 * remove beginning and trailing spaces in responsefilename
