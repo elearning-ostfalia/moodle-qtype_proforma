@@ -78,9 +78,12 @@ https://proforma.github.io/formatEditor/proformaEditor.html
 Of course ProFormA tasks can be created by different other external tools as well.
 
 
-In order to download all students' submissions for e.g. checking for plagiats 
-the plugin `responsedownload` is avaliable (https://github.com/elearning-ostfalia/moodle-responsedownload).
+In order to download all students' submissions for e.g. checking for plagiats the plugins 
 
+* `proformasubmexport`: https://github.com/elearning-ostfalia/moodle-proformasubmexport and
+* `responsedownload`:  https://github.com/elearning-ostfalia/moodle-responsedownload
+
+are avaliable.
 
 
 <!-- Import process:
