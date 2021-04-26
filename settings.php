@@ -48,6 +48,17 @@ $settings->add(new admin_setting_configtext('qtype_proforma/grading_timeout',
         get_string('grading_timeout_desc', 'qtype_proforma'), 40,
         PARAM_INT, 3));
 
+$proformaversions = array(
+        '2.0' => '2.0',
+        '2.1' => '2.1',
+);
+$settings->add(new admin_setting_configselect('qtype_proforma/submissionproformaversion',
+        get_string('submissionproformaversion', 'qtype_proforma'),
+        get_string('submissionproformaversion_help', 'qtype_proforma'),
+        '2.1',
+        $proformaversions));
+
+
 // Use CodeMirror.
 $settings->add(new admin_setting_heading('CodeMirror',
         'CodeMirror', ''));

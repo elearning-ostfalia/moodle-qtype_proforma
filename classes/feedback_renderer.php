@@ -191,6 +191,22 @@ class feedback_renderer {
     }
 
     /**
+     * seaches the test response for a regular expression.
+     * If more than one regular expression is found then only the first one is returned.
+     */
+    private function search_regexp($testresponse) {
+        $feedbacklist = $testresponse->{'test-result'}->{'feedback-list'};
+        foreach ($feedbacklist->children() as $feedback) {
+            $praktomatchildren = $feedback->children('praktomat', true);
+            if (count($praktomatchildren) > 0) {
+                $praktomatchild = $praktomatchildren[0];
+                $regexp = $praktomatchild->{'feedback-regexp'};
+                return (string)$regexp;
+            }
+        }
+        return null;
+    }
+    /**
      * creates the html fragment for a test title
      * @param $test
      * @param $score
@@ -269,7 +285,7 @@ class feedback_renderer {
                 // Todo.
                 break;
             default:
-                debugging('invalid value for expandcollapse ' . $this->_question->$expandcollapse);
+                debugging('invalid value for expandcollapse ' . $this->_question->expandcollapse);
                 break;
         }
         $result .= print_collapsible_region_start('', $collid,
@@ -277,20 +293,24 @@ class feedback_renderer {
                     '', !$expand, true);
 
         if (!$internalerror and isset(qtype_proforma_format_renderer_base::$codemirrorid)) {
-            // Add button for inline errors.
-            // Todo: regular expression should be sent by grader
-            // when XML response format is updated to version 2.1.
-            switch ($testtype) {
-                case 'java-compilation':
-                    // Regular expression for Java compilation.
-                    $regexp = '(?<filename>\/?(.+\/)*(.+)\.([^\s:]+)):(?<line>[0-9]+)(:(?<column>[0-9]+))?:\s(?<msgtype>[a-z]+):\s(?<text>.+)';
-                    break;
-                case 'java-checkstyle':
-                    // Regular expression for Checkstyle messages.
-                    $regexp = '\[(?<msgtype>[A-Z]+)\]\s(?<filename>\/?(.+\/)*(.+)\.([^\s:]+)):(?<line>[0-9]+)(:(?<column>[0-9]+))?:\s(?<text>.+\.)\s\[(?<short>\w+)\]';
-                    break;
+            // Look for regular expression in test response.
+            $regexp = $this->search_regexp($test);
+            // debugging($regexp);
+            if (!isset($regexp)) {
+                // No regular expression in test response. Use default ones.
+                switch ($testtype) {
+                    case 'java-compilation':
+                        // Regular expression for Java compilation.
+                        $regexp = '(?<filename>\/?(.+\/)*(.+)\.([^\s:]+)):(?<line>[0-9]+)(:(?<column>[0-9]+))?:\s(?<msgtype>[a-z]+):\s(?<text>.+)';
+                        break;
+                    case 'java-checkstyle':
+                        // Regular expression for Checkstyle messages.
+                        $regexp = '\[(?<msgtype>[A-Z]+)\]\s(?<filename>\/?(.+\/)*(.+)\.([^\s:]+)):(?<line>[0-9]+)(:(?<column>[0-9]+))?:\s(?<text>.+\.)\s\[(?<short>\w+)\]';
+                        break;
+                }
             }
             if (isset($regexp)) {
+                // Add button for inline errors.
                 $this->_mainrenderer->get_page()->requires->js_call_amd('qtype_proforma/inlinemessages',
                     'embedError', array(qtype_proforma_format_renderer_base::$codemirrorid,
                         $collid, $regexp));

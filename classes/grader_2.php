@@ -53,8 +53,11 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         $xw->startElement('submission');
 
+        $version = get_config('qtype_proforma', 'submissionproformaversion');
+
+
         // Attributes for submission.
-        $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
+        $xw->create_attribute('xmlns', 'urn:proforma:v' . $version);
         // $xw->createAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
         // $xw->createAttribute('xsi:schemaLocation', 'urn:proforma:v2.0 schema.xsd');
 

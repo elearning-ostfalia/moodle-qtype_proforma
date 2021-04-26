@@ -133,9 +133,12 @@ $string['defaultpenalty_desc'] = 'Penalty for each wrong submission (if question
 
 $string['grader_heading'] = 'Grader Specific Settings';
 $string['graderuri_host'] = 'URI: Protocol and Server';
-$string['graderuri_host_desc'] = 'Protocol and Server Part of Grader URI';
+$string['graderuri_host_desc'] = 'Protocol (Scheme) and Server (Host) Part of Grader URI';
 $string['graderuri_path'] = 'URI: Path';
 $string['graderuri_path_desc'] = 'Path Part of Grader URI';
+$string['submissionproformaversion'] = 'ProFormA version';
+$string['submissionproformaversion_help'] = 'ProFormA version for communication between Moodle and grader';
+
 
 $string['feedbackoptions_heading'] = 'Feedback Options';
 

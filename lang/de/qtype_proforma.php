@@ -147,9 +147,12 @@ $string['defaultpenalty_desc'] = 'Abzug bei Fehlversuchen, falls Frageverhalten 
 
 $string['grader_heading'] = 'Grader-Einstellungen';
 $string['graderuri_host'] = 'URI: Protokoll und Server';
-$string['graderuri_host_desc'] = 'Protokoll und Server der Grader URI';
+$string['graderuri_host_desc'] = 'Protokoll (Schema) und Server der Grader URI';
 $string['graderuri_path'] = 'URI: Pfad';
 $string['graderuri_path_desc'] = 'Pfad der Grader URI';
+$string['submissionproformaversion'] = 'ProFormA Version';
+$string['submissionproformaversion_help'] = 'ProFormA-Version, die für die Kommunikation zwischen Moodle und Grader verwendet werden soll.';
+
 
 $string['javasettings_header'] = 'Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';
 $string['checkstyleversion'] = 'Checkstyle Version';
