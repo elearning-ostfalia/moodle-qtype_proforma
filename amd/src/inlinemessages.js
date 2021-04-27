@@ -52,33 +52,41 @@ function _showMessages(editor, errors, widgets) {
         }
         var msg = document.createElement("div");
         var icon;
-        switch (err.msgtype.toLowerCase()) {
-            case 'error':
-                icon = msg.appendChild(document.createElement("span"));
-                icon.innerHTML = "x";
-                icon.className = 'proforma-dot-icon proforma-error-icon';
-                msg.className = "proforma-inline-error";
-                break;
-            case 'warn':
-            case 'warning':
-                icon = msg.appendChild(document.createElement("span"));
-                // icon.innerHTML = "";
-                icon.className = "proforma-warn-icon proforma-warning";
-                msg.className = "proforma-inline-warning";
-                break;
-            case 'info':
-                icon = msg.appendChild(document.createElement("span"));
-                icon.innerHTML = "i";
-                icon.className = 'proforma-dot-icon proforma-info-icon';
-                msg.className = "proforma-inline-info";
-                break;
-            default:
-                icon = msg.appendChild(document.createElement("span"));
-                icon.innerHTML = "?";
-                icon.className = 'proforma-dot-icon proforma-else-icon';
-                msg.className = "proforma-inline-info";
-                console.error('do not know message type ' + err.msgtype);
-                break;
+        if (typeof msg.msgtype !== 'undefined') {        
+            switch (err.msgtype.toLowerCase()) {
+                case 'error':
+                    icon = msg.appendChild(document.createElement("span"));
+                    icon.innerHTML = "x";
+                    icon.className = 'proforma-dot-icon proforma-error-icon';
+                    msg.className = "proforma-inline-error";
+                    break;
+                case 'warn':
+                case 'warning':
+                    icon = msg.appendChild(document.createElement("span"));
+                    // icon.innerHTML = "";
+                    icon.className = "proforma-warn-icon proforma-warning";
+                    msg.className = "proforma-inline-warning";
+                    break;
+                case 'info':
+                    icon = msg.appendChild(document.createElement("span"));
+                    icon.innerHTML = "i";
+                    icon.className = 'proforma-dot-icon proforma-info-icon';
+                    msg.className = "proforma-inline-info";
+                    break;
+                default:
+                    icon = msg.appendChild(document.createElement("span"));
+                    icon.innerHTML = "?";
+                    icon.className = 'proforma-dot-icon proforma-else-icon';
+                    msg.className = "proforma-inline-info";
+                    console.error('do not know message type ' + err.msgtype);
+                    break;
+            }
+        } else {
+            // No message types:
+            icon = msg.appendChild(document.createElement("span"));
+            icon.innerHTML = "x";
+            icon.className = 'proforma-dot-icon proforma-error-icon';
+            msg.className = "proforma-inline-error";
         }
         msg.appendChild(document.createTextNode(' ' + err.text));
         var widget = editor.addLineWidget(err.line - 1, msg, {coverGutter: true, noHScroll: true});
@@ -129,6 +137,8 @@ function _getErrorsFromLog(collapsregion, regexp) {
     // global match
     let re = new RegExp(regexp, "mg");
     let results = innertext.matchAll(re);
+    // console.log('innertext: ' + innertext);
+    // console.log('regexp: ' + regexp);
 
     for (let result of results) {
         let {msgtype, filename, line, text} = result.groups;
@@ -155,21 +165,25 @@ function _countMessages(messages) {
             if (!msg) {
                 continue;
             }
-            switch (msg.msgtype.toLowerCase()) {
-                case 'error':
-                    errors++;
-                    break;
-                case 'warn':
-                case 'warning':
-                    warnings++;
-                    break;
-                case 'info':
-                    infos++;
-                    break;
-                default:
-                    console.error('do not know message type ' + msg.msgtype);
-                    somethingelse++;
-                    break;
+            if (typeof msg.msgtype !== 'undefined') {
+                switch (msg.msgtype.toLowerCase()) {
+                    case 'error':
+                        errors++;
+                        break;
+                    case 'warn':
+                    case 'warning':
+                        warnings++;
+                        break;
+                    case 'info':
+                        infos++;
+                        break;
+                    default:
+                        console.error('do not know message type ' + msg.msgtype);
+                        somethingelse++;
+                        break;
+                }
+            } else {
+                errors++;
             }
         }
     }

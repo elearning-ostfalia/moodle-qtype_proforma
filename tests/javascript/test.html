@@ -9,25 +9,17 @@
     <script src="../../amd/src/codemirror.js"></script>
     <script src="../../tests/javascript/testimport.js"></script>
     <style>
-
-
-
 /*
 .proforma-feedback-msg-btn {
   display:block;
   border-radius: 5%;
 }
 */
-
-
-
-
-
-</style>
-
+    </style>
 </head>
 
 <body>
+
 
 <textarea id="editor" name="w3review" rows="20" cols="80">
 package de.ostfalia.zell.isPalindromTask;
@@ -44,15 +36,12 @@ public class MyString
 </textarea>
 
 
-
-
 <div id="m-id-test-proforma-2044604495-3" class="collapsibleregion" style="height: 123px;">
     <div id="m-id-test-proforma-2044604495-3_sizer">
         <div id="m-id-test-proforma-2044604495-3_caption" class="collapsibleregioncaption">
             <a href="#" title="Zum Erweitern oder Einklappen tippen" id="yui_3_17_2_1_1613312798920_163">
                 <i class="icon fa fa-check text-success fa-fw " title="Richtig" aria-label="Richtig"></i> CheckStyle Test (17/17 %) 
                 </a>
-                <!-- <button type="button">Show inline</button> -->
         </div>
         <div id="m-id-test-proforma-2044604495-3_inner" class="collapsibleregioninner">
             <div class="proforma_testlog_title"></div>
@@ -87,7 +76,6 @@ public class MyString
             <a href="#" title="Zum Erweitern oder Einklappen tippen" id="yui_3_17_2_1_1613312798920_163">
                 <i class="icon fa fa-check text-success fa-fw " title="Richtig" aria-label="Richtig"></i> CheckStyle Test (17/17 %) 
                 </a>
-                <!-- <button type="button">Show inline</button> -->
         </div>
         <div id="m-id-test-proforma-2044604495-4_inner" class="collapsibleregioninner">
             <div class="proforma_testlog_title"></div>
@@ -97,10 +85,39 @@ public class MyString
     [ERROR] de/ostfalia/MyString.java:3:1: '{' an Position 1 sollte in der vorherigen Zeile stehen. [LeftCurly]
     [SOMETHINGELSE] de/ostfalia/MyString.java:5:1: '{' an Position 1 sollte in der vorherigen Zeile stehen. [LeftCurly]
     Prüfung beendet.
-</pre>
+        </pre>
         </div>
     </div>
 </div>
+
+<textarea id="editor3" name="w3review3" rows="20" cols="80">
+/* Musterlösung */
+operation := procedure(a,b){
+    retur a*b;
+};
+menge1 := {0,1}
+menge2 := {0,1,2};
+# hallo
+</textarea>
+
+<div id="m-id-test-proforma-2044604495-5" class="collapsibleregion" style="height: 123px;">
+    <div id="m-id-test-proforma-2044604495-5_sizer">
+        <div id="m-id-test-proforma-2044604495-5_caption" class="collapsibleregioncaption">
+            <a href="#" title="Zum Erweitern oder Einklappen tippen" id="yui_3_17_2_1_1613312798920_163">
+                <i class="icon fa fa-check text-success fa-fw " title="Richtig" aria-label="Richtig"></i> Setlx (17/17 %) 
+                </a>
+        </div>
+        <div id="m-id-test-proforma-2044604495-5_inner" class="collapsibleregioninner">
+            <div class="proforma_testlog_title"></div>
+            <pre class="proforma_testlog">line 3:11 no viable alternative at input &#39;retura&#39;
+line 6:1 mismatched input &#39;menge2&#39; expecting !=, %, &amp;&amp;, *, */, +, +/, -, /, ;, &lt;, &lt;!=&gt;, &lt;=, &lt;==&gt;, ==, =&gt;, &gt;, &gt;&lt;, &gt;=, \, ||, in, notin
+line 8:1 mismatched input &#39;ist_Abgeschlossen&#39; expecting !, !=, %, &amp;&amp;, (, *, **, */, +, +/, -, ., /, ;, &lt;, &lt;!=&gt;, &lt;=, &lt;==&gt;, ==, =&gt;, &gt;, &gt;&lt;, &gt;=, [, \, {, ||, in, notin
+3 syntax error(s) encountered.
+        </pre>
+        </div>
+    </div>
+</div>
+
 
 </body>
 
