@@ -411,7 +411,8 @@ abstract class base_form_creator {
         $mform->addGroupRule('compilegroup', array(
             'compileweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
         $mform->hideIf('compileweight', 'compile');
-        $mform->setDefault('compile', 1);
+        // Compilation is done in all tests. So we do not need to again
+        $mform->setDefault('compile', 0);
     }
 
     /**
