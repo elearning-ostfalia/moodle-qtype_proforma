@@ -52,75 +52,86 @@ class qtype_proforma_renderer_test extends qtype_proforma_walkthrough_test_base 
 '</root>'.
 '</grading-hints>';
 
+
+    const GRADINGHINTS_2 = '<grading-hints>'.
+    '<root function="sum">'.
+    '<test-ref ref="2" weight="2">
+            <title>Compilation</title>
+            <test-type>TEST-CONFIG 1</test-type>
+            <description>DESCRIPTION 1</description>
+        </test-ref>'.
+    '<test-ref ref="3" weight="3">
+            <title>JUnit</title>
+            <test-type>TEST-CONFIG 2</test-type>
+            <description>DESCRIPTION 2</description>
+        </test-ref>'.
+    '</root>'.
+    '</grading-hints>';
+
+    // ProformA Version 2.1
     const RESPONSE_1 = <<<'EOD'
 <?xml version="1.0" encoding="utf-8"?>
-<response lang="en" xmlns="urn:proforma:v2.0">
-  <separate-test-feedback>
-    <submission-feedback-list>
-      <student-feedback level="debug">
-        <title>title1</title>
-        <content format="html">Fake Message</content>
-        <filerefs/>
-      </student-feedback>
-      <teacher-feedback level="debug">
-        <title>title2</title>
-        <content format="plaintext">Teacher Message</content>
-        <filerefs/>
-      </teacher-feedback>
-    </submission-feedback-list>
-    <tests-response>
-      <test-response id="1">
-        <test-result>
-          <result is-internal-error="false">
-            <score>0.0</score>
-            <validity>0.0</validity>
-          </result>
-          <feedback-list>
-            <student-feedback level="error">
-              <title>MyString cannot be resolved to a variable</title>
-              <content format="plaintext">Sample.java	line 55</content>
-              <filerefs/>
-            </student-feedback>
-            <student-feedback level="error">
-                <title>Inline cannot be resolved</title>
-              <content format="plaintext">Sample.java	line 56</content>
-              <filerefs/>
-            </student-feedback>
-            <teacher-feedback level="debug">
-              <title>Java-Compilation (teacher)</title>
-              <content format="html"><![CDATA[content11 <b>sample</b>]]></content>
-              <filerefs/>
-            </teacher-feedback>
-          </feedback-list>
-        </test-result>
-      </test-response>
-      <test-response id="2">
-        <test-result>
-          <result is-internal-error="true">
-            <score>0.0</score>
-            <validity>1.0</validity>
-          </result>
-          <feedback-list>
+<response xmlns="urn:proforma:v2.1" xmlns:praktomat="urn:proforma:praktomat:v2.1"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+    <separate-test-feedback>
+        <submission-feedback-list>
             <student-feedback level="debug">
-              <title>JUnit</title>
-              <content format="html">Fake Message</content>
-              <filerefs/>
+                <title>title1</title>
+                <content format="html">Fake Message</content>
             </student-feedback>
             <teacher-feedback level="debug">
-              <title>JUnit</title>
-              <content format="plaintext">content18</content>
-              <filerefs/>
+                <title>title2</title>
+                <content format="plaintext">Teacher Message</content>
             </teacher-feedback>
-          </feedback-list>
-        </test-result>
-      </test-response>
-    </tests-response>
-  </separate-test-feedback>
-  <files>
-  </files>
-  <response-meta-data>
-    <grader-engine name="praktomat" version="1.2.3" />
-  </response-meta-data>
+        </submission-feedback-list>
+        <tests-response>
+            <test-response id="1">
+                <test-result>
+                    <result is-internal-error="false">
+                        <score>0.0</score>
+                        <validity>0.0</validity>
+                    </result>
+                    <feedback-list>
+                        <student-feedback level="error">
+                            <title>MyString cannot be resolved to a variable</title>
+                            <content format="plaintext">Sample.java	line 55</content>
+                        </student-feedback>
+                        <student-feedback level="error">
+                            <title>Inline cannot be resolved</title>
+                            <content format="plaintext">Sample.java	line 56</content>
+                        </student-feedback>
+                        <teacher-feedback level="debug">
+                            <title>Java-Compilation (teacher)</title>
+                            <content format="html"><![CDATA[content11 <b>sample</b>]]></content>
+                        </teacher-feedback>
+                    </feedback-list>
+                </test-result>
+            </test-response>
+            <test-response id="2">
+                <test-result>
+                    <result is-internal-error="true">
+                        <score>0.0</score>
+                        <validity>1.0</validity>
+                    </result>
+                    <feedback-list>
+                        <student-feedback level="debug">
+                            <title>JUnit</title>
+                            <content format="html">Fake Message</content>
+                        </student-feedback>
+                        <teacher-feedback level="debug">
+                            <title>JUnit</title>
+                            <content format="plaintext">content18</content>
+                        </teacher-feedback>
+                    </feedback-list>
+                </test-result>
+            </test-response>
+        </tests-response>
+    </separate-test-feedback>
+    <files/>
+    <response-meta-data>
+        <response-datetime>2021-04-26T15:50:32.557797</response-datetime>
+        <grader-engine name="praktomat" version="1.2.3" />
+        <praktomat:response-meta-data/>
+    </response-meta-data>
 </response>
 EOD;
 
@@ -143,6 +154,7 @@ EOD;
             array('JUnit', 'content18')
     );
 
+    // ProformA Version 2.0
     const RESPONSE_2 = <<<'EOD'
 <?xml version="1.0" encoding="utf-8"?>
 <response lang="en" xmlns="urn:proforma:v2.0">
@@ -493,12 +505,6 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
 </response>
 EOD;
 
-/*
-<praktomat:response-meta-data>
-<praktomat:response-datetime>2020-08-04T13:29:42.570139</praktomat:response-datetime>
-
-</praktomat:response-meta-data>
-*/
     const LOGS_4_1 = array(
             array('1 Java user-submitted file(s) found for compilation', 'de/ostfalia/zell/isPalindromTask/MyString.java'),
             array('Compilation failed', 'de/ostfalia/zell/isPalindromTask/MyString.java:8: error: not a statement
@@ -516,8 +522,67 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
     );
     const LOGS_4_2 = self::LOGS_4_1;
 
+    const RESPONSE_COMP_ERROR_V21 = <<<'EOD'
+<?xml version="1.0" encoding="utf-8"?>
+<response xmlns="urn:proforma:v2.1" xmlns:praktomat="urn:proforma:praktomat:v2.1"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+    <separate-test-feedback>
+        <submission-feedback-list/>
+        <tests-response>
+            <test-response id="2">
+                <test-result>
+                    <result >
+                        <score>1</score>
+                    </result>
+                    <feedback-list>
+                        <student-feedback level="info">
+                            <title>1 Java user-submitted file(s) found for compilation</title>
+                            <content format="plaintext">MyString.java </content>
+                        </student-feedback>
+                        <student-feedback level="info">
+                            <title>Compilation finished successfully.</title>
+                        </student-feedback>
+                    </feedback-list>
+                </test-result>
+            </test-response>
+            <test-response id="3">
+                <test-result>
+                    <result >
+                        <score>0</score>
+                    </result>
+                    <feedback-list>
+                        <student-feedback level="info">
+                            <title>1 Java user-submitted file(s) found for compilation</title>
+                            <content format="plaintext">MyString.java </content>
+                        </student-feedback>
+                        <student-feedback level="error">
+                            <title>Compilation failed</title>
+                            <content format="plaintext">Palindrom2Test.java:14: error: &lt;identifier&gt; expected 	j public void testGetImmerSchief() { ^ 1 error 1</content>
+                            <praktomat:feedback>
+                                <praktomat:feedback-regexp>(?&lt;filename&gt;\/?(.+\/)*(.+)\.([^\s:]+)):(?&lt;line&gt;[0-9]+)(:(?&lt;column&gt;[0-9]+))?:\s(?&lt;msgtype&gt;[a-z]+):\s(?&lt;text&gt;.+) </praktomat:feedback-regexp>
+                            </praktomat:feedback>
+                        </student-feedback>
+                    </feedback-list>
+                </test-result>
+            </test-response>
+        </tests-response>
+    </separate-test-feedback>
+    <files/>
+    <response-meta-data>
+        <response-datetime>2021-04-26T15:39:22.271895</response-datetime>
+        <grader-engine name="praktomat" version="Version 4.8.3 | 20210422"/>
+        <praktomat:response-meta-data/>
+    </response-meta-data>
+</response>
+EOD;
 
-
+    const LOGS_COMP_ERROR_V21_1 = array(
+            array('1 Java user-submitted file(s) found for compilation', 'MyString.java '),
+            array('Compilation finished successfully.'),
+    );
+    const LOGS_COMP_ERROR_V21_2 = array(
+            array('1 Java user-submitted file(s) found for compilation', 'MyString.java '),
+            array('Compilation failed', 'Palindrom2Test.java:14: error: &lt;identifier&gt; expected 	j public void testGetImmerSchief() { ^ 1 error 1'),
+    );
 
     const RESPONSE_EMPTY = <<<'EOD'
 <?xml version="1.0" encoding="utf-8"?>
@@ -964,7 +1029,7 @@ Prüfung beendet.
     }
 
     /**
-     * compilation error
+     * compilation error version 2.0
      */
     public function test_compilation_error() {
         $expected =
@@ -988,6 +1053,33 @@ Prüfung beendet.
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_4, '', self::GRADINGHINTS_1, $expected, true);
     }
+
+    /**
+     * compilation error version 2.1
+     */
+    public function test_compilation_error_V21() {
+        $expected =
+                $this->render_collapsible_region_score(1, 0.4, 0.4, 'Compilation', 'DESCRIPTION 1', self::LOGS_COMP_ERROR_V21_1).
+                $this->render_collapsible_region_score(2, 0, 0.6, 'JUnit', 'DESCRIPTION 2', self::LOGS_COMP_ERROR_V21_2).
+                $this->render_graderinfo(3, 'praktomat Version 4.8.3 | 20210422', self::RESPONSE_COMP_ERROR_V21);
+
+        $this->setAdminUser();
+        $this->assert_same_feedback(self::RESPONSE_COMP_ERROR_V21, '', self::GRADINGHINTS_2, $expected);
+    }
+
+    /**
+     * compilation error version 2.1
+     */
+    public function test_compilation_error_V21_expanded() {
+        $expected =
+                $this->render_collapsible_region_score(1, 0.4, 0.4, 'Compilation', 'DESCRIPTION 1', self::LOGS_COMP_ERROR_V21_1, false, true).
+                $this->render_collapsible_region_score(2, 0, 0.6, 'JUnit', 'DESCRIPTION 2', self::LOGS_COMP_ERROR_V21_2, false, true).
+                $this->render_graderinfo(3, 'praktomat Version 4.8.3 | 20210422', self::RESPONSE_COMP_ERROR_V21);
+
+        $this->setAdminUser();
+        $this->assert_same_feedback(self::RESPONSE_COMP_ERROR_V21, '', self::GRADINGHINTS_2, $expected, true);
+    }
+
 
     /**
      * empty test result
