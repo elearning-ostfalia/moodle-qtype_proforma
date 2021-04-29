@@ -33,10 +33,12 @@ Feature: VALIDATION
     Then I should see "Required"
     When I set the field "Response filename" to "XClass.java"
     And I press "id_submitbutton"
-    Then I should see "java-question"
-    When I choose "Edit question" action for "java-question" in the question bank
+    Then I should see "Title required"
 
-    # Testcode required 
+    # Then I should see "java-question"
+    # When I choose "Edit question" action for "java-question" in the question bank
+
+    # Testcode required
     And I set the field "testtitle[0]" to "JUnit test 1"
     And I press "id_submitbutton"
     Then I should see "Testcode required"

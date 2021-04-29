@@ -28,7 +28,9 @@ Feature: ADD JAVA QUESTION WITH VERSION CONTROL SYSTEM USE
       | Question text            | write a java program that..... |
       | Response format          | Version control system         |
       | URI of repository        | https://code.ostfalia.de/svn/{group}/task1/  |
-    And I choose "Edit question" action for "java-question" in the question bank
+    Then I should see "Title required"
+    When I set the field "testtitle[0]" to "JUnit test title"
+    And I set the codemirror "testcode_0" to "class XClass {}"
     # check that Response filename is not visible
     Then I should not see "Response filename"
     # upload question attachment file (i.e. download link in preview)
@@ -36,6 +38,7 @@ Feature: ADD JAVA QUESTION WITH VERSION CONTROL SYSTEM USE
     # It is not possible to upload files in two filemanagers (bug in test environment?)
     # Therefore we close the editor and reopen it.
     And I press "id_submitbutton"
+    # And I pause
     When I choose "Edit question" action for "java-question" in the question bank
     # upload model solution file
     And I upload "question/type/proforma/tests/fixtures/MyString.java" file to "Model solution files" filemanager
@@ -53,13 +56,13 @@ Feature: ADD JAVA QUESTION WITH VERSION CONTROL SYSTEM USE
       | URI of repository        | https://code.ostfalia.de/svn/{group}/task1/  |
       | Comment                  |                                |
       | Penalty for each incorrect try  | 10%                     |
-      | compileweight              |      0                       |
+#      | compileweight              |      0                       |
       | Programming language version |    11                    |
 
     And I should not see "Response filename"
     And I should see "1" elements in "Model solution files" filemanager
     And I should see "1" elements in "Downloadable files" filemanager
-    And the "compile" checkbox is "checked"
+    And the "compile" checkbox is "not checked"
     # JUnit
     # is not available
     # Checkstyle

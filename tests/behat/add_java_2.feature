@@ -75,6 +75,7 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     And I set the field "testentrypoint[2]" to "YClass"
 
     # compilation
+    And I check the "compile" checkbox
     And I set the field "compileweight" to "5"
     
     # save question and check values.
@@ -164,6 +165,7 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     And I set the field "testweight[1]" to "20"
 
     # compilation
+    And I check the "compile" checkbox
     And I set the field "compileweight" to "5"
 
     And I press "id_submitbutton"

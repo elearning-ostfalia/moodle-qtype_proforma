@@ -62,7 +62,7 @@ Feature: ADD JAVA QUESTION
     # compile
       | compileweight              |      0                       |
     #And the field "compileweight" matches value "0"
-    And the "compile" checkbox is "checked"
+    And the "compile" checkbox is "not checked"
     # JUnit
     And the field "testweight[0]" matches value "1"
     And the field "testcode[0]" matches value "class XClass {}"
@@ -100,10 +100,11 @@ Feature: ADD JAVA QUESTION
 
     When I set the following fields to these values:
       | Question name   | new java-question |
-      | compileweight   | 10                |
+#      | compileweight   | 10                |
 
     # Compilation
-    #And I set the field "compileweight" to "10"
+    And I check the "compile" checkbox
+    And I set the field "compileweight" to "11"
     # JUnit
     And I set the field "testweight[0]" to "20"
     # And I set the field "testcode[0]" to "// class XClass {}"
@@ -150,7 +151,7 @@ Feature: ADD JAVA QUESTION
 
     # Compile
     And the "compile" checkbox is "checked"
-    And the field "compileweight" matches value "10"
+    And the field "compileweight" matches value "11"
     # JUnit
     And the field "testweight[0]" matches value "20"
     And the field "testcode[0]" matches value "class XClass {}"
@@ -222,8 +223,8 @@ Feature: ADD JAVA QUESTION
       | Comment                  |                                |
       | Penalty for each incorrect try  | 10%                     |
 
-    And the "compile" checkbox is "checked"
-    And the field "compileweight" matches value "0"
+    And the "compile" checkbox is "not checked"
+    # And the field "compileweight" matches value "0"
     # JUnit #1
     And the field "testweight[0]" matches value "1"
     And the field "testcode[0]" matches value "class XClass {}"

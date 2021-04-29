@@ -62,13 +62,13 @@ Feature: ADD JAVA FILEPICKER QUESTION
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
       | Max. upload size         | 2MB                            |
-      | compileweight              |      0                       |
+#      | compileweight              |      0                       |
       | testweight[0]              |      1                       |
     And I should not see "Response filename"
     # And I pause
     And I should see "1" elements in "Model solution files" filemanager
     And I should see "1" elements in "Downloadable files" filemanager
-    And the "compile" checkbox is "checked"
+    And the "compile" checkbox is "not checked"
     # JUnit
     #And the field "testweight[0]" matches value "1"
     And the codemirror "testcode_0" matches value "class TestClass {}"

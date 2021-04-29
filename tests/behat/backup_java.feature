@@ -40,6 +40,7 @@ Feature: BACKUP AND RESTORE JAVA
       | Title                    | Junit #1               |
 
     # compilation
+    And I check the "compile" checkbox
     And I set the field "compileweight" to "5"
 
     # Junit #1: editor

@@ -73,8 +73,8 @@ Feature: ADD SETLX QUESTION
       | Aggregation strategy     | Weighted sum                   |
       | Comment                  | a comment                      |
 
-    And the "compile" checkbox is "checked"
-    And the field "compileweight" matches value "0"
+    And the "compile" checkbox is "not checked"
+#    And the field "compileweight" matches value "0"
     # Setlx #1
     And the field "testweight[0]" matches value "1"
     And the field "testcode[0]" matches value "some test code"
@@ -106,6 +106,9 @@ Feature: ADD SETLX QUESTION
     Then I should see "Testcode required"
     # SetlX test
     When I set the codemirror "testcode_0" to "some test code"
+    And I check the "compile" checkbox
+    # compileweight not visible as 'all-or-nothing' is active
+    # And I set the field "compileweight" to "12"
     And I press "id_submitbutton"
     Then I should see "setlx-question"
 
@@ -125,8 +128,7 @@ Feature: ADD SETLX QUESTION
       | Aggregation strategy      | All or nothing                |
 
     # compile
-      | compileweight              |      0                       |
-    #And the field "compileweight" matches value "0"
+    # And I should not see "compileweight"
     And the "compile" checkbox is "checked"
     # SetlX test
     And the field "testweight[0]" matches value "1"
