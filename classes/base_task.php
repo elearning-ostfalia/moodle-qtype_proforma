@@ -290,7 +290,7 @@ abstract class qtype_proforma_base_task {
 
         if (!$xmldoc->loadXML($question->gradinghints)) {
             // Fatal error: grading hints cannot be loaded!
-            debugging('gradinghints is not valid XML');
+            debugging('gradinghints are not valid XML');
             return;
         }
 
@@ -298,7 +298,8 @@ abstract class qtype_proforma_base_task {
         $xpathresult = $xpath->query('//grading-hints/root/test-ref');
         $key = 0;
         if ($xpathresult->length == 0) {
-            debugging('no tests in gradinghints found');
+            // No debug message. This situation can occur when input is not validated successfully.
+            // debugging('no tests in gradinghints found ' . $question->gradinghints);
             return;
         }
 

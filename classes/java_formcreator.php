@@ -307,9 +307,17 @@ class java_form_creator extends base_form_creator {
         }
 
         // Check Junit tests.
-        $repeats = $this->get_count_tests(null);
-        for ($i = 0; $i < $repeats; $i++) {
-            $errors = $this->_validate_junit($editor, $fromform, $files, $i, $errors);
+        $title = $fromform["testtitle"][0];
+        $titleavailable = strlen(trim($title)) > 0;
+        if (!$titleavailable) {
+            // At least one test must be defined. This is checked by
+            // checking if the first title is set.
+            $errors['testoptions[0]'] = get_string('titleempty', 'qtype_proforma');
+        } else {
+            $repeats = $this->get_count_tests(null);
+            for ($i = 0; $i < $repeats; $i++) {
+                $errors = $this->_validate_junit($editor, $fromform, $files, $i, $errors);
+            }
         }
 
         if ($fromform["responseformat"] == 'editor') {
