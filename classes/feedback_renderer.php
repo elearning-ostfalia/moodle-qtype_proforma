@@ -196,12 +196,14 @@ class feedback_renderer {
      */
     private function search_regexp($testresponse) {
         $feedbacklist = $testresponse->{'test-result'}->{'feedback-list'};
-        foreach ($feedbacklist->children() as $feedback) {
-            $praktomatchildren = $feedback->children('praktomat', true);
-            if (count($praktomatchildren) > 0) {
-                $praktomatchild = $praktomatchildren[0];
-                $regexp = $praktomatchild->{'feedback-regexp'};
-                return (string)$regexp;
+        if (isset($feedbacklist)) {
+            foreach ($feedbacklist->children() as $feedback) {
+                $praktomatchildren = $feedback->children('praktomat', true);
+                if (count($praktomatchildren) > 0) {
+                    $praktomatchild = $praktomatchildren[0];
+                    $regexp = $praktomatchild->{'feedback-regexp'};
+                    return (string)$regexp;
+                }
             }
         }
         return null;

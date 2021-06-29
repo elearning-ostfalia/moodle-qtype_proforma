@@ -374,9 +374,14 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                 }
 
                 $ghtest = $ghtest[0];
-                $weight = floatval((string)$ghtest['weight']) / $totalweight;
-                $weightscore = $score * $weight;
-                $gradecalc += $weightscore;
+                if ($totalweight == 0) {
+                    debugging('Division by zero: ' . $question->name);
+                    $gradecalc = 0;
+                } else {
+                    $weight = floatval((string)$ghtest['weight']) / $totalweight;
+                    $weightscore = $score * $weight;
+                    $gradecalc += $weightscore;
+                }
                 break;
             case qtype_proforma::ALL_OR_NOTHING:
                 if ($score < 1.0) {
@@ -539,6 +544,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         if ($testswithinternalerror) {
             // TODO: get language string on display not here.
+            debugging('internaltesterror');
             return array(question_state::$needsgrading, null,
                     get_string('internaltesterror', 'qtype_proforma'), $result, $feedbackformat);
         }
