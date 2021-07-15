@@ -52,7 +52,7 @@ function _showMessages(editor, errors, widgets) {
         }
         var msg = document.createElement("div");
         var icon;
-        if (typeof msg.msgtype !== 'undefined') {        
+        if (typeof msg.msgtype !== 'undefined') {
             switch (err.msgtype.toLowerCase()) {
                 case 'error':
                     icon = msg.appendChild(document.createElement("span"));
@@ -121,7 +121,7 @@ function _getCodeMirror(target) {
 }
 
 
-function _getErrorsFromLog(collapsregion, regexp) {
+function _getErrorsFromLog(collapsregion, regexp, editorfilename) {
     let messages = [];
     let region = document.getElementById(collapsregion);
     let testlogs = region.querySelectorAll('.proforma_testlog');
@@ -142,6 +142,13 @@ function _getErrorsFromLog(collapsregion, regexp) {
 
     for (let result of results) {
         let {msgtype, filename, line, text} = result.groups;
+        if (filename !== undefined) {
+            // Filename is in message.
+            if (editorfilename.localeCompare(filename) !== 0) {
+                // Filename does not match name of file in editor.
+                continue;
+            }
+        }
         let error = {
           line: line,
           text: text,
@@ -216,7 +223,7 @@ const waitForElement = (node, selector) =>
         wait();
     });
 
-function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp) {
+function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename) {
     var widgets = [];
     // Codemirror id must be escaped!
     cmid = CSS.escape(cmid);
@@ -228,7 +235,7 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp) {
         })
         .then((a_element) => {
             // Get Messages
-            let messages = _getErrorsFromLog(collapsregion, regexp);
+            let messages = _getErrorsFromLog(collapsregion, regexp, filename);
             if (messages.length == 0) {
                 // console.log('no messages found => ready');
                 return;
@@ -297,9 +304,10 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp) {
  * @param {type} cmid Codemirror identifier
  * @param {type} collapsregion collapsible region with error messages
  * @param {type} regexp regulare expression for finding messages
+ * @param {type} filename filename of file in editor
  * @returns {undefined}
  */
-export const embedError = (cmid, collapsregion, regexp) => {
+export const embedError = (cmid, collapsregion, regexp, filename) => {
     if (!cmid) {
         console.error('cmid is invalid');
         return;
@@ -310,10 +318,10 @@ export const embedError = (cmid, collapsregion, regexp) => {
     // Note that Codemirror is created asynchronously after document ready.
     // So this is not enough when something has to be done with Codemirror.
     if( document.readyState !== 'loading' ) {
-        _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp);
+        _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename);
     } else {
         document.addEventListener("DOMContentLoaded", function() {
-            _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp);
+            _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename);
       });
     }
 };

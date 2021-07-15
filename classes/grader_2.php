@@ -544,7 +544,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         if ($testswithinternalerror) {
             // TODO: get language string on display not here.
-            debugging('internaltesterror');
+            // debugging('internaltesterror');
             return array(question_state::$needsgrading, null,
                     get_string('internaltesterror', 'qtype_proforma'), $result, $feedbackformat);
         }

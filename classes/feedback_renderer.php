@@ -311,11 +311,11 @@ class feedback_renderer {
                         break;
                 }
             }
-            if (isset($regexp)) {
+            if (isset($regexp) && $this->_question->responseformat == qtype_proforma::RESPONSE_EDITOR) {
                 // Add button for inline errors.
                 $this->_mainrenderer->get_page()->requires->js_call_amd('qtype_proforma/inlinemessages',
-                    'embedError', array(qtype_proforma_format_renderer_base::$codemirrorid,
-                        $collid, $regexp));
+                        'embedError', array(qtype_proforma_format_renderer_base::$codemirrorid,
+                                $collid, $regexp, $this->_question->responsefilename));
             }
         }
 
