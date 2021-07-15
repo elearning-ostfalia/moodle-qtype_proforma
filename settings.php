@@ -107,6 +107,10 @@ $settings->add(new admin_setting_configcheckbox('qtype_proforma/inlinemessages',
         get_string('inlinemessages', 'qtype_proforma'),
         get_string('inlinemessages_desc', 'qtype_proforma'), 1));
 
+$settings->add(new admin_setting_configcheckbox('qtype_proforma/regexpfromgrader',
+        get_string('regexpfromgrader', 'qtype_proforma'),
+        get_string('regexpfromgrader_desc', 'qtype_proforma'), 1));
+
 // Not supported:
 /* $settings->add(new admin_setting_configcheckbox('qtype_proforma/initiallyembedded',
         get_string('admininitiallyembedded', 'qtype_proforma'),

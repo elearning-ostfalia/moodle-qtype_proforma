@@ -126,26 +126,37 @@ function _getErrorsFromLog(collapsregion, regexp, editorfilename) {
     let region = document.getElementById(collapsregion);
     let testlogs = region.querySelectorAll('.proforma_testlog');
     let innertext = '';
+    let re = new RegExp(regexp, "mg");
     for (let testlog of testlogs) {
-        if (testlog.innerText.length == 0) {
+        let log = undefined;
+        if (testlog.innerText.length === 0) {
             // HtmlPreElement
-            innertext = innertext + '\n' + testlog.textContent;
+            log = testlog.textContent;
         } else {
-            innertext = innertext + '\n' + testlog.innerText;
+            log = testlog.innerText;
+        }
+        // only add log texts that contain messages.
+        // This is added because the log could contain just a filename.
+        if (log.match(re)) {
+            innertext = (innertext.length > 0)?(innertext + '\n' + log):log;
         }
     }
+
     // global match
-    let re = new RegExp(regexp, "mg");
     let results = innertext.matchAll(re);
     // console.log('innertext: ' + innertext);
     // console.log('regexp: ' + regexp);
 
     for (let result of results) {
-        let {msgtype, filename, line, text} = result.groups;
+        let {msgtype, filename, line, text, symbol} = result.groups;
+        // console.log('text: ' + text);
+        // console.log('filename: ' + filename);
+        // console.log('symbol: \'' + symbol + '\'');
         if (filename !== undefined) {
             // Filename is in message.
             if (editorfilename.localeCompare(filename) !== 0) {
                 // Filename does not match name of file in editor.
+                // console.log('filename does not match');
                 continue;
             }
         }
@@ -154,6 +165,9 @@ function _getErrorsFromLog(collapsregion, regexp, editorfilename) {
           text: text,
           msgtype: msgtype,
         };
+        if (symbol !== undefined) {
+            error.text = error.text + ' \'' + symbol.trim() + '\'';
+        }
         messages.push(error);
     }
     return messages;

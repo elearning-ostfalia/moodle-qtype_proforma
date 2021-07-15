@@ -195,6 +195,11 @@ class feedback_renderer {
      * If more than one regular expression is found then only the first one is returned.
      */
     private function search_regexp($testresponse) {
+        if (!get_config('qtype_proforma', 'regexpfromgrader')) {
+            // Do not use regular expressions from grader.
+            return null;
+        }
+        
         $feedbacklist = $testresponse->{'test-result'}->{'feedback-list'};
         if (isset($feedbacklist)) {
             foreach ($feedbacklist->children() as $feedback) {
@@ -202,7 +207,9 @@ class feedback_renderer {
                 if (count($praktomatchildren) > 0) {
                     $praktomatchild = $praktomatchildren[0];
                     $regexp = $praktomatchild->{'feedback-regexp'};
-                    return (string)$regexp;
+                    $regexp = (string)$regexp;
+                    // Remove (trailing) spaces.
+                    return trim($regexp, ' ');
                 }
             }
         }
@@ -297,6 +304,7 @@ class feedback_renderer {
         if (!$internalerror and isset(qtype_proforma_format_renderer_base::$codemirrorid)) {
             // Look for regular expression in test response.
             $regexp = $this->search_regexp($test);
+
             // debugging($regexp);
             if (!isset($regexp)) {
                 // No regular expression in test response. Use default ones.
