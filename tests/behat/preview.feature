@@ -22,7 +22,7 @@ Feature: PREVIEW
       | questioncategory | qtype | name      | template         |
       | Test questions   | proforma | proforma-001 | editor           |
       | Test questions   | proforma | proforma-003 | filepicker            |
-    Given I log in as "teacher1"
+    And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
