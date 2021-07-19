@@ -109,7 +109,7 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $debugging = $this->getDebuggingMessages();
         $this->resetDebugging();
         $this->assertEquals(1, count($debugging));
-        $this->assertContains('group is not unique', $debugging[0]->message);
+        $this->assertStringContainsString('group is not unique', $debugging[0]->message);
 
         $this->assertEquals('group2', $groupname, 'two groups, no grouping');
     }
@@ -170,7 +170,8 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $debugging = $this->getDebuggingMessages();
         $this->resetDebugging();
         $this->assertEquals(1, count($debugging));
-        $this->assertContains('group is not unique', $debugging[0]->message);
+        $this->assertStringContainsString('group is not unique', $debugging[0]->message);
+
 
         $this->assertEquals('group2', $groupname, 'two groups, no grouping');
     }
