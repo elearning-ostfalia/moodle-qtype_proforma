@@ -15,6 +15,11 @@ date
 if [ "$phpmd" -eq "1" ]; then 
     echo -- PHP Mess detector
     docker exec -i moodle-docker_webserver_1  phpmd --exclude "tests/*" question/type/proforma text phpmd.xml
+
+    # also run stylelint
+    # echo -- run stylelint
+    # docker exec -i moodle-docker_webserver_1 npx stylelint "**/*.css"
+    
 fi
 
 

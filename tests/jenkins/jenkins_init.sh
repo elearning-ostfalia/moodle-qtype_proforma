@@ -55,14 +55,25 @@ bin/moodle-docker-wait-for-db
 
 date
 
-# install PHP Mess detector
+# create and start praktomat, attach to moodle network
+# docker-compose -f docker-compose-test.yml build
+# docker-compose -f docker-compose-test.yml up
+
 if [ "$install" -eq "1" ]; then 
-    echo --install PHP mess detector
     docker exec -i moodle-docker_webserver_1 apt-get update
+    # install Stylelint
+    # docker exec -i moodle-docker_webserver_1 apt install -y nodejs
+    # docker exec -i moodle-docker_webserver_1 apt install -y npm    
+    # docker exec -i moodle-docker_webserver_1 npm install --save-dev stylelint stylelint-config-standard
+    
+    
+    # install PHP Mess detector
+    echo --install PHP mess detector
     docker exec -i moodle-docker_webserver_1 apt-get install -y wget
     docker exec -i moodle-docker_webserver_1 wget -c https://phpmd.org/static/latest/phpmd.phar
     docker exec -i moodle-docker_webserver_1 mv phpmd.phar /usr/bin/phpmd
     docker exec -i moodle-docker_webserver_1 chmod +x /usr/bin/phpmd
+    
 fi
 
 if [ "$init" -eq "1" ]; then 
