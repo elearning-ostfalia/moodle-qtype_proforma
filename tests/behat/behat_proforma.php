@@ -260,9 +260,12 @@ class behat_proforma extends behat_base {
     /**
      * Set codemirror answer with javascript in *Javascript* testcases.
      *
-     * @When /^I set the preview answer to "(?P<value_string>(?:[^"]|\\")*)"$/
+     * @When /^I set the response to$/
      */
-    public function set_the_preview_answer_to($value) {
+    public function set_the_response_to(PyStringNode $value) {
+        // Remove newline and carriage return.
+        $search = array("\r", "\n");
+        $value = str_replace($search, "", $value);
         $command = 'return (function() { $(".qtype_proforma_response").next(".CodeMirror").get(0).CodeMirror.setValue("'. $value. '"); })();';
         // fwrite(STDOUT, $command);
         $this->getSession()->getDriver()->evaluateScript($command);

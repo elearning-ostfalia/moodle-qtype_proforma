@@ -32,7 +32,7 @@ Feature: GRADE
 
 
   @javascript @_switch_window @_file_upload
-  Scenario: Import and preview a ProFormA question and submit a partially correct response.
+  Scenario: Import a ProFormA question, preview and submit a response.
 
     When I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_proforma" to "1"
@@ -47,7 +47,16 @@ Feature: GRADE
     And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
-    And I set the preview answer to "public class MyString {static public Boolean isPalindrom(String s){String r = new StringBuilder(s).reverse().toString();return (s.equalsIgnoreCase(r));}}"
+    And I set the response to
+    """
+    public class MyString {
+      static public Boolean isPalindrom(String s) {
+        String r = new StringBuilder(s).reverse().toString();
+        return (s.equalsIgnoreCase(r));
+      }
+    }
+    """
+
     And I press "Check"
     Then I should see "CheckStyle Test (0/17 %)"
     And I should see "Java Compiler Test"
