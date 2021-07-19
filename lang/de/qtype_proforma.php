@@ -156,7 +156,7 @@ $string['graderuri_host_desc'] = 'Protokoll (Schema) und Server der Grader URI';
 $string['graderuri_path'] = 'URI: Pfad';
 $string['graderuri_path_desc'] = 'Pfad der Grader URI';
 $string['submissionproformaversion'] = 'ProFormA Version';
-$string['submissionproformaversion_help'] = 'ProFormA-Version, die für die Kommunikation zwischen Moodle und Grader verwendet werden soll.';
+$string['submissionproformaversion_help'] = 'ProFormA-Version, die für die Kommunikation zwischen Moodle und Grader verwendet werden soll. Version 2.1 erfordert mindestens Praktomat 4.9.0.';
 
 
 $string['javasettings_header'] = 'Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';

@@ -137,7 +137,7 @@ $string['graderuri_host_desc'] = 'Protocol (Scheme) and Server (Host) Part of Gr
 $string['graderuri_path'] = 'URI: Path';
 $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 $string['submissionproformaversion'] = 'ProFormA version';
-$string['submissionproformaversion_help'] = 'ProFormA version for communication between Moodle and grader';
+$string['submissionproformaversion_help'] = 'ProFormA version for communication between Moodle and grader. Version 2.1 requires at least Praktomat 4.9.0.';
 
 
 $string['feedbackoptions_heading'] = 'Feedback Options';
