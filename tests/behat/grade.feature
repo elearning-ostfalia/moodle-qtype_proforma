@@ -21,22 +21,150 @@ Feature: GRADE
 #    And the following "question categories" exist:
 #      | contextlevel | reference | name           |
 #      | Course       | C1        | Test questions |
-#    And the following "questions" exist:
-#      | questioncategory | qtype | name      | template         |
-#      | Test questions   | proforma | proforma-001 | editor           |
-#      | Test questions   | proforma | proforma-003 | filepicker            |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-#    And I navigate to "Question bank" in current page administration
-    
 
 
   @javascript @_switch_window @_file_upload
+  Scenario: Create a Java question, preview and submit a response.
+    When I navigate to "Question bank" in current page administration
+    And I add a "ProFormA" question filling the form with:
+      | Question name            | Java question                  |
+      | Question text            | Write a class MyString that checks if a given string is a palindrome.  |
+      | Response format          | editor                         |
+      | Response filename        | MyString.java                   |
+      | Penalty for each incorrect try  | 20%     |
+      | Programming language version  | 11     |
+    # Compilation
+    And I check the "compile" checkbox
+    And I set the field "compileweight" to "1"
+
+    # JUnit 1
+    And I set the field "testtitle[0]" to "Junit 1"
+    And I set the field "testweight[0]" to "10"
+    And I set the field "testversion[0]" to "4.12"
+    When I set the codemirror "testcode_0" to multiline:
+    """
+import static org.junit.Assert.*;
+import org.junit.Test;
+
+public class PalindromTest {
+	@Test
+	public void testLagertonnennotregal() {
+		assertTrue( MyString.isPalindrom("Lagertonnennotregal"));
+	}
+
+	@Test
+	public void testEmpty() {
+		assertTrue( MyString.isPalindrom(""));
+	}
+
+
+	@Test
+	public void testFalse1() {
+		assertFalse( MyString.isPalindrom("abc123321cbc"));
+	}
+}
+"""
+
+    # JUnit 2
+    # add another Junit test
+    And I press "id_option_add_fields"
+    And I set the field "testtitle[1]" to "Junit 2"
+    And I set the field "testweight[1]" to "10"
+    And I set the field "testversion[1]" to "4.12"
+    And I select "id_testcodeformat_1_1" radio button
+    # upload JUnit test file
+    And I upload "question/type/proforma/tests/fixtures/behat/Palindrom2Test.java" to "testfiles[1]" filemanager by name
+    And I set the field "testentrypoint[1]" to "Palindrom2Test"
+
+    # JUnit 3
+    # add another Junit test
+    And I press "id_option_add_fields"
+    And I set the field "testtitle[2]" to "Junit 3"
+    And I set the field "testweight[2]" to "10"
+    And I set the field "testversion[2]" to "4.12"
+    And I select "id_testcodeformat_2_1" radio button
+    # upload JUnit test file
+    And I upload "question/type/proforma/tests/fixtures/behat/JunitPalindromTest.jar" to "testfiles[2]" filemanager by name
+    And I set the field "testentrypoint[2]" to "PalindromTest"
+
+    # Checkstyle
+    And I set the field "checkstyle" to "1"
+    And I set the field "checkstyleweight" to "5"
+    And I set the field "checkstyleversion" to "8.29"
+    ## And I set the field "checkstylecode" to "<!-- checkstyle code-->"
+    And I set the codemirror "checkstylecode" to multiline:
+"""
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Check Configuration 1.3//EN" "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<module name="Checker">
+  <property name="severity" value="warning"/>
+  <module name="TreeWalker">
+    <property name="tabWidth" value="4"/>
+    <module name="LocalFinalVariableName"/>
+    <module name="LocalVariableName"/>
+    <module name="MemberName"/>
+    <module name="MethodName"/>
+    <module name="PackageName">
+      <property name="severity" value="warning"/>
+    </module>
+    <module name="TypeName">
+      <property name="severity" value="error"/>
+    </module>
+    <module name="ParameterNumber">
+      <property name="severity" value="warning"/>
+    </module>
+    <module name="EmptyBlock">
+      <property name="severity" value="warning"/>
+    </module>
+    <module name="LeftCurly">
+      <property name="severity" value="info"/>
+    </module>
+    <module name="NeedBraces">
+      <property name="severity" value="error"/>
+    </module>
+    <module name="EmptyStatement">
+      <property name="severity" value="warning"/>
+    </module>
+    <module name="RightCurly">
+      <property name="severity" value="info"/>
+    </module>
+  </module>
+</module>
+"""
+
+    And I press "id_submitbutton"
+    Then I should see "Java question"
+    When I choose "Preview" action for "Java question" in the question bank
+    And I switch to "questionpreview" window
+    And I set the field "How questions behave" to "Adaptive mode (no penalties)"
+    And I press "Start again with these options"
+    And I set the response to
+    """
+    public class MyString {
+        static public Boolean isPalindrom(String aString) {
+            String reverse = new StringBuilder(aString).reverse().toString();
+            return (aString.equalsIgnoreCase(reverse));
+        }
+    }
+    """
+
+    And I press "Check"
+    Then I should see "Compiler (3/3 %)"
+    Then I should see "Junit 1 (28/28 %)"
+    And I should see "Junit 2 (14/28 %)"
+    And I should see "Junit 3 (28/28 %)"
+    And I should see "CheckStyle Test (14/14 %)"
+    And I should see "Partially correct"
+    And I should see "Marks for this submission: 0.86/1.00."
+
+  @javascript @_file_upload
   Scenario: Import a ProFormA question, preview and submit a response.
 
     When I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_proforma" to "1"
-    And I upload "question/type/proforma/tests/fixtures/behatPalindrom.zip" file to "Import" filemanager
+    And I upload "question/type/proforma/tests/fixtures/behat/Palindrom.zip" file to "Import" filemanager
     And I press "id_submitbutton"
     Then I should see "Parsing questions from import file."
     And I should see "Importing 1 questions from file"

@@ -258,6 +258,22 @@ class behat_proforma extends behat_base {
     }
 
     /**
+     * Set codemirror text with javascript in *Javascript* testcases.
+     *
+     * @When /^I set the codemirror "(?P<name_string>(?:[^"]|\\")*)" to multiline:$/
+     */
+    public function set_the_codemirror_to_multiline($name, PyStringNode $value) {
+        $search = array("\r", "\n");
+        $value = str_replace($search, " ", $value);
+        $value = str_replace("\"", "\\\"", $value);
+        // fwrite(STDOUT, $value);
+        $command = 'return (function() { $("#id_' . $name .
+                '").next(".CodeMirror").get(0).CodeMirror.setValue("'. $value. '"); })();';
+        // fwrite(STDOUT, $command);
+        $this->getSession()->getDriver()->evaluateScript($command);
+    }
+
+    /**
      * Set codemirror answer with javascript in *Javascript* testcases.
      *
      * @When /^I set the response to$/
@@ -266,6 +282,8 @@ class behat_proforma extends behat_base {
         // Remove newline and carriage return.
         $search = array("\r", "\n");
         $value = str_replace($search, "", $value);
+        // Do not use inline comments in response.
+
         $command = 'return (function() { $(".qtype_proforma_response").next(".CodeMirror").get(0).CodeMirror.setValue("'. $value. '"); })();';
         // fwrite(STDOUT, $command);
         $this->getSession()->getDriver()->evaluateScript($command);
