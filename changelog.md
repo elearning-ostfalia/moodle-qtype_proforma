@@ -1,3 +1,11 @@
+## v2.6.0
+
+* support for Proforma version 2.1 in request and response
+* read message regular expression from grader
+* bugfix: do not embed compiler messages for test files
+* add validation for missing tests
+* do not add compilation test by default
+
 ## v2.5.3
 
 * bugfix: VCS: getting groupname with groupings
