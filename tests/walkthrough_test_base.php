@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use PHPUnit\Runner\Version as PHPUnitVersion;
+
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 
@@ -512,7 +514,11 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
                 $element = $elements[0]; // leave DOM element
                 $elementFull = $element->ownerDocument->saveXML($element);
                 $element1 = preg_replace('/\r\n?/', "\n", $elementFull);
-                $this->assertRegExp('/' . preg_quote(s($content1), '/') . '/', $element1);
+                if (PHPUnitVersion::id() >= 9) {
+                    $this->assertMatchesRegularExpression('/' . preg_quote(s($content1), '/') . '/', $element1);
+                } else {
+                    $this->assertRegExp('/' . preg_quote(s($content1), '/') . '/', $element1);
+                }
             }
         } else {
             $this->assertTrue(empty($elementFull));
@@ -533,7 +539,11 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
                 $this->currentoutput);
 
         if (!is_null($content)) {
-            $this->assertRegExp('/' . preg_quote(s($content), '/') . '/', $this->currentoutput);
+            if (PHPUnitVersion::id() >= 9) {
+                $this->assertMatchesRegularExpression('/' . preg_quote(s($content), '/') . '/', $this->currentoutput);
+            } else {
+                $this->assertRegExp('/' . preg_quote(s($content), '/') . '/', $this->currentoutput);
+            }
         }
     }
 

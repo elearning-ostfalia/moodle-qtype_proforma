@@ -13,8 +13,8 @@
         stopOnFailure="false"
         stopOnIncomplete="false"
         stopOnSkipped="false"
-        testSuiteLoaderClass="phpunit_autoloader"
         >
+        <!-- testSuiteLoaderClass="PHPUnit\Runner\StandardTestSuiteLoader" -->
 
     <php>
         <!--<const name="PHPUNIT_LONGTEST" value="1"/> uncomment to execute also slow or otherwise expensive tests-->
