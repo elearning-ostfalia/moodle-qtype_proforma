@@ -136,6 +136,8 @@ $settings->add(new admin_setting_heading('proglangs',
         get_string('proglang_hdr', 'qtype_proforma'),
         get_string('proglang_hdr_info', 'qtype_proforma')));
 
+$settings->add(new admin_setting_configcheckbox('qtype_proforma/clang',
+        'c', '', 0));
 
 $settings->add(new admin_setting_configcheckbox('qtype_proforma/setlx',
         'SetlX', '', 0));

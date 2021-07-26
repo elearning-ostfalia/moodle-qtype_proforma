@@ -112,13 +112,14 @@ $string['addtest'] = 'Add {$a}';
 
 $string['junit'] = 'JUnit test';
 $string['setlx'] = 'SetlX test';
-
+$string['clang'] = 'c/CUnit/Makefile test';
 
 
 $string['codeempty'] = 'Testcode required';
 $string['titleempty'] = 'Title required';
 $string['versionrequired'] = 'Version required.';
 $string['entrypointrequired'] = 'JUnit entrypoint required.';
+$string['executablerequired'] = 'Command to run test required.';
 $string['filenameerror'] = 'Cannot determine classname (filename)';
 $string['entrypointerror'] = 'Cannot determine classname (entrypoint)';
 $string['sumweightzero'] = 'The sum of all weights must not be zero.';
@@ -229,6 +230,8 @@ $string['testcodefiles'] = 'Testcode files';
 $string['testlabel'] = 'Test';
 $string['testlabela'] = '{$a} {no}';
 $string['entrypoint'] = 'Entrypoint';
+$string['executable'] = 'Executable';
+$string['testexecutable_help'] = 'How to execute the test program, e.g. \'./tester\'';
 
 
 $string['weight'] = 'Weight';

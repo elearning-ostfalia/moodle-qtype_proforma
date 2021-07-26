@@ -121,11 +121,13 @@ $string['addtest'] = '{$a} hinzufügen';
 
 $string['junit'] = 'JUnit Test';
 $string['setlx'] = 'SetlX Test';
+$string['clang'] = 'c/CUnit/Makefile Test';
 
 $string['codeempty'] = 'Testcode fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
 $string['versionrequired'] = 'Version ist nicht ausgewählt.';
-$string['entrypointrequired'] = 'JUnit Entrypoint muss angegeben werde.';
+$string['entrypointrequired'] = 'JUnit Entrypoint muss angegeben werden.';
+$string['executablerequired'] = 'Befehl zum Ausführen des Tests muss angegeben werden.';
 $string['filenameerror'] = 'Kann Klassennamen nicht ermitteln (Dateiname).';
 $string['entrypointerror'] = 'Kann Klassennamen nicht ermitteln (Entrypoint).';
 $string['sumweightzero'] = 'Die Summe aller Gewichte darf nicht 0 sein.';
@@ -210,6 +212,8 @@ $string['testcodefiles'] = 'Testcode-Dateien';
 
 $string['weight'] = 'Gewicht';
 $string['entrypoint'] = 'Entrypoint';
+$string['executable'] = 'Executable';
+
 
 $string['filepickeroptions'] = 'Filepicker-Einstellungen';
 

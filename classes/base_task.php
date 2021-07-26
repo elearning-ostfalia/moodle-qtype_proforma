@@ -99,6 +99,18 @@ abstract class qtype_proforma_base_task {
     }
 
     /**
+     * set formdata from grading hints
+     *
+     * @param question $question
+     * @param test $ref
+     * @param test $weight
+     * @return bool
+     */
+    protected function set_formdata_from_gradinghints($question, $ref, $weight) {
+        return false;
+    }
+
+    /**
      * Add test specific data to LMS internal grading hints
      *
      * @param $xw

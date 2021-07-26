@@ -125,6 +125,56 @@ abstract class base_form_creator {
     }
 
     /**
+     * validate JUnit test input
+     *
+     * @param qtype_proforma_edit_form $editor main editor instance
+     * @param type $fromform  input data
+     * @param type $files file array
+     * @param type $i index
+     * @param type $errors errors array
+     * @return
+     * @throws coding_exception
+     */
+    protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
+        $title = $fromform["testtitle"][$i];
+        $format = $fromform["testcodeformat"][$i];
+        $codeavailable = false;
+        $testcodefield = "testcode";
+        $titleavailable = strlen(trim($title)) > 0;
+        switch ($format) {
+            case self::EDITORTESTINPUT: // Editor.
+                $code = $fromform["testcode"][$i];
+                $codeavailable = (strlen(trim($code)) > 0);
+                break;
+            case self::FILETESTINPUT: // Filemanager.
+                global $USER;
+                $usercontext = context_user::instance($USER->id);
+                $testcodefield = "testfiles";
+                $draftitemid = $fromform["testfiles"][$i];
+                $fs = get_file_storage();
+                $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
+                $codeavailable = (count($draftfiles) > 1);
+                break;
+            default:
+                throw new coding_exception('unexpected value ' . $format);
+        }
+        if (!$codeavailable and $titleavailable) {
+            // Title is set but code is missing.
+            $errors[$testcodefield . '['.$i.']'] = get_string('codeempty', 'qtype_proforma');
+        }
+
+        if ($codeavailable and !$titleavailable) {
+            // Title is missing:
+            // error message must be attached to testoptions group.
+            $errors['testtitle['.$i.']'] = get_string('titleempty', 'qtype_proforma');
+        }
+
+        return array($errors, $codeavailable and $titleavailable);
+    }
+
+
+
+    /**
      * Add something to select the programming language.
      */
     public function add_proglang_selection() {

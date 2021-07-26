@@ -87,6 +87,8 @@ class qtype_proforma extends question_type {
     const JAVA_TASKFILE = self::VOLATILE_TASKFILE;
     /** SetlX task file */
     const SETLX_TASKFILE = 4;
+    /** c task file */
+    const C_TASKFILE = 5;
     /** task file that is not yet completed */
     const SELECT_TASKFILE = 0;
 
@@ -293,6 +295,9 @@ class qtype_proforma extends question_type {
                 break;
             case self::SETLX_TASKFILE:
                 $editor = new setlx_form_creator($formdata);
+                break;
+            case self::C_TASKFILE:
+                $editor = new c_form_creator($formdata);
                 break;
             case self::REPOSITORY:
             default:

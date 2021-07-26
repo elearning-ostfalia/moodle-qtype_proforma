@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/java_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/setlx_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/c_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/select_formcreator.php');
 
 /**
@@ -54,6 +55,9 @@ class qtype_proforma_edit_form extends question_edit_form {
         ];
         if (get_config('qtype_proforma', 'setlx')) {
             array_push($proglangs, [qtype_proforma::SETLX_TASKFILE, 'SetlX']);
+        }
+        if (get_config('qtype_proforma', 'clang')) {
+            array_push($proglangs, [qtype_proforma::C_TASKFILE, 'c']);
         }
         if (count($proglangs) > 1) {
             // More than one programming language:
@@ -176,6 +180,10 @@ class qtype_proforma_edit_form extends question_edit_form {
             case qtype_proforma::JAVA_TASKFILE:
                 // Question was created by form editor.
                 $this->formcreator = new java_form_creator($this->_form, $newquestion);
+                break;
+            case qtype_proforma::C_TASKFILE:
+                // Question was created by form editor.
+                $this->formcreator = new c_form_creator($this->_form, $newquestion);
                 break;
             case qtype_proforma::SETLX_TASKFILE:
                 // Question was created by form editor.
