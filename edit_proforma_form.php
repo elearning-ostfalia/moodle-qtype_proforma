@@ -51,13 +51,13 @@ class qtype_proforma_edit_form extends question_edit_form {
     private function create_creator_for_new_question() {
         // Check how many programming languages are available at this site.
         $proglangs = [
-            [qtype_proforma::JAVA_TASKFILE, 'Java'],
+            [qtype_proforma::JAVA_TASKFILE, 'Java (JUnit)'],
         ];
         if (get_config('qtype_proforma', 'setlx')) {
             array_push($proglangs, [qtype_proforma::SETLX_TASKFILE, 'SetlX']);
         }
         if (get_config('qtype_proforma', 'clang')) {
-            array_push($proglangs, [qtype_proforma::C_TASKFILE, 'c']);
+            array_push($proglangs, [qtype_proforma::C_TASKFILE, 'c (CUnit, Make)']);
         }
         if (count($proglangs) > 1) {
             // More than one programming language:

@@ -59,14 +59,6 @@ class c_form_creator extends base_form_creator {
     }
 
     /**
-     * create task class instance belonging to form creator
-     */
-    /* protected function create_task_instance() {
-        return new qtype_proforma_c_task();
-    }*/
-
-
-    /**
      * Get test label for add_tests.
      *
      * @return string label of JUnit tests
@@ -114,6 +106,8 @@ class c_form_creator extends base_form_creator {
      * @return int
      */
     protected function add_tests($question, $questioneditform) {
+        $this->_form->addElement('html', get_string('clangfiles_help', 'qtype_proforma'));
+
         // Add c tests.
         return $this->add_test_fields($question, $questioneditform, 'clang');
     }
