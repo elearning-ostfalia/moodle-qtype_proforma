@@ -196,7 +196,8 @@ Feature: EDIT SETLX
     And following "template.txt" should download file with between "69" and "73" bytes
     And I switch to the main window
 
-##########################################################################
+  @javascript
+    ##########################################################################
   Scenario: Edit a ProFormA question (remove and add Setlx)
 ##########################################################################
     When I choose "Edit question" action for "proforma-setlx" in the question bank
@@ -204,7 +205,7 @@ Feature: EDIT SETLX
     # remove SetlX 2 data by deleting content
     And I set the field "testtitle[1]" to ""
     And I set the field "testdescription[1]" to ""
-    And I set the field "testcode[1]" to ""
+    And I set the codemirror "testcode_1" to ""
     And I press "id_submitbutton"
     Then I should see "proforma-setlx"
 
@@ -231,8 +232,8 @@ Feature: EDIT SETLX
     # add SetlX 2
     And I set the field "testtitle[1]" to "new Setlx Test 2"
     And I set the field "testdescription[1]" to "new Description Setlx 2"
-    And I set the field "testweight[1]" to "6.5"
-    And I set the field "testcode[1]" to "class NewYTest {}"
+    # And I set the field "testweight[1]" to "6.5"
+    And I set the codemirror "testcode_1" to "class NewYTest {}"
 
     And I press "id_submitbutton"
     Then I should see "proforma-setlx"
@@ -252,19 +253,19 @@ Feature: EDIT SETLX
       | Aggregation strategy      | All or nothing                |
       | Penalty for each incorrect try  | 20%                     |
     And the "compile" checkbox is "checked"
-    And the field "compileweight" matches value "2"
+    # And the field "compileweight" matches value "2"
     # SetlX 1
     And the field "testid[0]" matches value "1"
     And the field "testtitle[0]" matches value "Setlx Test 1"
     And the field "testdescription[0]" matches value "DESCRIPTION 1"
     And the field "testtype[0]" matches value "setlx"
-    And the field "testweight[0]" matches value "3"
+    # And the field "testweight[0]" matches value "3"
     And the field "testcode[0]" matches value "some testcode"
     # SetlX 2
     And the field "testtitle[1]" matches value "new Setlx Test 2"
     And the field "testdescription[1]" matches value "new Description Setlx 2"
     And the field "testtype[1]" matches value "setlx"
-    And the field "testweight[1]" matches value "6.5"
+    # And the field "testweight[1]" matches value "6.5"
     And the field "testid[1]" matches value "2"
     And the field "testcode[1]" matches value "class NewYTest {}"
 

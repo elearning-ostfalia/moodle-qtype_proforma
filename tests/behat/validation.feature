@@ -57,7 +57,7 @@ Feature: VALIDATION
     When I choose "Edit question" action for "java-question" in the question bank
 
     # Testcode (files) required
-    And I set the field "id_testcodeformat_0_1" to "1"
+    And I set the field "id_testcodeformat_0_2" to "1"
     And I press "id_submitbutton"
     Then I should see "Testcode required"
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit2.java" to "testfiles[0]" filemanager by name

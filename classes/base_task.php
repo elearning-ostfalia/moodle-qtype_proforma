@@ -67,7 +67,7 @@ abstract class qtype_proforma_base_task {
         // Check format: editor or filemanager?
         $editor = true;
         if (isset($formdata->testcodeformat[$index]) and
-            $formdata->testcodeformat[$index] == base_form_creator::FILETESTINPUT) {
+            $formdata->testcodeformat[$index] == base_form_creator::TESTCODE_FILES) {
                 $editor = false;
         }
 
@@ -458,7 +458,7 @@ abstract class qtype_proforma_base_task {
                     if (isset($filetype)) {
                         debugging('inconsistent task file: embedded-txt-file and embedded-bin-file mixed');
                     }
-                    $filetype = base_form_creator::EDITORTESTINPUT;
+                    $filetype = base_form_creator::TESTCODE_EDITOR;
                     if (isset($code)) {
                         // We must not have more than one embedded text file belonging to a test.
                         debugging('inconsistent task file: embedded-txt-file is used more than once');
@@ -469,7 +469,7 @@ abstract class qtype_proforma_base_task {
                     if (isset($code)) {
                         debugging('inconsistent task file: embedded-txt-file and embedded-bin-file mixed for ' . (string)$test['id']);
                     }
-                    $filetype = base_form_creator::FILETESTINPUT;
+                    $filetype = base_form_creator::TESTCODE_FILES;
                     // Store in draft area.
                     $attribute = 'testfiles[' . $index . ']';
                     global $USER;
@@ -485,7 +485,9 @@ abstract class qtype_proforma_base_task {
                 }
             }
         }
+        // debugging('set testcodeformat_' . $index . ' to ' . $filetype);
         $question->testcodeformat[$index] = $filetype;
+        // $question->testcodearray[$index] = $question->testcodeformat[$index];
         if (isset($code)) {
             $question->testcode[$index] = $code;
         }

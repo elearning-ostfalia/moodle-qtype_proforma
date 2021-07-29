@@ -58,7 +58,7 @@ Feature: BACKUP AND RESTORE JAVA
     And I set the field "testdescription[1]" to "second JUnit test"
     And I set the field "testversion[1]" to "4.12"
     # change JUnit code format to 'files'
-    And I set the field "id_testcodeformat_1_1" to "1"
+    And I set the field "id_testcodeformat_1_2" to "1"
     # upload JUnit test file
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit2.java" to "testfiles[1]" filemanager by name
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit1.java" to "testfiles[1]" filemanager by name
@@ -76,7 +76,7 @@ Feature: BACKUP AND RESTORE JAVA
     And I set the field "testversion[2]" to "5"
     And I set the field "testdescription[2]" to "third JUnit test"
     # change JUnit code format to 'files'
-    And I set the field "id_testcodeformat_2_1" to "1"
+    And I set the field "id_testcodeformat_2_2" to "1"
     # upload JUnit test file
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit.java" to "testfiles[2]" filemanager by name
     And I set the field "testentrypoint[2]" to "YClass"

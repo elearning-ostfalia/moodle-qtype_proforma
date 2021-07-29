@@ -43,13 +43,13 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     And I set the field "testweight[0]" to "10"
 
     # Junit #2: two files
+    And I set the field "id_testcodeformat_1_2" to "1"
     And I set the field "testtitle[1]" to "Junit #2"
     And I set the field "testweight[1]" to "20"
     And I set the field "testdescription[1]" to "second JUnit test"
     And I set the field "testversion[1]" to "4.12"
     # change JUnit code format to 'files'
     # select "Files" radio button
-    And I set the field "id_testcodeformat_1_1" to "1"
     And I press "id_submitbutton"
     Then I should see "Testcode required"
     # upload JUnit test file
@@ -62,14 +62,14 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     And I press "id_submitbutton"
     And I choose "Edit question" action for "java-question" in the question bank
 
-    # Junit #3: one file
+    # add Junit #3: one file
     And I press "id_option_add_fields"
     And I set the field "testtitle[2]" to "Junit #3"
     And I set the field "testweight[2]" to "30"
     And I set the field "testversion[2]" to "5"
     And I set the field "testdescription[2]" to "third JUnit test"
     # change JUnit code format to 'files'
-    And I set the field "id_testcodeformat_2_1" to "1"
+    And I set the field "id_testcodeformat_2_2" to "1"
     # upload JUnit test file
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit.java" to "testfiles[2]" filemanager by name
     And I set the field "testentrypoint[2]" to "YClass"

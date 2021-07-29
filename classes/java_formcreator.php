@@ -51,19 +51,21 @@ class java_form_creator extends base_form_creator {
      * @param bool $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
-        parent::__construct($form, new qtype_proforma_java_task(),
-            qtype_proforma::response_formats(), 'java', 'Java');
+        parent::__construct($form, new qtype_proforma_java_task());
+        // Set parent options.
+        $this->_syntaxhighlighting = 'java';
+        $this->_proglang = 'Java';
+        $this->_responseformats = qtype_proforma::response_formats();
+        $this->_entrypointlabel = get_string('entrypoint', 'qtype_proforma');
+        $this->_entrypoint = true;
+        // $this->_evalentrypoint = true;
+        $this->_taskType = qtype_proforma::JAVA_TASKFILE;
+        $this->_unittestlabel = get_string('junit', 'qtype_proforma');
+
         $this->_newquestion = $newquestion;
     }
 
     // Override.
-
-    /**
-     * the numeric type of task
-     */
-    protected function get_task_type() {
-        return qtype_proforma::JAVA_TASKFILE;
-    }
 
     /**
      * Add something to select the programming language.
@@ -90,27 +92,20 @@ class java_form_creator extends base_form_creator {
     }
 
     /**
-     * Get test label for add_tests.
-     *
-     * @return string label of JUnit tests
-     */
-    protected function get_test_label() {
-        return get_string('junit', 'qtype_proforma');
-    }
-
-    /**
      * Modify repeatarray in add_tests: add editor for testcode
      *
      * @param $repeatarray
      */
+    /*
     protected function adjust_test_repeatarray(&$repeatarray) {
         $mform = $this->_form;
 
         parent::adjust_test_repeatarray($repeatarray);
-        // Add JUnit entry point.
+        // Add Unit test entry point.
         $repeatarray[] = $mform->createElement('text', 'testentrypoint',
             get_string('entrypoint', 'qtype_proforma'), array('size' => 80));
     }
+    */
 
     /**
      * Modify repeatoptions in add_tests
@@ -120,8 +115,10 @@ class java_form_creator extends base_form_creator {
     protected function adjust_test_repeatoptions(&$repeatoptions) {
         parent::adjust_test_repeatoptions($repeatoptions);
 
-        $repeatoptions['testentrypoint']['hideif'] = array('testcodeformat', 'eq', self::EDITORTESTINPUT);
-        $this->_form->setType('testentrypoint', PARAM_TEXT);
+        $repeatoptions['testentrypoint']['hideif'] = array('testcodeformat', 'eq', self::TESTCODE_EDITOR);
+        /*if ($this->_newquestion) {
+            $repeatoptions['testcodeformat']['default'] = self::TESTCODE_EDITOR;
+        }*/
     }
 
     /**
@@ -201,7 +198,6 @@ class java_form_creator extends base_form_creator {
         $this->add_compilation(get_string('compile', 'qtype_proforma'));
         // Add JUnit.
         $repeats = $this->add_test_fields($question, $questioneditform, 'unittest');
-
         // Add checkstyle.
         $this->add_checkstyle();
         return $repeats;
@@ -219,15 +215,16 @@ class java_form_creator extends base_form_creator {
      * @throws coding_exception
      */
     private function _validate_junit(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
-        $title = $fromform["testtitle"][$i];
-        $format = $fromform["testcodeformat"][$i];
-        $codeavailable = false;
-        $titleavailable = strlen(trim($title)) > 0;
-        switch ($format) {
-            case self::EDITORTESTINPUT: // Editor.
-                $code = $fromform["testcode"][$i];
-                $codeavailable = (strlen(trim($code)) > 0);
-                if ($codeavailable) {
+        list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
+        if ($valid) {
+            if (0 == $fromform["testversion"][$i]) {
+                // Unsupported version and no new choice.
+                $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
+            }
+            $format = $fromform["testcodeformat"][$i];
+            switch ($format) {
+                case self::TESTCODE_EDITOR: // Editor.
+                    $code = $fromform["testcode"][$i];
                     if (!qtype_proforma_java_task::get_java_file($code)) {
                         // Cannot determine filename from test code.
                         $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
@@ -235,49 +232,16 @@ class java_form_creator extends base_form_creator {
                         // Cannot determine entrypoint from test code.
                         $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
                     }
-                } else {
-                    if ($titleavailable) {
-                        // Title is set but code is missing.
-                        $errors['testcode['.$i.']'] = get_string('codeempty', 'qtype_proforma');
-                    }
-                }
-                break;
-            case self::FILETESTINPUT: // Filemanager.
-                global $USER;
-                $usercontext = context_user::instance($USER->id);
-                $draftitemid = $fromform["testfiles"][$i];
-                $fs = get_file_storage();
-                $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
-                $codeavailable = (count($draftfiles) > 1);
-                if ($codeavailable) {
+                    break;
+                case self::TESTCODE_FILES: // Filemanager.
                     $entrypoint = $fromform["testentrypoint"][$i];
                     if (0 == strlen(trim($entrypoint))) {
                         // Entrypoint missing.
                         $errors['testentrypoint['.$i.']'] = get_string('entrypointrequired', 'qtype_proforma');
                     }
-                } else {
-                    // No test files.
-                    if ($titleavailable) {
-                        // Title is set but code is missing.
-                        $errors['testfiles['.$i.']'] = get_string('codeempty', 'qtype_proforma');
-                    }
-                }
-                break;
-            default:
-                throw new coding_exception('unexpected value ' . $format);
-        }
-
-        if ($codeavailable) {
-            if ($titleavailable) {
-                // Code and title are set.
-                if (0 == $fromform["testversion"][$i]) {
-                    // Unsupported version and no new choice.
-                    $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
-                }
-            } else {
-                // Title is missing:
-                // error message must be attached to testoptions group.
-                $errors['testoptions['.$i.']'] = get_string('titleempty', 'qtype_proforma');
+                    break;
+                default:
+                    throw new coding_exception('unexpected value ' . $format);
             }
         }
 
@@ -309,24 +273,12 @@ class java_form_creator extends base_form_creator {
         }
 
         // Check Junit tests.
-        $title = $fromform["testtitle"][0];
-        $titleavailable = strlen(trim($title)) > 0;
-        if (!$titleavailable) {
-            // At least one test must be defined. This is checked by
-            // checking if the first title is set.
-            $errors['testoptions[0]'] = get_string('titleempty', 'qtype_proforma');
-        } else {
-            $repeats = $this->get_count_tests(null);
-            for ($i = 0; $i < $repeats; $i++) {
-                $errors = $this->_validate_junit($editor, $fromform, $files, $i, $errors);
-            }
+        $repeats = $this->get_count_tests(null);
+        for ($i = 0; $i < $repeats; $i++) {
+            $errors = $this->_validate_junit($editor, $fromform, $files, $i, $errors);
         }
-
-        if ($fromform["responseformat"] == 'editor') {
-            // Missing response filename.
-            if (0 == strlen(trim($fromform["responsefilename"]))) {
-                $errors['responsefilename'] = get_string('required');
-            }
+        if (isset($fromform["responseformat"]) and $fromform["responseformat"] == 'editor') {
+            // Check response filename.
             if (0 < strlen(trim($fromform["modelsolution"]))) {
                 $filename = qtype_proforma_java_task::get_java_file($fromform["modelsolution"]);
                 if ($filename != null and trim($filename) != trim($fromform["responsefilename"])) {
@@ -335,6 +287,7 @@ class java_form_creator extends base_form_creator {
             }
         }
 
+        // Sum of weights must be > 0.
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
             $repeats = count($fromform["testweight"]);
             $sumweight = 0;
@@ -372,21 +325,27 @@ class java_form_creator extends base_form_creator {
             // Preset data if question already exists.
             $form = $editor->get_form();
 
-            switch ($question->taskstorage) {
-                case qtype_proforma::JAVA_TASKFILE:
-                    $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
-                    $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
+            if ($question->taskstorage != qtype_proforma::JAVA_TASKFILE) {
+                throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
+            }
+            $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
+            $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
 
-                    // Model solution files can be uploaded with a file manager
-                    // or entered as text in editor.
-                    $msfilearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
-                    $files = $msfilearea->get_files($editor->context->id, $question->id);
-                    if (count($files) === 1) {
-                        $question->modelsolution = $files[0]->get_content();
-                    }
-                    break;
-                default:
-                    throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
+            // testcode format is set from default for existing questions
+            $count = count($question->testid);
+            for ($key = 0; $key < $count; $key++) {
+                // We need to delete the default values for the testcodeformat
+                // for all existing tests in order to prevent Moodle
+                // from using the default value instead of the value read from task file.
+                unset($form->_defaultValues["testcodeformat[{$key}]"]);
+            }
+
+            // Model solution files can be uploaded with a file manager
+            // or entered as text in editor.
+            $msfilearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
+            $files = $msfilearea->get_files($editor->context->id, $question->id);
+            if (count($files) === 1) {
+                $question->modelsolution = $files[0]->get_content();
             }
         }
     }
@@ -438,6 +397,16 @@ class java_form_creator extends base_form_creator {
      * Do form definitions things that need to be done when data is set
      */
     public function definition_after_data() {
+        // debugging('definition_after_data');
+        $i = 0;
+        while ($this->_form->elementExists('testcodearray[' . $i . ']')) {
+            $group = &$this->_form->getElement('testcodearray[' . $i . ']');
+            $elements = &$group->getElements();
+            // debugging('testcodearray');
+            // var_dump($elements);
+            // $testcodeformat = &$this->_form->getElement('testcodeformat[' . $i . ']');
+            $i ++;
+        }
          // Try and remove 'Choose' option from JUnit version field.
         $i = 0;
         while ($this->_form->elementExists('testoptions[' . $i . ']')) {
@@ -458,7 +427,6 @@ class java_form_creator extends base_form_creator {
                 $firstoption = array_shift($options);
                 $versionelement->_options = $options;
             }
-
             $i ++;
         }
     }

@@ -277,6 +277,7 @@ Feature: EDIT JAVA
     And following "template.txt" should download file with between "69" and "73" bytes
     And I switch to the main window
 
+@javascript
 ##########################################################################
   Scenario: Edit a ProFormA question (remove and add Junit)
 ##########################################################################
@@ -285,7 +286,7 @@ Feature: EDIT JAVA
     # remove JUnit 2 data by deleting content
     And I set the field "testtitle[1]" to ""
     And I set the field "testdescription[1]" to ""
-    And I set the field "testcode[1]" to ""
+    And I set the codemirror "testcode_1" to ""
     And I press "id_submitbutton"
     Then I should see "proforma-java"
 
@@ -296,7 +297,8 @@ Feature: EDIT JAVA
     And the field "testtitle[0]" matches value "Junit Test 1"
     And the field "testdescription[0]" matches value "Description Junit 1"
     And the field "testtype[0]" matches value "unittest"
-    And the field "testweight[0]" matches value "3"
+    # weight is not visible (All or nothing)
+    #And the field "testweight[0]" matches value "3"
     And the field "testcode[0]" matches value "class XTest {}"
     And the field "testversion[0]" matches value "4.12"
     # JUnit 2 is not visible
@@ -313,8 +315,9 @@ Feature: EDIT JAVA
     # add JUnit 2
     And I set the field "testtitle[1]" to "new Junit Test 2"
     And I set the field "testdescription[1]" to "new Description Junit 2"
-    And I set the field "testweight[1]" to "6.5"
-    And I set the field "testcode[1]" to "class NewYTest {}"
+    # weight is not visible (All or nothing)
+    # And I set the field "testweight[1]" to "6.5"
+    And I set the codemirror "testcode_1" to "class NewYTest {}"
     And I set the field "testversion[1]" to "5"
 
     And I press "id_submitbutton"
@@ -343,14 +346,14 @@ Feature: EDIT JAVA
     And the field "testtitle[0]" matches value "Junit Test 1"
     And the field "testdescription[0]" matches value "Description Junit 1"
     And the field "testtype[0]" matches value "unittest"
-    And the field "testweight[0]" matches value "3"
+    # And the field "testweight[0]" matches value "3"
     And the field "testcode[0]" matches value "class XTest {}"
     And the field "testversion[0]" matches value "4.12"
     # JUnit 2
     And the field "testtitle[1]" matches value "new Junit Test 2"
     And the field "testdescription[1]" matches value "new Description Junit 2"
     And the field "testtype[1]" matches value "unittest"
-    And the field "testweight[1]" matches value "6.5"
+    # And the field "testweight[1]" matches value "6.5"
     And the field "testid[1]" matches value "2"
     And the field "testcode[1]" matches value "class NewYTest {}"
     And the field "testversion[1]" matches value "5"

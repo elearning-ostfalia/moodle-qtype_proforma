@@ -38,17 +38,11 @@ class select_form_creator extends base_form_creator {
      * @param null $newquestion new question indicator
      */
     public function __construct($form, $newquestion = null) {
-        parent::__construct($form, null, null, null);
+        parent::__construct($form, null);
+        $this->_taskType = qtype_proforma::SELECT_TASKFILE;
     }
 
     // Override.
-
-    /**
-     * the numeric type of task
-     */
-    protected function get_task_type() {
-        return qtype_proforma::SELECT_TASKFILE;
-    }
 
     /**
      * Add hidden fields for question attributes that are not part of the edit form.

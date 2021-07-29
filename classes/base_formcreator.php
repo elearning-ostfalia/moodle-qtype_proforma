@@ -42,9 +42,9 @@ abstract class base_form_creator {
     const DOWNLOADMANAGER = qtype_proforma::FILEAREA_DOWNLOAD;
 
     /** Radio button value for editor test code. */
-    const EDITORTESTINPUT = 0;
+    const TESTCODE_EDITOR = 1;
     /** Radio button value for file uploaded test code. */
-    const FILETESTINPUT = 1;
+    const TESTCODE_FILES = 2;
     /**
      * @var MoodleQuickForm The form object that must be filled with input fields.
      */
@@ -60,14 +60,28 @@ abstract class base_form_creator {
      * response options
      */
     protected $_responseformats = null;
+    /** input format for (unit) test code */
+    protected $_testcode = true;
+    protected $_testfiles = true;
 
-    /** Syntax highlighting mode */
+    /** Syntax highlighting mode. */
     protected $_syntaxhighlighting = 'java';
 
-    /** Programming language */
+    /** Programming language. */
     protected $_proglang = null;
 
+    /** (Unit) test has entrypoint. */
+    protected $_entrypoint = false;
+    /** Entrypoint label. */
+    protected $_entrypointlabel = null;
+    /** Can entrypoint be evaluated from code? */
+    // protected $_evalentrypoint = false;
 
+    /** @var null numberic identifier of task type */
+    protected $_taskType = null;
+
+    /** @var string label for unit test */
+    protected $_unittestlabel = null;
 
     /**
      * constructor
@@ -78,13 +92,10 @@ abstract class base_form_creator {
      * @param type $syntaxhighlight syntax highleighting for editor
      * @param type $proglang programming language if any
      */
-    protected function __construct($form, $taskhandler, $responseformats = null,
-        $syntaxhighlight = null, $proglang = null) {
+    protected function __construct($form, $taskhandler) {
         $this->_form = $form;
-        $this->_responseformats = $responseformats;
-        $this->_syntaxhighlighting = $syntaxhighlight;
         $this->_taskhandler = $taskhandler;
-        $this->_proglang = $proglang;
+        $this->_unittestlabel = get_string('testlabel', 'qtype_proforma');
     }
 
     // Override.
@@ -95,11 +106,6 @@ abstract class base_form_creator {
      */
     public function definition_after_data() {
     }
-
-    /**
-     * the numeric type of task
-     */
-    abstract protected function get_task_type();
 
     /**
      * Add tests as repeat group
@@ -121,11 +127,33 @@ abstract class base_form_creator {
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
+        $title = $fromform["testtitle"][0];
+        $titleavailable = strlen(trim($title)) > 0;
+        if (!$titleavailable) {
+            // At least one test must be defined. This is checked by
+            // checking if the first title is set.
+            $errors['testtitle[0]'] = get_string('titleempty', 'qtype_proforma');
+        }
+
+        // For deleting the last test by leaving all (relevant) fields empty.
+        /* $repeats = $this->get_count_tests(null);
+        if ($this->is_test_empty($fromform, $repeats - 1)) {
+            $errors = $this->prepare_removing_last_test($errors, $repeats - 1);
+        }
+        */
+
+        if (isset($fromform["responseformat"]) and $fromform["responseformat"] == 'editor') {
+            // Missing response filename.
+            if (0 == strlen(trim($fromform["responsefilename"]))) {
+                $errors['responsefilename'] = get_string('required');
+            }
+        }
+
         return $errors;
     }
 
     /**
-     * validate JUnit test input
+     * validate Unit test input
      *
      * @param qtype_proforma_edit_form $editor main editor instance
      * @param type $fromform  input data
@@ -138,15 +166,14 @@ abstract class base_form_creator {
     protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
         $title = $fromform["testtitle"][$i];
         $format = $fromform["testcodeformat"][$i];
-        $codeavailable = false;
         $testcodefield = "testcode";
         $titleavailable = strlen(trim($title)) > 0;
         switch ($format) {
-            case self::EDITORTESTINPUT: // Editor.
+            case self::TESTCODE_EDITOR: // Editor.
                 $code = $fromform["testcode"][$i];
                 $codeavailable = (strlen(trim($code)) > 0);
                 break;
-            case self::FILETESTINPUT: // Filemanager.
+            case self::TESTCODE_FILES: // Filemanager.
                 global $USER;
                 $usercontext = context_user::instance($USER->id);
                 $testcodefield = "testfiles";
@@ -188,8 +215,6 @@ abstract class base_form_creator {
         }
     }
 
-    /**
-
      /**
       * Add grader options/information.
       *
@@ -204,7 +229,6 @@ abstract class base_form_creator {
         // Task Filename.
         $this->add_static_text($question, 'link', 'taskfilename', 'qtype_proforma');
         $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
-
     }
 
     /**
@@ -226,7 +250,7 @@ abstract class base_form_creator {
             $mform->setType($field, PARAM_RAW);
         }
 
-        $mform->addElement('hidden', 'taskstorage', $this->get_task_type());
+        $mform->addElement('hidden', 'taskstorage', $this->_taskType);
         $mform->setType('taskstorage', PARAM_RAW);
     }
 
@@ -307,15 +331,6 @@ abstract class base_form_creator {
     }
 
     /**
-     * Get test label for add_tests.
-     *
-     * @return string label of (unit) tests
-     */
-    protected function get_test_label() {
-        return get_string('testlabel', 'qtype_proforma');
-    }
-
-    /**
      * Modify repeatarray in add_tests.
      *
      * @param $repeatarray
@@ -323,21 +338,42 @@ abstract class base_form_creator {
     protected function adjust_test_repeatarray(&$repeatarray) {
         $mform = $this->_form;
 
-        // Add choice for test code input: editor or filemanager.
-        $radioarray = array();
-        $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
-            get_string('editorinput', 'qtype_proforma'), self::EDITORTESTINPUT);
-        $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
-            get_string('fileinput', 'qtype_proforma'), self::FILETESTINPUT);
-        $repeatarray[] = $mform->createElement('group', 'testcodearray',
-            get_string('testcode', 'qtype_proforma'),
-            $radioarray, null, false);
-        // Add textarea for unit test code.
-        $repeatarray[] = $mform->createElement('textarea', 'testcode', '',
-            array('rows' => 20, 'cols' => 80));
-        // Add filemanager.
-        $repeatarray[] = $mform->createElement('filemanager', 'testfiles', '', null,
-            array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 15));
+        if ($this->_testcode and $this->_testfiles) {
+            // Add choice for test code input: editor or filemanager.
+            $radioarray = array();
+            $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
+                    get_string('editorinput', 'qtype_proforma'), self::TESTCODE_EDITOR);
+            $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
+                    get_string('fileinput', 'qtype_proforma'), self::TESTCODE_FILES);
+            $repeatarray[] = $mform->createElement('group', 'testcodearray',
+                    get_string('testcode', 'qtype_proforma'),
+                    $radioarray, null, false);
+        }
+        if ($this->_testcode) {
+            // Add textarea for unit test code.
+            $repeatarray[] = $mform->createElement('textarea', 'testcode', '',
+                    array('rows' => 20, 'cols' => 80));
+        } else {
+            $repeatarray[] = $mform->createElement("hidden", "testcodeformat", base_form_creator::TESTCODE_FILES);
+            $this->_form->setType('testcodeformat', PARAM_INT);
+            // $repeatoptions['testfiles']['rule'] = 'required';
+        }
+        if ($this->_testfiles) {
+            // Add filemanager.
+            $repeatarray[] = $mform->createElement('filemanager', 'testfiles', '', null,
+                    array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 15));
+        } else {
+            $repeatarray[] = $mform->createElement("hidden", "testcodeformat", base_form_creator::TESTCODE_EDITOR);
+            $this->_form->setType('testcodeformat', PARAM_INT);
+            // $repeatoptions['testcode']['rule'] = 'required';
+        }
+
+        if ($this->_entrypoint) {
+            // Add Unit test entry point.
+            $repeatarray[] = $mform->createElement('text', 'testentrypoint',
+                    $this->_entrypointlabel, array('size' => 80));
+            $this->_form->setType('testentrypoint', PARAM_TEXT);
+        }
     }
 
     /**
@@ -353,8 +389,23 @@ abstract class base_form_creator {
         $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
 
         // Show testcode editor/filemanager depending on radio button.
-        $repeatoptions['testcode']['hideif'] = array('testcodeformat', 'eq', self::FILETESTINPUT);
-        $repeatoptions['testfiles']['hideif'] = array('testcodeformat', 'eq', self::EDITORTESTINPUT);
+        $repeatoptions['testcode']['hideif'] = array('testcodeformat', 'eq', self::TESTCODE_FILES);
+        $repeatoptions['testfiles']['hideif'] = array('testcodeformat', 'eq', self::TESTCODE_EDITOR);
+
+        /* if ($this->_evalentrypoint) {
+            // Entrypoint can be determined from code. If we have got
+            // an editor we do not need to enter entrypoint.
+            $repeatoptions['testentrypoint']['hideif'] = array('testcodeformat', 'eq', self::TESTCODE_EDITOR);
+        }
+        */
+
+        // Note that setting the testcodeformat default ($repeatoptions['testcodeformat']['default'])
+        // also applies to already existing questions. So this is not set here.
+        if ($this->_testcode and $this->_testfiles) {
+            $repeatoptions['testcodeformat']['default'] = self::TESTCODE_EDITOR;
+            // debugging('default');
+        }
+
     }
     /**
      * Modify testoptions in add_tests
@@ -396,7 +447,7 @@ abstract class base_form_creator {
         $this->add_test_weight_option($testoptions, 'test', '1', false);
 
         $repeatarray = array();
-        $label = get_string('testlabela', 'qtype_proforma', $this->get_test_label());
+        $label = get_string('testlabela', 'qtype_proforma', $this->_unittestlabel);
         $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
         // Title.
         $repeatarray[] = $mform->createElement('text', 'testtitle',
@@ -415,6 +466,8 @@ abstract class base_form_creator {
         $repeatoptions['testtype']['default'] = $testtype;
         // Autoincrement test identifier.
         $repeatoptions['testid']['default'] = '{no}';
+        // Title is required.
+        // $repeatoptions['testtitle']['rule'] = 'required';
 
         // Derived class could modify array options.
         $this->adjust_test_repeatoptions($repeatoptions);
@@ -425,7 +478,7 @@ abstract class base_form_creator {
         $mform->setType('testid', PARAM_RAW);
         $mform->setType('testtype', PARAM_RAW);
         // Add tests with button for adding tests.
-        $buttonlabel = get_string('addtest', 'qtype_proforma', $this->get_test_label());
+        $buttonlabel = get_string('addtest', 'qtype_proforma', $this->_unittestlabel);
         $questioneditform->repeat_elements($repeatarray, $repeats,
             $repeatoptions, 'option_repeats', 'option_add_fields',
             1, $buttonlabel, true);
@@ -466,7 +519,7 @@ abstract class base_form_creator {
     }
 
     /**
-     * get number of tests for repeat group
+     * get number of unit tests for repeat group
      * @param $question
      * @return int
      */
@@ -716,11 +769,11 @@ abstract class base_form_creator {
             $question->taskfilename = '';
             $commenttext = null;
             $commentformat = FORMAT_HTML;
-
             foreach (qtype_proforma::fileareas_with_model_solutions() as $fileareaname => $value) {
                 $property = $value["dbcolumn"];
                 $question->$property = '';
             }
+
         } else {
             $commenttext = $question->options->comment;
             $commentformat = $question->options->commentformat;
@@ -909,4 +962,69 @@ abstract class base_form_creator {
             }
         }
     }
+
+    /**
+     * Checks if the last unit test is empty
+     * (all relevant fields have no input)
+     *
+     * @param $fromform array from form
+     * @param $index int of (unit) test
+     */
+    /*
+    protected function is_test_empty($fromform, $index) {
+        if (strlen(trim($fromform['testtitle'][$index])) > 0) {
+            // Title is set.
+            return false;
+        }
+
+        if ($fromform['testcodeformat'][$index] == self::TESTCODE_EDITOR) {
+            if (strlen(trim($fromform['testcode'][$index])) > 0) {
+                // Testcode in editor is set.
+                return false;
+            }
+        }
+
+        if (strlen(trim($fromform['testentrypoint'][$index])) > 0) {
+            // Entrypoint is set.
+            return false;
+        }
+
+        if (strlen(trim($fromform['testdescription'][$index])) > 0) {
+            // Description is set.
+            return false;
+        }
+
+        if ($fromform['testcodeformat'][$index] == self::TESTCODE_FILES) {
+            global $USER;
+            $usercontext = context_user::instance($USER->id);
+            $draftitemid = $fromform["testfiles"][$index];
+            $fs = get_file_storage();
+            $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
+            if (count($draftfiles) > 1) {
+                // Testfile available.
+                return false;
+            }
+        }
+
+        return true;
+    }
+    */
+
+    /** Because there is no function available for deleting tests,
+     * a test is automatically deleted when
+     * - it is empty and
+     * - it is the last one.
+     * This function removes all error messages for this last test.
+     * @param $errors array of erros
+     * @param $lastindex int of last test
+     * @return mixed
+     */
+    /*
+    protected function prepare_removing_last_test($errors, $lastindex) {
+        debugging('prepare_removing_last_test');
+        var_dump($errors);
+        return $errors;
+    }
+    */
+
 }

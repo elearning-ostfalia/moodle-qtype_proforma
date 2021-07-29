@@ -99,7 +99,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];
             if ($id !== '' && $this->is_test_set($formdata, $index)) {
-                if ($formdata->testcodeformat[$index] == base_form_creator::EDITORTESTINPUT) {
+                if ($formdata->testcodeformat[$index] == base_form_creator::TESTCODE_EDITOR) {
                     $xw->startElement('file');
                     $xw->create_attribute('id', $formdata->testid[$index]);
                     $xw->create_attribute('used-by-grader', 'true');
@@ -173,7 +173,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                 $xw->create_childelement_with_text('test-type', 'unittest');
                 $xw->startElement('test-configuration');
                 $xw->startElement('filerefs');
-                if ($formdata->testcodeformat[$index] == base_form_creator::EDITORTESTINPUT) {
+                if ($formdata->testcodeformat[$index] == base_form_creator::TESTCODE_EDITOR) {
                     $xw->startElement('fileref');
                     $xw->create_attribute('refid', $formdata->testid[$index]);
                     $xw->endElement(); // End tag fileref.
@@ -192,7 +192,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                 $xw->create_attribute('framework', 'JUnit');
                 $junitversion = $formdata->testversion[$index];
                 $xw->create_attribute('version', $junitversion);
-                if ($formdata->testcodeformat[$index] == base_form_creator::EDITORTESTINPUT) {
+                if ($formdata->testcodeformat[$index] == base_form_creator::TESTCODE_EDITOR) {
                     $code = $formdata->testcode[$index];
                     $entrypoint = self::get_java_entrypoint($code);
                 } else {

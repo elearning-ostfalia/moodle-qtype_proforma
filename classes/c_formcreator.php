@@ -38,6 +38,10 @@ class c_form_creator extends base_form_creator {
      * @param null $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
+        parent::__construct($form, new qtype_proforma_c_task());
+        // Set parent options.
+        $this->_syntaxhighlighting = 'c';
+        $this->_proglang = 'c';
         // Only allow editor and filepicker as reponse format.
         $ro = qtype_proforma::response_formats();
         $responseoptions = [
@@ -45,58 +49,48 @@ class c_form_creator extends base_form_creator {
                 qtype_proforma::RESPONSE_FILEPICKER => $ro[qtype_proforma::RESPONSE_FILEPICKER]
         ];
 
-        parent::__construct($form, new qtype_proforma_c_task(), $responseoptions,
-            'c', 'c');
+        $this->_responseformats = $responseoptions;
+        $this->_entrypointlabel = get_string('executable', 'qtype_proforma');
+        $this->_entrypoint = true;
+        $this->_taskType = qtype_proforma::C_TASKFILE;
+        $this->_unittestlabel = get_string('clang', 'qtype_proforma');
+        $this->_testcode = false;
     }
 
     // Override.
-
-    /**
-     * the numeric type of task
-     */
-    protected function get_task_type() {
-        return qtype_proforma::C_TASKFILE;
-    }
-
-    /**
-     * Get test label for add_tests.
-     *
-     * @return string label of JUnit tests
-     */
-    protected function get_test_label() {
-        return get_string('clang', 'qtype_proforma');
-    }
 
     /**
      * Modify repeatarray in add_tests: add filepicker for testcode
      *
      * @param $repeatarray
      */
+    /*
     protected function adjust_test_repeatarray(&$repeatarray) {
+        parent::adjust_test_repeatarray($repeatarray);
         $mform = $this->_form;
-        $repeatarray[] = $mform->createElement("hidden", "testcodeformat", base_form_creator::FILETESTINPUT);
-        // Add filemanager.
-        $repeatarray[] = $mform->createElement('filemanager', 'testfiles', '', null,
-                array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 15));
-
         // Add entry point field.
         $repeatarray[] = $mform->createElement('text', 'testexecutable',
                 get_string('executable', 'qtype_proforma'), array('size' => 80));
         // $repeatarray[] = $mform->createElement('helpbutton', 'testexecutable_help', get_string('testexecutable_help', 'qtype_proforma'));
         // $repeatarray[] = $mform->createElement('helpbutton', 'testexecutable', 'testexecutable', 'qtype_proforma');
     }
+    */
 
     /**
      * Modify repeatoptions in add_tests
      *
      * @param $repeatoptions
      */
+    /*
     protected function adjust_test_repeatoptions(&$repeatoptions) {
         parent::adjust_test_repeatoptions($repeatoptions);
+        $repeatoptions['testentrypoint']['rule'] = 'required';
+        // $repeatoptions['testfiles']['rule'] = 'required';
 
-        $this->_form->setType('testexecutable', PARAM_TEXT);
-        $this->_form->setType('testcodeformat', PARAM_INT);
+        // $this->_form->setType('testexecutable', PARAM_TEXT);
+        // $this->_form->setType('testcodeformat', PARAM_INT);
     }
+    */
 
     /**
      * add c specific test section
@@ -139,22 +133,14 @@ class c_form_creator extends base_form_creator {
         $errors = parent::validation($editor, $fromform, $files, $errors);
 
         // Check C tests.
-        $title = $fromform["testtitle"][0];
-        $titleavailable = strlen(trim($title)) > 0;
-        if (!$titleavailable) {
-            // At least one test must be defined. This is checked by
-            // checking if the first title is set.
-            $errors['testoptions[0]'] = get_string('titleempty', 'qtype_proforma');
-        } else {
-            $repeats = $this->get_count_tests(null);
-            for ($i = 0; $i < $repeats; $i++) {
-                list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
-                if ($valid) {
-                    $entrypoint = $fromform["testexecutable"][$i];
-                    if (0 == strlen(trim($entrypoint))) {
-                        // Executable missing.
-                        $errors['testexecutable['.$i.']'] = get_string('executablerequired', 'qtype_proforma');
-                    }
+        $repeats = $this->get_count_tests(null);
+        for ($i = 0; $i < $repeats; $i++) {
+            list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
+            if ($valid) {
+                $entrypoint = $fromform["testentrypoint"][$i];
+                if (0 == strlen(trim($entrypoint))) {
+                    // Entrypoint missing.
+                    $errors['testentrypoint['.$i.']'] = get_string('executablerequired', 'qtype_proforma');
                 }
             }
         }

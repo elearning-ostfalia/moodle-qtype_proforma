@@ -181,6 +181,7 @@ Feature: ADD JAVA QUESTION
     And following "template.txt" should download file with between "69" and "73" bytes
     And I switch to the main window
 
+@javascript
 ##########################################################################
   Scenario: Create, save and open a ProFormA java question with compilation and two Junit tests
 ##########################################################################
@@ -189,22 +190,25 @@ Feature: ADD JAVA QUESTION
       | Question text            | write a java program that..... |
       | Response format          | editor                         |
       | Response filename        | MyClass.java                   |
-      | Response template        | // type your code here         |
-      | Model solution           | // code for model solution     |
+
       | Title                    | JUnit #1                       |
+
     Then I should see "Testcode required"
-    # add new Junit
+    And I set the codemirror "responsetemplate" to "// type your code here"
+    And I set the codemirror "modelsolution" to "// code for model solution"
+
+    # add second Junit
     When I press "id_option_add_fields"
-    And I set the field "testcode[0]" to "class XClass {}"
+    And I set the codemirror "testcode_0" to "class XClass {}"
     And I set the field "testversion[0]" to "5"
 
-    And I set the field "testcode[1]" to "class YClass {}"
+    And I set the codemirror "testcode_1" to "class YClass {}"
     And I set the field "testdescription[1]" to "this is the second JUnit test"
     And I set the field "testversion[1]" to "4.12"
 
     And I press "id_submitbutton"
+    # Title #2 missing:
     Then I should see "Title required"
-
     When I set the field "testtitle[1]" to "Junit #2"
     And I press "id_submitbutton"
     Then I should see "java-question with 2 tests"
@@ -239,3 +243,4 @@ Feature: ADD JAVA QUESTION
     And the "checkstyle" checkbox is "not checked"
 
     And I press "Cancel"
+

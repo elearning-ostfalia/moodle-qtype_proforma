@@ -481,7 +481,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         //$form->maxbytes = 10240;
         //$form->filetypes = '.java';
 
-        $form->testcodeformat[0] = base_form_creator::EDITORTESTINPUT;
+        $form->testcodeformat[0] = base_form_creator::TESTCODE_EDITOR;
         $form->testcode[0] = 'class XTest {}';
         $form->testtitle[0] = 'JUnit Test 1';
         $form->testweight[0] = '3';
@@ -562,7 +562,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // Behat: values are set from grading hints!!
         // Junit #2
-        $form->testcodeformat[1] = base_form_creator::EDITORTESTINPUT;
+        $form->testcodeformat[1] = base_form_creator::TESTCODE_EDITOR;
         $form->testcode[1] = 'class YTest {}';
         $form->testtitle[1] = 'JUnit Test 2';
         $form->testweight[1] = '1';
@@ -570,7 +570,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testversion[1] = "5";
 
         // Junit #3 with empty fields
-        $form->testcodeformat[2] = base_form_creator::EDITORTESTINPUT;
+        $form->testcodeformat[2] = base_form_creator::TESTCODE_EDITOR;
         $form->testcode[2] = '';
         $form->testtitle[2] = '';
         $form->testweight[2] = '6';
@@ -607,7 +607,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     public function get_proforma_question_form_data_javafile1() {
         $form = $this->get_proforma_question_form_data_java1unit();
 
-        $form->testcodeformat[0] = base_form_creator::FILETESTINPUT;
+        $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = 'entrypoint';
         $form->testfiles = array();
         $form->testfiles[0] = file_get_unused_draft_itemid();
@@ -623,7 +623,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     public function get_proforma_question_form_data_java_2junit_file() {
         $form = $this->get_proforma_question_form_data_java_2junit();
 
-        $form->testcodeformat[0] = base_form_creator::FILETESTINPUT;
+        $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = 'entrypoint1';
         $form->testfiles = array();
         $form->testfiles[0] = file_get_unused_draft_itemid();
@@ -633,7 +633,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                 'class XTest2 {}');
 
 
-        $form->testcodeformat[1] = base_form_creator::FILETESTINPUT;
+        $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[1] = 'entrypoint2';
         $form->testfiles[1] = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($form->testfiles[1], 'junittest.java',
@@ -648,7 +648,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     public function get_proforma_question_form_data_java_3junit_file() {
         $form = $this->get_proforma_question_form_data_java_2junit_file();
 
-        $form->testcodeformat[0] = base_form_creator::FILETESTINPUT;
+        $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = 'entrypoint1';
         $form->testfiles = array();
         $form->testfiles[0] = file_get_unused_draft_itemid();
@@ -658,14 +658,14 @@ class qtype_proforma_test_helper extends question_test_helper {
                 'class XTest2 {}');
 
 
-        $form->testcodeformat[1] = base_form_creator::FILETESTINPUT;
+        $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[1] = 'entrypoint2';
         $form->testfiles[1] = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($form->testfiles[1], 'junittest.java',
                 'class Junittest {}');
 
         // Junit #3
-        $form->testcodeformat[2] = base_form_creator::EDITORTESTINPUT;
+        $form->testcodeformat[2] = base_form_creator::TESTCODE_EDITOR;
         $form->testcode[2] = 'class ZTest {}';
         $form->testtitle[2] = 'JUnit Test 3';
         $form->testweight[2] = '4';

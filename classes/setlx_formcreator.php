@@ -38,51 +38,34 @@ class setlx_form_creator extends base_form_creator {
      * @param null $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
+        parent::__construct($form, new qtype_proforma_setlx_task());
+        // Set parent options.
+        $this->_syntaxhighlighting = 'setlx';
+        $this->_proglang = 'SetlX';
         // Only allow editor as reponse format.
         $ro = qtype_proforma::response_formats();
         $responseoptions = [qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR]];
-
-        parent::__construct($form, new qtype_proforma_setlx_task(), $responseoptions,
-            'setlx', 'SetlX');
+        $this->_responseformats = $responseoptions;
+        $this->_testfiles = false;
+        $this->_entrypoint = false;
+        $this->_taskType = qtype_proforma::SETLX_TASKFILE;
+        $this->_unittestlabel = get_string('setlx', 'qtype_proforma');
     }
 
     // Override.
-
-    /**
-     * the numeric type of task
-     */
-    protected function get_task_type() {
-        return qtype_proforma::SETLX_TASKFILE;
-    }
-
-    /**
-     * create task class instance belonging to form creator
-     */
-    /*
-    protected function create_task_instance() {
-        return new qtype_proforma_proforma_task();
-    }*/
-
-
-    /**
-     * Get test label for add_tests.
-     *
-     * @return string label of JUnit tests
-     */
-    protected function get_test_label() {
-        return get_string('setlx', 'qtype_proforma');
-    }
 
     /**
      * Modify repeatarray in add_tests: add editor for testcode
      *
      * @param $repeatarray
      */
+    /*
     protected function adjust_test_repeatarray(&$repeatarray) {
         $mform = $this->_form;
         // Simply use textarea for unit test code.
         $repeatarray[] = $mform->createElement('textarea', 'testcode', '', 'rows="20" cols="80"');
     }
+    */
 
     /**
      *  Response filename is fixed to submission.stlx
@@ -137,18 +120,7 @@ class setlx_form_creator extends base_form_creator {
         // Check SetlX tests.
         $repeats = $this->get_count_tests(null);
         for ($i = 0; $i < $repeats; $i++) {
-            $title = $fromform["testtitle"][$i];
-            $code = $fromform["testcode"][$i];
-            $lencode = strlen(trim($code));
-            $lentitle = strlen(trim($title));
-            if (0 < $lentitle and 0 == $lencode) {
-                // Title is set but code is missing.
-                $errors['testcode[' . $i . ']'] = get_string('codeempty', 'qtype_proforma');
-            } else if (0 == $lentitle and 0 < $lencode) {
-                // Title is missing.
-                // (Error message must be attached to testoptions group).
-                $errors['testoptions[' . $i . ']'] = get_string('titleempty', 'qtype_proforma');
-            }
+            list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
         }
 
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {

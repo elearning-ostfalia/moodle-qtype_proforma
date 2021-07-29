@@ -122,7 +122,7 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
                 $xw->endElement(); // End tag filerefs.
                 $xw->startElement('unit:unittest');
                 // $xw->create_attribute('framework', 'JUnit');
-                $entrypoint = $formdata->testexecutable[$index];
+                $entrypoint = $formdata->testentrypoint[$index];
                 $xw->create_childelement_with_text('unit:entry-point', trim($entrypoint));
                 $xw->endElement(); // End tag unit:unittest.
                 $xw->endElement(); // End tag test-configuration.
@@ -162,7 +162,7 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
         parent::extract_formdata_from_test($question, $test, $files, $index);
         if (!isset($question->testcode[$originalindex])) {
             // Only set entrypoint if code for editor is set.
-            $question->testexecutable[$originalindex] = $unittest->{'entry-point'};
+            $question->testentrypoint[$originalindex] = $unittest->{'entry-point'};
         }
     }
 
