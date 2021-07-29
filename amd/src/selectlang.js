@@ -32,7 +32,8 @@ define(['core/modal_factory', 'core/modal_events'], function(ModalFactory, Modal
         // console.log(proglangs);
         proglangs.forEach(function(item, index) {
             // We add a human readable identifier for testing access.
-            body += '<p><input id="item_' + item[1].toLowerCase() + '" type="radio" name="lang" value="' + item[0] + '"';
+            let id = item[1].toLowerCase().split(' ')[0];
+            body += '<p><input id="item_' + id + '" type="radio" name="lang" value="' + item[0] + '"';
             if (index == 0) {
                 // Check first element
                 body +=  'checked';
