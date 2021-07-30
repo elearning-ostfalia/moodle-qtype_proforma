@@ -15,66 +15,17 @@ Feature: GRADE
     And the following "courses" exist:
       | fullname | shortname | category |
       | Course 1 | C1        | 0        |
+
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
 #    And the following "question categories" exist:
 #      | contextlevel | reference | name           |
 #      | Course       | C1        | Test questions |
+    And the following config values are set as admin:
+      | clang | 0  | qtype_proforma |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-
-  @javascript @_switch_window @_file_upload
-  Scenario: Create a Setlx question, preview and submit a response.
-    When the following config values are set as admin:
-      | setlx | 1  | qtype_proforma |
-    And I navigate to "Question bank" in current page administration
-    And I press "Create a new question ..."
-    And I set the field "item_qtype_proforma" to "1"
-    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
-    And I set the field "item_setlx" to "1"
-    And I click on "Ok" "button" in the "Select programming language" "dialogue"
-    Then I should see "Adding a ProFormA question"
-
-    When I set the following fields to these values:
-      | Question name            | setlx question    |
-      | Question text            | write a setlx program that..... |
-    # The default functions do not work for CodeMirror with Javascript.
-    # So we must use other functions.
-    And I set the field "testtitle[0]" to "Setlx #1"
-    And I set the codemirror "testcode_0" to multiline:
-"""
-  testfunction := procedure(set, operation){
-    return (forall(a in set, b in set| operation(a,b) in set));
-  };
-
-  print("Test1:$#set1>=2$");
-  print("Test1:$#set2>=2$");
-  print("Test2:$testfunction(set1,operation)$");
-  print("Test3:$!testfunction(set2,operation)$");
-"""
-    And I press "id_submitbutton"
-    Then I should see "setlx question"
-    When I choose "Preview" action for "setlx question" in the question bank
-    And I switch to "questionpreview" window
-    And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
-    And I set the response to
-    """
-operation := procedure(a,b){
-    return a*b;
-};
-set1 := {0,1};
-set2 := {0,1,2};
-    """
-
-    And I press "Check"
-    Then I should see "Setlx #1"
-    And I should see "Correct"
-    And I should see "Marks for this submission: 1.00/1.00."
-
-
-
 
 
   @javascript @_switch_window @_file_upload
@@ -125,7 +76,7 @@ public class PalindromTest {
     And I set the field "testtitle[1]" to "Junit 2"
     And I set the field "testweight[1]" to "10"
     And I set the field "testversion[1]" to "4.12"
-    And I select "id_testcodeformat_1_1" radio button
+    And I select "id_testcodeformat_1_2" radio button
     # upload JUnit test file
     And I upload "question/type/proforma/tests/fixtures/behat/Palindrom2Test.java" to "testfiles[1]" filemanager by name
     And I set the field "testentrypoint[1]" to "Palindrom2Test"
@@ -136,7 +87,7 @@ public class PalindromTest {
     And I set the field "testtitle[2]" to "Junit 3"
     And I set the field "testweight[2]" to "10"
     And I set the field "testversion[2]" to "4.12"
-    And I select "id_testcodeformat_2_1" radio button
+    And I select "id_testcodeformat_2_2" radio button
     # upload JUnit test file
     And I upload "question/type/proforma/tests/fixtures/behat/JunitPalindromTest.jar" to "testfiles[2]" filemanager by name
     And I set the field "testentrypoint[2]" to "PalindromTest"
@@ -244,3 +195,53 @@ public class PalindromTest {
     And I should see "Partially correct"
     And I should see "Marks for this submission: 0.83/1.00."
     # And I switch to the main window
+
+
+  @javascript @_switch_window @_file_upload
+  Scenario: Create a Setlx question, preview and submit a response.
+    When the following config values are set as admin:
+      | setlx | 1  | qtype_proforma |
+    And I navigate to "Question bank" in current page administration
+    And I press "Create a new question ..."
+    And I set the field "item_qtype_proforma" to "1"
+    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
+    And I set the field "item_setlx" to "1"
+    And I click on "Ok" "button" in the "Select programming language" "dialogue"
+    Then I should see "Adding a ProFormA question"
+
+    When I set the following fields to these values:
+      | Question name            | setlx question    |
+      | Question text            | write a setlx program that..... |
+    # The default functions do not work for CodeMirror with Javascript.
+    # So we must use other functions.
+    And I set the field "testtitle[0]" to "Setlx #1"
+    And I set the codemirror "testcode_0" to multiline:
+"""
+  testfunction := procedure(set, operation){
+    return (forall(a in set, b in set| operation(a,b) in set));
+  };
+
+  print("Test1:$#set1>=2$");
+  print("Test1:$#set2>=2$");
+  print("Test2:$testfunction(set1,operation)$");
+  print("Test3:$!testfunction(set2,operation)$");
+"""
+    And I press "id_submitbutton"
+    Then I should see "setlx question"
+    When I choose "Preview" action for "setlx question" in the question bank
+    And I switch to "questionpreview" window
+    And I set the field "How questions behave" to "Adaptive mode (no penalties)"
+    And I press "Start again with these options"
+    And I set the response to
+    """
+operation := procedure(a,b){
+    return a*b;
+};
+set1 := {0,1};
+set2 := {0,1,2};
+    """
+
+    And I press "Check"
+    Then I should see "Setlx #1"
+    And I should see "Correct"
+    And I should see "Marks for this submission: 1.00/1.00."
