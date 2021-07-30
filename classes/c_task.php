@@ -133,16 +133,6 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
     }
 
     /**
-     * Add tests to LMS internal grading hints.
-     *
-     * @param $xw
-     * @param $formdata
-     */
-/*    protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
-        parent::add_tests_to_lms_grading_hints($xw, $formdata);
-    }
-*/
-    /**
      * called by extract_formdata_from_taskfile in order to
      * extract form data from task test.
      *

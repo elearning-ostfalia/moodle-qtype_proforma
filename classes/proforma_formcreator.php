@@ -84,7 +84,7 @@ class proforma_form_creator extends base_form_creator {
      * @param qtype_proforma_edit_form $editor actual editor instance
      * @param type $fromform
      * @param type $errors
-     * @return updated error array
+     * @return type $errors
      */
     protected function validate_taskfile(qtype_proforma_edit_form &$editor, $fromform, $errors) {
         // Get Taskfile from draft area.
@@ -127,7 +127,7 @@ class proforma_form_creator extends base_form_creator {
      * @param type $draftfile
      * @param type $taskfile
      * @param type $errors
-     * @return updated error array
+     * @return type $errors
      */
     protected function check_if_taskfiles_are_compatible(qtype_proforma_edit_form &$editor, $draftfile, $taskfile, $errors) {
         // Extract relevent data for both files.

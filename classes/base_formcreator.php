@@ -392,18 +392,10 @@ abstract class base_form_creator {
         $repeatoptions['testcode']['hideif'] = array('testcodeformat', 'eq', self::TESTCODE_FILES);
         $repeatoptions['testfiles']['hideif'] = array('testcodeformat', 'eq', self::TESTCODE_EDITOR);
 
-        /* if ($this->_evalentrypoint) {
-            // Entrypoint can be determined from code. If we have got
-            // an editor we do not need to enter entrypoint.
-            $repeatoptions['testentrypoint']['hideif'] = array('testcodeformat', 'eq', self::TESTCODE_EDITOR);
-        }
-        */
-
         // Note that setting the testcodeformat default ($repeatoptions['testcodeformat']['default'])
         // also applies to already existing questions. So this is not set here.
         if ($this->_testcode and $this->_testfiles) {
             $repeatoptions['testcodeformat']['default'] = self::TESTCODE_EDITOR;
-            // debugging('default');
         }
 
     }
@@ -962,69 +954,4 @@ abstract class base_form_creator {
             }
         }
     }
-
-    /**
-     * Checks if the last unit test is empty
-     * (all relevant fields have no input)
-     *
-     * @param $fromform array from form
-     * @param $index int of (unit) test
-     */
-    /*
-    protected function is_test_empty($fromform, $index) {
-        if (strlen(trim($fromform['testtitle'][$index])) > 0) {
-            // Title is set.
-            return false;
-        }
-
-        if ($fromform['testcodeformat'][$index] == self::TESTCODE_EDITOR) {
-            if (strlen(trim($fromform['testcode'][$index])) > 0) {
-                // Testcode in editor is set.
-                return false;
-            }
-        }
-
-        if (strlen(trim($fromform['testentrypoint'][$index])) > 0) {
-            // Entrypoint is set.
-            return false;
-        }
-
-        if (strlen(trim($fromform['testdescription'][$index])) > 0) {
-            // Description is set.
-            return false;
-        }
-
-        if ($fromform['testcodeformat'][$index] == self::TESTCODE_FILES) {
-            global $USER;
-            $usercontext = context_user::instance($USER->id);
-            $draftitemid = $fromform["testfiles"][$index];
-            $fs = get_file_storage();
-            $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
-            if (count($draftfiles) > 1) {
-                // Testfile available.
-                return false;
-            }
-        }
-
-        return true;
-    }
-    */
-
-    /** Because there is no function available for deleting tests,
-     * a test is automatically deleted when
-     * - it is empty and
-     * - it is the last one.
-     * This function removes all error messages for this last test.
-     * @param $errors array of erros
-     * @param $lastindex int of last test
-     * @return mixed
-     */
-    /*
-    protected function prepare_removing_last_test($errors, $lastindex) {
-        debugging('prepare_removing_last_test');
-        var_dump($errors);
-        return $errors;
-    }
-    */
-
 }

@@ -58,7 +58,6 @@ class java_form_creator extends base_form_creator {
         $this->_responseformats = qtype_proforma::response_formats();
         $this->_entrypointlabel = get_string('entrypoint', 'qtype_proforma');
         $this->_entrypoint = true;
-        // $this->_evalentrypoint = true;
         $this->_taskType = qtype_proforma::JAVA_TASKFILE;
         $this->_unittestlabel = get_string('junit', 'qtype_proforma');
 

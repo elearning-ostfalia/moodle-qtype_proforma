@@ -55,19 +55,6 @@ class setlx_form_creator extends base_form_creator {
     // Override.
 
     /**
-     * Modify repeatarray in add_tests: add editor for testcode
-     *
-     * @param $repeatarray
-     */
-    /*
-    protected function adjust_test_repeatarray(&$repeatarray) {
-        $mform = $this->_form;
-        // Simply use textarea for unit test code.
-        $repeatarray[] = $mform->createElement('textarea', 'testcode', '', 'rows="20" cols="80"');
-    }
-    */
-
-    /**
      *  Response filename is fixed to submission.stlx
      * (does not depend on test or submission code)
      */

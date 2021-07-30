@@ -60,39 +60,6 @@ class c_form_creator extends base_form_creator {
     // Override.
 
     /**
-     * Modify repeatarray in add_tests: add filepicker for testcode
-     *
-     * @param $repeatarray
-     */
-    /*
-    protected function adjust_test_repeatarray(&$repeatarray) {
-        parent::adjust_test_repeatarray($repeatarray);
-        $mform = $this->_form;
-        // Add entry point field.
-        $repeatarray[] = $mform->createElement('text', 'testexecutable',
-                get_string('executable', 'qtype_proforma'), array('size' => 80));
-        // $repeatarray[] = $mform->createElement('helpbutton', 'testexecutable_help', get_string('testexecutable_help', 'qtype_proforma'));
-        // $repeatarray[] = $mform->createElement('helpbutton', 'testexecutable', 'testexecutable', 'qtype_proforma');
-    }
-    */
-
-    /**
-     * Modify repeatoptions in add_tests
-     *
-     * @param $repeatoptions
-     */
-    /*
-    protected function adjust_test_repeatoptions(&$repeatoptions) {
-        parent::adjust_test_repeatoptions($repeatoptions);
-        $repeatoptions['testentrypoint']['rule'] = 'required';
-        // $repeatoptions['testfiles']['rule'] = 'required';
-
-        // $this->_form->setType('testexecutable', PARAM_TEXT);
-        // $this->_form->setType('testcodeformat', PARAM_INT);
-    }
-    */
-
-    /**
      * add c specific test section
      *
      * @param $question
@@ -191,5 +158,4 @@ class c_form_creator extends base_form_creator {
             }
         }
     }
-
 }
