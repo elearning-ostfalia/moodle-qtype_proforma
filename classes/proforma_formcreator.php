@@ -41,7 +41,7 @@ class proforma_form_creator extends base_form_creator {
     public function __construct($form) {
         parent::__construct($form, new qtype_proforma_proforma_task());
         $this->_responseformats = qtype_proforma::response_formats();
-        $this->_taskType = qtype_proforma::PERSISTENT_TASKFILE;
+        $this->_tasktype = qtype_proforma::PERSISTENT_TASKFILE;
         // echo $this->_taskhandler->can_be_edited();
         // $this->_unittestlabel = get_string('setlx', 'qtype_proforma');
         $this->_testcode = false;

@@ -15,6 +15,8 @@ Feature: VALIDATION
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
+    And the following config values are set as admin:
+      | clang | 0  | qtype_proforma |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration

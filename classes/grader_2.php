@@ -55,7 +55,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         $version = get_config('qtype_proforma', 'submissionproformaversion');
 
-
         // Attributes for submission.
         $xw->create_attribute('xmlns', 'urn:proforma:v' . $version);
         // $xw->createAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
@@ -162,8 +161,15 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         }
 
         // Get URI.
-        $protocolhost = get_config('qtype_proforma', 'graderuri_host');
-        $path = get_config('qtype_proforma', 'graderuri_path');
+        $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
+        if ($question->programminglanguage == 'c') {
+            $alternativehost = trim(get_config('qtype_proforma', 'c_graderuri_host'));
+            if (isset($alternativehost) and strlen($alternativehost) > 0) {
+                // Use alternative host.
+                $protocolhost = $alternativehost;
+            }
+        }
+        $path = trim(get_config('qtype_proforma', 'graderuri_path'));
         $uri = $protocolhost . $path;
 
         // return array($this->set_dummy_result3(), 200); // Fake.

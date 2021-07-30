@@ -58,7 +58,7 @@ class qtype_proforma_filearea {
      * @param $filename
      * @return array
      */
-    static public function split_filename($filename) {
+    public static function split_filename($filename) {
         $pathparts = pathinfo('/'. $filename);
         $filepath = $pathparts['dirname'];
         $filename = $pathparts['basename'];

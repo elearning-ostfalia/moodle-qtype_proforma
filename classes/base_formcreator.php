@@ -74,11 +74,9 @@ abstract class base_form_creator {
     protected $_entrypoint = false;
     /** Entrypoint label. */
     protected $_entrypointlabel = null;
-    /** Can entrypoint be evaluated from code? */
-    // protected $_evalentrypoint = false;
 
     /** @var null numberic identifier of task type */
-    protected $_taskType = null;
+    protected $_tasktype = null;
 
     /** @var string label for unit test */
     protected $_unittestlabel = null;
@@ -250,7 +248,7 @@ abstract class base_form_creator {
             $mform->setType($field, PARAM_RAW);
         }
 
-        $mform->addElement('hidden', 'taskstorage', $this->_taskType);
+        $mform->addElement('hidden', 'taskstorage', $this->_tasktype);
         $mform->setType('taskstorage', PARAM_RAW);
     }
 
@@ -354,7 +352,7 @@ abstract class base_form_creator {
             $repeatarray[] = $mform->createElement('textarea', 'testcode', '',
                     array('rows' => 20, 'cols' => 80));
         } else {
-            $repeatarray[] = $mform->createElement("hidden", "testcodeformat", base_form_creator::TESTCODE_FILES);
+            $repeatarray[] = $mform->createElement("hidden", "testcodeformat", self::TESTCODE_FILES);
             $this->_form->setType('testcodeformat', PARAM_INT);
             // $repeatoptions['testfiles']['rule'] = 'required';
         }
@@ -363,7 +361,7 @@ abstract class base_form_creator {
             $repeatarray[] = $mform->createElement('filemanager', 'testfiles', '', null,
                     array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 15));
         } else {
-            $repeatarray[] = $mform->createElement("hidden", "testcodeformat", base_form_creator::TESTCODE_EDITOR);
+            $repeatarray[] = $mform->createElement("hidden", "testcodeformat", self::TESTCODE_EDITOR);
             $this->_form->setType('testcodeformat', PARAM_INT);
             // $repeatoptions['testcode']['rule'] = 'required';
         }

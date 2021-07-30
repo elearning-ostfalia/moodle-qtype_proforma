@@ -39,7 +39,7 @@ class select_form_creator extends base_form_creator {
      */
     public function __construct($form, $newquestion = null) {
         parent::__construct($form, null);
-        $this->_taskType = qtype_proforma::SELECT_TASKFILE;
+        $this->_tasktype = qtype_proforma::SELECT_TASKFILE;
     }
 
     // Override.

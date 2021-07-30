@@ -52,7 +52,7 @@ class c_form_creator extends base_form_creator {
         $this->_responseformats = $responseoptions;
         $this->_entrypointlabel = get_string('executable', 'qtype_proforma');
         $this->_entrypoint = true;
-        $this->_taskType = qtype_proforma::C_TASKFILE;
+        $this->_tasktype = qtype_proforma::C_TASKFILE;
         $this->_unittestlabel = get_string('clang', 'qtype_proforma');
         $this->_testcode = false;
     }

@@ -48,7 +48,7 @@ class setlx_form_creator extends base_form_creator {
         $this->_responseformats = $responseoptions;
         $this->_testfiles = false;
         $this->_entrypoint = false;
-        $this->_taskType = qtype_proforma::SETLX_TASKFILE;
+        $this->_tasktype = qtype_proforma::SETLX_TASKFILE;
         $this->_unittestlabel = get_string('setlx', 'qtype_proforma');
     }
 
