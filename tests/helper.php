@@ -62,6 +62,8 @@ class qtype_proforma_test_helper extends question_test_helper {
             'java_3junit_file', // Like java_2junit_file with 3 tests
             // Setlx.
             'setlx0', 'setlx1', 'setlx1a', 'setlx2',
+            // c.
+            'c1', 'c1a', 'c2',
             // Different grading approaches.
             'weightedsum',
             // Different values set in question.
@@ -191,6 +193,21 @@ class qtype_proforma_test_helper extends question_test_helper {
     '<test-ref ref="2" weight="6">
         <title>Setlx Test 2</title>
         <test-type>setlx</test-type>
+        <description>DESCRIPTION 2</description>
+    </test-ref>'.
+    '</root>'.
+    '</grading-hints>';
+
+    const QUESTION_GRADINGHINTS_C2= '<grading-hints>'.
+    '<root function="sum">'.
+    '<test-ref ref="1" weight="3">
+        <title>C Test 1</title>
+        <test-type>uniitest</test-type>
+        <description>DESCRIPTION 1</description>
+    </test-ref>'.
+    '<test-ref ref="2" weight="6">
+        <title>C Test 2</title>
+        <test-type>uniitest</test-type>
         <description>DESCRIPTION 2</description>
     </test-ref>'.
     '</root>'.
@@ -780,6 +797,113 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // Behat: Title, weight and description come from grading hints
         $form->gradinghints = self::QUESTION_GRADINGHINTS_SETLX2;
+        return $form;
+    }
+
+    // -------------------
+    // c
+    // -------------------
+
+    public function get_proforma_question_form_data_c_base() {
+        $form = new stdClass();
+
+        $form->original_template = '';
+
+        // valid data for a task file in the repository!
+        $form->taskstorage = qtype_proforma::C_TASKFILE;
+
+        $form->responsefilename = self::QUESTION_FILENAME;
+        $form->programminglanguage = 'c';
+        $form->proglangversion = '';
+
+        // $container->modelsolution = self::QUESTION_MODELSOLUTION;
+        // set redundant :-( template
+        $form->responsetemplate = self::QUESTION_TEMPLATE;
+        $form->template = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->template, 'template.txt',
+                self::QUESTION_TEMPLATE);
+
+        $form->gradinghints = self::QUESTION_GRADINGHINTS_C2;
+        $form->aggregationstrategy = qtype_proforma::ALL_OR_NOTHING;
+
+        $form->name = self::QUESTION_NAME;
+        //$form->questiontext = self::QUESTION_TEXT;
+        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        $form->defaultmark = 3.0;
+        $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
+        $form->penalty = 0.2;
+
+        $form->responseformat = 'editor';
+        $form->modelsolution = '// code for model solution';
+        $form->responsefieldlines = 10;
+        $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
+
+        $form->compile = 1;
+        $form->compileweight = 2;
+
+        // test weight, title and description are taken from grading hints.
+        // They must also exist as test variables.
+        $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
+        $form->testentrypoint[0] = './test';
+        $form->testfiles = array();
+        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->testfiles[0], 'cunit1.c',
+                'int cunit_1() { return 1; }');
+        $this->make_attachment_in_draft_area($form->testfiles[0], 'main.c',
+                'int main() { return 1; }');
+
+        $form->testtitle[0] = 'c Test 1';
+        $form->testweight[0] = '3';
+        $form->testid[0] = '1';
+
+
+        // handle different line ending on different platforms
+        //        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
+        $form->hint = array(
+                0 => array(
+                        'text' => 'hint 1<br>',
+                        'format' => '1',
+                        'itemid' => '83894244'),
+                1 => array(
+                        'text' => 'hint 2<br>',
+                        'format' => '1',
+                        'itemid' => '34635511'));
+
+        return $form;
+    }
+
+
+    /** one test and syntax check */
+    public function get_proforma_question_form_data_c1() {
+        $form = $this->get_proforma_question_form_data_c_base();
+        return $form;
+    }
+
+    /** one test and no syntax check */
+    public function get_proforma_question_form_data_c1a() {
+        $form = $this->get_proforma_question_form_data_c_base();
+        // $form->compile = 0;
+        return $form;
+    }
+
+    /** two tests and syntax check */
+    public function get_proforma_question_form_data_c2() {
+        $form = $this->get_proforma_question_form_data_c_base();
+
+        $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
+        $form->testentrypoint[1] = './test2';
+        // $form->testfiles = array();
+        $form->testfiles[1] = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->testfiles[1], 'main.c',
+                'int main() { return 1; }');
+
+        // Must be set correctly (=> grading hints) for PhpUnit test!
+        $form->testid[1] = '2';
+        $form->testtitle[1] = 'c Test 2';
+        $form->testweight[1] = '6'; // '-';
+
+        // Behat: Title, weight and description come from grading hints
+        $form->gradinghints = self::QUESTION_GRADINGHINTS_C2;
         return $form;
     }
 
