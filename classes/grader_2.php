@@ -31,6 +31,19 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.ph
 
 class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
+    /** @var programming|null programming language (for selecting grader) */
+    protected $_uri = null;
+
+    /**
+     * qtype_proforma_grader_2 constructor.
+     *
+     * @param $uri programming language (for selecting grader)
+     */
+    public function __construct($uri = null) {
+        parent::__construct();
+        $this->_uri = $uri;
+    }
+
     /**
      * Creates the submission.xml according to Proforma specification
      * @param $code
@@ -141,7 +154,13 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @return array
      * @throws coding_exception
      */
-    protected function post_to_grader(&$postfields, $question, $taskfile = null) {
+    protected function post_to_grader(&$postfields, $question, $taskfile = null, $test = false) {
+        // Get timeout.
+        $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'grading_timeout');
+        if ($test) {
+            // Reduce timeout for testing conection because user is waiting.
+            $options['CURLOPT_TIMEOUT'] = 5;
+        }
         // Add task file.
         if (isset($question)) {
             $task = $question->get_task_file();
@@ -157,26 +176,22 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                 throw new coding_exception("task variable has wrong class");
             }
             $postfields['task-file'] = $taskfile;
-
         }
 
         // Get URI.
-        $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
-        if ($question->programminglanguage == 'c') {
-            $alternativehost = trim(get_config('qtype_proforma', 'c_graderuri_host'));
-            if (isset($alternativehost) and strlen($alternativehost) > 0) {
-                // Use alternative host.
-                $protocolhost = $alternativehost;
-            }
+        if (!isset($this->_uri)) {
+            $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
+            $path = trim(get_config('qtype_proforma', 'graderuri_path'));
+            $uri = $protocolhost . $path;
+        } else {
+            $uri = $this->_uri;
         }
-        $path = trim(get_config('qtype_proforma', 'graderuri_path'));
-        $uri = $protocolhost . $path;
 
+        // debugging($uri);
         // return array($this->set_dummy_result3(), 200); // Fake.
 
         // Send task and submission to grader with Curl with a configured timeout.
         $curl = new curl();
-        $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'grading_timeout');
         $output = $curl->post($uri, $postfields, $options);
         $info = $curl->get_info();
         $httpcode = $info["http_code"];
@@ -332,7 +347,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                 $filename => $code
         );
 
-        return $this->post_to_grader($postfields, null, $taskfile);
+        return $this->post_to_grader($postfields, null, $taskfile, true);
     }
 
     /**

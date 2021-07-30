@@ -63,6 +63,12 @@ class qtype_proforma_grader {
     const FEEDBACK_FORMAT_HTTP_ERROR = -4;
 
     /**
+     * qtype_proforma_grader constructor.
+     */
+    public function __construct() {
+    }
+
+    /**
      * returns (encrypted) course identifier
      * @return string
      */

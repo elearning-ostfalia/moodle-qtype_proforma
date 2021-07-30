@@ -27,7 +27,6 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
   
 ## Features
 
-- Java code can be checked with JUnit and Checkstyle
 - various submission formats: 
     
     * editor with programming language support such as syntax highlighting or automatic indentation

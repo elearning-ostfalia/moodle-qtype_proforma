@@ -176,6 +176,9 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
      */
     private $_httpcode = null;
 
+    /** @var null Uri for this config grader */
+    private $_uri = null;
+
     /**
      * Constructor
      * @param string $name unique ascii name, either 'mysetting' for settings
@@ -186,7 +189,7 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
      */
     public function __construct($name, $visiblename, $description, $defaultdirectory) {
         parent::__construct($name, $visiblename, $description, $defaultdirectory, PARAM_RAW, 50);
-        $this->_grader = new \qtype_proforma_grader_2();
+
     }
 
     /**
@@ -221,12 +224,32 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
     }
 
     /**
+     * create grader object
+     * @throws \dml_exception
+     */
+    private function set_grader() {
+        if (!isset($this->_grader)) {
+            $host = trim(get_config('qtype_proforma', $this->name));
+            if (strlen($host) > 0) {
+                $path = trim(get_config('qtype_proforma', 'graderuri_path'));
+                $this->_uri = $host . $path;
+                // ebugging($this->_uri);
+                $this->_grader = new \qtype_proforma_grader_2($this->_uri);
+            }
+        }
+    }
+    /**
      * returns a text mesage to be displayed in case of an error
      * when testing the grader connection.
      *
      * @return string
      */
     protected function get_grader_response() {
+        $this->set_grader();
+
+        if (!isset($this->_uri)) {
+            return '';
+        }
         if (!isset($this->_result)) {
             list($this->_graderoutput, $this->_httpcode) = $this->_grader->test_connection();
         }
@@ -258,6 +281,7 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
      * @return bool
      */
     protected function is_proforma_grader() : bool {
+        $this->set_grader();
         if (!isset($this->_result)) {
             list($this->_graderoutput, $this->_httpcode) = $this->_grader->test_connection();
         }

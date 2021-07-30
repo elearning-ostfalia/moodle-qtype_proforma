@@ -164,7 +164,7 @@ class proforma_bulk_tester  {
      *              sring message summarising the number of passes and fails.
      */
     public function run_test_question($question, $proformafile, $modelsolution, $quiet = false) {
-        $grader = new qtype_proforma_grader_2();
+        $grader = new qtype_proforma_grader_2(isset($question)?$question->get_uri():null);
 
         $ok = false;
         $message = "";

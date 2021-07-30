@@ -114,15 +114,37 @@ class qtype_proforma_question extends question_graded_automatically {
     /** feedback option: shall messages be initially embedded into editor? */
     // public $initiallyinline;
 
+    /**
+     * get grader URI
+     * @return string|null
+     * @throws dml_exception
+     */
+    public function get_uri() {
+        // For c an alternative grader may be set.
+        if (isset($this->programminglanguage) && $this->programminglanguage == 'c') {
+            $alternativehost = trim(get_config('qtype_proforma', 'c_grader'));
+            if (isset($alternativehost) and strlen($alternativehost) > 0) {
+                // Use alternative host.
+                $path = trim(get_config('qtype_proforma', 'graderuri_path'));
+                $uri = $alternativehost . $path;
+                return $uri;
+            }
+        }
+        // Use default value.
+        return null;
+    }
 
     /**
-     * creates the grader object (why function???)
+     * creates the grader object
      *
      * @return null|qtype_proforma_grader_2
      */
     private function get_grader() {
         if ($this->grader == null) {
-            $this->grader = new qtype_proforma_grader_2();
+            $this->grader = new qtype_proforma_grader_2($this->get_uri());
+            return $this->grader;
+
+            // Use default Uri.
             // For using fake results use the following code:
             // (for testing renderer).
             /* global $CFG;
