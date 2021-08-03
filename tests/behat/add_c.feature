@@ -101,7 +101,8 @@ Feature: ADD C QUESTION
     And the field "testweight[0]" matches value "1"
     And the field "testdescription[0]" matches value ""
     And "main.c" "link" should exist
-    And the size of file "main.c" is between "1170" and "1180" bytes
+    # size is given in 1.1kB
+    And the size of file "main.c" is between "1000" and "1200" bytes
 
     # c #2
     And the field "testweight[1]" matches value "3"
@@ -164,7 +165,8 @@ Feature: ADD C QUESTION
     # c test
     And the field "testweight[0]" matches value "1"
     And "main.c" "link" should exist
-    And the size of file "main.c" is between "1170" and "1180" bytes
+    # size is given in 1.1kB
+    And the size of file "main.c" is between "1000" and "1200" bytes
     # Cancel (form is not modified)
     And I press "Cancel"
 
