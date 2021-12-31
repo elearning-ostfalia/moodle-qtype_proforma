@@ -1,3 +1,12 @@
+## v2.7.1
+
+* bugfix installation without grader
+
+## v2.7.0
+
+* new: create and grade c (CUnit) questions
+* refactor code for creating questions
+
 ## v2.6.0
 
 * support for Proforma version 2.1 in request and response
@@ -22,7 +31,6 @@
 
 * editor 'inline' messages for Checkstyle and Java compiler 
 * show grader settings for teacher (Java and Setlx)
-
 
 ## v2.4.0 
 

@@ -26,14 +26,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_proforma';
-$plugin->version   = 2021073000;
+$plugin->version   = 2021123100;
 
 $plugin->requires  = 2018051700;
-$plugin->release = '2.7.0';
+$plugin->release = '2.7.1';
 
 $plugin->maturity  = MATURITY_STABLE;
 
 $plugin->dependencies = array(
-        'qbehaviour_adaptiveexternalgrading' => 2019061201
+        'qbehaviour_adaptiveexternalgrading' => ANY_VERSION
 );
 

@@ -282,6 +282,9 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
      */
     protected function is_proforma_grader() : bool {
         $this->set_grader();
+        if (!isset($this->_grader)) {
+            return false;
+        }
         if (!isset($this->_result)) {
             list($this->_graderoutput, $this->_httpcode) = $this->_grader->test_connection();
         }
