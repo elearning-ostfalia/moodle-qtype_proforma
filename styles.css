@@ -196,7 +196,7 @@ body#page-question-type-proforma p[id^=fgroup_id_testoptions_][id*=label] {
 .proforma_general:not(.proforma_html) {
     /*padding-left: 0.1cm;*/
     font-family: "Andale Mono", Monaco, "Courier New", "DejaVu Sans Mono", monospace;
-    white-space: pre-wrap;
+    white-space: pre;
 }
 
 /* Feedback formats for testlogs not using subtests */
@@ -212,7 +212,7 @@ body#page-question-type-proforma p[id^=fgroup_id_testoptions_][id*=label] {
 .proforma_testlog:not(.proforma_html) {
     padding-left: 28px;
     font-family: "Andale Mono", Monaco, "Courier New", "DejaVu Sans Mono", monospace;
-    white-space: pre-wrap;
+    white-space: pre;
 }
 
 
@@ -233,7 +233,7 @@ body#page-question-type-proforma p[id^=fgroup_id_testoptions_][id*=label] {
     /*font-size: 0.73em;*/
     padding-left: 52px;
     font-family: "Andale Mono", Monaco, "Courier New", "DejaVu Sans Mono", monospace;
-    white-space: pre-wrap;
+    white-space: pre;
 }
 
 .fail {
