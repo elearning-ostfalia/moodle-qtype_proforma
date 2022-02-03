@@ -123,10 +123,14 @@ $string['junit'] = 'JUnit Test';
 $string['setlx'] = 'SetlX Test';
 $string['clang'] = 'CUnit Test';
 
-$string['clangfiles_help'] = 'Die Testdateien müssen mindestens 
+$string['cunit_help'] = 'Die Testdateien müssen mindestens 
     ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und <code>main.c</code> enthalten.<br>
     <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
     CUnit muss im <i>basic mode</i> ausgeführt werden.<br>
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt.';
+$string['gtest_help'] = 'Die Testdateien müssen mindestens 
+    ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
+    <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
     Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt.';
 
 $string['codeempty'] = 'Testcode fehlt.';

@@ -21,8 +21,6 @@ Feature: ADD C QUESTION
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
-
-
 ##########################################################################
   @javascript  @_file_upload
   Scenario: Create, save and open a ProFormA c question with two c tests
@@ -44,7 +42,6 @@ Feature: ADD C QUESTION
       | Max. number of uploaded files | 1                         |
       | Max. upload size         | 2MB                            |
       | Command for executing test | ./test1                      |
-
 
     # The default functions do not work for CodeMirror with Javascript.
     # So we must use other functions.
@@ -169,4 +166,3 @@ Feature: ADD C QUESTION
     And the size of file "main.c" is between "1000" and "1200" bytes
     # Cancel (form is not modified)
     And I press "Cancel"
-

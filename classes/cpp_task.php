@@ -15,25 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The ProFormA Question version information
+ * create ProFormA cpp task file resp. extract data from such a file
  *
- * @package    qtype_proforma
- * @copyright  2018 Ostfalia University of Applied Sciences
+ * @package    qtype
+ * @subpackage proforma
+ * @copyright  2022 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . '/question/type/proforma/classes/c_task.php');
 
-$plugin->component = 'qtype_proforma';
-$plugin->version   = 2022020300;
-
-$plugin->requires  = 2018051700;
-$plugin->release = '2.7.2';
-
-$plugin->maturity  = MATURITY_STABLE;
-
-$plugin->dependencies = array(
-        'qbehaviour_adaptiveexternalgrading' => ANY_VERSION
-);
-
+class qtype_proforma_cpp_task extends qtype_proforma_c_task {
+    // Currently there is no difference except for the programming language.
+}

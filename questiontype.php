@@ -82,6 +82,8 @@ class qtype_proforma extends question_type {
      * Question is created in Moodle Form Editor.
      * Taskfile could be created on the fly and is only stored for caching purposes.
      */
+    /** task file that is not yet completed */
+    const SELECT_TASKFILE = 0;
     const VOLATILE_TASKFILE = 3; // Depricated: Use JAVA_TASKFILE instead.
     /** Java task file */
     const JAVA_TASKFILE = self::VOLATILE_TASKFILE;
@@ -89,8 +91,8 @@ class qtype_proforma extends question_type {
     const SETLX_TASKFILE = 4;
     /** c task file */
     const C_TASKFILE = 5;
-    /** task file that is not yet completed */
-    const SELECT_TASKFILE = 0;
+    /** C++ task file */
+    const CPP_TASKFILE = 6;
 
     // Collapse options
     /**
@@ -299,6 +301,9 @@ class qtype_proforma extends question_type {
             case self::C_TASKFILE:
                 $editor = new c_form_creator($formdata);
                 break;
+            case self::CPP_TASKFILE:
+                $editor = new c_form_creator($formdata);
+                break;
             case self::REPOSITORY:
             default:
                 throw new coding_exception('proforma: unsupported taskstorage ' . $formdata->taskstorage);
@@ -376,7 +381,8 @@ class qtype_proforma extends question_type {
                 'java' => "Java",
                 'python' => "Python",
                 'setlx' => 'SetlX',
-                'c' => 'c',
+                'cpp' => 'C/C++',
+                'c' => 'C',
                 'none' => get_string('none', 'qtype_proforma'),
         );
     }

@@ -24,53 +24,42 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
-require_once($CFG->dirroot . '/question/type/proforma/classes/c_task.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/c_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/cpp_task.php');
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
-class c_form_creator extends base_form_creator {
-
+class cpp_form_creator extends c_form_creator {
 
     /**
-     * c_form_creator constructor.
+     * cpp_form_creator constructor.
      *
      * @param $form
      * @param null $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
-        parent::__construct($form, new qtype_proforma_c_task());
-        // Set parent options.
-        $this->_syntaxhighlighting = 'c';
-        $this->_proglang = 'c';
-        // Only allow editor and filepicker as reponse format.
-        $ro = qtype_proforma::response_formats();
-        $responseoptions = [
-                qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR],
-                qtype_proforma::RESPONSE_FILEPICKER => $ro[qtype_proforma::RESPONSE_FILEPICKER]
-        ];
+        parent::__construct($form, $newquestion);
+        $this->_taskhandler = new qtype_proforma_cpp_task();
+        $this->_syntaxhighlighting = 'cpp';
+        $this->_proglang = 'cpp';
 
-        $this->_responseformats = $responseoptions;
-        $this->_entrypointlabel = get_string('executable', 'qtype_proforma');
-        $this->_entrypoint = true;
-        $this->_tasktype = qtype_proforma::C_TASKFILE;
-        $this->_unittestlabel = get_string('clang', 'qtype_proforma');
-        $this->_testcode = false;
+        $this->_tasktype = qtype_proforma::CPP_TASKFILE;
+        $this->_unittestlabel = get_string('cppunittest', 'qtype_proforma');
     }
 
     // Override.
 
     /**
-     * add c specific test section
+     * add C++ specific test section
      *
      * @param $question
      * @param $questioneditform
      * @return int
      */
     protected function add_tests($question, $questioneditform) {
-        $this->_form->addElement('html', get_string('cunit_help', 'qtype_proforma'));
+        $this->_form->addElement('html', get_string('gtest_help', 'qtype_proforma'));
 
-        // Add c tests.
-        return $this->add_test_fields($question, $questioneditform, 'clang');
+        // Add cpp tests.
+        return $this->add_test_fields($question, $questioneditform, 'cpp');
     }
 
 
@@ -137,13 +126,13 @@ class c_form_creator extends base_form_creator {
      * @param qtype_proforma_edit_form $editor
      */
     public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
-        parent::data_preprocessing($question, $cat, $editor);
+        base_form_creator::data_preprocessing($question, $cat, $editor);
 
         if (isset($question->id)) {
             // Preset data if question already exists.
             $form = $editor->get_form();
 
-            if ($question->taskstorage != qtype_proforma::C_TASKFILE) {
+            if ($question->taskstorage != qtype_proforma::CPP_TASKFILE) {
                 throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }
             $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);

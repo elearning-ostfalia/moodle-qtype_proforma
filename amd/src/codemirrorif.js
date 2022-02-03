@@ -39,6 +39,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                 case "python": return ["text/x-python", 'qtype_proforma/python'];
                 case "setlx":  return ["text/text", null];
                 case "c":      return ["text/x-csrc", 'qtype_proforma/clike'];
+                case "cpp":    return ["text/x-c++src", 'qtype_proforma/clike'];
                 // with the actual xml mode the behat tests fail (hang in some scenarios
                 // with an error message in the console output of the browser.
                 // That's why I do not use xml mode anymore :-(

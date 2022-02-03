@@ -21,7 +21,6 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
 
-
 ##########################################################################
   @javascript @_file_upload
   Scenario: more complex Java question
@@ -59,7 +58,7 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit1.java" to "testfiles[1]" filemanager by name
     And I set the field "testentrypoint[1]" to "XClass"
 
-    # There seems to be a bug in the test environment uploading files 
+    # There seems to be a bug in the test environment uploading files
     # into a second filemenager. So we close and reopen.
     And I press "id_submitbutton"
     And I choose "Edit question" action for "java-question" in the question bank
@@ -79,7 +78,7 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
     # compilation
     And I check the "compile" checkbox
     And I set the field "compileweight" to "5"
-    
+
     # save question and check values.
     And I press "id_submitbutton"
     Then I should see "java-question"

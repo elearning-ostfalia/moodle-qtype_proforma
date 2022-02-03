@@ -139,6 +139,9 @@ $settings->add(new admin_setting_heading('proglangs',
 $settings->add(new admin_setting_configcheckbox('qtype_proforma/clang',
         'c', '', 1));
 
+$settings->add(new admin_setting_configcheckbox('qtype_proforma/cpp',
+    'C++', '', 1));
+
 $settings->add(new qtype_proforma\lib\admin_setting_configproformagrader('qtype_proforma/c_grader',
         get_string('c_graderuri_host', 'qtype_proforma'),
         get_string('c_graderuri_host_desc', 'qtype_proforma'),
