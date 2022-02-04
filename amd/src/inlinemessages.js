@@ -26,7 +26,7 @@
 
 // import './codemirror-global';
 // Moodle import:
-import CodeMirror from "./codemirror";
+// import CodeMirror from "./codemirror";
 // import any mode
 
 
@@ -52,7 +52,7 @@ function _showMessages(editor, errors, widgets) {
         }
         var msg = document.createElement("div");
         var icon;
-        if (typeof msg.msgtype !== 'undefined') {
+        if (err.msgtype !== undefined) {
             switch (err.msgtype.toLowerCase()) {
                 case 'error':
                     icon = msg.appendChild(document.createElement("span"));
@@ -152,7 +152,7 @@ function _getErrorsFromLog(collapsregion, regexp, editorfilename) {
         // console.log('text: ' + text);
         // console.log('filename: ' + filename);
         // console.log('symbol: \'' + symbol + '\'');
-        if (filename !== undefined) {
+        if (filename !== undefined && editorfilename != undefined) {
             // Filename is in message.
             if (editorfilename.localeCompare(filename) !== 0) {
                 // Filename does not match name of file in editor.

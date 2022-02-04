@@ -119,6 +119,54 @@ line 8:1 mismatched input &#39;ist_Abgeschlossen&#39; expecting !, !=, %, &amp;&
 </div>
 
 
+
+<h2>C++</h2>
+
+<textarea id="editor4" name="compile_cpp" rows="20" cols="80">
+    #include <math.h>
+ 
+    double squareRoot(const double a) { hh
+        double b = sqrt(a);
+        if(b != b) {
+            return -1.0;
+        }else{
+            return sqrt(a);
+        }
+     } 
+    </textarea>
+    
+    <div id="m-id-test-proforma-56-5" class="collapsibleregion" style="height: 123px;">
+        <div id="m-id-test-proforma-56-5_sizer">
+            <div id="m-id-test-proforma-56-5_caption" class="collapsibleregioncaption">
+                <a href="#" title="Zum Erweitern oder Einklappen tippen" id="yui_3_17_2_1_1613312798920_163">
+                    <i class="icon fa fa-check text-success fa-fw " title="Richtig" aria-label="Richtig"></i> C++ (../17 %) 
+                    </a>
+            </div>
+            <div id="m-id-test-proforma-56-5_inner" class="collapsibleregioninner">
+                <div class="proforma_testlog_title"></div>
+                <pre class="proforma_testlog">[ 50%] Building CXX object CMakeFiles/runTests.dir/tests.cpp.o
+                    In file included from tests.cpp:3:
+                    squareroot.cpp: In function ‘double squareRoot(double)’:
+                    squareroot.cpp:4:37: error: ‘hh’ was not declared in this scope
+                        4 | double squareRoot(const double a) { hh
+                          |                                     ^~
+                    squareroot.cpp:6:8: error: ‘b’ was not declared in this scope
+                        6 |     if(b != b) {
+                          |        ^
+                    squareroot.cpp:11:1: warning: control reaches end of non-void function [-Wreturn-type]
+                       11 | }
+                          | ^
+                    make[2]: *** [CMakeFiles/runTests.dir/build.make:63: CMakeFiles/runTests.dir/tests.cpp.o] Error 1
+                    make[1]: *** [CMakeFiles/Makefile2:76: CMakeFiles/runTests.dir/all] Error 2
+                    make: *** [Makefile:84: all] Error 2
+            </pre>
+            </div>
+        </div>
+    </div>
+
+
+
+
 </body>
 
 </html>

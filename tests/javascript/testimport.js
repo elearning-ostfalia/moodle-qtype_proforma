@@ -24,14 +24,14 @@ import('/amd/src/inlinemessages.js')
                     document.getElementById("editor"), {
                         lineNumbers: true,
                 });
-                module.embedError("editor", "m-id-test-proforma-2044604495-3", regexp, 1);
+                module.embedError("editor", "m-id-test-proforma-2044604495-3", regexp);
 
 
                 let editor2 = CodeMirror.fromTextArea(
                     document.getElementById("editor2"), {
                         lineNumbers: true,
                 });                                
-                module.embedError("editor2", "m-id-test-proforma-2044604495-4", regexp);
+                module.embedError("editor2", "m-id-test-proforma-2044604495-4", regexp, 'de/ostfalia/MyString.java');
 
                 let  regexpSetlx = "line\\ (?<line>[0-9]+)(:(?<column>[0-9]+))?\\s(?<text>.+)";
 
@@ -40,6 +40,14 @@ import('/amd/src/inlinemessages.js')
                         lineNumbers: true,
                 });                                
                 module.embedError("editor3", "m-id-test-proforma-2044604495-5", regexpSetlx);
+				
+                let  regexpCpp = "(?<filename>\/?(\w+\/)*(\w+)\.([^:]+)):(?<line>[0-9]+)(:(?<column>[0-9]+))?: (?<msgtype>[a-z]+): (?<text>.+)(?<code>\s+.+)?(?<position>\s+\^)?(\s+symbol:\s*(?<symbol>\s+.+))?";
+				
+                let editor4 = CodeMirror.fromTextArea(
+                    document.getElementById("editor4"), {
+                        lineNumbers: true,
+                });                                
+                module.embedError("editor4", "m-id-test-proforma-56-5", regexpCpp, 'squareroot.cpp');				
                 
             });
   });
