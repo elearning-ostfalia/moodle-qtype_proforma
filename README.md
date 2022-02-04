@@ -13,7 +13,8 @@ ProFormA standard (https://github.com/ProFormA/proformaxml) version 2: Praktomat
 Standard test frameworks are used for specifying tests. Currently the following programming languages and test frameworks are supported:
 
 - Java: JUnit 4, JUnit 5, Checkstyle
-- c: CUnit (Test framework depends on backend, not on plugin)
+- C++: GoogleTest (with CMake/Makefile)
+- c: GoogleTest, CUnit (with CMake/Makefile)
 - Setlx: Test, Syntax Check
 - (Python: Doctest, only by importing a question)
 
