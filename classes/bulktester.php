@@ -40,16 +40,40 @@ class proforma_bulk_tester  {
     public function get_proforma_questions_by_context() {
         global $DB;
 
-        return $DB->get_records_sql_menu("
-            SELECT ctx.id, COUNT(q.id) AS numproformaquestions
+        return $DB->get_records_sql("
+            SELECT ctx.id, COUNT(q.id) AS numproformaquestions, c.id as courseid
               FROM {context} ctx
               JOIN {question_categories} qc ON qc.contextid = ctx.id
               JOIN {question} q ON q.category = qc.id
+        LEFT  JOIN {course} c ON ctx.contextlevel = 50 and c.id = ctx.instanceid
              WHERE q.qtype = 'proforma'
           GROUP BY ctx.id, ctx.path
           ORDER BY ctx.path
         ");
     }
+
+
+    /**
+     * get all teachers
+     * @param $courseid
+     * @return array
+     * @throws dml_exception
+     */
+    public function get_teachers($courseid) {
+        global $DB;
+        $rolid = 3;
+        # only enroled users of courses that are still active
+        $sql = 'select u.id, u.lastname, u.firstname
+            from {course} ic
+                JOIN {context} con ON con.instanceid = ic.id
+                JOIN {role_assignments} ra ON con.id = ra.contextid AND con.contextlevel = 50
+                JOIN {role} r ON ra.roleid = r.id
+                JOIN {user} u ON u.id = ra.userid
+            WHERE u.deleted = 0 and u.suspended = 0 and ic.id = :courseid and r.id = :roleid';
+
+        return $DB->get_records_sql($sql, ['courseid' => $courseid, 'roleid' => $rolid]);
+    }
+
 
     /**
      * Run all the question tests for all variants of all questions belonging to

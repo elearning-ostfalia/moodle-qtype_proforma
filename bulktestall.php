@@ -59,7 +59,11 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($title, 1);
 
 // Run the tests.
-foreach ($bulktester->get_proforma_questions_by_context() as $contextid => $numproformaquestions) {
+foreach ($bulktester->get_proforma_questions_by_context() as $record) {
+    $numproformaquestions = $record->numproformaquestions;
+    $contextid = $record->id;
+    $courseid = $record->courseid;
+
     if ($skipping && $contextid != $startfromcontextid) {
         continue;
     }
