@@ -147,6 +147,11 @@ $settings->add(new qtype_proforma\lib\admin_setting_configproformagrader('qtype_
         get_string('c_graderuri_host_desc', 'qtype_proforma'),
         ''));
 
+$settings->add(new qtype_proforma\lib\admin_setting_configproformagrader('qtype_proforma/cpp_grader',
+    get_string('cpp_graderuri_host', 'qtype_proforma'),
+    get_string('cpp_graderuri_host_desc', 'qtype_proforma'),
+    ''));
+
 
 $settings->add(new admin_setting_configcheckbox('qtype_proforma/setlx',
         'SetlX', '', 0));
@@ -158,7 +163,7 @@ $settings->add(new admin_setting_heading('java',
 
 $settings->add(new admin_setting_configtext('qtype_proforma/javaversion',
         get_string('javaversion', 'qtype_proforma'),
-        get_string('javaversion_desc', 'qtype_proforma'), '11, 1.8' ));
+        get_string('javaversion_desc', 'qtype_proforma'), '17, 11, 1.8' ));
 
 
 $settings->add(new admin_setting_configtext('qtype_proforma/junitversion',

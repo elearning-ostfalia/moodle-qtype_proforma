@@ -120,18 +120,29 @@ class qtype_proforma_question extends question_graded_automatically {
      * @throws dml_exception
      */
     public function get_uri() {
-        // For c an alternative grader may be set.
-        if (isset($this->programminglanguage) && $this->programminglanguage == 'c') {
-            $alternativehost = trim(get_config('qtype_proforma', 'c_grader'));
-            if (isset($alternativehost) and strlen($alternativehost) > 0) {
-                // Use alternative host.
-                $path = trim(get_config('qtype_proforma', 'graderuri_path'));
-                $uri = $alternativehost . $path;
-                return $uri;
+        // Check for alternative grader.
+        // TODO: The programming language is only the highlight language!!
+        // Use the actual language.
+        if (isset($this->programminglanguage)) {
+            switch ($this->programminglanguage) {
+                case 'c':
+                    $alternativehost = trim(get_config('qtype_proforma', 'c_grader'));
+                    break;
+                case 'cpp':
+                    $alternativehost = trim(get_config('qtype_proforma', 'cpp_grader'));
+                    break;
             }
         }
+
+        $path = trim(get_config('qtype_proforma', 'graderuri_path'));
+        if (isset($alternativehost) and strlen($alternativehost) > 0) {
+            // Use alternative host.
+            return $alternativehost . $path;
+        }
+
         // Use default value.
-        return null;
+        $defaulthost = trim(get_config('qtype_proforma', 'graderuri_host'));
+        return $defaulthost . $path;
     }
 
     /**

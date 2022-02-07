@@ -167,9 +167,12 @@ $string['graderuri_host'] = 'URI: Protokoll und Server';
 $string['graderuri_host_desc'] = 'Protokoll (Schema) und Server der Grader URI';
 $string['graderuri_path'] = 'URI: Pfad';
 $string['graderuri_path_desc'] = 'Pfad der Grader URI';
-$string['c_graderuri_host'] = 'Alternativer Grader (Protokoll und Server)';
-$string['c_graderuri_host_desc'] = 'Für die Programmiersprache c kann ein alternativer Grader vorgegeben werden. 
-Protokoll (Schema) und Server der Grader URI, der Pfad wird übernommen.';
+$string['c_graderuri_host'] = 'Grader (Protokoll und Server) für c';
+$string['c_graderuri_host_desc'] = 'Für die Programmiersprache c kann ein alternativer Grader vorgegeben werden 
+(nur Protokoll und Server der Grader URI, der Pfad wird übernommen)';
+$string['cpp_graderuri_host'] = 'Grader (Protokoll und Server) für C++';
+$string['cpp_graderuri_host_desc'] = 'Für die Programmiersprache C++ kann ein alternativer Grader vorgegeben werden. 
+(nur Protokoll und Server der Grader URI, der Pfad wird übernommen)';
 
 $string['submissionproformaversion'] = 'ProFormA Version';
 $string['submissionproformaversion_help'] = 'ProFormA-Version, die für die Kommunikation zwischen Moodle und Grader verwendet werden soll. Version 2.1 erfordert mindestens Praktomat 4.9.0.';
