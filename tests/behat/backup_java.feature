@@ -8,6 +8,7 @@ Feature: BACKUP AND RESTORE JAVA
   Background:
     Given the following config values are set as admin:
       | clang | 0  | qtype_proforma |
+      | cpp | 0  | qtype_proforma |
     And the following "users" exist:
       | username | firstname | lastname | email               |
       | teacher1 | T1        | Teacher1 | teacher1@moodle.com |

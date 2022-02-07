@@ -16,7 +16,7 @@ pipeline {
     parameters {
         choice(name: 'SOURCE_ORIGIN', choices: ['github', 'local'], description: 'Where to get source code from')
         booleanParam(name: 'DO_NOT_FETCH_MOODLE', defaultValue: true, description: 'Use Moodle code from disk')
-        choice(name: 'MOODLE_VERSION', choices: ['all', '38', '39', '310', '311', 'master'], description: 'Run with specific Moodle version')
+        choice(name: 'MOODLE_VERSION', choices: ['all', '39', '310', '311', 'master'], description: 'Run with specific Moodle version')
         choice(name: 'DATABASE_TYPE', choices: ['all', 'mysql', 'pgsql'], description: 'Run with specific database')
         choice(name: 'PHP_VERSION', choices: ['all', '7.2', '7.3', '7.4'], description: 'Run with specific PHP version')
     }
@@ -66,6 +66,11 @@ def runTest(boolean DO_NOT_FETCH_MOODLE, String source_origin, String moodle_ver
     echo '** Getting praktomat from github...'           
     dir('praktomat') {
         git url: 'https://github.com/elearning-ostfalia/Proforma-Praktomat.git'
+			// create .env file with credentials
+            sh('cp .env.example .env')
+            sh('docker-compose down')
+            sh('docker-compose build')
+            sh('docker-compose -f docker-compose-test.yml up')
     }      
     
     if (DO_NOT_FETCH_MOODLE) {
