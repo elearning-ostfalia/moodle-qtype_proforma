@@ -68,9 +68,14 @@ def runTest(boolean DO_NOT_FETCH_MOODLE, String source_origin, String moodle_ver
         git url: 'https://github.com/elearning-ostfalia/Proforma-Praktomat.git'
 			// create .env file with credentials
             sh('cp .env.example .env')
+			sh('wget https://download.randoom.org/setlX/pc/setlX_v2-7-2.binary_only.zip')
+			// Note that unzip must exist (otherwise install previously)
+			sh('unzip -p setlX_v2-7-2.binary_only.zip setlX.jar > extra/setlX-2.7.jar')
             sh('docker-compose down')
             sh('docker-compose build')
-            sh('docker-compose -f docker-compose-test.yml up')
+			// TODO Problem: 
+			// Moodle-Network must exist before starting Praktomat...
+            sh('docker-compose -f docker-compose-test.yml -f docker-compose.yml up -d')
     }      
     
     if (DO_NOT_FETCH_MOODLE) {

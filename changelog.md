@@ -1,3 +1,5 @@
+## v2.7.2
+
 ## v2.7.1
 
 * bugfix installation without grader
