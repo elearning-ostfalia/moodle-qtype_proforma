@@ -476,10 +476,11 @@ class feedback_renderer {
             }
 
             if ($testresponse == null) {
-                // Inconsitent response.
+                // Inconsistent response.
                 $containsinternalerror = true;
                 $result .= '<p><b>INTERNAL ERROR</b>: Result for Test "' . $testid . '" is missing</p>';
             } else {
+                // Render test output.
                 list($internalerror, $result, $correct) = $this->render_test_response($testresponse[0], $result);
                 if ($internalerror) {
                     $containsinternalerror = true;
@@ -487,6 +488,8 @@ class feedback_renderer {
                 if (!$correct) {
                     $allcorrect = false;
                 }
+                // Check if there is an extra log to be rendered for this test.
+                $result .= $this->render_extralog($response, $testid);
             }
         }
 
@@ -527,6 +530,37 @@ class feedback_renderer {
             $result .= print_collapsible_region_end(true);
 
             $result .= html_writer::end_tag('small');
+        }
+        return $result;
+    }
+
+    protected function render_extralog(SimpleXMLElement $response, $id): string {
+        try {
+            $result = '';
+            $praktomat = $response->{'response-meta-data'}->children('praktomat', true);
+            $logs = $praktomat->{'response-meta-data'}->{'logs'};
+            if (isset($logs) && count($logs) > 0) {
+                foreach ($logs->{'testlog'} as $testlog) {
+                    $attrib = $testlog->attributes();
+                    $testid = (string)$attrib['id'];
+                    if ($testid == $id) {
+                        $log = $testlog->{'log'}->{'content'};
+
+                        $qaid = $this->_mainrenderer->create_collapsible_region_id();
+                        // $icon = $this->_mainrenderer->pix_icon('i/report', 'log');
+
+                        $result .= print_collapsible_region_start('', $qaid,
+                            '<code>Log</code>', '', true, true);
+                        $content = html_writer::tag('xmp', $log, array('class' => 'proforma_testlog'));
+                        $result .= html_writer::tag('small', $content);
+                        $result .= print_collapsible_region_end(true);
+
+                        break;
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            // Ignore exception.
         }
         return $result;
     }
