@@ -7,7 +7,8 @@
 * new: C++ support 
 * bulktestindex improvements
 * avoid wrapping of test log in feedback
-
+* bugfix inline messages in editor 
+* default Java 17
 
 ## v2.7.1
 
