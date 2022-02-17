@@ -1,4 +1,13 @@
+## v2.7.3
+
+* display extra log for Googletest (Praktomat 4.12.2)
+
 ## v2.7.2
+
+* new: C++ support 
+* bulktestindex improvements
+* avoid wrapping of test log in feedback
+
 
 ## v2.7.1
 
