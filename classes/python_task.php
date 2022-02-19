@@ -15,19 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * create ProFormA c task file resp. extract data from such a file
+ * create ProFormA python task file resp. extract data from such a file
  *
  * @package    qtype
  * @subpackage proforma
- * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @copyright  2022 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
-class qtype_proforma_c_task extends qtype_proforma_base_task {
+class qtype_proforma_python_task extends qtype_proforma_base_task {
 
     /**
      * add extra namespaces to XML
@@ -48,37 +49,9 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
         $xw->text($formdata->programminglanguage);
     }
 
-    /**
-     * add test files to XML.
-     *
-     * @param $xw
-     * @param $formdata
-     */
-    /*
-    protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
-        $count = count($formdata->testid);
-        for ($index = 0; $index < $count; $index++) {
-            $id = $formdata->testid[$index];
-            if ($id !== '' && $this->is_test_set($formdata, $index)) {
-                // Handle uploaded test files.
-                $counter = 1;
-                foreach (qtype_proforma_base_task::_get_draft_testfiles($formdata, $index) as $draftfile) {
-                    $xw->startElement('file');
-                    $xw->create_attribute('id', $formdata->testid[$index] . '-' . $counter);
-                    $xw->create_attribute('used-by-grader', 'true');
-                    $xw->create_attribute('visible', 'no');
-                    $xw->startElement('embedded-bin-file');
-                    $xw->create_attribute('filename', $draftfile->get_filename());
-                    $xw->text(base64_encode($draftfile->get_content()));
-                    $xw->endElement(); // End tag embedded-bin-file.
-                    $xw->endElement(); // End tag file.
-                    $counter++;
-                }
-            }
-        }
+    protected function get_testfilename($index, $id, $code) {
+        return 'test_pythontest' . $id . '.py';
     }
-    */
-
 
     /**
      * add unittest element to test in XML
@@ -89,9 +62,6 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
      */
     protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index, $formdata) {
         $xw->startElement('unit:unittest');
-        // $xw->create_attribute('framework', 'JUnit');
-        $entrypoint = $formdata->testentrypoint[$index];
-        $xw->create_childelement_with_text('unit:entry-point', trim($entrypoint));
         $xw->endElement(); // End tag unit:unittest.
     }
 
@@ -107,16 +77,10 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
     protected function extract_formdata_from_test($question, $test, $files, &$index) {
         $config = $test->{'test-configuration'};
         // Switch to namespace 'unit'.
-        $unittest = $config->children('unit', true)->{'unittest'};
+        // $unittest = $config->children('unit', true)->{'unittest'};
         // $question->testversion[$index] = (string)$unittest->attributes()->version;
         // Call parent function for setting testcode attribute.
         // Note that index will be increemented there, too.
-        $originalindex = $index;
         parent::extract_formdata_from_test($question, $test, $files, $index);
-        if (!isset($question->testcode[$originalindex])) {
-            // Only set entrypoint if code for editor is set.
-            $question->testentrypoint[$originalindex] = $unittest->{'entry-point'};
-        }
     }
-
 }

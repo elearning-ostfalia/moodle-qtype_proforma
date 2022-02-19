@@ -29,6 +29,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/java_formcreator.p
 require_once($CFG->dirroot . '/question/type/proforma/classes/setlx_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/c_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/cpp_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/python_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/select_formcreator.php');
 
 /**
@@ -62,6 +63,9 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
         if (get_config('qtype_proforma', 'clang')) {
             array_push($proglangs, [qtype_proforma::C_TASKFILE, 'c (CUnit, CMake/Make)']);
+        }
+        if (get_config('qtype_proforma', 'python')) {
+            array_push($proglangs, [qtype_proforma::PYTHON_TASKFILE, 'Python (Python Unittest)']);
         }
 
         if (count($proglangs) > 1) {
@@ -182,21 +186,21 @@ class qtype_proforma_edit_form extends question_edit_form {
             case qtype_proforma::PERSISTENT_TASKFILE:
                 $this->formcreator = new proforma_form_creator($this->_form);
                 break;
+            // Question was created by form editor.
             case qtype_proforma::JAVA_TASKFILE:
-                // Question was created by form editor.
                 $this->formcreator = new java_form_creator($this->_form, $newquestion);
                 break;
             case qtype_proforma::C_TASKFILE:
-                // Question was created by form editor.
                 $this->formcreator = new c_form_creator($this->_form, $newquestion);
                 break;
             case qtype_proforma::CPP_TASKFILE:
-                // Question was created by form editor.
                 $this->formcreator = new cpp_form_creator($this->_form, $newquestion);
                 break;
             case qtype_proforma::SETLX_TASKFILE:
-                // Question was created by form editor.
                 $this->formcreator = new setlx_form_creator($this->_form, $newquestion);
+                break;
+            case qtype_proforma::PYTHON_TASKFILE:
+                $this->formcreator = new python_form_creator($this->_form, $newquestion);
                 break;
             case qtype_proforma::SELECT_TASKFILE:
                 // Question was created by form editor but not yet finished.

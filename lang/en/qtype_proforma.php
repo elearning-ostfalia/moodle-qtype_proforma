@@ -114,6 +114,7 @@ $string['junit'] = 'JUnit test';
 $string['setlx'] = 'SetlX test';
 $string['clang'] = 'CUnit test';
 $string['cppunittest'] = 'Google Test';
+$string['pythonunit'] = 'Python Unittest';
 
 $string['cunit_help'] = 'The test files must contain at least a Makefile (<code>CMakeLists.txt</code> for <i>cmake</i> possible) and <code>main.c</code>.<br>
 <code>main()</code> must return 0 in case of an error-free test run, otherwise <> 0.<br>

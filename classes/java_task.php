@@ -71,22 +71,10 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     }
 
 
-    /**
-     * return the testfile from draft area
-     *
-     * @global type $USER
-     * @param type $formdata
-     * @param type $testindex
-     * @return type
-     */
-    private function _get_draft_testfiles($formdata, $testindex) {
-        global $USER;
-        $usercontext = context_user::instance($USER->id);
-
-        $draftitemid = $formdata->testfiles[$testindex];
-        $fs = get_file_storage();
-        return $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id', false);
+    protected function get_testfilename($index, $id, $code) {
+        return self::get_java_file($code);
     }
+
     /**
      * add test files to XML.
      *
@@ -95,6 +83,8 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      */
     protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
         // Create Junit files.
+        parent::add_testfiles_to_xml($xw, $formdata);
+        /*
         $count = count($formdata->testid);
         for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];
@@ -115,7 +105,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                 } else {
                     // Handle uploaded test files.
                     $counter = 1;
-                    foreach ($this->_get_draft_testfiles($formdata, $index) as $draftfile) {
+                    foreach (qtype_proforma_base_task::_get_draft_testfiles($formdata, $index) as $draftfile) {
                         $xw->startElement('file');
                         $xw->create_attribute('id', $formdata->testid[$index] . '-' . $counter);
                         $xw->create_attribute('used-by-grader', 'true');
@@ -129,7 +119,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                     }
                 }
             }
-        }
+        }*/
 
         // Create checkstyle file.
         if (self::has_checkstyle($formdata)) {
@@ -163,48 +153,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         }
 
         // Junit tests.
-        $count = count($formdata->testid);
-        for ($index = 0; $index < $count; $index++) {
-            $id = $formdata->testid[$index];
-            if ($id !== '' && $this->is_test_set($formdata, $index)) {
-                $xw->startElement('test');
-                $xw->create_attribute('id', $formdata->testid[$index]);
-                $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
-                $xw->create_childelement_with_text('test-type', 'unittest');
-                $xw->startElement('test-configuration');
-                $xw->startElement('filerefs');
-                if ($formdata->testcodeformat[$index] == base_form_creator::TESTCODE_EDITOR) {
-                    $xw->startElement('fileref');
-                    $xw->create_attribute('refid', $formdata->testid[$index]);
-                    $xw->endElement(); // End tag fileref.
-                } else {
-                    $counter = 1;
-                    foreach ($this->_get_draft_testfiles($formdata, $index) as $draftfile) {
-                        $xw->startElement('fileref');
-                        $xw->create_attribute('refid', $formdata->testid[$index] . '-' . $counter);
-                        $xw->endElement(); // End tag fileref.
-                        $counter++;
-                    }
-                }
-
-                $xw->endElement(); // End tag filerefs.
-                $xw->startElement('unit:unittest');
-                $xw->create_attribute('framework', 'JUnit');
-                $junitversion = $formdata->testversion[$index];
-                $xw->create_attribute('version', $junitversion);
-                if ($formdata->testcodeformat[$index] == base_form_creator::TESTCODE_EDITOR) {
-                    $code = $formdata->testcode[$index];
-                    $entrypoint = self::get_java_entrypoint($code);
-                } else {
-                    $entrypoint = $formdata->testentrypoint[$index];
-                }
-                $xw->create_childelement_with_text('unit:entry-point', trim($entrypoint));
-                $xw->endElement(); // End tag unit:unittest.
-                $xw->endElement(); // End tag test-configuration.
-
-                $xw->endElement(); // End tag test.
-            }
-        }
+        parent::add_tests_to_xml($xw, $formdata);
 
         // Create checkstyle test.
         if (self::has_checkstyle($formdata)) {
@@ -229,6 +178,29 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
             $xw->endElement(); // End tag test.
         }
     }
+
+    /**
+     * add unittest element to test in XML
+     * @param SimpleXmlWriter $xw
+     * @param $index
+     * @param $formdata
+     * @return void
+     */
+    protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index, $formdata) {
+        $xw->startElement('unit:unittest');
+        $xw->create_attribute('framework', 'JUnit');
+        $junitversion = $formdata->testversion[$index];
+        $xw->create_attribute('version', $junitversion);
+        if ($formdata->testcodeformat[$index] == base_form_creator::TESTCODE_EDITOR) {
+            $code = $formdata->testcode[$index];
+            $entrypoint = self::get_java_entrypoint($code);
+        } else {
+            $entrypoint = $formdata->testentrypoint[$index];
+        }
+        $xw->create_childelement_with_text('unit:entry-point', trim($entrypoint));
+        $xw->endElement(); // End tag unit:unittest.
+    }
+
 
     /**
      * Add tests to LMS internal grading hints.

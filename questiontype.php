@@ -30,6 +30,7 @@ require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/moodlelib.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/java_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/setlx_formcreator.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/python_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/question.php');
 
@@ -93,6 +94,8 @@ class qtype_proforma extends question_type {
     const C_TASKFILE = 5;
     /** C++ task file */
     const CPP_TASKFILE = 6;
+    /** Python task file */
+    const PYTHON_TASKFILE = 7;
 
     // Collapse options
     /**
@@ -303,6 +306,9 @@ class qtype_proforma extends question_type {
                 break;
             case self::CPP_TASKFILE:
                 $editor = new c_form_creator($formdata);
+                break;
+            case self::PYTHON_TASKFILE:
+                $editor = new python_form_creator($formdata);
                 break;
             case self::REPOSITORY:
             default:

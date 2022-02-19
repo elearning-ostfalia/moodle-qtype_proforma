@@ -71,6 +71,8 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         }
 
         // Setlx files.
+        parent::add_testfiles_to_xml($xw, $formdata);
+        /*
         $count = count($formdata->testid);
         for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];
@@ -86,7 +88,11 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
                 $xw->endElement(); // End tag embedded-txt-file.
                 $xw->endElement(); // End tag file.
             }
-        }
+        }*/
+    }
+
+    protected function get_testfilename($index, $id, $code) {
+        return 'test' . $id . '.stlx';
     }
 
     /**

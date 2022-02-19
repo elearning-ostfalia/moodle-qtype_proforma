@@ -493,4 +493,138 @@ abstract class qtype_proforma_base_task {
         }
         $index++;
     }
+
+    /**
+     * return the testfile from draft area
+     *
+     * @param type $formdata
+     * @param type $testindex
+     * @return type
+     * @global type $USER
+     */
+    protected static function _get_draft_testfiles($formdata, $testindex)
+    {
+        global $USER;
+        $usercontext = context_user::instance($USER->id);
+
+        $draftitemid = $formdata->testfiles[$testindex];
+        $fs = get_file_storage();
+        return $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id', false);
+    }
+
+    /**
+     * Default implementaion of adding tests to XML
+     * @param SimpleXmlWriter $xw
+     * @param $formdata
+     * @return void
+     * @throws coding_exception
+     */
+    protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata) {
+        $count = count($formdata->testid);
+        for ($index = 0; $index < $count; $index++) {
+            $id = $formdata->testid[$index];
+            if ($id !== '' && $this->is_test_set($formdata, $index)) {
+                $xw->startElement('test');
+                $xw->create_attribute('id', $formdata->testid[$index]);
+                $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
+                $xw->create_childelement_with_text('test-type', 'unittest');
+                $xw->startElement('test-configuration');
+                $xw->startElement('filerefs');
+                if ($formdata->testcodeformat[$index] == base_form_creator::TESTCODE_EDITOR) {
+                    $xw->startElement('fileref');
+                    $xw->create_attribute('refid', $formdata->testid[$index]);
+                    $xw->endElement(); // End tag fileref.
+                } else {
+                    $counter = 1;
+                    foreach (qtype_proforma_base_task::_get_draft_testfiles($formdata, $index) as $draftfile) {
+                        $xw->startElement('fileref');
+                        $xw->create_attribute('refid', $formdata->testid[$index] . '-' . $counter);
+                        $xw->endElement(); // End tag fileref.
+                        $counter++;
+                    }
+                }
+
+                $xw->endElement(); // End tag filerefs.
+
+                $this->add_unittest_to_xml($xw, $index, $formdata);
+
+                $xw->endElement(); // End tag test-configuration.
+
+                $xw->endElement(); // End tag test.
+            }
+        }
+    }
+
+    protected function get_testfilename($index, $id, $code) {
+        throw new coding_exception('missing implementation of get_testfilename');
+    }
+
+    protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index) {
+        throw new coding_exception('missing implementation of add_testframework_to_xml');
+    }
+
+    /**
+     * get number of Unit tests without any other test types.
+     *
+     * @param $gradinghints
+     * @return int
+     */
+    public function get_count_unit_tests($gradinghints) {
+        if (!$gradinghints) {
+            return 0;
+        }
+        $gh = new SimpleXMLElement($gradinghints, LIBXML_PARSEHUGE);
+        $count = 0;
+        foreach ($gh->root->{'test-ref'} as $test) {
+            $count++;
+        }
+        return $count;
+    }
+
+    /**
+     * add test files to XML.
+     *
+     * @param $xw
+     * @param $formdata
+     */
+    protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
+        // Create Unit test files.
+        $count = count($formdata->testid);
+        for ($index = 0; $index < $count; $index++) {
+            $id = $formdata->testid[$index];
+            if ($id !== '' && $this->is_test_set($formdata, $index)) {
+                if ($formdata->testcodeformat[$index] == base_form_creator::TESTCODE_EDITOR) {
+                    $xw->startElement('file');
+                    $xw->create_attribute('id', $formdata->testid[$index]);
+                    $xw->create_attribute('used-by-grader', 'true');
+                    $xw->create_attribute('visible', 'no');
+
+                    $xw->startElement('embedded-txt-file');
+                    $code = $formdata->testcode[$index];
+                    $filename = $this->get_testfilename($index, $id, $code);
+                    //     $filename = self::get_java_file($code);
+                    $xw->create_attribute('filename', $filename);
+                    $xw->text($formdata->testcode[$index]);
+                    $xw->endElement(); // End tag embedded-txt-file.
+                    $xw->endElement(); // End tag file.
+                } else {
+                    // Handle uploaded test files.
+                    $counter = 1;
+                    foreach (qtype_proforma_base_task::_get_draft_testfiles($formdata, $index) as $draftfile) {
+                        $xw->startElement('file');
+                        $xw->create_attribute('id', $formdata->testid[$index] . '-' . $counter);
+                        $xw->create_attribute('used-by-grader', 'true');
+                        $xw->create_attribute('visible', 'no');
+                        $xw->startElement('embedded-bin-file');
+                        $xw->create_attribute('filename', $draftfile->get_filename());
+                        $xw->text(base64_encode($draftfile->get_content()));
+                        $xw->endElement(); // End tag embedded-bin-file.
+                        $xw->endElement(); // End tag file.
+                        $counter++;
+                    }
+                }
+            }
+        }
+    }
+
 }

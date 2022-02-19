@@ -101,6 +101,7 @@ At least the following settings must be made:
 
 * set grader URI to IP address and port number of your 'ProFormA-Praktomat server'
 
+* Moodle 4: Ensure that the servers (IP and port) are not blocked by HTTP security ("cURL blocked hosts list" and "cURL allowed ports list").
 
 and for the built-in Java question generator: 
 

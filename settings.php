@@ -156,6 +156,8 @@ $settings->add(new qtype_proforma\lib\admin_setting_configproformagrader('qtype_
 $settings->add(new admin_setting_configcheckbox('qtype_proforma/setlx',
         'SetlX', '', 0));
 
+$settings->add(new admin_setting_configcheckbox('qtype_proforma/python',
+    'Python', '', 0));
 
 // Java - JUnit - Checkstyle.
 $settings->add(new admin_setting_heading('java',
