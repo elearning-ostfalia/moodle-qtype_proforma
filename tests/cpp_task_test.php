@@ -30,26 +30,30 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
-// require_once($CFG->dirroot . '/question/type/proforma/classes/c_task.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/cpp_task.php');
+require_once($CFG->dirroot . '/question/type/proforma/tests/task_testcase.php');
 
 
-class qtype_proforma_c_task_test extends task_testcase {
+class qtype_proforma_cpp_task_test extends task_testcase {
 
     const EXPECTED_BASE = '<?xml version="1.0" encoding="UTF-8"?>
 <task xmlns="urn:proforma:v2.0" lang="de" uuid="bbbf6679-0226-4fb3-8da0-4f370dd027cb" xmlns:unit="urn:proforma:tests:unittest:v1.1">
     <title>ProFormA question (äöüß)</title>
     <description>Please code the reverse string function not using a library function.(äöüß)</description>
-    <proglang version="">c</proglang>
+    <proglang version="">cpp</proglang>
     <submission-restrictions/>
     <files>
         <file id="1-1" used-by-grader="true" visible="no">
-            <embedded-bin-file filename="cunit1.c">aW50IGN1bml0XzEoKSB7IHJldHVybiAxOyB9</embedded-bin-file>
+            <embedded-bin-file filename="gtest.cpp">aW50IGN1bml0XzEoKSB7IHJldHVybiAxOyB9</embedded-bin-file>
         </file>
         <file id="1-2" used-by-grader="true" visible="no">
-            <embedded-bin-file filename="main.c">aW50IG1haW4oKSB7IHJldHVybiAxOyB9</embedded-bin-file>
+            <embedded-bin-file filename="main.cpp">aW50IG1haW4oKSB7IHJldHVybiAxOyB9</embedded-bin-file>
+        </file>
+        <file id="1-3" used-by-grader="true" visible="no">
+            <embedded-bin-file filename="Makefile">Ly8gQSBtYWtlZmlsZQ==</embedded-bin-file>
         </file>
         <file id="2-1" used-by-grader="true" visible="no">
-            <embedded-bin-file filename="main.c">aW50IG1haW4oKSB7IHJldHVybiAxOyB9</embedded-bin-file>
+            <embedded-bin-file filename="main.cpp">aW50IG1haW4oKSB7IHJldHVybiAxOyB9</embedded-bin-file>
         </file>
         <file id="MS" used-by-grader="false" visible="no">
             <embedded-txt-file filename="modelsolution.java">// no model solution available </embedded-txt-file>
@@ -64,20 +68,21 @@ class qtype_proforma_c_task_test extends task_testcase {
     </model-solutions>
     <tests>
         <test id="1">
-            <title>c Test 1</title>
+            <title>cpp Test 1</title>
             <test-type>unittest</test-type>
             <test-configuration>
                 <filerefs>
                     <fileref refid="1-1"/>
                     <fileref refid="1-2"/>
+                    <fileref refid="1-3"/>
                 </filerefs>
                 <unit:unittest>
-                    <unit:entry-point>./test</unit:entry-point>
+                    <unit:entry-point>./runtest</unit:entry-point>
                 </unit:unittest>
             </test-configuration>
         </test>
         <test id="2">
-            <title>c Test 2</title>
+            <title>cpp Test 2</title>
             <test-type>unittest</test-type>
             <test-configuration>
                 <filerefs>
@@ -95,7 +100,8 @@ class qtype_proforma_c_task_test extends task_testcase {
     <meta-data/>
 </task>
 ';    
-    
+
+    /*
     // TODO: also used in question_test.php!
     public function assert_same_xml($expectedxml, $xml) {
         
@@ -121,23 +127,23 @@ class qtype_proforma_c_task_test extends task_testcase {
         
         $this->assertEquals(str_replace("\r\n", "\n", $expectedxml),
                 str_replace("\r\n", "\n", $xml));
-    }
+    }*/
 
     /* one setlx test with syntax check */
-    public function test_create_c_file1() {
+    public function test_create_cpp_file1() {
         $this->resetAfterTest(true);
         $this->setAdminUser();
         // Create sample form data
-        $formdata = test_question_maker::get_question_form_data('proforma', 'c1');
+        $formdata = test_question_maker::get_question_form_data('proforma', 'cpp1');
         $instance = new qtype_proforma_c_task;
         $taskfile = $instance->create_task_file($formdata);
 
-        // Remove test id=2 and file id=2
+        // Remove second test (id=2) and last file (id=3)
         $xmldoc = new DOMDocument();
         $xmldoc->loadXML(self::EXPECTED_BASE);
         $node = $xmldoc->getElementsByTagName('tests')[0]->getElementsByTagName('test')[1];
         $node->parentNode->removeChild($node);
-        $node = $xmldoc->getElementsByTagName('files')[0]->getElementsByTagName('file')[2];
+        $node = $xmldoc->getElementsByTagName('files')[0]->getElementsByTagName('file')[3];
         $node->parentNode->removeChild($node);
         $expectedxml = $xmldoc->saveXML();      
                
@@ -172,11 +178,11 @@ class qtype_proforma_c_task_test extends task_testcase {
         $this->assert_same_xml($expectedxml, $taskfile);
     }
 */
-    public function test_create_c_file_2_tests() {
+    public function test_create_cpp_file_2_tests() {
         $this->resetAfterTest(true);
         $this->setAdminUser();
         // Create sample form data
-        $formdata = test_question_maker::get_question_form_data('proforma', 'c2');
+        $formdata = test_question_maker::get_question_form_data('proforma', 'cpp2');
         $instance = new qtype_proforma_c_task;
         $taskfile = $instance->create_task_file($formdata);
 

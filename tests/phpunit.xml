@@ -47,6 +47,7 @@
                 <exclude>../tests/helper.php</exclude>
                 <exclude>../tests/testgrader.php</exclude>
                 <exclude>../tests/walkthrough_test_base.php</exclude>
+                <exclude>../tests/task_testcase.php</exclude>
             </testsuite>
         </testsuites>
 
