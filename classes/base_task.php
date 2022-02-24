@@ -559,7 +559,7 @@ abstract class qtype_proforma_base_task {
         throw new coding_exception('missing implementation of get_testfilename');
     }
 
-    protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index) {
+    protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index, $formdata) {
         throw new coding_exception('missing implementation of add_testframework_to_xml');
     }
 
