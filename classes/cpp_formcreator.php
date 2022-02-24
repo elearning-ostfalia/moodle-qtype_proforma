@@ -73,7 +73,7 @@ class cpp_form_creator extends c_form_creator {
         parent::add_test_settings($question, $questioneditform);
 
         // Set aggregation strategy to 'all-or-nothing'.
-        $this->_form->setDefault('aggregationstrategy', qtype_proforma::ALL_OR_NOTHING);
+        $this->_form->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
     }
 
     /**
