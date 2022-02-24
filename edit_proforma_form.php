@@ -249,6 +249,9 @@ class qtype_proforma_edit_form extends question_edit_form {
         $mform->addElement('editor', 'comment', get_string('comment', 'qtype_proforma'),
                 array('rows' => 10), $this->editoroptions);
 
+        // Move general feedback element into 'feedback' elements folder in order to have a cleaner form.
+        $mform->insertElementBefore($mform->removeElement('generalfeedback', false), 'expandcollapse');
+
         // Attention! the following assignment is put at the very end of the function
         // in order to avoid problems with a call to repeat_elements which
         // crashes in case of previous closures.
