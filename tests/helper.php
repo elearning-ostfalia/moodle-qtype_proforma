@@ -65,6 +65,7 @@ class qtype_proforma_test_helper extends question_test_helper {
             // c.
             'c1', 'c1a', 'c2',
             'cpp1', 'cpp2',
+            'python1', 'python2', 'python3',
             // Different grading approaches.
             'weightedsum',
             // Different values set in question.
@@ -983,14 +984,14 @@ class qtype_proforma_test_helper extends question_test_helper {
     }
 
 
-    /** one test and syntax check */
+    /** one test */
     public function get_proforma_question_form_data_cpp1() {
         $form = $this->get_proforma_question_form_data_cpp_base();
         return $form;
     }
 
 
-    /** two tests and syntax check */
+    /** two tests */
     public function get_proforma_question_form_data_cpp2() {
         $form = $this->get_proforma_question_form_data_cpp_base();
 
@@ -1011,7 +1012,98 @@ class qtype_proforma_test_helper extends question_test_helper {
         return $form;
     }
 
+    // -------------------
+    // Python
+    // -------------------
+    public function get_proforma_question_form_data_python_base() {
+        $form = new stdClass();
 
+        $form->original_template = '';
+
+        // valid data for a task file in the repository!
+        $form->taskstorage = qtype_proforma::PYTHON_TASKFILE;
+
+        $form->responsefilename = self::QUESTION_FILENAME;
+        $form->programminglanguage = 'python';
+        $form->proglangversion = '';
+
+        // $container->modelsolution = self::QUESTION_MODELSOLUTION;
+        // set redundant :-( template
+        $form->responsetemplate = self::QUESTION_TEMPLATE;
+        $form->template = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->template, 'template.txt',
+            self::QUESTION_TEMPLATE);
+
+        $form->gradinghints = self::QUESTION_GRADINGHINTS_C2;
+        $form->aggregationstrategy = qtype_proforma::WEIGHTED_SUM;
+
+        $form->name = self::QUESTION_NAME;
+        //$form->questiontext = self::QUESTION_TEXT;
+        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        $form->defaultmark = 3.0;
+        $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
+        $form->penalty = 0.2;
+
+        $form->responseformat = 'editor';
+        $form->modelsolution = '# code for model solution';
+        $form->responsefieldlines = 10;
+        $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
+
+        $form->compile = 1;
+        $form->compileweight = 2;
+
+        // test weight, title and description are taken from grading hints.
+        // They must also exist as test variables.
+        $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
+        $form->testfiles = array();
+        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($form->testfiles[0], 'test1.py',
+            '# testfile 1 ...');
+        $this->make_attachment_in_draft_area($form->testfiles[0], 'test2.py',
+            '# testfile 2 ...');
+
+        $form->testtitle[0] = 'Python Test 1';
+        $form->testweight[0] = '3';
+        $form->testid[0] = '1';
+
+
+        // handle different line ending on different platforms
+        //        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
+        $form->hint = array(
+            0 => array(
+                'text' => 'hint 1<br>',
+                'format' => '1',
+                'itemid' => '83894244'),
+            1 => array(
+                'text' => 'hint 2<br>',
+                'format' => '1',
+                'itemid' => '34635511'));
+
+        return $form;
+    }
+
+
+    /** one test */
+    public function get_proforma_question_form_data_python1() {
+        $form = $this->get_proforma_question_form_data_python_base();
+        return $form;
+    }
+
+    /** two tests */
+    public function get_proforma_question_form_data_python2() {
+        $form = $this->get_proforma_question_form_data_python_base();
+
+        $form->testcodeformat[1] = base_form_creator::TESTCODE_EDITOR;
+        $form->testcode[1] = '# code for test 2';
+        // Must be set correctly (=> grading hints) for PhpUnit test!
+        $form->testid[1] = '2';
+        $form->testtitle[1] = 'Python Test 2';
+        $form->testweight[1] = '6'; // '-';
+
+        // Behat: Title, weight and description come from grading hints
+        $form->gradinghints = self::QUESTION_GRADINGHINTS_C2;
+        return $form;
+    }
 
     /**
      * Creates an empty draft area for attachments.
