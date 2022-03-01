@@ -30,8 +30,15 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 abstract class qtype_proforma_base_task {
+    protected $_reservedids;
 
-
+    /**
+     * constructor
+     * @param $reservedids
+     */
+    public function __construct($reservedids = []) {
+        $this->_reservedids = $reservedids;
+    }
     /**
      * returns false if the task is imported and cannot be modified,
      * returns true if the task is created and can be edited inside Moodle.
@@ -171,7 +178,7 @@ abstract class qtype_proforma_base_task {
         $xw->endElement(); // End tag submission-restrictions.
 
         $xw->startElement('files');
-        $this->add_testfiles_to_xml($xw, $formdata);
+        $this->add_files_to_xml($xw, $formdata);
 
         // Create dummy model solution file.
         $xw->startElement('file');
@@ -430,7 +437,7 @@ abstract class qtype_proforma_base_task {
         // Read tests.
         $index = 0;
         foreach ($task->tests->test as $test) {
-            $this->extract_formdata_from_test($question, $test, $files, $index);
+            $this->extract_formdata_from_taskfile_test($question, $test, $files, $index);
         }
     }
 
@@ -444,7 +451,13 @@ abstract class qtype_proforma_base_task {
      * @param type $files: files array
      * @param type $index: index of next unit test (in/out)
      */
-    protected function extract_formdata_from_test($question, $test, $files, &$index) {
+    protected function extract_formdata_from_taskfile_test($question, $test, $files, &$index) {
+        /*foreach ($this->_reservedids as $reserved) {
+            if ($reserved == $test['id']) {
+                return;
+            }
+        }*/
+
         // Default implementation:
         // only unit tests are available. No other test.
         $code = null;
@@ -576,18 +589,27 @@ abstract class qtype_proforma_base_task {
         $gh = new SimpleXMLElement($gradinghints, LIBXML_PARSEHUGE);
         $count = 0;
         foreach ($gh->root->{'test-ref'} as $test) {
-            $count++;
+            $id = (string)$test['ref'];
+            $reserved = false;
+            foreach ($this->_reservedids as $reserved) {
+                if ($reserved == $id) {
+                    $reserved = true;
+                }
+            }
+            if (!$reserved) {
+                $count++;
+            }
         }
         return $count;
     }
 
     /**
-     * add test files to XML.
+     * add files to XML output.
      *
      * @param $xw
      * @param $formdata
      */
-    protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
+    protected function add_files_to_xml(SimpleXmlWriter $xw, $formdata) {
         // Create Unit test files.
         $count = count($formdata->testid);
         for ($index = 0; $index < $count; $index++) {

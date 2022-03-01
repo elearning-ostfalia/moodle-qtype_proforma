@@ -72,7 +72,7 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
      * @param type $files: files array
      * @param type $index: index of next unit test (in/out)
      */
-    protected function extract_formdata_from_test($question, $test, $files, &$index) {
+    protected function extract_formdata_from_taskfile_test($question, $test, $files, &$index) {
         $config = $test->{'test-configuration'};
         // Switch to namespace 'unit'.
         $unittest = $config->children('unit', true)->{'unittest'};
@@ -80,7 +80,7 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
         // Call parent function for setting testcode attribute.
         // Note that index will be increemented there, too.
         $originalindex = $index;
-        parent::extract_formdata_from_test($question, $test, $files, $index);
+        parent::extract_formdata_from_taskfile_test($question, $test, $files, $index);
         if (!isset($question->testcode[$originalindex])) {
             // Only set entrypoint if code for editor is set.
             $question->testentrypoint[$originalindex] = $unittest->{'entry-point'};

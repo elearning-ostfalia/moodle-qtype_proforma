@@ -32,6 +32,13 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
     const CHECKSTYLE = 'checkstyle';
 
     /**
+     * constructor
+     */
+    public function __construct() {
+        parent::__construct([self::COMPILER, self::CHECKSTYLE]);
+    }
+
+    /**
      * is compiler option enabled?
      *
      * @param $formdata
@@ -58,7 +65,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
+    protected function add_files_to_xml(SimpleXmlWriter $xw, $formdata) {
         if (self::has_compiler($formdata)) {
             $xw->startElement('file');
             $xw->create_attribute('id', self::COMPILER);
@@ -73,7 +80,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         }
 
         // Setlx files.
-        parent::add_testfiles_to_xml($xw, $formdata);
+        parent::add_files_to_xml($xw, $formdata);
     }
 
     protected function get_testfilename($index, $id, $code) {
@@ -149,30 +156,6 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
     }
 
     /**
-     * get number of SetlX tests.
-     *
-     * @param $gradinghints
-     * @return int
-     */
-    public function get_count_unit_tests($gradinghints) {
-        if (!$gradinghints) {
-            return 0;
-        }
-        $gh = new SimpleXMLElement($gradinghints, LIBXML_PARSEHUGE);
-        $count = 0;
-        foreach ($gh->root->{'test-ref'} as $test) {
-            if ((string)$test['ref'] == self::CHECKSTYLE) {
-                continue;
-            }
-            if ((string)$test['ref'] == self::COMPILER) {
-                continue;
-            }
-            $count++;
-        }
-        return $count;
-    }
-
-    /**
      * called by extract_formdata_from_taskfile in order to
      * extract form data from task test.
      * Override if needed!
@@ -182,12 +165,12 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
      * @param type $files: files array
      * @param type $index: index of next unit test (in/out)
      */
-    protected function extract_formdata_from_test($question, $test, $files, &$index) {
+    protected function extract_formdata_from_taskfile_test($question, $test, $files, &$index) {
         switch ($test['id']) {
-            case self::COMPILER:
+            case self::COMPILER: // TODO: Set flag???
                 break;
             default:
-                parent::extract_formdata_from_test($question, $test, $files, $index);
+                parent::extract_formdata_from_taskfile_test($question, $test, $files, $index);
                 break;
         }
     }

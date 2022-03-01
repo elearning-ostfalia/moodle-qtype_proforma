@@ -74,6 +74,7 @@ class qtype_proforma_python_task extends qtype_proforma_base_task {
      * @param type $files: files array
      * @param type $index: index of next unit test (in/out)
      */
+    /*
     protected function extract_formdata_from_test($question, $test, $files, &$index) {
         $config = $test->{'test-configuration'};
         // Switch to namespace 'unit'.
@@ -83,4 +84,5 @@ class qtype_proforma_python_task extends qtype_proforma_base_task {
         // Note that index will be increemented there, too.
         parent::extract_formdata_from_test($question, $test, $files, $index);
     }
+    */
 }
