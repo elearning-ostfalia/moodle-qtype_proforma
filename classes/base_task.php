@@ -519,7 +519,7 @@ abstract class qtype_proforma_base_task {
      * @return void
      * @throws coding_exception
      */
-    protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata) {
+    protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata, $testtype = 'unittest') {
         $count = count($formdata->testid);
         for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];
@@ -527,7 +527,7 @@ abstract class qtype_proforma_base_task {
                 $xw->startElement('test');
                 $xw->create_attribute('id', $formdata->testid[$index]);
                 $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
-                $xw->create_childelement_with_text('test-type', 'unittest');
+                $xw->create_childelement_with_text('test-type', $testtype);
                 $xw->startElement('test-configuration');
                 $xw->startElement('filerefs');
                 if ($formdata->testcodeformat[$index] == base_form_creator::TESTCODE_EDITOR) {

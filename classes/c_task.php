@@ -49,38 +49,6 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
     }
 
     /**
-     * add test files to XML.
-     *
-     * @param $xw
-     * @param $formdata
-     */
-    /*
-    protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
-        $count = count($formdata->testid);
-        for ($index = 0; $index < $count; $index++) {
-            $id = $formdata->testid[$index];
-            if ($id !== '' && $this->is_test_set($formdata, $index)) {
-                // Handle uploaded test files.
-                $counter = 1;
-                foreach (qtype_proforma_base_task::_get_draft_testfiles($formdata, $index) as $draftfile) {
-                    $xw->startElement('file');
-                    $xw->create_attribute('id', $formdata->testid[$index] . '-' . $counter);
-                    $xw->create_attribute('used-by-grader', 'true');
-                    $xw->create_attribute('visible', 'no');
-                    $xw->startElement('embedded-bin-file');
-                    $xw->create_attribute('filename', $draftfile->get_filename());
-                    $xw->text(base64_encode($draftfile->get_content()));
-                    $xw->endElement(); // End tag embedded-bin-file.
-                    $xw->endElement(); // End tag file.
-                    $counter++;
-                }
-            }
-        }
-    }
-    */
-
-
-    /**
      * add unittest element to test in XML
      * @param SimpleXmlWriter $xw
      * @param $index

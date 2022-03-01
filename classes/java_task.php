@@ -28,7 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
 class qtype_proforma_java_task extends qtype_proforma_base_task {
-
+    const COMPILER   = 'compiler';
+    const CHECKSTYLE = 'checkstyle';
 
     /**
      * is Checkstyle option enabled?
@@ -84,47 +85,11 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
         // Create Junit files.
         parent::add_testfiles_to_xml($xw, $formdata);
-        /*
-        $count = count($formdata->testid);
-        for ($index = 0; $index < $count; $index++) {
-            $id = $formdata->testid[$index];
-            if ($id !== '' && $this->is_test_set($formdata, $index)) {
-                if ($formdata->testcodeformat[$index] == base_form_creator::TESTCODE_EDITOR) {
-                    $xw->startElement('file');
-                    $xw->create_attribute('id', $formdata->testid[$index]);
-                    $xw->create_attribute('used-by-grader', 'true');
-                    $xw->create_attribute('visible', 'no');
-
-                    $xw->startElement('embedded-txt-file');
-                    $code = $formdata->testcode[$index];
-                    $filename = self::get_java_file($code);
-                    $xw->create_attribute('filename', $filename);
-                    $xw->text($formdata->testcode[$index]);
-                    $xw->endElement(); // End tag embedded-txt-file.
-                    $xw->endElement(); // End tag file.
-                } else {
-                    // Handle uploaded test files.
-                    $counter = 1;
-                    foreach (qtype_proforma_base_task::_get_draft_testfiles($formdata, $index) as $draftfile) {
-                        $xw->startElement('file');
-                        $xw->create_attribute('id', $formdata->testid[$index] . '-' . $counter);
-                        $xw->create_attribute('used-by-grader', 'true');
-                        $xw->create_attribute('visible', 'no');
-                        $xw->startElement('embedded-bin-file');
-                        $xw->create_attribute('filename', $draftfile->get_filename());
-                        $xw->text(base64_encode($draftfile->get_content()));
-                        $xw->endElement(); // End tag embedded-bin-file.
-                        $xw->endElement(); // End tag file.
-                        $counter++;
-                    }
-                }
-            }
-        }*/
 
         // Create checkstyle file.
         if (self::has_checkstyle($formdata)) {
             $xw->startElement('file');
-            $xw->create_attribute('id', 'checkstyle');
+            $xw->create_attribute('id', self::CHECKSTYLE);
             $xw->create_attribute('used-by-grader', 'true');
             $xw->create_attribute('visible', 'no');
             $xw->startElement('embedded-txt-file');
@@ -145,7 +110,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         // Create compiler test.
         if (self::has_compiler($formdata)) {
             $xw->startElement('test');
-            $xw->create_attribute('id', 'compiler');
+            $xw->create_attribute('id', self::COMPILER);
             $xw->create_childelement_with_text('title', 'Compiler');
             $xw->create_childelement_with_text('test-type', 'java-compilation');
             $xw->create_childelement_with_text('test-configuration', null);
@@ -158,14 +123,14 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         // Create checkstyle test.
         if (self::has_checkstyle($formdata)) {
             $xw->startElement('test');
-            $xw->create_attribute('id', 'checkstyle');
+            $xw->create_attribute('id', self::CHECKSTYLE);
             $xw->create_childelement_with_text('title', 'CheckStyle Test');
             $xw->create_childelement_with_text('test-type', 'java-checkstyle');
             $xw->startElement('test-configuration');
 
             $xw->startElement('filerefs');
             $xw->startElement('fileref');
-            $xw->create_attribute('refid', 'checkstyle');
+            $xw->create_attribute('refid', self::CHECKSTYLE);
             $xw->endElement(); // End tag fileref.
             $xw->endElement(); // End tag filerefs.
             $xw->startElement('cs:java-checkstyle');
@@ -211,7 +176,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
         if (self::has_compiler($formdata)) {
             $xw->startElement('test-ref');
-            $xw->create_attribute('ref', 'compiler');
+            $xw->create_attribute('ref', self::COMPILER);
             $xw->create_attribute('weight', $formdata->compileweight);
             $xw->create_childelement_with_text('title', 'Compiler');
             $xw->create_childelement_with_text('description', '');
@@ -223,7 +188,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
 
         if (self::has_checkstyle($formdata)) {
             $xw->startElement('test-ref');
-            $xw->create_attribute('ref', 'checkstyle');
+            $xw->create_attribute('ref', self::CHECKSTYLE);
             $xw->create_attribute('weight', $formdata->checkstyleweight);
             $xw->create_childelement_with_text('title', 'CheckStyle Test');
             $xw->create_childelement_with_text('description', '');
@@ -242,11 +207,11 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      */
     protected function set_formdata_from_gradinghints($question, $ref, $weight) {
         switch($ref) {
-            case 'compiler':
+            case self::COMPILER:
                 $question->compileweight = $weight;
                 $question->compile = 1;
                 return true;
-            case 'checkstyle':
+            case self::CHECKSTYLE:
                 $question->checkstyleweight = $weight;
                 $question->checkstyle = 1;
                 return true;
@@ -267,7 +232,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      */
     protected function extract_formdata_from_test($question, $test, $files, &$index) {
         switch ($test['id']) {
-            case 'checkstyle':
+            case self::CHECKSTYLE:
                 $config = $test->{'test-configuration'};
                 // Get code (currently exactly one textfile is expected!!).
                 foreach ($config->filerefs as $filerefs) {
@@ -281,7 +246,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
                 $cs = $config->children('cs', true);
                 $question->checkstyleversion = (string)$cs->attributes()->version;
                 break;
-            case 'compiler':
+            case self::COMPILER:
                 // Nothing to be done for compiler.
                 break;
             default: // JUNIT test.
@@ -314,10 +279,10 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
         $gh = new SimpleXMLElement($gradinghints, LIBXML_PARSEHUGE);
         $count = 0;
         foreach ($gh->root->{'test-ref'} as $test) {
-            if ((string)$test['ref'] == 'checkstyle') {
+            if ((string)$test['ref'] == self::CHECKSTYLE) {
                 continue;
             }
-            if ((string)$test['ref'] == 'compiler') {
+            if ((string)$test['ref'] == self::COMPILER) {
                 continue;
             }
             $count++;

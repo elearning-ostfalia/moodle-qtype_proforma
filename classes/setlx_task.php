@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
 class qtype_proforma_setlx_task extends qtype_proforma_base_task {
+    const COMPILER   = 'compiler';
+    const CHECKSTYLE = 'checkstyle';
 
     /**
      * is compiler option enabled?
@@ -59,7 +61,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
     protected function add_testfiles_to_xml(SimpleXmlWriter $xw, $formdata) {
         if (self::has_compiler($formdata)) {
             $xw->startElement('file');
-            $xw->create_attribute('id', 'compiler');
+            $xw->create_attribute('id', self::COMPILER);
             $xw->create_attribute('used-by-grader', 'true');
             $xw->create_attribute('visible', 'no');
             $xw->startElement('embedded-txt-file');
@@ -72,23 +74,6 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
 
         // Setlx files.
         parent::add_testfiles_to_xml($xw, $formdata);
-        /*
-        $count = count($formdata->testid);
-        for ($index = 0; $index < $count; $index++) {
-            $id = $formdata->testid[$index];
-            if ($id !== '' && $this->is_test_set($formdata, $index)) {
-                $xw->startElement('file');
-                $xw->create_attribute('id', $formdata->testid[$index]);
-                $xw->create_attribute('used-by-grader', 'true');
-                $xw->create_attribute('visible', 'no');
-                $xw->startElement('embedded-txt-file');
-                $filename = 'test' . $id . '.stlx';
-                $xw->create_attribute('filename', $filename);
-                $xw->text($formdata->testcode[$index]);
-                $xw->endElement(); // End tag embedded-txt-file.
-                $xw->endElement(); // End tag file.
-            }
-        }*/
     }
 
     protected function get_testfilename($index, $id, $code) {
@@ -105,13 +90,13 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         // Create Setlx Syntax check.
         if (self::has_compiler($formdata)) {
             $xw->startElement('test');
-            $xw->create_attribute('id', 'compiler');
+            $xw->create_attribute('id', self::COMPILER);
             $xw->create_childelement_with_text('title', 'Syntax Check');
             $xw->create_childelement_with_text('test-type', 'setlx');
             $xw->startElement('test-configuration');
             $xw->startElement('filerefs');
             $xw->startElement('fileref');
-            $xw->create_attribute('refid', 'compiler');
+            $xw->create_attribute('refid', self::COMPILER);
             $xw->endElement(); // End tag fileref.
             $xw->endElement(); // End tag filerefs.
             $xw->endElement(); // End tag test-configuration.
@@ -119,26 +104,11 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         }
 
         // SetlX tests.
-        $count = count($formdata->testid);
-        for ($index = 0; $index < $count; $index++) {
-            $id = $formdata->testid[$index];
-            if ($id !== '' && $this->is_test_set($formdata, $index)) {
-                $xw->startElement('test');
-                $xw->create_attribute('id', $formdata->testid[$index]);
-                $xw->create_childelement_with_text('title', $formdata->testtitle[$index]);
-                $xw->create_childelement_with_text('test-type', 'setlx');
+        parent::add_tests_to_xml($xw, $formdata, 'setlx');
+    }
 
-                $xw->startElement('test-configuration');
-                $xw->startElement('filerefs');
-                $xw->startElement('fileref');
-                $xw->create_attribute('refid', $formdata->testid[$index]);
-                $xw->endElement(); // End tag fileref.
-                $xw->endElement(); // End tag filerefs.
-                $xw->endElement(); // End tag test-configuration.
-
-                $xw->endElement(); // End tag test.
-            }
-        }
+    protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index, $formdata) {
+        // Empty
     }
 
     /**
@@ -150,7 +120,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
     protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
         if (self::has_compiler($formdata)) {
             $xw->startElement('test-ref');
-            $xw->create_attribute('ref', 'compiler');
+            $xw->create_attribute('ref', self::COMPILER);
             $xw->create_attribute('weight', $formdata->compileweight);
             $xw->create_childelement_with_text('title', 'Syntax Check');
             $xw->create_childelement_with_text('description', '');
@@ -170,7 +140,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
      * @return bool
      */
     protected function set_formdata_from_gradinghints($question, $ref, $weight) {
-        if ($ref == 'compiler') {
+        if ($ref == self::COMPILER) {
             $question->compileweight = $weight;
             $question->compile = 1;
             return true;
@@ -191,10 +161,10 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         $gh = new SimpleXMLElement($gradinghints, LIBXML_PARSEHUGE);
         $count = 0;
         foreach ($gh->root->{'test-ref'} as $test) {
-            if ((string)$test['ref'] == 'checkstyle') {
+            if ((string)$test['ref'] == self::CHECKSTYLE) {
                 continue;
             }
-            if ((string)$test['ref'] == 'compiler') {
+            if ((string)$test['ref'] == self::COMPILER) {
                 continue;
             }
             $count++;
@@ -214,7 +184,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
      */
     protected function extract_formdata_from_test($question, $test, $files, &$index) {
         switch ($test['id']) {
-            case 'compiler':
+            case self::COMPILER:
                 break;
             default:
                 parent::extract_formdata_from_test($question, $test, $files, $index);

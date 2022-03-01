@@ -130,7 +130,7 @@ class python_form_creator extends base_form_creator {
             // Preset data if question already exists.
             $form = $editor->get_form();
 
-            if ($question->taskstorage != qtype_proforma::PYTHON_TASKFILE) {
+            if ($question->taskstorage != $this->_tasktype) {
                 throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }
             $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
