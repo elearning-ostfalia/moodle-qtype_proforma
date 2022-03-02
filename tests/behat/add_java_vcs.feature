@@ -18,6 +18,8 @@ Feature: ADD JAVA QUESTION WITH VERSION CONTROL SYSTEM USE
     And the following config values are set as admin:
       | clang | 0  | qtype_proforma |
       | cpp| 0  | qtype_proforma |
+      | python| 0  | qtype_proforma |
+      | setlx| 0  | qtype_proforma |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration

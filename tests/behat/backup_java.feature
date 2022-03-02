@@ -32,9 +32,11 @@ Feature: BACKUP AND RESTORE JAVA
     When I open the "last" add to quiz menu
     And I follow "a new question"
     And I set the field "item_qtype_proforma" to "1"
-    And I press "submitbutton"
+    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
+    And I set the field "item_java" to "1"
+    And I click on "Ok" "button" in the "Select programming language" "dialogue"
     Then I should see "Adding a ProFormA question"
-    And I set the following fields to these values:
+    When I set the following fields to these values:
       | Question name            | java-question  |
       | Question text            | write a java program that..... |
       | Response format          | editor                         |

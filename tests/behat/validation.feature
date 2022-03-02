@@ -15,9 +15,9 @@ Feature: VALIDATION
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
-    And the following config values are set as admin:
-      | clang | 0  | qtype_proforma |
-      | cpp | 0  | qtype_proforma |
+#    And the following config values are set as admin:
+#      | clang | 0  | qtype_proforma |
+#      | cpp | 0  | qtype_proforma |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
@@ -26,12 +26,19 @@ Feature: VALIDATION
   @javascript @_file_upload
   Scenario: Create Java question with missing or incorrect values
 ##########################################################################
-    When I add a "ProFormA" question filling the form with:
+    When I press "Create a new question ..."
+    And I set the field "item_qtype_proforma" to "1"
+    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
+    And I set the field "item_java" to "1"
+    And I click on "Ok" "button" in the "Select programming language" "dialogue"
+    Then I should see "Adding a ProFormA question"
+
+    When I set the following fields to these values:
+    # When I add a "ProFormA" question filling the form with:
       | Question name            | java-question                  |
       | Question text            | write a java program that..... |
       | Response format          | editor                         |
-    # Step is automatically finished with: I press "id_submitbutton"
-
+    And I press "id_submitbutton"
     # Response filename required:
     Then I should see "Required"
     When I set the field "Response filename" to "XClass.java"
