@@ -1,8 +1,8 @@
 @qtype @qtype_proforma @javascript @grade_proforma
 Feature: GRADE C/C++/Python
-  Grade c question with actual grader
+  Grade question with actual grader
   As a teacher
-  In order to check my c questions will work for students
+  In order to check if my questions will work for students
   I need to preview and grade them
 
   # Requires valid Praktomat connection on http://praktomat:8010
@@ -24,12 +24,91 @@ Feature: GRADE C/C++/Python
 #      | Course       | C1        | Test questions |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
+    And I navigate to "Question bank" in current page administration
 
+##########################################################################
   @javascript @_switch_window @_file_upload
-  Scenario: Create a C++ question, preview and submit a response.
-    When I navigate to "Question bank" in current page administration
+  Scenario: Python question grading
+##########################################################################
 
-    And I press "Create a new question ..."
+    When I press "Create a new question ..."
+    And I set the field "item_qtype_proforma" to "1"
+    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
+    And I set the field "item_python" to "1"
+    And I click on "Ok" "button" in the "Select programming language" "dialogue"
+    Then I should see "Adding a ProFormA question"
+
+    When I set the following fields to these values:
+      | Question name            | Python Question with 2 tests    |
+      | Question text            | write a Python program that..... |
+      | Aggregation strategy     | Weighted sum                |
+      | Comment                  | a comment                   |
+      | Response format          | editor                     |
+      | Response filename        | palindrome.py                   |
+
+    And I set the field "testtitle[0]" to "Python #1"
+    And I set the field "id_testcodeformat_0_2" to "1"
+    And I upload "question/type/proforma/tests/fixtures/behat/python/test.py" to "testfiles[0]" filemanager by name
+
+    # add new Test
+    When I press "id_option_add_fields"
+    And I set the field "testtitle[1]" to "Python #2"
+    And I set the field "testdescription[1]" to "this is the second Python test"
+    And I set the field "testweight[1]" to "3"
+    And I set the codemirror "testcode_1" to multiline:
+"""
+# coding=utf-8
+
+import unittest
+from palindrome import is_palindrome
+
+class PalindromeTest(unittest.TestCase):
+
+    def test_long(self):
+        self.assertEqual(True, is_palindrome('Roma tibi subito motibus ibit amor'), 'Roma tibi subito motibus ibit amor')
+
+    def test_short(self):
+        self.assertEqual(True, is_palindrome('otto'), 'otto')
+        self.assertEqual(True, is_palindrome('rentner'), 'rentner')
+        self.assertEqual(True, is_palindrome('a'), 'a')
+
+    def test_empty(self):
+        self.assertEqual(True, is_palindrome(''), '<empty>')
+"""
+
+    And I press "id_submitbutton"
+    Then I should see "Python Question with 2 tests"
+    When I choose "Preview" action for "Python Question with 2 tests" in the question bank
+    And I switch to "questionpreview" window
+    And I set the field "How questions behave" to "Adaptive mode (no penalties)"
+    And I press "Start again with these options"
+    And I set the response to
+"""
+# coding=utf-8
+
+import sys
+
+def is_palindrome(text):
+    print('is_palindrome ' + text)
+    sys.stderr.write('to stderr')
+    text = text.lower()
+    text = text.replace(' ', '')
+    reversestring = text[::-1]
+    return reversestring == text
+"""
+
+    And I press "Check"
+    Then I should see "Python #1 (25/25 %)"
+    And I should see "Python #2 (75/75 %)"
+    And I should see "Log"
+    And I should see "Correct"
+    And I should see "Marks for this submission: 1.00/1.00."
+
+##########################################################################
+  @javascript @_switch_window @_file_upload
+  Scenario: C++ question grading
+##########################################################################
+    When I press "Create a new question ..."
     And I set the field "item_qtype_proforma" to "1"
     And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
     And I set the field "item_c++/c" to "1"
@@ -82,86 +161,4 @@ Feature: GRADE C/C++/Python
     And I should see "Partially correct"
     And I should see "Marks for this submission: 0.83/1.00."
 
-  @javascript @_file_upload
-  Scenario: Import a ProFormA question, preview and submit a response.
 
-    When I navigate to "Question bank > Import" in current page administration
-    And I set the field "id_format_proforma" to "1"
-    And I upload "question/type/proforma/tests/fixtures/behat/Palindrom.zip" file to "Import" filemanager
-    And I press "id_submitbutton"
-    Then I should see "Parsing questions from import file."
-    And I should see "Importing 1 questions from file"
-    And I should see "1. Implementieren Sie"
-    And I press "Continue"
-    And I should see "Palindrom mit Checkstyle Vorne V2"
-    When I choose "Preview" action for "Palindrom mit Checkstyle Vorne V2" in the question bank
-    And I switch to "questionpreview" window
-    And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
-    And I set the response to
-    """
-    public class MyString {
-      static public Boolean isPalindrom(String s) {
-        String r = new StringBuilder(s).reverse().toString();
-        return (s.equalsIgnoreCase(r));
-      }
-    }
-    """
-
-    And I press "Check"
-    Then I should see "CheckStyle Test (0/17 %)"
-    And I should see "Java Compiler Test"
-    And I should see " Junit Test PalindromTest (83/83 %)"
-    And I should see "Partially correct"
-    And I should see "Marks for this submission: 0.83/1.00."
-    # And I switch to the main window
-
-
-  @javascript @_switch_window @_file_upload
-  Scenario: Create a Setlx question, preview and submit a response.
-    When the following config values are set as admin:
-      | setlx | 1  | qtype_proforma |
-    And I navigate to "Question bank" in current page administration
-    And I press "Create a new question ..."
-    And I set the field "item_qtype_proforma" to "1"
-    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
-    And I set the field "item_setlx" to "1"
-    And I click on "Ok" "button" in the "Select programming language" "dialogue"
-    Then I should see "Adding a ProFormA question"
-
-    When I set the following fields to these values:
-      | Question name            | setlx question    |
-      | Question text            | write a setlx program that..... |
-    # The default functions do not work for CodeMirror with Javascript.
-    # So we must use other functions.
-    And I set the field "testtitle[0]" to "Setlx #1"
-    And I set the codemirror "testcode_0" to multiline:
-"""
-  testfunction := procedure(set, operation){
-    return (forall(a in set, b in set| operation(a,b) in set));
-  };
-
-  print("Test1:$#set1>=2$");
-  print("Test1:$#set2>=2$");
-  print("Test2:$testfunction(set1,operation)$");
-  print("Test3:$!testfunction(set2,operation)$");
-"""
-    And I press "id_submitbutton"
-    Then I should see "setlx question"
-    When I choose "Preview" action for "setlx question" in the question bank
-    And I switch to "questionpreview" window
-    And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
-    And I set the response to
-    """
-operation := procedure(a,b){
-    return a*b;
-};
-set1 := {0,1};
-set2 := {0,1,2};
-    """
-
-    And I press "Check"
-    Then I should see "Setlx #1"
-    And I should see "Correct"
-    And I should see "Marks for this submission: 1.00/1.00."
