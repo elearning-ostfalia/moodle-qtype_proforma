@@ -28,6 +28,91 @@ Feature: GRADE C/C++/Python
 
 ##########################################################################
   @javascript @_switch_window @_file_upload
+  Scenario: C question grading
+##########################################################################
+    When I press "Create a new question ..."
+    And I set the field "item_qtype_proforma" to "1"
+    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
+    And I set the field "item_c" to "1"
+    And I click on "Ok" "button" in the "Select programming language" "dialogue"
+    Then I should see "Adding a ProFormA question"
+
+    When I set the following fields to these values:
+      | Question name            | C question                  |
+      | Question text            | question text  |
+      | Response format          | editor                         |
+      | Response filename        | palindrome.c                   |
+      | Penalty for each incorrect try  | 20%     |
+    # CUnit Test 1
+    And I set the field "testtitle[0]" to "CUnit Test 1"
+#    And I set the field "testweight[0]" to "10"
+    And I upload "question/type/proforma/tests/fixtures/behat/c/CMakeLists.txt" to "testfiles[0]" filemanager by name
+    And I upload "question/type/proforma/tests/fixtures/behat/c/main.c" to "testfiles[0]" filemanager by name
+    And I upload "question/type/proforma/tests/fixtures/behat/c/palindrome.h" to "testfiles[0]" filemanager by name
+    And I set the field "testentrypoint[0]" to "./palindrome_test"
+
+    And I press "id_submitbutton"
+    Then I should see "C question"
+    When I choose "Preview" action for "C question" in the question bank
+    And I switch to "questionpreview" window
+    And I set the field "How questions behave" to "Adaptive mode (no penalties)"
+    And I press "Start again with these options"
+    And I set the response to
+    """
+#include <stdio.h>
+#include <string.h>
+#include "palindrome.h"
+
+char *strrev(char *str)
+{
+      char *p1, *p2;
+
+      if (! str || ! *str)
+            return str;
+      for (p1 = str, p2 = str + strlen(str) - 1; p2 > p1; ++p1, --p2)
+      {
+            *p1 ^= *p2;
+            *p2 ^= *p1;
+            *p1 ^= *p2;
+      }
+      return str;
+}
+
+int is_palidrome(const char *input) {
+    char newstring[100]; // should be allocated...
+    strcpy(newstring, input);
+    strrev(newstring);
+    return (strcmp(input, newstring) == 0);
+}
+    """
+
+    And I press "Check"
+    Then I should see "CUnit Test 1"
+    And I should not see "Log"
+    And I should see "Correct"
+    And I should see "Marks for this submission: 1.00/1.00."
+
+    And I set the response to
+    """
+#include <stdio.h>
+#include <string.h>
+#include "palindrome.h"
+
+// Wrong answer
+int is_palidrome(const char *input) {
+    return 1;
+}
+    """
+
+    And I press "Check"
+    Then I should see "CUnit Test 1"
+    And I should not see "Log"
+    And I should see "Wrong"
+    And I should see "Marks for this submission: 0.00/1.00."
+
+
+##########################################################################
+  @javascript @_switch_window @_file_upload
   Scenario: Python question grading
 ##########################################################################
 
