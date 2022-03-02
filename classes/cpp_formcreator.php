@@ -62,7 +62,6 @@ class cpp_form_creator extends c_form_creator {
         return $this->add_test_fields($question, $questioneditform, 'cpp');
     }
 
-
     /**
      * Add test settings.
      *
@@ -74,46 +73,5 @@ class cpp_form_creator extends c_form_creator {
 
         // Set aggregation strategy to 'all-or-nothing'.
         $this->_form->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
-    }
-
-    /**
-     * Validate form fields.
-     *
-     * @param qtype_proforma_edit_form $editor actual editor instance
-     * @param Validation $fromform
-     * @param Validation $files
-     * @param array $errors
-     * @return array
-     */
-    public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
-        $errors = parent::validation($editor, $fromform, $files, $errors);
-
-        // Check C tests.
-        $repeats = $this->get_count_tests(null);
-        for ($i = 0; $i < $repeats; $i++) {
-            list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
-            if ($valid) {
-                $entrypoint = $fromform["testentrypoint"][$i];
-                if (0 == strlen(trim($entrypoint))) {
-                    // Entrypoint missing.
-                    $errors['testentrypoint['.$i.']'] = get_string('executablerequired', 'qtype_proforma');
-                }
-            }
-        }
-
-        if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
-            $repeats = count($fromform["testweight"]);
-            $sumweight = 0;
-            for ($i = 0; $i < $repeats; $i++) {
-                $sumweight += $fromform["testweight"][$i];
-            }
-            if ($repeats > 0 && $sumweight == 0) {
-                // Error message must be attached to testoptions group.
-                // Otherwise it is not visible.
-                $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
-            }
-        }
-
-        return $errors;
     }
 }

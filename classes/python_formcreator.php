@@ -76,14 +76,10 @@ class python_form_creator extends base_form_creator {
      * @param array $errors
      * @return array
      */
+    /*
     public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
         $errors = parent::validation($editor, $fromform, $files, $errors);
 
-        // Check tests.
-        $repeats = $this->get_count_tests(null);
-        for ($i = 0; $i < $repeats; $i++) {
-            list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
-        }
         // Sum of weights must be > 0.
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
             $repeats = count($fromform["testweight"]);
@@ -99,5 +95,5 @@ class python_form_creator extends base_form_creator {
         }
 
         return $errors;
-    }
+    } */
 }

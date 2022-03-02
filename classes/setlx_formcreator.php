@@ -30,7 +30,6 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 class setlx_form_creator extends base_form_creator {
 
-
     /**
      * setlx_form_creator constructor.
      *
@@ -78,7 +77,6 @@ class setlx_form_creator extends base_form_creator {
         return $this->add_test_fields($question, $questioneditform, 'setlx');
     }
 
-
     /**
      * Add test settings.
      *
@@ -93,76 +91,16 @@ class setlx_form_creator extends base_form_creator {
     }
 
     /**
-     * Validate form fields.
-     *
-     * @param qtype_proforma_edit_form $editor actual editor instance
-     * @param Validation $fromform
-     * @param Validation $files
-     * @param array $errors
-     * @return array
+     * calculates the sum of all weights (for validation)
+     * @param $fromform
+     * @return int|mixed
      */
-    public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
-        $errors = parent::validation($editor, $fromform, $files, $errors);
-
-        // Check SetlX tests.
-        $repeats = $this->get_count_tests(null);
-        for ($i = 0; $i < $repeats; $i++) {
-            list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
+    protected function calc_sumweight($fromform) {
+        $sumweight = parent::calc_sumweight($fromform);
+        if ($fromform["compile"]) {
+            $sumweight += $fromform["compileweight"];
         }
 
-        if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
-            $repeats = count($fromform["testweight"]);
-            $sumweight = 0;
-            for ($i = 0; $i < $repeats; $i++) {
-                $sumweight += $fromform["testweight"][$i];
-            }
-            if ($fromform["compile"]) {
-                $sumweight += $fromform["compileweight"];
-            }
-            if ($repeats > 0 && $sumweight == 0) {
-                // Error message must be attached to testoptions group.
-                // Otherwise it is not visible.
-                $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
-            }
-        }
-
-        return $errors;
+        return $sumweight;
     }
-
-    /**
-     * Prepare question to fit form field names and values.
-     *
-     * @param $question
-     * @param category $cat
-     * @param MoodleQuickForm $form
-     * @param qtype_proforma_edit_form $editor
-     */
-    /*
-    public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
-        parent::data_preprocessing($question, $cat, $editor);
-
-        if (isset($question->id)) {
-            // Preset data if question already exists.
-            $form = $editor->get_form();
-
-            switch ($question->taskstorage) {
-                case qtype_proforma::SETLX_TASKFILE:
-                    $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
-                    $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
-
-                    // Model solution files can be uploaded with a file manager
-                    // or entered as text in editor.
-                    $msfilearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
-                    $files = $msfilearea->get_files($editor->context->id, $question->id);
-                    if (count($files) === 1) {
-                        $question->modelsolution = $files[0]->get_content();
-                    }
-                    break;
-                default:
-                    throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
-            }
-        }
-    }*/
-
-
 }

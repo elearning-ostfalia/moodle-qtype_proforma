@@ -147,7 +147,38 @@ abstract class base_form_creator {
             }
         }
 
+        // Check tests.
+        $repeats = $this->get_count_tests(null);
+        for ($i = 0; $i < $repeats; $i++) {
+            list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
+        }
+
+        // Ensure that sum of weights is > 0.
+        if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
+            $repeats = count($fromform["testweight"]);
+            $sumweight = $this->calc_sumweight($fromform);
+            if (/*$repeats > 0 && */$sumweight == 0) {
+                // Error message must be attached to testoptions group
+                // otherwise it is not visible.
+                $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
+            }
+        }
+
         return $errors;
+    }
+
+    /**
+     * calculates the sum of all weights (for validation)
+     * @param $fromform
+     * @return int|mixed
+     */
+    protected function calc_sumweight($fromform) {
+        $repeats = count($fromform["testweight"]);
+        $sumweight = 0;
+        for ($i = 0; $i < $repeats; $i++) {
+            $sumweight += $fromform["testweight"][$i];
+        }
+        return $sumweight;
     }
 
     /**
@@ -196,7 +227,6 @@ abstract class base_form_creator {
 
         return array($errors, $codeavailable and $titleavailable);
     }
-
 
 
     /**

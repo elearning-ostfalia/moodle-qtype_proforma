@@ -90,21 +90,6 @@ class java_form_creator extends base_form_creator {
         $mform->addRule('proglangversion', get_string('error'), 'nonzero', null, 'client', false, false);
     }
 
-    /**
-     * Modify repeatarray in add_tests: add editor for testcode
-     *
-     * @param $repeatarray
-     */
-    /*
-    protected function adjust_test_repeatarray(&$repeatarray) {
-        $mform = $this->_form;
-
-        parent::adjust_test_repeatarray($repeatarray);
-        // Add Unit test entry point.
-        $repeatarray[] = $mform->createElement('text', 'testentrypoint',
-            get_string('entrypoint', 'qtype_proforma'), array('size' => 80));
-    }
-    */
 
     /**
      * Modify repeatoptions in add_tests
@@ -213,12 +198,13 @@ class java_form_creator extends base_form_creator {
      * @return type
      * @throws coding_exception
      */
-    private function _validate_junit(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
-        list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
+    protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
+        list($errors, $valid) = parent::validate_unittest($editor, $fromform, $files, $i, $errors);
         if ($valid) {
             if (0 == $fromform["testversion"][$i]) {
                 // Unsupported version and no new choice.
                 $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
+                $valid = false;
             }
             $format = $fromform["testcodeformat"][$i];
             switch ($format) {
@@ -244,7 +230,7 @@ class java_form_creator extends base_form_creator {
             }
         }
 
-        return $errors;
+        return array($errors, $valid);
     }
 
 
@@ -272,10 +258,6 @@ class java_form_creator extends base_form_creator {
         }
 
         // Check Junit tests.
-        $repeats = $this->get_count_tests(null);
-        for ($i = 0; $i < $repeats; $i++) {
-            $errors = $this->_validate_junit($editor, $fromform, $files, $i, $errors);
-        }
         if (isset($fromform["responseformat"]) and $fromform["responseformat"] == 'editor') {
             // Check response filename.
             if (0 < strlen(trim($fromform["modelsolution"]))) {
@@ -286,27 +268,24 @@ class java_form_creator extends base_form_creator {
             }
         }
 
-        // Sum of weights must be > 0.
-        if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
-            $repeats = count($fromform["testweight"]);
-            $sumweight = 0;
-            for ($i = 0; $i < $repeats; $i++) {
-                $sumweight += $fromform["testweight"][$i];
-            }
-            if ($fromform["checkstyle"]) {
-                $sumweight += $fromform["checkstyleweight"];
-            }
-            if ($fromform["compile"]) {
-                $sumweight += $fromform["compileweight"];
-            }
-            if ($repeats > 0 && $sumweight == 0) {
-                // Error message must be attached to testoptions group
-                // otherwise it is not visible.
-                $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
-            }
+        return $errors;
+    }
+
+    /**
+     * calculates the sum of all weights (for validation)
+     * @param $fromform
+     * @return int|mixed
+     */
+    protected function calc_sumweight($fromform) {
+        $sumweight = parent::calc_sumweight($fromform);
+        if ($fromform["checkstyle"]) {
+            $sumweight += $fromform["checkstyleweight"];
+        }
+        if ($fromform["compile"]) {
+            $sumweight += $fromform["compileweight"];
         }
 
-        return $errors;
+        return $sumweight;
     }
 
     /**

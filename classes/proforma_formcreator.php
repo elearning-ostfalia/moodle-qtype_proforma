@@ -59,7 +59,7 @@ class proforma_form_creator extends base_form_creator {
      */
     public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
         $errors = parent::validation($editor, $fromform, $files, $errors);
-
+/*
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
             $repeats = count($fromform["testweight"]);
             $sumweight = 0;
@@ -72,11 +72,16 @@ class proforma_form_creator extends base_form_creator {
                 $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
             }
         }
-
+*/
         $errors = $this->validate_taskfile($editor, $fromform, $errors);
 
         return $errors;
     }
+
+    protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
+        return array($errors, true);
+    }
+
 
     /**
      * Checks if the replaced taskfile is valid

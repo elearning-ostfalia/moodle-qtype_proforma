@@ -29,8 +29,6 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/c_task.php');
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 class c_form_creator extends base_form_creator {
-
-
     /**
      * c_form_creator constructor.
      *
@@ -88,43 +86,26 @@ class c_form_creator extends base_form_creator {
     }
 
     /**
-     * Validate form fields.
-     *
-     * @param qtype_proforma_edit_form $editor actual editor instance
-     * @param Validation $fromform
-     * @param Validation $files
-     * @param array $errors
+     * Check for run command (in addition to base function)
+     * @param qtype_proforma_edit_form $editor
+     * @param $fromform
+     * @param $files
+     * @param $i
+     * @param $errors
      * @return array
+     * @throws coding_exception
      */
-    public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
-        $errors = parent::validation($editor, $fromform, $files, $errors);
-
-        // Check C tests.
-        $repeats = $this->get_count_tests(null);
-        for ($i = 0; $i < $repeats; $i++) {
-            list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
-            if ($valid) {
-                $entrypoint = $fromform["testentrypoint"][$i];
-                if (0 == strlen(trim($entrypoint))) {
-                    // Entrypoint missing.
-                    $errors['testentrypoint['.$i.']'] = get_string('executablerequired', 'qtype_proforma');
-                }
+    protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
+        list($errors, $valid) = parent::validate_unittest($editor, $fromform, $files, $i, $errors);
+        if ($valid) {
+            $entrypoint = $fromform["testentrypoint"][$i];
+            if (0 == strlen(trim($entrypoint))) {
+                // Entrypoint missing.
+                $errors['testentrypoint['.$i.']'] = get_string('executablerequired', 'qtype_proforma');
+                $valid = false;
             }
         }
-
-        if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
-            $repeats = count($fromform["testweight"]);
-            $sumweight = 0;
-            for ($i = 0; $i < $repeats; $i++) {
-                $sumweight += $fromform["testweight"][$i];
-            }
-            if ($repeats > 0 && $sumweight == 0) {
-                // Error message must be attached to testoptions group.
-                // Otherwise it is not visible.
-                $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
-            }
-        }
-
-        return $errors;
+        return array($errors, $valid);
     }
+
 }
