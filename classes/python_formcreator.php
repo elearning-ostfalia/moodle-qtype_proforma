@@ -32,19 +32,6 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
  * Edit form for creating Python questions.
  */
 class python_form_creator extends base_form_creator {
-
-    /** Key for Choose option in version selection. */
-    const CHOOSE_OPTION = '0';
-
-    /**
-     * flag indicates if a new question is to be created. For new questions
-     * an invalid cohooser option is preselected.
-     * For existing questions the old value is preselected.
-     * @var type
-     */
-    protected $_newquestion = false;
-
-
     /**
      * python_form_creator constructor.
      * @param type $form form instance OR formdata
@@ -111,50 +98,6 @@ class python_form_creator extends base_form_creator {
             }
         }
 
-        debugging($errors);
         return $errors;
     }
-
-    /**
-     * Prepare question to fit form field names and values.
-     *
-     * @param $question
-     * @param category $cat
-     * @param MoodleQuickForm $form
-     * @param qtype_proforma_edit_form $editor
-     */
-    /*
-    public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
-        parent::data_preprocessing($question, $cat, $editor);
-
-        if (isset($question->id)) {
-            // Preset data if question already exists.
-            $form = $editor->get_form();
-
-            if ($question->taskstorage != $this->_tasktype) {
-                throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
-            }
-            $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
-            $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
-
-            // testcode format is set from default for existing questions
-            $count = count($question->testid);
-            for ($key = 0; $key < $count; $key++) {
-                // We need to delete the default values for the testcodeformat
-                // for all existing tests in order to prevent Moodle
-                // from using the default value instead of the value read from task file.
-                unset($form->_defaultValues["testcodeformat[{$key}]"]);
-            }
-
-            // Model solution files can be uploaded with a file manager
-            // or entered as text in editor.
-            $msfilearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
-            $files = $msfilearea->get_files($editor->context->id, $question->id);
-            if (count($files) === 1) {
-                $question->modelsolution = $files[0]->get_content();
-            }
-        }
-    }
-    */
-
 }

@@ -131,6 +131,9 @@ class qtype_proforma_question extends question_graded_automatically {
                 case 'cpp':
                     $alternativehost = trim(get_config('qtype_proforma', 'cpp_grader'));
                     break;
+                case 'python':
+                    $alternativehost = trim(get_config('qtype_proforma', 'python_grader'));
+                    break;
             }
         }
 

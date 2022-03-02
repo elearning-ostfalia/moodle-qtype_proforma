@@ -148,12 +148,15 @@ $string['graderuri_host'] = 'URI: Protocol and Server';
 $string['graderuri_host_desc'] = 'Protocol (Scheme) and Server (Host) Part of Grader URI';
 $string['graderuri_path'] = 'URI: Path';
 $string['graderuri_path_desc'] = 'Path Part of Grader URI';
-$string['c_graderuri_host'] = 'Grader (Protocol and server) for c';
-$string['c_graderuri_host_desc'] = 'For running tests with c programming language an alternative grader can be set 
-(only protocol (scheme) and server (host) part of grader URI, no path)';
-$string['cpp_graderuri_host'] = 'Grader (Protocol and server) for C++';
-$string['cpp_graderuri_host_desc'] = 'For running tests with C++ programming language an alternative grader can be set  
-(only protocol (scheme) and server (host) part of grader URI, no path)';
+$string['c_graderuri_host'] = 'Grader for c';
+$string['c_graderuri_host_desc'] = '';
+$string['cpp_graderuri_host'] = 'Grader for C++';
+$string['cpp_graderuri_host_desc'] = '';
+$string['python_graderuri_host'] = 'Grader for Python';
+$string['python_graderuri_host_desc'] = '';
+$string['alternativegrader'] = 'For (almost) all programming languages an alternative grader can be set.
+Only protocol (scheme) and server (host) part of grader URI must be set, no path.';
+
 $string['submissionproformaversion'] = 'ProFormA version';
 $string['submissionproformaversion_help'] = 'ProFormA version for communication between Moodle and grader. Version 2.1 requires at least Praktomat 4.9.0.';
 

@@ -310,47 +310,6 @@ class java_form_creator extends base_form_creator {
     }
 
     /**
-     * Prepare question to fit form field names and values.
-     *
-     * @param $question
-     * @param category $cat
-     * @param MoodleQuickForm $form
-     * @param qtype_proforma_edit_form $editor
-     */
-    /*
-    public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
-        parent::data_preprocessing($question, $cat, $editor);
-
-        if (isset($question->id)) {
-            // Preset data if question already exists.
-            $form = $editor->get_form();
-
-            if ($question->taskstorage != $this->_tasktype) {
-                throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
-            }
-            $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
-            $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
-
-            // testcode format is set from default for existing questions
-            $count = count($question->testid);
-            for ($key = 0; $key < $count; $key++) {
-                // We need to delete the default values for the testcodeformat
-                // for all existing tests in order to prevent Moodle
-                // from using the default value instead of the value read from task file.
-                unset($form->_defaultValues["testcodeformat[{$key}]"]);
-            }
-
-            // Model solution files can be uploaded with a file manager
-            // or entered as text in editor.
-            $msfilearea = new qtype_proforma_filearea(self::MODELSOLMANAGER);
-            $files = $msfilearea->get_files($editor->context->id, $question->id);
-            if (count($files) === 1) {
-                $question->modelsolution = $files[0]->get_content();
-            }
-        }
-    }*/
-
-    /**
      * checks if the first option can be removed in unit test version
      *
      * @param type $versionelement

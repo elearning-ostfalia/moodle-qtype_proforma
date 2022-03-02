@@ -55,9 +55,6 @@ class qtype_proforma_edit_form extends question_edit_form {
         $proglangs = [
             [qtype_proforma::JAVA_TASKFILE, 'Java (JUnit)'],
         ];
-        if (get_config('qtype_proforma', 'setlx')) {
-            array_push($proglangs, [qtype_proforma::SETLX_TASKFILE, 'SetlX']);
-        }
         if (get_config('qtype_proforma', 'cpp')) {
             array_push($proglangs, [qtype_proforma::CPP_TASKFILE, 'C++/c (GoogleTest, CMake/Make)']);
         }
@@ -66,6 +63,9 @@ class qtype_proforma_edit_form extends question_edit_form {
         }
         if (get_config('qtype_proforma', 'python')) {
             array_push($proglangs, [qtype_proforma::PYTHON_TASKFILE, 'Python (Python Unittest)']);
+        }
+        if (get_config('qtype_proforma', 'setlx')) {
+            array_push($proglangs, [qtype_proforma::SETLX_TASKFILE, 'SetlX']);
         }
 
         if (count($proglangs) > 1) {

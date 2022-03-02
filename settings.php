@@ -142,6 +142,12 @@ $settings->add(new admin_setting_configcheckbox('qtype_proforma/clang',
 $settings->add(new admin_setting_configcheckbox('qtype_proforma/cpp',
     'C++', '', 1));
 
+$settings->add(new admin_setting_configcheckbox('qtype_proforma/setlx',
+    'SetlX', '', 0));
+
+$settings->add(new admin_setting_configcheckbox('qtype_proforma/python',
+    'Python', get_string('alternativegrader', 'qtype_proforma'), 1));
+
 $settings->add(new qtype_proforma\lib\admin_setting_configproformagrader('qtype_proforma/c_grader',
         get_string('c_graderuri_host', 'qtype_proforma'),
         get_string('c_graderuri_host_desc', 'qtype_proforma'),
@@ -152,12 +158,11 @@ $settings->add(new qtype_proforma\lib\admin_setting_configproformagrader('qtype_
     get_string('cpp_graderuri_host_desc', 'qtype_proforma'),
     ''));
 
+$settings->add(new qtype_proforma\lib\admin_setting_configproformagrader('qtype_proforma/python_grader',
+    get_string('python_graderuri_host', 'qtype_proforma'),
+    get_string('python_graderuri_host_desc', 'qtype_proforma'),
+    ''));
 
-$settings->add(new admin_setting_configcheckbox('qtype_proforma/setlx',
-        'SetlX', '', 0));
-
-$settings->add(new admin_setting_configcheckbox('qtype_proforma/python',
-    'Python', '', 0));
 
 // Java - JUnit - Checkstyle.
 $settings->add(new admin_setting_heading('java',
