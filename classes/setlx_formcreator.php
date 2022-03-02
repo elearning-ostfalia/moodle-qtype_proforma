@@ -137,6 +137,7 @@ class setlx_form_creator extends base_form_creator {
      * @param MoodleQuickForm $form
      * @param qtype_proforma_edit_form $editor
      */
+    /*
     public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
         parent::data_preprocessing($question, $cat, $editor);
 
@@ -161,6 +162,7 @@ class setlx_form_creator extends base_form_creator {
                     throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }
         }
-    }
+    }*/
+
 
 }

@@ -136,6 +136,7 @@ class c_form_creator extends base_form_creator {
      * @param MoodleQuickForm $form
      * @param qtype_proforma_edit_form $editor
      */
+    /*
     public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
         parent::data_preprocessing($question, $cat, $editor);
 
@@ -158,4 +159,5 @@ class c_form_creator extends base_form_creator {
             }
         }
     }
+    */
 }

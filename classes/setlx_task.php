@@ -93,7 +93,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata) {
+    protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata, $testtype = 'unittest') {
         // Create Setlx Syntax check.
         if (self::has_compiler($formdata)) {
             $xw->startElement('test');

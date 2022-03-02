@@ -384,6 +384,9 @@ class proforma_form_creator extends base_form_creator {
         $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
     }
 
+    protected function preset_formdata(&$question, $cat, qtype_proforma_edit_form $editor) {
+    }
+
     /**
      * handle polymorphic behaviour when saving a question
      *

@@ -591,8 +591,8 @@ abstract class qtype_proforma_base_task {
         foreach ($gh->root->{'test-ref'} as $test) {
             $id = (string)$test['ref'];
             $reserved = false;
-            foreach ($this->_reservedids as $reserved) {
-                if ($reserved == $id) {
+            foreach ($this->_reservedids as $resid) {
+                if ($resid == $id) {
                     $reserved = true;
                 }
             }

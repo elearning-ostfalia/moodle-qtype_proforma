@@ -15,7 +15,7 @@
 // along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains unit tests for handling Setlx task files
+ * This file contains unit tests for handling c task files
  *
  * @package    qtype
  * @subpackage proforma
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
-// require_once($CFG->dirroot . '/question/type/proforma/classes/c_task.php');
+require_once($CFG->dirroot . '/question/type/proforma/tests/task_testcase.php');
 
 
 class qtype_proforma_c_task_test extends task_testcase {

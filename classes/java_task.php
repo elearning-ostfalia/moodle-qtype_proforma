@@ -113,7 +113,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      * @param $xw
      * @param $formdata
      */
-    protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata) {
+    protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata, $testtype = 'unittest') {
         // Create compiler test.
         if (self::has_compiler($formdata)) {
             $xw->startElement('test');
