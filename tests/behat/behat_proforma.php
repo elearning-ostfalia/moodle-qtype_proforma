@@ -264,7 +264,7 @@ class behat_proforma extends behat_base {
      */
     public function set_the_codemirror_to_multiline($name, PyStringNode $value) {
         $search = array("\r", "\n");
-        $value = str_replace($search, " ", $value);
+        $value = str_replace($search, "\\n", $value);
         $value = str_replace("\"", "\\\"", $value);
         // fwrite(STDOUT, $value);
         $command = 'return (function() { $("#id_' . $name .
@@ -281,8 +281,10 @@ class behat_proforma extends behat_base {
     public function set_the_response_to(PyStringNode $value) {
         // Remove newline and carriage return.
         $search = array("\r", "\n");
-        $value = str_replace($search, "", $value);
+        $value = str_replace($search, "\\n", $value);
+        $value = str_replace("\"", "\\\"", $value);
         // Do not use inline comments in response.
+        // $value = html_e::escape($value);
 
         $command = 'return (function() { $(".qtype_proforma_response").next(".CodeMirror").get(0).CodeMirror.setValue("'. $value. '"); })();';
         // fwrite(STDOUT, $command);
