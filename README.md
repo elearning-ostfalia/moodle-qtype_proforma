@@ -15,12 +15,16 @@ Standard test frameworks are used for specifying tests. Currently the following 
 - Java: JUnit 4, JUnit 5, Checkstyle
 - C++: GoogleTest (with CMake/Makefile)
 - c: GoogleTest, CUnit (with CMake/Makefile)
+- Python: Python Unittest
 - Setlx: Test, Syntax Check
-- (Python: Doctest, only by importing a question)
 
 Any other  programming language resp. test framework can be used as long as Praktomat (or any other ProFormA compatible test runner used as back-end) supports it. Since all code is open source, it can be easily extended to other languages and frameworks.
 
-The plugin comes with a built-in Java question form editor. Simple Java questions can be created diretly in Moodle with that editor. Simple means: only one file per JUnit test and only one Checkstyle test. More complex questions must be created outside of the system with a stand-alone editor (https://proforma.github.io/formatEditor/proformaEditor.html) or by other means (e.g. script). These questions can be imported by use of another Moodle plugin. 
+The plugin comes with a built-in question editor. 
+Most questions can be created diretly in Moodle with the built-in editor. 
+More complex questions can be created outside of the system with a stand-alone editor 
+(https://proforma.github.io/formatEditor/proformaEditor.html) or by other means 
+(e.g. script). These questions can be imported by use of another Moodle plugin. 
 
 Copyright note: The renderer code partly bases upon the renderer from essay question type (Moodle core).
 Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copied from Coderunner 
@@ -48,11 +52,15 @@ Alternative: File upload with filepicker for large files or if the response cons
 
 Student feedback for Java question:
 
-![filepicker](doc/student_feedback_2.png "feedback")
- 
+![filepicker](doc/student_feedback_2.png "Java feedback")
+
+Student feedback for Python question:
+
+![filepicker](doc/python.png "Python feedback")
+
 Messages in editor:
 
-![checkstyle](doc/checkstyle_2.PNG "feedback")
+![checkstyle](doc/checkstyle_2.PNG "Compiler messages")
 
 ## Installation
 

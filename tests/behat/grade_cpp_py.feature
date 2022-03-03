@@ -189,6 +189,24 @@ def is_palindrome(text):
     And I should see "Correct"
     And I should see "Marks for this submission: 1.00/1.00."
 
+
+    And I set the response to
+"""
+# coding=utf-8
+
+import sys
+
+def is_palindrome(text):
+    return False
+"""
+
+    And I press "Check"
+    Then I should see "Python #1 (0/25 %)"
+    And I should see "Python #2 (0/75 %)"
+    And I should see "Log"
+    And I should see "Incorrect"
+    And I should see "Marks for this submission: 0.00/1.00."
+
 ##########################################################################
   @javascript @_switch_window @_file_upload
   Scenario: C++ question grading
@@ -245,5 +263,25 @@ def is_palindrome(text):
     And I should see "Log"
     And I should see "Partially correct"
     And I should see "Marks for this submission: 0.83/1.00."
+
+    And I set the response to
+    """
+    #include <math.h>
+
+    double squareroot(const double a) {
+        if (a < 0) {
+            return -1;
+        }
+
+        return sqrt(a);
+    }
+    """
+
+    And I press "Check"
+    Then I should see "GoogleTest 1 (50/50 %)"
+    And I should see "GoogleTest 2 (50/50 %)"
+    And I should see "Log"
+    And I should see "Correct"
+    And I should see "Marks for this submission: 1.00/1.00."
 
 
