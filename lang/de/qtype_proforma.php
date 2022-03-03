@@ -123,15 +123,17 @@ $string['junit'] = 'JUnit Test';
 $string['setlx'] = 'SetlX Test';
 $string['clang'] = 'CUnit Test';
 
-$string['cunit_help'] = 'Die Testdateien müssen mindestens 
-    ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und <code>main.c</code> enthalten.<br>
-    <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
-    CUnit muss im <i>basic mode</i> ausgeführt werden.<br>
-    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt.';
-$string['gtest_help'] = 'Die Testdateien müssen mindestens 
+$string['cunit_help'] = 'Die Testdateien müssen 
     ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
     <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
-    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt.';
+    CUnit muss im <i>basic mode</i> ausgeführt werden.<br>
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.<br>
+    Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
+$string['gtest_help'] = 'Die Testdateien müssen  
+    ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
+    <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.<br>
+    Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
 
 $string['codeempty'] = 'Testcode fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
