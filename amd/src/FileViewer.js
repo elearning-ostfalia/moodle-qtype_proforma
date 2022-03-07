@@ -67,7 +67,7 @@ export class ProjectNode extends TreeNode {
 
             const span = document.createElement('span');
             span.innerHTML = ProjectNode.projects[i].name;
-            ul.appendChild(span);
+            li.appendChild(span);
 
             const subul = document.createElement('ul');
             subul.setAttribute('role', 'group');
@@ -78,11 +78,10 @@ export class ProjectNode extends TreeNode {
             for (let j = 0; j < project.files.length; j++) {
                 project.files[j].display(subul);
             }
-            ul.appendChild(subul);
+            li.appendChild(subul);
         }
-
-
     }
+
     constructor(name) {
         super(name);
         // Empty list of nodes.

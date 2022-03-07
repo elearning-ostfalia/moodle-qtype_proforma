@@ -47,6 +47,9 @@ Promise.all([
             test1.folders.push(new fileviewer.FolderNode('data'));
             test1.folders[0].files.push(new fileviewer.FileNode('input.txt'));
 
+            // Common files
+            let common = new fileviewer.ProjectNode('Common');
+
             let fv = document.getElementById("fileviewer");
             fileviewer.ProjectNode.display(fv);
 
