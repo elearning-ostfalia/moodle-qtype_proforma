@@ -85,6 +85,36 @@ Promise.all([
                     event.preventDefault();
                 });
             }
+
+            function _initSplitview() {
+                // Split view
+                let mousedown = false;
+                let resizer = document.getElementById('resize');
+                let fileviewerwin = document.getElementById('fileviewer');
+                resizer.addEventListener('mousedown', onMouseDown)
+
+                function onMouseDown(event) {
+                    mousedown = true;
+                    document.body.addEventListener('mousemove', onMouseMove)
+                    document.body.addEventListener('mouseup', onMouseUp)
+                }
+
+                function onMouseMove(event) {
+                    if (mousedown) {
+                        fileviewerwin.style.flexBasis = event.clientX + "px"
+                    } else {
+                        onMouseUp()
+                    }
+                }
+
+                const onMouseUp = (e) => {
+                    mousedown = false;
+                    document.body.removeEventListener('mouseup', onMouseUp)
+                    resizer.removeEventListener('mousemove', onMouseMove)
+                }
+            }
+
+            _initSplitview();
         }
 
         docReady(function() {
