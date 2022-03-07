@@ -4,11 +4,21 @@
 class TreeNode {
     constructor(name) {
         this.name = name;
+        this.boundHandleClick = event => {
+            console.log(`I was clicked: ${event}`)
+            document.getElementById('last_action').value = this.name;
+            document.getElementById('canvas').innerHTML = this.name;
+            event.stopPropagation();
+            event.preventDefault();
+        }
     }
-    display(domnode) {
+
+
+    displayInTreeview(domnode) {
         const li = document.createElement('li');
         li.setAttribute('role', 'treeitem');
         domnode.appendChild(li);
+        li.addEventListener('click', this.boundHandleClick);
         return li;
     }
 
@@ -19,8 +29,8 @@ export class FileNode extends TreeNode {
         super(name);
     }
 
-    display(domnode) {
-        const li = super.display(domnode);
+    displayInTreeview(domnode) {
+        const li = super.displayInTreeview(domnode);
         li.innerHTML = this.name;
         li.setAttribute('class', 'doc');
     }
@@ -34,8 +44,8 @@ export class FolderNode extends TreeNode {
         // Empty list of folders.
         this.folders = [];
     }
-    display(domnode) {
-        const li = super.display(domnode);
+    displayInTreeview(domnode) {
+        const li = super.displayInTreeview(domnode);
         li.setAttribute('aria-expanded', 'false');
 
         const span = document.createElement('span');
@@ -47,17 +57,17 @@ export class FolderNode extends TreeNode {
         li.appendChild(subul);
 
         for (let j = 0; j < this.folders.length; j++) {
-            this.folders[j].display(subul);
+            this.folders[j].displayInTreeview(subul);
         }
         for (let j = 0; j < this.files.length; j++) {
-            this.files[j].display(subul);
+            this.files[j].displayInTreeview(subul);
         }
     }
 }
 
 export class ProjectNode extends FolderNode {
     static projects = []; // all projects
-    static display(domnode) {
+    static displayInTreeview(domnode) {
         let ul = document.createElement("ul")
         ul.setAttribute('role', 'tree');
         ul.setAttribute('aria-labelledby', 'tree_label');
@@ -65,7 +75,7 @@ export class ProjectNode extends FolderNode {
 
         for (let i = 0; i < ProjectNode.projects.length; i++) {
             let project = ProjectNode.projects[i];
-            const li = project.display(ul);
+            const li = project.displayInTreeview(ul);
         }
     }
 
