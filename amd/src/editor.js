@@ -19,7 +19,60 @@
  * @description  after page has loaded initialize all treeitems based on the role=treeitem
  */
 
-window.addEventListener('load', function () {
+import('/amd/src/FileViewer.js')
+    .then((fileviewer) => {
+        console.log("editor.js script started");
+
+        function docReady(fn) {
+            // see if DOM is already available
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                // call on next available tick
+                setTimeout(fn, 1);
+            } else {
+                document.addEventListener("DOMContentLoaded", fn);
+            }
+        }
+
+        function _open() {
+            console.log('initialise elements');
+            var trees = document.querySelectorAll('[role="tree"]');
+
+            for (var i = 0; i < trees.length; i++) {
+                var t = new Tree(trees[i]);
+                t.init();
+            }
+
+            console.log('add event listener');
+            var treeitems = document.querySelectorAll('[role="treeitem"]');
+            for (var i = 0; i < treeitems.length; i++) {
+                treeitems[i].addEventListener('click', function (event) {
+                    var treeitem = event.currentTarget;
+                    var label = treeitem.getAttribute('aria-label');
+                    if (!label) {
+                        var child = treeitem.firstElementChild;
+                        label = child ? child.innerText : treeitem.innerText;
+                    }
+
+                    document.getElementById('last_action').value = label.trim();
+
+                    event.stopPropagation();
+                    event.preventDefault();
+                });
+            }
+        }
+
+        docReady(function() {
+            console.log("doc ready");
+            _open();
+        });
+
+
+// import {TreeItem} from "./FileViewer";
+
+
+
+        /*
+            window.addEventListener('load', function () {
     var trees = document.querySelectorAll('[role="tree"]');
 
     for (var i = 0; i < trees.length; i++) {
@@ -27,6 +80,7 @@ window.addEventListener('load', function () {
         t.init();
     }
 });
+*/
 
 /*
  *   @constructor
@@ -498,22 +552,25 @@ Treeitem.prototype.handleMouseOut = function (event) {
  * @description  after page has loaded initialize all treeitems based on the role=treeitem
  */
 
-window.addEventListener('load', function () {
-    var treeitems = document.querySelectorAll('[role="treeitem"]');
+/*
+    window.addEventListener('load', function () {
+        var treeitems = document.querySelectorAll('[role="treeitem"]');
 
-    for (var i = 0; i < treeitems.length; i++) {
-        treeitems[i].addEventListener('click', function (event) {
-            var treeitem = event.currentTarget;
-            var label = treeitem.getAttribute('aria-label');
-            if (!label) {
-                var child = treeitem.firstElementChild;
-                label = child ? child.innerText : treeitem.innerText;
-            }
+        for (var i = 0; i < treeitems.length; i++) {
+            treeitems[i].addEventListener('click', function (event) {
+                var treeitem = event.currentTarget;
+                var label = treeitem.getAttribute('aria-label');
+                if (!label) {
+                    var child = treeitem.firstElementChild;
+                    label = child ? child.innerText : treeitem.innerText;
+                }
 
-            document.getElementById('last_action').value = label.trim();
+                document.getElementById('last_action').value = label.trim();
 
-            event.stopPropagation();
-            event.preventDefault();
-        });
-    }
+                event.stopPropagation();
+                event.preventDefault();
+            });
+        }
+    });
+*/
 });
