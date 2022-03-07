@@ -1,12 +1,4 @@
-/*
- *   This content is licensed according to the W3C Software License at
- *   https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
- *
- *   File:   Tree.js
- *
- *   Desc:   Tree widget that implements ARIA Authoring Practices
- *           for a tree being used as a file viewer
- */
+
 
 /* global Treeitem */
 
@@ -19,8 +11,13 @@
  * @description  after page has loaded initialize all treeitems based on the role=treeitem
  */
 
-import('/amd/src/FileViewer.js')
-    .then((fileviewer) => {
+// import {FileNode} from "./FileViewer";
+
+Promise.all([
+    import('/amd/src/Tree.js'),
+    import('/amd/src/FileViewer.js')
+])
+    .then(([tree, fileviewer]) => {
         console.log("editor.js script started");
 
         function docReady(fn) {
@@ -35,14 +32,31 @@ import('/amd/src/FileViewer.js')
 
         function _open() {
             console.log('initialise elements');
+
+            // Create model solution
+            let modelsolution = new fileviewer.ProjectNode('Model Solution');
+            modelsolution.folders.push(new fileviewer.FileNode('MyString.java'));
+
+            // Create test
+            let test1 = new fileviewer.ProjectNode('Test 1');
+            test1.folders.push(new fileviewer.FileNode('MyStringTest.java'));
+
             var trees = document.querySelectorAll('[role="tree"]');
 
             for (var i = 0; i < trees.length; i++) {
-                var t = new fileviewer.Tree(trees[i]);
+                var t = new tree.Tree(trees[i]);
                 t.init();
             }
 
             console.log('add event listener');
+            /*
+ *   This content is licensed according to the W3C Software License at
+ *   https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
+ *
+ *   File:   Treeitem.js
+ *
+ *   Desc:   Setup click events for Tree widget examples
+ */
             var treeitems = document.querySelectorAll('[role="treeitem"]');
             for (var i = 0; i < treeitems.length; i++) {
                 treeitems[i].addEventListener('click', function (event) {
@@ -65,9 +79,6 @@ import('/amd/src/FileViewer.js')
             console.log("doc ready");
             _open();
         });
-
-
-// import {TreeItem} from "./FileViewer";
 
 
 
