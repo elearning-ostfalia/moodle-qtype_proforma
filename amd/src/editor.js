@@ -37,15 +37,15 @@ Promise.all([
             // Create model solution
 
             let modelsolution = new fileviewer.ProjectNode('Model Solution');
-            modelsolution.folders[0].files.push(new fileviewer.FileNode('MyString.java'));
-            modelsolution.folders[0].files.push(new fileviewer.FileNode('Helper.java'));
+            modelsolution.files.push(new fileviewer.FileNode('MyString.java'));
+            modelsolution.files.push(new fileviewer.FileNode('Helper.java'));
 
             // Create test
             let test1 = new fileviewer.ProjectNode('Test 1');
-            test1.folders[0].files.push(new fileviewer.FileNode('MyStringTest.java'));
-            test1.folders[0].files.push(new fileviewer.FileNode('MyStringTest1.java'));
-            test1.folders[0].folders.push(new fileviewer.FolderNode('data'));
-            test1.folders[0].folders[0].files.push(new fileviewer.FileNode('input.txt'));
+            test1.files.push(new fileviewer.FileNode('MyStringTest.java'));
+            test1.files.push(new fileviewer.FileNode('MyStringTest1.java'));
+            test1.folders.push(new fileviewer.FolderNode('data'));
+            test1.folders[0].files.push(new fileviewer.FileNode('input.txt'));
 
             let fv = document.getElementById("fileviewer");
             fileviewer.ProjectNode.display(fv);

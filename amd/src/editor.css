@@ -8,7 +8,7 @@ ul[role="tree"] {
 [role="treeitem"].doc::before {
     // font-family: "Font Awesome 5 Free";
     // content: "\f15c";
-    content: "#";
+    content: "o";
     display: inline-block;
     padding-right: 2px;
     padding-left: 5px;

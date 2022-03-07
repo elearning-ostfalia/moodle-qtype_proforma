@@ -32,13 +32,21 @@ export class FolderNode extends TreeNode {
         const li = document.createElement('li');
         li.setAttribute('role', 'treeitem');
         li.setAttribute('aria-expanded', 'false');
-        li.innerHTML = this.name;
         domnode.appendChild(li);
+
+        const span = document.createElement('span');
+        span.innerHTML = this.name;
+        li.appendChild(span);
+
+        const subul = document.createElement('ul');
+        subul.setAttribute('role', 'group');
+        li.appendChild(subul);
+
         for (let j = 0; j < this.folders.length; j++) {
-            this.folders[j].display(li);
+            this.folders[j].display(subul);
         }
         for (let j = 0; j < this.files.length; j++) {
-            this.files[j].display(li);
+            this.files[j].display(subul);
         }
     }
 }
@@ -49,6 +57,7 @@ export class ProjectNode extends TreeNode {
         let ul = document.createElement("ul")
         ul.setAttribute('role', 'tree');
         ul.setAttribute('aria-labelledby', 'tree_label');
+        domnode.appendChild(ul);
 
         for (let i = 0; i < ProjectNode.projects.length; i++) {
             const li = document.createElement('li');
@@ -64,19 +73,21 @@ export class ProjectNode extends TreeNode {
             subul.setAttribute('role', 'group');
             let project = ProjectNode.projects[i];
             for (let j = 0; j < project.folders.length; j++) {
-                console.log(project.folders[j]);
                 project.folders[j].display(subul);
+            }
+            for (let j = 0; j < project.files.length; j++) {
+                project.files[j].display(subul);
             }
             ul.appendChild(subul);
         }
 
-        domnode.appendChild(ul);
+
     }
     constructor(name) {
         super(name);
         // Empty list of nodes.
         this.folders = [];
-        this.folders.push(new FolderNode('/'));
+        this.files = [];
         ProjectNode.projects.push(this);
     }
 }
