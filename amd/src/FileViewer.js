@@ -31,6 +31,7 @@ export class FolderNode extends TreeNode {
         super(name);
         // Empty list of files.
         this.files = [];
+        // Empty list of folders.
         this.folders = [];
     }
     display(domnode) {
@@ -54,7 +55,7 @@ export class FolderNode extends TreeNode {
     }
 }
 
-export class ProjectNode extends TreeNode {
+export class ProjectNode extends FolderNode {
     static projects = []; // all projects
     static display(domnode) {
         let ul = document.createElement("ul")
@@ -64,33 +65,12 @@ export class ProjectNode extends TreeNode {
 
         for (let i = 0; i < ProjectNode.projects.length; i++) {
             let project = ProjectNode.projects[i];
-
             const li = project.display(ul);
-            li.setAttribute('aria-expanded', 'false');
-
-            const span = document.createElement('span');
-            span.innerHTML = project.name;
-            li.appendChild(span);
-
-            const subul = document.createElement('ul');
-            subul.setAttribute('role', 'group');
-            li.appendChild(subul);
-
-            for (let j = 0; j < project.folders.length; j++) {
-                project.folders[j].display(subul);
-            }
-            for (let j = 0; j < project.files.length; j++) {
-                project.files[j].display(subul);
-            }
-
         }
     }
 
     constructor(name) {
         super(name);
-        // Empty list of nodes.
-        this.folders = [];
-        this.files = [];
         ProjectNode.projects.push(this);
     }
 }
