@@ -5,6 +5,13 @@ class TreeNode {
     constructor(name) {
         this.name = name;
     }
+    display(domnode) {
+        const li = document.createElement('li');
+        li.setAttribute('role', 'treeitem');
+        domnode.appendChild(li);
+        return li;
+    }
+
 }
 
 export class FileNode extends TreeNode {
@@ -13,11 +20,9 @@ export class FileNode extends TreeNode {
     }
 
     display(domnode) {
-        const li = document.createElement('li');
-        li.setAttribute('role', 'treeitem');
-        li.setAttribute('class', 'doc');
+        const li = super.display(domnode);
         li.innerHTML = this.name;
-        domnode.appendChild(li);
+        li.setAttribute('class', 'doc');
     }
 }
 
@@ -29,10 +34,8 @@ export class FolderNode extends TreeNode {
         this.folders = [];
     }
     display(domnode) {
-        const li = document.createElement('li');
-        li.setAttribute('role', 'treeitem');
+        const li = super.display(domnode);
         li.setAttribute('aria-expanded', 'false');
-        domnode.appendChild(li);
 
         const span = document.createElement('span');
         span.innerHTML = this.name;
@@ -60,25 +63,26 @@ export class ProjectNode extends TreeNode {
         domnode.appendChild(ul);
 
         for (let i = 0; i < ProjectNode.projects.length; i++) {
-            const li = document.createElement('li');
-            li.setAttribute('role', 'treeitem');
+            let project = ProjectNode.projects[i];
+
+            const li = project.display(ul);
             li.setAttribute('aria-expanded', 'false');
-            ul.appendChild(li);
 
             const span = document.createElement('span');
-            span.innerHTML = ProjectNode.projects[i].name;
+            span.innerHTML = project.name;
             li.appendChild(span);
 
             const subul = document.createElement('ul');
             subul.setAttribute('role', 'group');
-            let project = ProjectNode.projects[i];
+            li.appendChild(subul);
+
             for (let j = 0; j < project.folders.length; j++) {
                 project.folders[j].display(subul);
             }
             for (let j = 0; j < project.files.length; j++) {
                 project.files[j].display(subul);
             }
-            li.appendChild(subul);
+
         }
     }
 
