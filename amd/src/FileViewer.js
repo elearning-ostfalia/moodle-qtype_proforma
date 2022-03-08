@@ -2,14 +2,61 @@
 
 
 class TreeNode {
+    static menu = undefined;
+    static menuVisible = false;
+
+    static toggleMenu = command => {
+        console.log(command);
+        TreeNode.menu.style.display = command === "show" ? "block" : "none";
+        TreeNode.menuVisible = (command === "show");
+    };
+
     constructor(name) {
         this.name = name;
         this.boundHandleClick = event => {
-            console.log(`I was clicked: ${event}`)
+            console.log(`clicked: ${event}`)
+            const xCoordinate = event.pageX;
+            const yCoordinate = event.pageY;
+            console.log(`x: ${xCoordinate}, y: ${yCoordinate}`)
+
+            TreeNode.toggleMenu("hide");
             document.getElementById('last_action').value = this.name;
             document.getElementById('canvas').innerHTML = this.name;
             event.stopPropagation();
             event.preventDefault();
+        }
+        this.boundHandleContextMenu = event => {
+            if (TreeNode.menu === undefined) {
+                TreeNode.menu = document.querySelector("#context-menu");
+            }
+            const setPosition = ({ top, left }) => {
+                TreeNode.menu.style.left = `${left}px`;
+                TreeNode.menu.style.top = `${top}px`;
+                TreeNode.menu.style.display = 'flex';
+                TreeNode.toggleMenu('show');
+            };
+
+            console.log(`contextmenu: ${event}`)
+            // console.log(event)
+            event.preventDefault();
+
+            const targetElement = event.target;
+            // console.log(targetElement);
+
+            const origin = {
+                left: event.pageX - targetElement.offsetLeft,
+                top: event.pageY - targetElement.offsetTop
+            };
+
+            /*
+            if (targetElement.nodeName === "TD") {
+                e.preventDefault();
+                console.log(targetElement)
+                setPosition(origin);
+            }*/
+
+            setPosition(origin);
+            return false;
         }
     }
 
@@ -19,6 +66,7 @@ class TreeNode {
         li.setAttribute('role', 'treeitem');
         domnode.appendChild(li);
         li.addEventListener('click', this.boundHandleClick);
+        li.addEventListener('contextmenu', this.boundHandleContextMenu);
         return li;
     }
 
@@ -67,6 +115,8 @@ export class FolderNode extends TreeNode {
 
 export class ProjectNode extends FolderNode {
     static projects = []; // all projects
+
+
     static displayInTreeview(domnode) {
         let ul = document.createElement("ul")
         ul.setAttribute('role', 'tree');
@@ -77,6 +127,13 @@ export class ProjectNode extends FolderNode {
             let project = ProjectNode.projects[i];
             const li = project.displayInTreeview(ul);
         }
+
+        // Hide context menu on every left click
+        window.addEventListener("click", e => {
+            if (TreeNode.menuVisible) {
+                TreeNode.toggleMenu("hide");
+            }
+        });
     }
 
     constructor(name) {

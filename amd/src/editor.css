@@ -73,7 +73,7 @@ ul[role="tree"] {
 
 /* Split view */
 
-div {
+.split {
     display: flex;
     border: 1px black solid;
     width: 100%;
@@ -98,5 +98,30 @@ div {
     flex-grow: 0;
     flex-shrink: 1;
     overflow-x: auto;
+}
+
+
+/* Context menu */
+
+.contextmenu {
+    width: 100px;
+    box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+    position: relative;
+    display: none;
+}
+.contextmenu .menu-options {
+    list-style: none;
+    padding: 10px 0;
+}
+
+.contextmenu .menu-options .menu-option {
+    font-weight: 500;
+    font-size: 14px;
+    padding: 10px 10px 10px 10px;
+    cursor: pointer;
+}
+
+.contextmenu .menu-options .menu-option:hover {
+     background: rgba(0, 0, 0, 0.2);
 }
 

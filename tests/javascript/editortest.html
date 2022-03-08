@@ -203,10 +203,19 @@
     </li>
 </ul>
 -->
-<div>
-    <div id="fileviewer"></div>
-    <div id="resize"></div>
-    <div id="canvas"></div>
+<div class="split">
+    <div class="split" id="fileviewer">
+    </div>
+    <div class="split" id="resize"></div>
+    <div class="split" id="canvas"></div>
+</div>
+
+<div class="contextmenu" id="context-menu">
+    <ul class="menu-options">
+        <li class="menu-option">New file</li>
+        <li class="menu-option">New folder</li>
+        <li class="menu-option">Delete...</li>
+    </ul>
 </div>
 <p><label>File or Folder Selected: <input id="last_action" type="text" size="15" readonly=""></label></p>
 
