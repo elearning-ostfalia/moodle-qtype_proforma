@@ -106,7 +106,8 @@ ul[role="tree"] {
 .contextmenu {
     width: 100px;
     box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
-    position: relative;
+    position: absolute; // relative;
+    background-color: white;
     display: none;
 }
 .contextmenu .menu-options {
@@ -115,9 +116,9 @@ ul[role="tree"] {
 }
 
 .contextmenu .menu-options .menu-option {
-    font-weight: 500;
+    // font-weight: 500;
     font-size: 14px;
-    padding: 10px 10px 10px 10px;
+    padding: 5px 5px 5px 5px;
     cursor: pointer;
 }
 

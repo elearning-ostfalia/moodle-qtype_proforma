@@ -32,7 +32,6 @@ class TreeNode {
             const setPosition = ({ top, left }) => {
                 TreeNode.menu.style.left = `${left}px`;
                 TreeNode.menu.style.top = `${top}px`;
-                TreeNode.menu.style.display = 'flex';
                 TreeNode.toggleMenu('show');
             };
 
@@ -40,20 +39,10 @@ class TreeNode {
             // console.log(event)
             event.preventDefault();
 
-            const targetElement = event.target;
-            // console.log(targetElement);
-
             const origin = {
-                left: event.pageX - targetElement.offsetLeft,
-                top: event.pageY - targetElement.offsetTop
+                left: event.pageX,
+                top: event.pageY
             };
-
-            /*
-            if (targetElement.nodeName === "TD") {
-                e.preventDefault();
-                console.log(targetElement)
-                setPosition(origin);
-            }*/
 
             setPosition(origin);
             return false;
