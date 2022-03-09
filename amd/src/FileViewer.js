@@ -164,6 +164,21 @@ export class FolderNode extends TreeNode {
                 this.expand(true);
             }
         }
+        this.boundHandleLoadFile = event => {
+            TreeNode.handleClickEvent(event);
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.onchange = e => {
+                let file = e.target.files[0];
+                let node = new FileNode(file.name);
+                this.appendFile(node);
+                node.displayInTreeview(this.element.querySelector('[role="group"]'));
+                this.expand(true);
+            }
+            input.click();
+        }
+
+
         this.boundHandleNewFolder = event => {
             TreeNode.handleClickEvent(event);
             let foldername = prompt("Please enter foldername:", "");
@@ -221,7 +236,8 @@ export class FolderNode extends TreeNode {
     setContextMenu() {
         console.log('FolderNode setContextMenu');
         this.createContextMenu([
-            ['New file...', this.boundHandleNewFile],
+            ['New empty file...', this.boundHandleNewFile],
+            ['Load file...', this.boundHandleLoadFile],
             ['New folder...', this.boundHandleNewFolder],
             ['Rename', this.boundHandleRename],
             ['Delete', this.boundHandleDelete]
