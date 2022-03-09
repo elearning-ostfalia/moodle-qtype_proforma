@@ -6,7 +6,11 @@ class TreeNode {
     static menuVisible = false;
 
     static toggleMenu = command => {
-        console.log(command);
+        if (TreeNode.menu === undefined) {
+            console.log('no context menu');
+            return;
+        }
+        // console.log(command);
         TreeNode.menu.style.display = command === "show" ? "block" : "none";
         TreeNode.menuVisible = (command === "show");
     };
@@ -14,10 +18,10 @@ class TreeNode {
     constructor(name) {
         this.name = name;
         this.boundHandleClick = event => {
-            console.log(`clicked: ${event}`)
+            // console.log(`clicked: ${event}`)
             const xCoordinate = event.pageX;
             const yCoordinate = event.pageY;
-            console.log(`x: ${xCoordinate}, y: ${yCoordinate}`)
+            //console.log(`x: ${xCoordinate}, y: ${yCoordinate}`)
 
             TreeNode.toggleMenu("hide");
             document.getElementById('last_action').value = this.name;
@@ -26,10 +30,11 @@ class TreeNode {
             event.preventDefault();
         }
         this.boundHandleContextMenu = event => {
+            this.setContextMenu();
             if (TreeNode.menu === undefined) {
-                TreeNode.menu = document.querySelector("#context-menu");
+                return;
             }
-            const setPosition = ({ top, left }) => {
+            const showMenu = ({ top, left }) => {
                 TreeNode.menu.style.left = `${left}px`;
                 TreeNode.menu.style.top = `${top}px`;
                 TreeNode.toggleMenu('show');
@@ -38,17 +43,38 @@ class TreeNode {
             console.log(`contextmenu: ${event}`)
             // console.log(event)
             event.preventDefault();
+            event.stopPropagation();
 
             const origin = {
                 left: event.pageX,
                 top: event.pageY
             };
 
-            setPosition(origin);
-            return false;
+            showMenu(origin);
+            // return false;
         }
     }
 
+    createContextMenu(list) {
+        console.log('createContextMenu');
+        console.log(list);
+        let ul = document.querySelector(".contextmenu .menu-options");
+        // console.log(ul);
+        ul.innerHTML = ''; // Delete all children
+        for (let i = 0; i < list.length; i++) {
+            const li = document.createElement('li');
+            li.setAttribute('class', 'menu-option');
+            li.innerHTML = list[i];
+            ul.appendChild(li);
+        }
+
+        TreeNode.menu = ul.parentNode;
+    }
+
+    // Override
+    setContextMenu() {
+        TreeNode.menu = undefined;
+    }
 
     displayInTreeview(domnode) {
         const li = document.createElement('li');
@@ -71,6 +97,12 @@ export class FileNode extends TreeNode {
         li.innerHTML = this.name;
         li.setAttribute('class', 'doc');
     }
+
+    setContextMenu() {
+        console.log('FileNode setContextMenu');
+        this.createContextMenu(['Delete...', 'Save', 'Rename']);
+    }
+
 }
 
 export class FolderNode extends TreeNode {
@@ -99,6 +131,11 @@ export class FolderNode extends TreeNode {
         for (let j = 0; j < this.files.length; j++) {
             this.files[j].displayInTreeview(subul);
         }
+    }
+
+    setContextMenu() {
+        console.log('FolderNode setContextMenu');
+        this.createContextMenu(['New file...', 'New folder...', 'Delete']);
     }
 }
 
