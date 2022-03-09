@@ -132,25 +132,32 @@ export class FileNode extends TreeNode {
 export class FolderNode extends TreeNode {
     constructor(name) {
         super(name);
-        // Empty list of files.
-        this.files = [];
-        // Empty list of folders.
-        this.folders = [];
+        this.files = []; // Empty list of files.
+        this.folders = []; // Empty list of folders.
         this.boundHandleDelete = event => {
             TreeNode.handleClickEvent(event);
-            alert('delete');
-            this.element.remove(); // parentNode.remove(this.element);
+            this.element.remove();
             this.parent.folders = this.parent.folders.filter(item => item !== this);
             console.log(ProjectNode.projects);
         }
 
         this.boundHandleNewFile = event => {
             TreeNode.handleClickEvent(event);
-            alert('new file');
+            let filename = prompt("Please enter filename:", "");
+            if (filename !== null && filename.length > 0) {
+                let node = new FileNode(filename);
+                this.appendFile(node);
+                node.displayInTreeview(this.element.querySelector('[role="group"]'));
+            }
         }
         this.boundHandleNewFolder = event => {
             TreeNode.handleClickEvent(event);
-            alert('new folder');
+            let foldername = prompt("Please enter foldername:", "");
+            if (foldername !== null && foldername.length > 0) {
+                let node = new FolderNode(foldername);
+                this.appendFolder(node);
+                node.displayInTreeview(this.element.querySelector('[role="group"]'));
+            }
         }
     }
     displayInTreeview(domnode) {
