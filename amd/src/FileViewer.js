@@ -107,6 +107,7 @@ class TreeNode {
 export class FileNode extends TreeNode {
     constructor(name) {
         super(name);
+        this.filecontent = '';
         this.boundHandleDelete = event => {
             TreeNode.handleClickEvent(event);
             this.element.remove();
@@ -120,6 +121,15 @@ export class FileNode extends TreeNode {
                 this.name = name;
                 this.element.innerHTML = name;
             }
+        }
+        this.boundHandleClick = event => {
+            TreeNode.toggleMenu("hide");
+            document.getElementById('last_action').value = this.name;
+            if (this.filecontent != undefined) {
+                document.getElementById('canvas').innerHTML = this.filecontent;
+            }
+            event.stopPropagation();
+            event.preventDefault();
         }
     }
 
@@ -171,6 +181,16 @@ export class FolderNode extends TreeNode {
             input.onchange = e => {
                 let file = e.target.files[0];
                 let node = new FileNode(file.name);
+                // setting up the reader
+                let reader = new FileReader();
+                reader.readAsText(file,'UTF-8');
+                reader.onload = readerEvent => {
+                    let content = readerEvent.target.result; // this is the content!
+                    console.log( content );
+                    node.filecontent = content;
+                    document.getElementById('canvas').innerHTML = content;
+                }
+
                 this.appendFile(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
                 this.expand(true);
