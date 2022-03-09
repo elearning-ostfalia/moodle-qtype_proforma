@@ -24,12 +24,9 @@ class TreeNode {
 
     constructor(name) {
         this.name = name;
+        this.element = undefined; // DOM element
+        this.parent = undefined; // parent
         this.boundHandleClick = event => {
-            // console.log(`clicked: ${event}`)
-            const xCoordinate = event.pageX;
-            const yCoordinate = event.pageY;
-            //console.log(`x: ${xCoordinate}, y: ${yCoordinate}`)
-
             TreeNode.toggleMenu("hide");
             document.getElementById('last_action').value = this.name;
             document.getElementById('canvas').innerHTML = this.name;
@@ -56,9 +53,7 @@ class TreeNode {
                 left: event.pageX,
                 top: event.pageY
             };
-
             showMenu(origin);
-            // return false;
         }
     }
 
@@ -90,6 +85,7 @@ class TreeNode {
         domnode.appendChild(li);
         li.addEventListener('click', this.boundHandleClick);
         li.addEventListener('contextmenu', this.boundHandleContextMenu);
+        this.element = li; // Store element
         return li;
     }
 
@@ -102,8 +98,11 @@ export class FileNode extends TreeNode {
     constructor(name) {
         super(name);
         this.boundHandleDelete = event => {
-            alert('delete');
             TreeNode.handleClickEvent(event);
+            alert('delete');
+            this.element.remove(); // parentNode.remove(this.element);
+            this.parent.files = this.parent.files.filter(item => item !== this);
+            console.log(ProjectNode.projects);
         }
         this.boundHandleRename = event => {
             alert('rename');
@@ -120,7 +119,7 @@ export class FileNode extends TreeNode {
     setContextMenu() {
         console.log('FileNode setContextMenu');
         this.createContextMenu([
-            ['Delete...', this.boundHandleDelete],
+            ['Delete', this.boundHandleDelete],
             ['Rename', this.boundHandleRename]]
         );
     }
@@ -138,16 +137,20 @@ export class FolderNode extends TreeNode {
         // Empty list of folders.
         this.folders = [];
         this.boundHandleDelete = event => {
+            TreeNode.handleClickEvent(event);
             alert('delete');
-            TreeNode.handleClickEvent(event);
+            this.element.remove(); // parentNode.remove(this.element);
+            this.parent.folders = this.parent.folders.filter(item => item !== this);
+            console.log(ProjectNode.projects);
         }
+
         this.boundHandleNewFile = event => {
-            alert('new file');
             TreeNode.handleClickEvent(event);
+            alert('new file');
         }
         this.boundHandleNewFolder = event => {
-            alert('new folder');
             TreeNode.handleClickEvent(event);
+            alert('new folder');
         }
     }
     displayInTreeview(domnode) {
@@ -179,6 +182,9 @@ export class FolderNode extends TreeNode {
             ]
         );
     }
+
+    appendFile(node) { this.files.push(node); node.parent = this; }
+    appendFolder(node) { this.folders.push(node); node.parent = this; }
 }
 
 /**
