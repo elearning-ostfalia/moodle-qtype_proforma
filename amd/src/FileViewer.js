@@ -1,3 +1,8 @@
+
+
+import { Tree }  from "./Tree.js";
+// 'use strict';
+
 /**
  * TreeNode
  */
@@ -218,6 +223,12 @@ export class ProjectNode extends FolderNode {
                 TreeNode.toggleMenu("hide");
             }
         });
+
+        var trees = document.querySelectorAll('[role="tree"]');
+        for (var i = 0; i < trees.length; i++) {
+            var t = new Tree(trees[i]);
+            t.init();
+        }
     }
 
     constructor(name) {
@@ -225,5 +236,3 @@ export class ProjectNode extends FolderNode {
         ProjectNode.projects.push(this);
     }
 }
-
-

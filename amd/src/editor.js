@@ -15,10 +15,12 @@
 
 
 Promise.all([
-    import('/amd/src/Tree.js'),
+//    import('/amd/src/Tree.js'),
     import('/amd/src/FileViewer.js')
 ])
-    .then(([tree, fileviewer]) => {
+    .then(([
+//        tree,
+               fileviewer]) => {
         console.log("editor.js script started");
 
         function docReady(fn) {
@@ -52,15 +54,6 @@ Promise.all([
 
             let fv = document.getElementById("fileviewer");
             fileviewer.ProjectNode.displayInTreeview(fv);
-
-            var trees = document.querySelectorAll('[role="tree"]');
-
-            for (var i = 0; i < trees.length; i++) {
-                var t = new tree.Tree(trees[i]);
-                t.init();
-            }
-
-
 
             function _initSplitview() {
                 // Split view
@@ -97,18 +90,4 @@ Promise.all([
             console.log("doc ready");
             _open();
         });
-
-
-
-        /*
-            window.addEventListener('load', function () {
-    var trees = document.querySelectorAll('[role="tree"]');
-
-    for (var i = 0; i < trees.length; i++) {
-        var t = new Tree(trees[i]);
-        t.init();
-    }
-});
-*/
-
 });
