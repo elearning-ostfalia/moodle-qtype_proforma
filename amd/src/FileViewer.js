@@ -114,8 +114,12 @@ export class FileNode extends TreeNode {
             console.log(ProjectNode.projects);
         }
         this.boundHandleRename = event => {
-            alert('rename');
             TreeNode.handleClickEvent(event);
+            let name = prompt("Please enter new name:", "");
+            if (name !== null && name.length > 0) {
+                this.name = name;
+                this.element.innerHTML = name;
+            }
         }
     }
 
@@ -178,6 +182,14 @@ export class FolderNode extends TreeNode {
             event.stopPropagation();
             event.preventDefault();
         }
+        this.boundHandleRename = event => {
+            TreeNode.handleClickEvent(event);
+            let name = prompt("Please enter new name:", "");
+            if (name !== null && name.length > 0) {
+                this.name = name;
+                this.element.querySelector('span').innerHTML = name;
+            }
+        }
     }
 
     expand(doit) {
@@ -211,7 +223,8 @@ export class FolderNode extends TreeNode {
         this.createContextMenu([
             ['New file...', this.boundHandleNewFile],
             ['New folder...', this.boundHandleNewFolder],
-            ['Delete', this.boundHandleDelete],
+            ['Rename', this.boundHandleRename],
+            ['Delete', this.boundHandleDelete]
             ]
         );
     }
