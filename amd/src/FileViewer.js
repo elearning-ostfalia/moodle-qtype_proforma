@@ -109,8 +109,7 @@ export class FileNode extends TreeNode {
         super(name);
         this.boundHandleDelete = event => {
             TreeNode.handleClickEvent(event);
-            alert('delete');
-            this.element.remove(); // parentNode.remove(this.element);
+            this.element.remove();
             this.parent.files = this.parent.files.filter(item => item !== this);
             console.log(ProjectNode.projects);
         }
@@ -158,6 +157,7 @@ export class FolderNode extends TreeNode {
                 let node = new FileNode(filename);
                 this.appendFile(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
+                this.expand(true);
             }
         }
         this.boundHandleNewFolder = event => {
@@ -167,6 +167,7 @@ export class FolderNode extends TreeNode {
                 let node = new FolderNode(foldername);
                 this.appendFolder(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
+                this.expand(true);
             }
         }
         this.boundHandleClick = event => {
@@ -179,6 +180,9 @@ export class FolderNode extends TreeNode {
         }
     }
 
+    expand(doit) {
+        this.element.setAttribute('aria-expanded', doit);
+    }
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
         li.setAttribute('aria-expanded', 'false');
@@ -241,19 +245,6 @@ export class ProjectNode extends FolderNode {
                 TreeNode.toggleMenu("hide");
             }
         });
-        ProjectNode.init();
-    }
-
-    static init() {
-        // w3org does not support changes in tree :-(
-        /*
-        ProjectNode.roots = [];
-        let trees = document.querySelectorAll('[role="tree"]');
-        for (let i = 0; i < trees.length; i++) {
-            let t = new Tree(trees[i]);
-            t.init();
-            ProjectNode.roots.push(t);
-        }*/
     }
 
     constructor(name) {
