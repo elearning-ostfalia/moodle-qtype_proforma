@@ -1,6 +1,6 @@
-
-
-
+/**
+ * TreeNode
+ */
 class TreeNode {
     static menu = undefined;
     static menuVisible = false;
@@ -14,6 +14,13 @@ class TreeNode {
         TreeNode.menu.style.display = command === "show" ? "block" : "none";
         TreeNode.menuVisible = (command === "show");
     };
+
+    static handleClickEvent(event) {
+        TreeNode.toggleMenu("hide");
+        event.preventDefault();
+        event.stopPropagation(); // otherwise parent node handles event, too
+
+    }
 
     constructor(name) {
         this.name = name;
@@ -43,7 +50,7 @@ class TreeNode {
             console.log(`contextmenu: ${event}`)
             // console.log(event)
             event.preventDefault();
-            event.stopPropagation();
+            event.stopPropagation(); // otherwise parent node handles event, too
 
             const origin = {
                 left: event.pageX,
@@ -64,7 +71,8 @@ class TreeNode {
         for (let i = 0; i < list.length; i++) {
             const li = document.createElement('li');
             li.setAttribute('class', 'menu-option');
-            li.innerHTML = list[i];
+            li.innerHTML = list[i][0];
+            li.addEventListener('click', list[i][1]); // this.boundHandleClick);
             ul.appendChild(li);
         }
 
@@ -87,9 +95,20 @@ class TreeNode {
 
 }
 
+/**
+ * FileNode
+ */
 export class FileNode extends TreeNode {
     constructor(name) {
         super(name);
+        this.boundHandleDelete = event => {
+            alert('delete');
+            TreeNode.handleClickEvent(event);
+        }
+        this.boundHandleRename = event => {
+            alert('rename');
+            TreeNode.handleClickEvent(event);
+        }
     }
 
     displayInTreeview(domnode) {
@@ -100,11 +119,17 @@ export class FileNode extends TreeNode {
 
     setContextMenu() {
         console.log('FileNode setContextMenu');
-        this.createContextMenu(['Delete...', 'Save', 'Rename']);
+        this.createContextMenu([
+            ['Delete...', this.boundHandleDelete],
+            ['Rename', this.boundHandleRename]]
+        );
     }
 
 }
 
+/**
+ * FolderNode
+ */
 export class FolderNode extends TreeNode {
     constructor(name) {
         super(name);
@@ -112,6 +137,18 @@ export class FolderNode extends TreeNode {
         this.files = [];
         // Empty list of folders.
         this.folders = [];
+        this.boundHandleDelete = event => {
+            alert('delete');
+            TreeNode.handleClickEvent(event);
+        }
+        this.boundHandleNewFile = event => {
+            alert('new file');
+            TreeNode.handleClickEvent(event);
+        }
+        this.boundHandleNewFolder = event => {
+            alert('new folder');
+            TreeNode.handleClickEvent(event);
+        }
     }
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
@@ -135,10 +172,18 @@ export class FolderNode extends TreeNode {
 
     setContextMenu() {
         console.log('FolderNode setContextMenu');
-        this.createContextMenu(['New file...', 'New folder...', 'Delete']);
+        this.createContextMenu([
+            ['New file...', this.boundHandleNewFile],
+            ['New folder...', this.boundHandleNewFolder],
+            ['Delete', this.boundHandleDelete],
+            ]
+        );
     }
 }
 
+/**
+ * ProjectNode
+ */
 export class ProjectNode extends FolderNode {
     static projects = []; // all projects
 
