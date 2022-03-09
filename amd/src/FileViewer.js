@@ -1,6 +1,6 @@
 
 
-import { Tree }  from "./Tree.js";
+// import { Tree }  from "./Tree.js";
 // 'use strict';
 
 /**
@@ -31,6 +31,11 @@ class TreeNode {
         this.name = name;
         this.element = undefined; // DOM element
         this.parent = undefined; // parent
+/*        this.boundHandleFocus = event => {
+            // this.element.classList.add('focus');
+            event.stopPropagation();
+            event.preventDefault();
+        }*/
         this.boundHandleClick = event => {
             TreeNode.toggleMenu("hide");
             document.getElementById('last_action').value = this.name;
@@ -72,7 +77,7 @@ class TreeNode {
             const li = document.createElement('li');
             li.setAttribute('class', 'menu-option');
             li.innerHTML = list[i][0];
-            li.addEventListener('click', list[i][1]); // this.boundHandleClick);
+            li.addEventListener('click', list[i][1]);
             ul.appendChild(li);
         }
 
@@ -153,7 +158,6 @@ export class FolderNode extends TreeNode {
                 let node = new FileNode(filename);
                 this.appendFile(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
-                // ProjectNode.init();
             }
         }
         this.boundHandleNewFolder = event => {
@@ -163,10 +167,18 @@ export class FolderNode extends TreeNode {
                 let node = new FolderNode(foldername);
                 this.appendFolder(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
-                // ProjectNode.init();
             }
         }
+        this.boundHandleClick = event => {
+            TreeNode.toggleMenu("hide");
+            document.getElementById('last_action').value = this.name;
+            document.getElementById('canvas').innerHTML = this.name;
+            this.element.setAttribute('aria-expanded', !this.isExpanded());
+            event.stopPropagation();
+            event.preventDefault();
+        }
     }
+
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
         li.setAttribute('aria-expanded', 'false');
@@ -187,6 +199,9 @@ export class FolderNode extends TreeNode {
         }
     }
 
+    isExpanded() {
+        return this.element.getAttribute('aria-expanded') === 'true';
+    }
     setContextMenu() {
         console.log('FolderNode setContextMenu');
         this.createContextMenu([
@@ -231,13 +246,14 @@ export class ProjectNode extends FolderNode {
 
     static init() {
         // w3org does not support changes in tree :-(
+        /*
         ProjectNode.roots = [];
         let trees = document.querySelectorAll('[role="tree"]');
         for (let i = 0; i < trees.length; i++) {
             let t = new Tree(trees[i]);
             t.init();
             ProjectNode.roots.push(t);
-        }
+        }*/
     }
 
     constructor(name) {

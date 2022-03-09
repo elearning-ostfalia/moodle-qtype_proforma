@@ -65,10 +65,11 @@ ul[role="tree"] {
     background-color: #eee;
 }
 
+/*
 [role="treeitem"].hover,
 [role="treeitem"] span:hover {
     background-color: #ddd;
-}
+}*/
 
 
 /* Split view */
