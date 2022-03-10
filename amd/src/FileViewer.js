@@ -1,9 +1,10 @@
 
 
 // import { Tree }  from "./Tree.js";
-// import './codemirror-global.js';
 
+import './codemirror-global.js';
 import CodeMirror from "./codemirror/src/codemirror.js";
+import "./codemirror/mode/clike/clike.js";
 
 'use strict';
 
@@ -326,7 +327,10 @@ export class ProjectNode extends FolderNode {
             lineNumbers: true
             //viewportMargin: Infinity
         });
-        ProjectNode.editor.setSize("100%", null);
+        ProjectNode.editor.setSize("100%", "100%");
+        ProjectNode.editor.setOption("mode", "text/x-java");
+        // ProjectNode.editor.setOption('theme', "blackboard");
+        ProjectNode.editor.setOption('theme', "darcula");
 
         // Hide context menu on every left click
         window.addEventListener("click", e => {

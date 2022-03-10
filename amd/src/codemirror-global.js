@@ -17,8 +17,8 @@
 
 // File for supporting modes in ES6 style.
 
-import { CodeMirror } from "./codemirror/src/edit/main.js";
+import CodeMirror from "./codemirror/src/codemirror.js";
+// import { CodeMirror } from "./codemirror/src/codemirror.js";
 
-export default CodeMirror
-// window.CodeMirror = CodeMirror;
+window.CodeMirror = CodeMirror;
 
