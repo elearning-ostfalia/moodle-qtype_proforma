@@ -52,8 +52,9 @@ Promise.all([
             // Common files
             let common = new fileviewer.ProjectNode('Common');
 
-            let fv = document.getElementById("fileviewer");
-            fileviewer.ProjectNode.displayInTreeview(fv);
+            const fv = document.getElementById("fileviewer");
+            const editor = document.getElementById("editor");
+            fileviewer.ProjectNode.init(fv, editor);
 
             function _initSplitview() {
                 // Split view

@@ -1,7 +1,11 @@
 
 
 // import { Tree }  from "./Tree.js";
-// 'use strict';
+// import './codemirror-global.js';
+
+import CodeMirror from "./codemirror/src/codemirror.js";
+
+'use strict';
 
 /**
  * TreeNode
@@ -9,10 +13,11 @@
 class TreeNode {
     static menu = undefined;
     static menuVisible = false;
+    static focus = undefined;
 
     static toggleMenu = command => {
         if (TreeNode.menu === undefined) {
-            console.log('no context menu');
+            // console.log('no context menu');
             return;
         }
         // console.log(command);
@@ -20,29 +25,34 @@ class TreeNode {
         TreeNode.menuVisible = (command === "show");
     };
 
-    static handleClickEvent(event) {
+    static setFocusTo(element) {
+        if (TreeNode.focus !== undefined) {
+            TreeNode.focus.classList.remove('focus');
+        }
+        if (element !== undefined) {
+            element.classList.add('focus');
+            TreeNode.focus = element;
+        } else {
+            TreeNode.focus = undefined;
+        }
+    }
+    static handleClickEvent() {
+        console.log('TreeNode click');
         TreeNode.toggleMenu("hide");
-        event.preventDefault();
-        event.stopPropagation(); // otherwise parent node handles event, too
-
+        TreeNode.setFocusTo(undefined);
     }
 
     constructor(name) {
         this.name = name;
         this.element = undefined; // DOM element
         this.parent = undefined; // parent
-/*        this.boundHandleFocus = event => {
-            // this.element.classList.add('focus');
-            event.stopPropagation();
-            event.preventDefault();
-        }*/
-        this.boundHandleClick = event => {
+/*        this.boundHandleClick = event => {
             TreeNode.toggleMenu("hide");
             document.getElementById('last_action').value = this.name;
             document.getElementById('canvas').innerHTML = this.name;
             event.stopPropagation();
             event.preventDefault();
-        }
+        } */
         this.boundHandleContextMenu = event => {
             this.setContextMenu();
             if (TreeNode.menu === undefined) {
@@ -98,7 +108,6 @@ class TreeNode {
         this.element = li; // Store element
         return li;
     }
-
 }
 
 /**
@@ -120,23 +129,35 @@ export class FileNode extends TreeNode {
             if (name !== null && name.length > 0) {
                 this.name = name;
                 this.element.innerHTML = name;
+                // this.element.tabIndex = 0;
             }
         }
         this.boundHandleClick = event => {
+            console.log('FileNode click');
+
             TreeNode.toggleMenu("hide");
             document.getElementById('last_action').value = this.name;
             if (this.filecontent != undefined) {
                 document.getElementById('canvas').innerHTML = this.filecontent;
             }
+            TreeNode.setFocusTo(this.element);
             event.stopPropagation();
-            event.preventDefault();
+            // event.preventDefault();
         }
+/*        this.handleMouseOver = event => {
+            event.currentTarget.classList.add('hover');
+        }
+        this.handleMouseOut = event => {
+            event.currentTarget.classList.remove('hover');
+        }*/
     }
 
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
         li.innerHTML = this.name;
         li.setAttribute('class', 'doc');
+//        li.addEventListener('mouseover', this.handleMouseOver);
+//        li.addEventListener('mouseout', this.handleMouseOut);
     }
 
     setContextMenu() {
@@ -210,10 +231,15 @@ export class FolderNode extends TreeNode {
             }
         }
         this.boundHandleClick = event => {
+            console.log('FolderNode click');
+
             TreeNode.toggleMenu("hide");
             document.getElementById('last_action').value = this.name;
             document.getElementById('canvas').innerHTML = this.name;
             this.element.setAttribute('aria-expanded', !this.isExpanded());
+            // TreeNode.setFocusTo(this.element);
+
+            // this.element.classList.add('focus');
             event.stopPropagation();
             event.preventDefault();
         }
@@ -275,25 +301,37 @@ export class FolderNode extends TreeNode {
 export class ProjectNode extends FolderNode {
     static projects = []; // all projects
     static roots = [];
+    static editor = undefined;
 
 
-    static displayInTreeview(domnode) {
+    static init(fileviewer, editor) {
         let ul = document.createElement("ul")
         ul.setAttribute('role', 'tree');
         ul.setAttribute('aria-labelledby', 'fileviewer');
-        domnode.appendChild(ul);
+        fileviewer.appendChild(ul);
 
         for (let i = 0; i < ProjectNode.projects.length; i++) {
             let project = ProjectNode.projects[i];
             const li = project.displayInTreeview(ul);
         }
 
+        ProjectNode.editor = CodeMirror.fromTextArea(editor, {
+            tabMode: "indent",
+            indentUnit: 4,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            styleActiveLine: true,
+            readOnly: false,
+            extraKeys: {'Tab': function(){editor.replaceSelection('    ' , 'end');}},
+            lineNumbers: true
+            //viewportMargin: Infinity
+        });
+        ProjectNode.editor.setSize("100%", null);
+
         // Hide context menu on every left click
         window.addEventListener("click", e => {
-            if (TreeNode.menuVisible) {
-                TreeNode.toggleMenu("hide");
-            }
-        });
+            TreeNode.handleClickEvent();
+         });
     }
 
     constructor(name) {

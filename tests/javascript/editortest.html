@@ -9,11 +9,10 @@
     <!-- <link rel="stylesheet" href="../../../../../general.css"> -->
     <link rel="stylesheet" href="../../styles.css">
     <link rel="stylesheet" href="../../amd/src/editor.css">
-    <script src="../../amd/src/codemirror.js"></script>
-    <script src="../../amd/src/editor.js"></script>
+    <!-- <script src="../../amd/src/codemirror.js"></script> -->
+    <script type="module" src="../../amd/src/editor.js"></script>
     <!-- <script src="../../tests/javascript/testimport.js"></script> -->
-    <style>
-    </style>
+    <!--<script src="../../amd/src/codemirrorif.js"></script>-->
 </head>
 
 <body>
@@ -207,7 +206,9 @@
     <div class="split" id="fileviewer">
     </div>
     <div class="split" id="resize"></div>
-    <div class="split" id="canvas"></div>
+    <div class="split" id="canvas">
+        <textarea id='editor' rows='10' cols='80'></textarea>
+    </div>
 </div>
 
 <div class="contextmenu" id="context-menu">
