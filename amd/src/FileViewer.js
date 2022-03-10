@@ -139,7 +139,7 @@ export class FileNode extends TreeNode {
             TreeNode.toggleMenu("hide");
             document.getElementById('last_action').value = this.name;
             if (this.filecontent != undefined) {
-                document.getElementById('canvas').innerHTML = this.filecontent;
+                ProjectNode.editor.setValue(this.filecontent);
             }
             TreeNode.setFocusTo(this.element);
             event.stopPropagation();
@@ -210,7 +210,7 @@ export class FolderNode extends TreeNode {
                     let content = readerEvent.target.result; // this is the content!
                     console.log( content );
                     node.filecontent = content;
-                    document.getElementById('canvas').innerHTML = content;
+                    ProjectNode.editor.setValue(this.content);
                 }
 
                 this.appendFile(node);
@@ -236,7 +236,7 @@ export class FolderNode extends TreeNode {
 
             TreeNode.toggleMenu("hide");
             document.getElementById('last_action').value = this.name;
-            document.getElementById('canvas').innerHTML = this.name;
+            ProjectNode.editor.setValue(this.name);
             this.element.setAttribute('aria-expanded', !this.isExpanded());
             // TreeNode.setFocusTo(this.element);
 
@@ -330,7 +330,8 @@ export class ProjectNode extends FolderNode {
         ProjectNode.editor.setSize("100%", "100%");
         ProjectNode.editor.setOption("mode", "text/x-java");
         // ProjectNode.editor.setOption('theme', "blackboard");
-        ProjectNode.editor.setOption('theme', "darcula");
+        // ProjectNode.editor.setOption('theme', "darcula");
+        ProjectNode.editor.setOption('theme', "abcdef");
 
         // Hide context menu on every left click
         window.addEventListener("click", e => {
