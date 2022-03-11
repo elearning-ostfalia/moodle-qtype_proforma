@@ -54,6 +54,7 @@ class TreeNode {
             event.stopPropagation();
             event.preventDefault();
         } */
+
         this.boundHandleContextMenu = event => {
             this.setContextMenu();
             if (TreeNode.menu === undefined) {
@@ -185,7 +186,6 @@ export class FolderNode extends TreeNode {
             this.parent.folders = this.parent.folders.filter(item => item !== this);
             console.log(ProjectNode.projects);
         }
-
         this.boundHandleNewFile = event => {
             TreeNode.handleClickEvent(event);
             let filename = prompt("Please enter filename:", "");
@@ -205,10 +205,10 @@ export class FolderNode extends TreeNode {
                 let node = new FileNode(file.name);
                 // setting up the reader
                 let reader = new FileReader();
-                reader.readAsText(file,'UTF-8');
+                reader.readAsText(file, 'UTF-8');
                 reader.onload = readerEvent => {
                     let content = readerEvent.target.result; // this is the content!
-                    console.log( content );
+                    console.log(content);
                     node.filecontent = content;
                     ProjectNode.editor.setValue(this.content);
                 }
@@ -218,6 +218,29 @@ export class FolderNode extends TreeNode {
                 this.expand(true);
             }
             input.click();
+        }
+        this.allowDrop = event => {
+            event.preventDefault();
+        }
+
+        this.drop = event => {
+            event.preventDefault();
+            // event.stopPropagation();
+            if (event.dataTransfer.items) {
+                // Use DataTransferItemList interface to access the file(s)
+                for (let i = 0; i < event.dataTransfer.items.length; i++) {
+                    // If dropped items aren't files, reject them
+                    if (event.dataTransfer.items[i].kind === 'file') {
+                        let file = event.dataTransfer.items[i].getAsFile();
+                        this._addFileFromOs(file);
+                    }
+                }
+            } else {
+                // Use DataTransfer interface to access the file(s)
+                for (let i = 0; i < event.dataTransfer.files.length; i++) {
+                    this._addFileFromOs(event.dataTransfer.files[i]);
+                }
+            }
         }
 
 
@@ -254,6 +277,20 @@ export class FolderNode extends TreeNode {
         }
     }
 
+    _addFileFromOs(file) {
+        let node = new FileNode(file.name);
+        let reader = new FileReader();
+        reader.readAsText(file,'UTF-8');
+        reader.onload = readerEvent => {
+            let content = readerEvent.target.result; // this is the content!
+            // console.log( content );
+            node.filecontent = content;
+            ProjectNode.editor.setValue(this.content);
+        }
+        this.appendFile(node);
+        node.displayInTreeview(this.element.querySelector('[role="group"]'));
+        this.expand(true);
+    }
     expand(doit) {
         this.element.setAttribute('aria-expanded', doit);
     }
@@ -275,6 +312,9 @@ export class FolderNode extends TreeNode {
         for (let j = 0; j < this.files.length; j++) {
             this.files[j].displayInTreeview(subul);
         }
+        li.addEventListener('drop', this.drop);
+        li.addEventListener('dragover', this.allowDrop);
+
     }
 
     isExpanded() {
