@@ -37,18 +37,17 @@ Promise.all([
             console.log('initialise elements');
 
             // Create model solution
-
             let modelsolution = new fileviewer.ProjectNode('Model Solution');
-            modelsolution.appendFile(new fileviewer.FileNode('MyString.java'));
-            modelsolution.appendFile(new fileviewer.FileNode('Helper.java'));
+//            modelsolution.appendFile(new fileviewer.FileNode('MyString.java'));
+//            modelsolution.appendFile(new fileviewer.FileNode('Helper.java'));
 
             // Create test
             let test1 = new fileviewer.ProjectNode('Test 1');
-            test1.appendFile(new fileviewer.FileNode('MyStringTest.java'));
+/*            test1.appendFile(new fileviewer.FileNode('MyStringTest.java'));
             test1.appendFile(new fileviewer.FileNode('MyStringTest1.java'));
             test1.appendFolder(new fileviewer.FolderNode('data'));
             test1.folders[0].appendFile(new fileviewer.FileNode('input.txt'));
-
+*/
             // Common files
             let common = new fileviewer.ProjectNode('Common');
 

@@ -37,8 +37,7 @@ class TreeNode {
             TreeNode.focus = undefined;
         }
     }
-    static handleClickEvent() {
-        console.log('TreeNode click');
+    static handleClick() {
         TreeNode.toggleMenu("hide");
         TreeNode.setFocusTo(undefined);
     }
@@ -47,13 +46,6 @@ class TreeNode {
         this.name = name;
         this.element = undefined; // DOM element
         this.parent = undefined; // parent
-/*        this.boundHandleClick = event => {
-            TreeNode.toggleMenu("hide");
-            document.getElementById('last_action').value = this.name;
-            document.getElementById('canvas').innerHTML = this.name;
-            event.stopPropagation();
-            event.preventDefault();
-        } */
 
         this.boundHandleContextMenu = event => {
             this.setContextMenu();
@@ -105,7 +97,6 @@ class TreeNode {
         const li = document.createElement('li');
         li.setAttribute('role', 'treeitem');
         domnode.appendChild(li);
-        li.addEventListener('click', this.boundHandleClick);
         li.addEventListener('contextmenu', this.boundHandleContextMenu);
         this.element = li; // Store element
         return li;
@@ -119,14 +110,14 @@ export class FileNode extends TreeNode {
     constructor(name) {
         super(name);
         this.filecontent = '';
-        this.boundHandleDelete = event => {
-            TreeNode.handleClickEvent(event);
+        this.handleDelete = event => {
+            TreeNode.handleClick(event);
             this.element.remove();
             this.parent.files = this.parent.files.filter(item => item !== this);
             console.log(ProjectNode.projects);
         }
         this.boundHandleRename = event => {
-            TreeNode.handleClickEvent(event);
+            TreeNode.handleClick(event);
             let name = prompt("Please enter new name:", "");
             if (name !== null && name.length > 0) {
                 this.name = name;
@@ -158,6 +149,8 @@ export class FileNode extends TreeNode {
         const li = super.displayInTreeview(domnode);
         li.innerHTML = this.name;
         li.setAttribute('class', 'doc');
+        li.addEventListener('click', this.boundHandleClick);
+
 //        li.addEventListener('mouseover', this.handleMouseOver);
 //        li.addEventListener('mouseout', this.handleMouseOut);
     }
@@ -165,7 +158,7 @@ export class FileNode extends TreeNode {
     setContextMenu() {
         console.log('FileNode setContextMenu');
         this.createContextMenu([
-            ['Delete', this.boundHandleDelete],
+            ['Delete', this.handleDelete],
             ['Rename', this.boundHandleRename]]
         );
     }
@@ -180,14 +173,14 @@ export class FolderNode extends TreeNode {
         super(name);
         this.files = []; // Empty list of files.
         this.folders = []; // Empty list of folders.
-        this.boundHandleDelete = event => {
-            TreeNode.handleClickEvent(event);
+        this.handleDelete = event => {
+            TreeNode.handleClick(event);
             this.element.remove();
             this.parent.folders = this.parent.folders.filter(item => item !== this);
             console.log(ProjectNode.projects);
         }
         this.boundHandleNewFile = event => {
-            TreeNode.handleClickEvent(event);
+            TreeNode.handleClick(event);
             let filename = prompt("Please enter filename:", "");
             if (filename !== null && filename.length > 0) {
                 let node = new FileNode(filename);
@@ -197,7 +190,7 @@ export class FolderNode extends TreeNode {
             }
         }
         this.boundHandleLoadFile = event => {
-            TreeNode.handleClickEvent(event);
+            TreeNode.handleClick(event);
             let input = document.createElement('input');
             input.type = 'file';
             input.onchange = e => {
@@ -225,7 +218,7 @@ export class FolderNode extends TreeNode {
 
         this.drop = event => {
             event.preventDefault();
-            // event.stopPropagation();
+            event.stopPropagation();
             if (event.dataTransfer.items) {
                 // Use DataTransferItemList interface to access the file(s)
                 for (let i = 0; i < event.dataTransfer.items.length; i++) {
@@ -245,7 +238,7 @@ export class FolderNode extends TreeNode {
 
 
         this.boundHandleNewFolder = event => {
-            TreeNode.handleClickEvent(event);
+            TreeNode.handleClick(event);
             let foldername = prompt("Please enter foldername:", "");
             if (foldername !== null && foldername.length > 0) {
                 let node = new FolderNode(foldername);
@@ -259,8 +252,9 @@ export class FolderNode extends TreeNode {
 
             TreeNode.toggleMenu("hide");
             document.getElementById('last_action').value = this.name;
-            ProjectNode.editor.setValue(this.name);
-            this.element.setAttribute('aria-expanded', !this.isExpanded());
+            if (ProjectNode.editor != undefined) {
+                ProjectNode.editor.setValue(this.name);
+            }
             // TreeNode.setFocusTo(this.element);
 
             // this.element.classList.add('focus');
@@ -268,13 +262,17 @@ export class FolderNode extends TreeNode {
             event.preventDefault();
         }
         this.boundHandleRename = event => {
-            TreeNode.handleClickEvent(event);
+            TreeNode.handleClick(event);
             let name = prompt("Please enter new name:", "");
             if (name !== null && name.length > 0) {
                 this.name = name;
                 this.element.querySelector('span').innerHTML = name;
             }
         }
+        this.toggleExpand = event => {
+            this.element.setAttribute('aria-expanded', !this.isExpanded());
+        }
+
     }
 
     _addFileFromOs(file) {
@@ -294,13 +292,23 @@ export class FolderNode extends TreeNode {
     expand(doit) {
         this.element.setAttribute('aria-expanded', doit);
     }
+
+
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
         li.setAttribute('aria-expanded', 'false');
 
-        const span = document.createElement('span');
-        span.innerHTML = this.name;
-        li.appendChild(span);
+        const span1 = document.createElement('span');
+        // span1.innerHTML = '';
+        span1.classList.add('before');
+        span1.addEventListener('click', this.toggleExpand);
+        li.appendChild(span1);
+
+        const span2 = document.createElement('span');
+        span2.innerHTML = this.name;
+        span1.classList.add('name');
+        span2.addEventListener('click', this.boundHandleClick);
+        li.appendChild(span2);
 
         const subul = document.createElement('ul');
         subul.setAttribute('role', 'group');
@@ -327,7 +335,7 @@ export class FolderNode extends TreeNode {
             ['Load file...', this.boundHandleLoadFile],
             ['New folder...', this.boundHandleNewFolder],
             ['Rename', this.boundHandleRename],
-            ['Delete', this.boundHandleDelete]
+            ['Delete', this.handleDelete]
             ]
         );
     }
@@ -375,7 +383,7 @@ export class ProjectNode extends FolderNode {
 
         // Hide context menu on every left click
         window.addEventListener("click", e => {
-            TreeNode.handleClickEvent();
+            TreeNode.handleClick();
          });
     }
 
