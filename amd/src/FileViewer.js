@@ -5,6 +5,10 @@
 import './codemirror-global.js';
 import CodeMirror from "./codemirror/src/codemirror.js";
 import "./codemirror/mode/clike/clike.js";
+import "./codemirror/mode/javascript/javascript.js";
+import "./codemirror/mode/python/python.js";
+import "./codemirror/mode/xml/xml.js";
+
 
 'use strict';
 
@@ -16,12 +20,10 @@ class TreeNode {
     static menuVisible = false;
     static focus = undefined;
 
-    static toggleMenu = command => {
+    static toggleContextmenu = command => {
         if (TreeNode.menu === undefined) {
-            // console.log('no context menu');
             return;
         }
-        // console.log(command);
         TreeNode.menu.style.display = command === "show" ? "block" : "none";
         TreeNode.menuVisible = (command === "show");
     };
@@ -38,7 +40,7 @@ class TreeNode {
         }
     }
     static handleClick() {
-        TreeNode.toggleMenu("hide");
+        TreeNode.toggleContextmenu("hide");
         TreeNode.setFocusTo(undefined);
     }
 
@@ -55,7 +57,7 @@ class TreeNode {
             const showMenu = ({ top, left }) => {
                 TreeNode.menu.style.left = `${left}px`;
                 TreeNode.menu.style.top = `${top}px`;
-                TreeNode.toggleMenu('show');
+                TreeNode.toggleContextmenu('show');
             };
 
             console.log(`contextmenu: ${event}`)
@@ -107,9 +109,37 @@ class TreeNode {
  * FileNode
  */
 export class FileNode extends TreeNode {
+    static getEditorModeFromFilename(filename) {
+        const extension = filename.split('.').pop().toLowerCase();
+        switch (extension) {
+            case "java":
+                return "text/x-java";
+            case "py":
+                return "text/x-python";
+            case "setlx":
+                return "text/text";
+            case "c":
+                return "text/x-csrc";
+            case "cpp":
+            case "cxx":
+            case "h":
+            case "hpp":
+                return "text/x-c++src";
+            case "xml":
+                return "application/xml";
+            case "html":
+                return "text/html";
+            case "sql":
+                return "text/x-sql";
+            case "js":
+                return "text/javascript";
+        }
+    }
+
     constructor(name) {
         super(name);
         this.filecontent = '';
+        this.mode = FileNode.getEditorModeFromFilename(this.name);
         this.handleDelete = event => {
             TreeNode.handleClick(event);
             this.element.remove();
@@ -118,7 +148,7 @@ export class FileNode extends TreeNode {
         }
         this.boundHandleRename = event => {
             TreeNode.handleClick(event);
-            let name = prompt("Please enter new name:", "");
+            let name = prompt("Please enter new name:", this.name);
             if (name !== null && name.length > 0) {
                 this.name = name;
                 this.element.innerHTML = name;
@@ -128,23 +158,19 @@ export class FileNode extends TreeNode {
         this.boundHandleClick = event => {
             console.log('FileNode click');
 
-            TreeNode.toggleMenu("hide");
+            TreeNode.toggleContextmenu("hide");
             document.getElementById('last_action').value = this.name;
             if (this.filecontent != undefined) {
-                ProjectNode.editor.setValue(this.filecontent);
+                ProjectNode.setEditorContent(this.filecontent, this.mode);
             }
             TreeNode.setFocusTo(this.element);
             event.stopPropagation();
             // event.preventDefault();
         }
-/*        this.handleMouseOver = event => {
-            event.currentTarget.classList.add('hover');
-        }
-        this.handleMouseOut = event => {
-            event.currentTarget.classList.remove('hover');
-        }*/
     }
 
+    setContent(content) {
+    }
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
         li.innerHTML = this.name;
@@ -195,6 +221,8 @@ export class FolderNode extends TreeNode {
             input.type = 'file';
             input.onchange = e => {
                 let file = e.target.files[0];
+                this._addFileFromOs(file);
+                /*
                 let node = new FileNode(file.name);
                 // setting up the reader
                 let reader = new FileReader();
@@ -203,22 +231,32 @@ export class FolderNode extends TreeNode {
                     let content = readerEvent.target.result; // this is the content!
                     console.log(content);
                     node.filecontent = content;
-                    ProjectNode.editor.setValue(this.content);
+                    ProjectNode.setEditorContent(this.content);
                 }
 
                 this.appendFile(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
                 this.expand(true);
+                */
             }
             input.click();
         }
-        this.allowDrop = event => {
+        this.handleDragOver = event => {
             event.preventDefault();
+        }
+        this.handleDragEnter = event => {
+            // event.currentTarget.classList.add('dragover');
+            this.element.querySelector('.name').classList.add('dragover');
+        }
+        this.handleDragLeave = event => {
+            // event.currentTarget.classList.remove('dragover');
+            this.element.querySelector('.name').classList.remove('dragover');
         }
 
         this.drop = event => {
             event.preventDefault();
             event.stopPropagation();
+            this.element.querySelector('.name').classList.remove('dragover');
             if (event.dataTransfer.items) {
                 // Use DataTransferItemList interface to access the file(s)
                 for (let i = 0; i < event.dataTransfer.items.length; i++) {
@@ -235,8 +273,6 @@ export class FolderNode extends TreeNode {
                 }
             }
         }
-
-
         this.boundHandleNewFolder = event => {
             TreeNode.handleClick(event);
             let foldername = prompt("Please enter foldername:", "");
@@ -249,30 +285,29 @@ export class FolderNode extends TreeNode {
         }
         this.boundHandleClick = event => {
             console.log('FolderNode click');
-
-            TreeNode.toggleMenu("hide");
-            document.getElementById('last_action').value = this.name;
-            if (ProjectNode.editor != undefined) {
-                ProjectNode.editor.setValue(this.name);
-            }
+            TreeNode.toggleContextmenu("hide");
             // TreeNode.setFocusTo(this.element);
-
             // this.element.classList.add('focus');
             event.stopPropagation();
             event.preventDefault();
         }
         this.boundHandleRename = event => {
             TreeNode.handleClick(event);
-            let name = prompt("Please enter new name:", "");
+            let name = prompt("Please enter new name:", this.name);
             if (name !== null && name.length > 0) {
                 this.name = name;
-                this.element.querySelector('span').innerHTML = name;
+                this.element.querySelector('.name').innerHTML = name;
             }
         }
         this.toggleExpand = event => {
             this.element.setAttribute('aria-expanded', !this.isExpanded());
         }
-
+        this.handleMouseOver = event => {
+            event.currentTarget.classList.add('hover');
+        }
+        this.handleMouseOut = event => {
+            event.currentTarget.classList.remove('hover');
+        }
     }
 
     _addFileFromOs(file) {
@@ -283,7 +318,7 @@ export class FolderNode extends TreeNode {
             let content = readerEvent.target.result; // this is the content!
             // console.log( content );
             node.filecontent = content;
-            ProjectNode.editor.setValue(this.content);
+            ProjectNode.setEditorContent(this.content);
         }
         this.appendFile(node);
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
@@ -299,15 +334,18 @@ export class FolderNode extends TreeNode {
         li.setAttribute('aria-expanded', 'false');
 
         const span1 = document.createElement('span');
-        // span1.innerHTML = '';
         span1.classList.add('before');
         span1.addEventListener('click', this.toggleExpand);
         li.appendChild(span1);
 
         const span2 = document.createElement('span');
         span2.innerHTML = this.name;
-        span1.classList.add('name');
+        span2.classList.add('name');
         span2.addEventListener('click', this.boundHandleClick);
+        span2.addEventListener('dragenter', this.handleDragEnter);
+        span2.addEventListener('dragleave', this.handleDragLeave);
+        span2.addEventListener('drop', this.drop);
+        span2.addEventListener('dragover', this.handleDragOver);
         li.appendChild(span2);
 
         const subul = document.createElement('ul');
@@ -320,9 +358,6 @@ export class FolderNode extends TreeNode {
         for (let j = 0; j < this.files.length; j++) {
             this.files[j].displayInTreeview(subul);
         }
-        li.addEventListener('drop', this.drop);
-        li.addEventListener('dragover', this.allowDrop);
-
     }
 
     isExpanded() {
@@ -376,7 +411,6 @@ export class ProjectNode extends FolderNode {
             //viewportMargin: Infinity
         });
         ProjectNode.editor.setSize("100%", "100%");
-        ProjectNode.editor.setOption("mode", "text/x-java");
         // ProjectNode.editor.setOption('theme', "blackboard");
         // ProjectNode.editor.setOption('theme', "darcula");
         ProjectNode.editor.setOption('theme', "abcdef");
@@ -385,6 +419,12 @@ export class ProjectNode extends FolderNode {
         window.addEventListener("click", e => {
             TreeNode.handleClick();
          });
+    }
+    static setEditorContent(content, mode = undefined) {
+        ProjectNode.editor.setValue(content);
+        if (mode !== undefined) {
+            ProjectNode.editor.setOption("mode", mode);
+        }
     }
 
     constructor(name) {

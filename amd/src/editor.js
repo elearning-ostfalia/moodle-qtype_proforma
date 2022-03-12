@@ -16,7 +16,8 @@
 
 Promise.all([
 //    import('/amd/src/Tree.js'),
-    import('/amd/src/FileViewer.js')
+    import('./FileViewer.js')
+//    import('/amd/src/FileViewer.js') // inside Moodle
 ])
     .then(([
 //        tree,
@@ -47,10 +48,10 @@ Promise.all([
             test1.appendFile(new fileviewer.FileNode('MyStringTest1.java'));
             test1.appendFolder(new fileviewer.FolderNode('data'));
             test1.folders[0].appendFile(new fileviewer.FileNode('input.txt'));
-*/
+
             // Common files
             let common = new fileviewer.ProjectNode('Common');
-
+*/
             const fv = document.getElementById("fileviewer");
             const editor = document.getElementById("editor");
             fileviewer.ProjectNode.init(fv, editor);

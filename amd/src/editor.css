@@ -70,8 +70,14 @@ ul[role="tree"] {
 [role="treeitem"].hover,
 [role="treeitem"] span:hover {
     background-color: #ddd;
-}*/
+}
+*/
 
+
+[role="treeitem"].dragover,
+[role="treeitem"] span.dragover {
+    background-color: #ddd;
+}
 
 /* Split view */
 
