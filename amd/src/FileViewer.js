@@ -222,22 +222,6 @@ export class FolderNode extends TreeNode {
             input.onchange = e => {
                 let file = e.target.files[0];
                 this._addFileFromOs(file);
-                /*
-                let node = new FileNode(file.name);
-                // setting up the reader
-                let reader = new FileReader();
-                reader.readAsText(file, 'UTF-8');
-                reader.onload = readerEvent => {
-                    let content = readerEvent.target.result; // this is the content!
-                    console.log(content);
-                    node.filecontent = content;
-                    ProjectNode.setEditorContent(this.content);
-                }
-
-                this.appendFile(node);
-                node.displayInTreeview(this.element.querySelector('[role="group"]'));
-                this.expand(true);
-                */
             }
             input.click();
         }
@@ -245,11 +229,9 @@ export class FolderNode extends TreeNode {
             event.preventDefault();
         }
         this.handleDragEnter = event => {
-            // event.currentTarget.classList.add('dragover');
             this.element.querySelector('.name').classList.add('dragover');
         }
         this.handleDragLeave = event => {
-            // event.currentTarget.classList.remove('dragover');
             this.element.querySelector('.name').classList.remove('dragover');
         }
 
@@ -257,19 +239,12 @@ export class FolderNode extends TreeNode {
             event.preventDefault();
             event.stopPropagation();
             this.element.querySelector('.name').classList.remove('dragover');
-            if (event.dataTransfer.items) {
-                // Use DataTransferItemList interface to access the file(s)
-                for (let i = 0; i < event.dataTransfer.items.length; i++) {
-                    // If dropped items aren't files, reject them
-                    if (event.dataTransfer.items[i].kind === 'file') {
-                        let file = event.dataTransfer.items[i].getAsFile();
-                        this._addFileFromOs(file);
-                    }
-                }
-            } else {
-                // Use DataTransfer interface to access the file(s)
-                for (let i = 0; i < event.dataTransfer.files.length; i++) {
-                    this._addFileFromOs(event.dataTransfer.files[i]);
+
+            let items = event.dataTransfer.items;
+            for (let i=0; i<items.length; i++) {
+                let item = items[i].webkitGetAsEntry();  //Might be renamed to GetAsEntry()
+                if (item) {
+                    this._getFileTree(item);
                 }
             }
         }
@@ -310,15 +285,32 @@ export class FolderNode extends TreeNode {
         }
     }
 
+    _getFileTree(item, path) {
+        path = path || "";
+        if (item.isFile) {
+            item.file(file => {
+                this._addFileFromOs(file);
+            });
+        } else if (item.isDirectory) {
+            // Get folder contents
+            // console.log(item.fullPath);
+            let dirReader = item.createReader();
+            dirReader.readEntries(entries => {
+                for (let i=0; i < entries.length; i++) {
+                    this._getFileTree(entries[i], path + item.name + "/");
+                }
+            });
+        }
+    }
+
     _addFileFromOs(file) {
         let node = new FileNode(file.name);
         let reader = new FileReader();
         reader.readAsText(file,'UTF-8');
         reader.onload = readerEvent => {
             let content = readerEvent.target.result; // this is the content!
-            // console.log( content );
             node.filecontent = content;
-            ProjectNode.setEditorContent(this.content);
+            ProjectNode.setEditorContent(content);
         }
         this.appendFile(node);
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
