@@ -8,6 +8,9 @@ import "./codemirror/mode/clike/clike.js";
 import "./codemirror/mode/javascript/javascript.js";
 import "./codemirror/mode/python/python.js";
 import "./codemirror/mode/xml/xml.js";
+import "./codemirror/addon/selection/active-line.js";
+import "./codemirror/addon/edit/matchbrackets.js";
+import "./codemirror/addon/edit/closebrackets.js";
 
 
 'use strict';
@@ -133,6 +136,10 @@ export class FileNode extends TreeNode {
                 return "text/x-sql";
             case "js":
                 return "text/javascript";
+            case 'txt':
+            case 'csv':
+            case 'md':
+                return "text";
         }
     }
 
@@ -161,7 +168,7 @@ export class FileNode extends TreeNode {
             TreeNode.toggleContextmenu("hide");
             document.getElementById('last_action').value = this.name;
             if (this.filecontent != undefined) {
-                ProjectNode.setEditorContent(this.filecontent, this.mode);
+                ProjectNode.setEditorContent(this);
             }
             TreeNode.setFocusTo(this.element);
             event.stopPropagation();
@@ -169,8 +176,6 @@ export class FileNode extends TreeNode {
         }
     }
 
-    setContent(content) {
-    }
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
         li.innerHTML = this.name;
@@ -292,12 +297,18 @@ export class FolderNode extends TreeNode {
                 this._addFileFromOs(file);
             });
         } else if (item.isDirectory) {
+            // Create new folder
+            let node = new FolderNode(item.name);
+            this.appendFolder(node);
+            node.displayInTreeview(this.element.querySelector('[role="group"]'));
+            this.expand(true);
+
             // Get folder contents
             // console.log(item.fullPath);
             let dirReader = item.createReader();
             dirReader.readEntries(entries => {
                 for (let i=0; i < entries.length; i++) {
-                    this._getFileTree(entries[i], path + item.name + "/");
+                    node._getFileTree(entries[i], path + item.name + "/");
                 }
             });
         }
@@ -310,7 +321,7 @@ export class FolderNode extends TreeNode {
         reader.onload = readerEvent => {
             let content = readerEvent.target.result; // this is the content!
             node.filecontent = content;
-            ProjectNode.setEditorContent(content);
+            ProjectNode.setEditorContent(node);
         }
         this.appendFile(node);
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
@@ -319,7 +330,6 @@ export class FolderNode extends TreeNode {
     expand(doit) {
         this.element.setAttribute('aria-expanded', doit);
     }
-
 
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
@@ -378,7 +388,7 @@ export class ProjectNode extends FolderNode {
     static projects = []; // all projects
     static roots = [];
     static editor = undefined;
-
+    static filenode = undefined;
 
     static init(fileviewer, editor) {
         let ul = document.createElement("ul")
@@ -412,10 +422,17 @@ export class ProjectNode extends FolderNode {
             TreeNode.handleClick();
          });
     }
-    static setEditorContent(content, mode = undefined) {
-        ProjectNode.editor.setValue(content);
-        if (mode !== undefined) {
-            ProjectNode.editor.setOption("mode", mode);
+    static setEditorContent(filenode) {
+        if (ProjectNode.filenode != undefined && ProjectNode.filenode.mode !== undefined) {
+            // Store (modified) content
+            ProjectNode.filenode.filecontent = ProjectNode.editor.getValue();
+        }
+        if (filenode.mode !== undefined) {
+            // Display new content
+            console.log(filenode.filecontent);
+            ProjectNode.filenode = filenode;
+            ProjectNode.editor.setValue(filenode.filecontent);
+            ProjectNode.editor.setOption("mode", filenode.mode);
         }
     }
 
