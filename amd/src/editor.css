@@ -58,7 +58,7 @@ ul[role="tree"] {
     display: inline;
     padding-right: 3px;
     vertical-align: middle;
-    font-weight: 900;
+    /* font-weight: 900; */
 }
 
 [role="treeitem"][aria-expanded="true"] > .before::before {
@@ -77,7 +77,7 @@ ul[role="tree"] {
     display: inline;
     padding-right: 3px;
     vertical-align: middle;
-    font-weight: 900;
+    /*font-weight: 900; */
 }
 
 /* [role="treeitem"] span {*/
@@ -85,9 +85,16 @@ ul[role="tree"] {
 [role="treeitem"] {
     width: fit-content;
     margin: 0;
-    padding: 0.1em; // Abstand zwischen den EInträgen vergrößern
+    padding: 0.1em; // Vertical distance between items
     border: 2px transparent solid;
     display: block;
+
+}
+
+/* Indent for all treeitems but first level */
+/* Default indentation is much too large */
+[role="treeitem"] [role="treeitem"] {
+    margin-left: -20px;
 }
 
 /* disable default keyboard focus styling for treeitems

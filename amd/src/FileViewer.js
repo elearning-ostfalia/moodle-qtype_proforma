@@ -74,6 +74,15 @@ class TreeNode {
             };
             showMenu(origin);
         }
+        this.handleDragStart = event => {
+            if (event.dataTransfer.getData('treeitem').length == 0) {
+                console.log('dragstart: ' + this.getPath());
+                event.dataTransfer.setData('treeitem', this.getPath());
+            }
+        }
+    }
+    getPath() {
+        return this.parent === undefined? this.name : this.parent.getPath() + '/' + this.name ;
     }
 
     createContextMenu(list) {
@@ -101,8 +110,10 @@ class TreeNode {
     displayInTreeview(domnode) {
         const li = document.createElement('li');
         li.setAttribute('role', 'treeitem');
+        li.setAttribute('draggable', 'true');
         domnode.appendChild(li);
         li.addEventListener('contextmenu', this.boundHandleContextMenu);
+        li.addEventListener('dragstart', this.handleDragStart);
         this.element = li; // Store element
         return li;
     }
@@ -136,9 +147,13 @@ export class FileNode extends TreeNode {
                 return "text/x-sql";
             case "js":
                 return "text/javascript";
+            case "php":
+                return "application/x-httpd-php";
             case 'txt':
+            case 'log':
             case 'csv':
             case 'md':
+            case 'csv':
                 return "text";
         }
     }
@@ -179,7 +194,8 @@ export class FileNode extends TreeNode {
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
         li.innerHTML = this.name;
-        li.setAttribute('class', 'doc');
+        li.classList.add('doc');
+
         li.addEventListener('click', this.boundHandleClick);
 
 //        li.addEventListener('mouseover', this.handleMouseOver);
@@ -214,6 +230,10 @@ export class FolderNode extends TreeNode {
             TreeNode.handleClick(event);
             let filename = prompt("Please enter filename:", "");
             if (filename !== null && filename.length > 0) {
+                if (!this.isNameChildUnique(filename)) {
+                    alert(filename + ' already exists');
+                    return;
+                }
                 let node = new FileNode(filename);
                 this.appendFile(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
@@ -240,23 +260,60 @@ export class FolderNode extends TreeNode {
             this.element.querySelector('.name').classList.remove('dragover');
         }
 
-        this.drop = event => {
+        this.handleDrop = event => {
             event.preventDefault();
             event.stopPropagation();
             this.element.querySelector('.name').classList.remove('dragover');
-
-            let items = event.dataTransfer.items;
-            for (let i=0; i<items.length; i++) {
-                let item = items[i].webkitGetAsEntry();  //Might be renamed to GetAsEntry()
-                if (item) {
-                    this._getFileTree(item);
+            const path = event.dataTransfer.getData('treeitem');
+            if (path !== undefined && path.length > 0) {
+                console.log('drop ' + path + ' onto ' + this.getPath());
+                // Node element from tree
+                const node = ProjectNode.findNodeByPath(path);
+                if (node !== undefined && !this.isNameChildUnique(node.name)) {
+                    // TODO: wenn der Ordner schon existiert, sollte nur der Inhalt gemergt werden
+                    alert(node.name + ' already exists');
+                    return;
                 }
+                if (node instanceof FolderNode) {
+                    // remove folder in old parent
+                    node.parent.folders = node.parent.folders.filter(item => item !== node);
+                    // add folder to this
+                    this.appendFolder(node);
+                    this.element.querySelector('ul').appendChild(node.element);
+                    // node.displayInTreeview(this.element.querySelector('[role="group"]'));
+                    this.expand(true);
+                } else if (node instanceof FileNode) {
+                    node.parent.files = node.parent.files.filter(item => item !== node);
+                    // add folder to this
+                    this.appendFile(node);
+                    // node.displayInTreeview(this.element.querySelector('[role="group"]'));
+                    this.element.querySelector('ul').appendChild(node.element);
+                    this.expand(true);
+                } else {
+                    console.log('node cannot be moved');
+                    console.log(node);
+                }
+            } else {
+                // External file or folder
+                console.log('drop file/folder');
+                let items = event.dataTransfer.items;
+                for (let i=0; i<items.length; i++) {
+                    let item = items[i].webkitGetAsEntry();  //Might be renamed to GetAsEntry()
+                    if (item) {
+                        this._getFileTree(item);
+                    }
+                }
+
             }
         }
         this.boundHandleNewFolder = event => {
             TreeNode.handleClick(event);
             let foldername = prompt("Please enter foldername:", "");
             if (foldername !== null && foldername.length > 0) {
+                if (!this.isNameChildUnique(foldername)) {
+                    alert(foldername + ' already exists');
+                    return;
+                }
                 let node = new FolderNode(foldername);
                 this.appendFolder(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
@@ -275,6 +332,10 @@ export class FolderNode extends TreeNode {
             TreeNode.handleClick(event);
             let name = prompt("Please enter new name:", this.name);
             if (name !== null && name.length > 0) {
+                if (!this.parent.isNameChildUnique(name)) {
+                    alert(node.name + ' already exists');
+                    return;
+                }
                 this.name = name;
                 this.element.querySelector('.name').innerHTML = name;
             }
@@ -288,6 +349,37 @@ export class FolderNode extends TreeNode {
         this.handleMouseOut = event => {
             event.currentTarget.classList.remove('hover');
         }
+    }
+    findNodeByPath(path) {
+        let first = path.shift();
+        for (let i = 0; i < this.files.length; i++) {
+            if (this.files[i].name === first) {
+                return this.files[i];
+            }
+        }
+        for (let i = 0; i < this.folders.length; i++) {
+            if (this.folders[i].name === first) {
+                if (path.length == 0) {
+                    return this.folders[i];
+                } else {
+                    return this.folders[i].findNodeByPath(path);
+                }
+            }
+        }
+        return undefined;
+    }
+    isNameChildUnique(name) {
+        for (let i = 0; i < this.files.length; i++) {
+            if (name.localeCompare(this.files[i].name) == 0 ) {
+                return false;
+            }
+        }
+        for (let i = 0; i < this.folders.length; i++) {
+            if (name.localeCompare(this.folders[i].name) == 0 ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     _getFileTree(item, path) {
@@ -315,6 +407,10 @@ export class FolderNode extends TreeNode {
     }
 
     _addFileFromOs(file) {
+        if (!this.isNameChildUnique(file.name)) {
+            alert(file.name + ' already exists');
+            return;
+        }
         let node = new FileNode(file.name);
         let reader = new FileReader();
         reader.readAsText(file,'UTF-8');
@@ -346,7 +442,7 @@ export class FolderNode extends TreeNode {
         span2.addEventListener('click', this.boundHandleClick);
         span2.addEventListener('dragenter', this.handleDragEnter);
         span2.addEventListener('dragleave', this.handleDragLeave);
-        span2.addEventListener('drop', this.drop);
+        span2.addEventListener('drop', this.handleDrop);
         span2.addEventListener('dragover', this.handleDragOver);
         li.appendChild(span2);
 
@@ -429,13 +525,21 @@ export class ProjectNode extends FolderNode {
         }
         if (filenode.mode !== undefined) {
             // Display new content
-            console.log(filenode.filecontent);
             ProjectNode.filenode = filenode;
             ProjectNode.editor.setValue(filenode.filecontent);
             ProjectNode.editor.setOption("mode", filenode.mode);
         }
     }
-
+    static findNodeByPath(path) {
+        let pathsplit = path.split('/');
+        let first = pathsplit.shift();
+        for (let i = 0; i < ProjectNode.projects.length; i++) {
+            if (ProjectNode.projects[i].name === first) {
+                return ProjectNode.projects[i].findNodeByPath(pathsplit);
+            }
+        }
+        return undefined;
+    }
     constructor(name) {
         super(name);
         ProjectNode.projects.push(this);
