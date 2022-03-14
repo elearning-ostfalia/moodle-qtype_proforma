@@ -102,7 +102,6 @@ body {font-family: Arial;}
 
 <script>
     // CodeMirror
-/*
     let textareas = document.querySelectorAll('.editor textarea');
     textareas.forEach(function(item) {
         let editor = CodeMirror.fromTextArea(item, {
@@ -111,7 +110,6 @@ body {font-family: Arial;}
         });
         editor.setSize('100%', null);
     });
-*/
 
 /*
     // Split view
@@ -155,6 +153,8 @@ body {font-family: Arial;}
         // Width of left side
         let leftWidth = 0;
 
+        let mousedown = false;
+
         // Handle the mousedown event
         // that's triggered when user drags the resizer
         const mouseDownHandler = function (e) {
@@ -166,24 +166,28 @@ body {font-family: Arial;}
             console.log('old R: ' + rightSide.getBoundingClientRect().width);
             console.log('old P: ' + resizer.parentNode.getBoundingClientRect().width);
 
+            mousedown = true;
             // Attach the listeners to `document`
             document.addEventListener('mousemove', mouseMoveHandler);
             document.addEventListener('mouseup', mouseUpHandler);
         };
 
         const mouseMoveHandler = function (e) {
-            // How far the mouse has been moved
-            const dx = e.clientX - x;
-            const dy = e.clientY - y;
+            if (mousedown) {
+                // How far the mouse has been moved
+                const dx = e.clientX - x;
+                const dy = e.clientY - y;
 
-            console.log('parent: ' + resizer.parentNode.getBoundingClientRect().width);
-            const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
-            console.log(newLeftWidth);
-            leftSide.style.flexBasis =`${newLeftWidth}%`;
+                console.log('parent: ' + resizer.parentNode.getBoundingClientRect().width);
+                const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+                console.log(newLeftWidth);
+                leftSide.style.flexBasis =`${newLeftWidth}%`;
+            } else {
+                mouseUpHandler();
+            }
         };
 
         const mouseUpHandler = function () {
-
             resizer.style.removeProperty('cursor');
             document.body.style.removeProperty('cursor');
 
