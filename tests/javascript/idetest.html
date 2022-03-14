@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!-- test environment for editor.js -->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>IDE TEST</title>
+    <script src="../../amd/src/codemirror.js"></script>
+
+    <!-- <link rel="stylesheet" href="../../../../../general.css"> -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../amd/src/editor.css">
+    <style>
+body {font-family: Arial;}
+
+
+.CodeMirror {
+    background-color: green;
+
+}
+.ide .explorer {
+    flex-grow: 0; /* use size calculated from resizer */
+    flex-shrink: 0;  /* use size calculated from resizer */
+    flex-basis: 20%;
+    background-color: #2B2B2B;
+    color: #A9B7C6;
+/*    overflow-y: auto; */
+}
+
+.ide .resize {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 0.15rem;
+    cursor: col-resize;
+    margin: 0 0 0 auto;
+}
+
+.ide .canvas {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 75%;
+    background-color: yellow;
+    /*    overflow-y: auto; */
+}
+
+.resizebottom {
+    cursor: row-resize;
+}
+    </style>
+</head>
+
+<body>
+<h3 id="tree_label">
+    IDE TEST
+</h3>
+
+<div class="ide" style="display: flex;flex-direction: column; border:black">
+    <div class="menu">
+        menu
+    </div>
+
+    <div class="body" style="display: flex; flex-direction: row; border: red">
+        <div class="explorer">
+            explorer
+        </div>
+        <div class="resize" id="resizeexplorer"></div>
+        <div class="canvas" style="display: flex; flex-direction: row">
+            <div class="canvascol" style="display: flex; flex-direction: column; flex-grow: 0; flex-shrink: 0">
+                <div class="tabs">
+                    <button>tab1</button>
+                    <button>tab2</button>
+                    <button>tab3</button>
+                </div>
+                <div class="editor">
+                    TEXT
+                    <textarea>editor1</textarea>
+                </div>
+            </div>
+
+            <div class="resize" id="spliteditors">||</div>
+            <div class="canvascol" style="display: flex; flex-direction: column">
+                <div class="tabs">
+                    <button>tab1</button>
+                    <button>tab2</button>
+                    <button>tab3</button>
+                </div>
+                <div class="editor">
+                    <textarea cols="10">editor2</textarea>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="status" style="border: green">
+        status
+    </div>
+
+    <div class="resizebottom">
+        resize bottom
+    </div>
+</div>
+
+<script>
+    // CodeMirror
+/*
+    let textareas = document.querySelectorAll('.editor textarea');
+    textareas.forEach(function(item) {
+        let editor = CodeMirror.fromTextArea(item, {
+            lineNumbers: true
+            //viewportMargin: Infinity
+        });
+        editor.setSize('100%', null);
+    });
+*/
+
+/*
+    // Split view
+    let mousedown = false;
+    let resizer = document.getElementById('resizeexplorer');
+    let fileviewerwin = document.querySelector('.ide .explorer');
+    resizer.addEventListener('mousedown', onMouseDown)
+    function onMouseDown(event) {
+        mousedown = true;
+        document.body.addEventListener('mousemove', onMouseMove)
+        document.body.addEventListener('mouseup', onMouseUp)
+    }
+    function onMouseMove(event) {
+        if (mousedown) {
+            console.log('x=' + event.clientX);
+            console.log(event);
+            fileviewerwin.style.flexBasis = event.clientX + "px"
+        } else {
+            onMouseUp()
+        }
+    }
+    const onMouseUp = (e) => {
+        mousedown = false;
+        document.body.removeEventListener('mouseup', onMouseUp)
+        resizer.removeEventListener('mousemove', onMouseMove)
+    }
+ */
+    function init_split_neu(id) {
+        // from https://htmldom.dev/create-resizable-split-views/
+        // Query the element
+        const resizer = document.getElementById(id);
+        const leftSide = resizer.previousElementSibling;
+        console.log(leftSide);
+        const rightSide = resizer.nextElementSibling;
+        console.log(rightSide);
+
+        // The current position of mouse
+        let x = 0;
+        let y = 0;
+
+        // Width of left side
+        let leftWidth = 0;
+
+        // Handle the mousedown event
+        // that's triggered when user drags the resizer
+        const mouseDownHandler = function (e) {
+            // Get the current mouse position
+            x = e.clientX;
+            y = e.clientY;
+            leftWidth = leftSide.getBoundingClientRect().width;
+
+            // Attach the listeners to `document`
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        };
+
+        const mouseMoveHandler = function (e) {
+            // How far the mouse has been moved
+            const dx = e.clientX - x;
+            const dy = e.clientY - y;
+
+            const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+            leftSide.style.flexBasis =`${newLeftWidth}%`;
+        };
+
+        const mouseUpHandler = function () {
+
+            resizer.style.removeProperty('cursor');
+            document.body.style.removeProperty('cursor');
+
+            leftSide.style.removeProperty('user-select');
+            leftSide.style.removeProperty('pointer-events');
+
+            rightSide.style.removeProperty('user-select');
+            rightSide.style.removeProperty('pointer-events');
+
+            // Remove the handlers of `mousemove` and `mouseup`
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+        };
+
+        // Attach the handler
+        resizer.addEventListener('mousedown', mouseDownHandler);
+    }
+
+    init_split_neu('resizeexplorer');
+    init_split_neu('spliteditors');
+
+</script>
+
+</body>
+
+</html>
