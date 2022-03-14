@@ -16,7 +16,6 @@ body {font-family: Arial;}
 
 .CodeMirror {
     background-color: green;
-
 }
 .ide .explorer {
     flex-grow: 0; /* use size calculated from resizer */
@@ -28,8 +27,8 @@ body {font-family: Arial;}
 }
 
 .ide .resize {
-    flex-grow: 0;
-    flex-shrink: 0;
+    flex-grow: 0; /* no resize */
+    flex-shrink: 0; /* no resize */
     width: 5px; /* 0.15rem; */
     background-color: red;
     cursor: col-resize;
@@ -39,12 +38,12 @@ body {font-family: Arial;}
 .ide .canvas {
     flex-grow: 1;
     flex-shrink: 1;
-    flex-basis: 75%;
+    /* flex-basis: 75%; */
     background-color: yellow;
     /*    overflow-y: auto; */
 }
 
-.resizebottom {
+#resizebottom {
     cursor: row-resize;
 }
     </style>
@@ -55,7 +54,7 @@ body {font-family: Arial;}
     IDE TEST
 </h3>
 
-<div class="ide" style="display: flex;flex-direction: column; border:black">
+<div class="ide" style="display: flex;flex-direction: column; border:black; height: 600px">
     <div class="menu">
         menu
     </div>
@@ -66,19 +65,19 @@ body {font-family: Arial;}
         </div>
         <div class="resize" id="resizeexplorer"></div>
         <div class="canvas" style="display: flex; flex-direction: row">
-            <div class="canvascol" style="display: flex; flex-direction: column; flex-grow: 0; flex-shrink: 0">
+            <!-- set flex-basis = 50% for 2 two columns and 100%V for one column -->
+            <div class="canvascol" style="display: flex; flex-direction: column; flex-grow: 0; flex-shrink: 0; flex-basis:50%">
                 <div class="tabs">
                     <button>tab1</button>
                     <button>tab2</button>
                     <button>tab3</button>
                 </div>
                 <div class="editor">
-                    TEXT
                     <textarea>editor1</textarea>
                 </div>
             </div>
             <div class="resize" id="spliteditors">||</div>
-            <div class="canvascol" style="display: flex; flex-direction: column">
+            <div class="canvascol" style="display: flex; flex-direction: column; flex-basis:50%">
                 <div class="tabs">
                     <button>tab1</button>
                     <button>tab2</button>
@@ -95,7 +94,7 @@ body {font-family: Arial;}
         status
     </div>
 
-    <div class="resizebottom">
+    <div id="resizebottom">
         resize bottom
     </div>
 </div>
@@ -108,7 +107,7 @@ body {font-family: Arial;}
             lineNumbers: true
             //viewportMargin: Infinity
         });
-        editor.setSize('100%', null);
+        editor.setSize('100%', '100%');
     });
 
 /*
@@ -137,23 +136,25 @@ body {font-family: Arial;}
         resizer.removeEventListener('mousemove', onMouseMove)
     }
  */
-    function init_split_neu(id) {
+    function init_split_neu(id, dir) {
         // from https://htmldom.dev/create-resizable-split-views/
         // Query the element
         const resizer = document.getElementById(id);
-        const leftSide = resizer.previousElementSibling;
-        console.log(leftSide);
-        const rightSide = resizer.nextElementSibling;
-        console.log(rightSide);
+        const before = resizer.previousElementSibling;
+        console.log(before);
+        const after = resizer.nextElementSibling;
+        console.log(after);
 
         // The current position of mouse
         let x = 0;
         let y = 0;
 
         // Width of left side
-        let leftWidth = 0;
+        let oldValue = 0;
 
         let mousedown = false;
+
+        const direction = dir;
 
         // Handle the mousedown event
         // that's triggered when user drags the resizer
@@ -161,10 +162,15 @@ body {font-family: Arial;}
             // Get the current mouse position
             x = e.clientX;
             y = e.clientY;
-            leftWidth = leftSide.getBoundingClientRect().width;
-            console.log('old L: ' + leftWidth);
-            console.log('old R: ' + rightSide.getBoundingClientRect().width);
-            console.log('old P: ' + resizer.parentNode.getBoundingClientRect().width);
+
+            if (direction === 'w') {
+                oldValue = before.getBoundingClientRect().width;
+            } else {
+                oldValue = before.getBoundingClientRect().height;
+            }
+            console.log('old L: ' + oldValue);
+            // console.log('old R: ' + after.getBoundingClientRect().width);
+            // console.log('old P: ' + resizer.parentNode.getBoundingClientRect().width);
 
             mousedown = true;
             // Attach the listeners to `document`
@@ -178,10 +184,22 @@ body {font-family: Arial;}
                 const dx = e.clientX - x;
                 const dy = e.clientY - y;
 
-                console.log('parent: ' + resizer.parentNode.getBoundingClientRect().width);
-                const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
-                console.log(newLeftWidth);
-                leftSide.style.flexBasis =`${newLeftWidth}%`;
+                let newBasis = 0;
+                if (direction === 'w') {
+                    console.log('parent: ' + resizer.parentNode.getBoundingClientRect().width);
+                    newBasis = ((oldValue + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+                } else {
+                    console.log('parent: ' + resizer.parentNode.getBoundingClientRect().height);
+                    newBasis = ((oldValue + dy) * 100) / resizer.parentNode.getBoundingClientRect().height;
+                }
+                console.log(newBasis);
+
+                before.style.flexBasis =`${newBasis}%`;
+                if (after != undefined) {
+                    after.style.flexBasis =`${100-newBasis}%`;
+                } else {
+                    // resizer.parentNode.getBoundingClientRect().height = '300px';
+                }
             } else {
                 mouseUpHandler();
             }
@@ -191,11 +209,13 @@ body {font-family: Arial;}
             resizer.style.removeProperty('cursor');
             document.body.style.removeProperty('cursor');
 
-            leftSide.style.removeProperty('user-select');
-            leftSide.style.removeProperty('pointer-events');
+            before.style.removeProperty('user-select');
+            before.style.removeProperty('pointer-events');
 
-            rightSide.style.removeProperty('user-select');
-            rightSide.style.removeProperty('pointer-events');
+            if (after != undefined) {
+                after.style.removeProperty('user-select');
+                after.style.removeProperty('pointer-events');
+            }
 
             // Remove the handlers of `mousemove` and `mouseup`
             document.removeEventListener('mousemove', mouseMoveHandler);
@@ -206,8 +226,9 @@ body {font-family: Arial;}
         resizer.addEventListener('mousedown', mouseDownHandler);
     }
 
-    init_split_neu('resizeexplorer');
-    init_split_neu('spliteditors');
+    init_split_neu('resizeexplorer', 'w');
+    init_split_neu('spliteditors', 'w');
+    init_split_neu('resizebottom', 'h');
 
 </script>
 
