@@ -129,43 +129,47 @@ ul[role="tree"] {
     border: 1px black solid;
     width: 100%;
     /* height is needed for scrollbar */
-    height: 400px;
+    min-height: 400px;
 }
 
 /* From Codemirror theme darcula: #2B2B2B */
-#fileviewer {
-    flex-grow: 1;
+.ide .explorer {
+/*    flex-grow: 1;
     flex-shrink: 0;
-    flex-basis: 20%;
+    flex-basis: 20%; */
     background-color: #2B2B2B;
     color: #A9B7C6;
-    overflow-y: auto;
+/*    overflow-y: auto; */
 }
 
+.ide .menu, .ide .status, .ide .tabs {
+    background-color: lightgrey;
+}
 
-#resize {
+.ide .resize {
     flex-grow: 0;
     flex-shrink: 0;
     width: 0.15rem;
     cursor: col-resize;
     margin: 0 0 0 auto;
 }
-
+/*
 #canvas {
     flex-grow: 0;
     flex-shrink: 1;
     overflow-x: auto;
 }
-
+ */
 
 /* Context menu */
 
 .contextmenu {
     width: 100px;
     box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
-    position: absolute; // relative;
+    position: absolute;
     background-color: white;
     display: none;
+    z-index: 300;
 }
 .contextmenu .menu-options {
     list-style: none;

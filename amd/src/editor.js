@@ -37,6 +37,8 @@ Promise.all([
         function _open() {
             console.log('initialise elements');
 
+            const explorer = document.getElementById('fileexplorer');
+            fileviewer.ProjectNode.buildFramework(explorer);
             // Create model solution
             let modelsolution = new fileviewer.ProjectNode('Model Solution');
 //            modelsolution.appendFile(new fileviewer.FileNode('MyString.java'));
@@ -52,10 +54,12 @@ Promise.all([
             // Common files
             let common = new fileviewer.ProjectNode('Common');
 */
-            const fv = document.getElementById("fileviewer");
-            const editor = document.getElementById("editor");
-            fileviewer.ProjectNode.init(fv, editor);
 
+            let submission = new fileviewer.ProjectNode('Submission');
+
+            fileviewer.ProjectNode.init(explorer);
+
+            /*
             function _initSplitview() {
                 // Split view
                 let mousedown = false;
@@ -85,6 +89,10 @@ Promise.all([
             }
 
             _initSplitview();
+
+             */
+
+
         }
 
         docReady(function() {

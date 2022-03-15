@@ -50,7 +50,7 @@ class TreeNode {
     constructor(name) {
         this.name = name;
         this.element = undefined; // DOM element
-        this.parent = undefined; // parent
+        this.parent = undefined; // parent Treenode
 
         this.boundHandleContextMenu = event => {
             this.setContextMenu();
@@ -246,7 +246,7 @@ export class FolderNode extends TreeNode {
             input.type = 'file';
             input.onchange = e => {
                 let file = e.target.files[0];
-                this._addFileFromOs(file);
+                this._addFileFromOs(file, true);
             }
             input.click();
         }
@@ -263,6 +263,7 @@ export class FolderNode extends TreeNode {
         this.handleDrop = event => {
             event.preventDefault();
             event.stopPropagation();
+            TreeNode.toggleContextmenu("hide");
             this.element.querySelector('.name').classList.remove('dragover');
             const path = event.dataTransfer.getData('treeitem');
             if (path !== undefined && path.length > 0) {
@@ -406,7 +407,7 @@ export class FolderNode extends TreeNode {
         }
     }
 
-    _addFileFromOs(file) {
+    _addFileFromOs(file, show = false) {
         if (!this.isNameChildUnique(file.name)) {
             alert(file.name + ' already exists');
             return;
@@ -417,7 +418,9 @@ export class FolderNode extends TreeNode {
         reader.onload = readerEvent => {
             let content = readerEvent.target.result; // this is the content!
             node.filecontent = content;
-            ProjectNode.setEditorContent(node);
+            if (show) {
+                ProjectNode.setEditorContent(node);
+            }
         }
         this.appendFile(node);
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
@@ -486,7 +489,126 @@ export class ProjectNode extends FolderNode {
     static editor = undefined;
     static filenode = undefined;
 
-    static init(fileviewer, editor) {
+
+    static buildFramework(node) {
+        node.innerHTML = `<div class="ide" style="display: flex;flex-direction: column; /* align-items: stretch;*/
+    resize: vertical;
+    overflow: hidden;
+    min-height: 100px;
+    border:black">
+    <div class="menu" style="flex: none">menu</div>
+
+    <div class="body"
+         style="display: flex; flex-direction: row; flex: auto">
+        <div class="explorercol" style="display: flex; flex-direction: column; flex: 1 1 20%;">
+            <div class="explorer" style="flex: 1 1 0; min-height: 0; overflow: auto;">
+            </div>
+        </div>
+        <div class="resize"></div>
+        <div class="canvas" style="display: flex; flex-direction: row; flex: 1 1">
+            <!-- set flex-basis = 50% for 2 two columns and 100%V for one column -->
+            <div class="canvascol" style="display: flex; flex-direction: column; flex: 1 1 50%; min-height: 0;">
+                <div class="tabs" style="flex: none; ">
+                    <button>tab1</button>
+                    <button>tab2</button>
+                    <button>tab3</button>
+                </div>
+                <div class="editor" style="flex: 1 1 0; min-height: 0; overflow: hidden;">
+                    <textarea></textarea>
+                </div>
+            </div>
+            <div class="resize"></div>
+            <div class="canvascol" style="display: flex; flex-direction: column; flex: 1 1 50%; min-height: 0;">
+                <div class="tabs" style="flex: none; ">
+                    <button>tab1</button>
+                    <button>tab2</button>
+                    <button>tab3</button>
+                </div>
+                <div class="editor" style="flex: 1 1 0; min-height: 0; overflow: hidden;">
+                    <textarea></textarea>
+                </div>
+            </div> 
+        </div>
+    </div>
+
+    <div class="status" style="flex: none">
+        status
+    </div>
+</div>
+`;
+    }
+
+    static init(node) {
+        function initSplit(resizer) {
+            // from https://htmldom.dev/create-resizable-split-views/
+            const before = resizer.previousElementSibling;
+            const after = resizer.nextElementSibling;
+
+            // The current position of mouse
+            let x = 0;
+            let y = 0;
+
+            let oldValue = 0;
+            let mousedown = false;
+
+            // Handle the mousedown event
+            // that's triggered when user drags the resizer
+            const mouseDownHandler = function (e) {
+                // Get the current mouse position
+                x = e.clientX;
+                y = e.clientY;
+
+                TreeNode.toggleContextmenu("hide");
+                oldValue = before.getBoundingClientRect().width;
+                mousedown = true;
+                // Attach the listeners to `document`
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+            };
+
+            const mouseMoveHandler = function (e) {
+                if (mousedown) {
+                    // How far the mouse has been moved
+                    const dx = e.clientX - x;
+                    const dy = e.clientY - y;
+
+                    let newBasis = ((oldValue + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+
+                    before.style.flexBasis =`${newBasis}%`;
+                    if (after != undefined) {
+                        after.style.flexBasis =`${100-newBasis}%`;
+                    } else {
+                        resizer.parentNode.getBoundingClientRect().width =
+                                resizer.parentNode.getBoundingClientRect().width - dx;
+                    }
+                } else {
+                    mouseUpHandler();
+                }
+            };
+
+            const mouseUpHandler = function () {
+                resizer.style.removeProperty('cursor');
+                document.body.style.removeProperty('cursor');
+
+                before.style.removeProperty('user-select');
+                before.style.removeProperty('pointer-events');
+
+                if (after != undefined) {
+                    after.style.removeProperty('user-select');
+                    after.style.removeProperty('pointer-events');
+                }
+
+                // Remove the handlers of `mousemove` and `mouseup`
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            };
+            // Attach the handler
+            resizer.addEventListener('mousedown', mouseDownHandler);
+        }
+
+        const fileviewer = node.querySelector('.explorer');
+        const editor = node.querySelector('.editor textarea');
+
         let ul = document.createElement("ul")
         ul.setAttribute('role', 'tree');
         ul.setAttribute('aria-labelledby', 'fileviewer');
@@ -517,7 +639,10 @@ export class ProjectNode extends FolderNode {
         window.addEventListener("click", e => {
             TreeNode.handleClick();
          });
+        initSplit(document.querySelector('.ide .body > .resize'),  'w');
+        initSplit(document.querySelector('.ide .canvas > .resize'), 'w');
     }
+
     static setEditorContent(filenode) {
         if (ProjectNode.filenode != undefined && ProjectNode.filenode.mode !== undefined) {
             // Store (modified) content
