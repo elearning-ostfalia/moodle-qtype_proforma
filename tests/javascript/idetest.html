@@ -68,22 +68,23 @@ body {font-family: Arial;}
     <div class="menu" style="flex: none">menu</div>
 
     <div class="body" id="body"
-         style="display: flex; flex-direction: row; flex-grow: 1; flex-shrink: 1; border: red">
-        <div class="explorer" style="flex: 0 0 20%; min-height: 0; overflow: hidden;">
-            <ul>
-                <li>jklsd</li>
-                <li>jklsd</li>
-                <li>jklsd</li>
-                <li>jklsd</li>
-                <li>jklsd</li>
-                <li>jklsd</li>
-                <li>jklsd</li>
-                <li>jklsd</li>
-                <li>jklsd</li>
-                <li>jklsd</li>
-                <li>jklsd</li>
-            </ul>
-
+         style="display: flex; flex-direction: row; flex-grow: 1; flex-shrink: 1">
+        <div class="explorercol" style="display: flex; flex-direction: column; flex: 0 0 20%;">
+            <div class="explorer" style="flex: 1 1 0; min-height: 0; overflow: auto;">
+                <ul>
+                    <li>jklsd</li>
+                    <li>jklsd</li>
+                    <li>jklsd</li>
+                    <li>jklsd</li>
+                    <li>jklsd</li>
+                    <li>jklsd</li>
+                    <li>jklsd</li>
+                    <li>jklsd</li>
+                    <li>jklsd</li>
+                    <li>jklsd</li>
+                    <li>jklsd</li>
+                </ul>
+            </div>
         </div>
         <div class="resize" id="resizeexplorer"></div>
         <div class="canvas" style="display: flex; flex-direction: row; flex: 1 1">
@@ -240,6 +241,7 @@ body {font-family: Arial;}
         };
 
         const mouseUpHandler = function () {
+            /*
             resizer.style.removeProperty('cursor');
             document.body.style.removeProperty('cursor');
 
@@ -250,7 +252,7 @@ body {font-family: Arial;}
                 after.style.removeProperty('user-select');
                 after.style.removeProperty('pointer-events');
             }
-
+*/
             // Remove the handlers of `mousemove` and `mouseup`
             document.removeEventListener('mousemove', mouseMoveHandler);
             document.removeEventListener('mouseup', mouseUpHandler);
