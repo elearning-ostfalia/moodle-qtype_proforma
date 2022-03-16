@@ -1,4 +1,29 @@
+// This file is part of ProFormA Question Type for Moodle
+//
+// ProFormA Question Type for Moodle is free software:
+// you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// ProFormA Question Type for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with ProFormA Question Type for Moodle.
+// If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * The ProFormA Question CodeMirror support functions
+ *
+ * @package    qtype
+ * @subpackage proforma
+ * @copyright  2022 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author     K.Borm <k.borm[at]ostfalia.de>
+ */
 
 // import { Tree }  from "./Tree.js";
 
@@ -490,33 +515,37 @@ export class ProjectNode extends FolderNode {
     static filenode = undefined;
 
 
-    static buildFramework(node) {
-        node.innerHTML = `<div class="ide" style="display: flex;flex-direction: column; /* align-items: stretch;*/
-    resize: vertical;
-    overflow: hidden;
-    min-height: 100px;
-    border:black">
-    <div class="menu" style="flex: none">menu</div>
-
-    <div class="body"
-         style="display: flex; flex-direction: row; flex: auto">
-        <div class="explorercol" style="display: flex; flex-direction: column; flex: 1 1 20%;">
-            <div class="explorer" style="flex: 1 1 0; min-height: 0; overflow: auto;">
+    /*
+            <div class="explorercol" style="display: flex; flex-direction: column; min-width: 20px; flex: 0 0 25%;">
+            <div class="explorer" style="flex: 1 1 ; min-height: 0; overflow: auto;">
             </div>
         </div>
+
+     */
+    static buildFramework(node) {
+        node.innerHTML = `<div class="ide" style="display: flex;flex-direction: column; align-items: stretch;
+    resize: vertical;
+    overflow: hidden;
+    min-height: 150px">
+    <div class="menu" style="flex: none">menu</div>
+
+    <div class="body" style="display: flex; flex-direction: row; flex: 1 1 0; min-height: 0">
+        <div class="explorer" style="min-width: 20px; flex: 1 0 0; overflow: auto;">
+        </div>
         <div class="resize"></div>
-        <div class="canvas" style="display: flex; flex-direction: row; flex: 1 1">
+        <div class="canvas" style="min-width: 20px;  flex: 0 0 75%; display: flex; flex-direction: row;">
             <!-- set flex-basis = 50% for 2 two columns and 100%V for one column -->
-            <div class="canvascol" style="display: flex; flex-direction: column; flex: 1 1 50%; min-height: 0;">
+            <div class="canvascol" style="display: flex; flex-direction: column; flex: 1 1 50%; overflow: hidden;">
                 <div class="tabs" style="flex: none; ">
                     <button>tab1</button>
                     <button>tab2</button>
                     <button>tab3</button>
                 </div>
-                <div class="editor" style="flex: 1 1 0; min-height: 0; overflow: hidden;">
+                <div class="editor" style="flex: 1 1 0; overflow: hidden;">
                     <textarea></textarea>
                 </div>
             </div>
+            <!--
             <div class="resize"></div>
             <div class="canvascol" style="display: flex; flex-direction: column; flex: 1 1 50%; min-height: 0;">
                 <div class="tabs" style="flex: none; ">
@@ -527,13 +556,11 @@ export class ProjectNode extends FolderNode {
                 <div class="editor" style="flex: 1 1 0; min-height: 0; overflow: hidden;">
                     <textarea></textarea>
                 </div>
-            </div> 
+            </div> --> 
         </div>
     </div>
 
-    <div class="status" style="flex: none">
-        status
-    </div>
+    <div class="status" style="flex: none">status</div>
 </div>
 `;
     }
@@ -640,7 +667,7 @@ export class ProjectNode extends FolderNode {
             TreeNode.handleClick();
          });
         initSplit(document.querySelector('.ide .body > .resize'),  'w');
-        initSplit(document.querySelector('.ide .canvas > .resize'), 'w');
+        // initSplit(document.querySelector('.ide .canvas > .resize'), 'w');
     }
 
     static setEditorContent(filenode) {

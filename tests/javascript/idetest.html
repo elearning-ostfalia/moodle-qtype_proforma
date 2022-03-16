@@ -60,7 +60,7 @@ body {font-family: Arial;}
     IDE TEST
 </h3>
 
-<div class="ide" id="ide" style="display: flex;flex-direction: column; align-items: stretch;
+<div class="ide" id="ide" style="display: flex;flex-direction: column; /* align-items: stretch;*/
     resize: vertical;
     overflow: hidden;
     min-height: 100px;
@@ -68,23 +68,21 @@ body {font-family: Arial;}
     <div class="menu" style="flex: none">menu</div>
 
     <div class="body" id="body"
-         style="display: flex; flex-direction: row; flex-grow: 1; flex-shrink: 1">
-        <div class="explorercol" style="display: flex; flex-direction: column; flex: 0 0 20%;">
-            <div class="explorer" style="flex: 1 1 0; min-height: 0; overflow: auto;">
-                <ul>
-                    <li>jklsd</li>
-                    <li>jklsd</li>
-                    <li>jklsd</li>
-                    <li>jklsd</li>
-                    <li>jklsd</li>
-                    <li>jklsd</li>
-                    <li>jklsd</li>
-                    <li>jklsd</li>
-                    <li>jklsd</li>
-                    <li>jklsd</li>
-                    <li>jklsd</li>
-                </ul>
-            </div>
+         style="display: flex; flex-direction: row; flex: auto">
+        <div class="explorer" style="min-width: 20px; flex: 1 0 5%; overflow: auto;">
+            <ul>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklfdfgdfghdfggggggggggggggggggggggggsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+            </ul>
         </div>
         <div class="resize" id="resizeexplorer"></div>
         <div class="canvas" style="display: flex; flex-direction: row; flex: 1 1">
