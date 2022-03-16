@@ -27,10 +27,11 @@
 
 
 // Use this for Moodle
-// import './codemirror-global';
-// import CodeMirror from "./codemirror";
+import './codemirror-global';
+import CodeMirror from "./codemirror";
 
 // Use this for editortest.html
+/*
 import './codemirror-global.js';
 
 import CodeMirror from "./codemirror/src/codemirror.js";
@@ -41,6 +42,7 @@ import "./codemirror/mode/xml/xml.js";
 import "./codemirror/addon/selection/active-line.js";
 import "./codemirror/addon/edit/matchbrackets.js";
 import "./codemirror/addon/edit/closebrackets.js";
+*/
 
 'use strict';
 

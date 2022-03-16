@@ -6,11 +6,8 @@ ul[role="tree"] {
 }
 
 [role="treeitem"].doc::before {
-    // font-family: "Font Awesome 5 Free";
-    // content: "\f15c";
-/*    content: "o"; */
     /* document icon from https://css.gg/file-document (MIT license)
-    Copyright © 2019-2020 css.gg */
+    Copyright 2019-2020 css.gg */
     content: url("data:image/svg+xml;utf8,<svg \
     width='14' \
     height='14' \
@@ -43,8 +40,6 @@ ul[role="tree"] {
 }
 
 [role="treeitem"][aria-expanded="false"] > .before::before {
-    // font-family: "Font Awesome 5 Free";
-    // content: "\f07b";
     /* COLLECTION: Akar Interface Icons
     LICENSE: MIT License
     AUTHOR: artcoholic
@@ -54,21 +49,15 @@ ul[role="tree"] {
         <path d='M22 19V9C22 7.89543 21.1046 7 20 7H13.2361C12.4785 7 11.786 6.572 11.4472 5.89443L10.5528 4.10557C10.214 3.428 9.52148 3 8.76393 3H4C2.89543 3 2 3.89543 2 5V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19Z' \
         stroke='grey' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/> \
     </svg>" );
-            /* "+"; */
     display: inline;
     padding-right: 3px;
     vertical-align: middle;
-    /* font-weight: 900; */
 }
-
 [role="treeitem"][aria-expanded="true"] > .before::before {
-    // background-image: url('[[pix:t/expanded]]');
-    // font-family: "Font Awesome 5 Free";
-    // content: "\f07c";
     /* COLLECTION: Fluent Ui Icons Outlined
     LICENSE: MIT License
     AUTHOR: Microsoft
-    from https://www.svgrepo.com/svg/309636/folder-open*/
+    from https://www.svgrepo.com/svg/309636/folder-open */
     content: url("data:image/svg+xml;utf8, <svg \
         width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'> \
     <path d='M20 9.50195V8.74985C20 7.50721 18.9926 6.49985 17.75 6.49985H12.0247L9.64368 4.51995C9.23959 \
@@ -77,7 +66,6 @@ ul[role="tree"] {
     display: inline;
     padding-right: 3px;
     vertical-align: middle;
-    /*font-weight: 900; */
 }
 
 /* [role="treeitem"] span {*/
@@ -85,7 +73,8 @@ ul[role="tree"] {
 [role="treeitem"] {
     width: fit-content;
     margin: 0;
-    padding: 0.1em; // Vertical distance between items
+    padding: 0; /* Vertical distance between items */
+/*    padding: 0.1em; *//* Vertical distance between items */
     border: 2px transparent solid;
     display: block;
 
@@ -94,7 +83,8 @@ ul[role="tree"] {
 /* Indent for all treeitems but first level */
 /* Default indentation is much too large */
 [role="treeitem"] [role="treeitem"] {
-    margin-left: -20px;
+/* editortest:    margin-left: -20px; */
+    margin-left: 0px;
 }
 
 /* disable default keyboard focus styling for treeitems
@@ -124,22 +114,20 @@ ul[role="tree"] {
 
 /* Split view */
 
+/*
 .split {
     display: flex;
     border: 1px black solid;
     width: 100%;
-    /* height is needed for scrollbar */
     min-height: 400px;
 }
+*/
+
 
 /* From Codemirror theme darcula: #2B2B2B */
 .ide .explorer {
-/*    flex-grow: 1;
-    flex-shrink: 0;
-    flex-basis: 20%; */
     background-color: #2B2B2B;
     color: #A9B7C6;
-/*    overflow-y: auto; */
 }
 
 .ide .menu, .ide .status, .ide .tabs {
@@ -153,13 +141,6 @@ ul[role="tree"] {
     cursor: col-resize;
     margin: 0 0 0 auto;
 }
-/*
-#canvas {
-    flex-grow: 0;
-    flex-shrink: 1;
-    overflow-x: auto;
-}
- */
 
 /* Context menu */
 
@@ -177,7 +158,6 @@ ul[role="tree"] {
 }
 
 .contextmenu .menu-options .menu-option {
-    // font-weight: 500;
     font-size: 14px;
     padding: 5px 5px 5px 5px;
     cursor: pointer;

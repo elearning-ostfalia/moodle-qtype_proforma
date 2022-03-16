@@ -42,6 +42,8 @@ if (!$PAGE->requires->is_head_done()) {
     $PAGE->requires->jquery();
     $PAGE->requires->jquery_plugin('ui');
     $PAGE->requires->jquery_plugin('ui-css');
+    // Does not work :-(
+    $PAGE->requires->css('/question/type/proforma/amd/src/editor.css');
 }
 
 /**
@@ -418,8 +420,6 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
             array('fileexplorer', 'gestartet'));
-/*        $PAGE->requires->js_call_amd('qtype_proforma/inlinemessages',
-                        'embedError', array(1, 2, 3, 4));*/
         return $input;
     }
 
@@ -427,7 +427,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
      * @return bool true: the student submission can have attachments
      */
     public function can_have_attachments() {
-        return true;
+        return false;
     }
 
     /** @return string returns the class name */
