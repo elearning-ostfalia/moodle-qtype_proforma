@@ -37,7 +37,7 @@ $string['proforma:viewsysteminfo'] = 'View ProFormA system information';
 $string['allowattachments'] = 'Max. number of uploaded files';
 $string['formateditor'] = 'Editor';
 $string['formatfilepicker'] = 'File picker';
-
+$string['formatexplorer'] = 'File explorer';
 
 $string['comment'] = 'Comment';
 $string['commentheader'] = 'Comment';

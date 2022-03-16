@@ -75,8 +75,6 @@ abstract class qtype_proforma_format_renderer_base extends plugin_renderer_base 
         return false;
     }
     abstract public function answerfieldname();
-
-
 }
 
 /**
@@ -225,7 +223,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
 /**
  * A renderer for questions where the student uses a version control system
  */
-class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_format_renderer_base /*plugin_renderer_base*/ {
+class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_format_renderer_base {
 
     private $name = VCSINPUT;
 
@@ -383,5 +381,64 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
      */
     public function answerfieldname() {
         return $this->name;
+    }
+}
+
+
+/**
+ * A renderer for questions where the student needs to upload multiple files
+ * that can be edited in a mixture of editor and explorer on client side.
+ */
+class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_renderer_base {
+
+    /**
+     * returns the html fragment for the reponse area in readonly mode
+     * @param $qa
+     * @param $step
+     * @param $context
+     * @return string
+     */
+    public function response_area_read_only($qa, $step, $context) {
+        return '';
+    }
+
+    /**
+     * returns the html fragment for the reponse area in input mode
+     *
+     * @param $qa
+     * @param $step
+     * @param $lines
+     * @param $context
+     * @return string
+     */
+    public function response_area_input($qa, $step, $context) {
+        debugging('here');
+        $input = html_writer::tag('div', '', array('id' => 'fileexplorer'));
+
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
+            array('fileexplorer', 'gestartet'));
+/*        $PAGE->requires->js_call_amd('qtype_proforma/inlinemessages',
+                        'embedError', array(1, 2, 3, 4));*/
+        return $input;
+    }
+
+    /**
+     * @return bool true: the student submission can have attachments
+     */
+    public function can_have_attachments() {
+        return true;
+    }
+
+    /** @return string returns the class name */
+    protected function class_name() {
+        return 'qtype_proforma_explorer';
+    }
+
+    /**
+     * @return string: returns the name of the answer step field
+     */
+    public function answerfieldname() {
+        return ANSWER; // Attachments are not stored here.
     }
 }

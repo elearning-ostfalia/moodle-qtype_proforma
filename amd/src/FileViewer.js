@@ -27,7 +27,12 @@
 
 // import { Tree }  from "./Tree.js";
 
-import './codemirror-global.js';
+import './codemirror-global';
+import CodeMirror from "./codemirror";
+
+/*
+Für das Testen wird folgendes genutzt:
+
 import CodeMirror from "./codemirror/src/codemirror.js";
 import "./codemirror/mode/clike/clike.js";
 import "./codemirror/mode/javascript/javascript.js";
@@ -36,7 +41,7 @@ import "./codemirror/mode/xml/xml.js";
 import "./codemirror/addon/selection/active-line.js";
 import "./codemirror/addon/edit/matchbrackets.js";
 import "./codemirror/addon/edit/closebrackets.js";
-
+*/
 
 'use strict';
 
@@ -88,7 +93,7 @@ class TreeNode {
                 TreeNode.toggleContextmenu('show');
             };
 
-            console.log(`contextmenu: ${event}`)
+            console.log(`contextmenu: ${event}`);
             // console.log(event)
             event.preventDefault();
             event.stopPropagation(); // otherwise parent node handles event, too
@@ -147,7 +152,7 @@ class TreeNode {
 /**
  * FileNode
  */
-export class FileNode extends TreeNode {
+class FileNode extends TreeNode {
     static getEditorModeFromFilename(filename) {
         const extension = filename.split('.').pop().toLowerCase();
         switch (extension) {
@@ -240,7 +245,7 @@ export class FileNode extends TreeNode {
 /**
  * FolderNode
  */
-export class FolderNode extends TreeNode {
+class FolderNode extends TreeNode {
     constructor(name) {
         super(name);
         this.files = []; // Empty list of files.
@@ -346,6 +351,7 @@ export class FolderNode extends TreeNode {
                 this.expand(true);
             }
         }
+
         this.boundHandleClick = event => {
             console.log('FolderNode click');
             TreeNode.toggleContextmenu("hide");
@@ -523,6 +529,7 @@ export class ProjectNode extends FolderNode {
 
      */
     static buildFramework(node) {
+        console.log('buildFramework');
         node.innerHTML = `<div class="ide" style="display: flex;flex-direction: column; align-items: stretch;
     resize: vertical;
     overflow: hidden;

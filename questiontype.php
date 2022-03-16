@@ -138,6 +138,8 @@ class qtype_proforma extends question_type {
     const RESPONSE_EDITOR = 'editor';
     /** Get submission from version control. */
     const RESPONSE_VERSION_CONTROL = 'versioncontrol';
+    /** Get submission from kind of explorer. */
+    const RESPONSE_EXPLORER = 'explorer';
 
     /**
      * Function returns array with fileareas containing files visible to students.
@@ -375,7 +377,8 @@ class qtype_proforma extends question_type {
         return array(
             self::RESPONSE_EDITOR => get_string('formateditor', 'qtype_proforma'),
             self::RESPONSE_FILEPICKER => get_string('formatfilepicker', 'qtype_proforma'),
-            self::RESPONSE_VERSION_CONTROL => get_string('versioncontrol', 'qtype_proforma')
+            self::RESPONSE_VERSION_CONTROL => get_string('versioncontrol', 'qtype_proforma'),
+            self::RESPONSE_EXPLORER => get_string('formatexplorer', 'qtype_proforma'),
         );
     }
 
