@@ -25,13 +25,13 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-// import { Tree }  from "./Tree.js";
 
-import './codemirror-global';
-import CodeMirror from "./codemirror";
+// Use this for Moodle
+// import './codemirror-global';
+// import CodeMirror from "./codemirror";
 
-/*
-Für das Testen wird folgendes genutzt:
+// Use this for editortest.html
+import './codemirror-global.js';
 
 import CodeMirror from "./codemirror/src/codemirror.js";
 import "./codemirror/mode/clike/clike.js";
@@ -41,7 +41,6 @@ import "./codemirror/mode/xml/xml.js";
 import "./codemirror/addon/selection/active-line.js";
 import "./codemirror/addon/edit/matchbrackets.js";
 import "./codemirror/addon/edit/closebrackets.js";
-*/
 
 'use strict';
 
@@ -568,6 +567,14 @@ export class ProjectNode extends FolderNode {
     </div>
 
     <div class="status" style="flex: none">status</div>
+</div>
+<p><label>File or Folder Selected: <input id="last_action" type="text" size="15" readonly=""></label></p>
+<div class="contextmenu" id="context-menu">
+    <ul class="menu-options">
+        <li class="menu-option">New file</li>
+        <li class="menu-option">New folder</li>
+        <li class="menu-option">Delete...</li>
+    </ul>
 </div>
 `;
     }

@@ -17,10 +17,12 @@
 
 // File for supporting modes in ES6 style.
 
-import { CodeMirror } from "./codemirror";
+// Use this for Moodle
+// import { CodeMirror } from "./codemirror";
 
-// import { CodeMirror} from "./codemirror/src/codemirror";
-// import { CodeMirror } from "./codemirror/src/codemirror.js";
+// Use this for editortest.html
+import CodeMirror from "./codemirror/src/codemirror.js";
 
+// Use this for both
 window.CodeMirror = CodeMirror;
 
