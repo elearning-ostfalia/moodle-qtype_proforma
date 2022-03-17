@@ -422,11 +422,14 @@ class FolderNode extends TreeNode {
         return true;
     }
 
-    _getFileTree(item, path) {
+    _getFileTree(item, path = undefined) {
+        const recurseinit = (path === undefined);
         path = path || "";
         if (item.isFile) {
             item.file(file => {
-                this._addFileFromOs(file);
+                // Show file content only if no path given
+                // i.e. no recursion
+                this._addFileFromOs(file, recurseinit);
             });
         } else if (item.isDirectory) {
             // Create new folder
