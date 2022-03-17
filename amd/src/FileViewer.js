@@ -26,9 +26,17 @@
  */
 
 
-// Use this for Moodle
+// Use these imports for Moodle
 import './codemirror-global';
 import CodeMirror from "./codemirror";
+
+import "./clike";
+import "./python";
+import "./javascriptmode"; // renamed from javascript
+import "./xml";
+import "./matchbrackets";
+import "./closebrackets";
+import "./active-line";
 
 // Use this for editortest.html
 /*
@@ -44,7 +52,7 @@ import "./codemirror/addon/edit/matchbrackets.js";
 import "./codemirror/addon/edit/closebrackets.js";
 */
 
-'use strict';
+// 'use strict'; ecma6 code is always strict
 
 /**
  * TreeNode
@@ -104,13 +112,13 @@ class TreeNode {
                 top: event.pageY
             };
             showMenu(origin);
-        }
+        };
         this.handleDragStart = event => {
             if (event.dataTransfer.getData('treeitem').length == 0) {
                 console.log('dragstart: ' + this.getPath());
                 event.dataTransfer.setData('treeitem', this.getPath());
             }
-        }
+        };
     }
     getPath() {
         return this.parent === undefined? this.name : this.parent.getPath() + '/' + this.name ;
@@ -182,7 +190,6 @@ class FileNode extends TreeNode {
                 return "application/x-httpd-php";
             case 'txt':
             case 'log':
-            case 'csv':
             case 'md':
             case 'csv':
                 return "text";
@@ -198,7 +205,7 @@ class FileNode extends TreeNode {
             this.element.remove();
             this.parent.files = this.parent.files.filter(item => item !== this);
             console.log(ProjectNode.projects);
-        }
+        };
         this.boundHandleRename = event => {
             TreeNode.handleClick(event);
             let name = prompt("Please enter new name:", this.name);
@@ -207,7 +214,7 @@ class FileNode extends TreeNode {
                 this.element.innerHTML = name;
                 // this.element.tabIndex = 0;
             }
-        }
+        };
         this.boundHandleClick = event => {
             console.log('FileNode click');
 
@@ -219,7 +226,7 @@ class FileNode extends TreeNode {
             TreeNode.setFocusTo(this.element);
             event.stopPropagation();
             // event.preventDefault();
-        }
+        };
     }
 
     displayInTreeview(domnode) {
@@ -256,7 +263,7 @@ class FolderNode extends TreeNode {
             this.element.remove();
             this.parent.folders = this.parent.folders.filter(item => item !== this);
             console.log(ProjectNode.projects);
-        }
+        };
         this.boundHandleNewFile = event => {
             TreeNode.handleClick(event);
             let filename = prompt("Please enter filename:", "");
@@ -270,7 +277,7 @@ class FolderNode extends TreeNode {
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
                 this.expand(true);
             }
-        }
+        };
         this.boundHandleLoadFile = event => {
             TreeNode.handleClick(event);
             let input = document.createElement('input');
@@ -278,18 +285,18 @@ class FolderNode extends TreeNode {
             input.onchange = e => {
                 let file = e.target.files[0];
                 this._addFileFromOs(file, true);
-            }
+            };
             input.click();
-        }
+        };
         this.handleDragOver = event => {
             event.preventDefault();
-        }
+        };
         this.handleDragEnter = event => {
             this.element.querySelector('.name').classList.add('dragover');
-        }
+        };
         this.handleDragLeave = event => {
             this.element.querySelector('.name').classList.remove('dragover');
-        }
+        };
 
         this.handleDrop = event => {
             event.preventDefault();
@@ -337,7 +344,7 @@ class FolderNode extends TreeNode {
                 }
 
             }
-        }
+        };
         this.boundHandleNewFolder = event => {
             TreeNode.handleClick(event);
             let foldername = prompt("Please enter foldername:", "");
@@ -351,7 +358,7 @@ class FolderNode extends TreeNode {
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
                 this.expand(true);
             }
-        }
+        };
 
         this.boundHandleClick = event => {
             console.log('FolderNode click');
@@ -360,28 +367,28 @@ class FolderNode extends TreeNode {
             // this.element.classList.add('focus');
             event.stopPropagation();
             event.preventDefault();
-        }
+        };
         this.boundHandleRename = event => {
             TreeNode.handleClick(event);
             let name = prompt("Please enter new name:", this.name);
             if (name !== null && name.length > 0) {
                 if (!this.parent.isNameChildUnique(name)) {
-                    alert(node.name + ' already exists');
+                    alert(name + ' already exists');
                     return;
                 }
                 this.name = name;
                 this.element.querySelector('.name').innerHTML = name;
             }
-        }
+        };
         this.toggleExpand = event => {
             this.element.setAttribute('aria-expanded', !this.isExpanded());
-        }
+        };
         this.handleMouseOver = event => {
             event.currentTarget.classList.add('hover');
-        }
+        };
         this.handleMouseOut = event => {
             event.currentTarget.classList.remove('hover');
-        }
+        };
     }
     findNodeByPath(path) {
         let first = path.shift();
@@ -453,7 +460,7 @@ class FolderNode extends TreeNode {
             if (show) {
                 ProjectNode.setEditorContent(node);
             }
-        }
+        };
         this.appendFile(node);
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
         this.expand(true);
@@ -613,7 +620,6 @@ export class ProjectNode extends FolderNode {
                 if (mousedown) {
                     // How far the mouse has been moved
                     const dx = e.clientX - x;
-                    const dy = e.clientY - y;
 
                     let newBasis = ((oldValue + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
 
@@ -652,14 +658,14 @@ export class ProjectNode extends FolderNode {
         const fileviewer = node.querySelector('.explorer');
         const editor = node.querySelector('.editor textarea');
 
-        let ul = document.createElement("ul")
+        let ul = document.createElement("ul");
         ul.setAttribute('role', 'tree');
         ul.setAttribute('aria-labelledby', 'fileviewer');
         fileviewer.appendChild(ul);
 
         for (let i = 0; i < ProjectNode.projects.length; i++) {
             let project = ProjectNode.projects[i];
-            const li = project.displayInTreeview(ul);
+            /* const li = */ project.displayInTreeview(ul);
         }
 
         ProjectNode.editor = CodeMirror.fromTextArea(editor, {
@@ -696,6 +702,7 @@ export class ProjectNode extends FolderNode {
             ProjectNode.filenode = filenode;
             ProjectNode.editor.setValue(filenode.filecontent);
             ProjectNode.editor.setOption("mode", filenode.mode);
+            ProjectNode.editor.refresh(); // for old version of Codemirror
         }
     }
     static findNodeByPath(path) {

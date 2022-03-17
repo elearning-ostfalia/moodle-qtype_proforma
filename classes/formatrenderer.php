@@ -42,8 +42,10 @@ if (!$PAGE->requires->is_head_done()) {
     $PAGE->requires->jquery();
     $PAGE->requires->jquery_plugin('ui');
     $PAGE->requires->jquery_plugin('ui-css');
-    // Does not work :-(
+
     $PAGE->requires->css('/question/type/proforma/amd/src/editor.css');
+    // Codemirror themes.
+    $PAGE->requires->css('/question/type/proforma/amd/src/abcdef.css');
 }
 
 /**
