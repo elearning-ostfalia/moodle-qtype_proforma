@@ -25,6 +25,7 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+/* eslint-disable no-unused-vars */
 
 // Use these imports for Moodle
 import './codemirror-global';
@@ -37,6 +38,12 @@ import "./xml";
 import "./matchbrackets";
 import "./closebrackets";
 import "./active-line";
+
+
+// import {get_string as getString} from 'core/str';
+// import Ajax from 'core/ajax';
+
+import Config from 'core/config';
 
 // Use this for editortest.html
 /*
@@ -291,7 +298,7 @@ class FolderNode extends TreeNode {
         this.handleDragOver = event => {
             event.preventDefault();
         };
-        this.handleDragEnter = event => {
+        this.handleDragEnter = event =>  {
             this.element.querySelector('.name').classList.add('dragover');
         };
         this.handleDragLeave = event => {
@@ -591,7 +598,7 @@ export class ProjectNode extends FolderNode {
 `;
     }
 
-    static init(node) {
+    static init(node, options) {
         function initSplit(resizer) {
             // from https://htmldom.dev/create-resizable-split-views/
             const before = resizer.previousElementSibling;
@@ -599,7 +606,7 @@ export class ProjectNode extends FolderNode {
 
             // The current position of mouse
             let x = 0;
-            let y = 0;
+            // let y = 0;
 
             let oldValue = 0;
             let mousedown = false;
@@ -609,7 +616,7 @@ export class ProjectNode extends FolderNode {
             const mouseDownHandler = function (e) {
                 // Get the current mouse position
                 x = e.clientX;
-                y = e.clientY;
+                // y = e.clientY;
 
                 TreeNode.toggleContextmenu("hide");
                 oldValue = before.getBoundingClientRect().width;
@@ -688,11 +695,16 @@ export class ProjectNode extends FolderNode {
         ProjectNode.editor.setOption('theme', "abcdef");
 
         // Hide context menu on every left click
-        window.addEventListener("click", e => {
-            TreeNode.handleClick();
-         });
+        window.addEventListener("click", // e => {
+            TreeNode.handleClick()
+         // });
+        );
+
         initSplit(document.querySelector('.ide .body > .resize'),  'w');
         // initSplit(document.querySelector('.ide .canvas > .resize'), 'w');
+
+        ProjectNode.sendRequest('mkdir', options, 'newproformafolder');
+        ProjectNode.sendRequest('list', options);
     }
 
     static setEditorContent(filenode) {
@@ -721,5 +733,32 @@ export class ProjectNode extends FolderNode {
     constructor(name) {
         super(name);
         ProjectNode.projects.push(this);
+    }
+
+    static sendRequest(action, options, param = undefined) {
+        console.log(options);
+        const url = Config.wwwroot + '/repository/draftfiles_ajax.php';
+        // const action = 'list';
+        var params = {};
+        params['sesskey'] = Config.sesskey;
+//        params['client_id'] = this.client_id;
+        params['filepath'] = '/';
+        params['itemid'] = options['itemid'];
+        if (param !== undefined) {
+            params['newdirname'] = param;
+        }
+
+        fetch(
+            url + '?action=' + action + '&' + window.build_querystring(params),
+            {
+                method: 'POST',
+                // body: JSON.stringify(window.build_querystring(params))
+                // body: window.build_querystring(params)
+            }
+        )
+            // .then( response => console.log(response))
+            .then( response => response.json() )
+            .then( json => console.log(json) )
+            .catch( error => console.error('error:', error) );
     }
 }

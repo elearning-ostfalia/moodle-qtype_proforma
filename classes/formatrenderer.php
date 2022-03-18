@@ -419,9 +419,36 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         debugging('here');
         $input = html_writer::tag('div', '', array('id' => 'fileexplorer'));
 
+        $draftid = file_get_unused_draft_itemid();
+        $defaults = array(
+            'maxbytes'=>-1,
+            'areamaxbytes' => FILE_AREA_MAX_BYTES_UNLIMITED,
+            'maxfiles'=>-1,
+            'itemid'=>0,
+            'subdirs'=>1,
+            'client_id'=>uniqid(),
+            'accepted_types'=>'*',
+            'return_types'=>FILE_INTERNAL,
+//            'context'=>$PAGE->context,
+        );
+
+        $fs = get_file_storage();
+        // initilise options, getting files in root path
+        $options = file_get_drafarea_files($defaults->itemid, '/');
+
+        global $USER;
+        $usercontext = context_user::instance($USER->id);
+        $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', false);
+        $options->filecount = count($files);
+
+        foreach ($defaults as $name=>$value) {
+            $options->$name = $value;
+        }
+
+        var_dump($options);
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
-            array('fileexplorer', 'gestartet'));
+            array('fileexplorer', $options));
         return $input;
     }
 

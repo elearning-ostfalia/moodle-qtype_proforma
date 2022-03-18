@@ -24,17 +24,19 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+/* eslint-disable no-unused-vars */
+
 import { ProjectNode } from "./FileViewer";
 // import ProjectNode from "qtype_proforma/FileViewer";
 
-function _start(nodename) {
+function _start(nodename, options) {
     console.log('start');
 
     const explorer = document.getElementById(nodename);
     //    const explorer = document.getElementById('fileexplorer');
     ProjectNode.buildFramework(explorer);
     let submission = new ProjectNode('Submission');
-    ProjectNode.init(explorer);
+    ProjectNode.init(explorer, options);
 /*
 
     Promise.all([
@@ -53,7 +55,7 @@ function _start(nodename) {
  */
 }
 
-export const createExplorer = (nodename, info) => {
+export const createExplorer = (nodename, options) => {
     console.log('createExplorer called');
 
 
@@ -62,10 +64,10 @@ export const createExplorer = (nodename, info) => {
     // Note that Codemirror is created asynchronously after document ready.
     // So this is not enough when something has to be done with Codemirror.
     if( document.readyState !== 'loading' ) {
-        _start(nodename);
+        _start(nodename, options);
     } else {
         document.addEventListener("DOMContentLoaded", function() {
-            _start(nodename);
+            _start(nodename, options);
         });
     }
 };
