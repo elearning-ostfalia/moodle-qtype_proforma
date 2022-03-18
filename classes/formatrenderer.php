@@ -432,13 +432,24 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
 //            'context'=>$PAGE->context,
         );
 
+
+        global $COURSE;
+        $context = context_course::instance($COURSE->id);
+
+        $repo = repository::get_instances(array('type' => 'upload', 'currentcontext' => $context));
+        if (empty($repo)) {
+            throw new moodle_exception('errornouploadrepo', 'moodle');
+        }
+        $repo = reset($repo); // Get the first (and only) upload repo.
+
         $fs = get_file_storage();
-        // initilise options, getting files in root path
-        $options = file_get_drafarea_files($defaults->itemid, '/');
+        // initialise options, getting files in root path
+        $options = file_get_drafarea_files($defaults['itemid'], '/');
+        $options->repo_id = $repo->id;
 
         global $USER;
         $usercontext = context_user::instance($USER->id);
-        $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', false);
+        $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', true);
         $options->filecount = count($files);
 
         foreach ($defaults as $name=>$value) {

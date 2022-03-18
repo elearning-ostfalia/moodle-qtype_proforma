@@ -471,6 +471,7 @@ class FolderNode extends TreeNode {
                 ProjectNode.setEditorContent(node);
             }
         };
+        ProjectNode.syncer.upload(file);
         this.appendFile(node);
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
         this.expand(true);
@@ -527,6 +528,87 @@ class FolderNode extends TreeNode {
 
     appendFile(node) { this.files.push(node); node.parent = this; }
     appendFolder(node) { this.folders.push(node); node.parent = this; }
+}
+
+class MoodleSyncer {
+    constructor(options) {
+        this.options = options;
+        console.log(this.options);
+    }
+    sendRequest(action, param = undefined) {
+        const url = Config.wwwroot + '/repository/draftfiles_ajax.php';
+        // const action = 'list';
+        let params = {};
+        params['sesskey'] = Config.sesskey;
+        params['client_id'] = this.options['client_id'];
+        params['filepath'] = '/';
+        params['itemid'] = this.options['itemid'];
+        if (param !== undefined) {
+            params['newdirname'] = param;
+        }
+
+        fetch(
+            url + '?action=' + action + '&' + window.build_querystring(params),
+            {
+                method: 'POST',
+            }
+        )
+            // .then( response => console.log(response))
+            .then( response => response.json() )
+            .then( json => {
+                console.log(action);
+                console.log(json);
+            })
+            .catch( error => console.error('error:', error) );
+    }
+
+    upload(file) {
+        const url = Config.wwwroot + '/repository/repository_ajax.php';
+        const action = 'upload';
+
+        let formData = new FormData();
+        formData.append('sesskey', Config.sesskey);
+        formData.append('repo_upload_file', file);
+        formData.append('filepath', '/');
+        formData.append('client_id', this.options['client_id']);
+        formData.append('title', file.name);
+        formData.append('itemid', this.options['itemid']);
+
+        let params = {};
+        params['sesskey'] = Config.sesskey;
+        params['client_id'] = this.options['client_id'];
+        params['filepath'] = '/';
+        params['itemid'] = this.options['itemid'];
+        params['repo_upload_file'] = file;
+        params['savepath'] = '/';
+        params['title'] = file.name;
+        params['repo_id'] = this.options['repo_id'];
+//        params['overwrite'] = 1;
+//        params['maxbytes'] = 217;
+
+
+        fetch(
+            url + '?action=' + action + '&' + window.build_querystring(params),
+            {
+                method: 'POST',
+                body: formData // file
+            }
+        )
+            .then( response => response.json() )
+            .then( json => {
+                console.log(action);
+                if (json.error) {
+                    console.error('error:', json.error);
+                    alert(json.error);
+                } else {
+                    console.log(json);
+                }
+            })
+            .catch( error => {
+                console.error('error:', error);
+                alert(error);
+            } );
+    }
 }
 
 /**
@@ -703,8 +785,10 @@ export class ProjectNode extends FolderNode {
         initSplit(document.querySelector('.ide .body > .resize'),  'w');
         // initSplit(document.querySelector('.ide .canvas > .resize'), 'w');
 
-        ProjectNode.sendRequest('mkdir', options, 'newproformafolder');
-        ProjectNode.sendRequest('list', options);
+        ProjectNode.syncer = new MoodleSyncer(options);
+        ProjectNode.syncer.sendRequest('mkdir', 'newproformafolder');
+        ProjectNode.syncer.sendRequest('list');
+        ProjectNode.syncer.sendRequest('dir');
     }
 
     static setEditorContent(filenode) {
@@ -735,30 +819,4 @@ export class ProjectNode extends FolderNode {
         ProjectNode.projects.push(this);
     }
 
-    static sendRequest(action, options, param = undefined) {
-        console.log(options);
-        const url = Config.wwwroot + '/repository/draftfiles_ajax.php';
-        // const action = 'list';
-        var params = {};
-        params['sesskey'] = Config.sesskey;
-//        params['client_id'] = this.client_id;
-        params['filepath'] = '/';
-        params['itemid'] = options['itemid'];
-        if (param !== undefined) {
-            params['newdirname'] = param;
-        }
-
-        fetch(
-            url + '?action=' + action + '&' + window.build_querystring(params),
-            {
-                method: 'POST',
-                // body: JSON.stringify(window.build_querystring(params))
-                // body: window.build_querystring(params)
-            }
-        )
-            // .then( response => console.log(response))
-            .then( response => response.json() )
-            .then( json => console.log(json) )
-            .catch( error => console.error('error:', error) );
-    }
 }
