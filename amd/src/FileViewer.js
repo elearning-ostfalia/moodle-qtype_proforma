@@ -28,6 +28,8 @@
 /* eslint-disable no-unused-vars */
 
 // Use these imports for Moodle
+// -----------------------------
+/*
 import './codemirror-global';
 import CodeMirror from "./codemirror";
 
@@ -39,14 +41,12 @@ import "./matchbrackets";
 import "./closebrackets";
 import "./active-line";
 
-
 // import {get_string as getString} from 'core/str';
-// import Ajax from 'core/ajax';
-
 import Config from 'core/config';
+*/
 
 // Use this for editortest.html
-/*
+// -----------------------------
 import './codemirror-global.js';
 
 import CodeMirror from "./codemirror/src/codemirror.js";
@@ -57,7 +57,10 @@ import "./codemirror/mode/xml/xml.js";
 import "./codemirror/addon/selection/active-line.js";
 import "./codemirror/addon/edit/matchbrackets.js";
 import "./codemirror/addon/edit/closebrackets.js";
-*/
+class Config { // Fake
+    static wwwroot = '';
+    static sesskey = '';
+}
 
 // 'use strict'; ecma6 code is always strict
 
@@ -163,6 +166,10 @@ class TreeNode {
         this.element = li; // Store element
         return li;
     }
+
+    getFramework() {
+        return this.parent.getFramework();
+    }
 }
 
 /**
@@ -211,7 +218,6 @@ class FileNode extends TreeNode {
             TreeNode.handleClick(event);
             this.element.remove();
             this.parent.files = this.parent.files.filter(item => item !== this);
-            console.log(ProjectNode.projects);
         };
         this.boundHandleRename = event => {
             TreeNode.handleClick(event);
@@ -228,7 +234,7 @@ class FileNode extends TreeNode {
             TreeNode.toggleContextmenu("hide");
             document.getElementById('last_action').value = this.name;
             if (this.filecontent != undefined) {
-                ProjectNode.setEditorContent(this);
+                this.getFramework().setEditorContent(this);
             }
             TreeNode.setFocusTo(this.element);
             event.stopPropagation();
@@ -269,7 +275,7 @@ class FolderNode extends TreeNode {
             TreeNode.handleClick(event);
             this.element.remove();
             this.parent.folders = this.parent.folders.filter(item => item !== this);
-            console.log(ProjectNode.projects);
+            // console.log(RootNode.projects);
         };
         this.boundHandleNewFile = event => {
             TreeNode.handleClick(event);
@@ -314,7 +320,7 @@ class FolderNode extends TreeNode {
             if (path !== undefined && path.length > 0) {
                 console.log('drop ' + path + ' onto ' + this.getPath());
                 // Node element from tree
-                const node = ProjectNode.findNodeByPath(path);
+                const node = RootNode.findNodeByPath(path);
                 if (node !== undefined && !this.isNameChildUnique(node.name)) {
                     // TODO: wenn der Ordner schon existiert, sollte nur der Inhalt gemergt werden
                     alert(node.name + ' already exists');
@@ -468,10 +474,10 @@ class FolderNode extends TreeNode {
             let content = readerEvent.target.result; // this is the content!
             node.filecontent = content;
             if (show) {
-                ProjectNode.setEditorContent(node);
+                this.getFramework().setEditorContent(node);
             }
         };
-        ProjectNode.syncer.upload(file);
+        // RootNode.syncer.upload(file);
         this.appendFile(node);
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
         this.expand(true);
@@ -613,14 +619,25 @@ class MoodleSyncer {
 }
 
 /**
- * ProjectNode
+ * RootNode
  */
-export class ProjectNode extends FolderNode {
-    static projects = []; // all projects
-    static roots = [];
-    static editor = undefined;
-    static filenode = undefined;
+export class RootNode extends FolderNode {
+    constructor(name, framework) {
+        super(name);
+        this.framework = framework;
+        framework.roots.push(this);
+    }
+    getFramework() {
+        return this.framework;
+    }
+}
 
+export class Framework {
+    constructor() {
+        this.roots = []; // all root nodes
+        this.editor = undefined; // Codemirror instance
+        this.activeNode = undefined; // activeNode associated with Codemirror
+    }
 
     /*
             <div class="explorercol" style="display: flex; flex-direction: column; min-width: 20px; flex: 0 0 25%;">
@@ -629,7 +646,7 @@ export class ProjectNode extends FolderNode {
         </div>
 
      */
-    static buildFramework(node) {
+    buildFramework(node) {
         console.log('buildFramework');
         node.innerHTML = `<div class="ide" style="display: flex;flex-direction: column; align-items: stretch;
     resize: vertical;
@@ -681,7 +698,7 @@ export class ProjectNode extends FolderNode {
 `;
     }
 
-    static init(node, options) {
+    init(node, options) {
         function initSplit(resizer) {
             // from https://htmldom.dev/create-resizable-split-views/
             const before = resizer.previousElementSibling;
@@ -721,7 +738,7 @@ export class ProjectNode extends FolderNode {
                         after.style.flexBasis =`${100-newBasis}%`;
                     } else {
                         resizer.parentNode.getBoundingClientRect().width =
-                                resizer.parentNode.getBoundingClientRect().width - dx;
+                            resizer.parentNode.getBoundingClientRect().width - dx;
                     }
                 } else {
                     mouseUpHandler();
@@ -756,12 +773,12 @@ export class ProjectNode extends FolderNode {
         ul.setAttribute('aria-labelledby', 'fileviewer');
         fileviewer.appendChild(ul);
 
-        for (let i = 0; i < ProjectNode.projects.length; i++) {
-            let project = ProjectNode.projects[i];
+        for (let i = 0; i < this.roots.length; i++) {
+            let project = this.roots[i];
             /* const li = */ project.displayInTreeview(ul);
         }
 
-        ProjectNode.editor = CodeMirror.fromTextArea(editor, {
+        this.editor = CodeMirror.fromTextArea(editor, {
             tabMode: "indent",
             indentUnit: 4,
             matchBrackets: true,
@@ -772,52 +789,48 @@ export class ProjectNode extends FolderNode {
             lineNumbers: true
             //viewportMargin: Infinity
         });
-        ProjectNode.editor.setSize("100%", "100%");
-        // ProjectNode.editor.setOption('theme', "blackboard");
-        // ProjectNode.editor.setOption('theme', "darcula");
-        ProjectNode.editor.setOption('theme', "abcdef");
+        this.editor.setSize("100%", "100%");
+        // RootNode.editor.setOption('theme', "blackboard");
+        // RootNode.editor.setOption('theme', "darcula");
+        this.editor.setOption('theme', "abcdef");
 
         // Hide context menu on every left click
         window.addEventListener("click", // e => {
             TreeNode.handleClick()
-         // });
+            // });
         );
 
         initSplit(document.querySelector('.ide .body > .resize'),  'w');
         // initSplit(document.querySelector('.ide .canvas > .resize'), 'w');
 
-        ProjectNode.syncer = new MoodleSyncer(options);
-        ProjectNode.syncer.sendRequest('mkdir', 'newproformafolder');
-        ProjectNode.syncer.sendRequest('list');
-        ProjectNode.syncer.sendRequest('dir');
+        /*
+        RootNode.syncer = new MoodleSyncer(options);
+        RootNode.syncer.sendRequest('mkdir', 'newproformafolder');
+        RootNode.syncer.sendRequest('list');
+        RootNode.syncer.sendRequest('dir'); */
     }
 
-    static setEditorContent(filenode) {
-        if (ProjectNode.filenode != undefined && ProjectNode.filenode.mode !== undefined) {
-            // Store (modified) content
-            ProjectNode.filenode.filecontent = ProjectNode.editor.getValue();
+    setEditorContent(node) {
+        if (this.activeNode != undefined && this.activeNode.mode !== undefined) {
+            // Read back (modified) content
+            this.activeNode.filecontent = this.editor.getValue();
         }
-        if (filenode.mode !== undefined) {
-            // Display new content
-            ProjectNode.filenode = filenode;
-            ProjectNode.editor.setValue(filenode.filecontent);
-            ProjectNode.editor.setOption("mode", filenode.mode);
-            ProjectNode.editor.refresh(); // for old version of Codemirror
+        if (node.mode !== undefined) {
+            // Display new text content
+            this.activeNode = node;
+            this.editor.setValue(node.filecontent);
+            this.editor.setOption("mode", node.mode);
+            this.editor.refresh(); // for old version of Codemirror
         }
     }
-    static findNodeByPath(path) {
+    findNodeByPath(path) {
         let pathsplit = path.split('/');
         let first = pathsplit.shift();
-        for (let i = 0; i < ProjectNode.projects.length; i++) {
-            if (ProjectNode.projects[i].name === first) {
-                return ProjectNode.projects[i].findNodeByPath(pathsplit);
+        for (let i = 0; i < this.roots.length; i++) {
+            if (this.roots[i].name === first) {
+                return this.roots[i].findNodeByPath(pathsplit);
             }
         }
         return undefined;
     }
-    constructor(name) {
-        super(name);
-        ProjectNode.projects.push(this);
-    }
-
 }

@@ -26,7 +26,7 @@
 
 /* eslint-disable no-unused-vars */
 
-import { ProjectNode } from "./FileViewer";
+import { Framework, RootNode } from "./FileViewer";
 // import ProjectNode from "qtype_proforma/FileViewer";
 
 function _start(nodename, options) {
@@ -34,11 +34,11 @@ function _start(nodename, options) {
 
     const explorer = document.getElementById(nodename);
     //    const explorer = document.getElementById('fileexplorer');
-    ProjectNode.buildFramework(explorer);
-    let submission = new ProjectNode('Submission');
-    ProjectNode.init(explorer, options);
+    let framework = new Framework();
+    framework.buildFramework(explorer);
+    let submission = new RootNode('Submission', framework);
+    framework.init(explorer, options);
 /*
-
     Promise.all([
         import('./FileViewer.js')
 //    import('/amd/src/FileViewer.js') // inside Moodle

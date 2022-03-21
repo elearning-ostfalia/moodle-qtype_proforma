@@ -14,6 +14,8 @@
 // import {ProjectNode} from "./FileViewer";
 
 
+// import {Framework, RootNode} from "./FileViewer";
+
 Promise.all([
 //    import('/amd/src/Tree.js'),
     import('./FileViewer.js')
@@ -38,14 +40,19 @@ Promise.all([
             console.log('initialise elements');
 
             const explorer = document.getElementById('fileexplorer');
-            fileviewer.ProjectNode.buildFramework(explorer);
+            let framework = new fileviewer.Framework();
+            framework.buildFramework(explorer);
+            let submission = new fileviewer.RootNode('Submission', framework);
+            const options = [];
+            framework.init(explorer, options);
+
             // Create model solution
-            let modelsolution = new fileviewer.ProjectNode('Model Solution');
+//            let modelsolution = new fileviewer.ProjectNode('Model Solution');
 //            modelsolution.appendFile(new fileviewer.FileNode('MyString.java'));
 //            modelsolution.appendFile(new fileviewer.FileNode('Helper.java'));
 
             // Create test
-            let test1 = new fileviewer.ProjectNode('Test 1');
+//            let test1 = new fileviewer.ProjectNode('Test 1');
 /*            test1.appendFile(new fileviewer.FileNode('MyStringTest.java'));
             test1.appendFile(new fileviewer.FileNode('MyStringTest1.java'));
             test1.appendFolder(new fileviewer.FolderNode('data'));
@@ -55,9 +62,9 @@ Promise.all([
             let common = new fileviewer.ProjectNode('Common');
 */
 
-            let submission = new fileviewer.ProjectNode('Submission');
+//            let submission = new fileviewer.ProjectNode('Submission');
 
-            fileviewer.ProjectNode.init(explorer);
+//            fileviewer.ProjectNode.init(explorer);
 
             /*
             function _initSplitview() {
