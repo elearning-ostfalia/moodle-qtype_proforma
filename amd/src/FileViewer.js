@@ -572,9 +572,11 @@ class MoodleSyncer {
         formData.append('filepath', '/');
         formData.append('client_id', this.options['client_id']);
         formData.append('title', file.name);
+        formData.append('savepath', '/');
+        formData.append('repo_id', this.options['repo_id']);
         formData.append('itemid', this.options['itemid']);
 
-        let params = {};
+/*        let params = {};
         params['sesskey'] = Config.sesskey;
         params['client_id'] = this.options['client_id'];
         params['filepath'] = '/';
@@ -585,10 +587,9 @@ class MoodleSyncer {
         params['repo_id'] = this.options['repo_id'];
 //        params['overwrite'] = 1;
 //        params['maxbytes'] = 217;
-
-
+*/
         fetch(
-            url + '?action=' + action + '&' + window.build_querystring(params),
+            url + '?action=' + action, //  + '&' + window.build_querystring(params),
             {
                 method: 'POST',
                 body: formData // file
