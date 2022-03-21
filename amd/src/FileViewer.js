@@ -68,34 +68,6 @@ class Config { // Fake
  * TreeNode
  */
 class TreeNode {
-    static menu = undefined;
-    static menuVisible = false;
-    static focus = undefined;
-
-    static toggleContextmenu = command => {
-        if (TreeNode.menu === undefined) {
-            return;
-        }
-        TreeNode.menu.style.display = command === "show" ? "block" : "none";
-        TreeNode.menuVisible = (command === "show");
-    };
-
-    static setFocusTo(element) {
-        if (TreeNode.focus !== undefined) {
-            TreeNode.focus.classList.remove('focus');
-        }
-        if (element !== undefined) {
-            element.classList.add('focus');
-            TreeNode.focus = element;
-        } else {
-            TreeNode.focus = undefined;
-        }
-    }
-    static handleClick() {
-        TreeNode.toggleContextmenu("hide");
-        TreeNode.setFocusTo(undefined);
-    }
-
     constructor(name) {
         this.name = name;
         this.element = undefined; // DOM element
@@ -103,13 +75,13 @@ class TreeNode {
 
         this.boundHandleContextMenu = event => {
             this.setContextMenu();
-            if (TreeNode.menu === undefined) {
+            if (this.getFramework().menu === undefined) {
                 return;
             }
             const showMenu = ({ top, left }) => {
-                TreeNode.menu.style.left = `${left}px`;
-                TreeNode.menu.style.top = `${top}px`;
-                TreeNode.toggleContextmenu('show');
+                this.getFramework().menu.style.left = `${left}px`;
+                this.getFramework().menu.style.top = `${top}px`;
+                this.getFramework().toggleContextmenu('show');
             };
 
             console.log(`contextmenu: ${event}`);
@@ -132,23 +104,6 @@ class TreeNode {
     }
     getPath() {
         return this.parent === undefined? this.name : this.parent.getPath() + '/' + this.name ;
-    }
-
-    createContextMenu(list) {
-        console.log('createContextMenu');
-        console.log(list);
-        let ul = document.querySelector(".contextmenu .menu-options");
-        // console.log(ul);
-        ul.innerHTML = ''; // Delete all children
-        for (let i = 0; i < list.length; i++) {
-            const li = document.createElement('li');
-            li.setAttribute('class', 'menu-option');
-            li.innerHTML = list[i][0];
-            li.addEventListener('click', list[i][1]);
-            ul.appendChild(li);
-        }
-
-        TreeNode.menu = ul.parentNode;
     }
 
     // Override
@@ -215,12 +170,12 @@ class FileNode extends TreeNode {
         this.filecontent = '';
         this.mode = FileNode.getEditorModeFromFilename(this.name);
         this.handleDelete = event => {
-            TreeNode.handleClick(event);
+            this.getFramework().handleClick(event);
             this.element.remove();
             this.parent.files = this.parent.files.filter(item => item !== this);
         };
         this.boundHandleRename = event => {
-            TreeNode.handleClick(event);
+            this.getFramework().handleClick(event);
             let name = prompt("Please enter new name:", this.name);
             if (name !== null && name.length > 0) {
                 this.name = name;
@@ -231,12 +186,12 @@ class FileNode extends TreeNode {
         this.boundHandleClick = event => {
             console.log('FileNode click');
 
-            TreeNode.toggleContextmenu("hide");
+            this.getFramework().toggleContextmenu("hide");
             document.getElementById('last_action').value = this.name;
             if (this.filecontent != undefined) {
                 this.getFramework().setEditorContent(this);
             }
-            TreeNode.setFocusTo(this.element);
+            this.getFramework().setFocusTo(this.element);
             event.stopPropagation();
             // event.preventDefault();
         };
@@ -272,13 +227,13 @@ class FolderNode extends TreeNode {
         this.files = []; // Empty list of files.
         this.folders = []; // Empty list of folders.
         this.handleDelete = event => {
-            TreeNode.handleClick(event);
+            this.getFramework().handleClick(event);
             this.element.remove();
             this.parent.folders = this.parent.folders.filter(item => item !== this);
             // console.log(RootNode.projects);
         };
         this.boundHandleNewFile = event => {
-            TreeNode.handleClick(event);
+            this.getFramework().handleClick(event);
             let filename = prompt("Please enter filename:", "");
             if (filename !== null && filename.length > 0) {
                 if (!this.isNameChildUnique(filename)) {
@@ -292,7 +247,7 @@ class FolderNode extends TreeNode {
             }
         };
         this.boundHandleLoadFile = event => {
-            TreeNode.handleClick(event);
+            this.getFramework().handleClick(event);
             let input = document.createElement('input');
             input.type = 'file';
             input.onchange = e => {
@@ -314,7 +269,7 @@ class FolderNode extends TreeNode {
         this.handleDrop = event => {
             event.preventDefault();
             event.stopPropagation();
-            TreeNode.toggleContextmenu("hide");
+            this.getFramework().toggleContextmenu("hide");
             this.element.querySelector('.name').classList.remove('dragover');
             const path = event.dataTransfer.getData('treeitem');
             if (path !== undefined && path.length > 0) {
@@ -359,7 +314,7 @@ class FolderNode extends TreeNode {
             }
         };
         this.boundHandleNewFolder = event => {
-            TreeNode.handleClick(event);
+            this.getFramework().handleClick(event);
             let foldername = prompt("Please enter foldername:", "");
             if (foldername !== null && foldername.length > 0) {
                 if (!this.isNameChildUnique(foldername)) {
@@ -375,14 +330,14 @@ class FolderNode extends TreeNode {
 
         this.boundHandleClick = event => {
             console.log('FolderNode click');
-            TreeNode.toggleContextmenu("hide");
+            this.getFramework().toggleContextmenu("hide");
             // TreeNode.setFocusTo(this.element);
             // this.element.classList.add('focus');
             event.stopPropagation();
             event.preventDefault();
         };
         this.boundHandleRename = event => {
-            TreeNode.handleClick(event);
+            this.getFramework().handleClick(event);
             let name = prompt("Please enter new name:", this.name);
             if (name !== null && name.length > 0) {
                 if (!this.parent.isNameChildUnique(name)) {
@@ -522,7 +477,7 @@ class FolderNode extends TreeNode {
     }
     setContextMenu() {
         console.log('FolderNode setContextMenu');
-        this.createContextMenu([
+        this.getFramework().createContextMenu([
             ['New empty file...', this.boundHandleNewFile],
             ['Load file...', this.boundHandleLoadFile],
             ['New folder...', this.boundHandleNewFolder],
@@ -637,6 +592,11 @@ export class Framework {
         this.roots = []; // all root nodes
         this.editor = undefined; // Codemirror instance
         this.activeNode = undefined; // activeNode associated with Codemirror
+        this.syncer = undefined;
+        this.mainnode = undefined;
+        this.menu = undefined;
+        this.menuVisible = false;
+        this.focus = undefined;
     }
 
     /*
@@ -655,6 +615,7 @@ export class Framework {
     <div class="menu" style="flex: none">menu</div>
 
     <div class="body" style="display: flex; flex-direction: row; flex: 1 1 0; min-height: 0">
+        <!--<div class="fake" style="min-width: 100px; flex: 1 0 0; overflow: auto;">Fake element</div> -->
         <div class="explorer" style="min-width: 20px; flex: 1 0 0; overflow: auto;">
         </div>
         <div class="resize"></div>
@@ -696,10 +657,11 @@ export class Framework {
     </ul>
 </div>
 `;
+        this.mainnode = node;
     }
 
-    init(node, options) {
-        function initSplit(resizer) {
+    init(node, syncer = undefined) {
+        const initSplit = resizer =>  {
             // from https://htmldom.dev/create-resizable-split-views/
             const before = resizer.previousElementSibling;
             const after = resizer.nextElementSibling;
@@ -713,12 +675,12 @@ export class Framework {
 
             // Handle the mousedown event
             // that's triggered when user drags the resizer
-            const mouseDownHandler = function (e) {
+            const mouseDownHandler = e => {
                 // Get the current mouse position
                 x = e.clientX;
                 // y = e.clientY;
 
-                TreeNode.toggleContextmenu("hide");
+                this.toggleContextmenu("hide");
                 oldValue = before.getBoundingClientRect().width;
                 mousedown = true;
                 // Attach the listeners to `document`
@@ -726,7 +688,7 @@ export class Framework {
                 document.addEventListener('mouseup', mouseUpHandler);
             };
 
-            const mouseMoveHandler = function (e) {
+            const mouseMoveHandler = e =>  {
                 if (mousedown) {
                     // How far the mouse has been moved
                     const dx = e.clientX - x;
@@ -795,16 +757,15 @@ export class Framework {
         this.editor.setOption('theme', "abcdef");
 
         // Hide context menu on every left click
-        window.addEventListener("click", // e => {
-            TreeNode.handleClick()
-            // });
-        );
+        window.addEventListener("click", e => {
+            this.handleClick()
+        });
 
         initSplit(document.querySelector('.ide .body > .resize'),  'w');
         // initSplit(document.querySelector('.ide .canvas > .resize'), 'w');
 
+        this.syncer = syncer;
         /*
-        RootNode.syncer = new MoodleSyncer(options);
         RootNode.syncer.sendRequest('mkdir', 'newproformafolder');
         RootNode.syncer.sendRequest('list');
         RootNode.syncer.sendRequest('dir'); */
@@ -832,5 +793,46 @@ export class Framework {
             }
         }
         return undefined;
+    }
+
+    createContextMenu(list) {
+        console.log('createContextMenu');
+        console.log(list);
+        let ul = this.mainnode.querySelector(".contextmenu .menu-options");
+        // console.log(ul);
+        ul.innerHTML = ''; // Delete all children
+        for (let i = 0; i < list.length; i++) {
+            const li = document.createElement('li');
+            li.setAttribute('class', 'menu-option');
+            li.innerHTML = list[i][0];
+            li.addEventListener('click', list[i][1]);
+            ul.appendChild(li);
+        }
+
+        this.menu = ul.parentNode;
+    }
+
+    toggleContextmenu = command => {
+        if (this.menu === undefined) {
+            return;
+        }
+        this.menu.style.display = command === "show" ? "block" : "none";
+        this.menuVisible = (command === "show");
+    };
+
+    handleClick() {
+        this.toggleContextmenu("hide");
+        this.setFocusTo(undefined);
+    }
+    setFocusTo(element) {
+        if (this.focus !== undefined) {
+            this.focus.classList.remove('focus');
+        }
+        if (element !== undefined) {
+            element.classList.add('focus');
+            this.focus = element;
+        } else {
+            this.focus = undefined;
+        }
     }
 }
