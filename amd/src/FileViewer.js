@@ -496,7 +496,7 @@ class MoodleSyncer {
         this.options = options;
         console.log(this.options);
     }
-    sendRequest(action, param = undefined) {
+    _sendRequest(action, param = undefined) {
         const url = Config.wwwroot + '/repository/draftfiles_ajax.php';
         // const action = 'list';
         let params = {};
@@ -523,6 +523,12 @@ class MoodleSyncer {
             .catch( error => console.error('error:', error) );
     }
 
+    delete(path, filename) {}
+    rename(pathold, filenameold, pathnew, filenamenew) {}
+    mkdir(path) { this._sendRequest('mkdir', path); }
+    list() {
+        this._sendRequest('list');
+    }
     upload(file) {
         const url = Config.wwwroot + '/repository/repository_ajax.php';
         const action = 'upload';
@@ -587,16 +593,118 @@ export class RootNode extends FolderNode {
     }
 }
 
+class EditorStack {
+    constructor(donNodeEditor, donNodeTabs) {
+        const editor = donNodeEditor.querySelector('textarea');
+        this.editor = CodeMirror.fromTextArea(editor, {
+            tabMode: "indent",
+            indentUnit: 4,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            styleActiveLine: true,
+            readOnly: false,
+            extraKeys: {'Tab': function(){editor.replaceSelection('    ' , 'end');}},
+            lineNumbers: true
+            //viewportMargin: Infinity
+        });
+        this.editor.setSize("100%", "100%");
+        // RootNode.editor.setOption('theme', "blackboard");
+        this.editor.setOption('theme', "darcula");
+        // this.editor.setOption('theme', "abcdef");
+
+        this.activeNode = undefined; // activeNode associated with Codemirror
+
+        this.nodes = []; // all filenodes with open editor
+        this.donNodeEditor = donNodeEditor;
+        this.donNodeTabs = donNodeTabs;
+    }
+
+    _switchTo(filenode, i = undefined) {
+        if (i === undefined) {
+            // figure out value of i
+            for (i = 0; i < this.nodes.length; i++) {
+                if (this.nodes[i] === filenode) {
+                    break;
+                }
+            }
+        }
+        this.nodes.splice(i, 1);
+        this.nodes.push(filenode); // move on top
+        this.editor.setValue(filenode.filecontent);
+        this.editor.setOption("mode", filenode.mode);
+        this.editor.refresh(); // for old version of Codemirror
+    }
+
+    _delete(filenode) {
+        for (let i = 0; i < this.nodes.length; i++) {
+            if (this.nodes[i] === filenode) {
+                this.nodes.splice(i, 1);
+                if (this.nodes.length > 0) {
+                    this._switchTo(this.nodes[0], 0);
+                } else {
+                    alert('todo: no more ...');
+                }
+                return;
+            }
+        }
+        console.error('could not find filenode');
+    }
+    setContent(filenode) {
+        // Check if filenode is already in stack
+        for (let i = 0; i < this.nodes.length; i++) {
+            if (this.nodes[i] === filenode) {
+                // filenode is in list
+                this._switchTo(filenode, i);
+                return;
+            }
+        }
+
+        if (this.activeNode != undefined && this.activeNode.mode !== undefined) {
+            // Read back (modified) content
+            this.activeNode.filecontent = this.editor.getValue();
+        }
+        if (filenode.mode !== undefined) {
+            // Mode is known => display new text content
+            this.activeNode = filenode;
+            this.editor.setValue(filenode.filecontent);
+            this.editor.setOption("mode", filenode.mode);
+            this.editor.refresh(); // for old version of Codemirror
+            // Create tab
+            let tab = document.createElement('button');
+            tab.classList.add('tab');
+            let close = document.createElement('span');
+            close.classList.add('close');
+            close.innerHTML = 'x';
+            close.addEventListener('click', event => {
+                event.stopPropagation();
+                this._delete(filenode);
+                close.parentElement.remove();
+            });
+            tab.innerHTML = filenode.name;
+            tab.append(close);
+            tab.addEventListener('click', event => {
+                this._switchTo(filenode);
+            });
+            this.donNodeTabs.append(tab);
+        } else {
+            console.log('unknown mode');
+        }
+        this.nodes.push(filenode);
+    }
+}
+
 export class Framework {
     constructor() {
         this.roots = []; // all root nodes
-        this.editor = undefined; // Codemirror instance
-        this.activeNode = undefined; // activeNode associated with Codemirror
         this.syncer = undefined;
-        this.mainnode = undefined;
+        this.mainDomNode = undefined;
         this.menu = undefined;
         this.menuVisible = false;
         this.focus = undefined;
+        this.editorstack = undefined;
+
+        this.editor = undefined; // Codemirror instance
+        this.activeNode = undefined; // activeNode associated with Codemirror
     }
 
     /*
@@ -606,9 +714,9 @@ export class Framework {
         </div>
 
      */
-    buildFramework(node) {
+    buildFramework(domnode) {
         console.log('buildFramework');
-        node.innerHTML = `<div class="ide" style="display: flex;flex-direction: column; align-items: stretch;
+        domnode.innerHTML = `<div class="ide" style="display: flex;flex-direction: column; align-items: stretch;
     resize: vertical;
     overflow: hidden;
     min-height: 150px">
@@ -623,9 +731,6 @@ export class Framework {
             <!-- set flex-basis = 50% for 2 two columns and 100%V for one column -->
             <div class="canvascol" style="display: flex; flex-direction: column; flex: 1 1 50%; overflow: hidden;">
                 <div class="tabs" style="flex: none; ">
-                    <button>tab1</button>
-                    <button>tab2</button>
-                    <button>tab3</button>
                 </div>
                 <div class="editor" style="flex: 1 1 0; overflow: hidden;">
                     <textarea></textarea>
@@ -657,7 +762,9 @@ export class Framework {
     </ul>
 </div>
 `;
-        this.mainnode = node;
+        this.mainDomNode = domnode;
+        this.editorstack = new EditorStack(domnode.querySelector('.editor'),
+            domnode.querySelector('.tabs'));
     }
 
     init(node, syncer = undefined) {
@@ -725,10 +832,9 @@ export class Framework {
             };
             // Attach the handler
             resizer.addEventListener('mousedown', mouseDownHandler);
-        }
+        };
 
         const fileviewer = node.querySelector('.explorer');
-        const editor = node.querySelector('.editor textarea');
 
         let ul = document.createElement("ul");
         ul.setAttribute('role', 'tree');
@@ -740,29 +846,13 @@ export class Framework {
             /* const li = */ project.displayInTreeview(ul);
         }
 
-        this.editor = CodeMirror.fromTextArea(editor, {
-            tabMode: "indent",
-            indentUnit: 4,
-            matchBrackets: true,
-            autoCloseBrackets: true,
-            styleActiveLine: true,
-            readOnly: false,
-            extraKeys: {'Tab': function(){editor.replaceSelection('    ' , 'end');}},
-            lineNumbers: true
-            //viewportMargin: Infinity
-        });
-        this.editor.setSize("100%", "100%");
-        // RootNode.editor.setOption('theme', "blackboard");
-        // RootNode.editor.setOption('theme', "darcula");
-        this.editor.setOption('theme', "abcdef");
-
         // Hide context menu on every left click
         window.addEventListener("click", e => {
             this.handleClick()
         });
 
-        initSplit(document.querySelector('.ide .body > .resize'),  'w');
-        // initSplit(document.querySelector('.ide .canvas > .resize'), 'w');
+        initSplit(node.querySelector('.ide .body > .resize'),  'w');
+        // initSplit(node.querySelector('.ide .canvas > .resize'), 'w');
 
         this.syncer = syncer;
         /*
@@ -771,19 +861,10 @@ export class Framework {
         RootNode.syncer.sendRequest('dir'); */
     }
 
-    setEditorContent(node) {
-        if (this.activeNode != undefined && this.activeNode.mode !== undefined) {
-            // Read back (modified) content
-            this.activeNode.filecontent = this.editor.getValue();
-        }
-        if (node.mode !== undefined) {
-            // Display new text content
-            this.activeNode = node;
-            this.editor.setValue(node.filecontent);
-            this.editor.setOption("mode", node.mode);
-            this.editor.refresh(); // for old version of Codemirror
-        }
+    setEditorContent(filenode) {
+        this.editorstack.setContent(filenode);
     }
+
     findNodeByPath(path) {
         let pathsplit = path.split('/');
         let first = pathsplit.shift();
@@ -798,7 +879,7 @@ export class Framework {
     createContextMenu(list) {
         console.log('createContextMenu');
         console.log(list);
-        let ul = this.mainnode.querySelector(".contextmenu .menu-options");
+        let ul = this.mainDomNode.querySelector(".contextmenu .menu-options");
         // console.log(ul);
         ul.innerHTML = ''; // Delete all children
         for (let i = 0; i < list.length; i++) {

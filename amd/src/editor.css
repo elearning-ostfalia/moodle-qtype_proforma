@@ -142,6 +142,17 @@ ul[role="tree"] {
     margin: 0 0 0 auto;
 }
 
+/* Editor tabs */
+
+.ide .tab .close:hover {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0px 4px 0px 4px;
+}
+
+.ide .tab .close {
+    padding: 0px 4px 0px 4px;
+}
+
 /* Context menu */
 
 .contextmenu {

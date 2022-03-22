@@ -39,12 +39,21 @@ Promise.all([
         function _open() {
             console.log('initialise elements');
 
-            const explorer = document.getElementById('fileexplorer');
-            let framework = new fileviewer.Framework();
-            framework.buildFramework(explorer);
-            let submission = new fileviewer.RootNode('Submission', framework);
-            const options = [];
-            framework.init(explorer, options);
+            // # 1
+            const options1 = [];
+            const explorer1 = document.getElementById('fileexplorer1');
+            let framework1 = new fileviewer.Framework();
+            framework1.buildFramework(explorer1);
+            let submission1 = new fileviewer.RootNode('Submission', framework1);
+            framework1.init(explorer1, options1);
+
+            // # 2
+            const options2 = [];
+            const explorer2 = document.getElementById('fileexplorer2');
+            let framework2 = new fileviewer.Framework();
+            framework2.buildFramework(explorer2);
+            let submission2 = new fileviewer.RootNode('Submission', framework2);
+            framework2.init(explorer2, options2);
 
             // Create model solution
 //            let modelsolution = new fileviewer.ProjectNode('Model Solution');
