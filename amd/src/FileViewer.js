@@ -64,6 +64,13 @@ class Config { // Fake
 
 // 'use strict'; ecma6 code is always strict
 
+
+// TODO:
+// - Anzahl von Tabs beschränken (max und dann Meldung)
+// - Split View: Problem mit Flackern
+// - Theme wechseln
+// - Menu erstmal raus - außer zum Wechseln des Themes
+
 /**
  * TreeNode
  */
@@ -184,12 +191,16 @@ class FileNode extends TreeNode {
             }
         };
         this.boundHandleClick = event => {
-            console.log('FileNode click');
-
+            this.getFramework().toggleContextmenu("hide");
+            this.getFramework().setFocusTo(this.element);
+            event.stopPropagation();
+            // event.preventDefault();
+        };
+        this.handleDoubleClick = event => {
             this.getFramework().toggleContextmenu("hide");
             document.getElementById('last_action').value = this.name;
             if (this.filecontent != undefined) {
-                this.getFramework().setEditorContent(this);
+                this.getFramework().switchEditorTo(this);
             }
             this.getFramework().setFocusTo(this.element);
             event.stopPropagation();
@@ -202,6 +213,7 @@ class FileNode extends TreeNode {
         li.innerHTML = this.name;
         li.classList.add('doc');
 
+        li.addEventListener('dblclick', this.handleDoubleClick);
         li.addEventListener('click', this.boundHandleClick);
 
 //        li.addEventListener('mouseover', this.handleMouseOver);
@@ -210,7 +222,7 @@ class FileNode extends TreeNode {
 
     setContextMenu() {
         console.log('FileNode setContextMenu');
-        this.createContextMenu([
+        this.getFramework().createContextMenu([
             ['Delete', this.handleDelete],
             ['Rename', this.boundHandleRename]]
         );
@@ -429,7 +441,8 @@ class FolderNode extends TreeNode {
             let content = readerEvent.target.result; // this is the content!
             node.filecontent = content;
             if (show) {
-                this.getFramework().setEditorContent(node);
+                this.getFramework().addEditor(node);
+                this.getFramework().setFocusTo(node.element);
             }
         };
         // RootNode.syncer.upload(file);
@@ -591,12 +604,21 @@ export class RootNode extends FolderNode {
     getFramework() {
         return this.framework;
     }
+    setContextMenu() {
+        console.log('RootNode setContextMenu');
+        this.getFramework().createContextMenu([
+                ['New empty file...', this.boundHandleNewFile],
+                ['Load file...', this.boundHandleLoadFile],
+                ['New folder...', this.boundHandleNewFolder],
+            ]
+        );
+    }
 }
 
-class EditorStack {
-    constructor(donNodeEditor, donNodeTabs) {
-        const editor = donNodeEditor.querySelector('textarea');
-        this.editor = CodeMirror.fromTextArea(editor, {
+class EditorItem {
+    constructor(fileNode, textarea, tabDomNode) {
+        this.fileNode = fileNode;
+        this.editor = CodeMirror.fromTextArea(textarea, {
             tabMode: "indent",
             indentUnit: 4,
             matchBrackets: true,
@@ -611,85 +633,138 @@ class EditorStack {
         // RootNode.editor.setOption('theme', "blackboard");
         this.editor.setOption('theme', "darcula");
         // this.editor.setOption('theme', "abcdef");
+        this.tab = tabDomNode;
+    }
+}
+
+
+class EditorStack {
+
+    constructor(donNodeEditor, donNodeTabs) {
+        this.editortextarea = donNodeEditor.querySelector('textarea');
+        // Initialise readonly editor
+        this.editor = CodeMirror.fromTextArea(this.editortextarea, {
+            tabMode: "indent",
+            indentUnit: 4,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            styleActiveLine: true,
+            readOnly: true,
+            extraKeys: {'Tab': function(){editor.replaceSelection('    ' , 'end');}},
+            lineNumbers: true
+            //viewportMargin: Infinity
+        });
+        this.editor.setSize("100%", "100%");
+        // RootNode.editor.setOption('theme', "blackboard");
+        this.editor.setOption('theme', "darcula");
+        // this.editor.setOption('theme', "abcdef");
 
         this.activeNode = undefined; // activeNode associated with Codemirror
 
         this.nodes = []; // all filenodes with open editor
         this.donNodeEditor = donNodeEditor;
         this.donNodeTabs = donNodeTabs;
+        this.focus = undefined; // the tab that has got the focus
     }
 
-    _switchTo(filenode, i = undefined) {
-        if (i === undefined) {
+    _switchTo(item, index = undefined) {
+        if (index === undefined) {
             // figure out value of i
-            for (i = 0; i < this.nodes.length; i++) {
-                if (this.nodes[i] === filenode) {
+            for (index = 0; index < this.nodes.length; index++) {
+                if (this.nodes[index] === item) {
                     break;
                 }
             }
         }
-        this.nodes.splice(i, 1);
-        this.nodes.push(filenode); // move on top
-        this.editor.setValue(filenode.filecontent);
-        this.editor.setOption("mode", filenode.mode);
-        this.editor.refresh(); // for old version of Codemirror
+        console.log('item index is ' + index);
+
+        // move on top
+        this.nodes.splice(index, 1);
+        this.nodes.push(item);
+
+        // Hide all editors
+        for (index = 0; index < this.nodes.length; index++) {
+            this.nodes[index].editor.getWrapperElement().style.display = 'none';
+        }
+
+        item.editor.getWrapperElement().style.display = 'block';
+        item.editor.refresh();
+        item.editor.focus();
+
+        // Switch focus
+        if (this.focus !== undefined) {
+            this.focus.classList.remove('focus');
+            let focusClose = this.focus.querySelector('.close');
+            focusClose.style.display = 'none';
+        }
+        item.tab.classList.add('focus');
+        item.tab.querySelector('.close').style.display = 'inline';
+        this.focus = item.tab;
     }
 
-    _delete(filenode) {
+    _delete(item) {
         for (let i = 0; i < this.nodes.length; i++) {
-            if (this.nodes[i] === filenode) {
+            if (this.nodes[i] === item) {
+                // Read back (modified) content
+                this.nodes[i].fileNode.filecontent = this.nodes[i].editor.getValue();
+
                 this.nodes.splice(i, 1);
+                // Delete Codemirror element (in order to avoid resource leak)
+                item.editor.getWrapperElement().remove();
                 if (this.nodes.length > 0) {
                     this._switchTo(this.nodes[0], 0);
-                } else {
-                    alert('todo: no more ...');
                 }
                 return;
             }
         }
         console.error('could not find filenode');
     }
-    setContent(filenode) {
-        // Check if filenode is already in stack
-        for (let i = 0; i < this.nodes.length; i++) {
-            if (this.nodes[i] === filenode) {
-                // filenode is in list
-                this._switchTo(filenode, i);
-                return;
-            }
-        }
 
-        if (this.activeNode != undefined && this.activeNode.mode !== undefined) {
-            // Read back (modified) content
-            this.activeNode.filecontent = this.editor.getValue();
-        }
+    addEditor(filenode) {
         if (filenode.mode !== undefined) {
-            // Mode is known => display new text content
-            this.activeNode = filenode;
-            this.editor.setValue(filenode.filecontent);
-            this.editor.setOption("mode", filenode.mode);
-            this.editor.refresh(); // for old version of Codemirror
             // Create tab
             let tab = document.createElement('button');
+
+            // Mode is known => display new text content
+            let item = new EditorItem(filenode, this.editortextarea, tab);
+            // this.activeNode = filenode;
+            item.editor.setValue(filenode.filecontent);
+            item.editor.setOption("mode", filenode.mode);
+            item.editor.refresh(); // for old version of Codemirror
+
             tab.classList.add('tab');
             let close = document.createElement('span');
             close.classList.add('close');
             close.innerHTML = 'x';
             close.addEventListener('click', event => {
                 event.stopPropagation();
-                this._delete(filenode);
+                this._delete(item);
                 close.parentElement.remove();
             });
             tab.innerHTML = filenode.name;
             tab.append(close);
             tab.addEventListener('click', event => {
-                this._switchTo(filenode);
+                this._switchTo(item);
             });
             this.donNodeTabs.append(tab);
+
+            this.nodes.push(item);
+            this._switchTo(item);
         } else {
-            console.log('unknown mode');
+            alert('unknown mode');
         }
-        this.nodes.push(filenode);
+    }
+
+    switchEditorTo(filenode) {
+        // Check if filenode is already in stack
+        for (let i = 0; i < this.nodes.length; i++) {
+            if (this.nodes[i].fileNode === filenode) {
+                // filenode is in list
+                this._switchTo(this.nodes[i], i);
+                return;
+            }
+        }
+        this.addEditor(filenode);
     }
 }
 
@@ -702,18 +777,8 @@ export class Framework {
         this.menuVisible = false;
         this.focus = undefined;
         this.editorstack = undefined;
-
-        this.editor = undefined; // Codemirror instance
-        this.activeNode = undefined; // activeNode associated with Codemirror
     }
 
-    /*
-            <div class="explorercol" style="display: flex; flex-direction: column; min-width: 20px; flex: 0 0 25%;">
-            <div class="explorer" style="flex: 1 1 ; min-height: 0; overflow: auto;">
-            </div>
-        </div>
-
-     */
     buildFramework(domnode) {
         console.log('buildFramework');
         domnode.innerHTML = `<div class="ide" style="display: flex;flex-direction: column; align-items: stretch;
@@ -861,8 +926,11 @@ export class Framework {
         RootNode.syncer.sendRequest('dir'); */
     }
 
-    setEditorContent(filenode) {
-        this.editorstack.setContent(filenode);
+    switchEditorTo(filenode) {
+        this.editorstack.switchEditorTo(filenode);
+    }
+    addEditor(filenode) {
+        this.editorstack.addEditor(filenode);
     }
 
     findNodeByPath(path) {

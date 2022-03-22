@@ -130,7 +130,7 @@ ul[role="tree"] {
     color: #A9B7C6;
 }
 
-.ide .menu, .ide .status, .ide .tabs {
+.ide .menu, .ide .status, .ide .tabs, .ide .tab {
     background-color: lightgrey;
 }
 
@@ -147,10 +147,20 @@ ul[role="tree"] {
 .ide .tab .close:hover {
     background: rgba(0, 0, 0, 0.2);
     padding: 0px 4px 0px 4px;
+    vertical-align: top;
+}
+
+.ide .tab.focus {
+    background-color: #eee;
 }
 
 .ide .tab .close {
+    font-size: 80%;
+    font-weight: 100;
     padding: 0px 4px 0px 4px;
+    /* padding: 0px 4px 6px 4px;
+    margin: 0px 4px 6px 4px;*/
+    vertical-align: top;
 }
 
 /* Context menu */
