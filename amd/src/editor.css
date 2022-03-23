@@ -2,7 +2,9 @@ ul[role="tree"] {
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: 90%;
+    font-size: 75%;
+    font-family: sans-serif;
+    font-weight: 100;
 }
 
 [role="treeitem"].doc::before {
@@ -134,6 +136,7 @@ ul[role="tree"] {
     background-color: lightgrey;
 }
 
+
 .ide .resize {
     flex-grow: 0;
     flex-shrink: 0;
@@ -142,12 +145,16 @@ ul[role="tree"] {
     margin: 0 0 0 auto;
 }
 
-/* Editor tabs */
+.ide .CodeMirror {
+    font-size: 90%;
+}
 
+/* Editor tabs */
+.ide .tab {
+    border-radius: 2px;
+}
 .ide .tab .close:hover {
     background: rgba(0, 0, 0, 0.2);
-    padding: 0px 4px 0px 4px;
-    vertical-align: top;
 }
 
 .ide .tab.focus {
@@ -157,10 +164,10 @@ ul[role="tree"] {
 .ide .tab .close {
     font-size: 80%;
     font-weight: 100;
-    padding: 0px 4px 0px 4px;
-    /* padding: 0px 4px 6px 4px;
-    margin: 0px 4px 6px 4px;*/
-    vertical-align: top;
+    padding: 0px 2px 0px 2px;
+    margin: 0px 0px 0px 2px;
+    vertical-align: baseline;
+    border-radius: 1px;
 }
 
 /* Context menu */

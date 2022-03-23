@@ -66,10 +66,12 @@ class Config { // Fake
 
 
 // TODO:
-// - Anzahl von Tabs beschränken (max und dann Meldung)
 // - Split View: Problem mit Flackern
 // - Theme wechseln
 // - Menu erstmal raus - außer zum Wechseln des Themes
+// - Editorstack arbeitet in falscher Reihenfolge
+// - Resize Fenster führt dazu, dass Codemirror Text abschneidet
+// - Andere Browser testen
 
 /**
  * TreeNode
@@ -639,7 +641,7 @@ class EditorItem {
 
 
 class EditorStack {
-
+    static maxEditors = 15;
     constructor(donNodeEditor, donNodeTabs) {
         this.editortextarea = donNodeEditor.querySelector('textarea');
         // Initialise readonly editor
@@ -721,6 +723,10 @@ class EditorStack {
     }
 
     addEditor(filenode) {
+        if (EditorStack.maxEditors == this.nodes.length) {
+            alert('maximum number of editors reached');
+            return;
+        }
         if (filenode.mode !== undefined) {
             // Create tab
             let tab = document.createElement('button');
@@ -735,7 +741,7 @@ class EditorStack {
             tab.classList.add('tab');
             let close = document.createElement('span');
             close.classList.add('close');
-            close.innerHTML = 'x';
+            close.innerHTML = '&#x2715';
             close.addEventListener('click', event => {
                 event.stopPropagation();
                 this._delete(item);
