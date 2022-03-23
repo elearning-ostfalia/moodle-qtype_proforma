@@ -69,8 +69,6 @@ class Config { // Fake
 // - Split View: Problem mit Flackern
 // - Theme wechseln
 // - Menu erstmal raus - außer zum Wechseln des Themes
-// - Editorstack arbeitet in falscher Reihenfolge
-// - Resize Fenster führt dazu, dass Codemirror Text abschneidet
 // - Andere Browser testen
 
 /**
@@ -714,7 +712,7 @@ class EditorStack {
                 // Delete Codemirror element (in order to avoid resource leak)
                 item.editor.getWrapperElement().remove();
                 if (this.nodes.length > 0) {
-                    this._switchTo(this.nodes[0], 0);
+                    this._switchTo(this.nodes[this.nodes.length-1], this.nodes.length-1);
                 }
                 return;
             }
@@ -772,6 +770,15 @@ class EditorStack {
         }
         this.addEditor(filenode);
     }
+
+    handleResize() {
+        if (this.nodes.length > 0) {
+            // Call refresh for current Codemirror
+            // in order to update text window. Otherwise
+            // text is cut off
+            this.nodes[this.nodes.length-1].editor.refresh();
+        }
+    }
 }
 
 export class Framework {
@@ -811,9 +818,6 @@ export class Framework {
             <div class="resize"></div>
             <div class="canvascol" style="display: flex; flex-direction: column; flex: 1 1 50%; min-height: 0;">
                 <div class="tabs" style="flex: none; ">
-                    <button>tab1</button>
-                    <button>tab2</button>
-                    <button>tab3</button>
                 </div>
                 <div class="editor" style="flex: 1 1 0; min-height: 0; overflow: hidden;">
                     <textarea></textarea>
@@ -846,46 +850,11 @@ export class Framework {
 
             // The current position of mouse
             let x = 0;
-            // let y = 0;
 
             let oldValue = 0;
             let mousedown = false;
 
-            // Handle the mousedown event
-            // that's triggered when user drags the resizer
-            const mouseDownHandler = e => {
-                // Get the current mouse position
-                x = e.clientX;
-                // y = e.clientY;
-
-                this.toggleContextmenu("hide");
-                oldValue = before.getBoundingClientRect().width;
-                mousedown = true;
-                // Attach the listeners to `document`
-                document.addEventListener('mousemove', mouseMoveHandler);
-                document.addEventListener('mouseup', mouseUpHandler);
-            };
-
-            const mouseMoveHandler = e =>  {
-                if (mousedown) {
-                    // How far the mouse has been moved
-                    const dx = e.clientX - x;
-
-                    let newBasis = ((oldValue + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
-
-                    before.style.flexBasis =`${newBasis}%`;
-                    if (after != undefined) {
-                        after.style.flexBasis =`${100-newBasis}%`;
-                    } else {
-                        resizer.parentNode.getBoundingClientRect().width =
-                            resizer.parentNode.getBoundingClientRect().width - dx;
-                    }
-                } else {
-                    mouseUpHandler();
-                }
-            };
-
-            const mouseUpHandler = function () {
+            const removeSelection = () => {
                 resizer.style.removeProperty('cursor');
                 document.body.style.removeProperty('cursor');
 
@@ -896,6 +865,43 @@ export class Framework {
                     after.style.removeProperty('user-select');
                     after.style.removeProperty('pointer-events');
                 }
+            }
+            // Handle the mousedown event
+            // that's triggered when user drags the resizer
+            const mouseDownHandler = e => {
+                // Get the current mouse position
+                x = e.clientX;
+
+                this.toggleContextmenu("hide");
+                oldValue = before.getBoundingClientRect().width;
+                mousedown = true;
+                // Attach the listeners to `document`
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+
+                removeSelection();
+            };
+
+            const mouseMoveHandler = e =>  {
+                if (mousedown) {
+                    // How far the mouse has been moved
+                    const dx = e.clientX - x;
+                    let newBasis = ((oldValue + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+                    before.style.flexBasis =`${newBasis}%`;
+                    if (after != undefined) {
+                        after.style.flexBasis =`${100-newBasis}%`;
+                    } else {
+                        resizer.parentNode.getBoundingClientRect().width =
+                            resizer.parentNode.getBoundingClientRect().width - dx;
+                    }
+                    removeSelection();
+                } else {
+                    mouseUpHandler();
+                }
+            };
+
+            const mouseUpHandler = function () {
+                removeSelection();
 
                 // Remove the handlers of `mousemove` and `mouseup`
                 document.removeEventListener('mousemove', mouseMoveHandler);
@@ -922,6 +928,11 @@ export class Framework {
             this.handleClick()
         });
 
+        let el = this.mainDomNode.querySelector('.ide');
+        const observer = new ResizeObserver(() => {
+            this.editorstack.handleResize();
+        });
+        observer.observe(el);
         initSplit(node.querySelector('.ide .body > .resize'),  'w');
         // initSplit(node.querySelector('.ide .canvas > .resize'), 'w');
 
