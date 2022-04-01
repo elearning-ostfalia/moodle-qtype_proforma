@@ -46,6 +46,7 @@ if (!$PAGE->requires->is_head_done()) {
     $PAGE->requires->css('/question/type/proforma/amd/src/editor.css');
     // Codemirror themes.
     $PAGE->requires->css('/question/type/proforma/amd/src/abcdef.css');
+    $PAGE->requires->css('/question/type/proforma/amd/src/darcula.css');
 }
 
 /**

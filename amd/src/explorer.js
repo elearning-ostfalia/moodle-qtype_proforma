@@ -26,7 +26,7 @@
 
 /* eslint-disable no-unused-vars */
 
-import { Framework, RootNode, MoodleSyncer } from "./FileViewer";
+import { Framework, RootNode } from "./FileViewer";
 // import ProjectNode from "qtype_proforma/FileViewer";
 
 function _start(nodename, options) {
@@ -37,8 +37,8 @@ function _start(nodename, options) {
     let framework = new Framework();
     framework.buildFramework(explorer);
     let submission = new RootNode('Submission', framework);
-    let syncer = new MoodleSyncer(options);
-    framework.init(explorer, syncer);
+    // let syncer = new MoodleSyncer(options);
+    framework.init(explorer, options);
 /*
     Promise.all([
         import('./FileViewer.js')

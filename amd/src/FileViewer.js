@@ -29,7 +29,7 @@
 
 // Use these imports for Moodle
 // -----------------------------
-/*
+
 import './codemirror-global';
 import CodeMirror from "./codemirror";
 
@@ -43,10 +43,11 @@ import "./active-line";
 
 // import {get_string as getString} from 'core/str';
 import Config from 'core/config';
-*/
+
 
 // Use this for editortest.html
 // -----------------------------
+/*
 import './codemirror-global.js';
 
 import CodeMirror from "./codemirror/src/codemirror.js";
@@ -61,6 +62,8 @@ class Config { // Fake
     static wwwroot = '';
     static sesskey = '';
 }
+*/
+
 
 // 'use strict'; ecma6 code is always strict
 
@@ -625,7 +628,7 @@ class EditorItem {
             autoCloseBrackets: true,
             styleActiveLine: true,
             readOnly: false,
-            extraKeys: {'Tab': function(){editor.replaceSelection('    ' , 'end');}},
+            extraKeys: {'Tab': function(){ this.editor.replaceSelection('    ' , 'end');}},
             lineNumbers: true
             //viewportMargin: Infinity
         });
@@ -639,7 +642,7 @@ class EditorItem {
 
 
 class EditorStack {
-    static maxEditors = 15;
+    static maxEditors = 12;
     constructor(donNodeEditor, donNodeTabs) {
         this.editortextarea = donNodeEditor.querySelector('textarea');
         // Initialise readonly editor
@@ -650,7 +653,7 @@ class EditorStack {
             autoCloseBrackets: true,
             styleActiveLine: true,
             readOnly: true,
-            extraKeys: {'Tab': function(){editor.replaceSelection('    ' , 'end');}},
+            extraKeys: {'Tab': function(){ this.editor.replaceSelection('    ' , 'end');}},
             lineNumbers: true
             //viewportMargin: Infinity
         });
@@ -727,6 +730,7 @@ class EditorStack {
         }
         if (filenode.mode !== undefined) {
             // Create tab
+            // let tab = document.createElement('span');
             let tab = document.createElement('button');
 
             // Mode is known => display new text content
@@ -748,6 +752,8 @@ class EditorStack {
             tab.innerHTML = filenode.name;
             tab.append(close);
             tab.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
                 this._switchTo(item);
             });
             this.donNodeTabs.append(tab);
@@ -865,7 +871,7 @@ export class Framework {
                     after.style.removeProperty('user-select');
                     after.style.removeProperty('pointer-events');
                 }
-            }
+            };
             // Handle the mousedown event
             // that's triggered when user drags the resizer
             const mouseDownHandler = e => {
@@ -925,7 +931,7 @@ export class Framework {
 
         // Hide context menu on every left click
         window.addEventListener("click", e => {
-            this.handleClick()
+            this.handleClick();
         });
 
         let el = this.mainDomNode.querySelector('.ide');
