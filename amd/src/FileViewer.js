@@ -29,6 +29,7 @@
 
 // Use these imports for Moodle
 // -----------------------------
+import "./MoodleSyncer";
 
 import './codemirror-global';
 import CodeMirror from "./codemirror";
@@ -91,6 +92,8 @@ class TreeNode {
             const showMenu = ({ top, left }) => {
                 this.getFramework().menu.style.left = `${left}px`;
                 this.getFramework().menu.style.top = `${top}px`;
+                // this.getFramework().menu.style.setProperty('--mouse-x', event.clientX + 'px');
+                // this.getFramework().menu.style.setProperty('--mouse-y', event.clientY + 'px');
                 this.getFramework().toggleContextmenu('show');
             };
 
@@ -103,6 +106,8 @@ class TreeNode {
                 left: event.pageX,
                 top: event.pageY
             };
+            console.log(`${event.pageX}px ${event.pageY}px`);
+            console.log(event);
             showMenu(origin);
         };
         this.handleDragStart = event => {
@@ -340,6 +345,8 @@ class FolderNode extends TreeNode {
                 this.appendFolder(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
                 this.expand(true);
+                console.log('create new folder ' + node.getPath());
+                this.getFramework().syncer.mkdir(node.getPath());
             }
         };
 
@@ -391,6 +398,27 @@ class FolderNode extends TreeNode {
         }
         return undefined;
     }
+    createPath(path) {
+        let first = path.shift();
+        console.log('foldernode: create node for ' + first);
+        for (let i = 0; i < this.folders.length; i++) {
+            if (this.folders[i].name === first) {
+                // Subpath exists
+                if (path.length == 0) {
+                    // full path exists => return folder object.
+                    return this.folders[i];
+                } else {
+                    return this.folders[i].createPath(path);
+                }
+            }
+        }
+        // Path does not exist => create.
+        console.log('create folder node for ' + first);
+        let node = new FolderNode(first);
+        this.appendFolder(node);
+        return node.createPath(path);
+    }
+
     isNameChildUnique(name) {
         for (let i = 0; i < this.files.length; i++) {
             if (name.localeCompare(this.files[i].name) == 0 ) {
@@ -448,7 +476,7 @@ class FolderNode extends TreeNode {
                 this.getFramework().setFocusTo(node.element);
             }
         };
-        // RootNode.syncer.upload(file);
+        this.getFramework().syncer.upload(file);
         this.appendFile(node);
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
         this.expand(true);
@@ -507,105 +535,23 @@ class FolderNode extends TreeNode {
     appendFolder(node) { this.folders.push(node); node.parent = this; }
 }
 
-class MoodleSyncer {
-    constructor(options) {
-        this.options = options;
-        console.log(this.options);
-    }
-    _sendRequest(action, param = undefined) {
-        const url = Config.wwwroot + '/repository/draftfiles_ajax.php';
-        // const action = 'list';
-        let params = {};
-        params['sesskey'] = Config.sesskey;
-        params['client_id'] = this.options['client_id'];
-        params['filepath'] = '/';
-        params['itemid'] = this.options['itemid'];
-        if (param !== undefined) {
-            params['newdirname'] = param;
-        }
-
-        fetch(
-            url + '?action=' + action + '&' + window.build_querystring(params),
-            {
-                method: 'POST',
-            }
-        )
-            // .then( response => console.log(response))
-            .then( response => response.json() )
-            .then( json => {
-                console.log(action);
-                console.log(json);
-            })
-            .catch( error => console.error('error:', error) );
-    }
-
-    delete(path, filename) {}
-    rename(pathold, filenameold, pathnew, filenamenew) {}
-    mkdir(path) { this._sendRequest('mkdir', path); }
-    list() {
-        this._sendRequest('list');
-    }
-    upload(file) {
-        const url = Config.wwwroot + '/repository/repository_ajax.php';
-        const action = 'upload';
-
-        let formData = new FormData();
-        formData.append('sesskey', Config.sesskey);
-        formData.append('repo_upload_file', file);
-        formData.append('filepath', '/');
-        formData.append('client_id', this.options['client_id']);
-        formData.append('title', file.name);
-        formData.append('savepath', '/');
-        formData.append('repo_id', this.options['repo_id']);
-        formData.append('itemid', this.options['itemid']);
-
-/*        let params = {};
-        params['sesskey'] = Config.sesskey;
-        params['client_id'] = this.options['client_id'];
-        params['filepath'] = '/';
-        params['itemid'] = this.options['itemid'];
-        params['repo_upload_file'] = file;
-        params['savepath'] = '/';
-        params['title'] = file.name;
-        params['repo_id'] = this.options['repo_id'];
-//        params['overwrite'] = 1;
-//        params['maxbytes'] = 217;
-*/
-        fetch(
-            url + '?action=' + action, //  + '&' + window.build_querystring(params),
-            {
-                method: 'POST',
-                body: formData // file
-            }
-        )
-            .then( response => response.json() )
-            .then( json => {
-                console.log(action);
-                if (json.error) {
-                    console.error('error:', json.error);
-                    alert(json.error);
-                } else {
-                    console.log(json);
-                }
-            })
-            .catch( error => {
-                console.error('error:', error);
-                alert(error);
-            } );
-    }
-}
-
 /**
  * RootNode
  */
 export class RootNode extends FolderNode {
     constructor(name, framework) {
         super(name);
+        console.log('CREATE root node ' + name);
+        console.log('for  ');
+        console.log(framework);
         this.framework = framework;
         framework.roots.push(this);
     }
     getFramework() {
         return this.framework;
+    }
+    getPath() {
+        return '/';
     }
     setContextMenu() {
         console.log('RootNode setContextMenu');
@@ -616,6 +562,7 @@ export class RootNode extends FolderNode {
             ]
         );
     }
+
 }
 
 class EditorItem {
@@ -835,14 +782,22 @@ export class Framework {
     <div class="status" style="flex: none">status</div>
 </div>
 <p><label>File or Folder Selected: <input id="last_action" type="text" size="15" readonly=""></label></p>
-<div class="contextmenu" id="context-menu">
+`;
+        // We only need one context menu that must be placed outside
+        // all other elements (esp. those that are positioned relative)
+        // in order to have the menu placed correctly.
+        let contextmenu = `<div class="contextmenu" id="context-menu">
     <ul class="menu-options">
         <li class="menu-option">New file</li>
         <li class="menu-option">New folder</li>
         <li class="menu-option">Delete...</li>
     </ul>
-</div>
-`;
+</div>`;
+        const menu = document.createElement('div');
+        menu.innerHTML = contextmenu;
+        let body = document.querySelector('body');
+        body.appendChild(menu);
+
         this.mainDomNode = domnode;
         this.editorstack = new EditorStack(domnode.querySelector('.editor'),
             domnode.querySelector('.tabs'));
@@ -924,10 +879,57 @@ export class Framework {
         ul.setAttribute('aria-labelledby', 'fileviewer');
         fileviewer.appendChild(ul);
 
-        for (let i = 0; i < this.roots.length; i++) {
-            let project = this.roots[i];
-            /* const li = */ project.displayInTreeview(ul);
-        }
+        this.syncer = syncer;
+        // build folder/file structure.
+        this.syncer.list(jsonResult => {
+            function stripSlashes(path) {
+                /*if (path.substring(0,1) == '/') { // Strip '/'
+                    path = path.substring(1);
+                } */
+                if (path.length > 1 && path.substring(path.length-1) == '/') { // Strip '/'
+                    path = path.substring(0, path.length-1);
+                }
+                return path;
+            }
+            // Toplevel folders?
+            jsonResult.path.forEach(item => {
+                console.log('syncer List path');
+                console.log(item);
+                let path = item.path + item.name;
+                path = stripSlashes(path);
+                console.log(path);
+                this.createPath(path);
+            });
+
+            // Files and folders
+            jsonResult.list.forEach(item => {
+                console.log('syncer List list');
+                console.log(item);
+                if (item.filename == '.') {
+                    // Create Folder.
+                    let path = stripSlashes(item.filepath);
+                    console.log('Syncer: create folder ' + path);
+                    this.createPath(path);
+                } else {
+                    console.log('Syncer: create file ' + item.filename);
+                    let path = stripSlashes(item.filepath);
+                    let folder = this.createPath(path);
+                    console.log(folder);
+                    // let folder = this.findNodeByPath(path);
+                    let file = new FileNode(item.filename);
+                    folder.appendFile(file);
+                }
+                console.log(item.filename);
+            });
+            console.log('DISPLAY ROOTS');
+            console.log(this.roots);
+
+            for (let i = 0; i < this.roots.length; i++) {
+                let root = this.roots[i];
+                /* const li = */ root.displayInTreeview(ul);
+            }
+        });
+
 
         // Hide context menu on every left click
         window.addEventListener("click", e => {
@@ -942,10 +944,10 @@ export class Framework {
         initSplit(node.querySelector('.ide .body > .resize'),  'w');
         // initSplit(node.querySelector('.ide .canvas > .resize'), 'w');
 
-        this.syncer = syncer;
+
+
         /*
         RootNode.syncer.sendRequest('mkdir', 'newproformafolder');
-        RootNode.syncer.sendRequest('list');
         RootNode.syncer.sendRequest('dir'); */
     }
 
@@ -957,6 +959,12 @@ export class Framework {
     }
 
     findNodeByPath(path) {
+        console.log('find <' + path + '>');
+        /* if (path == '') {
+            console.log(this.roots);
+            return this.roots[0].folders[0];
+        }*/
+
         let pathsplit = path.split('/');
         let first = pathsplit.shift();
         for (let i = 0; i < this.roots.length; i++) {
@@ -967,10 +975,56 @@ export class Framework {
         return undefined;
     }
 
+    createPath(path) {
+        console.log('Framework: create folder ' + path);
+        // Assume first char is always /
+        if (path[0] != '/') {
+            console.error('first char in path is not /: ' + path);
+        }
+        let root;
+        if (this.roots.length == 0) {
+            root = new RootNode('ROOT', this);
+        } else {
+            root = this.roots[0];
+        }
+
+        let pathsplit = path.split('/');
+        let first = pathsplit.shift();
+
+        console.log(pathsplit);
+        console.log(pathsplit[0]);
+        // console.log(pathsplit[1]);
+
+        console.log('first: ' + first);
+        if (first.length == 0 && pathsplit.length > 0) {
+            console.log('shift');
+            first = pathsplit.shift();
+        }
+        console.log('first ' + first);
+        console.log('split');
+        console.log(pathsplit);
+
+        if (first.length == 0) {
+            console.log('RETURN ROOT');
+            return root;
+        }
+        for (let i = 0; i < this.roots.length; i++) {
+            if (this.roots[i].name === first) {
+                return this.roots[i].createPath(pathsplit);
+            }
+        }
+        // Not found
+        let node = new FolderNode(first);
+        root.appendFolder(node);
+        return node;
+        // return node.createPath(pathsplit);
+    }
+
     createContextMenu(list) {
         console.log('createContextMenu');
         console.log(list);
-        let ul = this.mainDomNode.querySelector(".contextmenu .menu-options");
+        // let ul = this.mainDomNode.querySelector(".contextmenu .menu-options");
+        let ul = document.querySelector(".contextmenu .menu-options");
         // console.log(ul);
         ul.innerHTML = ''; // Delete all children
         for (let i = 0; i < list.length; i++) {
