@@ -145,7 +145,7 @@ class TreeNode {
 /**
  * FileNode
  */
-class FileNode extends TreeNode {
+export class FileNode extends TreeNode {
     static getEditorModeFromFilename(filename) {
         const extension = filename.split('.').pop().toLowerCase();
         switch (extension) {
@@ -186,6 +186,7 @@ class FileNode extends TreeNode {
         this.mode = FileNode.getEditorModeFromFilename(this.name);
         this.handleDelete = event => {
             this.getFramework().handleClick(event);
+            this.getFramework().syncer.delete(this.getPath());
             this.element.remove();
             this.parent.files = this.parent.files.filter(item => item !== this);
         };
@@ -193,8 +194,12 @@ class FileNode extends TreeNode {
             this.getFramework().handleClick(event);
             let name = prompt("Please enter new name:", this.name);
             if (name !== null && name.length > 0) {
+                const oldpath = this.getPath();
                 this.name = name;
                 this.element.innerHTML = name;
+                const newpath = this.getPath();
+                this.getFramework().syncer.renameFile(oldpath, newpath);
+
                 // this.element.tabIndex = 0;
             }
         };
@@ -235,19 +240,19 @@ class FileNode extends TreeNode {
             ['Rename', this.boundHandleRename]]
         );
     }
-
 }
 
 /**
  * FolderNode
  */
-class FolderNode extends TreeNode {
+export class FolderNode extends TreeNode {
     constructor(name) {
         super(name);
         this.files = []; // Empty list of files.
         this.folders = []; // Empty list of folders.
         this.handleDelete = event => {
             this.getFramework().handleClick(event);
+            this.getFramework().syncer.delete(this.getPath() + '/.');
             this.element.remove();
             this.parent.folders = this.parent.folders.filter(item => item !== this);
             // console.log(RootNode.projects);
@@ -279,10 +284,10 @@ class FolderNode extends TreeNode {
         this.handleDragOver = event => {
             event.preventDefault();
         };
-        this.handleDragEnter = event =>  {
+        this.handleDragEnter = () =>  {
             this.element.querySelector('.name').classList.add('dragover');
         };
-        this.handleDragLeave = event => {
+        this.handleDragLeave = () => {
             this.element.querySelector('.name').classList.remove('dragover');
         };
 
@@ -366,11 +371,14 @@ class FolderNode extends TreeNode {
                     alert(name + ' already exists');
                     return;
                 }
+                const oldpath = this.getPath() + '/.';
                 this.name = name;
                 this.element.querySelector('.name').innerHTML = name;
+                const newpath = this.getPath() + '/.';
+                this.getFramework().syncer.rename(oldpath, newpath);
             }
         };
-        this.toggleExpand = event => {
+        this.toggleExpand = () => {
             this.element.setAttribute('aria-expanded', !this.isExpanded());
         };
         this.handleMouseOver = event => {
@@ -476,8 +484,8 @@ class FolderNode extends TreeNode {
                 this.getFramework().setFocusTo(node.element);
             }
         };
-        this.getFramework().syncer.upload(file);
         this.appendFile(node);
+        this.getFramework().syncer.upload(file, node.getPath());
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
         this.expand(true);
     }
@@ -551,7 +559,7 @@ export class RootNode extends FolderNode {
         return this.framework;
     }
     getPath() {
-        return '/';
+        return '';
     }
     setContextMenu() {
         console.log('RootNode setContextMenu');
@@ -586,7 +594,6 @@ class EditorItem {
         this.tab = tabDomNode;
     }
 }
-
 
 class EditorStack {
     static maxEditors = 12;
@@ -881,55 +888,16 @@ export class Framework {
 
         this.syncer = syncer;
         // build folder/file structure.
+        /* this.syncer.dir(); Da fehlen die Dateien */
         this.syncer.list(jsonResult => {
-            function stripSlashes(path) {
-                /*if (path.substring(0,1) == '/') { // Strip '/'
-                    path = path.substring(1);
-                } */
-                if (path.length > 1 && path.substring(path.length-1) == '/') { // Strip '/'
-                    path = path.substring(0, path.length-1);
-                }
-                return path;
-            }
-            // Toplevel folders?
-            jsonResult.path.forEach(item => {
-                console.log('syncer List path');
-                console.log(item);
-                let path = item.path + item.name;
-                path = stripSlashes(path);
-                console.log(path);
-                this.createPath(path);
-            });
-
-            // Files and folders
-            jsonResult.list.forEach(item => {
-                console.log('syncer List list');
-                console.log(item);
-                if (item.filename == '.') {
-                    // Create Folder.
-                    let path = stripSlashes(item.filepath);
-                    console.log('Syncer: create folder ' + path);
-                    this.createPath(path);
-                } else {
-                    console.log('Syncer: create file ' + item.filename);
-                    let path = stripSlashes(item.filepath);
-                    let folder = this.createPath(path);
-                    console.log(folder);
-                    // let folder = this.findNodeByPath(path);
-                    let file = new FileNode(item.filename);
-                    folder.appendFile(file);
-                }
-                console.log(item.filename);
-            });
             console.log('DISPLAY ROOTS');
             console.log(this.roots);
-
             for (let i = 0; i < this.roots.length; i++) {
                 let root = this.roots[i];
-                /* const li = */ root.displayInTreeview(ul);
+                root.displayInTreeview(ul);
+                root.toggleExpand();
             }
-        });
-
+        }, this);
 
         // Hide context menu on every left click
         window.addEventListener("click", e => {
@@ -943,8 +911,6 @@ export class Framework {
         observer.observe(el);
         initSplit(node.querySelector('.ide .body > .resize'),  'w');
         // initSplit(node.querySelector('.ide .canvas > .resize'), 'w');
-
-
 
         /*
         RootNode.syncer.sendRequest('mkdir', 'newproformafolder');
@@ -991,18 +957,16 @@ export class Framework {
         let pathsplit = path.split('/');
         let first = pathsplit.shift();
 
-        console.log(pathsplit);
+/*        console.log(pathsplit);
         console.log(pathsplit[0]);
-        // console.log(pathsplit[1]);
-
-        console.log('first: ' + first);
+        console.log('first: ' + first);*/
         if (first.length == 0 && pathsplit.length > 0) {
-            console.log('shift');
+            // console.log('shift');
             first = pathsplit.shift();
         }
-        console.log('first ' + first);
+/*        console.log('first ' + first);
         console.log('split');
-        console.log(pathsplit);
+        console.log(pathsplit); */
 
         if (first.length == 0) {
             console.log('RETURN ROOT');
