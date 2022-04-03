@@ -62,7 +62,7 @@ export class MoodleSyncer {
             // .then( response => console.log(response))
             .then( response => response.json() )
             .then( json => {
-                console.log(action);
+                console.log('got response for action ' + action);
                 if (json.error) {
                     console.error('error:', json.error);
                     alert(json.error);
@@ -103,15 +103,13 @@ export class MoodleSyncer {
         }, params);
     }
     renameFolder(pathold, pathnew) {
-        // TODO:
         console.log('rename ' + pathold + ' => ' + pathnew);
         let params = {};
         let values = MoodleSyncer.splitFullname(pathold);
         let newValue = MoodleSyncer.splitFullname(pathnew);
         params['filepath'] = values[0];
-        // params['filename'] = values[1];
-        params['newdirname'] = newValue[0];
-        params['newfilepath'] = newValue[1];
+        params['newdirname'] = newValue[1];
+        params['newfilepath'] = newValue[0];
         this._sendRequest('updatedir', jsonResult => {
             console.log(jsonResult);
         }, params);
@@ -144,6 +142,11 @@ export class MoodleSyncer {
         }, params);
     }
     list(callback, framework) {
+        console.log('Start list');
+        // Counter for counting active list requests.
+        // Needed to detect finishing the last one in order
+        // to display resulting tree.
+        let listcounter = 0;
         function stripSlashes(path) {
             /*if (path.substring(0,1) == '/') { // Strip '/'
                 path = path.substring(1);
@@ -153,9 +156,34 @@ export class MoodleSyncer {
             }
             return path;
         }
-        // Fake
-        // const obj = JSON.parse(MoodleSyncer.response);
-        // callback(obj);
+        this.handleListResponse = json => {
+            json.list.forEach(item => {
+                console.log('syncer List Response');
+                if (item.filename == '.') {
+                    // Create Folder.
+                    let path = stripSlashes(item.filepath);
+                    // console.log('Syncer: create folder ' + path);
+                    framework.createPath(path);
+                    let params = {};
+                    params['filepath'] = path;
+                    // console.log('RECURSION FOR ' + path);
+                    listcounter++;
+                    this._sendRequest('list', jsonResultSub => {
+                            this.handleListResponse(jsonResultSub);
+                    }, params);
+
+                } else {
+                    // console.log('Syncer: create file ' + item.filename);
+                    let folder = framework.createPath(stripSlashes(item.filepath));
+                    folder.appendFile(new FileNode(item.filename));
+                }
+            });
+            listcounter--;
+            if (listcounter == 0) {
+                callback(json);
+            }
+        };
+        listcounter++;
         this._sendRequest('list', jsonResult => {
             // Toplevel folders?
             /* jsonResult.path.forEach(item => {
@@ -167,77 +195,7 @@ export class MoodleSyncer {
                 framework.createPath(path);
             }); */
             // Files and folders
-            this.handleListResponse = json => {
-                json.list.forEach(item => {
-                    console.log('syncer List list');
-                    console.log(item.filename);
-                    // console.log(item);
-                    if (item.filename == '.') {
-                        // Create Folder.
-                        let path = stripSlashes(item.filepath);
-                        console.log('Syncer: create folder ' + path);
-                        framework.createPath(path);
-                    } else {
-                        console.log('Syncer: create file ' + item.filename);
-                        let folder = framework.createPath(stripSlashes(item.filepath));
-                        console.log(folder);
-                        folder.appendFile(new FileNode(item.filename));
-                    }
-                });
-            };
-            jsonResult.list.forEach(item => {
-                console.log('syncer List list');
-                console.log(item.filename);
-                // console.log(item);
-                if (item.filename == '.') {
-                    // Create Folder.
-                    let path = stripSlashes(item.filepath);
-                    console.log('Syncer: create folder ' + path);
-                    framework.createPath(path);
-                } else {
-                    console.log('Syncer: create file ' + item.filename);
-                    let folder = framework.createPath(stripSlashes(item.filepath));
-                    console.log(folder);
-                    folder.appendFile(new FileNode(item.filename));
-                }
-            });
-
-            let params = {};
-            params['filepath'] = '/jj';
-            this._sendRequest('list', jsonResultSub => {
-                // Toplevel folders?
-                /* jsonResultSub.path.forEach(item => {
-                    console.log('syncer List path');
-                    console.log(item);
-                    let path = item.path + item.name;
-                    path = stripSlashes(path);
-                    console.log(path);
-                    framework.createPath(path);
-                }); */
-                // Files and folders
-                jsonResultSub.list.forEach(item => {
-                    console.log('syncer List list');
-                    console.log(item);
-                    if (item.filename == '.') {
-                        // Create Folder.
-                        let path = stripSlashes(item.filepath);
-                        console.log('Syncer: create folder ' + path);
-                        framework.createPath(path);
-                    } else {
-                        console.log('Syncer: create file ' + item.filename);
-                        let path = stripSlashes(item.filepath);
-                        let folder = framework.createPath(path);
-                        console.log(folder);
-                        // let folder = this.findNodeByPath(path);
-                        let file = new FileNode(item.filename);
-                        folder.appendFile(file);
-                    }
-                    console.log(item.filename);
-                });
-                // callback(jsonResult);
-            }, params);
-
-            callback(jsonResult);
+            this.handleListResponse(jsonResult);
         });
 
     }

@@ -375,7 +375,7 @@ export class FolderNode extends TreeNode {
                 this.name = name;
                 this.element.querySelector('.name').innerHTML = name;
                 const newpath = this.getPath() + '/.';
-                this.getFramework().syncer.rename(oldpath, newpath);
+                this.getFramework().syncer.renameFolder(oldpath, newpath);
             }
         };
         this.toggleExpand = () => {
@@ -407,8 +407,15 @@ export class FolderNode extends TreeNode {
         return undefined;
     }
     createPath(path) {
+        // console.log(path);
         let first = path.shift();
-        console.log('foldernode: create node for ' + first);
+        // console.log('foldernode: create node for <' + first + '>');
+        if (first === undefined || first.length == 0) {
+            if (path.lenghth > 0) {
+                console.error('Bug in creating path');
+            }
+            return this;
+        }
         for (let i = 0; i < this.folders.length; i++) {
             if (this.folders[i].name === first) {
                 // Subpath exists
@@ -421,7 +428,7 @@ export class FolderNode extends TreeNode {
             }
         }
         // Path does not exist => create.
-        console.log('create folder node for ' + first);
+        // console.log('create folder node for ' + first);
         let node = new FolderNode(first);
         this.appendFolder(node);
         return node.createPath(path);
@@ -550,8 +557,6 @@ export class RootNode extends FolderNode {
     constructor(name, framework) {
         super(name);
         console.log('CREATE root node ' + name);
-        console.log('for  ');
-        console.log(framework);
         this.framework = framework;
         framework.roots.push(this);
     }
@@ -955,38 +960,13 @@ export class Framework {
         }
 
         let pathsplit = path.split('/');
-        let first = pathsplit.shift();
-
-/*        console.log(pathsplit);
-        console.log(pathsplit[0]);
-        console.log('first: ' + first);*/
-        if (first.length == 0 && pathsplit.length > 0) {
-            // console.log('shift');
-            first = pathsplit.shift();
-        }
-/*        console.log('first ' + first);
-        console.log('split');
-        console.log(pathsplit); */
-
-        if (first.length == 0) {
-            console.log('RETURN ROOT');
-            return root;
-        }
-        for (let i = 0; i < this.roots.length; i++) {
-            if (this.roots[i].name === first) {
-                return this.roots[i].createPath(pathsplit);
-            }
-        }
-        // Not found
-        let node = new FolderNode(first);
-        root.appendFolder(node);
-        return node;
-        // return node.createPath(pathsplit);
+        pathsplit.shift(); // first element in array is always empty
+        return root.createPath(pathsplit);
     }
 
     createContextMenu(list) {
         console.log('createContextMenu');
-        console.log(list);
+        // console.log(list);
         // let ul = this.mainDomNode.querySelector(".contextmenu .menu-options");
         let ul = document.querySelector(".contextmenu .menu-options");
         // console.log(ul);
