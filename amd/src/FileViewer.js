@@ -220,7 +220,16 @@ export class FileNode extends TreeNode {
             // event.preventDefault();
         };
     }
-
+    getContent(callback) {
+        if (this.filecontent.length == 0) {
+            this.getFramework().syncer.download(this.getPath(), result => {
+                this.filecontent = result;
+                callback(result);
+            });
+        } else {
+            callback(this.filecontent);
+        }
+    }
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
         li.innerHTML = this.name;
@@ -695,7 +704,9 @@ class EditorStack {
             // Mode is known => display new text content
             let item = new EditorItem(filenode, this.editortextarea, tab);
             // this.activeNode = filenode;
-            item.editor.setValue(filenode.filecontent);
+            filenode.getContent(text => {
+                item.editor.setValue(text);
+            });
             item.editor.setOption("mode", filenode.mode);
             item.editor.refresh(); // for old version of Codemirror
 

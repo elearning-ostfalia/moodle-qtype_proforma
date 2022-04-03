@@ -456,6 +456,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         foreach ($defaults as $name=>$value) {
             $options->$name = $value;
         }
+        $options->contextid = $usercontext->id;
 
         var_dump($options);
         global $PAGE;

@@ -89,6 +89,87 @@ export class MoodleSyncer {
             console.log(jsonResult);
         }, params);
     }
+    download(path, callback) {
+        console.log('DOWNLOAD');
+        console.log(this.options);
+        let pathsplit = MoodleSyncer.splitFullname(path);
+        const contextid = this.options.contextid;
+        const addon = '/user/draft/' + this.options.itemid + '/' + pathsplit[1];
+        const url = Config.wwwroot + '/draftfile.php/' + contextid + addon;
+        console.log(url);
+        fetch(url, { method: 'GET' })
+            .then( response => response.text() )
+            .then( text => {
+                console.log('download draftfile');
+                callback(text);
+            })
+            .catch( error => {
+                console.error('error:', error);
+                alert(error);
+            });
+/*
+        console.log('download files from Moodle ' + path);
+        const url = Config.wwwroot + '/repository/repository_ajax.php';
+        const action = 'download';
+        let values = MoodleSyncer.splitFullname(path);
+        console.log(values[0]);
+
+        let formData = new FormData();
+
+        let sourcearray = [];
+        sourcearray['url'] = url;
+        sourcearray['filename'] = path;
+        // const source = base64_encode(JSON.stringify(sourcearray));
+        // const sourcekey = sha1(source . repository::get_secret_key() . Config.sesskey);
+
+        formData.append('sesskey', Config.sesskey);
+        formData.append('filepath', values[0]);
+        formData.append('client_id', this.options['client_id']);
+        formData.append('title', values[1]);
+        formData.append('savepath', values[0]);
+        formData.append('sourcekey', 'TODO source key'); // this.options['client_id']); // repository ajax
+        formData.append('repo_id', this.options['repo_id']);
+        formData.append('itemid', this.options['itemid']);
+        console.log(formData);
+        fetch(
+            url + '?action=' + action, //  + '&' + window.build_querystring(params),
+            {
+                method: 'POST',
+                body: formData // file
+            }
+        )
+            .then( response => response.json() )
+            .then( json => {
+                console.log(action);
+                if (json.error) {
+                    console.error('error:', json.error);
+                    alert(json.error);
+                } else {
+                    console.log(json);
+                    callback(json);
+                    // this.renameFile('/' + file.name, filename);
+                }
+            })
+            .catch( error => {
+                console.error('error:', error);
+                alert(error);
+            } ); */
+
+      // download many files as zip archive
+        /*
+        let params = {};
+        let values = MoodleSyncer.splitFullname(path);
+        let selected = new Object();
+        selected.filepath = values[0];
+        selected.filename = values[1];
+        let selectedarray = [];
+        selectedarray.push(selected);
+        params['selected'] = JSON.stringify(selectedarray);
+        this._sendRequest('downloadselected', jsonResult => {
+            console.log(jsonResult);
+            callback(jsonResult);
+        }, params); */
+    }
     renameFile(pathold, pathnew) {
         console.log('rename ' + pathold + ' => ' + pathnew);
         let params = {};
@@ -142,7 +223,10 @@ export class MoodleSyncer {
         }, params);
     }
     list(callback, framework) {
+        this.dir();
         console.log('Start list');
+        let params = {};
+        params['source'] = '1';
         // Counter for counting active list requests.
         // Needed to detect finishing the last one in order
         // to display resulting tree.
@@ -196,7 +280,7 @@ export class MoodleSyncer {
             }); */
             // Files and folders
             this.handleListResponse(jsonResult);
-        });
+        }, params);
 
     }
     upload(file, filename) {
@@ -242,3 +326,4 @@ export class MoodleSyncer {
             } );
     }
 }
+
