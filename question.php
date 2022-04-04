@@ -233,6 +233,9 @@ class qtype_proforma_question extends question_graded_automatically {
             case qtype_proforma::RESPONSE_FILEPICKER:
                 $expecteddata[ATTACHMENTS] = question_attempt::PARAM_FILES;
                 break;
+            case qtype_proforma::RESPONSE_EXPLORER:
+                $expecteddata[ATTACHMENTS] = question_attempt::PARAM_FILES;
+                break;
             case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 $expecteddata[VCSINPUT] = PARAM_TEXT;
                 $expecteddata[VCSGROUP] = PARAM_TEXT;
@@ -349,6 +352,7 @@ class qtype_proforma_question extends question_graded_automatically {
         // Determine if we have /some/ content to be graded.
         switch ($this->responseformat) {
             case qtype_proforma::RESPONSE_FILEPICKER:
+            case qtype_proforma::RESPONSE_EXPLORER:
                 $hasattachments = array_key_exists(ATTACHMENTS, $response)
                         && $response[ATTACHMENTS] instanceof question_response_files;
 
@@ -425,6 +429,13 @@ class qtype_proforma_question extends question_graded_automatically {
                 // TODO check file content.
                 return true;
                 break;
+            case qtype_proforma::RESPONSE_EXPLORER:
+                if (!question_utils::arrays_same_at_key_missing_is_blank(
+                    $prevresponse, $newresponse, ATTACHMENTS)) {
+                    return false;
+                }
+            // TODO check file content.
+                return true;
             case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 // We cannot decide if the student's response has changed
                 // since it is located somewhere else. So we always return false.

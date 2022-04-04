@@ -101,7 +101,7 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         if (empty($options->readonly)) {
             // Student view for input.
-            $answer = $renderer->response_area_input($qa, $step, $options->context);
+            $answer = $renderer->response_area_input($qa, $step, $options);
         } else {
             // Readonly for review
             // => we cannot use default renderer from question settings
@@ -113,13 +113,15 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         // Show file upload area resp. uploaded files.
         $files = '';
+        /*
         if ($renderer->can_have_attachments() && $question->attachments) {
             if (empty($options->readonly)) {
                 $files = $this->files_input($qa, $question, $options);
             } else {
                 $files = $this->files_read_only($qa, $options);
             }
-        }
+        }*/
+        // debugging('Achtung, class bei files und anwer unterscheiden');
 
         // Show question test atachments.
         $downloadtext = $this->question_downloads($question);
@@ -130,7 +132,7 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         $result .= html_writer::start_tag('div', array('class' => 'ablock'));
         $result .= html_writer::tag('div', $answer, array('class' => $renderer->answerfieldname()));
-        $result .= html_writer::tag('div', $files, array('class' => ATTACHMENTS));
+        // $result .= html_writer::tag('div', $files, array('class' => ATTACHMENTS));
         $result .= html_writer::end_tag('div');
 
         return $result;
@@ -201,13 +203,13 @@ class qtype_proforma_renderer extends qtype_renderer {
         $pickeroptions->return_types = FILE_INTERNAL | FILE_CONTROLLED_LINK;
 
         $pickeroptions->itemid = $qa->prepare_response_files_draft_itemid(
-                'attachments', $options->context->id);
+            'attachments', $options->context->id);
 
         $fm = new form_filemanager($pickeroptions);
         $filesrenderer = $this->page->get_renderer('core', 'files');
         return $filesrenderer->render($fm) . html_writer::empty_tag(
-                        'input', array('type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
-                        'value' => $pickeroptions->itemid));
+                'input', array('type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
+                'value' => $pickeroptions->itemid));
     }
 
     /**
