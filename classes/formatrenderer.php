@@ -417,7 +417,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
      * @return string
      */
     public function response_area_input($qa, $step, $context) {
-        debugging('here');
+        // debugging('here');
         $input = html_writer::tag('div', '', array('id' => 'fileexplorer'));
 
         $draftid = file_get_unused_draft_itemid();
@@ -433,7 +433,6 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
 //            'context'=>$PAGE->context,
         );
 
-
         global $COURSE;
         $context = context_course::instance($COURSE->id);
 
@@ -445,20 +444,20 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
 
         $fs = get_file_storage();
         // initialise options, getting files in root path
-        $options = file_get_drafarea_files($defaults['itemid'], '/');
+        $options = new stdClass();
+        // $options = file_get_drafarea_files($defaults['itemid'], '/');
         $options->repo_id = $repo->id;
-
-        global $USER;
-        $usercontext = context_user::instance($USER->id);
-        $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', true);
-        $options->filecount = count($files);
-
+        // $options->itemid = 0; // TODO????
         foreach ($defaults as $name=>$value) {
             $options->$name = $value;
         }
+        global $USER;
+        $usercontext = context_user::instance($USER->id);
         $options->contextid = $usercontext->id;
 
-        var_dump($options);
+        // $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', true);
+        // $options->filecount = count($files);
+        // var_dump($options);
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
             array('fileexplorer', $options));
