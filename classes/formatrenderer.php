@@ -451,24 +451,23 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
      * @return string
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
-        // debugging('here');
-
-
         // $draftid = file_get_unused_draft_itemid();
         $itemid = $qa->prepare_response_files_draft_itemid(
             'attachments', $options->context->id);
         $sql = 'select * from mdl_files where filearea="draft" and itemid=' . $itemid . ';';
+        debugging('---');
         debugging($sql);
+        $clientid = uniqid();
 
         $defaults = array(
-            'maxbytes'=>-1,
+            'maxbytes' => -1,
             'areamaxbytes' => FILE_AREA_MAX_BYTES_UNLIMITED,
-            'maxfiles'=>-1,
-            'itemid'=>$itemid,
-            'subdirs'=>1,
-            'client_id'=>uniqid(),
-            'accepted_types'=>'*',
-            'return_types'=>FILE_INTERNAL,
+            'maxfiles' => -1,
+            'itemid' => $itemid,
+            'subdirs' => 1,
+            'client_id' => $clientid,
+            'accepted_types' => '*',
+            'return_types' => FILE_INTERNAL,
 //            'context'=>$PAGE->context,
         );
 
@@ -498,9 +497,9 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         // var_dump($options);
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
-            array('fileexplorer', $options));
+            array('fileexplorer_' . $clientid, $options));
 
-        return html_writer::tag('div', '', array('id' => 'fileexplorer')) .
+        return html_writer::tag('div', '', array('id' => 'fileexplorer_' . $clientid)) .
         html_writer::empty_tag(
                 'input', array('type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
                 'value' => $itemid));

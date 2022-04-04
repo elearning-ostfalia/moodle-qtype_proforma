@@ -427,8 +427,11 @@ class qtype_proforma_renderer extends qtype_renderer {
                 return array($step, $this->page->get_renderer('qtype_proforma', 'format_versioncontrol'));
             }
             if ($step->has_qt_var(ATTACHMENTS)) {
-                return array($step, $this->page->get_renderer('qtype_proforma', 'format_filepicker'));
-
+                if ($qa->get_question()->responseformat == qtype_proforma::RESPONSE_EXPLORER) {
+                    return array($step, $this->page->get_renderer('qtype_proforma', 'format_explorer'));
+                } else {
+                    return array($step, $this->page->get_renderer('qtype_proforma', 'format_filepicker'));
+                }
             }
             if ($step->has_qt_var(ANSWER)) {
                 return array($step, $this->page->get_renderer('qtype_proforma', 'format_editor'));
