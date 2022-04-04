@@ -107,53 +107,6 @@ export class MoodleSyncer {
                 console.error('error:', error);
                 alert(error);
             });
-/*
-        console.log('download files from Moodle ' + path);
-        const url = Config.wwwroot + '/repository/repository_ajax.php';
-        const action = 'download';
-        let values = MoodleSyncer.splitFullname(path);
-        console.log(values[0]);
-
-        let formData = new FormData();
-
-        let sourcearray = [];
-        sourcearray['url'] = url;
-        sourcearray['filename'] = path;
-        // const source = base64_encode(JSON.stringify(sourcearray));
-        // const sourcekey = sha1(source . repository::get_secret_key() . Config.sesskey);
-
-        formData.append('sesskey', Config.sesskey);
-        formData.append('filepath', values[0]);
-        formData.append('client_id', this.options['client_id']);
-        formData.append('title', values[1]);
-        formData.append('savepath', values[0]);
-        formData.append('sourcekey', 'TODO source key'); // this.options['client_id']); // repository ajax
-        formData.append('repo_id', this.options['repo_id']);
-        formData.append('itemid', this.options['itemid']);
-        console.log(formData);
-        fetch(
-            url + '?action=' + action, //  + '&' + window.build_querystring(params),
-            {
-                method: 'POST',
-                body: formData // file
-            }
-        )
-            .then( response => response.json() )
-            .then( json => {
-                console.log(action);
-                if (json.error) {
-                    console.error('error:', json.error);
-                    alert(json.error);
-                } else {
-                    console.log(json);
-                    callback(json);
-                    // this.renameFile('/' + file.name, filename);
-                }
-            })
-            .catch( error => {
-                console.error('error:', error);
-                alert(error);
-            } ); */
 
       // download many files as zip archive
         /*
@@ -186,11 +139,11 @@ export class MoodleSyncer {
     renameFolder(pathold, pathnew) {
         console.log('rename ' + pathold + ' => ' + pathnew);
         let params = {};
-        let values = MoodleSyncer.splitFullname(pathold);
+        // let values = MoodleSyncer.splitFullname(pathold);
         let newValue = MoodleSyncer.splitFullname(pathnew);
-        params['filepath'] = values[0];
+        params['filepath'] = pathold + '/'; // values[0];
         params['newdirname'] = newValue[1];
-        params['newfilepath'] = newValue[0];
+        params['newfilepath'] = newValue[0].substr(0, newValue[0].length-1); // strip trailing /
         this._sendRequest('updatedir', jsonResult => {
             console.log(jsonResult);
         }, params);
@@ -282,6 +235,13 @@ export class MoodleSyncer {
             this.handleListResponse(jsonResult);
         }, params);
 
+    }
+    newfile(filename) {
+        let values = MoodleSyncer.splitFullname(filename);
+        const file = new File([''], values[1], {
+            type: "text/plain"
+        });
+        this.upload(file, filename);
     }
     upload(file, filename) {
         const url = Config.wwwroot + '/repository/repository_ajax.php';

@@ -278,6 +278,7 @@ export class FolderNode extends TreeNode {
                 this.appendFile(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
                 this.expand(true);
+                this.getFramework().syncer.newfile(filename);
             }
         };
         this.boundHandleLoadFile = event => {
@@ -309,7 +310,7 @@ export class FolderNode extends TreeNode {
             if (path !== undefined && path.length > 0) {
                 console.log('drop ' + path + ' onto ' + this.getPath());
                 // Node element from tree
-                const node = RootNode.findNodeByPath(path);
+                const node = this.getFramework().findNodeByPath(path);
                 if (node !== undefined && !this.isNameChildUnique(node.name)) {
                     // TODO: wenn der Ordner schon existiert, sollte nur der Inhalt gemergt werden
                     alert(node.name + ' already exists');
@@ -317,21 +318,25 @@ export class FolderNode extends TreeNode {
                 }
                 if (node instanceof FolderNode) {
                     // remove folder in old parent
+                    const oldpath = node.getPath();
                     node.parent.folders = node.parent.folders.filter(item => item !== node);
                     // add folder to this
                     this.appendFolder(node);
                     this.element.querySelector('ul').appendChild(node.element);
                     // node.displayInTreeview(this.element.querySelector('[role="group"]'));
                     this.expand(true);
+                    this.getFramework().syncer.renameFolder(oldpath, node.getPath());
                 } else if (node instanceof FileNode) {
+                    const oldpath = node.getPath();
                     node.parent.files = node.parent.files.filter(item => item !== node);
                     // add folder to this
                     this.appendFile(node);
                     // node.displayInTreeview(this.element.querySelector('[role="group"]'));
                     this.element.querySelector('ul').appendChild(node.element);
                     this.expand(true);
+                    this.getFramework().syncer.renameFile(oldpath, node.getPath());
                 } else {
-                    console.log('node cannot be moved');
+                    console.error('node cannot be moved');
                     console.log(node);
                 }
             } else {
@@ -344,7 +349,6 @@ export class FolderNode extends TreeNode {
                         this._getFileTree(item);
                     }
                 }
-
             }
         };
         this.boundHandleNewFolder = event => {
@@ -942,19 +946,24 @@ export class Framework {
 
     findNodeByPath(path) {
         console.log('find <' + path + '>');
-        /* if (path == '') {
-            console.log(this.roots);
-            return this.roots[0].folders[0];
-        }*/
+        if (path.substr(0,1) != '/') {
+            console.error('path does not start with /: ' + path);
+            return undefined;
+        }
 
         let pathsplit = path.split('/');
-        let first = pathsplit.shift();
+        pathsplit.shift(); // first element is always empty
+        // let first = pathsplit.shift();
+        let root = this.roots[0];
+        return root.findNodeByPath(pathsplit);
+
+        /*
         for (let i = 0; i < this.roots.length; i++) {
             if (this.roots[i].name === first) {
                 return this.roots[i].findNodeByPath(pathsplit);
             }
         }
-        return undefined;
+        return undefined; */
     }
 
     createPath(path) {
