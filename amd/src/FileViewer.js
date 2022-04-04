@@ -503,9 +503,9 @@ export class FolderNode extends TreeNode {
                 this.getFramework().addEditor(node);
                 this.getFramework().setFocusTo(node.element);
             }
+            this.getFramework().syncer.upload(file, node.getPath());
         };
         this.appendFile(node);
-        this.getFramework().syncer.upload(file, node.getPath());
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
         this.expand(true);
     }
