@@ -78,7 +78,7 @@ export class MoodleSyncer {
             .catch( error => console.error('error:', error) );
     }
 
-    delete(path) {
+    delete(path, callback) {
         console.log('delete ' + path);
         let params = {};
         let values = MoodleSyncer.splitFullname(path);
@@ -87,14 +87,17 @@ export class MoodleSyncer {
         console.log('delete ' + params['filepath'] + ' ' + params['filename']);
         this._sendRequest('delete', jsonResult => {
             console.log(jsonResult);
+            if (callback !== undefined) {
+                callback(jsonResult);
+            }
         }, params);
     }
     download(path, callback) {
         console.log('DOWNLOAD');
         console.log(this.options);
-        let pathsplit = MoodleSyncer.splitFullname(path);
+        // let pathsplit = MoodleSyncer.splitFullname(path);
         const contextid = this.options.contextid;
-        const addon = '/user/draft/' + this.options.itemid + '/' + pathsplit[1];
+        const addon = '/user/draft/' + this.options.itemid + path; // '/' + pathsplit[1];
         const url = Config.wwwroot + '/draftfile.php/' + contextid + addon;
         console.log(url);
         fetch(url, { method: 'GET' })
@@ -236,6 +239,18 @@ export class MoodleSyncer {
         }, params);
 
     }
+    update(filename, text) {
+        this.delete(filename, () => {
+            console.log(filename + ' is deleted, upload new version');
+            // upload when file is deleted (otherwise nameclash)
+            let values = MoodleSyncer.splitFullname(filename);
+            const file = new File([text], values[1], {
+                type: "text/plain"
+            });
+            console.log('upload as new file with name ' + file.name);
+            this.upload(filename, file);
+        });
+    }
     newfile(filename) {
         let values = MoodleSyncer.splitFullname(filename);
         const file = new File([''], values[1], {
@@ -243,11 +258,10 @@ export class MoodleSyncer {
         });
         this.upload(file, filename);
     }
-    upload(file, filename) {
+    upload(filename, file) {
         const url = Config.wwwroot + '/repository/repository_ajax.php';
         const action = 'upload';
-        console.log(file.name);
-        console.log(filename);
+        console.log('upload ' + file.name + ' as ' + filename);
 
         let values = MoodleSyncer.splitFullname(filename);
         console.log(values[0]);

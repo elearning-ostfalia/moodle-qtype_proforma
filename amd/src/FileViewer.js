@@ -230,6 +230,10 @@ export class FileNode extends TreeNode {
             callback(this.filecontent);
         }
     }
+    updateContent(newcontent) {
+        this.filecontent = newcontent;
+        this.getFramework().syncer.update(this.getPath(), newcontent);
+    }
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
         li.innerHTML = this.name;
@@ -476,6 +480,7 @@ export class FolderNode extends TreeNode {
             this.appendFolder(node);
             node.displayInTreeview(this.element.querySelector('[role="group"]'));
             this.expand(true);
+            this.getFramework().syncer.mkdir(node.getPath());
 
             // Get folder contents
             // console.log(item.fullPath);
@@ -503,7 +508,7 @@ export class FolderNode extends TreeNode {
                 this.getFramework().addEditor(node);
                 this.getFramework().setFocusTo(node.element);
             }
-            this.getFramework().syncer.upload(file, node.getPath());
+            this.getFramework().syncer.upload(node.getPath(), file);
         };
         this.appendFile(node);
         node.displayInTreeview(this.element.querySelector('[role="group"]'));
@@ -681,7 +686,7 @@ class EditorStack {
         for (let i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i] === item) {
                 // Read back (modified) content
-                this.nodes[i].fileNode.filecontent = this.nodes[i].editor.getValue();
+                this.nodes[i].fileNode.updateContent(this.nodes[i].editor.getValue());
 
                 this.nodes.splice(i, 1);
                 // Delete Codemirror element (in order to avoid resource leak)
@@ -719,6 +724,7 @@ class EditorStack {
             close.classList.add('close');
             close.innerHTML = '&#x2715';
             close.addEventListener('click', event => {
+                event.preventDefault();
                 event.stopPropagation();
                 this._delete(item);
                 close.parentElement.remove();
@@ -909,6 +915,7 @@ export class Framework {
         this.syncer = syncer;
         // build folder/file structure.
         /* this.syncer.dir(); Da fehlen die Dateien */
+        this.createPath('/'); // needed when no files come from syncer.
         this.syncer.list(jsonResult => {
             console.log('DISPLAY ROOTS');
             console.log(this.roots);
