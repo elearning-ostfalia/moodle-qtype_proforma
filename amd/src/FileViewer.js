@@ -299,9 +299,15 @@ export class FolderNode extends TreeNode {
             event.preventDefault();
         };
         this.handleDragEnter = () =>  {
+            if (this.getFramework().readOnly) {
+                return;
+            }
             this.element.querySelector('.name').classList.add('dragover');
         };
         this.handleDragLeave = () => {
+            if (this.getFramework().readOnly) {
+                return;
+            }
             this.element.querySelector('.name').classList.remove('dragover');
         };
 
@@ -309,6 +315,9 @@ export class FolderNode extends TreeNode {
             event.preventDefault();
             event.stopPropagation();
             this.getFramework().toggleContextmenu("hide");
+            if (this.getFramework().readOnly) {
+                return;
+            }
             this.element.querySelector('.name').classList.remove('dragover');
             const path = event.dataTransfer.getData('treeitem');
             if (path !== undefined && path.length > 0) {
@@ -597,7 +606,9 @@ export class RootNode extends FolderNode {
 }
 
 class EditorItem {
-    constructor(fileNode, textarea, tabDomNode) {
+    constructor(fileNode, textarea, tabDomNode, readOnly) {
+        console.log('Create Codemirror ' + readOnly);
+
         this.fileNode = fileNode;
         this.editor = CodeMirror.fromTextArea(textarea, {
             tabMode: "indent",
@@ -605,7 +616,7 @@ class EditorItem {
             matchBrackets: true,
             autoCloseBrackets: true,
             styleActiveLine: true,
-            readOnly: false,
+            readOnly: readOnly,
             extraKeys: {'Tab': function(){ this.editor.replaceSelection('    ' , 'end');}},
             lineNumbers: true
             //viewportMargin: Infinity
@@ -620,7 +631,7 @@ class EditorItem {
 
 class EditorStack {
     static maxEditors = 12;
-    constructor(donNodeEditor, donNodeTabs) {
+    constructor(donNodeEditor, donNodeTabs, framework) {
         this.editortextarea = donNodeEditor.querySelector('textarea');
         // Initialise readonly editor
         this.editor = CodeMirror.fromTextArea(this.editortextarea, {
@@ -645,6 +656,7 @@ class EditorStack {
         this.donNodeEditor = donNodeEditor;
         this.donNodeTabs = donNodeTabs;
         this.focus = undefined; // the tab that has got the focus
+        this.framework = framework;
     }
 
     _switchTo(item, index = undefined) {
@@ -711,12 +723,12 @@ class EditorStack {
             let tab = document.createElement('button');
 
             // Mode is known => display new text content
-            let item = new EditorItem(filenode, this.editortextarea, tab);
-            // this.activeNode = filenode;
+            let item = new EditorItem(filenode, this.editortextarea, tab, this.framework.readOnly);
             filenode.getContent(text => {
                 item.editor.setValue(text);
             });
             item.editor.setOption("mode", filenode.mode);
+            // item.editor.setOption("readOnly", this.readOnly);
             item.editor.refresh(); // for old version of Codemirror
 
             tab.classList.add('tab');
@@ -776,6 +788,7 @@ export class Framework {
         this.menuVisible = false;
         this.focus = undefined;
         this.editorstack = undefined;
+        this.readOnly = false;
     }
 
     buildFramework(domnode) {
@@ -833,10 +846,11 @@ export class Framework {
 
         this.mainDomNode = domnode;
         this.editorstack = new EditorStack(domnode.querySelector('.editor'),
-            domnode.querySelector('.tabs'));
+            domnode.querySelector('.tabs'), this);
     }
 
-    init(node, syncer = undefined) {
+    init(node, syncer, readOnly) {
+        this.readOnly = readOnly;
         const initSplit = resizer =>  {
             // from https://htmldom.dev/create-resizable-split-views/
             const before = resizer.previousElementSibling;
@@ -916,7 +930,7 @@ export class Framework {
         // build folder/file structure.
         /* this.syncer.dir(); Da fehlen die Dateien */
         this.createPath('/'); // needed when no files come from syncer.
-        this.syncer.list(jsonResult => {
+        this.syncer.list(() => {
             console.log('DISPLAY ROOTS');
             console.log(this.roots);
             for (let i = 0; i < this.roots.length; i++) {
@@ -992,6 +1006,9 @@ export class Framework {
     }
 
     createContextMenu(list) {
+        if (this.getFramework().readOnly) {
+            return;
+        }
         console.log('createContextMenu');
         // console.log(list);
         // let ul = this.mainDomNode.querySelector(".contextmenu .menu-options");

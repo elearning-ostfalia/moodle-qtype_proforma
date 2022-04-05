@@ -16,13 +16,14 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /* eslint-disable max-len */
+/* eslint-disable no-unused-vars */
+
 
 import Config from 'core/config';
 import { FileNode  } from "./FileViewer";
 
-export class MoodleSyncer {
-    // Fake response
-    static response = '{"path":[{"name":"Dateien","path":"/","icon":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/folder-24"}],"itemid":0,"list":[{"filename":".","filepath":"/Dateien/","fullname":"Dateien","size":null,"filesize":0,"sortorder":"0","author":null,"license":null,"datemodified":1648799808,"datecreated":1648799808,"isref":false,"icon":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/folder-24","type":"folder","thumbnail":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/folder-64","datemodified_f":"1. April 2022, 09:56","datemodified_f_s":"1.04.2022 09:56","datecreated_f":"1. April 2022, 09:56","datecreated_f_s":"1.04.2022 09:56"},{"filename":".","filepath":"/Dateienverz/","fullname":"Dateienverz","size":null,"filesize":0,"sortorder":"0","author":null,"license":null,"datemodified":1648800382,"datecreated":1648800382,"isref":false,"icon":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/folder-24","type":"folder","thumbnail":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/folder-64","datemodified_f":"1. April 2022, 10:06","datemodified_f_s":"1.04.2022 10:06","datecreated_f":"1. April 2022, 10:06","datecreated_f_s":"1.04.2022 10:06"},{"filename":".","filepath":"/hhh/","fullname":"hhh","size":null,"filesize":0,"sortorder":"0","author":null,"license":null,"datemodified":1648808962,"datecreated":1648808962,"isref":false,"icon":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/folder-24","type":"folder","thumbnail":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/folder-64","datemodified_f":"1. April 2022, 12:29","datemodified_f_s":"1.04.2022 12:29","datecreated_f":"1. April 2022, 12:29","datecreated_f_s":"1.04.2022 12:29"},{"filename":".","filepath":"/kkk/","fullname":"kkk","size":null,"filesize":0,"sortorder":"0","author":null,"license":null,"datemodified":1648809005,"datecreated":1648809005,"isref":false,"icon":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/folder-24","type":"folder","thumbnail":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/folder-64","datemodified_f":"1. April 2022, 12:30","datemodified_f_s":"1.04.2022 12:30","datecreated_f":"1. April 2022, 12:30","datecreated_f_s":"1.04.2022 12:30"},{"filename":"MyString.java","filepath":"/","fullname":"MyString.java","size":276,"filesize":"276 Bytes","sortorder":"0","author":null,"license":"allrightsreserved","datemodified":1648798737,"datecreated":1648798737,"isref":false,"mimetype":"Unformatierte Textdatei","type":"file","url":"http://10.235.1.41/moodle/draftfile.php/5/user/draft/0/MyString.java","icon":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/sourcecode-24","thumbnail":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/sourcecode-80","status":0,"size_f":"276 Bytes","license_f":"Alle Rechte vorbehalten","datemodified_f":"1. April 2022, 09:38","datemodified_f_s":"1.04.2022 09:38","datecreated_f":"1. April 2022, 09:38","datecreated_f_s":"1.04.2022 09:38"},{"filename":"palindrome.c","filepath":"/","fullname":"palindrome.c","size":1121,"filesize":"1.1KB","sortorder":"0","author":null,"license":"allrightsreserved","datemodified":1648798748,"datecreated":1648798748,"isref":false,"mimetype":"Unformatierte Textdatei","type":"file","url":"http://10.235.1.41/moodle/draftfile.php/5/user/draft/0/palindrome.c","icon":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/sourcecode-24","thumbnail":"http://10.235.1.41/moodle/theme/image.php/boost_campus/core/1648452664/f/sourcecode-80","status":0,"size_f":"1.1KB","license_f":"Alle Rechte vorbehalten","datemodified_f":"1. April 2022, 09:39","datemodified_f_s":"1.04.2022 09:39","datecreated_f":"1. April 2022, 09:39","datecreated_f_s":"1.04.2022 09:39"}],"filecount":2,"filesize":1397,"tree":{"children":[{"sortorder":"0","filepath":"/Dateien/","fullname":"Dateien","id":"624725f53d40e","children":[{"sortorder":"0","filepath":"/Dateien/ggg/","fullname":"ggg","id":"624725f53da94","children":[]},{"sortorder":"0","filepath":"/Dateien/kkk/","fullname":"kkk","id":"624725f53e0d8","children":[]},{"sortorder":"0","filepath":"/Dateien/Kverz/","fullname":"Kverz","id":"624725f53e6de","children":[]},{"sortorder":"0","filepath":"/Dateien/verz/","fullname":"verz","id":"624725f53ece9","children":[]},{"sortorder":"0","filepath":"/Dateien/verzeichnis/","fullname":"verzeichnis","id":"624725f53f30d","children":[]},{"sortorder":"0","filepath":"/Dateien/xxx/","fullname":"xxx","id":"624725f53f97c","children":[]}]},{"sortorder":"0","filepath":"/Dateienverz/","fullname":"Dateienverz","id":"624725f53ffa7","children":[]},{"sortorder":"0","filepath":"/hhh/","fullname":"hhh","id":"624725f5405cc","children":[]},{"sortorder":"0","filepath":"/kkk/","fullname":"kkk","id":"624725f540bbd","children":[]}]}}';
+/* Syncer base class */
+export class Syncer {
     static splitFullname(path) {
         const index = path.lastIndexOf('/', path.length-1);
         if (index < 0) {
@@ -41,6 +42,95 @@ export class MoodleSyncer {
     constructor(options) {
         this.options = options;
         console.log(this.options);
+    }
+    delete(path, callback) {
+        callback();
+    }
+    download(path, callback) {
+        console.log('DOWNLOAD');
+        console.log(this.options);
+        // let pathsplit = MoodleSyncer.splitFullname(path);
+        const contextid = this.options.contextid;
+        const addon = '/user/draft/' + this.options.itemid + path; // '/' + pathsplit[1];
+        const url = Config.wwwroot + '/draftfile.php/' + contextid + addon;
+        console.log(url);
+        fetch(url, { method: 'GET' })
+            .then( response => response.text() )
+            .then( text => {
+                console.log('download draftfile');
+                callback(text);
+            })
+            .catch( error => {
+                console.error('error:', error);
+                alert(error);
+            });
+
+        // download many files as zip archive
+        /*
+        let params = {};
+        let values = MoodleSyncer.splitFullname(path);
+        let selected = new Object();
+        selected.filepath = values[0];
+        selected.filename = values[1];
+        let selectedarray = [];
+        selectedarray.push(selected);
+        params['selected'] = JSON.stringify(selectedarray);
+        this._sendRequest('downloadselected', jsonResult => {
+            console.log(jsonResult);
+            callback(jsonResult);
+        }, params); */
+    }
+    renameFile(pathold, pathnew) {}
+    renameFolder(pathold, pathnew) {}
+    mkdir(path) {}
+    list(callback, framework) {
+        callback(framework);
+    }
+    update(filename, text) {}
+    newfile(filename) {}
+    upload(filename, file) {}
+}
+
+export class MoodleQuestionAttemptSyncer extends Syncer {
+    constructor(options) {
+        super(options);
+    }
+    list(callback, framework) {
+//        console.log('Start listing question attempt files');
+//        console.log(this.options['files']);
+        this.options['files'].forEach(path => {
+            let values = Syncer.splitFullname(path);
+            let folder = framework.createPath(values[0]);
+            folder.appendFile(new FileNode(values[1]));
+        });
+        callback();
+    }
+    download(path, callback) {
+        const addon = '/question/response_attachments/' +
+            this.options.usageid + '/' +
+            this.options.slot + '/' +
+            this.options.itemid + path;
+        const url = Config.wwwroot + '/pluginfile.php/' + this.options.contextid + addon;
+//        console.log(url);
+        fetch(url, { method: 'GET' })
+            .then( response => response.text() )
+            .then( text => {
+                console.log('download responsefile');
+                callback(text);
+            })
+            .catch( error => {
+                console.error('error:', error);
+                alert(error);
+            });
+    }
+}
+
+/* Class for synchronizing explorer with draft area */
+export class MoodleSyncer extends Syncer {
+    constructor(options) {
+        super(options);
+        // this.options = options;
+        // console.log(this.options);
     }
     _sendRequest(action, callback, options = undefined) {
         const url = Config.wwwroot + '/repository/draftfiles_ajax.php';
@@ -170,16 +260,16 @@ export class MoodleSyncer {
         console.log(params);
         this._sendRequest('mkdir', undefined, params);
     }
-    dir() {
+/*    dir() {
         let params = {};
         params['filepath'] = '/';
         this._sendRequest('dir', jsonResult => {
             console.log('dir fertig');
             console.log(jsonResult);
         }, params);
-    }
+    } */
     list(callback, framework) {
-        this.dir();
+        // this.dir();
         console.log('Start list');
         let params = {};
         params['source'] = '1';
@@ -211,7 +301,6 @@ export class MoodleSyncer {
                     this._sendRequest('list', jsonResultSub => {
                             this.handleListResponse(jsonResultSub);
                     }, params);
-
                 } else {
                     // console.log('Syncer: create file ' + item.filename);
                     let folder = framework.createPath(stripSlashes(item.filepath));
@@ -220,7 +309,7 @@ export class MoodleSyncer {
             });
             listcounter--;
             if (listcounter == 0) {
-                callback(json);
+                callback();
             }
         };
         listcounter++;
@@ -237,7 +326,6 @@ export class MoodleSyncer {
             // Files and folders
             this.handleListResponse(jsonResult);
         }, params);
-
     }
     update(filename, text) {
         this.delete(filename, () => {

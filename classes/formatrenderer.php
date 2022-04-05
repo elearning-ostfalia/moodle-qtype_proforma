@@ -437,8 +437,37 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
-        return $this->response_area_input($qa, $step, $options);
-        // return '';
+        // debugging('---');
+        $files = $qa->get_last_qt_files('attachments', $options->context->id);
+        $itemid = null;
+        $responsefiles = [];
+        foreach ($files as $file) {
+            // debugging('file: ' . $file->get_filepath() . $file->get_filename());
+            // var_dump($file);
+            $itemid = $file->get_itemid();
+            $responsefiles[] = $file->get_filepath() . $file->get_filename();
+        }
+
+        // debugging('itemid = ' . $itemid);
+        // debugging('context = ' . $options->context->id);
+        $clientid = uniqid();
+
+        $params = new stdClass();
+        $params->contextid = $options->context->id;
+        $params->itemid = $itemid;
+        $params->readonly = true;
+        $params->usageid = $qa->get_usage_id();
+        $params->slot = $qa->get_slot();
+        $params->files = $responsefiles;
+
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
+            array('fileexplorer_' . $clientid, $params));
+
+        return html_writer::tag('div', '', array('id' => 'fileexplorer_' . $clientid)) .
+            html_writer::empty_tag(
+                'input', array('type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
+                'value' => $itemid));
     }
 
     /**
@@ -460,6 +489,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $clientid = uniqid();
 
         $defaults = array(
+            'readonly' => false,
             'maxbytes' => -1,
             'areamaxbytes' => FILE_AREA_MAX_BYTES_UNLIMITED,
             'maxfiles' => -1,
@@ -482,22 +512,22 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
 
         $fs = get_file_storage();
         // initialise options, getting files in root path
-        $options = new stdClass();
-        // $options = file_get_drafarea_files($defaults['itemid'], '/');
-        $options->repo_id = $repo->id;
+        $params = new stdClass();
+        // $params = file_get_drafarea_files($defaults['itemid'], '/');
+        $params->repo_id = $repo->id;
         foreach ($defaults as $name=>$value) {
-            $options->$name = $value;
+            $params->$name = $value;
         }
         global $USER;
         $usercontext = context_user::instance($USER->id);
-        $options->contextid = $usercontext->id;
+        $params->contextid = $usercontext->id;
 
         // $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', true);
         // $options->filecount = count($files);
         // var_dump($options);
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
-            array('fileexplorer_' . $clientid, $options));
+            array('fileexplorer_' . $clientid, $params));
 
         return html_writer::tag('div', '', array('id' => 'fileexplorer_' . $clientid)) .
         html_writer::empty_tag(

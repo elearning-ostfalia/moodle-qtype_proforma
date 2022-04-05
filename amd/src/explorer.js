@@ -27,20 +27,25 @@
 /* eslint-disable no-unused-vars */
 
 import { Framework, RootNode } from "./FileViewer";
-import { MoodleSyncer } from "./MoodleSyncer";
+import {MoodleQuestionAttemptSyncer, MoodleSyncer} from "./MoodleSyncer";
 // import ProjectNode from "qtype_proforma/FileViewer";
 
 function _start(nodename, options) {
     console.log('start');
 
     const explorer = document.getElementById(nodename);
-    //    const explorer = document.getElementById('fileexplorer');
     let framework = new Framework();
     framework.buildFramework(explorer);
     // let submission = new RootNode('Submission', framework);
-    let syncer = new MoodleSyncer(options);
-    framework.init(explorer, syncer);
-
+    if (options['readonly']) {
+        console.log('create readonly framework');
+        let syncer = new MoodleQuestionAttemptSyncer(options);
+        framework.init(explorer, syncer, true);
+    } else {
+        console.log('create readwrite framework');
+        let syncer = new MoodleSyncer(options);
+        framework.init(explorer, syncer, false);
+    }
 
 /*
     Promise.all([

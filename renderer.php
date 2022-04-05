@@ -108,7 +108,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             // since the teacher could have changed it in the meantime!!
             // => try and figure out what renderer to use.
             list($step, $renderer) = $this->determine_renderer($qa, $step, $renderer);
-            $answer = $renderer->response_area_read_only($qa, $step, $options->context);
+            $answer = $renderer->response_area_read_only($qa, $step, $options);
         }
 
         // Show file upload area resp. uploaded files.
