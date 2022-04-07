@@ -483,11 +483,10 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         // $draftid = file_get_unused_draft_itemid();
         $itemid = $qa->prepare_response_files_draft_itemid(
             'attachments', $options->context->id);
-        $sql = 'select * from mdl_files where filearea="draft" and itemid=' . $itemid . ';';
-        debugging('---');
-        debugging($sql);
+        // $sql = 'select * from mdl_files where filearea="draft" and itemid=' . $itemid . ';';
+        // debugging('---');
+        // debugging($sql);
         $clientid = uniqid();
-
         $defaults = array(
             'readonly' => false,
             'maxbytes' => -1,
@@ -498,12 +497,9 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
             'client_id' => $clientid,
             'accepted_types' => '*',
             'return_types' => FILE_INTERNAL,
-//            'context'=>$PAGE->context,
         );
 
-        global $COURSE;
-        $context = $options->context; // context_course::instance($COURSE->id);
-
+        $context = $options->context;
         $repo = repository::get_instances(array('type' => 'upload', 'currentcontext' => $context));
         if (empty($repo)) {
             throw new moodle_exception('errornouploadrepo', 'moodle');
