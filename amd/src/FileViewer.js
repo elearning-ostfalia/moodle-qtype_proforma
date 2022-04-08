@@ -29,6 +29,7 @@
 
 // Use these imports for Moodle
 // -----------------------------
+
 import "./MoodleSyncer";
 
 import './codemirror-global';
@@ -220,14 +221,19 @@ export class FileNode extends TreeNode {
             // event.preventDefault();
         };
     }
-    getContent(callback) {
+    getContent() {
         if (this.filecontent.length == 0) {
-            this.getFramework().syncer.download(this.getPath(), result => {
+            const p1 = this.getFramework().syncer.download(this.getPath());
+            // console.log('Fileviewer promise result');
+            // console.log(p1);
+            p1.then(result => {
+                console.log('Downloaded text is: '+ result);
                 this.filecontent = result;
-                callback(result);
+                return result;
             });
+            return p1;
         } else {
-            callback(this.filecontent);
+            return Promise.resolve(this.filecontent);
         }
     }
     updateContent(newcontent) {
@@ -282,7 +288,7 @@ export class FolderNode extends TreeNode {
                 this.appendFile(node);
                 node.displayInTreeview(this.element.querySelector('[role="group"]'));
                 this.expand(true);
-                this.getFramework().syncer.newfile(filename);
+                this.getFramework().syncer.newfile(node.getPath());
             }
         };
         this.boundHandleLoadFile = event => {
@@ -724,12 +730,17 @@ class EditorStack {
 
             // Mode is known => display new text content
             let item = new EditorItem(filenode, this.editortextarea, tab, this.framework.readOnly);
-            filenode.getContent(text => {
-                item.editor.setValue(text);
-            });
-            item.editor.setOption("mode", filenode.mode);
-            // item.editor.setOption("readOnly", this.readOnly);
-            item.editor.refresh(); // for old version of Codemirror
+            filenode.getContent()
+                .then(text => {
+                    item.editor.setValue(text);
+                    item.editor.setOption("mode", filenode.mode);
+                    // item.editor.setOption("readOnly", this.readOnly);
+                    item.editor.refresh(); // for old version of Codemirror
+                })
+                .catch( error => {
+                    console.error('error:', error);
+                    alert(error);
+                });
 
             tab.classList.add('tab');
             let close = document.createElement('span');
@@ -776,6 +787,18 @@ class EditorStack {
             // text is cut off
             this.nodes[this.nodes.length-1].editor.refresh();
         }
+    }
+    save(callback) {
+        // Save all
+        // (we could save current if file is saved on switching)
+        for (let i = 0; i < this.nodes.length; i++) {
+            this.nodes[i].fileNode.updateContent(this.nodes[i].editor.getValue());
+        }
+        // TODO: Use Promises and wait for all.
+        setTimeout(() => {
+            console.log('timeout expired => call callback');
+            callback();
+        }, 5000);
     }
 }
 
@@ -930,15 +953,16 @@ export class Framework {
         // build folder/file structure.
         /* this.syncer.dir(); Da fehlen die Dateien */
         this.createPath('/'); // needed when no files come from syncer.
-        this.syncer.list(() => {
-            console.log('DISPLAY ROOTS');
-            console.log(this.roots);
-            for (let i = 0; i < this.roots.length; i++) {
-                let root = this.roots[i];
-                root.displayInTreeview(ul);
-                root.toggleExpand();
-            }
-        }, this);
+        this.syncer.list(this)
+            .then (() => {
+                console.log('DISPLAY ROOTS');
+                console.log(this.roots);
+                for (let i = 0; i < this.roots.length; i++) {
+                    let root = this.roots[i];
+                    root.displayInTreeview(ul);
+                    root.toggleExpand();
+                }
+            });
 
         // Hide context menu on every left click
         window.addEventListener("click", e => {
@@ -1006,7 +1030,7 @@ export class Framework {
     }
 
     createContextMenu(list) {
-        if (this.getFramework().readOnly) {
+        if (this.readOnly) {
             return;
         }
         console.log('createContextMenu');
@@ -1048,5 +1072,9 @@ export class Framework {
         } else {
             this.focus = undefined;
         }
+    }
+
+    save(callback) {
+        this.editorstack.save(callback);
     }
 }
