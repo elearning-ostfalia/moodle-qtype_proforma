@@ -40,42 +40,39 @@ export class Syncer {
         // return [path.substring(0, index + 1), path.substring(index + 1)];
     }
     constructor(options) {
+        if (new.target === Syncer) {
+            throw new TypeError("Cannot construct Syncer instances directly");
+        }
         this.options = options;
         console.log(this.options);
     }
-    delete(path, callback) {
-        callback();
+    delete(path) {
+        return Promise.resolve('fake implentation');
     }
     download(path) {
-        /*
-        console.log('DOWNLOAD');
-        console.log(this.options);
-        // let pathsplit = MoodleSyncer.splitFullname(path);
-        const contextid = this.options.contextid;
-        const addon = '/user/draft/' + this.options.itemid + path; // '/' + pathsplit[1];
-        const url = Config.wwwroot + '/draftfile.php/' + contextid + addon;
-        console.log(url);
-        fetch(url, { method: 'GET' })
-            .then( response => response.text() )
-            .then( text => {
-                console.log('download draftfile');
-                callback(text);
-            })
-            .catch( error => {
-                console.error('error:', error);
-                alert(error);
-            });
-*/
+        return Promise.resolve('fake implentation');
     }
-    renameFile(pathold, pathnew) {}
-    renameFolder(pathold, pathnew) {}
-    mkdir(path) {}
-    list(callback, framework) {
-        callback(framework);
+    renameFile(pathold, pathnew) {
+        return Promise.resolve('fake implentation');
     }
-    update(filename, text) {}
-    newfile(filename) {}
-    upload(filename, file) {}
+    renameFolder(pathold, pathnew) {
+        return Promise.resolve('fake implentation');
+    }
+    mkdir(path) {
+        return Promise.resolve('fake implentation');
+    }
+    list(framework) {
+        return Promise.resolve('fake implentation');
+    }
+    update(filename, text) {
+        return Promise.resolve('fake implentation');
+    }
+    newfile(filename) {
+        return Promise.resolve('fake implentation');
+    }
+    upload(filename, file) {
+        return Promise.resolve('fake implentation');
+    }
 }
 
 
@@ -83,7 +80,7 @@ export class MoodleQuestionAttemptSyncer extends Syncer {
     constructor(options) {
         super(options);
     }
-    list(callback, framework) {
+    list(framework) {
 //        console.log('Start listing question attempt files');
 //        console.log(this.options['files']);
         this.options['files'].forEach(path => {
@@ -91,25 +88,23 @@ export class MoodleQuestionAttemptSyncer extends Syncer {
             let folder = framework.createPath(values[0]);
             folder.appendFile(new FileNode(values[1]));
         });
-        callback();
+        // Dummy
+        return Promise.resolve();
     }
-    download(path, callback) {
+    download(path) {
         const addon = '/question/response_attachments/' +
             this.options.usageid + '/' +
             this.options.slot + '/' +
             this.options.itemid + path;
         const url = Config.wwwroot + '/pluginfile.php/' + this.options.contextid + addon;
 //        console.log(url);
-        fetch(url, { method: 'GET' })
+        const promise = fetch(url, { method: 'GET' })
             .then( response => response.text() )
-            .then( text => {
-                console.log('download responsefile');
-                callback(text);
-            })
             .catch( error => {
                 console.error('error:', error);
                 alert(error);
             });
+        return promise;
     }
 }
 
@@ -252,56 +247,36 @@ export class MoodleSyncer extends Syncer {
     } */
     list(framework) {
         console.log('Start list');
-        let params = {};
-        // params['source'] = '1';
-        // Counter for counting active list requests.
-        // Needed to detect finishing the last one in order
-        // to display resulting tree.
-        let listcounter = 0;
         function stripSlashes(path) {
             if (path.length > 1 && path.substring(path.length-1) == '/') { // Strip '/'
                 path = path.substring(0, path.length-1);
             }
             return path;
         }
-        this.handleListResponse = json => {
-            listcounter++;
-            console.log('handleListResponse: json');
-            return new Promise(resolve => {
-                json.list.forEach(item => {
-                    console.log('syncer List Response');
-                    if (item.filename == '.') {
-                        // Create Folder.
-                        let path = stripSlashes(item.filepath);
-                        console.log('Syncer: create folder ' + path);
-                        framework.createPath(path);
-                        let params = {};
-                        params['filepath'] = path;
-                        console.log('RECURSION FOR ' + path);
-                        const promise = this._sendRequest('list', params).
-                            then(jsonResultSub => {
-                                this.handleListResponse(jsonResultSub);
-                            });
-                        return resolve(promise);
-                    } else {
-                        console.log('Syncer: create file ' + item.filename);
-                        let folder = framework.createPath(stripSlashes(item.filepath));
-                        folder.appendFile(new FileNode(item.filename));
-                    }
-                });
-                listcounter--;
-                console.log('handleListResponse: counter ' + listcounter);
-                if (listcounter == 0) {
-                    console.log('handleListResponse: ENDE');
+        const listfolder = (path) => new Promise((resolve, reject) => {
+            let params = {};
+            params['filepath'] = path;
+            this._sendRequest('list', params)
+                .then (json => {
+                    json.list.forEach(item => {
+                        // console.log('syncer List Response');
+                        if (item.filename == '.') {
+                            // Create Folder.
+                            let path = stripSlashes(item.filepath);
+                            console.log('Syncer: create folder ' + path);
+                            framework.createPath(path);
+                            // console.log('** RECURSION FOR ' + path + ' => request');
+                            resolve(listfolder(path));
+                        } else {
+                            console.log('Syncer: create file ' + item.filename);
+                            let folder = framework.createPath(stripSlashes(item.filepath));
+                            folder.appendFile(new FileNode(item.filename));
+                        }
+                    });
                     resolve();
-                }
-            });
-        };
-        const promise = this._sendRequest('list', params)
-            .then (jsonResult => {
-                this.handleListResponse(jsonResult);
-            });
-        return promise;
+                });
+        });
+        return listfolder('/');
     }
     update(filename, text) {
         console.log('update file ' + filename);
@@ -370,8 +345,7 @@ export class MoodleSyncer extends Syncer {
             console.log('upload as new file with name ' + file.name);
             this.upload(filename, file, callback);
         });
-         */
-    }
+         */    }
     newfile(filename) {
         console.log('create new empty file ' + filename);
         let values = Syncer.splitFullname(filename);
