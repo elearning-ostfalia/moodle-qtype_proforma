@@ -187,7 +187,7 @@ export class FileNode extends TreeNode {
         this.mode = FileNode.getEditorModeFromFilename(this.name);
         this.handleDelete = event => {
             this.getFramework().handleClick(event);
-            this.getFramework().syncer.delete(this.getPath());
+            this.getFramework().syncer.deleteFileOrFolder(this.getPath());
             this.element.remove();
             this.parent.files = this.parent.files.filter(item => item !== this);
         };
@@ -238,7 +238,7 @@ export class FileNode extends TreeNode {
     }
     updateContent(newcontent) {
         this.filecontent = newcontent;
-        this.getFramework().syncer.update(this.getPath(), newcontent);
+        return this.getFramework().syncer.update(this.getPath(), newcontent);
     }
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
@@ -271,7 +271,7 @@ export class FolderNode extends TreeNode {
         this.folders = []; // Empty list of folders.
         this.handleDelete = event => {
             this.getFramework().handleClick(event);
-            this.getFramework().syncer.delete(this.getPath() + '/.');
+            this.getFramework().syncer.deleteFileOrFolder(this.getPath() + '/.');
             this.element.remove();
             this.parent.folders = this.parent.folders.filter(item => item !== this);
             // console.log(RootNode.projects);
@@ -701,6 +701,7 @@ class EditorStack {
     }
 
     _delete(item) {
+        console.log('** Delete item from editor');
         for (let i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i] === item) {
                 // Read back (modified) content
@@ -788,17 +789,33 @@ class EditorStack {
             this.nodes[this.nodes.length-1].editor.refresh();
         }
     }
-    save(callback) {
+    save() {
         // Save all
         // (we could save current if file is saved on switching)
+
+        console.log('currently open editors ' + this.nodes.length.toString());
+        console.timeStamp('save');
+        console.time('save');
+
+        let promises = [];
         for (let i = 0; i < this.nodes.length; i++) {
-            this.nodes[i].fileNode.updateContent(this.nodes[i].editor.getValue());
+            console.log('add promise to list ' + i.toString());
+            promises.push(this.nodes[i].fileNode.updateContent(this.nodes[i].editor.getValue()));
         }
-        // TODO: Use Promises and wait for all.
-        setTimeout(() => {
-            console.log('timeout expired => call callback');
-            callback();
-        }, 5000);
+        return Promise.all(promises).
+            then(() => {
+                console.log('all files saved');
+                console.timeStamp('save');
+                console.timeEnd('save');
+                // return true;
+                // alert('look');
+            })
+            .catch( error => {
+                console.timeStamp('save');
+                console.timeEnd('save');
+                console.error('error:', error);
+                alert(error);
+            });
     }
 }
 
@@ -806,11 +823,11 @@ export class Framework {
     constructor() {
         this.roots = []; // all root nodes
         this.syncer = undefined;
+        this.editorstack = undefined;
         this.mainDomNode = undefined;
         this.menu = undefined;
         this.menuVisible = false;
         this.focus = undefined;
-        this.editorstack = undefined;
         this.readOnly = false;
     }
 
@@ -1074,7 +1091,11 @@ export class Framework {
         }
     }
 
-    save(callback) {
-        this.editorstack.save(callback);
+    save() {
+        console.log(this);
+        console.log(this.editorstack);
+        return this.editorstack.save();
+        // alert('hallo');
+        // setTimeout(() => { return p1; }, 60000);
     }
 }

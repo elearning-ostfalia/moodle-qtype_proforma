@@ -46,7 +46,7 @@ export class Syncer {
         this.options = options;
         console.log(this.options);
     }
-    delete(path) {
+    deleteFileOrFolder(path) {
         return Promise.resolve('fake implentation');
     }
     download(path) {
@@ -70,7 +70,7 @@ export class Syncer {
     newfile(filename) {
         return Promise.resolve('fake implentation');
     }
-    upload(filename, file) {
+    upload(filename, file, overwrite) {
         return Promise.resolve('fake implentation');
     }
 }
@@ -126,7 +126,8 @@ export class MoodleSyncer extends Syncer {
         }
         console.log('action ' + action);
         console.log(params);
-        const promise = fetch(
+        // const promise =
+        return fetch(
             url + '?action=' + action + '&' + window.build_querystring(params),
             {
                 method: 'POST',
@@ -137,7 +138,7 @@ export class MoodleSyncer extends Syncer {
             .then( json => {
                 console.log('got response for requested action ' + action);
                 if (json.error) {
-                    console.error('error:', json.error);
+                    console.error(action + ' error:', json.error);
                     throw new Error(json.error);
 //                    alert(json.error);
                 }
@@ -150,14 +151,14 @@ export class MoodleSyncer extends Syncer {
                 return json;
             })
             .catch( error => {
-                console.error('error:', error);
+                console.error('error on ' + action + ':', error);
                 alert(error);
             } );
 
-        return promise;
+        // return promise;
     }
 
-    delete(path) {
+    deleteFileOrFolder(path) {
         console.log('delete ' + path);
         let params = {};
         let values = MoodleSyncer.splitFullname(path);
@@ -280,72 +281,13 @@ export class MoodleSyncer extends Syncer {
     }
     update(filename, text) {
         console.log('update file ' + filename);
-        const tmp_filename = "file" + Math.random().toString(16).slice(2) + '.txt';
-        console.log('create tmp file ' + tmp_filename);
-        const file = new File([text], tmp_filename, {
+        // const tmp_filename = "/file" + Math.random().toString(16).slice(2) + '.txt';
+        // console.log('create tmp file ' + tmp_filename);
+        const file = new File([text], filename, {
             type: "text/plain"
         });
-        this.upload(tmp_filename, file)
-            .then(() => {
-                // overwrite existing file
-                let values = MoodleSyncer.splitFullname(filename);
-                const url = Config.wwwroot + '/repository/repository_ajax.php';
-                const action = 'overwrite';
-
-                let formData = new FormData();
-                formData.append('sesskey', Config.sesskey);
-                formData.append('repo_upload_file', file);
-                formData.append('filepath', '/');
-                formData.append('client_id', this.options['client_id']);
-                formData.append('title', file.name);
-                formData.append('savepath', '/');
-                formData.append('repo_id', this.options['repo_id']);
-                formData.append('itemid', this.options['itemid']);
-                formData.append('existingfilepath', values[0]);
-                formData.append('existingfilename', values[1]);
-                // user added file which needs to replace the existing file
-                formData.append('newfilepath', '/');
-                formData.append('newfilename', tmp_filename);
-
-                console.log(formData);
-                console.log('action ' + action);
-                return fetch(
-                    url + '?action=' + action, //  + '&' + window.build_querystring(params),
-                    {
-                        method: 'POST',
-                        body: formData
-                    }
-                );
-            })
-            .then( response => response.json() )
-            .then( json => {
-                // console.log('got response for action ' + action);
-                if (json.error) {
-                    throw new Error(json.error);
-                }
-                console.log(json);
-                return json;
-            })
-            .catch( error => {
-                console.error('error:', error);
-                alert(error);
-            });
-
-        /*
-        // Todo: use Promises
-        // return new Promise((resolve, reject) => {
-        // });
-        this.delete(filename, () => {
-            console.log(filename + ' is deleted, upload new version');
-            // upload when file is deleted (otherwise nameclash)
-            let values = MoodleSyncer.splitFullname(filename);
-            const file = new File([text], values[1], {
-                type: "text/plain"
-            });
-            console.log('upload as new file with name ' + file.name);
-            this.upload(filename, file, callback);
-        });
-         */    }
+        return this.upload(filename, file, true);
+    }
     newfile(filename) {
         console.log('create new empty file ' + filename);
         let values = Syncer.splitFullname(filename);
@@ -354,13 +296,13 @@ export class MoodleSyncer extends Syncer {
         });
         return this.upload(filename, file);
     }
-    upload(filename, file) {
+    upload(filename, file, overwrite = false) {
         const url = Config.wwwroot + '/repository/repository_ajax.php';
         const action = 'upload';
         console.log('upload ' + file.name + ' as ' + filename);
 
-        let values = MoodleSyncer.splitFullname(filename);
-        console.log(values[0]);
+        // let values = MoodleSyncer.splitFullname(filename);
+        // console.log(values[0]);
 
         let formData = new FormData();
         formData.append('sesskey', Config.sesskey);
@@ -368,10 +310,11 @@ export class MoodleSyncer extends Syncer {
         formData.append('filepath', '/');
         formData.append('client_id', this.options['client_id']);
         formData.append('title', file.name);
+        formData.append('overwrite', overwrite);
         formData.append('savepath', '/');
         formData.append('repo_id', this.options['repo_id']);
         formData.append('itemid', this.options['itemid']);
-        console.log(formData);
+        // console.log(formData);
         const promise = fetch(
             url + '?action=' + action, //  + '&' + window.build_querystring(params),
             {
@@ -381,15 +324,22 @@ export class MoodleSyncer extends Syncer {
         )
             .then( response => response.json() )
             .then( json => {
-                console.log(action);
+                // console.log(action);
                 if (json.error) {
                     throw new Error(json.error);
                 }
                 console.log(json);
-                return this.renameFile('/' + file.name, filename);
+                let originalFilename = file.name;
+                if (originalFilename.substr(0,1) != '/') {
+                    originalFilename = '/' + originalFilename;
+                }
+                if (originalFilename != filename) {
+                    return this.renameFile(originalFilename, filename);
+                }
+                return json;
             })
             .catch( error => {
-                console.error('error:', error);
+                console.error('upload error:', error);
                 alert(error);
             });
         return promise;

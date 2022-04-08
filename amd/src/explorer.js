@@ -26,14 +26,14 @@
 
 /* eslint-disable no-unused-vars */
 
-import { Framework, RootNode } from "./FileViewer";
-import {MoodleQuestionAttemptSyncer, MoodleSyncer} from "./MoodleSyncer";
-// import ProjectNode from "qtype_proforma/FileViewer";
+import { Framework } from "./FileViewer";
+import { MoodleQuestionAttemptSyncer, MoodleSyncer } from "./MoodleSyncer";
 
 function _start(nodename, options) {
-    console.log('start');
+    console.log('start for ' + nodename);
 
     const explorer = document.getElementById(nodename);
+
     let framework = new Framework();
     framework.buildFramework(explorer);
     // let submission = new RootNode('Submission', framework);
@@ -46,6 +46,53 @@ function _start(nodename, options) {
         let syncer = new MoodleSyncer(options);
         framework.init(explorer, syncer, false);
     }
+
+    // Change submit function: Save before submit!
+    // VORSICHT: DAS MUSS GETESTET WERDEN MIT 2 oder mehr Frameworks!!
+    console.log('change submit function');
+    let form = explorer.closest('form');
+    console.log(form);
+    let originalSubmit = form.submit;
+    console.log(originalSubmit);
+    try {
+        let wrappedSubmit = (event) => {
+            event.preventDefault();
+            console.log('save before submit');
+            // alert('save before submit');
+            framework.save()
+                .then(() => {
+                    console.log('do submit');
+                    // alert('look');
+                    form.onsubmit = originalSubmit;
+                    form.submit();
+                    form.onsubmit = wrappedSubmit;
+                });
+        };
+        console.log('change submit');
+        form.onsubmit = wrappedSubmit;
+    } catch(e) {
+        console.error(e);
+        alert(e);
+    }
+
+    /*
+    let submitbutton = explorer.parentNode.parentNode.parentNode.querySelector('.submit');
+    if (submitbutton === undefined) {
+        alert('cannot find submit button');
+    } else {
+        // Add hook for saving files before submission
+        //
+        // let new_element = old_element.cloneNode(true);
+        // submitbutton.parentNode.replaceChild(new_element, submitbutton);
+        submitbutton.addEventListener('click', event => {
+            // event.preventDefault();
+            // event.stopPropagation();
+            // alert('CLICKED');
+            console.log('CLICKED');
+            framework.save();
+        });
+    }*/
+
 
 /*
     Promise.all([
