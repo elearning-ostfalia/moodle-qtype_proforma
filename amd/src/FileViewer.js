@@ -227,7 +227,7 @@ export class FileNode extends TreeNode {
             // console.log('Fileviewer promise result');
             // console.log(p1);
             p1.then(result => {
-                console.log('Downloaded text is: '+ result);
+                // console.log('Downloaded text is: '+ result);
                 this.filecontent = result;
                 return result;
             });

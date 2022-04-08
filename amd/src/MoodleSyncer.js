@@ -287,7 +287,7 @@ export class MoodleSyncer extends Syncer {
         });
         this.upload(tmp_filename, file)
             .then(() => {
-                // existing file
+                // overwrite existing file
                 let values = MoodleSyncer.splitFullname(filename);
                 const url = Config.wwwroot + '/repository/repository_ajax.php';
                 const action = 'overwrite';
@@ -309,26 +309,26 @@ export class MoodleSyncer extends Syncer {
 
                 console.log(formData);
                 console.log('action ' + action);
-                // console.log(params);
-
-                fetch(
+                return fetch(
                     url + '?action=' + action, //  + '&' + window.build_querystring(params),
                     {
                         method: 'POST',
                         body: formData
                     }
-                )
-                    // .then( response => console.log(response))
-                    .then( response => response.json() )
-                    .then( json => {
-                        console.log('got response for action ' + action);
-                        if (json.error) {
-                            throw new Error(json.error);
-                        }
-                        console.log(json);
-                        return json;
-                    })
-                    .catch( error => console.error('error:', error) );
+                );
+            })
+            .then( response => response.json() )
+            .then( json => {
+                // console.log('got response for action ' + action);
+                if (json.error) {
+                    throw new Error(json.error);
+                }
+                console.log(json);
+                return json;
+            })
+            .catch( error => {
+                console.error('error:', error);
+                alert(error);
             });
 
         /*
