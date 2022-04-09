@@ -52,28 +52,22 @@ function _start(nodename, options) {
     console.log('change submit function');
     let form = explorer.closest('form');
     console.log(form);
-    let originalSubmit = form.submit;
-    console.log(originalSubmit);
-    try {
-        let wrappedSubmit = (event) => {
-            event.preventDefault();
-            console.log('save before submit');
-            // alert('save before submit');
-            framework.save()
-                .then(() => {
-                    console.log('do submit');
-                    // alert('look');
-                    form.onsubmit = originalSubmit;
-                    form.submit();
-                    form.onsubmit = wrappedSubmit;
-                });
-        };
-        console.log('change submit');
-        form.onsubmit = wrappedSubmit;
-    } catch(e) {
-        console.error(e);
-        alert(e);
-    }
+    let saveSubmit = (event) => {
+        console.log('save before submit');
+        // event.preventDefault();
+        framework.save(); // synchronous action!
+/*
+            .then(() => {
+                console.log('do submit');
+                // alert('jetzt sollte die Bewertung erfolgen. Aber das klappt nicht.');
+                let button = form.querySelector('input[type="submit"]');
+                // see qengine.js!!!!
+                // Da ist eine Sperre gegen mehrfaches submitten :-(
+                button.disabled = false;
+                form.submit();
+            });*/
+    };
+    form.onsubmit = saveSubmit;
 
     /*
     let submitbutton = explorer.parentNode.parentNode.parentNode.querySelector('.submit');

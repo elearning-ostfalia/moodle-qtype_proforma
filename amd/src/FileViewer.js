@@ -236,9 +236,9 @@ export class FileNode extends TreeNode {
             return Promise.resolve(this.filecontent);
         }
     }
-    updateContent(newcontent) {
+    updateContent(newcontent, async) {
         this.filecontent = newcontent;
-        return this.getFramework().syncer.update(this.getPath(), newcontent);
+        return this.getFramework().syncer.update(this.getPath(), newcontent, async);
     }
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
@@ -792,11 +792,16 @@ class EditorStack {
     save() {
         // Save all
         // (we could save current if file is saved on switching)
-
+        // this.issaved = false;
         console.log('currently open editors ' + this.nodes.length.toString());
         console.timeStamp('save');
         console.time('save');
 
+        for (let i = 0; i < this.nodes.length; i++) {
+            this.nodes[i].fileNode.updateContent(this.nodes[i].editor.getValue(), false);
+        }
+
+        /*
         let promises = [];
         for (let i = 0; i < this.nodes.length; i++) {
             console.log('add promise to list ' + i.toString());
@@ -807,7 +812,9 @@ class EditorStack {
                 console.log('all files saved');
                 console.timeStamp('save');
                 console.timeEnd('save');
-                // return true;
+                this.issaved = true;
+
+            // return true;
                 // alert('look');
             })
             .catch( error => {
@@ -815,9 +822,24 @@ class EditorStack {
                 console.timeEnd('save');
                 console.error('error:', error);
                 alert(error);
-            });
+            });*/
+        console.log('all files saved');
+        console.timeStamp('save');
+        console.timeEnd('save');
     }
+/*    needssaving() {
+        for (let i = 0; i < this.nodes.length; i++) {
+            if (this.nodes[i].fileNode.filecontent != this.nodes[i].editor.getValue()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    issaved() {
+        return this.issaved;
+    }*/
 }
+
 
 export class Framework {
     constructor() {
@@ -1091,6 +1113,12 @@ export class Framework {
         }
     }
 
+/*    needssaving() {
+        return this.editorstack.needssaving();
+    }
+    issaved() {
+        return this.editorstack.issaved();
+    } */
     save() {
         console.log(this);
         console.log(this.editorstack);

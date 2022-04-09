@@ -279,14 +279,14 @@ export class MoodleSyncer extends Syncer {
         });
         return listfolder('/');
     }
-    update(filename, text) {
+    update(filename, text, async = false) {
         console.log('update file ' + filename);
         // const tmp_filename = "/file" + Math.random().toString(16).slice(2) + '.txt';
         // console.log('create tmp file ' + tmp_filename);
         const file = new File([text], filename, {
             type: "text/plain"
         });
-        return this.upload(filename, file, true);
+        return this.upload(filename, file, true, async);
     }
     newfile(filename) {
         console.log('create new empty file ' + filename);
@@ -296,7 +296,7 @@ export class MoodleSyncer extends Syncer {
         });
         return this.upload(filename, file);
     }
-    upload(filename, file, overwrite = false) {
+    upload(filename, file, overwrite = false, async = true) {
         const url = Config.wwwroot + '/repository/repository_ajax.php';
         const action = 'upload';
         console.log('upload ' + file.name + ' as ' + filename);
@@ -315,34 +315,46 @@ export class MoodleSyncer extends Syncer {
         formData.append('repo_id', this.options['repo_id']);
         formData.append('itemid', this.options['itemid']);
         // console.log(formData);
-        const promise = fetch(
-            url + '?action=' + action, //  + '&' + window.build_querystring(params),
-            {
-                method: 'POST',
-                body: formData // file
+        if (async) {
+            const promise = fetch(
+                url + '?action=' + action, //  + '&' + window.build_querystring(params),
+                {
+                    method: 'POST',
+                    body: formData // file
+                }
+            )
+                .then( response => response.json() )
+                .then( json => {
+                    // console.log(action);
+                    if (json.error) {
+                        throw new Error(json.error);
+                    }
+                    console.log(json);
+                    let originalFilename = file.name;
+                    if (originalFilename.substr(0,1) != '/') {
+                        originalFilename = '/' + originalFilename;
+                    }
+                    if (originalFilename != filename) {
+                        return this.renameFile(originalFilename, filename);
+                    }
+                    return json;
+                })
+                .catch( error => {
+                    console.error('upload error:', error);
+                    alert(error);
+                });
+            return promise;
+        } else {
+            // synchronous
+            console.log('SYNCHRONOUSE UPDATE');
+            let request = new XMLHttpRequest();
+            request.open('POST', url + '?action=' + action, false);
+            request.send(formData);
+            if (request.status === 200) {
+                console.log(request.responseText);
             }
-        )
-            .then( response => response.json() )
-            .then( json => {
-                // console.log(action);
-                if (json.error) {
-                    throw new Error(json.error);
-                }
-                console.log(json);
-                let originalFilename = file.name;
-                if (originalFilename.substr(0,1) != '/') {
-                    originalFilename = '/' + originalFilename;
-                }
-                if (originalFilename != filename) {
-                    return this.renameFile(originalFilename, filename);
-                }
-                return json;
-            })
-            .catch( error => {
-                console.error('upload error:', error);
-                alert(error);
-            });
-        return promise;
+        }
+
     }
 }
 
