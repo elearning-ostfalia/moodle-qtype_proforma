@@ -138,8 +138,9 @@ Feature: EDIT PROFORMA
     Then I should see "edited question name"
 
     # check for download link
-    When I choose "Preview" action for "edited question name" in the question bank
-    And I switch to "questionpreview" window
+    # When I choose "Preview" action for "edited question name" in the question bank
+    When I am on the "edited question name" "core_question > preview" page
+    # And I switch to "questionpreview" window
     Then I should see "questiondownload.txt"
     Then I should see "lib.txt"
     Then I should see "instruction.txt"

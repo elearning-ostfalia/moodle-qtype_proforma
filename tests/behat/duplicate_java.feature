@@ -41,13 +41,12 @@ Feature: DUPLICATE JAVA
     And  I set the following fields to these values:
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
-      | Max. upload size         | 2MB                            |
+      | Max. upload size         | 2097152                            |
 
     And I press "id_submitbutton"
     Then I should see "proforma-java"
 
-    When I am on the "proforma-java" "core_question > duplicate" page
-    #When I choose "Duplicate" action for "proforma-java" in the question bank
+    When I choose "Duplicate" action for "proforma-java" in the question bank
     Then the following fields match these values:
       | Question name            | proforma-java (copy)            |
       | Default mark             | 3                              |
@@ -63,7 +62,7 @@ Feature: DUPLICATE JAVA
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
-      | Max. upload size         | 2MB                            |
+      | Max. upload size         | 2097152                            |
     And I should see "1" elements in "Model solution files" filemanager
     # compile
     And the "compile" checkbox is "checked"
@@ -121,7 +120,7 @@ Feature: DUPLICATE JAVA
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
-      | Max. upload size         | 2MB                            |
+    And the field "Max. upload size" matches value "2097152"
     And I should see "1" elements in "Model solution files" filemanager
 
     # compile
@@ -164,8 +163,8 @@ Feature: DUPLICATE JAVA
 ##########################################################################
   Scenario: Duplicate a Java question without editing
 ##########################################################################
-    When I am on the "proforma-java" "core_question > Duplicate" page logged in as teacher1
-    #When I choose "Duplicate" action for "proforma-java" in the question bank
+    When I am on the "Course 1" "core_question > course question bank" page
+    And I choose "Duplicate" action for "proforma-java" in the question bank
     Then the following fields match these values:
       | Question name            | proforma-java (copy)            |
       | Default mark             | 3                              |
@@ -228,8 +227,8 @@ Feature: DUPLICATE JAVA
     And I should see "proforma-java (copy)"
 
     # open copied question and check values
-    When I am on the "proforma-java" "core_question > edit" page
-#    When I choose "Edit question" action for "proforma-java (copy)" in the question bank
+#    When I am on the "proforma-java" "core_question > edit" page
+    When I choose "Edit question" action for "proforma-java (copy)" in the question bank
     Then the following fields match these values:
       | Question name            | proforma-java (copy)            |
       | Default mark             | 3                              |

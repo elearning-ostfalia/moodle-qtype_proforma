@@ -146,6 +146,31 @@ class behat_proforma extends behat_base {
     }
 
     /**
+     * Checks, the field matches a given regular expression value.
+     *
+     * @Then /^the field "(?P<field_string>(?:[^"]|\\")*)" matches regexp "(?P<field_value_string>(?:[^"]|\\")*)"$/
+     * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $field
+     * @param string $value
+     * @return void
+     */
+    /* WORKS BUT IS UNUSED SO FAR
+    public function the_field_matches_regexp($field, $value) {
+        // Get the field.
+        $formfield = behat_field_manager::get_form_field_from_label($field, $this);
+
+        // Checks if the provided regular expression matches the current field value.
+        $fieldvalue = $formfield->get_value();
+        $match = preg_match($value, $fieldvalue);
+        if ($match == 0) {
+            throw new ExpectationException(
+                'The \'' . $field . '\' value is \'' . $fieldvalue . '\', regular expression \'' . $value . '\' expected' ,
+                $this->getSession()
+            );
+        }
+    }*/
+
+    /**
      * Checks the value of a multiline field.
      *
      * @Then /^the field "(?P<label_string>(?:[^"]|\\")*)" matches multiline$/

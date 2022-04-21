@@ -159,7 +159,6 @@ Feature: BACKUP AND RESTORE
       | General feedback         | <p>You must not use a library function.</p>        |
       | Response format          | File picker                         |
       | Max. number of uploaded files          | 3                         |
-      | Max. upload size          | 10KB                         |
       | Accepted file types          | .java, .jar                         |
       | Syntax highlighting      | Python                         |
 
@@ -170,6 +169,7 @@ Feature: BACKUP AND RESTORE
 #      | Response template        | multiline              |
       | UUID                     | UUID 2                     |
       | ProFormA Version         | 2.0                        |
+    And the field "Max. upload size" matches value "10240"
     And the field "testweight[0]" matches value "2"
     And the field "testweight[1]" matches value "3"
     And the field with name "testtitle[0]" matches value "TEST 1"
@@ -193,8 +193,9 @@ Feature: BACKUP AND RESTORE
     And I press "Cancel"
 
     # check for download link in "proforma-003"
-    When I choose "Preview" action for "proforma-001" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "proforma-001" "core_question > preview" page
+    # When I choose "Preview" action for "proforma-001" in the question bank
+    # And I switch to "questionpreview" window
     Then I should see "lib.txt"
     Then I should see "instruction.txt"
     And following "instruction.txt" should download file with between "17" and "20" bytes
@@ -202,8 +203,9 @@ Feature: BACKUP AND RESTORE
     And I switch to the main window
 
     # check for download link in "proforma-003"
-    When I choose "Preview" action for "proforma-003" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "proforma-003" "core_question > preview" page
+#    When I choose "Preview" action for "proforma-003" in the question bank
+#    And I switch to "questionpreview" window
     Then I should see "lib.txt"
     Then I should see "instruction.txt"
     And following "instruction.txt" should download file with between "17" and "20" bytes

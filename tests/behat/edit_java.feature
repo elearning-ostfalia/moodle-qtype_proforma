@@ -260,7 +260,6 @@ Feature: EDIT JAVA
 
 
     # check for download link
-    And I pause
     When I am on the "updated proforma-java" "core_question > preview" page
     # When I choose "Preview" action for "updated proforma-java" in the question bank
     # And I switch to "questionpreview" window
