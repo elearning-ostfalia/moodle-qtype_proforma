@@ -21,15 +21,12 @@ Feature: EDIT JAVA
     And the following "questions" exist:
       | questioncategory | qtype | name      | template         |
       | Test questions   | proforma | proforma-java | java_2junit           |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
 
 ##########################################################################
   @javascript
   Scenario: Check precondition for all successive scenarios
 ##########################################################################
-    When I choose "Edit question" action for "proforma-java" in the question bank
+    When I am on the "proforma-java" "core_question > edit" page logged in as teacher1
     # assert(expected old values)
     Then the following fields match these values:
       | Question name            | proforma-java           |
@@ -50,7 +47,7 @@ Feature: EDIT JAVA
     And the field "Initially collapse/expand" matches value "collapse"
     # 'Show messages in editor'
     And the "inlinemessages" checkbox is "1"
-    
+
     # compile
     And the "compile" checkbox is "checked"
     And the field "compileweight" matches value "2"
@@ -92,8 +89,7 @@ Feature: EDIT JAVA
     Then I should see "proforma-java"
 
     # check for download link
-    When I choose "Preview" action for "proforma-java" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "proforma-java" "core_question > preview" page
     #Then I should see "lib.txt"
     #Then I should see "instruction.txt"
     Then I should see "template.txt"
@@ -107,7 +103,7 @@ Feature: EDIT JAVA
   @javascript
   Scenario: Edit a ProFormA question (uncheck/check checkstyle and compile)
 ##########################################################################
-    When I choose "Edit question" action for "proforma-java" in the question bank
+    When I am on the "proforma-java" "core_question > edit" page logged in as teacher1
     # uncheck compile and checkstyle
     And I uncheck the "compile" checkbox
     And I uncheck the "checkstyle" checkbox
@@ -161,7 +157,7 @@ Feature: EDIT JAVA
   @javascript @_file_upload
   Scenario: Edit a ProFormA question (simply edit all values)
 ##########################################################################
-    When I choose "Edit question" action for "proforma-java" in the question bank
+    When I am on the "proforma-java" "core_question > edit" page logged in as teacher1
     # change all values that can be changed (keep editor set)
     And  I set the following fields to these values:
       | Question name            | updated proforma-java|
@@ -232,7 +228,7 @@ Feature: EDIT JAVA
     # feedback options
     And the field "Initially collapse/expand" matches value "expand"
     # 'Show messages in editor'
-    And the "inlinemessages" checkbox is "0"      
+    And the "inlinemessages" checkbox is "0"
   # compile
     And the "compile" checkbox is "checked"
     And the field "compileweight" matches value "2.5"
@@ -262,9 +258,12 @@ Feature: EDIT JAVA
     And I press "id_submitbutton"
     Then I should see "updated proforma-java"
 
+
     # check for download link
-    When I choose "Preview" action for "updated proforma-java" in the question bank
-    And I switch to "questionpreview" window
+    And I pause
+    When I am on the "updated proforma-java" "core_question > preview" page
+    # When I choose "Preview" action for "updated proforma-java" in the question bank
+    # And I switch to "questionpreview" window
     #Then I should see "questiondownload.txt"
     #Then I should see "lib.txt"
     #Then I should see "instruction.txt"
@@ -281,7 +280,8 @@ Feature: EDIT JAVA
 ##########################################################################
   Scenario: Edit a ProFormA question (remove and add Junit)
 ##########################################################################
-    When I choose "Edit question" action for "proforma-java" in the question bank
+    When I am on the "proforma-java" "core_question > edit" page logged in as teacher1
+    # When I choose "Edit question" action for "proforma-java" in the question bank
 
     # remove JUnit 2 data by deleting content
     And I set the field "testtitle[1]" to ""

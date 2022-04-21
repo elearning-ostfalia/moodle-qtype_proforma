@@ -23,14 +23,14 @@ Feature: DUPLICATE JAVA
       | Test questions   | proforma | proforma-java | java_2junit           |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+
 
 ##########################################################################
   @javascript @_file_upload
   Scenario: Duplicate a Java question with use of filepicker
 ##########################################################################
     # at first we need to create a filepicker question
-    When I choose "Edit question" action for "proforma-java" in the question bank
+    When I am on the "proforma-java" "core_question > edit" page logged in as teacher1
     And I set the field "Response format" to "filepicker"
     # model solution converted to file
     And I should see "1" elements in "Model solution files" filemanager
@@ -46,7 +46,8 @@ Feature: DUPLICATE JAVA
     And I press "id_submitbutton"
     Then I should see "proforma-java"
 
-    When I choose "Duplicate" action for "proforma-java" in the question bank
+    When I am on the "proforma-java" "core_question > duplicate" page
+    #When I choose "Duplicate" action for "proforma-java" in the question bank
     Then the following fields match these values:
       | Question name            | proforma-java (copy)            |
       | Default mark             | 3                              |
@@ -163,7 +164,8 @@ Feature: DUPLICATE JAVA
 ##########################################################################
   Scenario: Duplicate a Java question without editing
 ##########################################################################
-    When I choose "Duplicate" action for "proforma-java" in the question bank
+    When I am on the "proforma-java" "core_question > Duplicate" page logged in as teacher1
+    #When I choose "Duplicate" action for "proforma-java" in the question bank
     Then the following fields match these values:
       | Question name            | proforma-java (copy)            |
       | Default mark             | 3                              |
@@ -226,7 +228,8 @@ Feature: DUPLICATE JAVA
     And I should see "proforma-java (copy)"
 
     # open copied question and check values
-    When I choose "Edit question" action for "proforma-java (copy)" in the question bank
+    When I am on the "proforma-java" "core_question > edit" page
+#    When I choose "Edit question" action for "proforma-java (copy)" in the question bank
     Then the following fields match these values:
       | Question name            | proforma-java (copy)            |
       | Default mark             | 3                              |

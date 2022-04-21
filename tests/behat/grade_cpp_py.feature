@@ -53,8 +53,10 @@ Feature: GRADE C/C++/Python
 
     And I press "id_submitbutton"
     Then I should see "C question"
-    When I choose "Preview" action for "C question" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "C question" "core_question > preview" page logged in as teacher1
+    And I expand all fieldsets
+    # When I choose "Preview" action for "C question" in the question bank
+    # And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
     And I set the response to
@@ -163,8 +165,10 @@ class PalindromeTest(unittest.TestCase):
 
     And I press "id_submitbutton"
     Then I should see "Python Question with 2 tests"
-    When I choose "Preview" action for "Python Question with 2 tests" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "Python Question with 2 tests" "core_question > preview" page logged in as teacher1
+    And I expand all fieldsets
+    # When I choose "Preview" action for "Python Question with 2 tests" in the question bank
+    # And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
     And I set the response to
@@ -244,8 +248,10 @@ def is_palindrome(text):
 
     And I press "id_submitbutton"
     Then I should see "C++ question"
-    When I choose "Preview" action for "C++ question" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "C++ question" "core_question > preview" page logged in as teacher1
+    And I expand all fieldsets
+    # When I choose "Preview" action for "C++ question" in the question bank
+    # And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
     And I set the response to

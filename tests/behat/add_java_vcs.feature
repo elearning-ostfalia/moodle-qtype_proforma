@@ -77,8 +77,10 @@ Feature: ADD JAVA QUESTION WITH VERSION CONTROL SYSTEM USE
     Then I should see "java-question"
 
     # check for download link
-    When I choose "Preview" action for "java-question" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "java-question" "core_question > preview" page
+    #And I expand all fieldsets
+    #When I choose "Preview" action for "java-question" in the question bank
+    #And I switch to "questionpreview" window
     Then I should see "questiondownload.txt"
     And following "questiondownload.txt" should download file with between "65" and "67" bytes
 

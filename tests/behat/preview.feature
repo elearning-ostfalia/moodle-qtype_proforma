@@ -22,14 +22,12 @@ Feature: PREVIEW
       | questioncategory | qtype | name      | template         |
       | Test questions   | proforma | proforma-001 | editor           |
       | Test questions   | proforma | proforma-003 | filepicker            |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
 
   @javascript @_switch_window
   Scenario: Preview a ProFormA question and submit a partially correct response.
-    When I choose "Preview" action for "proforma-001" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "proforma-001" "core_question > preview" page logged in as teacher1
+    And I should see "//text in responsetemplate"
+    And I expand all fieldsets
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
     And I should see "Please code the reverse string function not using a library function.(äöüß)"
@@ -49,8 +47,8 @@ Feature: PREVIEW
 
   @javascript @_switch_window
   Scenario: Preview a ProFormA question and submit a partially correct response.
-    When I choose "Preview" action for "proforma-003" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "proforma-003" "core_question > preview" page logged in as teacher1
+    And I expand all fieldsets
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
 

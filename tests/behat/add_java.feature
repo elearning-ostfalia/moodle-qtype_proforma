@@ -130,14 +130,16 @@ Feature: ADD JAVA QUESTION
     Then I should see "new java-question"
 
     # check for download link
-    When I choose "Preview" action for "java-question" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "new java-question" "core_question > preview" page
+    # When I choose "Preview" action for "java-question" in the question bank
+    # And I switch to "questionpreview" window
     Then I should see "template.txt"
     Then I should see "// type your code here"
     And following "template.txt" should download file with between "22" and "24" bytes
     And I switch to the main window
 
-    When I choose "Edit question" action for "new java-question" in the question bank
+    When I am on the "new java-question" "core_question > edit" page logged in as teacher1
+    # When I choose "Edit question" action for "new java-question" in the question bank
     Then the following fields match these values:
       | Question name            | new java-question              |
       | Question text            | write a java program that..... |
@@ -172,8 +174,9 @@ Feature: ADD JAVA QUESTION
     Then I should see "new java-question"
 
     # check for download link
-    When I choose "Preview" action for "new java-question" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "new java-question" "core_question > preview" page
+    #When I choose "Preview" action for "new java-question" in the question bank
+    #And I switch to "questionpreview" window
     #Then I should see "questiondownload.txt"
     #Then I should see "lib.txt"
     #Then I should see "instruction.txt"

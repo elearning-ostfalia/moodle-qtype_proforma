@@ -21,15 +21,16 @@ Feature: EDIT SETLX
     And the following "questions" exist:
       | questioncategory | qtype | name      | template         |
       | Test questions   | proforma | proforma-setlx | setlx2           |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    #And I log in as "teacher1"
+    #And I am on "Course 1" course homepage
+    #And I navigate to "Question bank" in current page administration
 
 ##########################################################################
   @javascript
   Scenario: Check precondition for all successive scenarios
 ##########################################################################
-    When I choose "Edit question" action for "proforma-setlx" in the question bank
+    # When I choose "Edit question" action for "proforma-setlx" in the question bank
+    When I am on the "proforma-setlx" "core_question > edit" page logged in as teacher1
     # assert(expected old values)
     Then the following fields match these values:
       | Question name            | proforma-setlx           |
@@ -66,8 +67,9 @@ Feature: EDIT SETLX
     Then I should see "proforma-setlx"
 
     # check for download link
-    When I choose "Preview" action for "proforma-setlx" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "proforma-setlx" "core_question > preview" page
+    # When I choose "Preview" action for "proforma-setlx" in the question bank
+    # And I switch to "questionpreview" window
     #Then I should see "lib.txt"
     #Then I should see "instruction.txt"
     Then I should see "template.txt"
@@ -81,7 +83,8 @@ Feature: EDIT SETLX
   @javascript
   Scenario: Edit a ProFormA question (uncheck/check Syntax Check)
 ##########################################################################
-    When I choose "Edit question" action for "proforma-setlx" in the question bank
+    When I am on the "proforma-setlx" "core_question > edit" page logged in as teacher1
+    # When I choose "Edit question" action for "proforma-setlx" in the question bank
     # uncheck compile
     And I uncheck the "compile" checkbox
     And the "compile" checkbox is "unchecked"
@@ -110,7 +113,8 @@ Feature: EDIT SETLX
   @javascript @_file_upload
   Scenario: Edit a ProFormA question (simply edit all values)
 ##########################################################################
-    When I choose "Edit question" action for "proforma-setlx" in the question bank
+    When I am on the "proforma-setlx" "core_question > edit" page logged in as teacher1
+    # When I choose "Edit question" action for "proforma-setlx" in the question bank
     # change all values that can be changed (keep editor set)
     And  I set the following fields to these values:
       | Question name            | updated proforma-setlx|
@@ -182,8 +186,7 @@ Feature: EDIT SETLX
     Then I should see "updated proforma-setlx"
 
     # check for download link
-    When I choose "Preview" action for "updated proforma-setlx" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "updated proforma-setlx" "core_question > preview" page
     #Then I should see "questiondownload.txt"
     #Then I should see "lib.txt"
     #Then I should see "instruction.txt"
@@ -200,7 +203,8 @@ Feature: EDIT SETLX
     ##########################################################################
   Scenario: Edit a ProFormA question (remove and add Setlx)
 ##########################################################################
-    When I choose "Edit question" action for "proforma-setlx" in the question bank
+    When I am on the "proforma-setlx" "core_question > edit" page logged in as teacher1
+    # When I choose "Edit question" action for "proforma-setlx" in the question bank
 
     # remove SetlX 2 data by deleting content
     And I set the field "testtitle[1]" to ""

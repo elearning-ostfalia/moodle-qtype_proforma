@@ -141,8 +141,8 @@ public class PalindromTest {
 
     And I press "id_submitbutton"
     Then I should see "Java question"
-    When I choose "Preview" action for "Java question" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "Java question" "core_question > preview" page
+    And I expand all fieldsets
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
     And I set the response to
@@ -167,7 +167,8 @@ public class PalindromTest {
   @javascript @_file_upload
   Scenario: Import a ProFormA question, preview and submit a response.
 
-    When I navigate to "Question bank > Import" in current page administration
+    When I am on the "Course 1" "core_question > course question import" page
+    # When I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_proforma" to "1"
     And I upload "question/type/proforma/tests/fixtures/behat/Palindrom.zip" file to "Import" filemanager
     And I press "id_submitbutton"
@@ -176,8 +177,10 @@ public class PalindromTest {
     And I should see "1. Implementieren Sie"
     And I press "Continue"
     And I should see "Palindrom mit Checkstyle Vorne V2"
-    When I choose "Preview" action for "Palindrom mit Checkstyle Vorne V2" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "Palindrom mit Checkstyle Vorne V2" "core_question > preview" page
+    And I expand all fieldsets
+    ##When I choose "Preview" action for "Palindrom mit Checkstyle Vorne V2" in the question bank
+    ##And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
     And I set the response to
@@ -230,8 +233,10 @@ public class PalindromTest {
 """
     And I press "id_submitbutton"
     Then I should see "setlx question"
-    When I choose "Preview" action for "setlx question" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "setlx question" "core_question > preview" page logged in as teacher1
+    And I expand all fieldsets
+    # When I choose "Preview" action for "setlx question" in the question bank
+    # And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
     And I press "Start again with these options"
     And I set the response to
