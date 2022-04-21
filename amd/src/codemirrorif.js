@@ -111,7 +111,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
 
 
                     if (enlarge_width) {
-                        editor.setSize("100%", null);
+                        editor.setSize("100%", "100%");
                     }
 
                     editor.refresh();
