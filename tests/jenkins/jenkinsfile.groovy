@@ -8,6 +8,7 @@ def combinations = [
     ['39', '7.2', 'mysql'],
     ['310', '7.3', 'pgsql'],
     ['311', '7.4', 'pgsql'],
+    ['400', '7.4', 'pgsql'],
     ['master', '7.4', 'pgsql']
 ];
 

@@ -16,6 +16,8 @@
 
 // import {Framework, RootNode} from "./FileViewer";
 
+// import { Syncer } from "./MoodleSyncer";
+
 Promise.all([
 //    import('/amd/src/Tree.js'),
     import('./FileViewer.js')
@@ -41,39 +43,64 @@ Promise.all([
 
             // # 1
             const options1 = [];
+
             const explorer1 = document.getElementById('fileexplorer1');
+            let syncer1 = new fileviewer.Syncer(options1);
             let framework1 = new fileviewer.Framework();
             framework1.buildFramework(explorer1);
-            let submission1 = new fileviewer.RootNode('Submission', framework1);
-            framework1.init(explorer1, options1);
+//            let submission1 = new fileviewer.RootNode('Submission', framework1);
+            framework1.init(explorer1, syncer1, false);
 
             // # 2
             const options2 = [];
             const explorer2 = document.getElementById('fileexplorer2');
+            let syncer2 = new fileviewer.Syncer(options2);
             let framework2 = new fileviewer.Framework();
             framework2.buildFramework(explorer2);
-            let submission2 = new fileviewer.RootNode('Submission', framework2);
-            framework2.init(explorer2, options2);
+//            let submission2 = new fileviewer.RootNode('Submission', framework2);
+            framework2.init(explorer2, syncer2, true);
 
-            // Create model solution
-//            let modelsolution = new fileviewer.ProjectNode('Model Solution');
-//            modelsolution.appendFile(new fileviewer.FileNode('MyString.java'));
-//            modelsolution.appendFile(new fileviewer.FileNode('Helper.java'));
-
-            // Create test
-//            let test1 = new fileviewer.ProjectNode('Test 1');
-/*            test1.appendFile(new fileviewer.FileNode('MyStringTest.java'));
-            test1.appendFile(new fileviewer.FileNode('MyStringTest1.java'));
-            test1.appendFolder(new fileviewer.FolderNode('data'));
-            test1.folders[0].appendFile(new fileviewer.FileNode('input.txt'));
-
-            // Common files
-            let common = new fileviewer.ProjectNode('Common');
+            console.log('change submit function');
+            let form = explorer1.closest('form');
+            console.log(form);
+            let originalSubmit = form.submit;
+            console.log(form.submit);
+            try {
+                let wrappedSubmit = (e) => {
+                    e.preventDefault();
+                    // e.preventDefault();
+                    // window.history.back();
+                    // form.action = '/action_page3.php';
+                    // console.log('wrappedSubmit');
+                    alert('save form');
+                    setTimeout(() => {
+                        alert('timeout expired');
+                        form.onsubmit = originalSubmit;
+                        form.submit();
+                        form.onsubmit = wrappedSubmit;
+                    }, 2000);
+                };
+                form.onsubmit = wrappedSubmit;
+                // form.addEventListener('submit', wrappedSubmit);
+            } catch(e) {}
+            console.log(form.submit);
+/*
+            let button = form.querySelector('input[type="submit"]');
+            console.log(button);
+            console.log(button.click);
+            button.onclick = () => {
+                // e.preventDefault();
+                // e.stopPropagation();
+                alert('save buuton');
+                return false;
+            };
+            console.log(button.click);
 */
 
-//            let submission = new fileviewer.ProjectNode('Submission');
 
-//            fileviewer.ProjectNode.init(explorer);
+            // Common files
+//            let common = new fileviewer.ProjectNode('Common');
+
 
             /*
             function _initSplitview() {

@@ -448,8 +448,8 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
             $responsefiles[] = $file->get_filepath() . $file->get_filename();
         }
 
-        // debugging('itemid = ' . $itemid);
-        // debugging('context = ' . $options->context->id);
+        debugging('itemid = ' . $itemid);
+        debugging('context = ' . $options->context->id);
         $clientid = uniqid();
 
         $params = new stdClass();
@@ -480,11 +480,12 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
      * @return string
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
-        // $draftid = file_get_unused_draft_itemid();
-        $itemid = $qa->prepare_response_files_draft_itemid(
-            'attachments', $options->context->id);
+        /////// $draftid = file_get_unused_draft_itemid();
+        // $itemid = 581155797;
+        $itemid = $qa->prepare_response_files_draft_itemid('attachments', $options->context->id);
+
         // $sql = 'select * from mdl_files where filearea="draft" and itemid=' . $itemid . ';';
-        // debugging('---');
+        debugging('---');
         // debugging($sql);
         $clientid = uniqid();
         $defaults = array(
@@ -500,6 +501,9 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         );
 
         $context = $options->context;
+
+        debugging('itemid = ' . $itemid);
+        debugging('context = ' . $options->context->id);
         $repo = repository::get_instances(array('type' => 'upload', 'currentcontext' => $context));
         if (empty($repo)) {
             throw new moodle_exception('errornouploadrepo', 'moodle');
