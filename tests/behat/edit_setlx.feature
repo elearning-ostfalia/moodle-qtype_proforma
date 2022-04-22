@@ -67,9 +67,7 @@ Feature: EDIT SETLX
     Then I should see "proforma-setlx"
 
     # check for download link
-    When I am on the "proforma-setlx" "core_question > preview" page
-    # When I choose "Preview" action for "proforma-setlx" in the question bank
-    # And I switch to "questionpreview" window
+    When I open preview for "proforma-setlx" in the question bank
     #Then I should see "lib.txt"
     #Then I should see "instruction.txt"
     Then I should see "template.txt"
@@ -77,7 +75,7 @@ Feature: EDIT SETLX
     #And following "instruction.txt" should download file with between "17" and "20" bytes
     #And following "lib.txt" should download file with between "9" and "12" bytes
     And following "template.txt" should download file with between "26" and "28" bytes
-    And I switch to the main window
+    # And I switch to the main window
 
 ##########################################################################
   @javascript
@@ -186,7 +184,7 @@ Feature: EDIT SETLX
     Then I should see "updated proforma-setlx"
 
     # check for download link
-    When I am on the "updated proforma-setlx" "core_question > preview" page
+    When I open preview for "proforma-setlx" in the question bank
     #Then I should see "questiondownload.txt"
     #Then I should see "lib.txt"
     #Then I should see "instruction.txt"

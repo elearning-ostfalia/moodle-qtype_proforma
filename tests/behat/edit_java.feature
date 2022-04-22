@@ -89,7 +89,7 @@ Feature: EDIT JAVA
     Then I should see "proforma-java"
 
     # check for download link
-    When I am on the "proforma-java" "core_question > preview" page
+    When I open preview for "proforma-java" in the question bank
     #Then I should see "lib.txt"
     #Then I should see "instruction.txt"
     Then I should see "template.txt"
@@ -97,11 +97,11 @@ Feature: EDIT JAVA
     #And following "instruction.txt" should download file with between "17" and "20" bytes
     #And following "lib.txt" should download file with between "9" and "12" bytes
     And following "template.txt" should download file with between "26" and "28" bytes
-    And I switch to the main window
+    # And I switch to the main window
 
 ##########################################################################
   @javascript
-  Scenario: Edit a ProFormA question (uncheck/check checkstyle and compile)
+  Scenario: Edit a Java question (uncheck/check checkstyle and compile)
 ##########################################################################
     When I am on the "proforma-java" "core_question > edit" page logged in as teacher1
     # uncheck compile and checkstyle
@@ -155,7 +155,7 @@ Feature: EDIT JAVA
 
 ##########################################################################
   @javascript @_file_upload
-  Scenario: Edit a ProFormA question (simply edit all values)
+  Scenario: Edit a Java question (simply edit all values)
 ##########################################################################
     When I am on the "proforma-java" "core_question > edit" page logged in as teacher1
     # change all values that can be changed (keep editor set)
@@ -260,9 +260,7 @@ Feature: EDIT JAVA
 
 
     # check for download link
-    When I am on the "updated proforma-java" "core_question > preview" page
-    # When I choose "Preview" action for "updated proforma-java" in the question bank
-    # And I switch to "questionpreview" window
+    When I open preview for "updated proforma-java" in the question bank
     #Then I should see "questiondownload.txt"
     #Then I should see "lib.txt"
     #Then I should see "instruction.txt"
@@ -273,11 +271,11 @@ Feature: EDIT JAVA
     #And following "instruction.txt" should download file with between "17" and "20" bytes
     #And following "lib.txt" should download file with between "9" and "12" bytes
     And following "template.txt" should download file with between "69" and "73" bytes
-    And I switch to the main window
+    # And I switch to the main window
 
 @javascript
 ##########################################################################
-  Scenario: Edit a ProFormA question (remove and add Junit)
+  Scenario: Edit a Java question (remove and add Junit)
 ##########################################################################
     When I am on the "proforma-java" "core_question > edit" page logged in as teacher1
     # When I choose "Edit question" action for "proforma-java" in the question bank

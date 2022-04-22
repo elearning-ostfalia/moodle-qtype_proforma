@@ -138,9 +138,7 @@ Feature: EDIT PROFORMA
     Then I should see "edited question name"
 
     # check for download link
-    # When I choose "Preview" action for "edited question name" in the question bank
-    When I am on the "edited question name" "core_question > preview" page
-    # And I switch to "questionpreview" window
+    When I open preview for "edited question name" in the question bank
     Then I should see "questiondownload.txt"
     Then I should see "lib.txt"
     Then I should see "instruction.txt"
@@ -151,4 +149,4 @@ Feature: EDIT PROFORMA
     And following "instruction.txt" should download file with between "17" and "20" bytes
     And following "lib.txt" should download file with between "9" and "12" bytes
     And following "template.txt" should download file with between "69" and "73" bytes
-    And I switch to the main window
+    # And I switch to the main window
