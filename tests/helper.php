@@ -36,6 +36,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
+require_once($CFG->dirroot . '/lib/accesslib.php');
 
 /**
  * Test helper class for the proforma question type.
@@ -355,7 +356,13 @@ class qtype_proforma_test_helper extends question_test_helper {
      */
     public function make_proforma_question_editor() {
         $q = $this->initialise_proforma_question();
-        $q->contextid = 12;
+        // Use first existing context id with course context.
+        global $DB;
+        $sql = 'select id 
+            from {context} 
+            where contextlevel = :level';
+        $result = $DB->get_records_sql($sql, array('level' => CONTEXT_COURSE));
+        $q->contextid = array_keys($result)[0];
         $q->id = 75;
         $q->responseformat = 'editor';
         $q->attachments = 0;
