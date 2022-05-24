@@ -6,7 +6,7 @@ export COMPOSE_INTERACTIVE_NO_CLI=1
 
 
 shutdown=1
-install=1
+install=0
 init=1
 
 # Change working directory
@@ -39,7 +39,7 @@ if [ "$shutdown" -eq "1" ]; then
     # Build Images
     echo -- build docker
     bin/moodle-docker-compose "build"
-    install=1
+    install=0
     init=1
 fi
 
@@ -54,6 +54,7 @@ bin/moodle-docker-compose up -d
 date
 echo -- wait for db
 bin/moodle-docker-wait-for-db
+sleep 45
 
 date
 
