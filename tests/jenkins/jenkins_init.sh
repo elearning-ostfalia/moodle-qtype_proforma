@@ -58,6 +58,8 @@ sleep 5
 
 date
 
+docker ps
+
 # create and start praktomat, attach to moodle network
 # docker-compose -f docker-compose-test.yml build
 # docker-compose -f docker-compose-test.yml up
