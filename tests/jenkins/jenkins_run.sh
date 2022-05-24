@@ -2,8 +2,10 @@
 
 # set -xe
 
+source ./jenkins_init.sh
+
 # Change working directory
-cd $WORKSPACE/moodle-docker
+# cd $WORKSPACE/moodle-docker
 
 phpmd=0
 behat=1
