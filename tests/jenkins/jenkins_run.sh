@@ -2,6 +2,8 @@
 
 # set -xe
 
+# Change working directory
+cd $WORKSPACE/moodle-docker
 
 phpmd=0
 behat=1
