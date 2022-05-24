@@ -212,7 +212,7 @@ export class FileNode extends TreeNode {
         };
         this.handleDoubleClick = event => {
             this.getFramework().toggleContextmenu("hide");
-            document.getElementById('last_action').value = this.name;
+            // document.getElementById('last_action').value = this.name;
             if (this.filecontent != undefined) {
                 this.getFramework().switchEditorTo(this);
             }
@@ -889,7 +889,7 @@ export class Framework {
 
     <div class="status" style="flex: none">status</div>
 </div>
-<p><label>File or Folder Selected: <input id="last_action" type="text" size="15" readonly=""></label></p>
+<p><!--<label>File or Folder Selected: <input id="last_action" type="text" size="15" readonly=""></label>--></p>
 `;
         // We only need one context menu that must be placed outside
         // all other elements (esp. those that are positioned relative)
@@ -1058,7 +1058,7 @@ export class Framework {
         }
         let root;
         if (this.roots.length == 0) {
-            root = new RootNode('ROOT', this);
+            root = new RootNode('/', this);
         } else {
             root = this.roots[0];
         }
