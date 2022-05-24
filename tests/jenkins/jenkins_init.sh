@@ -46,10 +46,12 @@ fi
 
 
 # Start up containers
+date
 echo -- docker up
 bin/moodle-docker-compose up -d
 
 # Wait for DB to come up (important for oracle/mssql)
+date
 echo -- wait for db
 bin/moodle-docker-wait-for-db
 
