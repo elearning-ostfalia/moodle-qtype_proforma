@@ -5,7 +5,7 @@
 export COMPOSE_INTERACTIVE_NO_CLI=1
 
 
-shutdown=0
+shutdown=1
 install=0
 init=1
 

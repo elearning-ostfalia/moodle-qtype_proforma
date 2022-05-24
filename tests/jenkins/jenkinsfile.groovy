@@ -112,9 +112,9 @@ def runTest(boolean DO_NOT_FETCH_MOODLE, String source_origin, String moodle_ver
             git url: 'https://github.com/elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading.git'
         }
         dir('moodle/question/type/proforma/tests/jenkins') {
-            echo '** Initialising test...'
-            sh('./jenkins_init.sh')
-            echo '** Starting tests...'
+            // echo '** Initialising test...'
+            // sh('./jenkins_init.sh')
+            echo '** Running tests...'
             sh('./jenkins_run.sh')
         }        
     } else {    
