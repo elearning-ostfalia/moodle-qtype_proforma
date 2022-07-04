@@ -90,7 +90,7 @@ function get_groupname_sample() {
 /**
  * @return string returns the name of the group that the current user belongs to
  */
-function get_groupname($courseid, $context) {
+function get_groupname($context) {
     global $USER;
     // Get all groups.
     list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid, 'quiz');

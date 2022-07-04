@@ -47,6 +47,12 @@ class qtype_proforma_locallib_test extends advanced_testcase {
 
         $course = $generator->create_course();
         $courseid = $course->id;
+
+        // Make a quiz.
+        $quizgenerator = $this->getDataGenerator()->get_plugin_generator('mod_quiz');
+        $quiz = $quizgenerator->create_instance(['course' => $course->id,
+            'grade' => 100.0, 'sumgrades' => 2, 'layout' => '1,0']);
+
         $user1 = $generator->create_user();
         $user2 = $generator->create_user();
         $generator->enrol_user($user1->id, $courseid);
@@ -64,6 +70,8 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $this->grouping = $generator->create_grouping(array('courseid' => $courseid, 'name' => 'grouping'));
         $this->groupingid = $this->grouping->id;
         $this->setUser($this->user1);
+
+        return context_module::instance($quiz->cmid);
     }
 
     // + user without group
@@ -76,13 +84,12 @@ class qtype_proforma_locallib_test extends advanced_testcase {
     public function test_no_group() {
         $this->resetAfterTest();
 
-        $generator = $this->getDataGenerator();
-        $this->create_group_objects();
+        $context = $this->create_group_objects();
 
         // Retrieve groups for user1.
         // User1 belongs to no group
 
-        $groupname = qtype_proforma\lib\get_groupname($this->course->id);
+        $groupname = qtype_proforma\lib\get_groupname($context);
         $this->assertEquals('N/A', $groupname, 'no group, no grouping');
     }
 
@@ -91,7 +98,7 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $this->resetAfterTest();
 
         $generator = $this->getDataGenerator();
-        $this->create_group_objects();
+        $context = $this->create_group_objects();
 
         // Add user1 to group1 and group2.
         $generator->create_group_member(array('groupid' => $this->group1->id, 'userid' => $this->user1->id));
@@ -104,27 +111,27 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         // Retrieve groups for user1.
         // User1 belongs to group1 and group2.
 
-        $groupname = qtype_proforma\lib\get_groupname($this->course->id);
+        $groupname = qtype_proforma\lib\get_groupname($context);
 
         $debugging = $this->getDebuggingMessages();
         $this->resetDebugging();
         $this->assertEquals(1, count($debugging));
         $this->assertStringContainsString('group is not unique', $debugging[0]->message);
 
-        $this->assertEquals('group2', $groupname, 'two groups, no grouping');
+        $this->assertEquals('???', $groupname, 'two groups, no grouping');
     }
 
     public function test_no_grouping_one_group_alone() {
         $this->resetAfterTest();
 
         $generator = $this->getDataGenerator();
-        $this->create_group_objects();
+        $context = $this->create_group_objects();
 
         // User1 belongs to group1.
         $generator->create_group_member(array('groupid' => $this->group1->id, 'userid' => $this->user1->id));
 
         // Retrieve groups for user1.
-        $groupname = qtype_proforma\lib\get_groupname($this->course->id);
+        $groupname = qtype_proforma\lib\get_groupname($context);
 
         $this->assertEquals('group1', $groupname, 'two groups, no grouping');
     }
@@ -133,14 +140,14 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $this->resetAfterTest();
 
         $generator = $this->getDataGenerator();
-        $this->create_group_objects();
+        $context = $this->create_group_objects();
 
         // User1 and User2 belong to group1.
         $generator->create_group_member(array('groupid' => $this->group1->id, 'userid' => $this->user1->id));
         $generator->create_group_member(array('groupid' => $this->group2->id, 'userid' => $this->user2->id));
 
         // Retrieve groups for user1.
-        $groupname = qtype_proforma\lib\get_groupname($this->course->id);
+        $groupname = qtype_proforma\lib\get_groupname($context);
 
         $this->assertEquals('group1', $groupname, 'two groups, no grouping');
     }
@@ -151,7 +158,7 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $this->resetAfterTest();
 
         $generator = $this->getDataGenerator();
-        $this->create_group_objects();
+        $context = $this->create_group_objects();
         $generator->create_grouping_group(array('groupingid' => $this->groupingid, 'groupid' => $this->group1->id));
 
         // Add user1 to group1 and group2.
@@ -165,7 +172,7 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         // Retrieve groups for user1.
         // User1 belongs to group1 and group2.
 
-        $groupname = qtype_proforma\lib\get_groupname($this->course->id);
+        $groupname = qtype_proforma\lib\get_groupname($context);
 
         $debugging = $this->getDebuggingMessages();
         $this->resetDebugging();
@@ -173,21 +180,21 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $this->assertStringContainsString('group is not unique', $debugging[0]->message);
 
 
-        $this->assertEquals('group2', $groupname, 'two groups, no grouping');
+        $this->assertEquals('???', $groupname, 'two groups, no grouping');
     }
 
     public function test_grouping_one_group_alone() {
         $this->resetAfterTest();
 
         $generator = $this->getDataGenerator();
-        $this->create_group_objects();
+        $context = $this->create_group_objects();
         $generator->create_grouping_group(array('groupingid' => $this->groupingid, 'groupid' => $this->group1->id));
 
         // User1 belongs to group1.
         $generator->create_group_member(array('groupid' => $this->group1->id, 'userid' => $this->user1->id));
 
         // Retrieve groups for user1.
-        $groupname = qtype_proforma\lib\get_groupname($this->course->id);
+        $groupname = qtype_proforma\lib\get_groupname($context);
 
         $this->assertEquals('group1', $groupname, 'two groups, no grouping');
     }
@@ -196,7 +203,7 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $this->resetAfterTest();
 
         $generator = $this->getDataGenerator();
-        $this->create_group_objects();
+        $context = $this->create_group_objects();
         $generator->create_grouping_group(array('groupingid' => $this->groupingid, 'groupid' => $this->group1->id));
 
 
@@ -205,9 +212,18 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $generator->create_group_member(array('groupid' => $this->group2->id, 'userid' => $this->user2->id));
 
         // Retrieve groups for user1.
-        $groupname = qtype_proforma\lib\get_groupname($this->course->id);
+        $groupname = qtype_proforma\lib\get_groupname($context);
 
         $this->assertEquals('group1', $groupname, 'two groups, no grouping');
     }
 
+    public function test_todo_availablity_and_groups() {
+        $this->resetAfterTest();
+
+        $generator = $this->getDataGenerator();
+        $context = $this->create_group_objects();
+        $groupname = qtype_proforma\lib\get_groupname($context);
+
+        $this->assertEquals('group1', $groupname, 'todo: check quiz availability groups');
+    }
 }

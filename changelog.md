@@ -1,3 +1,11 @@
+## v2.8.1
+
+* bugfix: SVN and groups: get group according to quiz restrictions 
+
+## v2.8.0
+
+* new: Python unittest
+
 ## v2.7.3
 
 * display extra log for Googletest (Praktomat 4.12.2)
