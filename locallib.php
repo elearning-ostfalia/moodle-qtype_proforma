@@ -90,31 +90,30 @@ function get_groupname_sample() {
 /**
  * @return string returns the name of the group that the current user belongs to
  */
-function get_groupname($courseid) {
+function get_groupname($courseid, $context) {
     global $USER;
     // Get all groups.
-    $groups = groups_get_user_groups($courseid, $USER->id);
-    // var_dump($groups);
+    list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid, 'quiz');
+    $groups = groups_get_activity_allowed_groups($cm, $USER->id);
 
     // Count groups and fetch name.
-    $count = 0;
     $groupname = '???';
-    if (count($groups) > 0) {
-        foreach ($groups[0] as $group) {
-            $count++;
-            $groupname = groups_get_group_name($group);
-        }
-    }
 
-    switch ($count) {
+    switch (count($groups)) {
         case 0:
             return 'N/A'; // No group found.
         case 1:
             // Exactly one group found.
+            $group = reset($groups);
+            $groupname = $group->name;
             break;
         default:
             // More than one group found.
-            debugging('group is not unique');
+            if (!is_teacher() and !is_admin()) {
+                debugging('group is not unique');
+            } else {
+                $groupname = '';
+            }
             break;
     }
 
