@@ -13,8 +13,9 @@
         stopOnFailure="false"
         stopOnIncomplete="false"
         stopOnSkipped="false"
-        >
-        <!-- testSuiteLoaderClass="PHPUnit\Runner\StandardTestSuiteLoader" -->
+>
+    <!-- testSuiteLoaderClass="phpunit_autoloader"-->
+    <!-- testSuiteLoaderClass="PHPUnit\Runner\StandardTestSuiteLoader" -->
 
     <php>
         <!--<const name="PHPUNIT_LONGTEST" value="1"/> uncomment to execute also slow or otherwise expensive tests-->
@@ -24,7 +25,6 @@
         <!--<const name="TEST_EXTERNAL_FILES_HTTP_URL" value="http://download.moodle.org/unittest"/> uncomment and alter to fetch external test files from alternative location-->
         <!--<const name="TEST_EXTERNAL_FILES_HTTPS_URL" value="https://download.moodle.org/unittest"/> uncomment and alter to fetch external test files from alternative location-->
     </php>
-
 
         <testsuites>
 <!--
