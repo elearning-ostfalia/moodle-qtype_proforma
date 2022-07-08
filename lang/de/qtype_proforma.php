@@ -310,7 +310,16 @@ $string['passed'] = 'OK';
 $string['failed'] = 'Fehler';
 $string['bulktestcontinuefromhere'] = 'Nochmal starten oder fortsetzen, beginnend ab hier';
 
+// Javascript strings
+$string['delete'] = 'Löschen';
+$string['rename'] = 'Umbenennen';
+$string['loadfile'] = 'Datei laden';
+$string['newfolder'] = 'Neues Verzeichnis';
+$string['newemptyfile'] = 'Neue leere Datei';
+$string['enterfolder'] = 'Verzeichnisname';
+$string['enterfilename'] = 'Dateiname';
 
+// Errors.
 $string['errinvalidtask'] = 'Datei ist keine ProFormA-Aufgabendatei.';
 $string['errinvalidproglang'] = 'Programmiersprache ist nicht \'{$a}\'.';
 $string['errcounttest'] = 'Anzahl der Tests wurde geändert: {$a}.';

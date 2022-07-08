@@ -45,7 +45,8 @@ import "./active-line";
 
 // import {get_string as getString} from 'core/str';
 import Config from 'core/config';
-
+import * as Str from 'core/str';
+import * as notification from 'core/notification';
 
 // Use this for editortest.html
 // -----------------------------
@@ -254,10 +255,21 @@ export class FileNode extends TreeNode {
 
     setContextMenu() {
         console.log('FileNode setContextMenu');
-        this.getFramework().createContextMenu([
-            ['Delete', this.handleDelete],
-            ['Rename', this.boundHandleRename]]
-        );
+        // this is something from codemirror in promise done function???
+        // so this is renamed
+        let thecontext = this;
+        Str.get_strings([
+            {key: 'delete', component: 'qtype_proforma'},
+            {key: 'rename', component: 'qtype_proforma'}
+        ]).done(function(strings) {
+            thecontext.getFramework().createContextMenu([
+                [strings[0], thecontext.handleDelete], // Delete
+                [strings[1], thecontext.boundHandleRename] // Rename
+            ]);
+        }) /*.fail(notification.exception)*/
+            .fail(function (response) {
+                console.error(response);
+        });
     }
 }
 
@@ -569,14 +581,25 @@ export class FolderNode extends TreeNode {
     }
     setContextMenu() {
         console.log('FolderNode setContextMenu');
-        this.getFramework().createContextMenu([
-            ['New empty file...', this.boundHandleNewFile],
-            ['Load file...', this.boundHandleLoadFile],
-            ['New folder...', this.boundHandleNewFolder],
-            ['Rename', this.boundHandleRename],
-            ['Delete', this.handleDelete]
-            ]
-        );
+        let thecontext = this; // This is changed to something codemirror in promise
+        Str.get_strings([
+            {key: 'newemptyfile', component: 'qtype_proforma'},
+            {key: 'loadfile', component: 'qtype_proforma'},
+            {key: 'newfolder', component: 'qtype_proforma'},
+            {key: 'rename', component: 'qtype_proforma'},
+            {key: 'delete', component: 'qtype_proforma'}
+        ]).done(function(strings) {
+            thecontext.getFramework().createContextMenu([
+                [strings[0] + '...', thecontext.boundHandleNewFile], // newemptyfile
+                [strings[1] + '...', thecontext.boundHandleLoadFile], // loadfile
+                [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
+                [strings[3], thecontext.boundHandleRename], // Rename
+                [strings[4], thecontext.handleDelete], // delete
+            ]);
+        }) //. fail(notification.exception)
+            .fail(function (response) {
+                console.error(response);
+            });
     }
 
     appendFile(node) { this.files.push(node); node.parent = this; }
@@ -601,12 +624,21 @@ export class RootNode extends FolderNode {
     }
     setContextMenu() {
         console.log('RootNode setContextMenu');
-        this.getFramework().createContextMenu([
-                ['New empty file...', this.boundHandleNewFile],
-                ['Load file...', this.boundHandleLoadFile],
-                ['New folder...', this.boundHandleNewFolder],
-            ]
-        );
+        let thecontext = this; // This is changed to something codemirror in promise
+        Str.get_strings([
+            {key: 'newemptyfile', component: 'qtype_proforma'},
+            {key: 'loadfile', component: 'qtype_proforma'},
+            {key: 'newfolder', component: 'qtype_proforma'}
+        ]).done(function(strings) {
+            thecontext.getFramework().createContextMenu([
+                [strings[0] + '...', thecontext.boundHandleNewFile], // newemptyfile
+                [strings[1] + '...', thecontext.boundHandleLoadFile], // loadfile
+                [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
+            ]);
+        }) //. fail(notification.exception)
+            .fail(function (response) {
+                console.error(response);
+            });
     }
 
 }

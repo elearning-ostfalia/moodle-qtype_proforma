@@ -329,6 +329,16 @@ $string['passed'] = 'passed';
 $string['failed'] = 'failed';
 $string['bulktestcontinuefromhere'] = 'Run again or resume, starting from here';
 
+// Javascript strings
+$string['delete'] = 'Delete';
+$string['rename'] = 'Rename';
+$string['loadfile'] = 'Load file';
+$string['newfolder'] = 'New folder';
+$string['newemptyfile'] = 'New empty file';
+$string['enterfolder'] = 'Foldername';
+$string['enterfilename'] = 'Filename';
+
+
 // Errors.
 $string['errinvalidtask'] = 'File is no ProFormA task file.';
 $string['errinvalidproglang'] = 'Programming language in new task is not \'{$a}\'.';
