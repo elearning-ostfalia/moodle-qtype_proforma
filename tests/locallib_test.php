@@ -74,13 +74,12 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         return context_module::instance($quiz->cmid);
     }
 
-    // + user without group
-    // + user in one group with other user (no groupings)
-    // + user in one group alone (no groupings)
-    // + user in two groups (no groupings)
-    // - user in one group (with groupings)
-    // - user in two groups (with groupings)
 
+
+
+
+
+    // + user without group
     public function test_no_group() {
         $this->resetAfterTest();
 
@@ -88,12 +87,13 @@ class qtype_proforma_locallib_test extends advanced_testcase {
 
         // Retrieve groups for user1.
         // User1 belongs to no group
-
         $groupname = qtype_proforma\lib\get_groupname($context);
         $this->assertEquals('N/A', $groupname, 'no group, no grouping');
     }
 
 
+    // + user in two groups (no groupings)
+    // => not unique
     public function test_no_grouping_two_groups() {
         $this->resetAfterTest();
 
@@ -121,7 +121,8 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $this->assertEquals('???', $groupname, 'two groups, no grouping');
     }
 
-    public function test_no_grouping_one_group_alone() {
+    // + user in one group (no groupings)
+    public function test_no_grouping_one_group() {
         $this->resetAfterTest();
 
         $generator = $this->getDataGenerator();
@@ -133,9 +134,10 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         // Retrieve groups for user1.
         $groupname = qtype_proforma\lib\get_groupname($context);
 
-        $this->assertEquals('group1', $groupname, 'two groups, no grouping');
+        $this->assertEquals('group1', $groupname, 'one group, no grouping');
     }
 
+    // + user in one group (no groupings)
     public function test_no_grouping_one_group_with_other_user() {
         $this->resetAfterTest();
 
@@ -153,7 +155,8 @@ class qtype_proforma_locallib_test extends advanced_testcase {
     }
 
 
-
+    // - user in two groups (with groupings)
+    // => not unique
     public function test_grouping_two_groups() {
         $this->resetAfterTest();
 
@@ -183,7 +186,8 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $this->assertEquals('???', $groupname, 'two groups, no grouping');
     }
 
-    public function test_grouping_one_group_alone() {
+    // - user in one group (with groupings)
+    public function test_grouping_one_group() {
         $this->resetAfterTest();
 
         $generator = $this->getDataGenerator();
@@ -199,6 +203,7 @@ class qtype_proforma_locallib_test extends advanced_testcase {
         $this->assertEquals('group1', $groupname, 'two groups, no grouping');
     }
 
+    // + user in one group with other user (no groupings)
     public function test_grouping_one_group_with_other_user() {
         $this->resetAfterTest();
 

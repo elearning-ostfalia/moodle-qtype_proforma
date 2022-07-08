@@ -91,7 +91,7 @@ function get_groupname_sample() {
  * @return string returns the name of the group that the current user belongs to
  */
 function get_groupname($context) {
-    if (!isset($context->instanceid)) {
+    if (CONTEXT_MODULE != $context->contextlevel or !isset($context->instanceid)) {
         // No quiz context (e.g. in question bank preview)
         return '';
     }
