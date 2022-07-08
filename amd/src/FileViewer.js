@@ -1074,6 +1074,13 @@ export class Framework {
         };
 
         const fileviewer = node.querySelector('.explorer');
+        // Prevent browser from opening a dropped file in a new tab.
+        fileviewer.addEventListener('drop', event => {
+            event.preventDefault();
+        });
+        fileviewer.addEventListener('dragover', event => {
+            event.preventDefault();
+        });
 
         let ul = document.createElement("ul");
         ul.setAttribute('role', 'tree');
