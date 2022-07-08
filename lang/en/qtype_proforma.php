@@ -337,7 +337,7 @@ $string['newfolder'] = 'New folder';
 $string['newemptyfile'] = 'New empty file';
 $string['enterfoldername'] = 'New foldername';
 $string['enterfilename'] = 'New filename';
-$string['alreadyexists'] = 'already exists';
+$string['alreadyexists'] = '{$a} already exists';
 
 
 // Errors.

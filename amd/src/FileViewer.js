@@ -47,6 +47,7 @@ import "./active-line";
 import Config from 'core/config';
 import * as Str from 'core/str';
 import * as notification from 'core/notification';
+import {get_string as getString} from 'core/str';
 
 // Use this for editortest.html
 // -----------------------------
@@ -87,6 +88,10 @@ class TreeNode {
         this.parent = undefined; // parent Treenode
 
         this.boundHandleContextMenu = event => {
+            // console.log(event)
+            event.preventDefault();
+            event.stopPropagation(); // otherwise parent node handles event, too
+
             this.setContextMenu();
             if (this.getFramework().menu === undefined) {
                 return;
@@ -100,9 +105,6 @@ class TreeNode {
             };
 
             console.log(`contextmenu: ${event}`);
-            // console.log(event)
-            event.preventDefault();
-            event.stopPropagation(); // otherwise parent node handles event, too
 
             const origin = {
                 left: event.pageX,
@@ -141,6 +143,11 @@ class TreeNode {
 
     getFramework() {
         return this.parent.getFramework();
+    }
+
+    async alreadyExists(name) {
+        let text = await getString('alreadyexists', 'qtype_proforma', name);
+        alert(text);
     }
 }
 
@@ -200,6 +207,10 @@ export class FileNode extends TreeNode {
             ]).done(function(strings) {
                 let name = prompt(strings[0] + ':', thecontext.name);
                 if (name !== null && name.length > 0) {
+                    if (!thecontext.parent.isNameChildUnique(name)) {
+                        thecontext.alreadyExists(name);
+                        return;
+                    }
                     const oldpath = thecontext.getPath();
                     thecontext.name = name;
                     thecontext.element.innerHTML = name;
@@ -304,7 +315,8 @@ export class FolderNode extends TreeNode {
                 let filename = prompt(strings[0] + ':', "");
                 if (filename !== null && filename.length > 0) {
                     if (!thecontext.isNameChildUnique(filename)) {
-                        alert(filename + ' already exists');
+                        thecontext.alreadyExists(filename);
+                        // alert(filename + ' already exists');
                         return;
                     }
                     let node = new FileNode(filename);
@@ -359,7 +371,8 @@ export class FolderNode extends TreeNode {
                 const node = this.getFramework().findNodeByPath(path);
                 if (node !== undefined && !this.isNameChildUnique(node.name)) {
                     // TODO: wenn der Ordner schon existiert, sollte nur der Inhalt gemergt werden
-                    alert(node.name + ' already exists');
+                    // alert(node.name + ' already exists');
+                    this.alreadyExists(node.name);
                     return;
                 }
                 if (node instanceof FolderNode) {
@@ -401,12 +414,13 @@ export class FolderNode extends TreeNode {
             this.getFramework().handleClick(event);
             let thecontext = this;
             Str.get_strings([
-                {key: 'enterfolder', component: 'qtype_proforma'},
+                {key: 'enterfoldername', component: 'qtype_proforma'},
             ]).done(function(strings) {
                 let foldername = prompt(strings[0] + ':', "");
                 if (foldername !== null && foldername.length > 0) {
                     if (!thecontext.isNameChildUnique(foldername)) {
-                        alert(foldername + ' already exists');
+                        thecontext.alreadyExists(foldername);
+                        // alert(foldername + ' already exists');
                         return;
                     }
                     let node = new FolderNode(foldername);
@@ -440,7 +454,7 @@ export class FolderNode extends TreeNode {
                 let name = prompt(strings[0] + ':', thecontext.name);
                 if (name !== null && name.length > 0) {
                     if (!thecontext.parent.isNameChildUnique(name)) {
-                        alert(name + ' already exists');
+                        thecontext.alreadyExists(name);
                         return;
                     }
                     const oldpath = thecontext.getPath() + '/.';
@@ -568,7 +582,7 @@ export class FolderNode extends TreeNode {
 
     _addFileFromOs(file, show = false) {
         if (!this.isNameChildUnique(file.name)) {
-            alert(file.name + ' already exists');
+            this.alreadyExists(file.name);
             return;
         }
         let node = new FileNode(file.name);
@@ -1094,6 +1108,22 @@ export class Framework {
         initSplit(node.querySelector('.ide .body > .resize'),  'w');
         // initSplit(node.querySelector('.ide .canvas > .resize'), 'w');
 
+        // Read context menu strings in order to have them in
+        // the browser cache and the menu can open immediately
+        /*
+        Str.get_strings([
+            {key: 'delete', component: 'qtype_proforma'},
+            {key: 'rename', component: 'qtype_proforma'},
+            {key: 'loadfile', component: 'qtype_proforma'},
+            {key: 'newemptyfile', component: 'qtype_proforma'},
+            {key: 'newfolder', component: 'qtype_proforma'},
+        ]).done(function(strings) {
+            console.log('context menu string read.');
+            console.log(strings);
+        }).fail(function (response) {
+            console.error(response);
+        }); */
+
         /*
         RootNode.syncer.sendRequest('mkdir', 'newproformafolder');
         RootNode.syncer.sendRequest('dir'); */
@@ -1150,7 +1180,7 @@ export class Framework {
         if (this.readOnly) {
             return;
         }
-        console.log('createContextMenu');
+        console.log('createContextMenu ' + list.length);
         // console.log(list);
         // let ul = this.mainDomNode.querySelector(".contextmenu .menu-options");
         let ul = document.querySelector(".contextmenu .menu-options");
@@ -1161,6 +1191,7 @@ export class Framework {
             li.setAttribute('class', 'menu-option');
             li.innerHTML = list[i][0];
             li.addEventListener('click', list[i][1]);
+            console.log(list[i][0]);
             ul.appendChild(li);
         }
 
