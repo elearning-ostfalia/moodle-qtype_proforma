@@ -316,8 +316,10 @@ $string['rename'] = 'Umbenennen';
 $string['loadfile'] = 'Datei laden';
 $string['newfolder'] = 'Neues Verzeichnis';
 $string['newemptyfile'] = 'Neue leere Datei';
-$string['enterfolder'] = 'Verzeichnisname';
-$string['enterfilename'] = 'Dateiname';
+$string['enterfoldername'] = 'Neuer Verzeichnisname';
+$string['enterfilename'] = 'Neuer Dateiname';
+$string['alreadyexists'] = 'existiert bereits';
+
 
 // Errors.
 $string['errinvalidtask'] = 'Datei ist keine ProFormA-Aufgabendatei.';

@@ -194,16 +194,23 @@ export class FileNode extends TreeNode {
         };
         this.boundHandleRename = event => {
             this.getFramework().handleClick(event);
-            let name = prompt("Please enter new name:", this.name);
-            if (name !== null && name.length > 0) {
-                const oldpath = this.getPath();
-                this.name = name;
-                this.element.innerHTML = name;
-                const newpath = this.getPath();
-                this.getFramework().syncer.renameFile(oldpath, newpath);
-
-                // this.element.tabIndex = 0;
-            }
+            let thecontext = this;
+            Str.get_strings([
+                {key: 'enterfilename', component: 'qtype_proforma'},
+            ]).done(function(strings) {
+                let name = prompt(strings[0] + ':', thecontext.name);
+                if (name !== null && name.length > 0) {
+                    const oldpath = thecontext.getPath();
+                    thecontext.name = name;
+                    thecontext.element.innerHTML = name;
+                    const newpath = thecontext.getPath();
+                    thecontext.getFramework().syncer.renameFile(oldpath, newpath);
+                    // thecontext.element.tabIndex = 0;
+                }
+            }) //. fail(notification.exception)
+                .fail(function (response) {
+                    console.error(response);
+                });
         };
         this.boundHandleClick = event => {
             this.getFramework().toggleContextmenu("hide");
@@ -290,18 +297,26 @@ export class FolderNode extends TreeNode {
         };
         this.boundHandleNewFile = event => {
             this.getFramework().handleClick(event);
-            let filename = prompt("Please enter filename:", "");
-            if (filename !== null && filename.length > 0) {
-                if (!this.isNameChildUnique(filename)) {
-                    alert(filename + ' already exists');
-                    return;
+            let thecontext = this;
+            Str.get_strings([
+                {key: 'enterfilename', component: 'qtype_proforma'},
+            ]).done(function(strings) {
+                let filename = prompt(strings[0] + ':', "");
+                if (filename !== null && filename.length > 0) {
+                    if (!thecontext.isNameChildUnique(filename)) {
+                        alert(filename + ' already exists');
+                        return;
+                    }
+                    let node = new FileNode(filename);
+                    thecontext.appendFile(node);
+                    node.displayInTreeview(thecontext.element.querySelector('[role="group"]'));
+                    thecontext.expand(true);
+                    thecontext.getFramework().syncer.newfile(node.getPath());
                 }
-                let node = new FileNode(filename);
-                this.appendFile(node);
-                node.displayInTreeview(this.element.querySelector('[role="group"]'));
-                this.expand(true);
-                this.getFramework().syncer.newfile(node.getPath());
-            }
+            }) //. fail(notification.exception)
+                .fail(function (response) {
+                    console.error(response);
+                });
         };
         this.boundHandleLoadFile = event => {
             this.getFramework().handleClick(event);
@@ -384,19 +399,28 @@ export class FolderNode extends TreeNode {
         };
         this.boundHandleNewFolder = event => {
             this.getFramework().handleClick(event);
-            let foldername = prompt("Please enter foldername:", "");
-            if (foldername !== null && foldername.length > 0) {
-                if (!this.isNameChildUnique(foldername)) {
-                    alert(foldername + ' already exists');
-                    return;
+            let thecontext = this;
+            Str.get_strings([
+                {key: 'enterfolder', component: 'qtype_proforma'},
+            ]).done(function(strings) {
+                let foldername = prompt(strings[0] + ':', "");
+                if (foldername !== null && foldername.length > 0) {
+                    if (!thecontext.isNameChildUnique(foldername)) {
+                        alert(foldername + ' already exists');
+                        return;
+                    }
+                    let node = new FolderNode(foldername);
+                    thecontext.appendFolder(node);
+                    node.displayInTreeview(thecontext.element.querySelector('[role="group"]'));
+                    thecontext.expand(true);
+                    console.log('create new folder ' + node.getPath());
+                    thecontext.getFramework().syncer.mkdir(node.getPath());
                 }
-                let node = new FolderNode(foldername);
-                this.appendFolder(node);
-                node.displayInTreeview(this.element.querySelector('[role="group"]'));
-                this.expand(true);
-                console.log('create new folder ' + node.getPath());
-                this.getFramework().syncer.mkdir(node.getPath());
-            }
+
+            }) //. fail(notification.exception)
+                .fail(function (response) {
+                    console.error(response);
+                });
         };
 
         this.boundHandleClick = event => {
@@ -409,6 +433,28 @@ export class FolderNode extends TreeNode {
         };
         this.boundHandleRename = event => {
             this.getFramework().handleClick(event);
+            let thecontext = this;
+            Str.get_strings([
+                {key: 'enterfoldername', component: 'qtype_proforma'},
+            ]).done(function(strings) {
+                let name = prompt(strings[0] + ':', thecontext.name);
+                if (name !== null && name.length > 0) {
+                    if (!thecontext.parent.isNameChildUnique(name)) {
+                        alert(name + ' already exists');
+                        return;
+                    }
+                    const oldpath = thecontext.getPath() + '/.';
+                    thecontext.name = name;
+                    thecontext.element.querySelector('.name').innerHTML = name;
+                    const newpath = thecontext.getPath() + '/.';
+                    thecontext.getFramework().syncer.renameFolder(oldpath, newpath);
+                }
+            }) //. fail(notification.exception)
+                .fail(function (response) {
+                    console.error(response);
+                });
+
+            /*
             let name = prompt("Please enter new name:", this.name);
             if (name !== null && name.length > 0) {
                 if (!this.parent.isNameChildUnique(name)) {
@@ -420,7 +466,7 @@ export class FolderNode extends TreeNode {
                 this.element.querySelector('.name').innerHTML = name;
                 const newpath = this.getPath() + '/.';
                 this.getFramework().syncer.renameFolder(oldpath, newpath);
-            }
+            }*/
         };
         this.toggleExpand = () => {
             this.element.setAttribute('aria-expanded', !this.isExpanded());

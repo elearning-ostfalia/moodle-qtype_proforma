@@ -335,8 +335,9 @@ $string['rename'] = 'Rename';
 $string['loadfile'] = 'Load file';
 $string['newfolder'] = 'New folder';
 $string['newemptyfile'] = 'New empty file';
-$string['enterfolder'] = 'Foldername';
-$string['enterfilename'] = 'Filename';
+$string['enterfoldername'] = 'New foldername';
+$string['enterfilename'] = 'New filename';
+$string['alreadyexists'] = 'already exists';
 
 
 // Errors.
