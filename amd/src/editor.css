@@ -7,12 +7,18 @@ ul[role="tree"] {
     font-weight: 100;
 }
 
+ul[role="group"] {
+    /*background: yellowgreen;*/
+    padding-left: 20px;
+
+}
+
 [role="treeitem"].doc::before {
     /* document icon from https://css.gg/file-document (MIT license)
     Copyright 2019-2020 css.gg */
     content: url("data:image/svg+xml;utf8,<svg \
-    width='14' \
-    height='14' \
+    width='18' \
+    height='18' \
     viewBox='0 0 24 24' \
     fill='none' \
     xmlns='http://www.w3.org/2000/svg'> \
@@ -154,7 +160,12 @@ ul[role="tree"] {
 
 /* Editor tabs */
 .ide .tab {
-    border-radius: 2px;
+    border-radius: 3px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-color: dimgrey;
+    border-bottom: 0;
+    border-width: 1px;
 }
 .ide .tab .close:hover {
     background: rgba(0, 0, 0, 0.2);
