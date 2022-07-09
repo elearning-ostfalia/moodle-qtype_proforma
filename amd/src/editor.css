@@ -98,8 +98,8 @@ ul[role="tree"] {
 
 [role="treeitem"].focus,
 [role="treeitem"] span.focus {
-    border-color: black;
-    background-color: #eee;
+    /*border-color: darkblue;*/
+    background-color: steelblue;
 }
 
 /*
@@ -113,7 +113,8 @@ ul[role="tree"] {
 [role="treeitem"].dragover,
 [role="treeitem"] span.dragover {
 /*    width: 10em;*/
-    background-color: #ddd;
+    background-color: lightsteelblue;
+    color: black;
 }
 
 /* Split view */

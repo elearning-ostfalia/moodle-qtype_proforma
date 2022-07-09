@@ -338,7 +338,8 @@ $string['newemptyfile'] = 'New empty file';
 $string['enterfoldername'] = 'New foldername';
 $string['enterfilename'] = 'New filename';
 $string['alreadyexists'] = '{$a} already exists';
-
+$string['deletefile'] = 'Are you sure that you want to delete file {$a}?';
+$string['deletefolder'] = 'Are you sure that you want to delete folder {$a}?';
 
 // Errors.
 $string['errinvalidtask'] = 'File is no ProFormA task file.';

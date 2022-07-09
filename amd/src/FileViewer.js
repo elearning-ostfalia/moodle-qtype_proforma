@@ -95,6 +95,7 @@ class Str {
         // return Promise.resolve(result);
     }
 }
+function getString(text) { return text; }
 
 
 
@@ -178,6 +179,13 @@ class TreeNode {
         let text = await getString('alreadyexists', 'qtype_proforma', name);
         alert(text);
     }
+
+    async confirmAndDo(prompt, callback, name) {
+        let text = await getString(prompt, 'qtype_proforma', name);
+        if (confirm(text)) {
+            callback();
+        }
+    }
 }
 
 /**
@@ -224,9 +232,13 @@ export class FileNode extends TreeNode {
         this.mode = FileNode.getEditorModeFromFilename(this.name);
         this.handleDelete = event => {
             this.getFramework().handleClick(event);
-            this.getFramework().syncer.deleteFileOrFolder(this.getPath());
-            this.element.remove();
-            this.parent.files = this.parent.files.filter(item => item !== this);
+            let context = this;
+            this.confirmAndDo('deletefile', function() {
+                context.getFramework().deleteEditor(context);
+                context.getFramework().syncer.deleteFileOrFolder(context.getPath());
+                context.element.remove();
+                context.parent.files = context.parent.files.filter(item => item !== context);
+            }, this.getPath());
         };
         this.boundHandleRename = event => {
             this.getFramework().handleClick(event);
@@ -330,10 +342,13 @@ export class FolderNode extends TreeNode {
         this.folders = []; // Empty list of folders.
         this.handleDelete = event => {
             this.getFramework().handleClick(event);
-            this.getFramework().syncer.deleteFileOrFolder(this.getPath() + '/.');
-            this.element.remove();
-            this.parent.folders = this.parent.folders.filter(item => item !== this);
-            // console.log(RootNode.projects);
+            let context = this;
+            this.confirmAndDo('deletefolder', function() {
+                context.getFramework().syncer.deleteFileOrFolder(context.getPath() + '/.');
+                context.element.remove();
+                context.parent.folders = context.parent.folders.filter(item => item !== context);
+                // console.log(RootNode.projects);
+            }, this.getPath());
         };
         this.boundHandleNewFile = event => {
             this.getFramework().handleClick(event);
@@ -804,9 +819,9 @@ class EditorStack {
     }
 
     _delete(item) {
-        console.log('** Delete item from editor');
         for (let i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i] === item) {
+                console.log('** Delete item from editor');
                 // Read back (modified) content
                 this.nodes[i].fileNode.updateContent(this.nodes[i].editor.getValue());
 
@@ -822,6 +837,15 @@ class EditorStack {
         console.error('could not find filenode');
     }
 
+    deleteEditor(filenode) {
+        alert('todo close codemirror window');
+        for (let i = 0; i < this.nodes.length; i++) {
+            if (this.nodes[i].fileNode === filenode) {
+                this._delete(this.nodes[i]);
+                return;
+            }
+        }
+    }
     addEditor(filenode) {
         if (EditorStack.maxEditors == this.nodes.length) {
             alert('maximum number of editors reached');
@@ -1152,6 +1176,9 @@ export class Framework {
     }
     addEditor(filenode) {
         this.editorstack.addEditor(filenode);
+    }
+    deleteEditor(filenode) {
+        this.editorstack.deleteEditor(filenode);
     }
 
     findNodeByPath(path) {
