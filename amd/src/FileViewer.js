@@ -496,20 +496,6 @@ export class FolderNode extends TreeNode {
                 .fail(function (response) {
                     console.error(response);
                 });
-
-            /*
-            let name = prompt("Please enter new name:", this.name);
-            if (name !== null && name.length > 0) {
-                if (!this.parent.isNameChildUnique(name)) {
-                    alert(name + ' already exists');
-                    return;
-                }
-                const oldpath = this.getPath() + '/.';
-                this.name = name;
-                this.element.querySelector('.name').innerHTML = name;
-                const newpath = this.getPath() + '/.';
-                this.getFramework().syncer.renameFolder(oldpath, newpath);
-            }*/
         };
         this.toggleExpand = () => {
             this.element.setAttribute('aria-expanded', !this.isExpanded());
@@ -638,12 +624,8 @@ export class FolderNode extends TreeNode {
         const li = super.displayInTreeview(domnode);
         li.setAttribute('aria-expanded', 'false');
 
-        const span1 = document.createElement('span');
-        span1.classList.add('before');
-        span1.addEventListener('click', this.toggleExpand);
-        li.appendChild(span1);
-
         const span2 = document.createElement('span');
+        span2.addEventListener('click', this.toggleExpand);
         span2.innerHTML = this.name;
         span2.classList.add('name');
         span2.addEventListener('click', this.boundHandleClick);

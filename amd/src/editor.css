@@ -41,7 +41,7 @@ ul[role="tree"] {
     display: block;
 }
 
-[role="treeitem"][aria-expanded="false"] > .before::before {
+[role="treeitem"][aria-expanded="false"] > .name::before {
     /* COLLECTION: Akar Interface Icons
     LICENSE: MIT License
     AUTHOR: artcoholic
@@ -51,11 +51,11 @@ ul[role="tree"] {
         <path d='M22 19V9C22 7.89543 21.1046 7 20 7H13.2361C12.4785 7 11.786 6.572 11.4472 5.89443L10.5528 4.10557C10.214 3.428 9.52148 3 8.76393 3H4C2.89543 3 2 3.89543 2 5V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19Z' \
         stroke='grey' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/> \
     </svg>" );
-    display: inline;
+    display: inline-block;
     padding-right: 3px;
     vertical-align: middle;
 }
-[role="treeitem"][aria-expanded="true"] > .before::before {
+[role="treeitem"][aria-expanded="true"] > .name::before {
     /* COLLECTION: Fluent Ui Icons Outlined
     LICENSE: MIT License
     AUTHOR: Microsoft
@@ -65,15 +65,16 @@ ul[role="tree"] {
     <path d='M20 9.50195V8.74985C20 7.50721 18.9926 6.49985 17.75 6.49985H12.0247L9.64368 4.51995C9.23959 \
     4.18393 8.73063 3.99997 8.20509 3.99997H4.24957C3.00724 3.99997 2 5.00686 1.99957 6.24919L1.99561 17.7492C1.99518 18.9921 3.00266 20 4.24561 20H4.27196C4.27607 20 4.28019 20 4.28431 20H18.4693C19.2723 20 19.9723 19.4535 20.167 18.6745L21.9169 11.6765C22.1931 10.5719 21.3577 9.50195 20.2192 9.50195H20ZM4.24957 5.49997H8.20509C8.38027 5.49997 8.54993 5.56129 8.68462 5.6733L11.2741 7.82652C11.4088 7.93852 11.5784 7.99985 11.7536 7.99985H17.75C18.1642 7.99985 18.5 8.33563 18.5 8.74985V9.50195H6.42385C5.39136 9.50195 4.49137 10.2047 4.241 11.2064L3.49684 14.1837L3.49957 6.24971C3.49971 5.8356 3.83546 5.49997 4.24957 5.49997ZM5.69623 11.5701C5.77969 11.2362 6.07969 11.002 6.42385 11.002H20.2192C20.3819 11.002 20.5012 11.1548 20.4617 11.3126L18.7119 18.3107C18.684 18.4219 18.584 18.5 18.4693 18.5H4.28431C4.12167 18.5 4.00233 18.3472 4.04177 18.1894L5.69623 11.5701Z' fill='grey'/> \
     </svg>");
-    display: inline;
+    display: inline-block;
     padding-right: 3px;
     vertical-align: middle;
 }
 
-/* [role="treeitem"] span {*/
-
+[role="treeitem"] span,
 [role="treeitem"] {
-    width: fit-content;
+    /*width: fit-content;*/
+    /*width: 10em; *//* enlarge for easier dropping */
+    min-width: fit-content;
     margin: 0;
     padding: 0; /* Vertical distance between items */
 /*    padding: 0.1em; *//* Vertical distance between items */
@@ -104,13 +105,14 @@ ul[role="tree"] {
 /*
 [role="treeitem"].hover,
 [role="treeitem"] span:hover {
+    width: 10em;
     background-color: #ddd;
-}
-*/
+}*/
 
 
 [role="treeitem"].dragover,
 [role="treeitem"] span.dragover {
+/*    width: 10em;*/
     background-color: #ddd;
 }
 
