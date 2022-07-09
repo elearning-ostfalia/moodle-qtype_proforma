@@ -11,21 +11,17 @@
  * @description  after page has loaded initialize all treeitems based on the role=treeitem
  */
 
-// import {ProjectNode} from "./FileViewer";
-
 
 // import {Framework, RootNode} from "./FileViewer";
 
-// import { Syncer } from "./MoodleSyncer";
+// import {FakeSyncer} from "./FakeSyncer";
 
 Promise.all([
-//    import('/amd/src/Tree.js'),
-    import('./FileViewer.js')
+    import('./FileViewer.js'),
+    import('./FakeSyncer.js')
 //    import('/amd/src/FileViewer.js') // inside Moodle
 ])
-    .then(([
-//        tree,
-               fileviewer]) => {
+    .then(([fileviewer, fakesyncer]) => {
         console.log("editor.js script started");
 
         function docReady(fn) {
@@ -45,18 +41,20 @@ Promise.all([
             const options1 = [];
 
             const explorer1 = document.getElementById('fileexplorer1');
-            let syncer1 = new fileviewer.Syncer(options1);
             let framework1 = new fileviewer.Framework();
             framework1.buildFramework(explorer1);
+
+            let syncer1 = new fakesyncer.FakeSyncer(options1);
 //            let submission1 = new fileviewer.RootNode('Submission', framework1);
             framework1.init(explorer1, syncer1, false);
 
             // # 2
             const options2 = [];
             const explorer2 = document.getElementById('fileexplorer2');
-            let syncer2 = new fileviewer.Syncer(options2);
             let framework2 = new fileviewer.Framework();
             framework2.buildFramework(explorer2);
+
+            let syncer2 = new fakesyncer.FakeSyncer(options2);
 //            let submission2 = new fileviewer.RootNode('Submission', framework2);
             framework2.init(explorer2, syncer2, true);
 

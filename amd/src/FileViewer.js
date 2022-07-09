@@ -29,7 +29,7 @@
 
 // Use these imports for Moodle
 // -----------------------------
-
+/*
 import "./MoodleSyncer";
 
 import './codemirror-global';
@@ -44,15 +44,16 @@ import "./closebrackets";
 import "./active-line";
 
 // import {get_string as getString} from 'core/str';
-import Config from 'core/config';
+// import Config from 'core/config';
 import * as Str from 'core/str';
-import * as notification from 'core/notification';
+// import * as notification from 'core/notification';
 import {get_string as getString} from 'core/str';
-
+*/
 // Use this for editortest.html
 // -----------------------------
-/*
+
 import './codemirror-global.js';
+import "./FakeSyncer.js";
 
 import CodeMirror from "./codemirror/src/codemirror.js";
 import "./codemirror/mode/clike/clike.js";
@@ -66,7 +67,35 @@ class Config { // Fake
     static wwwroot = '';
     static sesskey = '';
 }
-*/
+class FakeAjaxResult {
+    constructor(result) {
+        this.result = result;
+    }
+    done(callback) {
+        callback(this.result);
+        return this;
+    }
+    fail(callback) {
+        return this;
+    }
+}
+class Str {
+    static get_strings(dict) {
+        console.log('fake get_strings');
+        console.log(dict);
+        let result = [];
+        let index = 0;
+        dict.forEach(function(item, index, array) {
+            // var value = dict[key];
+            result[index] = item['key'];
+        });
+        console.log(result);
+        return new FakeAjaxResult(result);
+        // return FakeAjaxResult.create(result);
+        // return Promise.resolve(result);
+    }
+}
+
 
 
 // 'use strict'; ecma6 code is always strict
@@ -951,7 +980,7 @@ export class Framework {
     resize: vertical;
     overflow: hidden;
     min-height: 150px">
-    <div class="menu" style="flex: none">menu</div>
+    <!--<div class="menu" style="flex: none">menu</div>-->
 
     <div class="body" style="display: flex; flex-direction: row; flex: 1 1 0; min-height: 0">
         <!--<div class="fake" style="min-width: 100px; flex: 1 0 0; overflow: auto;">Fake element</div> -->
@@ -979,7 +1008,7 @@ export class Framework {
         </div>
     </div>
 
-    <div class="status" style="flex: none">status</div>
+    <!--<div class="status" style="flex: none">status</div>-->
 </div>
 <p><!--<label>File or Folder Selected: <input id="last_action" type="text" size="15" readonly=""></label>--></p>
 `;
