@@ -484,8 +484,8 @@ export class FolderNode extends TreeNode {
         this.boundHandleClick = event => {
             console.log('FolderNode click');
             this.getFramework().toggleContextmenu("hide");
-            // TreeNode.setFocusTo(this.element);
-            // this.element.classList.add('focus');
+            // Problem: child nodes also get focus
+            this.getFramework().setFocusTo(this.element);
             event.stopPropagation();
             event.preventDefault();
         };
@@ -640,7 +640,7 @@ export class FolderNode extends TreeNode {
         li.setAttribute('aria-expanded', 'false');
 
         const span2 = document.createElement('span');
-        span2.addEventListener('click', this.toggleExpand);
+        span2.addEventListener('dblclick', this.toggleExpand);
         span2.innerHTML = this.name;
         span2.classList.add('name');
         span2.addEventListener('click', this.boundHandleClick);
@@ -1211,7 +1211,7 @@ export class Framework {
         }
         let root;
         if (this.roots.length == 0) {
-            root = new RootNode('/', this);
+            root = new RootNode('Submission', this);
         } else {
             root = this.roots[0];
         }

@@ -102,9 +102,8 @@ ul[role="group"] {
     outline: 0;
 }
 
-[role="treeitem"].focus,
-[role="treeitem"] span.focus {
-    /*border-color: darkblue;*/
+[role="treeitem"].focus.doc,
+[role="treeitem"].focus > span {
     background-color: steelblue;
 }
 
@@ -202,7 +201,7 @@ ul[role="group"] {
 }
 
 .contextmenu .menu-options .menu-option {
-    font-size: 80%;
+    font-size: 90%;
     padding: 1px 4px 1px 5px;
     cursor: pointer;
 }
