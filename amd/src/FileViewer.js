@@ -777,7 +777,7 @@ class EditorStack {
         this.activeNode = undefined; // activeNode associated with Codemirror
 
         this.nodes = []; // all filenodes with open editor
-        this.donNodeEditor = donNodeEditor;
+        // this.donNodeEditor = donNodeEditor;
         this.donNodeTabs = donNodeTabs;
         this.focus = undefined; // the tab that has got the focus
         this.framework = framework;
@@ -838,9 +838,10 @@ class EditorStack {
     }
 
     deleteEditor(filenode) {
-        alert('todo close codemirror window');
         for (let i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i].fileNode === filenode) {
+                this.nodes[i].tab.remove();
+                this.nodes[i].tab = undefined;
                 this._delete(this.nodes[i]);
                 return;
             }
