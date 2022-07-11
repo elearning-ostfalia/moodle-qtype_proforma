@@ -450,6 +450,8 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
 
         debugging('itemid = ' . $itemid);
         debugging('context = ' . $options->context->id);
+// DEBUGGING
+
         $clientid = uniqid();
 
         $params = new stdClass();
@@ -481,7 +483,20 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
         /////// $draftid = file_get_unused_draft_itemid();
-        // $itemid = 581155797;
+/*
+        $files = $qa->get_last_qt_files('attachments', $options->context->id);
+        $itemid = null;
+        $responsefiles = [];
+        foreach ($files as $file) {
+            debugging('file: ' . $file->get_itemid() . ' => ' . $file->get_filepath() . $file->get_filename());
+            // var_dump($file);
+            $itemid = $file->get_itemid();
+            $responsefiles[] = $file->get_filepath() . $file->get_filename();
+        }
+        debugging('itemid = ' . $itemid);
+        debugging('context = ' . $options->context->id);
+*/
+
         $itemid = $qa->prepare_response_files_draft_itemid('attachments', $options->context->id);
 
         // $sql = 'select * from mdl_files where filearea="draft" and itemid=' . $itemid . ';';
@@ -521,6 +536,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         global $USER;
         $usercontext = context_user::instance($USER->id);
         $params->contextid = $usercontext->id;
+        debugging('usercontext = ' . $params->contextid);
 
         // $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', true);
         // $options->filecount = count($files);

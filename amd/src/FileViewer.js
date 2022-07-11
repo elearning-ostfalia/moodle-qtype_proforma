@@ -25,6 +25,10 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+
+/** NOTE:
+ * Currently creating subfolders is disabled, because the moodle question filesaver does not support it */
+
 /* eslint-disable no-unused-vars */
 
 // Use these imports for Moodle
@@ -590,6 +594,7 @@ export class FolderNode extends TreeNode {
                 this._addFileFromOs(file, recurseinit);
             });
         } else if (item.isDirectory) {
+/*******
             // Create new folder
             let node = new FolderNode(item.name);
             this.appendFolder(node);
@@ -605,6 +610,7 @@ export class FolderNode extends TreeNode {
                     node._getFileTree(entries[i], path + item.name + "/");
                 }
             });
+ */
         }
     }
 
@@ -676,7 +682,7 @@ export class FolderNode extends TreeNode {
             thecontext.getFramework().createContextMenu([
                 [strings[0] + '...', thecontext.boundHandleNewFile], // newemptyfile
                 [strings[1] + '...', thecontext.boundHandleLoadFile], // loadfile
-                [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
+//***                [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
                 [strings[3], thecontext.boundHandleRename], // Rename
                 [strings[4] + '...', thecontext.handleDelete], // delete
             ]);
@@ -717,7 +723,7 @@ export class RootNode extends FolderNode {
             thecontext.getFramework().createContextMenu([
                 [strings[0] + '...', thecontext.boundHandleNewFile], // newemptyfile
                 [strings[1] + '...', thecontext.boundHandleLoadFile], // loadfile
-                [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
+//***                [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
             ]);
         }) //. fail(notification.exception)
             .fail(function (response) {
