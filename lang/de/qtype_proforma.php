@@ -321,6 +321,7 @@ $string['enterfilename'] = 'Neuer Dateiname';
 $string['alreadyexists'] = '{$a} existiert bereits';
 $string['deletefile'] = 'Soll die Datei {$a} wirklich gelöscht werden?';
 $string['deletefolder'] = 'Soll das Verzeichnis {$a} wirklich gelöscht werden?';
+$string['rootsubmission'] = 'Lösung';
 
 
 // Errors.

@@ -29,7 +29,6 @@
 
 // Use these imports for Moodle
 // -----------------------------
-/*
 import "./MoodleSyncer";
 
 import './codemirror-global';
@@ -43,15 +42,14 @@ import "./matchbrackets";
 import "./closebrackets";
 import "./active-line";
 
-// import {get_string as getString} from 'core/str';
 // import Config from 'core/config';
 import * as Str from 'core/str';
 // import * as notification from 'core/notification';
 import {get_string as getString} from 'core/str';
-*/
+
 // Use this for editortest.html
 // -----------------------------
-
+/*
 import './codemirror-global.js';
 import "./FakeSyncer.js";
 
@@ -96,7 +94,7 @@ class Str {
     }
 }
 function getString(text) { return text; }
-
+*/
 
 
 // 'use strict'; ecma6 code is always strict
@@ -322,7 +320,7 @@ export class FileNode extends TreeNode {
             {key: 'rename', component: 'qtype_proforma'}
         ]).done(function(strings) {
             thecontext.getFramework().createContextMenu([
-                [strings[0], thecontext.handleDelete], // Delete
+                [strings[0] + '...', thecontext.handleDelete], // Delete
                 [strings[1], thecontext.boundHandleRename] // Rename
             ]);
         }) /*.fail(notification.exception)*/
@@ -680,7 +678,7 @@ export class FolderNode extends TreeNode {
                 [strings[1] + '...', thecontext.boundHandleLoadFile], // loadfile
                 [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
                 [strings[3], thecontext.boundHandleRename], // Rename
-                [strings[4], thecontext.handleDelete], // delete
+                [strings[4] + '...', thecontext.handleDelete], // delete
             ]);
         }) //. fail(notification.exception)
             .fail(function (response) {
@@ -1207,19 +1205,30 @@ export class Framework {
     createPath(path) {
         console.log('Framework: create folder ' + path);
         // Assume first char is always /
-        if (path[0] != '/') {
+        if (path[0] !== '/') {
             console.error('first char in path is not /: ' + path);
         }
-        let root;
-        if (this.roots.length == 0) {
-            root = new RootNode('Submission', this);
-        } else {
-            root = this.roots[0];
-        }
-
         let pathsplit = path.split('/');
         pathsplit.shift(); // first element in array is always empty
-        return root.createPath(pathsplit);
+
+        let root;
+        let context = this;
+        if (this.roots.length === 0) {
+            root = new RootNode('Submission', context);
+            return root.createPath(pathsplit);
+/*
+            getString('rootsubmission', 'qtype_proforma')
+                .done(function(string) {
+                    root = new RootNode(string, context);
+                    return root.createPath(pathsplit);
+                })
+                .fail(function (response) {
+                    console.error(response);
+                });*/
+        } else {
+            root = this.roots[0];
+            return root.createPath(pathsplit);
+        }
     }
 
     createContextMenu(list) {

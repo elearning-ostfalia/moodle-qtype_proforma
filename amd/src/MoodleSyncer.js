@@ -249,7 +249,7 @@ export class MoodleSyncer extends Syncer {
     list(framework) {
         console.log('Start list');
         function stripSlashes(path) {
-            if (path.length > 1 && path.substring(path.length-1) == '/') { // Strip '/'
+            if (path.length > 1 && path.substring(path.length-1) === '/') { // Strip '/'
                 path = path.substring(0, path.length-1);
             }
             return path;
@@ -259,9 +259,10 @@ export class MoodleSyncer extends Syncer {
             params['filepath'] = path;
             this._sendRequest('list', params)
                 .then (json => {
+                    let firstFile = undefined;
                     json.list.forEach(item => {
                         // console.log('syncer List Response');
-                        if (item.filename == '.') {
+                        if (item.filename === '.') {
                             // Create Folder.
                             let path = stripSlashes(item.filepath);
                             console.log('Syncer: create folder ' + path);
@@ -271,7 +272,13 @@ export class MoodleSyncer extends Syncer {
                         } else {
                             console.log('Syncer: create file ' + item.filename);
                             let folder = framework.createPath(stripSlashes(item.filepath));
-                            folder.appendFile(new FileNode(item.filename));
+                            let filenode = new FileNode(item.filename);
+                            folder.appendFile(filenode);
+                            if (firstFile === undefined) {
+                                firstFile = filenode;
+                                // Open first file in editor.
+                                framework.addEditor(filenode);
+                            }
                         }
                     });
                     resolve();
