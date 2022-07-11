@@ -318,6 +318,8 @@ export class MoodleSyncer extends Syncer {
         formData.append('client_id', this.options['client_id']);
         formData.append('title', file.name);
         formData.append('overwrite', overwrite);
+        formData.append('maxbytes', this.options['maxbytes']);
+        formData.append('areamaxbytes', this.options['areamaxbytes']);
         formData.append('savepath', '/');
         formData.append('repo_id', this.options['repo_id']);
         formData.append('itemid', this.options['itemid']);

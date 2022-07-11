@@ -631,7 +631,10 @@ abstract class base_form_creator {
         }
 
         // Filepicker options.
-        if (array_key_exists(qtype_proforma::RESPONSE_FILEPICKER, $this->_responseformats)) {
+        if (array_key_exists(qtype_proforma::RESPONSE_FILEPICKER, $this->_responseformats) or
+            array_key_exists(qtype_proforma::RESPONSE_EXPLORER, $this->_responseformats)) {
+            // Also for Explorer/IDE.
+
             $choices = get_max_upload_sizes($CFG->maxbytes, $COURSE->maxbytes,
             get_config('qtype_proforma', 'maxbytes'));
 
@@ -645,7 +648,10 @@ abstract class base_form_creator {
             $filepickeroptions[] = $mform->createElement('text', 'filetypes', $name2);
             $mform->addGroup($filepickeroptions, 'filepickergroup',
                 get_string('filepickeroptions', 'qtype_proforma'), array(' '), false);
-            $mform->hideIf('filepickergroup', 'responseformat', 'neq', 'filepicker');
+            $mform->hideIf('filepickergroup', 'responseformat', 'eq', 'editor');
+            $mform->hideIf('filepickergroup', 'responseformat', 'eq', 'versioncontrol');
+            $mform->hideIf('attachments', 'responseformat', 'eq', 'explorer');
+            $mform->hideIf('filetypes', 'responseformat', 'eq', 'explorer');
             $mform->addHelpButton('filepickergroup', 'acceptedfiletypes', 'qtype_proforma');
             $mform->setType('filetypes', PARAM_RAW);
         }

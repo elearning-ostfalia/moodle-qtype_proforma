@@ -897,7 +897,7 @@ class EditorStack {
             this.nodes.push(item);
             this._switchTo(item);
         } else {
-            alert('unknown mode');
+            console.error('unknown file mode');
         }
     }
 
