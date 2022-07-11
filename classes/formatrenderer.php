@@ -91,7 +91,7 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
      * returns the html fragment for the reponse area in readonly mode
      * @param $qa
      * @param $step
-     * @param $context
+     * @param $options
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
@@ -112,8 +112,7 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
      *
      * @param $qa
      * @param $step
-     * @param $lines
-     * @param $context
+     * @param $options
      * @return string
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
@@ -174,7 +173,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
      *
      * @param $qa
      * @param $step
-     * @param $context
+     * @param $options
      * @return string
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
@@ -222,7 +221,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
      *
      * @param $qa
      * @param $step
-     * @param $context
+     * @param $options
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
@@ -314,7 +313,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
      *
      * @param $qa
      * @param $step
-     * @param $context
+     * @param $options
      * @return string
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
@@ -341,7 +340,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
         } else if ($this->has_group_field($question)) {
             global $COURSE;
             $this->name = VCSGROUP;
-            $groupname = qtype_proforma\lib\get_groupname($context);
+            $groupname = qtype_proforma\lib\get_groupname($options->context);
             $attributes = array();
             $id = 'id_' . $qa->get_qt_field_name($this->name);
             $inputname = $qa->get_qt_field_name($this->name);
@@ -394,7 +393,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
      * @param $qa
      * @param $step
      * @param $lines
-     * @param $context
+     * @param $options
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
@@ -433,7 +432,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
      * returns the html fragment for the reponse area in readonly mode
      * @param $qa
      * @param $step
-     * @param $context
+     * @param $options
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
@@ -477,8 +476,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
      *
      * @param $qa
      * @param $step
-     * @param $lines
-     * @param $context
+     * @param $options
      * @return string
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
