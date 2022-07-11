@@ -144,8 +144,9 @@ Feature: DUPLICATE PROFORMA
     And I press "Cancel"
 
     # check for download link in "proforma-003"
-    When I choose "Preview" action for "Duplicated question name" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "Duplicated question name" "core_question > preview" page
+    # When I choose "Preview" action for "Duplicated question name" in the question bank
+    # And I switch to "questionpreview" window
     Then I should see "lib.txt"
     Then I should see "instruction.txt"
     And following "instruction.txt" should download file with between "17" and "20" bytes

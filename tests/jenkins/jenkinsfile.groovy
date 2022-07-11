@@ -9,7 +9,7 @@ def combinations = [
     ['310', '7.3', 'pgsql'],
     ['311', '7.4', 'pgsql'],
     ['400', '7.4', 'pgsql'],
-    ['master', '7.4', 'pgsql']
+    ['master', '8.0', 'pgsql']
 ];
 
 pipeline {
@@ -17,9 +17,9 @@ pipeline {
     parameters {
         choice(name: 'SOURCE_ORIGIN', choices: ['github', 'local'], description: 'Where to get source code from')
         booleanParam(name: 'DO_NOT_FETCH_MOODLE', defaultValue: true, description: 'Use Moodle code from disk')
-        choice(name: 'MOODLE_VERSION', choices: ['all', '39', '310', '311', 'master'], description: 'Run with specific Moodle version')
+        choice(name: 'MOODLE_VERSION', choices: ['all', '39', '310', '311', '400', 'master'], description: 'Run with specific Moodle version')
         choice(name: 'DATABASE_TYPE', choices: ['all', 'mysql', 'pgsql'], description: 'Run with specific database')
-        choice(name: 'PHP_VERSION', choices: ['all', '7.2', '7.3', '7.4'], description: 'Run with specific PHP version')
+        choice(name: 'PHP_VERSION', choices: ['all', '7.2', '7.3', '7.4', '8.0'], description: 'Run with specific PHP version')
     }
     stages {
         stage('init') {
@@ -112,9 +112,9 @@ def runTest(boolean DO_NOT_FETCH_MOODLE, String source_origin, String moodle_ver
             git url: 'https://github.com/elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading.git'
         }
         dir('moodle/question/type/proforma/tests/jenkins') {
-            echo '** Initialising test...'
-            sh('./jenkins_init.sh')
-            echo '** Starting tests...'
+            // echo '** Initialising test...'
+            // sh('./jenkins_init.sh')
+            echo '** Running tests...'
             sh('./jenkins_run.sh')
         }        
     } else {    

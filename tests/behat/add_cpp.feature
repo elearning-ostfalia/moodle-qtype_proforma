@@ -40,11 +40,12 @@ Feature: ADD C++ QUESTION
       | Response format          | filepicker                     |
       | Accepted file types      | .cpp                          |
       | Max. number of uploaded files | 1                         |
-      | Max. upload size         | 2MB                            |
       | Command for executing test | ./test1                      |
 
     # The default functions do not work for CodeMirror with Javascript.
     # So we must use other functions.
+    # Set upload size to 2MB
+    And I set the field "Max. upload size" to "2097152"
     And I set the field "testtitle[0]" to "C++ #1"
     And I set the codemirror "responsetemplate" to "// type your code here"
     # And I set the codemirror "modelsolution" to "// code for model solution"
@@ -88,13 +89,15 @@ Feature: ADD C++ QUESTION
       | Comment                  | a comment                      |
       | Accepted file types      | .cpp                           |
       | Max. number of uploaded files | 1                         |
-      | Max. upload size         | 2MB                            |
       | Response format          | filepicker                         |
 
     # Filpicker option => no response template, model solution is empry (file)
     # And the codemirror "responsetemplate" matches value "// type your code here"
     # And the codemirror "modelsolution" matches value "// code for model solution"
     # C++ #1
+    # Check for 2MB (until 3.11 and 2&nbsp;MB starting from 4.0)
+    # And the field "Max. upload size" matches regexp "/2(\&nbsp\;)?MB/i"
+    And the field "Max. upload size" matches value "2097152"
     And the field "testweight[0]" matches value "1"
     And the field "testdescription[0]" matches value ""
     And "main.c" "link" should exist

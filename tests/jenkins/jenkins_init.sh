@@ -6,7 +6,7 @@ export COMPOSE_INTERACTIVE_NO_CLI=1
 
 
 shutdown=1
-install=1
+install=0
 init=1
 
 # Change working directory
@@ -39,13 +39,14 @@ if [ "$shutdown" -eq "1" ]; then
     # Build Images
     echo -- build docker
     bin/moodle-docker-compose "build"
-    install=1
+    install=0
     init=1
 fi
 
 
 
 # Start up containers
+date
 echo -- docker up
 bin/moodle-docker-compose up -d
 
@@ -55,12 +56,14 @@ bin/moodle-docker-wait-for-db
 
 date
 
+docker ps
+
 # create and start praktomat, attach to moodle network
 # docker-compose -f docker-compose-test.yml build
 # docker-compose -f docker-compose-test.yml up
 
 if [ "$install" -eq "1" ]; then 
-    docker exec -i moodle-docker_webserver_1 apt-get update
+    bin/moodle-docker-compose exec webserver apt-get update
     # install Stylelint
     # docker exec -i moodle-docker_webserver_1 apt install -y nodejs
     # docker exec -i moodle-docker_webserver_1 apt install -y npm    
@@ -69,18 +72,19 @@ if [ "$install" -eq "1" ]; then
     
     # install PHP Mess detector
     echo --install PHP mess detector
-    docker exec -i moodle-docker_webserver_1 apt-get install -y wget
-    docker exec -i moodle-docker_webserver_1 wget -c https://phpmd.org/static/latest/phpmd.phar
-    docker exec -i moodle-docker_webserver_1 mv phpmd.phar /usr/bin/phpmd
-    docker exec -i moodle-docker_webserver_1 chmod +x /usr/bin/phpmd
+    # todo: use bin/moodle-docker-compose exec webserver 
+    bin/moodle-docker-compose exec webserver apt-get install -y wget
+    bin/moodle-docker-compose exec webserver wget -c https://phpmd.org/static/latest/phpmd.phar
+    bin/moodle-docker-compose exec webserver mv phpmd.phar /usr/bin/phpmd
+    bin/moodle-docker-compose exec webserver chmod +x /usr/bin/phpmd
     
 fi
 
 if [ "$init" -eq "1" ]; then 
     echo -- init phpunit
-    docker exec -i moodle-docker_webserver_1 php admin/tool/phpunit/cli/init.php
+    bin/moodle-docker-compose exec webserver php admin/tool/phpunit/cli/init.php
     echo -- init behat
-    docker exec -i moodle-docker_webserver_1 php admin/tool/behat/cli/init.php
+    bin/moodle-docker-compose exec webserver php admin/tool/behat/cli/init.php
 fi
 
 

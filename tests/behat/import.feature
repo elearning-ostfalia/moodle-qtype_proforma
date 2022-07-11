@@ -15,12 +15,13 @@ Feature: IMPORT (Moodle-XML format)
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
+    # And I log in as "teacher1"
+    # And I am on "Course 1" course homepage
 
   @javascript @_file_upload
   Scenario: import Java question.
-    When I navigate to "Question bank > Import" in current page administration
+    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
+    # When I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_xml" to "1"
     And I upload "question/type/proforma/tests/fixtures/javaquestion.xml" file to "Import" filemanager
     And I press "id_submitbutton"
@@ -70,7 +71,7 @@ Feature: IMPORT (Moodle-XML format)
 
   @javascript @_file_upload
   Scenario: import ProFormA question.
-    When I navigate to "Question bank > Import" in current page administration
+    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
     And I set the field "id_format_xml" to "1"
     And I upload "question/type/proforma/tests/fixtures/testquestion_v2.xml" file to "Import" filemanager
     And I press "id_submitbutton"
@@ -123,6 +124,7 @@ Feature: IMPORT (Moodle-XML format)
     And I press "Cancel"
 
     When I choose "Edit question" action for "second ProFormA question" in the question bank
+    # And I pause
     Then the following fields match these values:
       | Question name            | second ProFormA question           |
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
@@ -130,7 +132,6 @@ Feature: IMPORT (Moodle-XML format)
       | General feedback         | <p>You must not use a library function.</p>        |
       | Response format          | File picker                         |
       | Max. number of uploaded files          | 3                         |
-      | Max. upload size          | 10KB                         |
       | Accepted file types          | .java, .jar                         |
       | Syntax highlighting      | Python                         |
       | Comment                  | <p>Check if the code uses a library function.(äöüß)</p>                 |
@@ -139,6 +140,7 @@ Feature: IMPORT (Moodle-XML format)
       | UUID                     | UUID 1                     |
       | ProFormA Version         | 2.0                        |
 #      | Response template        | multiline              |
+    And the field "Max. upload size" matches value "10240"
     And the field with name "testweight[0]" matches value "0"
     And the field with name "testweight[1]" matches value "1"
     And the field with name "testtitle[0]" matches value "Compiler Test"
@@ -165,8 +167,9 @@ Feature: IMPORT (Moodle-XML format)
     And I press "Cancel"
 
     # check for download link in "proforma-003"
-    When I choose "Preview" action for "second ProFormA question" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "second ProFormA question" "core_question > preview" page logged in as teacher1
+    # When I choose "Preview" action for "second ProFormA question" in the question bank
+    # And I switch to "questionpreview" window
     Then I should see "lib.txt"
     Then I should see "instruction.txt"
     And following "instruction.txt" should download file with between "17" and "20" bytes

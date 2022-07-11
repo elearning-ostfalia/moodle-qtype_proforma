@@ -146,6 +146,31 @@ class behat_proforma extends behat_base {
     }
 
     /**
+     * Checks, the field matches a given regular expression value.
+     *
+     * @Then /^the field "(?P<field_string>(?:[^"]|\\")*)" matches regexp "(?P<field_value_string>(?:[^"]|\\")*)"$/
+     * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $field
+     * @param string $value
+     * @return void
+     */
+    /* WORKS BUT IS UNUSED SO FAR
+    public function the_field_matches_regexp($field, $value) {
+        // Get the field.
+        $formfield = behat_field_manager::get_form_field_from_label($field, $this);
+
+        // Checks if the provided regular expression matches the current field value.
+        $fieldvalue = $formfield->get_value();
+        $match = preg_match($value, $fieldvalue);
+        if ($match == 0) {
+            throw new ExpectationException(
+                'The \'' . $field . '\' value is \'' . $fieldvalue . '\', regular expression \'' . $value . '\' expected' ,
+                $this->getSession()
+            );
+        }
+    }*/
+
+    /**
      * Checks the value of a multiline field.
      *
      * @Then /^the field "(?P<label_string>(?:[^"]|\\")*)" matches multiline$/
@@ -307,4 +332,64 @@ class behat_proforma extends behat_base {
             );
         }
     }
+
+    /**
+     * Opens preview window on a particular question in the question bank UI.
+     * (Background: In Moodle 3 a new Window is opened for preview.
+     * In Moodle 4 the main window is used. So in Moodle 3 the user has to switch the window,
+     * whereas in Moodle 4 he/she does not need to switch window.
+     * In order to use the test scripts in both Moodle versions this step is added.)
+     *
+     *
+     * @When I open preview for :questionname in the question bank
+     * @param string $questionname the question name.
+     */
+    public function i_open_preview_for_the_question($questionname) {
+        // Open Question bank context
+        try {
+            $this->i_navigate_to_in_current_page_administration("Question bank");
+        } catch(Exception $err) {
+            // Moodle 3: Ignore
+        }
+        // Open the menu.
+        $this->execute("behat_general::i_click_on_in_the",
+            [get_string('edit'), 'link', $questionname, 'table_row']);
+
+        // Click the action from the menu.
+        $this->execute("behat_general::i_click_on_in_the",
+            ['Preview', 'link', $questionname, 'table_row']);
+
+        // Switch to window if it exists
+        try {
+            $this->getSession()->switchToWindow('questionpreview');
+        } catch(Exception $err) {
+            // Moodle 4: Ignore
+        }
+    }
+
+    /**
+     * Closes preview window (compatible for Moodle 3 and Moodle 4).
+     *
+     * @When I close preview
+     */
+    public function i_close_preview() {
+        // Moodle 3: Switch to main window
+        try {
+            $this->getSession()->switchToWindow(behat_general::MAIN_WINDOW_NAME);
+            return;
+        } catch(Exception $err) {
+            // Moodle 4: Ignore
+        }
+
+        // Moodle 4
+        try {
+            $this->execute('behat_general::i_click_on', ["Close preview", 'button']);
+            return;
+        } catch(Exception $err) {
+            // Moodle 3: Ignore
+        }
+
+
+    }
+
 }

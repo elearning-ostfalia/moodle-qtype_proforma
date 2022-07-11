@@ -341,7 +341,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
         } else if ($this->has_group_field($question)) {
             global $COURSE;
             $this->name = VCSGROUP;
-            $groupname = qtype_proforma\lib\get_groupname($COURSE->id);
+            $groupname = qtype_proforma\lib\get_groupname($context);
             $attributes = array();
             $id = 'id_' . $qa->get_qt_field_name($this->name);
             $inputname = $qa->get_qt_field_name($this->name);

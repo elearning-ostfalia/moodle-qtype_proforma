@@ -41,7 +41,7 @@ Feature: ADD JAVA FILEPICKER QUESTION
       | Title                    | JUnit test title               |
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
-      | Max. upload size         | 2MB                            |
+      | Max. upload size         | 2097152                            |
     # check that Response filename is not visible
     And I should not see "Response filename"
     And I set the codemirror "testcode_0" to "class TestClass {}"
@@ -72,7 +72,7 @@ Feature: ADD JAVA FILEPICKER QUESTION
       | Penalty for each incorrect try  | 10%                     |
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
-      | Max. upload size         | 2MB                            |
+      | Max. upload size         | 2097152                            |
 #      | compileweight              |      0                       |
       | testweight[0]              |      1                       |
     And I should not see "Response filename"
@@ -90,9 +90,11 @@ Feature: ADD JAVA FILEPICKER QUESTION
     Then I should see "java-question"
 
     # check for download link
-    When I choose "Preview" action for "java-question" in the question bank
-    And I switch to "questionpreview" window
+    #When I am on the "java-question" "core_question > preview" page
+    When I open preview for "java-question" in the question bank
+    # When I choose "Preview" action for "java-question" in the question bank
+    # And I switch to "questionpreview" window
     Then I should see "questiondownload.txt"
     And following "questiondownload.txt" should download file with between "65" and "67" bytes
 
-    And I switch to the main window
+    # And I switch to the main window
