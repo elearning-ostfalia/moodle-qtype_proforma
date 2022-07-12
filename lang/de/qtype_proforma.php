@@ -34,6 +34,8 @@ $string['pluginnamesummary'] = 'Automatisch bewertete Programmieraufgabe.';
 $string['proforma:runbulktest'] = 'Starten des ProFormA-Bulktests';
 $string['proforma:viewsysteminfo'] = 'ProFormA-Systeminformationen sehen';
 
+$string['infoexplorer'] = 'Aktuell unterstützt das Explorerformat keine Unterverzeichnisse.';
+
 
 $string['allowattachments'] = 'Max. Anzahl Dateien';
 $string['comment'] = 'Kommentar';
@@ -237,7 +239,7 @@ $string['entrypoint'] = 'Entrypoint';
 $string['executable'] = 'Befehl zum Ausführen des Tests';
 
 
-$string['filepickeroptions'] = 'Filepicker-Einstellungen';
+$string['filepickeroptions'] = 'Datei-Upload-Einstellungen';
 
 
 $string['all_or_nothing'] = 'alles oder nichts';

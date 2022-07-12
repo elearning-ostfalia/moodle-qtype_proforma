@@ -38,6 +38,9 @@ $string['allowattachments'] = 'Max. number of uploaded files';
 $string['formateditor'] = 'Editor';
 $string['formatfilepicker'] = 'File picker';
 $string['formatexplorer'] = 'File explorer (experimental)';
+$string['infoexplorer'] = 'currently subdirectories are not supported in explorer';
+
+
 
 $string['comment'] = 'Comment';
 $string['commentheader'] = 'Comment';
@@ -259,7 +262,7 @@ $string['testexecutable_help'] = 'How to execute the test program, e.g. \'./test
 
 
 $string['weight'] = 'Weight';
-$string['filepickeroptions'] = 'Filepicker options';
+$string['filepickeroptions'] = 'File upload options';
 
 $string['all_or_nothing'] = 'All or nothing';
 $string['weighted_sum'] = 'Weighted sum';

@@ -607,6 +607,8 @@ abstract class base_form_creator {
         $mform->addElement('header', 'responseoptions', get_string('responseoptions', 'qtype_proforma'));
         $mform->setExpanded('responseoptions');
 
+
+
         // Create select if there is more than one format available.
         switch (count($this->_responseformats)) {
             case 0:
@@ -620,6 +622,12 @@ abstract class base_form_creator {
                 $mform->addElement('select', 'responseformat',
                 get_string('responseformat', 'qtype_proforma'), $this->_responseformats);
                 break;
+        }
+
+        if (array_key_exists(qtype_proforma::RESPONSE_EXPLORER, $this->_responseformats)) {
+            $mform->addElement('static', 'explorerinfo', '', '<small>' . get_string('infoexplorer', 'qtype_proforma') . '</small>');
+            // Does not disappear...
+            $mform->hideIf('explorerinfo', 'responseformat', 'neq', 'explorer');
         }
 
         // Editor options.
@@ -654,6 +662,8 @@ abstract class base_form_creator {
             $mform->hideIf('filetypes', 'responseformat', 'eq', 'explorer');
             $mform->addHelpButton('filepickergroup', 'acceptedfiletypes', 'qtype_proforma');
             $mform->setType('filetypes', PARAM_RAW);
+
+
         }
 
         // Version control options.
