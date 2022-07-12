@@ -65,34 +65,18 @@ function _start(nodename, options) {
         alert('cannot find submit button');
         return;
     }
-    console.log(submitbutton);
-    let originalHandler = submitbutton.onsubmit;
-
     submitbutton.onclick = (event) => {
         console.log('save before submit');
         // alert('button submit');
-        // event.preventDefault();
         framework.save(); // synchronous action!
     };
 
     /*
-    let submitbutton = explorer.parentNode.parentNode.parentNode.querySelector('.submit');
-    if (submitbutton === undefined) {
-        alert('cannot find submit button');
-    } else {
-        // Add hook for saving files before submission
-        //
-        // let new_element = old_element.cloneNode(true);
-        // submitbutton.parentNode.replaceChild(new_element, submitbutton);
-        submitbutton.addEventListener('click', event => {
-            // event.preventDefault();
-            // event.stopPropagation();
-            // alert('CLICKED');
-            console.log('CLICKED');
-            framework.save();
-        });
-    }*/
-
+    window.onbeforeunload = function(){
+        // framework.save(); // synchronous action!
+        // return 'Are you sure you want to leave?';
+        return false;
+    };*/
 
 /*
     Promise.all([

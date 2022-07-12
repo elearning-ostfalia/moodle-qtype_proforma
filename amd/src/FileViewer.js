@@ -136,19 +136,19 @@ class TreeNode {
                 this.getFramework().toggleContextmenu('show');
             };
 
-            console.log(`contextmenu: ${event}`);
+            // console.log(`contextmenu: ${event}`);
 
             const origin = {
                 left: event.pageX,
                 top: event.pageY
             };
-            console.log(`${event.pageX}px ${event.pageY}px`);
-            console.log(event);
+            // console.log(`${event.pageX}px ${event.pageY}px`);
+            // console.log(event);
             showMenu(origin);
         };
         this.handleDragStart = event => {
             if (event.dataTransfer.getData('treeitem').length == 0) {
-                console.log('dragstart: ' + this.getPath());
+                // console.log('dragstart: ' + this.getPath());
                 event.dataTransfer.setData('treeitem', this.getPath());
             }
         };
@@ -156,12 +156,10 @@ class TreeNode {
     getPath() {
         return this.parent === undefined? this.name : this.parent.getPath() + '/' + this.name ;
     }
-
     // Override
     setContextMenu() {
         TreeNode.menu = undefined;
     }
-
     displayInTreeview(domnode) {
         const li = document.createElement('li');
         li.setAttribute('role', 'treeitem');
@@ -865,6 +863,9 @@ class EditorStack {
             let item = new EditorItem(filenode, this.editortextarea, tab, this.framework.readOnly);
             filenode.getContent()
                 .then(text => {
+                    if (text === undefined) {
+                        text = '???';
+                    }
                     item.editor.setValue(text);
                     item.editor.setOption("mode", filenode.mode);
                     // item.editor.setOption("readOnly", this.readOnly);

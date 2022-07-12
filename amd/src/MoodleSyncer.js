@@ -83,10 +83,16 @@ export class MoodleQuestionAttemptSyncer extends Syncer {
     list(framework) {
 //        console.log('Start listing question attempt files');
 //        console.log(this.options['files']);
+        let firstFile = undefined;
         this.options['files'].forEach(path => {
             let values = Syncer.splitFullname(path);
+            let node = new FileNode(values[1]);
             let folder = framework.createPath(values[0]);
-            folder.appendFile(new FileNode(values[1]));
+            folder.appendFile(node);
+            if (firstFile === undefined) {
+                firstFile = node;
+                framework.addEditor(node);
+            }
         });
         // Dummy
         return Promise.resolve();
@@ -97,8 +103,15 @@ export class MoodleQuestionAttemptSyncer extends Syncer {
             this.options.slot + '/' +
             this.options.itemid + path;
         const url = Config.wwwroot + '/pluginfile.php/' + this.options.contextid + addon;
-//        console.log(url);
+        console.log('Download response file: ' + url);
         const promise = fetch(url, { method: 'GET' })
+            .then( response => {
+                if (response.status != 200) {
+                    console.log(response);
+                    throw new Error(response.statusText);
+                }
+                return response;
+            })
             .then( response => response.text() )
             .catch( error => {
                 console.error('error:', error);
@@ -307,6 +320,7 @@ export class MoodleSyncer extends Syncer {
         const url = Config.wwwroot + '/repository/repository_ajax.php';
         const action = 'upload';
         console.log('upload ' + file.name + ' as ' + filename);
+        // alert('upload/overrite: ' + filename);
 
         // let values = MoodleSyncer.splitFullname(filename);
         // console.log(values[0]);
@@ -358,7 +372,7 @@ export class MoodleSyncer extends Syncer {
             return promise;
         } else {
             // synchronous
-            console.log('SYNCHRONOUSE UPDATE');
+            console.log('SYNCHRONOUSE UPDATE!');
             let request = new XMLHttpRequest();
             request.open('POST', url + '?action=' + action, false);
             request.send(formData);

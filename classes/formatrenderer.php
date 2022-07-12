@@ -447,8 +447,8 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
             $responsefiles[] = $file->get_filepath() . $file->get_filename();
         }
 
-        debugging('itemid = ' . $itemid);
-        debugging('context = ' . $options->context->id);
+        // debugging('itemid = ' . $itemid);
+        // debugging('context = ' . $options->context->id);
 // DEBUGGING
 
         $clientid = uniqid();
@@ -457,6 +457,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $params->contextid = $options->context->id;
         $params->itemid = $itemid;
         $params->readonly = true;
+        $params->subdirs = true;
         $params->usageid = $qa->get_usage_id();
         $params->slot = $qa->get_slot();
         $params->files = $responsefiles;
@@ -505,7 +506,6 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $clientid = uniqid();
         $defaults = array(
             'readonly' => false,
-            'maxbytes' => -1,
             'areamaxbytes' => $question->maxbytes,
             'maxbytes' => $question->maxbytes,
             'maxfiles' => -1,

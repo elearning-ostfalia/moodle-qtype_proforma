@@ -547,6 +547,9 @@ class qtype_proforma_question extends question_graded_automatically {
         // TODO: response_attachments gibt es nicht mehr...
         if ($component == 'question' && $filearea == 'response_attachments') {
             // Response attachments visible if the question has them.
+            if ($this->responseformat == qtype_proforma::RESPONSE_EXPLORER) {
+                return true;
+            }
             return $this->attachments != 0;
 
             /* } else if ($component == 'question' && $filearea == 'response_answer') {
