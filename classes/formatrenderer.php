@@ -44,9 +44,12 @@ if (!$PAGE->requires->is_head_done()) {
     $PAGE->requires->jquery_plugin('ui-css');
 
     $PAGE->requires->css('/question/type/proforma/amd/src/editor.css');
-    // Codemirror themes.
+    // Other codemirror themes.
     $PAGE->requires->css('/question/type/proforma/amd/src/abcdef.css');
-    $PAGE->requires->css('/question/type/proforma/amd/src/darcula.css');
+    // Main Codemirror theme is defined in plugin styles.css to have the definitions
+    // in the review history windows.
+    // Otherwise the question history window looks a bit strange.
+    // $PAGE->requires->css('/question/type/proforma/amd/src/darcula.css');
 }
 
 /**
