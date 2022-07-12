@@ -319,7 +319,10 @@ export class MoodleSyncer extends Syncer {
         formData.append('title', file.name);
         formData.append('overwrite', overwrite);
         formData.append('maxbytes', this.options['maxbytes']);
-        formData.append('areamaxbytes', this.options['areamaxbytes']);
+        // since we are uploading the file to the 'draft area',
+        // there is no point in limiting the size of the file area.
+        // The draft area is used for all users.
+        // formData.append('areamaxbytes', this.options['areamaxbytes']);
         formData.append('savepath', '/');
         formData.append('repo_id', this.options['repo_id']);
         formData.append('itemid', this.options['itemid']);
@@ -359,11 +362,13 @@ export class MoodleSyncer extends Syncer {
             let request = new XMLHttpRequest();
             request.open('POST', url + '?action=' + action, false);
             request.send(formData);
-            if (request.status === 200) {
-                console.log(request.responseText);
+            const jsonResponse = JSON.parse(request.responseText);
+            console.log(jsonResponse);
+            if (jsonResponse.error !== undefined) {
+                console.error(request.responseText);
+                alert(jsonResponse.error);
             }
         }
-
     }
 }
 
