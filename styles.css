@@ -138,11 +138,14 @@ ul[role="group"] {
 
 /* From Codemirror theme darcula: #2B2B2B */
 .ide .explorer {
-    background-color: #2B2B2B;
-    color: #A9B7C6;
+    background-color: #2b2b2b;
+    color: #a9b7c6;
 }
 
-.ide .menu, .ide .status, .ide .tabs, .ide .tab {
+.ide .menu,
+.ide .status,
+.ide .tabs,
+.ide .tab {
     background-color: lightgrey;
 }
 
@@ -162,8 +165,8 @@ ul[role="group"] {
 /* Editor tabs */
 .ide .tab {
     border-radius: 3px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
     border-color: dimgrey;
     border-bottom: 0;
     border-width: 1px;
@@ -179,8 +182,8 @@ ul[role="group"] {
 .ide .tab .close {
     font-size: 80%;
     font-weight: 100;
-    padding: 0px 2px 0px 2px;
-    margin: 0px 0px 0px 2px;
+    padding: 0 2px 0 2px;
+    margin: 0 0 0 2px;
     vertical-align: baseline;
     border-radius: 1px;
     float: none; /* needed to override value from Moodle, otherwise vertical-align is not applied */

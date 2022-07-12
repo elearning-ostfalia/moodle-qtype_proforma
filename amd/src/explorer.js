@@ -57,19 +57,17 @@ function _start(nodename, options) {
         // framework.save(); // synchronous action!
     }; */
 
-
     console.log('change submit function');
     let parent = explorer.closest('.que');
     let submitbutton = parent.querySelector('input[type="submit"]');
-    if (submitbutton === undefined) {
-        alert('cannot find submit button');
-        return;
+    if (submitbutton !== null) {
+        // In student review there will be no button!
+        submitbutton.onclick = (event) => {
+            console.log('save before submit');
+            // alert('button submit');
+            framework.save(); // synchronous action!
+        };
     }
-    submitbutton.onclick = (event) => {
-        console.log('save before submit');
-        // alert('button submit');
-        framework.save(); // synchronous action!
-    };
 
     /*
     window.onbeforeunload = function(){
