@@ -31,7 +31,6 @@ import { MoodleQuestionAttemptSyncer, MoodleSyncer } from "./MoodleSyncer";
 
 function _start(nodename, options) {
     console.log('start for ' + nodename);
-
     const explorer = document.getElementById(nodename);
 
     let framework = new Framework();
@@ -48,26 +47,33 @@ function _start(nodename, options) {
     }
 
     // Change submit function: Save before submit!
-    // VORSICHT: DAS MUSS GETESTET WERDEN MIT 2 oder mehr Frameworks!!
+    // There is only one form in case of several questions per page
+    // as all of the buttons are secondary buttons.
+    // A common parent has class
+    /* let form = explorer.closest('form');
+    form.onsubmit = (event) => {
+        // alert('form submit');
+        // console.log('save before submit');
+        // framework.save(); // synchronous action!
+    }; */
+
+
     console.log('change submit function');
-    let form = explorer.closest('form');
-    console.log(form);
-    let saveSubmit = (event) => {
+    let parent = explorer.closest('.que');
+    let submitbutton = parent.querySelector('input[type="submit"]');
+    if (submitbutton === undefined) {
+        alert('cannot find submit button');
+        return;
+    }
+    console.log(submitbutton);
+    let originalHandler = submitbutton.onsubmit;
+
+    submitbutton.onclick = (event) => {
         console.log('save before submit');
+        // alert('button submit');
         // event.preventDefault();
         framework.save(); // synchronous action!
-/*
-            .then(() => {
-                console.log('do submit');
-                // alert('jetzt sollte die Bewertung erfolgen. Aber das klappt nicht.');
-                let button = form.querySelector('input[type="submit"]');
-                // see qengine.js!!!!
-                // Da ist eine Sperre gegen mehrfaches submitten :-(
-                button.disabled = false;
-                form.submit();
-            });*/
     };
-    form.onsubmit = saveSubmit;
 
     /*
     let submitbutton = explorer.parentNode.parentNode.parentNode.querySelector('.submit');
