@@ -426,18 +426,13 @@ class qtype_proforma_question extends question_graded_automatically {
                         $prevresponse, $newresponse, ATTACHMENTS)) {
                     return false;
                 }
-                // TODO check file content.
                 return true;
                 break;
             case qtype_proforma::RESPONSE_EXPLORER:
-/*                if (!question_utils::arrays_same_at_key_missing_is_blank(
-                    $prevresponse, $newresponse, ATTACHMENTS)) {
-                    return false;
-                }
-            // TODO check file content.
-                return true;*/
-                return false;
-            case qtype_proforma::RESPONSE_VERSION_CONTROL:
+                // Compare files by comparing the content hashes
+                return question_utils::arrays_same_at_key_missing_is_blank(
+                    $prevresponse, $newresponse, ATTACHMENTS);
+           case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 // We cannot decide if the student's response has changed
                 // since it is located somewhere else. So we always return false.
                 return false;
