@@ -4,7 +4,7 @@
 they need to be defined in the global proforma style settings
  */
 
-ul[role="tree"] {
+.que.proforma ul[role="tree"] {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -13,11 +13,11 @@ ul[role="tree"] {
     font-weight: 100;
 }
 
-ul[role="group"] {
+.que.proforma ul[role="group"] {
     padding-left: 20px;
 }
 
-[role="treeitem"].doc::before {
+.que.proforma [role="treeitem"].doc::before {
     /* document icon from https://css.gg/file-document (MIT license)
     Copyright 2019-2020 css.gg */
     content: url("data:image/svg+xml;utf8,<svg \
@@ -43,15 +43,15 @@ ul[role="group"] {
     vertical-align: middle;
 }
 
-[role="treeitem"][aria-expanded="false"] > ul {
+.que.proforma [role="treeitem"][aria-expanded="false"] > ul {
     display: none;
 }
 
-[role="treeitem"][aria-expanded="true"] > ul {
+.que.proforma [role="treeitem"][aria-expanded="true"] > ul {
     display: block;
 }
 
-[role="treeitem"][aria-expanded="false"] > .name::before {
+.que.proforma [role="treeitem"][aria-expanded="false"] > .name::before {
     /* COLLECTION: Akar Interface Icons
     LICENSE: MIT License
     AUTHOR: artcoholic
@@ -65,7 +65,7 @@ ul[role="group"] {
     padding-right: 3px;
     vertical-align: middle;
 }
-[role="treeitem"][aria-expanded="true"] > .name::before {
+.que.proforma [role="treeitem"][aria-expanded="true"] > .name::before {
     /* COLLECTION: Fluent Ui Icons Outlined
     LICENSE: MIT License
     AUTHOR: Microsoft
@@ -80,33 +80,36 @@ ul[role="group"] {
     vertical-align: middle;
 }
 
-[role="treeitem"] span,
-[role="treeitem"] {
+.que.proforma [role="treeitem"] span,
+.que.proforma [role="treeitem"] {
     min-width: fit-content;
     margin: 0;
     padding: 0; /* Vertical distance between items */
     /*    padding: 0.1em; *//* Vertical distance between items */
-    border: 2px transparent solid;
+    border: 0px transparent solid;
     display: block;
 
 }
 
 /* Indent for all treeitems but first level */
 /* Default indentation is much too large */
-[role="treeitem"] [role="treeitem"] {
+.que.proforma [role="treeitem"] [role="treeitem"] {
     /* editortest:    margin-left: -20px; */
-    margin-left: 0px;
+    margin-left: 0;
 }
 
 /* disable default keyboard focus styling for treeitems
    Keyboard focus is styled with the following CSS */
-[role="treeitem"]:focus {
+.que.proforma [role="treeitem"]:focus {
     outline: 0;
+    box-shadow: 0 0 0 0;
 }
 
-[role="treeitem"].focus.doc,
-[role="treeitem"].focus > span {
+.que.proforma [role="treeitem"].focus.doc,
+.que.proforma [role="treeitem"].focus > span {
     background-color: steelblue;
+    border: 0;
+    box-shadow: 0 0 0 0;
 }
 
 /*
@@ -137,20 +140,20 @@ ul[role="group"] {
 
 
 /* From Codemirror theme darcula: #2B2B2B */
-.ide .explorer {
+.que.proforma .ide .explorer {
     background-color: #2b2b2b;
     color: #a9b7c6;
 }
 
-.ide .menu,
-.ide .status,
-.ide .tabs,
-.ide .tab {
+.que.proforma .ide .menu,
+.que.proforma .ide .status,
+.que.proforma .ide .tabs,
+.que.proforma .ide .tab {
     background-color: lightgrey;
 }
 
 
-.ide .resize {
+.que.proforma .ide .resize {
     flex-grow: 0;
     flex-shrink: 0;
     width: 0.15rem;
@@ -158,12 +161,12 @@ ul[role="group"] {
     margin: 0 0 0 auto;
 }
 
-.ide .CodeMirror {
+.que.proforma .ide .CodeMirror {
     font-size: 90%;
 }
 
 /* Editor tabs */
-.ide .tab {
+.que.proforma .ide .tab {
     border-radius: 3px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -171,15 +174,15 @@ ul[role="group"] {
     border-bottom: 0;
     border-width: 1px;
 }
-.ide .tab .close:hover {
+.que.proforma .ide .tab .close:hover {
     background: rgba(0, 0, 0, 0.2);
 }
 
-.ide .tab.focus {
+.que.proforma .ide .tab.focus {
     background-color: #eee;
 }
 
-.ide .tab .close {
+.que.proforma .ide .tab .close {
     font-size: 80%;
     font-weight: 100;
     padding: 0 2px 0 2px;

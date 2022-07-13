@@ -70,10 +70,11 @@ function _start(nodename, options) {
     }
 
     /*
-    window.onbeforeunload = function(){
+    window.onbeforeunload = function() {
+        // This function disables everything if confirmed and page is turned.
+        // So this does not make sense this way.
         // framework.save(); // synchronous action!
-        // return 'Are you sure you want to leave?';
-        return false;
+        return confirm('Are you sure you want to leave?');
     };*/
 
 /*

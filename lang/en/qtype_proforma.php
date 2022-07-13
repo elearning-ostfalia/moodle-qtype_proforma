@@ -18,7 +18,6 @@
  *
  * @package    qtype
  * @subpackage proforma
- * @copyright  1999 onwards Martin Dougiamas {@link http://moodle.com}
  * @copyright  2017 Ostfalia University of Applied Sciences
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -37,7 +36,7 @@ $string['proforma:viewsysteminfo'] = 'View ProFormA system information';
 $string['allowattachments'] = 'Max. number of uploaded files';
 $string['formateditor'] = 'Editor';
 $string['formatfilepicker'] = 'File picker';
-$string['formatexplorer'] = 'File explorer (experimental)';
+$string['formatexplorer'] = 'File explorer';
 $string['infoexplorer'] = 'currently subdirectories are not supported in explorer';
 
 

@@ -46,6 +46,10 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
 Student view with editor input (code template and syntax highlighting): 
 ![editor with code template](doc/student_editor.png "student view with editor")
 
+Alternative: Simple file explorer if the response consists of more than one file:
+
+![filepicker](doc/student_explorer.png "student view with explorer")
+
 Alternative: File upload with filepicker for large files or if the response consists of more than one file:
 
 ![filepicker](doc/student_filepicker.png "student view with filepicker")
