@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<!-- test environment for editor.js -->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>IDE TEST</title>
+    <script src="../../amd/src/codemirror.js"></script>
+
+    <!-- <link rel="stylesheet" href="../../../../../general.css"> -->
+    <link rel="stylesheet" href="../../styles.css">
+    <!--<link rel="stylesheet" href="../../amd/src/editor.css"> -->
+    <style>
+body {font-family: Arial;}
+
+
+.CodeMirror {
+    background-color: green;
+}
+.ide .menu, .ide .status {
+    background-color: #A9B7C6;
+}
+.ide .explorer {
+    /*flex-grow: 0; */ /* use size calculated from resizer */
+    /* flex-shrink: 0; */ /* use size calculated from resizer */
+    /* flex-basis: 20%; */
+    background-color: #2B2B2B;
+    color: #A9B7C6;
+/*    overflow-y: auto; */
+}
+
+.ide .resize {
+    flex-grow: 0; /* no resize */
+    flex-shrink: 0; /* no resize */
+    width: 5px; /* 0.15rem; */
+    background-color: red;
+    cursor: col-resize;
+    margin: 0 0 0 0;
+}
+
+.ide .canvas {
+/*    flex-grow: 1;
+    flex-shrink: 1; */
+    /* flex-basis: 75%; */
+    background-color: yellow;
+    /*    overflow-y: auto; */
+}
+
+#resizebottom {
+    cursor: row-resize;
+    height: 5px; /* 0.15rem; */
+    margin: 0 0 0 0;
+    background-color: red;
+}
+    </style>
+</head>
+
+<body>
+<h3 id="tree_label">
+    IDE TEST
+</h3>
+
+<div class="ide" id="ide" style="display: flex;flex-direction: column; /* align-items: stretch;*/
+    resize: vertical;
+    overflow: hidden;
+    min-height: 100px;
+    border:black">
+    <div class="menu" style="flex: none">menu</div>
+
+    <div class="body" id="body"
+         style="display: flex; flex-direction: row; flex: auto">
+        <div class="explorer" style="min-width: 20px; flex: 1 0 5%; overflow: auto;">
+            <ul>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklfdfgdfghdfggggggggggggggggggggggggsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+                <li>jklsd</li>
+            </ul>
+        </div>
+        <div class="resize" id="resizeexplorer"></div>
+        <div class="canvas" style="display: flex; flex-direction: row; flex: 1 1">
+            <!-- set flex-basis = 50% for 2 two columns and 100%V for one column -->
+            <div class="canvascol" style="display: flex; flex-direction: column; flex: 1 1 50%; min-height: 0;">
+                <div class="tabs" style="flex: none; ">
+                    <button>tab1</button>
+                    <button>tab2</button>
+                    <button>tab3</button>
+                </div>
+                <div class="editor" style="flex: 1 1 0; min-height: 0; overflow: hidden;">
+                    <textarea>editor1</textarea>
+                </div>
+            </div>
+            <div class="resize" id="spliteditors"></div>
+            <div class="canvascol" style="display: flex; flex-direction: column; flex: initial; flex-basis:50%">
+                <div class="tabs" style="flex: none; ">
+                    <button>tab1</button>
+                    <button>tab2</button>
+                    <button>tab3</button>
+                </div>
+                <div class="editor" style="flex: 1 1 0; min-height: 0; overflow: hidden;">
+                    <textarea>editor2</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status" style="flex: none">
+        status
+    </div>
+
+    <!-- <div id="resizebottom"></div> -->
+</div>
+
+<script>
+    // CodeMirror
+    let textareas = document.querySelectorAll('.editor textarea');
+    textareas.forEach(function(item) {
+        let editor = CodeMirror.fromTextArea(item, {
+            lineNumbers: true
+            //viewportMargin: Infinity
+        });
+        editor.setSize('100%', '100%');
+        // editor.refresh();
+    });
+/*
+    // Split view
+    let mousedown = false;
+    let resizer = document.getElementById('resizeexplorer');
+    let fileviewerwin = document.querySelector('.ide .explorer');
+    resizer.addEventListener('mousedown', onMouseDown)
+    function onMouseDown(event) {
+        mousedown = true;
+        document.body.addEventListener('mousemove', onMouseMove)
+        document.body.addEventListener('mouseup', onMouseUp)
+    }
+    function onMouseMove(event) {
+        if (mousedown) {
+            console.log('x=' + event.clientX);
+            console.log(event);
+            fileviewerwin.style.flexBasis = event.clientX + "px"
+        } else {
+            onMouseUp()
+        }
+    }
+    const onMouseUp = (e) => {
+        mousedown = false;
+        document.body.removeEventListener('mouseup', onMouseUp)
+        resizer.removeEventListener('mousemove', onMouseMove)
+    }
+ */
+    function init_split_neu(id, dir) {
+        // from https://htmldom.dev/create-resizable-split-views/
+        // Query the element
+        const resizer = document.getElementById(id);
+        const before = resizer.previousElementSibling;
+        console.log(before);
+        const after = resizer.nextElementSibling;
+        console.log(after);
+
+        // The current position of mouse
+        let x = 0;
+        let y = 0;
+
+        // Width of left side
+        let oldValue = 0;
+
+        let mousedown = false;
+
+        const direction = dir;
+
+        // Handle the mousedown event
+        // that's triggered when user drags the resizer
+        const mouseDownHandler = function (e) {
+            // Get the current mouse position
+            x = e.clientX;
+            y = e.clientY;
+
+            if (direction === 'w') {
+                oldValue = before.getBoundingClientRect().width;
+            } else {
+                oldValue = before.getBoundingClientRect().height;
+            }
+            console.log('old L: ' + oldValue);
+            // console.log('old R: ' + after.getBoundingClientRect().width);
+            // console.log('old P: ' + resizer.parentNode.getBoundingClientRect().width);
+
+            mousedown = true;
+            // Attach the listeners to `document`
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        };
+
+        const mouseMoveHandler = function (e) {
+            if (mousedown) {
+                // How far the mouse has been moved
+                const dx = e.clientX - x;
+                const dy = e.clientY - y;
+
+                let newBasis = 0;
+                if (direction === 'w') {
+                    console.log('parent: ' + resizer.parentNode.getBoundingClientRect().width);
+                    newBasis = ((oldValue + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+                } else {
+                    console.log('parent: ' + resizer.parentNode.getBoundingClientRect().height);
+                    newBasis = ((oldValue + dy) * 100) / resizer.parentNode.getBoundingClientRect().height;
+                }
+
+                before.style.flexBasis =`${newBasis}%`;
+                if (after != undefined) {
+                    console.log(newBasis);
+                    after.style.flexBasis =`${100-newBasis}%`;
+                } else {
+                    if (direction === 'w') {
+                        console.log(dx);
+                        resizer.parentNode.getBoundingClientRect().width =
+                            resizer.parentNode.getBoundingClientRect().width - dx;
+                    } else {
+                        console.log('d ' + dy);
+                        // resizer.parentNode.bottom = resizer.parentNode.bottom +
+//                            resizer.parentNode.getBoundingClientRect().height + dy;
+                        console.log('parent 1: ' + resizer.parentNode.getBoundingClientRect().height);
+                        const newvalue = resizer.parentNode.getBoundingClientRect().height + dy;
+                        console.log(newvalue);
+                        // resizer.parentNode.height = newvalue + 'px';
+                        document.getElementById('ide').setAttribute('height', '300px'); // newvalue + 'px';
+                        console.log('parent 2: ' + resizer.parentNode.getBoundingClientRect().height);
+                    }
+                }
+            } else {
+                mouseUpHandler();
+            }
+        };
+
+        const mouseUpHandler = function () {
+            resizer.style.removeProperty('cursor');
+            document.body.style.removeProperty('cursor');
+
+            before.style.removeProperty('user-select');
+            before.style.removeProperty('pointer-events');
+
+            if (after != undefined) {
+                after.style.removeProperty('user-select');
+                after.style.removeProperty('pointer-events');
+            }
+
+            // Remove the handlers of `mousemove` and `mouseup`
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+        };
+
+        // Attach the handler
+        resizer.addEventListener('mousedown', mouseDownHandler);
+    }
+
+    init_split_neu('resizeexplorer', 'w');
+    init_split_neu('spliteditors', 'w');
+    // init_split_neu('resizebottom', 'h');
+
+</script>
+
+</body>
+
+</html>

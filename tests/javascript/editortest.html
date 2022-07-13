@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- test environment for editor.js -->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Editor-Test</title>
+
+    <!-- <link rel="stylesheet" href="../../../../../general.css"> -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../amd/src/editor.css">
+    <link rel="stylesheet" href="../../amd/src/codemirror/theme/blackboard.css">
+    <link rel="stylesheet" href="../../amd/src/codemirror/theme/darcula.css">
+    <link rel="stylesheet" href="../../amd/src/codemirror/theme/abcdef.css">
+    <!-- <script src="../../amd/src/codemirror.js"></script> -->
+    <!-- <script type="module" src="../../amd/src/explorer.js"></script> -->
+    <script type="module" src="../../amd/src/editor.js"></script>
+</head>
+
+<body>
+<h3 id="tree_label">
+    File Viewer
+</h3>
+<form action="/action_page1.php"> <!-- fake for testing submit actions -->
+    <div id="fileexplorer1"></div>
+    <input type="submit" value="Prüfen">
+</form>
+<form action="/action_page2.php">
+    <div id="fileexplorer2"></div>
+    <input type="submit" value="Prüfen">
+</form>
+
+<!--
+<div class="split">
+    <div class="split" id="fileviewer">
+    </div>
+    <div id="resize"></div>
+    <div class="split" id="canvas">
+        <textarea id='editor' rows='10' cols='80'></textarea>
+    </div>
+</div>
+-->
+
+
+</body>
+
+</html>

@@ -111,6 +111,8 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
 
 
                     if (enlarge_width) {
+                        // Resize to fit parent window.
+                        // Height will not be set. Otherwise window will shrink to fit text.
                         editor.setSize("100%", null);
                     }
 

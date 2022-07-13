@@ -34,6 +34,8 @@ $string['pluginnamesummary'] = 'Automatisch bewertete Programmieraufgabe.';
 $string['proforma:runbulktest'] = 'Starten des ProFormA-Bulktests';
 $string['proforma:viewsysteminfo'] = 'ProFormA-Systeminformationen sehen';
 
+$string['infoexplorer'] = 'Aktuell unterstützt das Explorerformat keine Unterverzeichnisse.';
+
 
 $string['allowattachments'] = 'Max. Anzahl Dateien';
 $string['comment'] = 'Kommentar';
@@ -237,7 +239,7 @@ $string['entrypoint'] = 'Entrypoint';
 $string['executable'] = 'Befehl zum Ausführen des Tests';
 
 
-$string['filepickeroptions'] = 'Filepicker-Einstellungen';
+$string['filepickeroptions'] = 'Datei-Upload-Einstellungen';
 
 
 $string['all_or_nothing'] = 'alles oder nichts';
@@ -310,7 +312,21 @@ $string['passed'] = 'OK';
 $string['failed'] = 'Fehler';
 $string['bulktestcontinuefromhere'] = 'Nochmal starten oder fortsetzen, beginnend ab hier';
 
+// Javascript strings
+$string['delete'] = 'Löschen';
+$string['rename'] = 'Umbenennen';
+$string['loadfile'] = 'Datei laden';
+$string['newfolder'] = 'Neues Verzeichnis';
+$string['newemptyfile'] = 'Neue leere Datei';
+$string['enterfoldername'] = 'Neuer Verzeichnisname';
+$string['enterfilename'] = 'Neuer Dateiname';
+$string['alreadyexists'] = '{$a} existiert bereits';
+$string['deletefile'] = 'Soll die Datei {$a} wirklich gelöscht werden?';
+$string['deletefolder'] = 'Soll das Verzeichnis {$a} wirklich gelöscht werden?';
+$string['rootsubmission'] = 'Lösung';
 
+
+// Errors.
 $string['errinvalidtask'] = 'Datei ist keine ProFormA-Aufgabendatei.';
 $string['errinvalidproglang'] = 'Programmiersprache ist nicht \'{$a}\'.';
 $string['errcounttest'] = 'Anzahl der Tests wurde geändert: {$a}.';

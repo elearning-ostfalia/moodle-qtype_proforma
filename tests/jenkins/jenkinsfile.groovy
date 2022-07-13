@@ -8,8 +8,8 @@ def combinations = [
     ['39', '7.2', 'mysql'],
     ['310', '7.3', 'pgsql'],
     ['311', '7.4', 'pgsql'],
-    ['400', '7.4', 'pgsql'],	
-    ['master', '7.4', 'pgsql']
+    ['400', '7.4', 'pgsql'],
+    ['master', '8.0', 'pgsql']
 ];
 
 pipeline {
@@ -19,7 +19,7 @@ pipeline {
         booleanParam(name: 'DO_NOT_FETCH_MOODLE', defaultValue: true, description: 'Use Moodle code from disk')
         choice(name: 'MOODLE_VERSION', choices: ['all', '39', '310', '311', '400', 'master'], description: 'Run with specific Moodle version')
         choice(name: 'DATABASE_TYPE', choices: ['all', 'mysql', 'pgsql'], description: 'Run with specific database')
-        choice(name: 'PHP_VERSION', choices: ['all', '7.2', '7.3', '7.4'], description: 'Run with specific PHP version')
+        choice(name: 'PHP_VERSION', choices: ['all', '7.2', '7.3', '7.4', '8.0'], description: 'Run with specific PHP version')
     }
     stages {
         stage('init') {

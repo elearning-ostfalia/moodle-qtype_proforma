@@ -233,6 +233,9 @@ class qtype_proforma_question extends question_graded_automatically {
             case qtype_proforma::RESPONSE_FILEPICKER:
                 $expecteddata[ATTACHMENTS] = question_attempt::PARAM_FILES;
                 break;
+            case qtype_proforma::RESPONSE_EXPLORER:
+                $expecteddata[ATTACHMENTS] = question_attempt::PARAM_FILES;
+                break;
             case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 $expecteddata[VCSINPUT] = PARAM_TEXT;
                 $expecteddata[VCSGROUP] = PARAM_TEXT;
@@ -297,9 +300,11 @@ class qtype_proforma_question extends question_graded_automatically {
                     $feedback = new SimpleXMLElement($response['_feedback'], LIBXML_PARSEHUGE | LIBXML_NOERROR);
                     $praktomat = $feedback->{'response-meta-data'}->children('praktomat', true);
                     $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
-                    if (isset($vcs)) {
+                    if (isset($vcs) and $vcs->asXML() !== false) {
                         $attrib = $vcs->attributes();
-                        $revision = ' (' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'] . ')';
+                        if (isset($attrib['submission-uri']) and isset($attrib['submission-revision'])) {
+                            $revision = ' (' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'] . ')';
+                        }
                     }
                 } catch (Exception $e) {
                     // Ignore exception.
@@ -313,12 +318,11 @@ class qtype_proforma_question extends question_graded_automatically {
             } else if (isset($response[VCSUSERNAME])) {
                 return 'User '. ' '. $response[VCSUSERNAME] . $revision;
             }
-        } else {
-
-            // Response data could be extracted from question step which
-            // could be grader feedback without any user repsonse.
-            return null;
         }
+
+        // Response data could be extracted from question step which
+        // could be grader feedback without any user repsonse.
+        return '-';
     }
 
     /** Base comment from question_definition (abstract)
@@ -349,6 +353,7 @@ class qtype_proforma_question extends question_graded_automatically {
         // Determine if we have /some/ content to be graded.
         switch ($this->responseformat) {
             case qtype_proforma::RESPONSE_FILEPICKER:
+            case qtype_proforma::RESPONSE_EXPLORER:
                 $hasattachments = array_key_exists(ATTACHMENTS, $response)
                         && $response[ATTACHMENTS] instanceof question_response_files;
 
@@ -422,10 +427,13 @@ class qtype_proforma_question extends question_graded_automatically {
                         $prevresponse, $newresponse, ATTACHMENTS)) {
                     return false;
                 }
-                // TODO check file content.
                 return true;
                 break;
-            case qtype_proforma::RESPONSE_VERSION_CONTROL:
+            case qtype_proforma::RESPONSE_EXPLORER:
+                // Compare files by comparing the content hashes
+                return question_utils::arrays_same_at_key_missing_is_blank(
+                    $prevresponse, $newresponse, ATTACHMENTS);
+           case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 // We cannot decide if the student's response has changed
                 // since it is located somewhere else. So we always return false.
                 return false;
@@ -535,6 +543,9 @@ class qtype_proforma_question extends question_graded_automatically {
         // TODO: response_attachments gibt es nicht mehr...
         if ($component == 'question' && $filearea == 'response_attachments') {
             // Response attachments visible if the question has them.
+            if ($this->responseformat == qtype_proforma::RESPONSE_EXPLORER) {
+                return true;
+            }
             return $this->attachments != 0;
 
             /* } else if ($component == 'question' && $filearea == 'response_answer') {

@@ -1,0 +1,27 @@
+/* Styles not needed in the review history page */
+
+/* Context menu */
+
+.contextmenu {
+    /* width: 100px; */
+    box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    background-color: white;
+    display: none;
+    z-index: 300;
+}
+.contextmenu .menu-options {
+    list-style: none;
+    padding: 3px 4px 5px 4px;
+    margin: 0 0 0 0;
+}
+
+.contextmenu .menu-options .menu-option {
+    font-size: 90%;
+    padding: 1px 4px 1px 5px;
+    cursor: pointer;
+}
+
+.contextmenu .menu-options .menu-option:hover {
+     background: rgba(0, 0, 0, 0.2);
+}

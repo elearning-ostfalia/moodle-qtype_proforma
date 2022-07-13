@@ -37,6 +37,9 @@ $string['proforma:viewsysteminfo'] = 'View ProFormA system information';
 $string['allowattachments'] = 'Max. number of uploaded files';
 $string['formateditor'] = 'Editor';
 $string['formatfilepicker'] = 'File picker';
+$string['formatexplorer'] = 'File explorer (experimental)';
+$string['infoexplorer'] = 'currently subdirectories are not supported in explorer';
+
 
 
 $string['comment'] = 'Comment';
@@ -259,7 +262,7 @@ $string['testexecutable_help'] = 'How to execute the test program, e.g. \'./test
 
 
 $string['weight'] = 'Weight';
-$string['filepickeroptions'] = 'Filepicker options';
+$string['filepickeroptions'] = 'File upload options';
 
 $string['all_or_nothing'] = 'All or nothing';
 $string['weighted_sum'] = 'Weighted sum';
@@ -328,6 +331,19 @@ $string['overallresult'] = 'Overall result';
 $string['passed'] = 'passed';
 $string['failed'] = 'failed';
 $string['bulktestcontinuefromhere'] = 'Run again or resume, starting from here';
+
+// Javascript strings
+$string['delete'] = 'Delete';
+$string['rename'] = 'Rename';
+$string['loadfile'] = 'Load file';
+$string['newfolder'] = 'New folder';
+$string['newemptyfile'] = 'New empty file';
+$string['enterfoldername'] = 'New foldername';
+$string['enterfilename'] = 'New filename';
+$string['alreadyexists'] = '{$a} already exists';
+$string['deletefile'] = 'Are you sure that you want to delete file {$a}?';
+$string['deletefolder'] = 'Are you sure that you want to delete folder {$a}?';
+$string['rootsubmission'] = 'Solution';
 
 // Errors.
 $string['errinvalidtask'] = 'File is no ProFormA task file.';

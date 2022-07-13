@@ -44,7 +44,8 @@ class c_form_creator extends base_form_creator {
         $ro = qtype_proforma::response_formats();
         $responseoptions = [
                 qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR],
-                qtype_proforma::RESPONSE_FILEPICKER => $ro[qtype_proforma::RESPONSE_FILEPICKER]
+                qtype_proforma::RESPONSE_FILEPICKER => $ro[qtype_proforma::RESPONSE_FILEPICKER],
+                qtype_proforma::RESPONSE_EXPLORER => $ro[qtype_proforma::RESPONSE_EXPLORER],
         ];
 
         $this->_responseformats = $responseoptions;

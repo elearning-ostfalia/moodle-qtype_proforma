@@ -607,6 +607,8 @@ abstract class base_form_creator {
         $mform->addElement('header', 'responseoptions', get_string('responseoptions', 'qtype_proforma'));
         $mform->setExpanded('responseoptions');
 
+
+
         // Create select if there is more than one format available.
         switch (count($this->_responseformats)) {
             case 0:
@@ -622,6 +624,12 @@ abstract class base_form_creator {
                 break;
         }
 
+        if (array_key_exists(qtype_proforma::RESPONSE_EXPLORER, $this->_responseformats)) {
+            $mform->addElement('static', 'explorerinfo', '', '<small>' . get_string('infoexplorer', 'qtype_proforma') . '</small>');
+            // Does not disappear...
+            $mform->hideIf('explorerinfo', 'responseformat', 'neq', 'explorer');
+        }
+
         // Editor options.
         if (array_key_exists(qtype_proforma::RESPONSE_EDITOR, $this->_responseformats)) {
             $mform->setDefault('responseformat', 'editor');
@@ -631,7 +639,10 @@ abstract class base_form_creator {
         }
 
         // Filepicker options.
-        if (array_key_exists(qtype_proforma::RESPONSE_FILEPICKER, $this->_responseformats)) {
+        if (array_key_exists(qtype_proforma::RESPONSE_FILEPICKER, $this->_responseformats) or
+            array_key_exists(qtype_proforma::RESPONSE_EXPLORER, $this->_responseformats)) {
+            // Also for Explorer/IDE.
+
             $choices = get_max_upload_sizes($CFG->maxbytes, $COURSE->maxbytes,
             get_config('qtype_proforma', 'maxbytes'));
 
@@ -645,9 +656,14 @@ abstract class base_form_creator {
             $filepickeroptions[] = $mform->createElement('text', 'filetypes', $name2);
             $mform->addGroup($filepickeroptions, 'filepickergroup',
                 get_string('filepickeroptions', 'qtype_proforma'), array(' '), false);
-            $mform->hideIf('filepickergroup', 'responseformat', 'neq', 'filepicker');
+            $mform->hideIf('filepickergroup', 'responseformat', 'eq', 'editor');
+            $mform->hideIf('filepickergroup', 'responseformat', 'eq', 'versioncontrol');
+            $mform->hideIf('attachments', 'responseformat', 'eq', 'explorer');
+            $mform->hideIf('filetypes', 'responseformat', 'eq', 'explorer');
             $mform->addHelpButton('filepickergroup', 'acceptedfiletypes', 'qtype_proforma');
             $mform->setType('filetypes', PARAM_RAW);
+
+
         }
 
         // Version control options.
