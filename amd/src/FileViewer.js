@@ -984,6 +984,7 @@ export class Framework {
         this.menuVisible = false;
         this.focus = undefined;
         this.readOnly = false;
+        this.rootnode = 'Submission';
     }
 
     buildFramework(domnode) {
@@ -1044,8 +1045,9 @@ export class Framework {
             domnode.querySelector('.tabs'), this);
     }
 
-    init(node, syncer, readOnly) {
+    init(node, syncer, readOnly, rootnode = 'Files') {
         this.readOnly = readOnly;
+        this.rootnode = rootnode;
         const initSplit = resizer =>  {
             // from https://htmldom.dev/create-resizable-split-views/
             const before = resizer.previousElementSibling;
@@ -1221,7 +1223,7 @@ export class Framework {
         let root;
         let context = this;
         if (this.roots.length === 0) {
-            root = new RootNode('Submission', context);
+            root = new RootNode(context.rootnode, context);
             return root.createPath(pathsplit);
 /*
             getString('rootsubmission', 'qtype_proforma')

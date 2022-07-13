@@ -464,6 +464,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $params->usageid = $qa->get_usage_id();
         $params->slot = $qa->get_slot();
         $params->files = $responsefiles;
+        $params->rootnode = get_string('rootsubmission', 'qtype_proforma');
 
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
@@ -517,6 +518,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
             'client_id' => $clientid,
             'accepted_types' => '*',
             'return_types' => FILE_INTERNAL,
+            'rootnode' => get_string('rootsubmission', 'qtype_proforma'),
         );
 
         $context = $options->context;

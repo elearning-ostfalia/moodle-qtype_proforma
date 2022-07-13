@@ -39,11 +39,11 @@ function _start(nodename, options) {
     if (options['readonly']) {
         console.log('create readonly framework');
         let syncer = new MoodleQuestionAttemptSyncer(options);
-        framework.init(explorer, syncer, true);
+        framework.init(explorer, syncer, true, options['rootnode']);
     } else {
         console.log('create readwrite framework');
         let syncer = new MoodleSyncer(options);
-        framework.init(explorer, syncer, false);
+        framework.init(explorer, syncer, false, options['rootnode']);
     }
 
     // Change submit function: Save before submit!
