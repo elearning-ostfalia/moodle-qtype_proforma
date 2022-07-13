@@ -300,9 +300,11 @@ class qtype_proforma_question extends question_graded_automatically {
                     $feedback = new SimpleXMLElement($response['_feedback'], LIBXML_PARSEHUGE | LIBXML_NOERROR);
                     $praktomat = $feedback->{'response-meta-data'}->children('praktomat', true);
                     $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
-                    if (isset($vcs)) {
+                    if (isset($vcs) and $vcs->asXML() !== false) {
                         $attrib = $vcs->attributes();
-                        $revision = ' (' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'] . ')';
+                        if (isset($attrib['submission-uri']) and isset($attrib['submission-revision'])) {
+                            $revision = ' (' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'] . ')';
+                        }
                     }
                 } catch (Exception $e) {
                     // Ignore exception.
@@ -316,12 +318,11 @@ class qtype_proforma_question extends question_graded_automatically {
             } else if (isset($response[VCSUSERNAME])) {
                 return 'User '. ' '. $response[VCSUSERNAME] . $revision;
             }
-        } else {
-
-            // Response data could be extracted from question step which
-            // could be grader feedback without any user repsonse.
-            return null;
         }
+
+        // Response data could be extracted from question step which
+        // could be grader feedback without any user repsonse.
+        return '-';
     }
 
     /** Base comment from question_definition (abstract)
