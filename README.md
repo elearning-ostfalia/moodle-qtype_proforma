@@ -44,27 +44,27 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
 ## Screenshots
 
 Student view with editor input (code template and syntax highlighting): 
-![editor with code template](doc/student_editor.png "student view with editor")
+![Editor with code template](doc/student_editor.png "student view with editor")
 
 Alternative: Simple file explorer if the response consists of more than one file:
 
-![filepicker](doc/student_explorer.png "student view with explorer")
+![Explorer](doc/student_explorer.png "student view with explorer")
 
 Alternative: File upload with filepicker for large files or if the response consists of more than one file:
 
-![filepicker](doc/student_filepicker.png "student view with filepicker")
+![Filepicker](doc/student_filepicker.png "student view with filepicker")
 
 Student feedback for Java question:
 
-![filepicker](doc/student_feedback_2.png "Java feedback")
+![Java](doc/student_feedback_2.png "Java feedback")
 
 Student feedback for Python question:
 
-![filepicker](doc/python.png "Python feedback")
+![Python](doc/python.png "Python feedback")
 
 Messages in editor:
 
-![checkstyle](doc/checkstyle_2.PNG "Compiler messages")
+![Checkstyle](doc/checkstyle_2.PNG "Checkstyle messages")
 
 ## Installation
 

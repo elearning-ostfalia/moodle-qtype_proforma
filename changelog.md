@@ -1,3 +1,7 @@
+## v2.9.0
+
+new: Explorer response format
+
 ## v2.8.1
 
 * bugfix: SVN and groups: get group according to quiz restrictions 
