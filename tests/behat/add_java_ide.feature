@@ -24,7 +24,7 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
 
 ##########################################################################
   @javascript @_file_upload
-  Scenario: Create ProFormA java filepicker question with compilation, one Junit test (default values)
+  Scenario: Create ProFormA java explorer question with compilation, one Junit test (default values)
 ##########################################################################
     When I press "Create a new question ..."
     And I set the field "item_qtype_proforma" to "1"
@@ -39,8 +39,6 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
       | Question text            | write a java program that..... |
       | Response format          | explorer                     |
       | Title                    | JUnit test title               |
-      | Accepted file types      | .java                          |
-      | Max. number of uploaded files | 2                         |
       | Max. upload size         | 2097152                            |
     # check that Response filename is not visible
     And I should not see "Response filename"
@@ -70,8 +68,6 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
       | Title                    | JUnit test title               |
       | Description              |                                |
       | Penalty for each incorrect try  | 10%                     |
-      | Accepted file types      | .java                          |
-      | Max. number of uploaded files | 2                         |
       | Max. upload size         | 2097152                            |
 #      | compileweight              |      0                       |
       | testweight[0]              |      1                       |
@@ -96,5 +92,3 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     # And I switch to "questionpreview" window
     Then I should see "questiondownload.txt"
     And following "questiondownload.txt" should download file with between "65" and "67" bytes
-
-    # And I switch to the main window

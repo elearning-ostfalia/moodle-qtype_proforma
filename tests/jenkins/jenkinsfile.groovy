@@ -2,13 +2,10 @@
 // with Moodle HQ docker. So we use a script based implementation.
 
 // Not all combinations shall be tested because this takes too much time.
-// 3.8 requires at least PHP 7.1-7.4 (since 3.8.3)
-// 3.9, 3.10: 7.2-7.4
 def combinations = [
-    ['39', '7.2', 'mysql'],
-    ['310', '7.3', 'pgsql'],
-    ['311', '7.4', 'pgsql'],
-    ['400', '7.4', 'pgsql'],
+    ['311', '7.4', 'mysql'],
+    ['311', '7.3', 'pgsql'],
+    ['400', '8.0', 'mysql'],
     ['master', '8.0', 'pgsql']
 ];
 
@@ -17,9 +14,9 @@ pipeline {
     parameters {
         choice(name: 'SOURCE_ORIGIN', choices: ['github', 'local'], description: 'Where to get source code from')
         booleanParam(name: 'DO_NOT_FETCH_MOODLE', defaultValue: true, description: 'Use Moodle code from disk')
-        choice(name: 'MOODLE_VERSION', choices: ['all', '39', '310', '311', '400', 'master'], description: 'Run with specific Moodle version')
+        choice(name: 'MOODLE_VERSION', choices: ['all', '311', '400', 'master'], description: 'Run with specific Moodle version')
         choice(name: 'DATABASE_TYPE', choices: ['all', 'mysql', 'pgsql'], description: 'Run with specific database')
-        choice(name: 'PHP_VERSION', choices: ['all', '7.2', '7.3', '7.4', '8.0'], description: 'Run with specific PHP version')
+        choice(name: 'PHP_VERSION', choices: ['all', '7.3', '7.4', '8.0'], description: 'Run with specific PHP version')
     }
     stages {
         stage('init') {

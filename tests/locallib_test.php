@@ -30,7 +30,7 @@ global $CFG;
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
 
-class qtype_proforma_locallib_test extends advanced_testcase {
+class locallib_test extends advanced_testcase {
 
     private $user1;
     private $user2;
