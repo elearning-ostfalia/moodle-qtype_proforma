@@ -515,6 +515,13 @@ class qtype_proforma extends question_type {
                 array('#', 'comment', 0));
         $qo->comment = $comment['text'];
         $qo->commentformat = $comment['format'];
+        // Set defaults if missing
+        if (empty($qo->expandcollapse)) {
+            $qo->expandcollapse = 0;
+        }
+        if (empty($qo->inlinemessages)) {
+            $qo->inlinemessages = 0;
+        }
         // todo: restore $comment['itemid']
         // if (!empty($comment['itemid'])) {
         // $qo->commentitemid = $comment['itemid'];
