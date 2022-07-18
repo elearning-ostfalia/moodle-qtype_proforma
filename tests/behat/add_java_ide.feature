@@ -7,25 +7,63 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
 
   Background:
     Given the following "users" exist:
-      | username | firstname | lastname | email               |
-      | teacher1 | T1        | Teacher1 | teacher1@moodle.com |
+      | username | firstname | lastname | email |
+      | teacher1 | Teacher | 1 | teacher@moodle.org |
+      | student1 | Student | 1 | student@moodle.org |
+
     And the following "courses" exist:
       | fullname | shortname | category |
       | Course 1 | C1        | 0        |
+    And the following "activities" exist:
+      | activity   | name      | course | idnumber |
+      | quiz       | Quiz 1    | C1     | quiz1    |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
 #    And the following config values are set as admin:
 #      | clang | 0  | qtype_proforma |
 #      | cpp | 0  | qtype_proforma |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
+
+
+##########################################################################
+  @javascript @_file_upload
+  Scenario: Create a Proforma question in quiz subcategory
+##########################################################################
+    Given I am on the "Quiz 1" "quiz activity" page logged in as teacher1
     And I navigate to "Question bank" in current page administration
+    And I set the field "Select a category" to "Default for Quiz 1"
+    And I press "Create a new question ..."
+    And I set the field "item_qtype_proforma" to "1"
+    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
+    And I set the field "item_java" to "1"
+    And I click on "Ok" "button" in the "Select programming language" "dialogue"
+    And I should see "Adding a ProFormA question"
+
+    And  I set the following fields to these values:
+      | Question name            | java-question                  |
+      | Question text            | write a java program that..... |
+      | Response format          | editor                         |
+      | Response filename        | MyClass.java                   |
+      | Title                    | JUnit test title               |
+    And I set the codemirror "testcode_0" to "class TestClass {}"
+    And I upload "question/type/proforma/tests/fixtures/questiondownload.txt" file to "Downloadable files" filemanager
+    And I press "id_submitbutton"
+    Then I should see "java-question" in the "categoryquestions" "table"
+
+    When I open preview for "java-question" in the question bank
+    Then I should see "questiondownload.txt"
+    And following "questiondownload.txt" should download file with between "65" and "67" bytes
 
 ##########################################################################
   @javascript @_file_upload
   Scenario: Create ProFormA java explorer question with compilation, one Junit test (default values)
 ##########################################################################
+    # And I log in as "teacher1"
+    # And I am on "Course 1" course homepage
+    # And I navigate to "Question bank" in current page administration
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
+
     When I press "Create a new question ..."
     And I set the field "item_qtype_proforma" to "1"
     And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
@@ -34,7 +72,6 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     Then I should see "Adding a ProFormA question"
 
     When I set the following fields to these values:
-    #When I add a "ProFormA" question filling the form with:
       | Question name            | java-question                  |
       | Question text            | write a java program that..... |
       | Response format          | explorer                     |

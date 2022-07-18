@@ -28,6 +28,90 @@ use Behat\Gherkin\Node\PyStringNode as PyStringNode;
 class behat_proforma extends behat_base {
 
     private $downloadfile = '/tmp/behattest_download.txt';
+
+    /**
+     * Generic right click action. Click on the element of the specified type.
+     *
+     * @When /^I rightclick on "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)"$/
+     * @param string $element Element we look for
+     * @param string $selectortype The type of what we look for
+     */
+    public function i_rightclick_on($element, $selectortype) {
+
+        // Gets the node based on the requested selector type and locator.
+        $node = $this->get_selected_node($selectortype, $element);
+        $this->ensure_node_is_visible($node);
+        $node->rightClick();
+    }
+
+    /**
+     * @When /^I click on "([^"]*)" in "([^"]*)" contextmenu$/
+     */
+    public function i_click_on_menu($menuelement, $nodename) {
+        $xpath = "//*[text() = '". $nodename . "']";
+        $this->i_rightclick_on($xpath, 'xpath_element');
+        $this->execute("behat_general::i_wait_seconds", [1]);
+
+        // two clicks because the localized strings must be retrieved from server
+        $this->i_rightclick_on($xpath, 'xpath_element');
+        $xpath = "//*[text() = '". $menuelement . "']";
+        $this->execute("behat_general::i_wait_seconds", [2]);
+
+        $page = $this->getSession()->getPage();
+        echo $xpath . PHP_EOL;
+
+        $session = $this->getSession();
+        $driver = $session->getDriver();
+        $webDriver = $session->getDriver()->getWebDriver();
+        $cap = $webDriver->getCapabilities();
+        // var_dump($cap);
+
+        /* $dc = new Facebook\WebDriver\Remote\DesiredCapabilities();
+        $dc->setCapability(CapabilityType::UNEXPECTED_ALERT_BEHAVIOUR,
+                UnexpectedAlertBehaviour::IGNORE);
+        */
+
+        try {
+            $this->execute("behat_general::i_click_on", [$xpath, 'xpath_element']);
+        } catch (Exception /*UnexpectedAlertOpenException*/ $f) {
+            return;
+            $session = $this->getSession();
+            $driver = $session->getDriver();
+            $webDriver = $session->getDriver()->getWebDriver();
+
+            echo 'search alert ' . PHP_EOL;
+            echo 'wait ' . PHP_EOL;
+            // $alert = $driver->switchTo()->alert();
+            $this->execute("behat_general::i_wait_seconds", [2]);
+            // $webDriver->wait()->until(WebDriverExpectedCondition::alertIsPresent());
+            $alert = $webDriver->switchTo()->alert();
+            $text = $alert->getText();
+            echo 'Text: ' . $text . PHP_EOL;
+            var_dump($alert);
+            echo 'send keys ' . PHP_EOL;
+            // $alert = $webDriver->getCurrentPromptOrAlert();
+#            self::assertEquals('Can you handle this?', $alert->getText());
+            $alert->sendKeys('MyString.java');
+            $alert->accept();
+  //              });
+//            }
+
+  //          $session->switchToWindow('New filename:');
+
+            /*
+            try {
+                Alert alert = driver.switchTo().alert();
+        String alertText = alert.getText();
+        System.out.println("Alert data: " + alertText);
+        alert.accept();
+            } catch (NoAlertPresentException e) {
+                e.printStackTrace();
+            }*/
+        }
+        // $session->expectDialog(Session::PROMPT_DIALOG)->withText('dialog text here')->typeText('some text here')->thenPressOK();
+        // $session->expectDialog(Session::PROMPT_DIALOG)->withText('dialog text here')->typeText('some text here')->thenPressOK();
+    }
+
     /**
      * @When /^I select "([^"]*)" radio button$/
      */

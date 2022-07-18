@@ -47,8 +47,13 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
  */
 function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
     // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
-    if ($context->contextlevel != CONTEXT_COURSE && $context->contextlevel != CONTEXT_COURSECAT) {
-        return false;
+    switch ($context->contextlevel) {
+        case CONTEXT_COURSE:
+        case CONTEXT_COURSECAT:
+        case CONTEXT_MODULE:
+            break;
+        default:
+            return false;
     }
 
     // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
