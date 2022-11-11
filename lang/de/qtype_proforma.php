@@ -255,6 +255,7 @@ $string['privacy:metadata'] = 'Das ProFormA Frageformat Plugin speichert keine p
 // Version control system.
 
 $string['versioncontrol'] = 'Version Control System';
+$string['vcssystem'] = 'Art des Systems';
 $string['vcsuritemplate'] = 'URI des Repository (Template)';
 $string['vcsuritemplate_help'] = 'Ort, von dem die studentische Einreichung abgeholt wird - muss genau einen Platzhalter enthalten:<br>
 {group} = Gruppenname der Gruppe, zu der der Studierende gehört<br>

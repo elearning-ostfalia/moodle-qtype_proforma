@@ -607,8 +607,6 @@ abstract class base_form_creator {
         $mform->addElement('header', 'responseoptions', get_string('responseoptions', 'qtype_proforma'));
         $mform->setExpanded('responseoptions');
 
-
-
         // Create select if there is more than one format available.
         switch (count($this->_responseformats)) {
             case 0:
@@ -662,12 +660,20 @@ abstract class base_form_creator {
             $mform->hideIf('filetypes', 'responseformat', 'eq', 'explorer');
             $mform->addHelpButton('filepickergroup', 'acceptedfiletypes', 'qtype_proforma');
             $mform->setType('filetypes', PARAM_RAW);
-
-
         }
 
         // Version control options.
         if (array_key_exists(qtype_proforma::RESPONSE_VERSION_CONTROL, $this->_responseformats)) {
+            $vcssystems = [
+                qtype_proforma::VCS_GIT => 'Git',
+                qtype_proforma::VCS_SVN => 'Subversion (SVN)'
+            ];
+            $mform->addElement('select', 'vcssystem',
+                get_string('vcssystem', 'qtype_proforma'), $vcssystems);
+            $mform->setDefault('vcssystem', qtype_proforma::VCS_GIT);
+            $mform->setType('vcssystem', PARAM_INT);
+            $mform->hideIf('vcssystem', 'responseformat', 'neq', 'versioncontrol');
+
             $mform->addElement('text', 'vcsuritemplate',
                 get_string('vcsuritemplate', 'qtype_proforma'), array('size' => '80'));
             $mform->setDefault('vcsuritemplate', get_config('qtype_proforma', 'defaultvcsuri'));

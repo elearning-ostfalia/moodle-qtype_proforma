@@ -141,6 +141,10 @@ class qtype_proforma extends question_type {
     /** Get submission from kind of explorer. */
     const RESPONSE_EXPLORER = 'explorer';
 
+    // Version Control Systems.
+    const VCS_GIT = 1;
+    const VCS_SVN = 2;
+
     /**
      * Function returns array with fileareas containing files visible to students.
      *
@@ -221,6 +225,7 @@ class qtype_proforma extends question_type {
                 'gradinghints',
 
                 'vcsuritemplate',
+                'vcssystem',
                 'vcslabel',
 
                 'expandcollapse',

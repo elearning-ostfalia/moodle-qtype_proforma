@@ -274,6 +274,7 @@ $string['privacy:metadata'] = 'The ProFormA question type plugin does not store 
 // Version control system.
 
 $string['versioncontrol'] = 'Version control system';
+$string['vcssystem'] = 'Type of system';
 $string['vcsuritemplate'] = 'URI of repository';
 $string['vcsuritemplate_help'] = 'location where the student\'s submission can be found. Must contain exactly one placeholder:<br>
 {group} = groupname of the group that the student belongs to<br>

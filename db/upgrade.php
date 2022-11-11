@@ -326,5 +326,22 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021021802, 'qtype', 'proforma');
     }
 
+    if ($oldversion < 2022111100) {
+        require_once(__DIR__ . '/upgradelib.php');
+
+        // Add fields for feedback options.
+        $field = new xmldb_field('vcssystem', XMLDB_TYPE_INTEGER,  '4', null, null, null, null, 'taskrepository');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $DB->execute('UPDATE {qtype_proforma_options} '.
+            'SET vcssystem = "2" ' .
+            'WHERE responseformat = "versioncontrol"');
+
+        // ProFormA savepoint reached.
+        upgrade_plugin_savepoint(true, 2022111100, 'qtype', 'proforma');
+    }
+
     return true;
 }

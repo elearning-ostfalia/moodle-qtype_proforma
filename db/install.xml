@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="question/type/proforma/db" VERSION="2020042006" COMMENT="XMLDB file for Moodle question/type/proforma"
+<XMLDB PATH="question/type/proforma/db" VERSION="2022111100" COMMENT="XMLDB file for Moodle question/type/proforma"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
@@ -19,6 +19,7 @@
         <FIELD NAME="responsetemplate" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The template to pre-populate student's response field during attempt."/>
         <FIELD NAME="vcsuritemplate" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Template to generate URI for external submission (e.g. version control system)."/>
         <FIELD NAME="vcslabel" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Label for VCS input field."/>
+        <FIELD NAME="vcssystem" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="1=git, 2=SVN."/>
         <FIELD NAME="taskrepository" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="URI of repository."/>
         <FIELD NAME="taskpath" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Location of task zip file in repository including filename."/>
         <FIELD NAME="responsefilename" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Filename for user source code (if file upload is not used)."/>
