@@ -164,8 +164,9 @@ $string['alternativegrader'] = 'For (almost) all programming languages an altern
 Only protocol (scheme) and server (host) part of grader URI must be set, no path.';
 
 $string['submissionproformaversion'] = 'ProFormA version';
-$string['submissionproformaversion_help'] = 'ProFormA version for communication between Moodle and grader. Version 2.1 requires at least Praktomat 4.9.0.';
-
+$string['submissionproformaversion_help'] = 'ProFormA version for communication between Moodle and grader. Version "2.1 new"requires at least Praktomat 4.150.';
+$string['new'] = 'new';
+$string['old'] = 'old';
 
 $string['feedbackoptions_heading'] = 'Feedback Options';
 

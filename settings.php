@@ -50,12 +50,13 @@ $settings->add(new admin_setting_configtext('qtype_proforma/grading_timeout',
 
 $proformaversions = array(
         '2.0' => '2.0',
-        '2.1' => '2.1',
+        '2.1_old' => '2.1 ' . get_string('old', 'qtype_proforma'),
+        '2.1_new' => '2.1 ' . get_string('new', 'qtype_proforma'),
 );
 $settings->add(new admin_setting_configselect('qtype_proforma/submissionproformaversion',
         get_string('submissionproformaversion', 'qtype_proforma'),
         get_string('submissionproformaversion_help', 'qtype_proforma'),
-        '2.1',
+        '2.1_new',
         $proformaversions));
 
 

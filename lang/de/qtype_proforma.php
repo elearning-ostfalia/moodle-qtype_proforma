@@ -182,8 +182,9 @@ Es ist nur das Protokoll und Server der Grader URI anzugeben, der Pfad wird übe
 
 
 $string['submissionproformaversion'] = 'ProFormA Version';
-$string['submissionproformaversion_help'] = 'ProFormA-Version, die für die Kommunikation zwischen Moodle und Grader verwendet werden soll. Version 2.1 erfordert mindestens Praktomat 4.9.0.';
-
+$string['submissionproformaversion_help'] = 'ProFormA-Version, die für die Kommunikation zwischen Moodle und Grader verwendet werden soll. Version "2.1 neu" erfordert mindestens Praktomat 4.15.0.';
+$string['new'] = 'neu';
+$string['old'] = 'alt';
 
 $string['javasettings_header'] = 'Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';
 $string['checkstyleversion'] = 'Checkstyle Version';
