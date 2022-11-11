@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/grader_2.php');
 require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_base.php');
 
 
-class qtype_proforma_grader_test extends qtype_proforma_walkthrough_test_base {
+class grader_test extends qtype_proforma_walkthrough_test_base {
 
     const GRADINGHINTS_1 = '<grading-hints>'.
     '<root function="sum">'.
@@ -410,5 +410,42 @@ EOD;
     public function test_6_AON() {
         $this->assert_grade(self::RESPONSE_6, null,
                 question_state::$gradedwrong, 0.0, '', '');
+    }
+
+    private function init_xml_generation($version) {
+        set_config('submissionproformaversion', $version, 'qtype_proforma');
+        $grader = new qtype_proforma_grader_2();
+        $method = new ReflectionMethod(
+            'qtype_proforma_grader_2', 'create_submission_xml'
+        );
+        $method->setAccessible(TRUE);
+        $doc = new DOMDocument();
+        return [$grader, $method, $doc];
+    }
+    public function test_xml_for_code_2_0() {
+        $question = test_question_maker::make_question('proforma', 'editor');
+        list($grader, $method, $doc) = $this->init_xml_generation("2.0");
+        $xml = $method->invoke($grader, "code", null, "filename.txt", "URI", $question);
+        // echo $xml;
+        $doc->loadXML($xml);
+        $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_v2.0.xsd'));
+    }
+
+    public function test_xml_for_code_2_1_old() {
+        $question = test_question_maker::make_question('proforma', 'editor');
+        list($grader, $method, $doc) = $this->init_xml_generation("2.1_old");
+        $xml = $method->invoke($grader, "code", null, "filename.txt", "URI", $question);
+        // echo $xml;
+        $doc->loadXML($xml);
+        $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_v2.1_old.xsd'));
+    }
+    
+    public function test_xml_for_code_2_1_new() {
+        $question = test_question_maker::make_question('proforma', 'editor');
+        list($grader, $method, $doc) = $this->init_xml_generation("2.1_new");
+        $xml = $method->invoke($grader, "code", null, "filename.txt", "URI", $question);
+        // echo $xml;
+        $doc->loadXML($xml);
+        $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_full_v2.1.xsd'));
     }
 }

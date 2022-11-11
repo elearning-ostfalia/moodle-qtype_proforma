@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+targetNamespace="urn:proforma:praktomat:v2.3"
+xmlns:ns1="urn:proforma:praktomat:v2.3"
+xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified">
+<!-- Work in progress, not yet working! -->
+<!-- attributeFormDefault="unqualified" -->
+
+    <xs:complexType name="external-task-meta-data-type">    
+        <xs:sequence>
+            <xs:element name="source" type="ns1:external-source-type" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>            
+    </xs:complexType>        
+    
+
+    <xs:complexType name="response-meta-data-type">    
+        <xs:sequence>
+            <xs:element name="version-control-system" type="ns1:version-control-system-type" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="logs" type="ns1:logs-type" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>            
+    </xs:complexType>        
+    
+    <xs:complexType name="version-control-system-type">
+        <xs:attribute name="name" type="xs:string" use="optional"/>
+        <!-- version of version control system ??? -->
+        <xs:attribute name="version" type="xs:string" use="optional"/>
+        <xs:attribute name="submission-uri" type="xs:string" use="optional"/>
+        <!-- revision of submission for identifying submission -->
+        <xs:attribute name="submission-revision" type="xs:string" use="optional"/>
+    </xs:complexType>    
+    
+    <xs:complexType name="git-type">
+      <!-- may contain further information in future -->
+    </xs:complexType>
+    <xs:complexType name="svn-type">
+      <!-- may contain further information in future -->
+    </xs:complexType>
+    <xs:complexType name="external-source-type">
+        <xs:choice>
+          <xs:element name="git" type="ns1:git-type"/>
+          <xs:element name="svn" type="ns1:svn-type"/>            
+        </xs:choice>
+    </xs:complexType>
+
+
+
+
+    <xs:complexType name="logs-type">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="testlog" type="ns1:testlog-type"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="testlog-type">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="log" type="ns1:log-type"/>
+        </xs:sequence>
+
+		<!--<xs:key name="logids">
+			<xs:selector xpath=".//ns1:log"/>
+			<xs:field xpath="@id"/>
+		</xs:key> -->
+		<!--
+    <xs:key name="resp-testrespids">
+      <xs:selector xpath=".//tns:test-response"/>
+      <xs:field xpath="@id"/>
+    </xs:key>		
+		-->
+        <!-- id is an id of a test from task definition -->
+        <xs:attribute name="id" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="log-type">
+        <xs:sequence>    
+            <xs:element name="title" minOccurs="0" type="xs:string"/>
+            <xs:element name="content" minOccurs="0">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="format" use="required">
+                        <xs:simpleType>
+                          <xs:restriction base="xs:string">
+                            <xs:enumeration value="html"/>
+                            <xs:enumeration value="plaintext"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:attribute>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+
+
+
+	
+</xs:schema>

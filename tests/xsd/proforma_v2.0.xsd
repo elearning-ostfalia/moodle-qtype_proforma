@@ -1,0 +1,1038 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:proforma:v2.0" xmlns:tns="urn:proforma:v2.0"
+           elementFormDefault="qualified">
+
+  <xs:element name="task" type="tns:task-type">
+    <xs:key name="task-fileids">
+      <xs:selector xpath=".//tns:file"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="testids">
+      <xs:selector xpath=".//tns:test"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="model-solutionids">
+      <xs:selector xpath=".//tns:model-solution"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="external-resourceids">
+      <xs:selector xpath=".//tns:external-resource"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:keyref name="task-filerefs" refer="tns:task-fileids">
+      <xs:selector xpath=".//tns:fileref"/>
+      <xs:field xpath="@refid"/>
+    </xs:keyref>
+    <xs:keyref name="tests-extresrefs-extresref" refer="tns:external-resourceids">
+      <xs:selector xpath=".//tns:externalresourceref"/>
+      <xs:field xpath="@refid"/>
+    </xs:keyref>
+  </xs:element>
+
+  <xs:element name="submission" type="tns:submission-type">
+    <xs:unique name="subm-fileids">
+      <xs:selector xpath="./tns:files/tns:file"/>
+      <xs:field xpath="@id"/>
+    </xs:unique>
+    <xs:key name="submtask-fileids">
+      <xs:selector xpath="./tns:task/tns:files/tns:file"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="submtask-testids">
+      <xs:selector xpath=".//tns:test"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="submtask-model-solutionids">
+      <xs:selector xpath=".//tns:model-solution"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="submtask-external-resourceids">
+      <xs:selector xpath=".//tns:external-resource"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:keyref name="submtask-filerefs" refer="tns:submtask-fileids">
+      <xs:selector xpath=".//tns:fileref"/>
+      <xs:field xpath="@refid"/>
+    </xs:keyref>
+    <xs:keyref name="submtask-tests-extresrefs-extresref" refer="tns:submtask-external-resourceids">
+      <xs:selector xpath=".//tns:externalresourceref"/>
+      <xs:field xpath="@refid"/>
+    </xs:keyref>
+  </xs:element>
+
+  <xs:element name="response" type="tns:response-type">
+    <xs:key name="resp-fileids">
+      <xs:selector xpath=".//tns:file"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="resp-testrespids">
+      <xs:selector xpath=".//tns:test-response"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:keyref name="resp-filerefs" refer="tns:resp-fileids">
+      <xs:selector xpath=".//tns:fileref"/>
+      <xs:field xpath="@refid"/>
+    </xs:keyref>
+  </xs:element>
+
+  <xs:complexType name="embedded-txt-file-type">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="filename" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="embedded-bin-file-type">
+    <xs:simpleContent>
+      <xs:extension base="xs:base64Binary">
+        <xs:attribute name="filename" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="attached-bin-file-type">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="attached-txt-file-type">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="encoding" type="xs:string"/>
+        <xs:attribute name="natural-lang" type="xs:language"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:group name="file-choice-group">
+    <xs:choice>
+      <xs:element name="embedded-bin-file" type="tns:embedded-bin-file-type"/>
+      <xs:element name="embedded-txt-file" type="tns:embedded-txt-file-type"/>
+      <xs:element name="attached-bin-file" type="tns:attached-bin-file-type"/>
+      <xs:element name="attached-txt-file" type="tns:attached-txt-file-type"/>
+    </xs:choice>
+  </xs:group>
+
+  <xs:complexType name="filerefs-type">
+    <xs:sequence maxOccurs="unbounded">
+      <xs:element name="fileref" type="tns:fileref-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="fileref-type">
+    <xs:attribute name="refid" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="description-type">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="grading-hints-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Root element type of a ProFormA grading-hints element. This includes the complete
+        hierarchical grading scheme with all tests references, weights, accumulating functions and nullify conditions.
+        Hierarchy nodes and conditions can get a title and descriptions. All information below this element except the
+        root node is optional. Grader-specific hints from other XML namespaces can be included in xs:any elements.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="root" type="tns:grades-node-type">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">Root node of the grading scheme hierarchy. If no children are specified, the
+            total grading score will be obtained by including all test results scores. The "function" attribute
+            specifies the accumulator function.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="combine" type="tns:grades-node-type" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">Inner node of the grading scheme hierarchy. This can be a child of the root
+            node or any descendant node. A "combine" node specifies how to condense several sub results. Sub results can
+            be test results or again "combined" results.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">Any non-standard information that can be used by a grader or humans to
+            calculate a total result from tests results.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:any>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="grades-node-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Inner node of the grading scheme hierarchy. There are only two types of inner
+        nodes: the "root" node and "combine" nodes.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="title" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">A not too long title to be shown above the grading result represented by this
+            node.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="description" type="tns:description-type" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">A more or less comprehensive description of the problem aspect represented by
+            this node.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="internal-description" type="tns:description-type" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">A more or less comprehensive internal description of the problem aspect
+            represented by this node. Internal descriptions are meant for teachers and maybe grading assistants.
+            Internal descriptions are not shown to students. The internal description could include didactic background
+            information and possibly technical or organizational details about this grading aspect.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="test-ref" type="tns:grades-test-ref-child-type"/>
+        <xs:element name="combine-ref" type="tns:grades-combine-ref-child-type"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Node identifier. It is optional for the "root" node and required for "combine"
+          nodes.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="function" use="optional" default="min">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Accumulator function that is used to condense several sub results to a single
+          result.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="min">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">Specifies the minimum of several sub scores. This can be used in an "all
+                or nothing" situation, where a parent score should reflect the worst of the child results. Weights can
+                be attached to children to express the valency of a child's result. The child node representing the
+                easiest aspect among its siblings could get the weight 1. Child nodes for grading aspects connected with
+                a higher effort represent scores that are more difficult to achieve. These child nodes could get weights
+                larger than 1. This would guarantee, that when all child nodes results are in [0,1] also the parent node
+                result is in [0,1].
+              </xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="max">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">Specifies the maximum of several sub scores. This is used in an "one
+                success is enough" situation, where a parent score should reflect the best of the child results. An
+                example is a task or a graded problem aspect that could be solved in different ways and for each way
+                there is a separate test element in the task. A solution that succeeds any one of these tests is
+                regarded successful. If one of the different ways of solving the task is more sophisticated than the
+                others, the respective child test could get the highest weight 1. Easier, less valent solution paths get
+                lower weights between 0 and 1. This would guarantee, that when all child nodes results are in [0,1] also
+                the parent node result is in [0,1].
+              </xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="sum">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">Specifies the sum of several sub scores. This is used in a situation,
+                where every child represents a problem aspect that could be solved more or less independently of the
+                other aspects. Weights can be attached to child nodes. Those child nodes representing easy problem
+                aspects could get lower weights than other aspects. If all weights of all direct children of a node add
+                up to 1, this would guarantee, that the parent node result is in [0,1] when all child nodes results are
+                in [0,1].
+              </xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="grades-base-ref-child-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Inner nodes of the grading scheme hierarchy carry pointers to children. This
+        element represents such a pointer. There are two kinds of pointers: "test-ref" pointers and "combine-ref"
+        pointers.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:choice minOccurs="0">
+        <xs:element name="nullify-conditions" type="tns:grades-nullify-conditions-type">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">Specifies a composite condition when the sub result of the pointed-at node
+              should get nullified. The pointed-at node is a test or a combine node. If the composite condition
+              evaluates to False, it has no effect. Otherwise, the score of the pointed-at node is not accumulated into
+              the condensed result of the pointing-from-node. State differently, the score that flows into the
+              accumulator function of the pointing-from-node, is assumed to be emitted as 0 from the pointed-at node.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="nullify-condition" type="tns:grades-nullify-condition-type">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">Specifies a _comparison_ condition when the sub result of the pointed-at
+              node should get nullified. The only difference to &lt;nullify-conditions&gt; is the trailing "s" and the
+              fact, that &lt;nullify-conditions&gt; represents a composite condition while &lt;nullify-condition&gt;
+              represents a simple comparison condition.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="weight" type="xs:double" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Specifies a weight that is multiplied to the sub result of the pointed-at node
+          when flowing into the accumulator function. The pointed-at node is a test or a combine node. When calculating
+          the condensed result for the pointing-from node, the score of the pointed-at node is multiplied by the weight,
+          if present. Otherwise nothing is multiplied.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="grades-test-ref-child-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">A "test-ref" node points to a test in a ProFormA task. As such the result of the
+        pointed at test is obtained and included in a bottom-up fashion in the calculation of the total result.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="tns:grades-base-ref-child-type">
+        <xs:sequence>
+          <xs:element name="title" type="xs:string" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">A not too long title to be shown above the pointed-at test's result.
+                Overrides the title of the pointed-at test element. This can be used especially when pointing to sub
+                test results.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="description" type="tns:description-type" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">A more or less comprehensive description of the problem aspect represented
+                by the pointed-at test. This can be used especially when pointing to sub test results.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="internal-description" type="tns:description-type" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">A more or less comprehensive internal description of the problem aspect
+                represented by the pointed-at test. This can be used especially when pointing to sub test results.
+                Internal descriptions are meant for teachers and maybe grading assistants. Internal descriptions are not
+                shown to students. The internal description could include didactic background information and possibly
+                technical or organizational details about this grading aspect.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="ref" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">The id of the pointed-at test.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="sub-ref" type="xs:string" use="optional">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">If the pointed at test exhibits sub test results, this points to one of the
+              sub results. Examples are individual test cases in a unit test specification, individual violation rules
+              in a static code analyzer, individual error classes in a compilation step, etc. Since the sub-ref format
+              or content is test-tool-specific, it is not normed in the ProFormA format.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="grades-combine-ref-child-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">A "combine-ref" node points to a "combine" node in the grading scheme hierarchy.
+        As such the result of the pointed at node is obtained and included in a bottom-up fashion in the calculation of
+        the total result.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="tns:grades-base-ref-child-type">
+        <xs:attribute name="ref" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">The id of the pointed-at combine node.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="grades-nullify-base-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Specifies an operand of a composite nullify condition.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="title" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">A title to be displayed when explaining a score nullification to students or
+            teachers. Front ends might decide to explain nullification conditions in a grading scheme even if for a
+            certain submission no nullification took place.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="description" type="tns:description-type" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">A detailed description to be displayed when explaining a score nullification.
+            Front ends might decide to extend this description by an automatically generated, human readable version of
+            the involved boolean or comparison expression.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="internal-description" type="tns:description-type" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">A detailed description to be displayed to teachers and grading assistants
+            only.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="grades-nullify-conditions-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Specifies a composite condition when the sub result of a pointed-at node should
+        get nullified. The composite condition is attributed with one of the boolean operators { and, or }. Further it
+        contains operands that usually are of the nullify-condition type, which represents a simple comparison.
+        Nevertheless a composite condition can have nested composite conditions as operands as well.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="tns:grades-nullify-base-type">
+        <xs:sequence>
+          <xs:choice minOccurs="2" maxOccurs="unbounded">
+            <xs:element name="nullify-conditions" type="tns:grades-nullify-conditions-type">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">An operand of the boolean expression, itself being a composite
+                  condition.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="nullify-condition" type="tns:grades-nullify-condition-type">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">A simple comparison condition as an operand of the boolean expression.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="compose-op" use="required">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">The boolean operator of the boolean expression.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="and"/>
+              <xs:enumeration value="or"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="grades-nullify-condition-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Specifies a simple comparison condition when the sub result of a pointed-at node
+        should get nullified. This simple comparison condition is attributed with one of the six common comparison
+        operators. Further it contains operands that refer to tests or combine nodes or that specify a numerical
+        constant, which a result should be compared to.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="tns:grades-nullify-base-type">
+        <xs:sequence>
+          <xs:choice minOccurs="2" maxOccurs="2">
+            <xs:element name="nullify-combine-ref" type="tns:grades-nullify-combine-ref-type">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">An operand of the comparison expression pointing to a "combine" node.
+                  When evaluating the condition, the numerical score calculated for the referenced combine node will be
+                  used as an operand in comparison.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="nullify-test-ref" type="tns:grades-nullify-test-ref-type">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">An operand of the comparison expression pointing to a "test". When
+                  evaluating the condition, the numerical score delivered by the referenced test will be used as an
+                  operand in comparison.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="nullify-literal" type="tns:grades-nullify-literal-type">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">A numerical constant serving as an operand of the comparison expression.
+                  The constant is specified as a "value" attribute in the nullify-literal element.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="compare-op" use="required">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">The comparison operator of the comparison expression.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="eq">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">equals</xs:documentation>
+                </xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="ne">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">not equals</xs:documentation>
+                </xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="gt">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">greater than</xs:documentation>
+                </xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="ge">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">greater than or equals</xs:documentation>
+                </xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="lt">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">less than</xs:documentation>
+                </xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="le">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">less than or equals</xs:documentation>
+                </xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="grades-nullify-comparison-operand-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Specifies an operand of a comparison nullify condition.</xs:documentation>
+    </xs:annotation>
+  </xs:complexType>
+
+  <xs:complexType name="grades-nullify-combine-ref-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">An operand of a comparison expression pointing to a "combine" node.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="tns:grades-nullify-comparison-operand-type">
+        <xs:attribute name="ref" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">The id of the pointed-at combine node.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="grades-nullify-test-ref-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">An operand of a comparison expression pointing to a "test".</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="tns:grades-nullify-comparison-operand-type">
+        <xs:attribute name="ref" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">The id of the pointed-at test.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="sub-ref" type="xs:string" use="optional">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">If the pointed at test exhibits sub test results, this points to one of the
+              sub results. Examples are individual test cases in a unit test specification, individual violation rules
+              in a static code analyzer, individual error classes in a compilation step, etc. Since the sub-ref format
+              or content is test-tool-specific, it is not normed in the ProFormA format.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="grades-nullify-literal-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">A numerical constant serving as an operand of the comparison expression.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="tns:grades-nullify-comparison-operand-type">
+        <xs:attribute name="value" type="xs:decimal" use="required">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">A numerical constant value to be compared with.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="task-type">
+    <xs:sequence>
+      <xs:element name="title" type="tns:title-type"/>
+      <xs:element name="description" type="tns:description-type"/>
+      <xs:element name="internal-description" type="tns:description-type" minOccurs="0"/>
+      <xs:element name="proglang" type="tns:proglang-type"/>
+      <xs:element name="submission-restrictions" type="tns:submission-restrictions-type" minOccurs="0"/>
+      <xs:element name="files" type="tns:task-files-type"/>
+      <xs:element name="external-resources" type="tns:external-resources-type" minOccurs="0"/>
+      <xs:element name="model-solutions" type="tns:model-solutions-type"/>
+      <xs:element name="tests" type="tns:tests-type"/>
+      <xs:element name="grading-hints" type="tns:grading-hints-type" minOccurs="0">
+        <xs:key name="task-gh-combineids">
+          <xs:selector xpath=".//tns:combine"/>
+          <xs:field xpath="@id"/>
+        </xs:key>
+        <xs:keyref name="task-gh-combinerefs" refer="tns:task-gh-combineids">
+          <xs:selector xpath=".//tns:combine-ref|.//tns:nullify-combine-ref"/>
+          <xs:field xpath="@ref"/>
+        </xs:keyref>
+      </xs:element>
+      <xs:element name="meta-data" type="tns:task-meta-data-type"/>
+    </xs:sequence>
+    <xs:attribute name="uuid" type="xs:string" use="required"/>
+    <xs:attribute name="parent-uuid" type="xs:string" use="optional"/>
+    <xs:attribute name="lang" type="xs:language"/>
+  </xs:complexType>
+
+  <xs:complexType name="submission-restrictions-type">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="file-restriction" type="tns:file-restr-type"/>
+    </xs:sequence>
+    <xs:attribute name="max-size" type="xs:positiveInteger" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="file-restr-type">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="required" type="xs:boolean" use="optional" default="true"/>
+        <xs:attribute name="pattern-format" use="optional" default="none">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="none"/>
+              <xs:enumeration value="posix-ere"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>  
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="model-solutions-type">
+    <xs:sequence maxOccurs="unbounded">
+      <xs:element name="model-solution" type="tns:model-solution-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="model-solution-type">
+    <xs:sequence>
+      <xs:element name="filerefs" type="tns:filerefs-type"/>
+      <xs:element name="description" type="tns:description-type" minOccurs="0"/>
+      <xs:element name="internal-description" type="tns:description-type" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="task-meta-data-type">
+    <xs:sequence>
+      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="proglang-type">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="version" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="task-file-type">
+    <xs:sequence>
+      <xs:group ref="tns:file-choice-group"/>
+      <xs:element name="internal-description" type="tns:description-type" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="mimetype" type="xs:string" use="optional"/>
+    <xs:attribute name="used-by-grader" type="xs:boolean" use="required"/>
+    <xs:attribute name="visible" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="yes"/>
+          <xs:enumeration value="no"/>
+          <xs:enumeration value="delayed"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>          
+    <xs:attribute name="usage-by-lms" use="optional" default="download">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="edit"/>
+          <xs:enumeration value="display"/>
+          <xs:enumeration value="download"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>  
+  </xs:complexType>
+
+  <xs:complexType name="task-files-type">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="file" type="tns:task-file-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="external-resources-type">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="external-resource" type="tns:external-resource-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="external-resource-type">
+    <xs:sequence>
+      <xs:element name="internal-description" type="tns:description-type" minOccurs="0"/>
+      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="reference" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:simpleType name="title-type">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="tests-type">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="test" type="tns:test-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="test-type-type">
+    <xs:restriction base="xs:string">
+      <xs:annotation>
+         <xs:documentation xml:lang="en">
+             For common test types one of the following strings should be used:
+             "java-compilation", "java-checkstyle", "java-code-coverage-emma", "java-findbugs",
+             "java-pmd", "unittest", "dejagnu", "setlx", "regexptest". For some of these
+             an xsd is provided by the format.
+         </xs:documentation>
+      </xs:annotation>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="test-configuration-type">
+    <xs:sequence>
+      <xs:element name="filerefs" type="tns:filerefs-type" minOccurs="0"/>
+      <xs:element name="timeout" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:positiveInteger"/>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="externalresourcerefs" type="tns:externalresourcerefs-type" minOccurs="0"/>
+      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+      <xs:element name="test-meta-data" type="tns:test-meta-data-type" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="test-type">
+    <xs:sequence>
+      <xs:element name="title" type="tns:title-type"/>
+      <xs:element name="description" type="tns:description-type" minOccurs="0"/>
+      <xs:element name="internal-description" type="tns:description-type" minOccurs="0"/>
+      <xs:element name="test-type" type="tns:test-type-type"/>
+      <xs:element name="test-configuration" type="tns:test-configuration-type"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="validity" use="optional" default="1.00">
+      <xs:simpleType>
+        <xs:restriction base="xs:decimal">
+          <xs:totalDigits value="3"/>
+          <xs:fractionDigits value="2"/>
+          <xs:minInclusive value="0"/>
+          <xs:maxInclusive value="1.00"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="externalresourcerefs-type">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="externalresourceref" type="tns:externalresourceref-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="externalresourceref-type">
+    <xs:attribute name="refid" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="test-meta-data-type">
+    <xs:sequence>
+      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="submission-type">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element name="external-task" type="tns:external-task-type"/>
+        <xs:element name="included-task-file" type="tns:included-task-file-type"/>
+        <xs:element name="task" type="tns:task-type"/>
+      </xs:choice>
+      <xs:element name="grading-hints" type="tns:grading-hints-type" minOccurs="0">
+        <xs:key name="subm-gh-combineids">
+          <xs:selector xpath=".//tns:combine"/>
+          <xs:field xpath="@id"/>
+        </xs:key>
+        <xs:keyref name="subm-gh-combinerefs" refer="tns:subm-gh-combineids">
+          <xs:selector xpath=".//tns:combine-ref|.//tns:nullify-combine-ref"/>
+          <xs:field xpath="@ref"/>
+        </xs:keyref>
+      </xs:element>
+      <xs:choice>
+        <xs:element name="external-submission" type="tns:external-submission-type"/>
+        <xs:element name="files" type="tns:submission-files-type"/>
+      </xs:choice>
+      <xs:element name="lms" type="tns:lms-type" minOccurs="0"/>
+      <xs:element name="result-spec" type="tns:result-spec-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="submission-file-type">
+    <xs:group ref="tns:file-choice-group"/>
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+    <xs:attribute name="mimetype" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="submission-files-type">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="file" type="tns:submission-file-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="external-task-type">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="uuid" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="external-submission-type">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="included-task-file-type">
+    <xs:choice>
+      <xs:element name="embedded-zip-file" type="tns:embedded-bin-file-type"/>
+      <xs:element name="attached-zip-file" type="tns:attached-bin-file-type"/>
+      <xs:element name="attached-xml-file" type="tns:attached-txt-file-type"/>
+    </xs:choice>
+    <xs:attribute name="uuid" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="lms-type">
+    <xs:sequence>
+      <xs:element name="submission-datetime" type="xs:dateTime"/>
+      <xs:element name="user-id" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="course-id" type="xs:string" minOccurs="0"/>
+      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded"
+              processContents="lax"/>
+    </xs:sequence>
+    <xs:attribute name="url" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="result-spec-type">
+    <xs:sequence>
+      <xs:element name="student-feedback-level" type="tns:feedback-level-type" minOccurs="0"/>
+      <xs:element name="teacher-feedback-level" type="tns:feedback-level-type" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="format" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="xml"/>
+          <xs:enumeration value="zip"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="structure" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="merged-test-feedback"/>
+          <xs:enumeration value="separate-test-feedback"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="lang" type="xs:language"/>
+  </xs:complexType>
+
+  <xs:simpleType name="feedback-level-type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="debug"/>
+      <xs:enumeration value="info"/>
+      <xs:enumeration value="warn"/>
+      <xs:enumeration value="error"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="response-type">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element name="merged-test-feedback" type="tns:merged-test-feedback-type"/>
+        <xs:element name="separate-test-feedback" type="tns:separate-test-feedback-type"/>
+      </xs:choice>
+      <xs:element name="files" type="tns:response-files-type"/>
+      <xs:element name="response-meta-data" type="tns:response-meta-data-type"/>
+    </xs:sequence>
+    <xs:attribute name="lang" type="xs:language"/>
+  </xs:complexType>
+
+  <xs:complexType name="response-meta-data-type">
+    <xs:sequence>
+      <xs:element name="grader-engine" type="tns:grader-engine-type"/>
+      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="grader-engine-type">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="version" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="result-type">
+    <xs:sequence>
+      <xs:element name="score" type="tns:score-type"/>
+      <xs:element name="validity" minOccurs="0" type="tns:validity-type"/>
+    </xs:sequence>
+    <xs:attribute name="is-internal-error" type="xs:boolean" default="false"/>
+  </xs:complexType>
+
+  <xs:simpleType name="score-type">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0.0"/>
+      <xs:maxInclusive value="1.0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="validity-type">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0.0"/>
+      <xs:maxInclusive value="1.0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="merged-feedback-type">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="merged-test-feedback-type">
+    <xs:sequence>
+      <xs:element name="overall-result" type="tns:result-type"/>
+      <xs:element name="student-feedback" type="tns:merged-feedback-type" minOccurs="0"/>
+      <xs:element name="teacher-feedback" type="tns:merged-feedback-type" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="separate-test-feedback-type">
+    <xs:sequence>
+      <xs:element name="submission-feedback-list" type="tns:feedback-list-type"/>
+      <xs:element name="tests-response" type="tns:tests-response-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tests-response-type">
+    <xs:sequence>
+      <xs:element name="test-response" type="tns:test-response-type" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="test-response-type">
+    <xs:choice>
+      <xs:element name="test-result" type="tns:test-result-type"/>
+      <xs:element name="subtests-response" type="tns:subtests-response-type">
+        <xs:key name="subtestrespids">
+          <xs:selector xpath=".//tns:subtest-response"/>
+          <xs:field xpath="@id"/>
+        </xs:key>
+      </xs:element>
+    </xs:choice>
+    <xs:attribute name="id" use="required" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="subtests-response-type">
+    <xs:sequence>
+      <xs:element name="subtest-response" maxOccurs="unbounded" type="tns:subtest-response-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="subtest-response-type">
+    <xs:sequence>
+      <xs:element name="test-result" type="tns:test-result-type"/>
+    </xs:sequence>
+    <xs:attribute name="id" use="required" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="test-result-type">
+    <xs:sequence>
+      <xs:element name="result" type="tns:result-type"/>
+      <xs:element name="feedback-list" type="tns:feedback-list-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="feedback-list-type">
+    <xs:sequence>
+      <xs:element name="student-feedback" minOccurs="0" maxOccurs="unbounded"
+                  type="tns:feedback-type"/>
+      <xs:element name="teacher-feedback" minOccurs="0" maxOccurs="unbounded"
+                  type="tns:feedback-type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="feedback-type">
+    <xs:sequence>
+      <xs:element name="title" minOccurs="0" type="xs:string"/>
+      <xs:element name="content" minOccurs="0">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="format" use="required">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:enumeration value="html"/>
+                    <xs:enumeration value="plaintext"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="filerefs" type="tns:filerefs-type" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="level" type="tns:feedback-level-type"/>
+  </xs:complexType>
+
+  <xs:complexType name="response-file-type">
+    <xs:group ref="tns:file-choice-group"/>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="mimetype" type="xs:string" use="optional"/>
+    <xs:attribute name="title" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="response-files-type">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="file" type="tns:response-file-type"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
