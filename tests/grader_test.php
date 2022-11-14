@@ -503,30 +503,55 @@ EOD;
         $this->assertNotNull($git);
     }
 
-/*
- * TODO: Test files
- * 
     public function test_xml_for_filepicker_2_1_old() {
-        $code = "code";
         $question = test_question_maker::make_question('proforma', 'filepicker');
         list($grader, $method, $doc) = $this->init_xml_generation("2.1_old");
+
+        $fs = get_file_storage();
+
+        // Prepare file record object
+        $fileinfo = array(
+            'contextid' => context_system::instance()->id, // ID of context
+            'component' => 'qtype_proforma',     // usually = table name
+            'filearea' => 'test',     // usually = table name
+            'itemid' => 0,               // usually = ID of row in table
+            'filepath' => '/',           // any path beginning and ending in /
+            'filename' => 'filename.txt'); // any filename
+
+        // Create file containing text 'hello world'
+        $file = $fs->create_file_from_string($fileinfo, 'hello world');
+        $files['filename.txt'] = $file;
+
         $xml = $method->invoke($grader, null, $files, "filename.txt", null, $question);
-        echo $xml;
+        // echo $xml;
         // Validate
         $doc->loadXML($xml);
         $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_v2.1_old.xsd'));
         // Check content.
         $submission = new SimpleXMLElement($xml);
         $this->assertEquals('http-file:testtask.zip', $submission->{'external-task'});
-        $embeddedfile = $submission->files->file->{'embedded-bin-file'};
-        $this->assertEquals(base64_encode($code), $embeddedfile);
-        $this->assertEquals("filename.txt", $embeddedfile['filename']);
+        $this->assertEquals("http-file:filename.txt", $submission->{'external-submission'});
     }
 
     public function test_xml_for_filepicker_2_1_new() {
-        $code = "code";
         $question = test_question_maker::make_question('proforma', 'filepicker');
         list($grader, $method, $doc) = $this->init_xml_generation("2.1_new");
+
+        $fs = get_file_storage();
+
+        // Prepare file record object
+        $fileinfo = array(
+            'contextid' => context_system::instance()->id, // ID of context
+            'component' => 'qtype_proforma',     // usually = table name
+            'filearea' => 'test',     // usually = table name
+            'itemid' => 0,               // usually = ID of row in table
+            'filepath' => '/',           // any path beginning and ending in /
+            'filename' => 'filename.txt'); // any filename
+
+        // Create file containing text 'hello world'
+        $file = $fs->create_file_from_string($fileinfo, 'hello world');
+        $files['filename.txt'] = $file;
+
         $xml = $method->invoke($grader, null, $files, "filename.txt", null, $question);
         // echo $xml;
         // Validate
@@ -535,9 +560,7 @@ EOD;
         // Check content.
         $submission = new SimpleXMLElement($xml);
         $this->assertEquals('http-file:testtask.zip', $submission->{'external-task'}->{'uri'});
-        $embeddedfile = $submission->files->file->{'embedded-bin-file'};
-        $this->assertEquals(base64_encode($code), $embeddedfile);
-        $this->assertEquals("filename.txt", $embeddedfile['filename']);
+        $this->assertEquals("http-file:filename.txt", $submission->{'external-submission'}->{'uri'});
     }
-*/
+
 }
