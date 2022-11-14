@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_bas
 require_once($CFG->dirroot . '/question/format/xml/format.php');
 
 
-class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_base {
+class questiontype_test extends qtype_proforma_walkthrough_test_base {
     protected $qtype;
 
     protected function setUp(): void {
@@ -71,7 +71,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $this->assertEquals(array(), $this->qtype->get_possible_responses($q));
     }
 
-    public function assert_same_xml($expectedxml, $xml) {
+    public function assertXmlEquals($expectedxml, $xml) {
         // Remove comments.
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
         $expectedxml = preg_replace('/<!--(.|\s)*?-->/', '', $expectedxml);
@@ -79,22 +79,14 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
                 str_replace("\r\n", "\n", $xml));
     }
 
-    public function test_xml_export_and_import() {
-        global $CFG, $USER;
-        $this->resetAfterTest(true);
-        $this->setAdminUser();
-
-        // Create a proforma question in the DB.
-        $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $cat = $generator->create_question_category();
-        $question = $generator->create_question('proforma', 'editor', array('category' => $cat->id));
+    private function _export_and_reimport($question, $novcs) {
         $question->contextid = 1; // Must be the same as in questiontype.save_question_options
         // where do we get it? evaluated by debugging...
         $question->hidden = null; // Dummy.
 
         $questiontype = new qtype_proforma();
         $exporter = new qformat_xml();
-
+        // Export.
         $questiontype->get_question_options($question);
         $export1 = $exporter->writequestion($question);
 
@@ -103,7 +95,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         // Re-import.
         $importer = new qformat_xml();
         $importedq = $importer->try_importing_using_qtypes(
-                $xmldata['question'], null, null, 'proforma');
+            $xmldata['question'], null, null, 'proforma');
 
         // Problem:
         // - exported question contains values in 'options' member
@@ -116,13 +108,60 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
         $questiontype->save_question_options($importedq);
         $questiontype->get_question_options($importedq);
         $importedq->contextid = $importedq->context->id;
-
         $importedq->hidden = null;
+        if ($novcs) {
+            // Saving the question to database results in vcssystem to be 0 because the field is integer and
+            // it is converted.
+            $this->assertEquals(0, $importedq->options->vcssystem);
+            // Old value is ''. So, let's override value.
+            $importedq->options->vcssystem = '';
+        }
+        // Re-Export.
         $export2 = $exporter->writequestion($importedq);
 
-        $this->assert_same_xml($export1, $export2);
-
+        return [$export1, $export2];
     }
+    public function test_xml_export_and_reimport_editor()
+    {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        // Create a proforma question in the DB.
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $cat = $generator->create_question_category();
+        $question = $generator->create_question('proforma', 'editor', array('category' => $cat->id));
+
+        list($export1, $export2) = $this->_export_and_reimport($question, True);
+        $this->assertXmlEquals($export1, $export2);
+    }
+    public function test_xml_export_and_reimport_filepicker()
+    {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        // Create a proforma question in the DB.
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $cat = $generator->create_question_category();
+        $question = $generator->create_question('proforma', 'filepicker', array('category' => $cat->id));
+
+        list($export1, $export2) = $this->_export_and_reimport($question, True);
+        $this->assertXmlEquals($export1, $export2);
+    }
+
+    public function test_xml_export_and_reimport_vcs_git()
+    {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        // Create a proforma question in the DB.
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $cat = $generator->create_question_category();
+        $question = $generator->create_question('proforma', 'vcs_git', array('category' => $cat->id));
+
+        list($export1, $export2) = $this->_export_and_reimport($question, False);
+        $this->assertXmlEquals($export1, $export2);
+    }
+
 
     public function test_xml_export_editor() {
         global $CFG, $USER;
@@ -183,8 +222,8 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <taskstorage>'.qtype_proforma_test_helper::QUESTION_TASKSTORAGE.'</taskstorage>
     <aggregationstrategy>1</aggregationstrategy>
     <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
-    <vcssystem></vcssystem>
     <vcsuritemplate></vcsuritemplate>
+    <vcssystem></vcssystem>
     <vcslabel></vcslabel>
     <expandcollapse>1</expandcollapse>
     <inlinemessages>1</inlinemessages>
@@ -214,9 +253,8 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
   </question>
 ';
 
-        $this->assert_same_xml($expectedxml, $export);
+        $this->assertXmlEquals($expectedxml, $export);
     }
-
 
     public function test_xml_export_filepicker() {
         global $CFG, $USER;
@@ -278,6 +316,7 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
     <aggregationstrategy>1</aggregationstrategy>
     <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
     <vcsuritemplate></vcsuritemplate>
+    <vcssystem></vcssystem>
     <vcslabel></vcslabel>
     <expandcollapse>0</expandcollapse>
     <inlinemessages>0</inlinemessages>
@@ -306,7 +345,99 @@ class qtype_proforma_questiontype_test extends qtype_proforma_walkthrough_test_b
   </question>
 ';
 
-        $this->assert_same_xml($expectedxml, $export);
+        $this->assertXmlEquals($expectedxml, $export);
+    }
+
+    public function test_xml_export_vcs_git() {
+        global $CFG, $USER;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $usercontextid = context_user::instance($USER->id)->id;
+
+        // Create a proforma question in the DB.
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $cat = $generator->create_question_category();
+        $question = $generator->create_question('proforma', 'vcs_git', array('category' => $cat->id));
+        $question->contextid = 1; // Must be the same as in questiontype.save_question_options
+        // where do we get it? evaluated by debugging :-(
+        $question->hidden = null; // Dummy.
+
+        $questiontype = new qtype_proforma();
+        $questiontype->get_question_options($question);
+        $exporter = new qformat_xml();
+        //$export = $questiontype->export_to_xml($question, $exporter);
+        $export = $exporter->writequestion($question);
+
+        // Special handling for Moodle 3/4.
+        // In Moodle 4 the hidden value is 0 whereas in Moodle 3 it is left blank.
+        $hidden = '0';
+        if (str_starts_with($CFG->release, '3')) {
+            $hidden = '';
+        }
+
+        $expectedxml = '<!-- question: '. $question->id . '  -->
+  <question type="proforma">
+    <name>
+      <text>'.qtype_proforma_test_helper::QUESTION_NAME.'</text>
+    </name>
+    <questiontext format="html">
+      <text>'.qtype_proforma_test_helper::QUESTION_TEXT.'</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text><![CDATA['.qtype_proforma_test_helper::QUESTION_GENERAL_FEEDBACK.']]></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.2</penalty>
+    <hidden>' . $hidden . '</hidden>
+    <idnumber></idnumber>
+    <uuid>UUID 2</uuid>
+    <proformaversion>2.0</proformaversion>
+    <taskrepository>'.qtype_proforma_test_helper::QUESTION_REPOSITORY.'</taskrepository>
+    <taskpath>'.qtype_proforma_test_helper::QUESTION_PATH.'</taskpath>
+    <taskfilename>'.qtype_proforma_test_helper::QUESTION_TASKFILENAME.'</taskfilename>
+    <responsefilename>'.qtype_proforma_test_helper::QUESTION_FILENAME.'</responsefilename>
+    <programminglanguage>python</programminglanguage>
+    <responsetemplate>'.qtype_proforma_test_helper::QUESTION_TEMPLATE.'</responsetemplate>
+    <responseformat>versioncontrol</responseformat>
+    <responsefieldlines>10</responsefieldlines>
+    <attachments>0</attachments>
+    <maxbytes>10240</maxbytes>
+    <filetypes>.java, .jar</filetypes>
+    <taskstorage>'.qtype_proforma_test_helper::QUESTION_TASKSTORAGE.'</taskstorage>
+    <aggregationstrategy>1</aggregationstrategy>
+    <gradinghints><![CDATA['.qtype_proforma_test_helper::QUESTION_GRADINGHINTS.']]></gradinghints>
+    <vcsuritemplate>https://git.uri.org/somewhere</vcsuritemplate>
+    <vcssystem>1</vcssystem>
+    <vcslabel></vcslabel>
+    <expandcollapse>0</expandcollapse>
+    <inlinemessages>0</inlinemessages>
+    <templates></templates>
+    <downloads>'.qtype_proforma_test_helper::QUESTION_DOWNLOADS.'</downloads>
+    <modelsolfiles>'.qtype_proforma_test_helper::QUESTION_MODELSOLS.'</modelsolfiles>
+    <comment format="html">
+      <text><![CDATA['.qtype_proforma_test_helper::QUESTION_COMMENT.']]></text>
+    </comment>
+<templatefiles></templatefiles>
+<downloadfiles><file name="instruction.txt" path="/" encoding="base64">SU5TVFJVQ1RJT04tRHVtbXk=</file>
+<file name="lib.txt" path="/" encoding="base64">TElCLUR1bW15</file>
+</downloadfiles>
+<modelsolutionfiles><file name="ms1.txt" path="/" encoding="base64">TVMxLUR1bW15</file>
+<file name="ms2.txt" path="/" encoding="base64">TVMyLUR1bW15</file>
+</modelsolutionfiles>
+<task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
+</task>
+<commentfiles></commentfiles>
+    <hint format="html">
+      <text><![CDATA[hint 1<br>]]></text>
+    </hint>
+    <hint format="html">
+      <text><![CDATA[hint 2<br>]]></text>
+    </hint>
+  </question>
+';
+
+        $this->assertXmlEquals($expectedxml, $export);
     }
 
     public function test_xml_import_old_filenames() {

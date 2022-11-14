@@ -74,11 +74,6 @@ class locallib_test extends advanced_testcase {
         return context_module::instance($quiz->cmid);
     }
 
-
-
-
-
-
     // + user without group
     public function test_no_group() {
         $this->resetAfterTest();
