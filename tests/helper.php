@@ -52,6 +52,7 @@ class qtype_proforma_test_helper extends question_test_helper {
             'editor',
             'filepicker',
             'vcs_git',
+            'vcs_svn',
             // Java.
             'java1', // One JUnit test, checkstyle, compilation.
             'java1unit', // Like java, different question text.
@@ -394,6 +395,28 @@ class qtype_proforma_test_helper extends question_test_helper {
     }
 
     /**
+     * Makes a proforma question using the version control system (SVN) as input.
+     * @return qtype_proforma_question
+     */
+    public function make_proforma_question_vcs_svn() {
+        $q = $this->initialise_proforma_question();
+        // Use first existing context id with course context.
+        /* global $DB;
+        $sql = 'select id
+            from {context}
+            where contextlevel = :level';
+        $result = $DB->get_records_sql($sql, array('level' => CONTEXT_COURSE));
+        $q->contextid = array_keys($result)[0];*/
+        // $q->id = 75;
+        $q->responseformat = 'versioncontrol';
+        $q->vcssystem = qtype_proforma::VCS_SVN;
+        $q->vcsuritemplate = "https://SVN.uri.org/somewhere";
+        $q->attachments = 0;
+
+        return $q;
+    }
+
+    /**
      * Makes a proforma question using the filepicker.
      * @return qtype_proforma_question
      */
@@ -466,6 +489,29 @@ class qtype_proforma_test_helper extends question_test_helper {
         $fromform->$property = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
                 '#code snippet for python');
+
+        $fromform->programminglanguage = 'python';
+        //$fromform->responsetemplate = '';
+
+        $fromform->uuid = 'UUID 2';
+
+        return $fromform;
+    }
+
+    public function get_proforma_question_form_data_vcs_svn() {
+        $fromform = new stdClass();
+        $this->get_form_data($fromform);
+        $fromform->responseformat = 'versioncontrol';
+        $fromform->attachments = 0;
+        $fromform->inlinemessages = 0;
+        $fromform->vcssystem = qtype_proforma::VCS_SVN;
+        $fromform->vcsuritemplate = "https://SVN.uri.org/somewhere";
+
+        $fromform->templates = self::QUESTION_TEMPLATES_2;
+        $property = qtype_proforma::FILEAREA_TEMPLATE;
+        $fromform->$property = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
+            '#code snippet for python');
 
         $fromform->programminglanguage = 'python';
         //$fromform->responsetemplate = '';

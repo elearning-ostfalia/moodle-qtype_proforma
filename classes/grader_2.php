@@ -69,12 +69,15 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $version = get_config('qtype_proforma', 'submissionproformaversion');
         // Namespace for Proforma Version.
         switch ($version) {
-            case "2.0":
+/*            case "2.0":
                 $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
-                break;
+                break;*/
             case "2.1_new":
+                $xw->create_attribute('xmlns', 'urn:proforma:v2.1');
+                $xw->create_attribute('xmlns:praktomat', 'urn:proforma:praktomat:v2.3');
+                break;
             case "2.1_old":
-            $xw->create_attribute('xmlns', 'urn:proforma:v2.1');
+                $xw->create_attribute('xmlns', 'urn:proforma:v2.1');
                 break;
         }
 
@@ -85,21 +88,57 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $xw->startElement('external-task');
         if (isset($taskfile)) {
             $xw->create_attribute('uuid', 'x-y-z');
-            $xw->text('http-file:' . $taskfile->get_filename());
         } else {
             $xw->create_attribute('uuid', $question->uuid);
-            $xw->text('http-file:' . $question->taskfilename);
+        }
+        if (isset($taskfile)) {
+            $xaskfiletext = 'http-file:' . $taskfile->get_filename();
+        } else {
+            $xaskfiletext = 'http-file:' . $question->taskfilename;
+        }
+
+        if ($version == "2.1_new") {
+            $xw->create_childelement_with_text('uri', $xaskfiletext);
+        } else {
+            $xw->text($xaskfiletext);
         }
         $xw->endElement(); // End tag external-task.
 
         if (isset($uri)) {
             // Version control system.
-            $xw->create_childelement_with_text('external-submission', $uri);
+            if ($version == "2.1_new") {
+                $xw->startElement('external-submission');
+                $xw->create_childelement_with_text('uri', $uri);
+                $xw->startElement('praktomat:meta-data');
+                $xw->startElement('praktomat:source');
+                switch ($question->vcssystem) {
+                    case qtype_proforma::VCS_GIT:
+                        $xw->startElement('praktomat:git');
+                        $xw->endElement(); // End tag praktomat:git.
+                        break;
+                    case qtype_proforma::VCS_SVN:
+                        $xw->startElement('praktomat:svn');
+                        $xw->endElement(); // End tag praktomat:git.
+                        break;
+                    default:
+                        throw new coding_exception('invalid vcs system');
+                }
+                $xw->endElement(); // End tag praktomat:source.
+                $xw->endElement(); // End tag praktomat::meta-data.
+
+                $xw->endElement(); // End tag external-submission.
+            } else {
+                $xw->create_childelement_with_text('external-submission', $uri);
+            }
         } else if (isset($files)) {
+            $xw->startElement('external-submission');
+            if ($version == "2.1_new") {
+                $xw->startElement('uri');
+            }
             // File upload.
             if (count($files) == 1) {
                 $file = array_values($files)[0];
-                $xw->create_childelement_with_text('external-submission', 'http-file:' . $file->get_filename());
+                $xw->text('http-file:' . $file->get_filename());
             } else {
                 $httpfilename = '';
                 foreach ($files as $file) {
@@ -109,8 +148,12 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                         $httpfilename = $httpfilename . ',' . $file->get_filename();
                     }
                 }
-                $xw->create_childelement_with_text('external-submission', 'http-file:' . $httpfilename);
+                $xw->text('http-file:' . $httpfilename);
             }
+            if ($version == "2.1_new") {
+                $xw->endElement(); // End tag uri.
+            }
+            $xw->endElement(); // End tag external-submission.
         } else if (isset($code)) {
             // Editor.
             $xw->startElement('files');

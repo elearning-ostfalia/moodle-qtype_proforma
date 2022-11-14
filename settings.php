@@ -49,7 +49,7 @@ $settings->add(new admin_setting_configtext('qtype_proforma/grading_timeout',
         PARAM_INT, 3));
 
 $proformaversions = array(
-        '2.0' => '2.0',
+//        '2.0' => '2.0',
         '2.1_old' => '2.1 ' . get_string('old', 'qtype_proforma'),
         '2.1_new' => '2.1 ' . get_string('new', 'qtype_proforma'),
 );

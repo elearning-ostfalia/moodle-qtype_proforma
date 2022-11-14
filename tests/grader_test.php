@@ -422,6 +422,8 @@ EOD;
         $doc = new DOMDocument();
         return [$grader, $method, $doc];
     }
+
+/*
     public function test_xml_for_code_2_0() {
         $question = test_question_maker::make_question('proforma', 'editor');
         list($grader, $method, $doc) = $this->init_xml_generation("2.0");
@@ -429,23 +431,113 @@ EOD;
         // echo $xml;
         $doc->loadXML($xml);
         $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_v2.0.xsd'));
-    }
+    }*/
 
-    public function test_xml_for_code_2_1_old() {
+    public function test_xml_for_editor_2_1_old() {
+        $code = "code";
         $question = test_question_maker::make_question('proforma', 'editor');
         list($grader, $method, $doc) = $this->init_xml_generation("2.1_old");
-        $xml = $method->invoke($grader, "code", null, "filename.txt", "URI", $question);
+        $xml = $method->invoke($grader, $code, null, "filename.txt", null, $question);
         // echo $xml;
+        // Validate
         $doc->loadXML($xml);
         $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_v2.1_old.xsd'));
+        // Check content.
+        $submission = new SimpleXMLElement($xml);
+        $this->assertEquals('http-file:testtask.zip', $submission->{'external-task'});
+        $embeddedfile = $submission->files->file->{'embedded-bin-file'};
+        $this->assertEquals(base64_encode($code), $embeddedfile);
+        $this->assertEquals("filename.txt", $embeddedfile['filename']);
     }
     
-    public function test_xml_for_code_2_1_new() {
+    public function test_xml_for_editor_2_1_new() {
+        $code = "code";
         $question = test_question_maker::make_question('proforma', 'editor');
         list($grader, $method, $doc) = $this->init_xml_generation("2.1_new");
-        $xml = $method->invoke($grader, "code", null, "filename.txt", "URI", $question);
+        $xml = $method->invoke($grader, "code", null, "filename.txt", null, $question);
         // echo $xml;
+        // Validate
         $doc->loadXML($xml);
         $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_full_v2.1.xsd'));
+        // Check content.
+        $submission = new SimpleXMLElement($xml);
+        $this->assertEquals('http-file:testtask.zip', $submission->{'external-task'}->{'uri'});
+        $embeddedfile = $submission->files->file->{'embedded-bin-file'};
+        $this->assertEquals(base64_encode($code), $embeddedfile);
+        $this->assertEquals("filename.txt", $embeddedfile['filename']);
     }
+
+    /**
+     * test old 2.1 XML. Here only SVN is supported!!
+     */
+    public function test_xml_for_SVN_2_1_old() {
+        $question = test_question_maker::make_question('proforma', 'vcs_svn');
+        list($grader, $method, $doc) = $this->init_xml_generation("2.1_old");
+        $xml = $method->invoke($grader, "code", null, "filename.txt", "SVN-URI", $question);
+        // echo $xml;
+        // Validate
+        $doc->loadXML($xml);
+        $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_v2.1_old.xsd'));
+
+        // Check content.
+        $submission = new SimpleXMLElement($xml);
+        $this->assertEquals('http-file:testtask.zip', $submission->{'external-task'});
+        $this->assertEquals("SVN-URI", $submission->{'external-submission'});
+    }
+
+    public function test_xml_for_git_2_1_new() {
+        $question = test_question_maker::make_question('proforma', 'vcs_git');
+        list($grader, $method, $doc) = $this->init_xml_generation("2.1_new");
+        $xml = $method->invoke($grader, "code", null, "filename.txt", "GIT-URI", $question);
+        // echo $xml;
+        // Validate
+        $doc->loadXML($xml);
+        $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_full_v2.1.xsd'));
+        // Check content.
+        $submission = new SimpleXMLElement($xml);
+        $this->assertEquals('http-file:testtask.zip', $submission->{'external-task'}->{'uri'});
+        $this->assertEquals("GIT-URI", $submission->{'external-submission'}->{'uri'});
+
+        $praktomat = $submission->{'external-submission'}->children('praktomat', true);
+        $git = $praktomat->{'meta-data'}->{'source'}->{'git'};
+        $this->assertNotNull($git);
+    }
+
+/*
+ * TODO: Test files
+ * 
+    public function test_xml_for_filepicker_2_1_old() {
+        $code = "code";
+        $question = test_question_maker::make_question('proforma', 'filepicker');
+        list($grader, $method, $doc) = $this->init_xml_generation("2.1_old");
+        $xml = $method->invoke($grader, null, $files, "filename.txt", null, $question);
+        echo $xml;
+        // Validate
+        $doc->loadXML($xml);
+        $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_v2.1_old.xsd'));
+        // Check content.
+        $submission = new SimpleXMLElement($xml);
+        $this->assertEquals('http-file:testtask.zip', $submission->{'external-task'});
+        $embeddedfile = $submission->files->file->{'embedded-bin-file'};
+        $this->assertEquals(base64_encode($code), $embeddedfile);
+        $this->assertEquals("filename.txt", $embeddedfile['filename']);
+    }
+
+    public function test_xml_for_filepicker_2_1_new() {
+        $code = "code";
+        $question = test_question_maker::make_question('proforma', 'filepicker');
+        list($grader, $method, $doc) = $this->init_xml_generation("2.1_new");
+        $xml = $method->invoke($grader, null, $files, "filename.txt", null, $question);
+        // echo $xml;
+        // Validate
+        $doc->loadXML($xml);
+        $this->assertTrue($doc->schemaValidate(__DIR__ . '/xsd/proforma_full_v2.1.xsd'));
+        // Check content.
+        $submission = new SimpleXMLElement($xml);
+        $this->assertEquals('http-file:testtask.zip', $submission->{'external-task'}->{'uri'});
+        $embeddedfile = $submission->files->file->{'embedded-bin-file'};
+        $this->assertEquals(base64_encode($code), $embeddedfile);
+        $this->assertEquals("filename.txt", $embeddedfile['filename']);
+    }
+*/
 }
