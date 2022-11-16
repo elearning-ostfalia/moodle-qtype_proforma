@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_bas
 // TODO
 // - check student versus teacher feedback
 
-class qtype_proforma_renderer_test extends qtype_proforma_walkthrough_test_base {
+class renderer_test extends qtype_proforma_walkthrough_test_base {
 
 
     const GRADINGHINTS_1 = '<grading-hints>'.
@@ -1100,7 +1100,7 @@ Prüfung beendet.
                 $this->render_collapsible_region_score(1, 0.4, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_EMPTY_1).
                 $this->render_collapsible_region_score(2, null, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_EMPTY_2, true).
                 $this->render_graderinfo(3, 'praktomat Version 4.5.1 | 20200803', self::RESPONSE_EMPTY,
-                     'SVN: https://svn.ostfalia.de/src Revision 1234');
+                     'SVN: <span style="font-family: monospace;">https://svn.ostfalia.de/src</span> Revision: 1234');
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_EMPTY, '', self::GRADINGHINTS_1, $expected);

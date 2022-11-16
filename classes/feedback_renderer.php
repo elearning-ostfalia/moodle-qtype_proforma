@@ -576,6 +576,7 @@ class feedback_renderer {
             $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
             if (isset($vcs) && count($vcs) > 0) {
                 $attrib = $vcs->attributes();
+                // Todo: create style in css.
                 $vcstext = $attrib['name'] . ': <span style="font-family: monospace;">' . $attrib['submission-uri'] . '</span>' .
                     ' Revision: ' . $attrib['submission-revision'];
             } else {
