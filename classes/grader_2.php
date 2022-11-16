@@ -105,12 +105,17 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $xw->endElement(); // End tag external-task.
 
         if (isset($uri)) {
+            if (qtype_proforma::VCS_GIT == $question->vcssystem) {
+                if ($version == '2.1_old' or $version == '2.0') {
+                    throw new coding_exception('Version control system Git is not supported in ' .
+                        'Proforma version ' . $version);
+                }
+            }
             // Version control system.
             if ($version == "2.1_new") {
                 $xw->startElement('external-submission');
                 $xw->create_childelement_with_text('uri', $uri);
                 $xw->startElement('praktomat:meta-data');
-                $xw->startElement('praktomat:source');
                 switch ($question->vcssystem) {
                     case qtype_proforma::VCS_GIT:
                         $xw->startElement('praktomat:git');
@@ -123,7 +128,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                     default:
                         throw new coding_exception('invalid vcs system');
                 }
-                $xw->endElement(); // End tag praktomat:source.
                 $xw->endElement(); // End tag praktomat::meta-data.
 
                 $xw->endElement(); // End tag external-submission.
@@ -411,7 +415,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      */
     public function send_external_submission_to_grader($uri, qtype_proforma_question $question) {
         if (empty($uri)) {
-            throw new coding_exception('send_external_submission_to_grader with empty $uri');
+            throw new coding_exception('send_external_submission_to_grader with empty uri');
         }
 
         $submissionxml = $this->create_submission_xml(null, null, null, $uri, $question);

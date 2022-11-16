@@ -499,7 +499,7 @@ EOD;
         $this->assertEquals("GIT-URI", $submission->{'external-submission'}->{'uri'});
 
         $praktomat = $submission->{'external-submission'}->children('praktomat', true);
-        $git = $praktomat->{'meta-data'}->{'source'}->{'git'};
+        $git = $praktomat->{'meta-data'}->{'git'};
         $this->assertNotNull($git);
     }
 

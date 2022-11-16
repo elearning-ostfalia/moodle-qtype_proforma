@@ -105,7 +105,8 @@ class qtype_proforma_question extends question_graded_automatically {
     public $vcsuritemplate;
     /** @var string The label for an input field (if any). */
     public $vcslabel;
-
+    /** @var int what kind of version control system? 1=git, 2=SVN */
+    public $vcssystem;
     /** feedback option for collapsible regions */
     public $expandcollapse;
 
@@ -466,6 +467,8 @@ class qtype_proforma_question extends question_graded_automatically {
                 $uri = str_replace('{group}', $response[VCSGROUP], $this->vcsuritemplate);
             } else if (array_key_exists(VCSUSERNAME, $response)) {
                 $uri = str_replace('{username}', $response[VCSUSERNAME], $this->vcsuritemplate);
+            } else {
+                $uri = $this->vcsuritemplate;
             }
             list($graderoutput, $httpcode) = $grader->send_external_submission_to_grader($uri, $this);
         } else {

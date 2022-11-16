@@ -860,7 +860,6 @@
   <xs:complexType name="external-task-type">
     <xs:sequence>
       <xs:element name="uri" type="xs:string" minOccurs="0"/>
-      <xs:element name="meta-data" type="praktomat:external-task-meta-data-type" minOccurs="0"/>           
       <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
     </xs:sequence>
     <xs:attribute name="uuid" type="xs:string"/>
@@ -869,7 +868,8 @@
   <xs:complexType name="external-submission-type">
     <xs:sequence>
       <xs:element name="uri" type="xs:string" minOccurs="0"/>
-      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+      <xs:element ref="praktomat:meta-data" minOccurs="0"/>   	  
+      <!--<xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>-->
     </xs:sequence>
   </xs:complexType>
 
@@ -944,8 +944,8 @@
     <xs:sequence>
       <xs:element name="response-datetime" minOccurs="0" type="xs:dateTime"/>
       <xs:element name="grader-engine" type="tns:grader-engine-type"/>
-      <xs:element name="response-meta-data" type="praktomat:response-meta-data-type" minOccurs="0"/>      
-      <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+      <xs:element ref="praktomat:response-meta-data" minOccurs="0"/>   	   
+      <!--<xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>-->
     </xs:sequence>
   </xs:complexType>
 

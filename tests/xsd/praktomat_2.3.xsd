@@ -4,15 +4,20 @@ targetNamespace="urn:proforma:praktomat:v2.3"
 xmlns:ns1="urn:proforma:praktomat:v2.3"
 xmlns:xs="http://www.w3.org/2001/XMLSchema" 
 elementFormDefault="qualified">
-<!-- Work in progress, not yet working! -->
+<!-- 2022/11/16 -->
 <!-- attributeFormDefault="unqualified" -->
 
-    <xs:complexType name="external-task-meta-data-type">    
-        <xs:sequence>
-            <xs:element name="source" type="ns1:external-source-type" minOccurs="0" maxOccurs="1"/>
-        </xs:sequence>            
+	<!-- elements -->
+    <xs:element name="meta-data" type="ns1:external-submission-meta-data-type"/>
+    <xs:element name="response-meta-data" type="ns1:response-meta-data-type"/>	
+
+	<!-- types -->
+    <xs:complexType name="external-submission-meta-data-type">    
+        <xs:choice minOccurs="0">
+          <xs:element name="git" type="ns1:git-type"/>
+          <xs:element name="svn" type="ns1:svn-type"/>            
+        </xs:choice>    
     </xs:complexType>        
-    
 
     <xs:complexType name="response-meta-data-type">    
         <xs:sequence>
@@ -36,15 +41,6 @@ elementFormDefault="qualified">
     <xs:complexType name="svn-type">
       <!-- may contain further information in future -->
     </xs:complexType>
-    <xs:complexType name="external-source-type">
-        <xs:choice>
-          <xs:element name="git" type="ns1:git-type"/>
-          <xs:element name="svn" type="ns1:svn-type"/>            
-        </xs:choice>
-    </xs:complexType>
-
-
-
 
     <xs:complexType name="logs-type">
         <xs:sequence maxOccurs="unbounded">
@@ -93,9 +89,5 @@ elementFormDefault="qualified">
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="optional"/>
     </xs:complexType>
-
-
-
-
 	
 </xs:schema>
