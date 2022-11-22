@@ -292,7 +292,8 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
             throw new coding_exception('unexpected responseformat in qtype_proforma_format_versioncontrol_renderer');
         }
 
-        return (strpos($question->vcsuritemplate, PHGROUP) !== false);
+        return ((strpos($question->vcsuritemplate, PHGROUP) !== false) or
+            (strpos($question->vcsuritemplate, PHGROUPL) !== false));
     }
 
     /**
@@ -365,6 +366,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
                         // with groups named 'group1' and URI template expecting '1' as
                         // group name.
                         $uri = str_replace('{group}', '<b>' . $samplename . '</b>', $question->vcsuritemplate);
+                        $uri = str_replace('{groupl}', '<b>' . mb_strtolower($samplename) . '</b>', $uri);
                         $input .= '<br>' . html_writer::tag('small', get_string('sampleuri', 'qtype_proforma') . ': ' . $uri);
                     }
                 } catch (Exception $ex) {

@@ -280,6 +280,7 @@ $string['vcssystem'] = 'Type of system';
 $string['vcsuritemplate'] = 'URI of repository';
 $string['vcsuritemplate_help'] = 'location where the student\'s submission can be found. Must contain exactly one placeholder:<br>
 {group} = groupname of the group that the student belongs to<br>
+{groupl} = like {group} in lowercase<br>
 {input} = identifier to be entered by student';
 // Maybe for future use: '{username} = student\'s login name in Moodle'.
 
@@ -301,6 +302,7 @@ $string['vcs_header'] = 'Version control system';
 $string['vcs_info'] = 'For use of a version control system that stores the students\' code.
 The actual URI to locate the submission is compiled by replacing the placeholder in the URI template:<br>
 {group}: name of group that the student belongs to<br>
+{groupl}: like {group} in lowercase<br>
 {input}: generates an input field';
 // Maybe for future use: '{username}: takes the student\'s username in Moodle'.
 

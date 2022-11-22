@@ -261,6 +261,7 @@ $string['vcssystem'] = 'Art des Systems';
 $string['vcsuritemplate'] = 'URI des Repository (Template)';
 $string['vcsuritemplate_help'] = 'Ort, von dem die studentische Einreichung abgeholt wird - muss genau einen Platzhalter enthalten:<br>
 {group} = Gruppenname der Gruppe, zu der der Studierende gehört<br>
+{groupl} = wie {group} in Kleinbuchstaben<br>
 {input} = Eingabe des Studierenden';
 // Maybe for future use: '{username} = student\'s login name in Moodle'.
 
@@ -280,6 +281,7 @@ $string['vcs_header'] = 'Version control system';
 $string['vcs_info'] = 'Für Einreichungen, die sich in einem Versionskontrollsystem (z.B. SVN, git o.ä.) befinden.
 Die tatsächliche URI einer studentischen Einreichung wird aus dem URI-Template durch Ersetzen des Platzhalters ermittelt:<br>
 {group}: Name der Gruppe, zu der der Studierende gehört<br>
+{groupl}: Name der Gruppe, zu der der Studierende gehört (Kleinbuchstaben)<br>
 {input}: erzeugt ein Eingabefeld, in dem der Studierende einen Identifier eingeben muss';
 // Maybe for future use: '{username}: takes the student\'s username in Moodle'.
 // Maybe for future use: '{func}: return value of configured helper function'.
