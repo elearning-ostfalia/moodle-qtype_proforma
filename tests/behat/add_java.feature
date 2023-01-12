@@ -173,8 +173,7 @@ Feature: ADD JAVA QUESTION
     Then I should see "new java-question"
 
     # check for download link
-    # And I pause
-
+    # The following line does not work as there are multiple records found :-(
     # When I am on the "new java-question" "core_question > preview" page
     When I open preview for "new java-question" in the question bank
     #Then I should see "questiondownload.txt"

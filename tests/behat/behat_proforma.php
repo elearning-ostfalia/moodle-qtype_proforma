@@ -429,19 +429,39 @@ class behat_proforma extends behat_base {
      * @param string $questionname the question name.
      */
     public function i_open_preview_for_the_question($questionname) {
+/*        global $CFG;
+        $moodleversion = $CFG->version;
+        if ($moodleversion > 2022112800) {
+            // Moodle 4.1
+            // echo 'Moodle 4.1 ';
+        } elseif ($moodleversion > 2022041900) { // 4.0.0
+            // Moodle 4.0
+            // echo 'Moodle 4 ';
+        } else {
+            // Moodle 3
+            // echo 'Moodle 3 ';
+        }
+*/
         // Open Question bank context
+        // echo '0';
         try {
             $this->i_navigate_to_in_current_page_administration("Question bank");
         } catch(Exception $err) {
             // Moodle 3: Ignore
         }
+        // echo '1';
         // Open the menu.
+//        $this->execute("behat_general::i_click_on_in_the",
+//                    [get_string('edit'), 'link', $questionname, 'table_row']);
         $this->execute("behat_general::i_click_on_in_the",
-            [get_string('edit'), 'link', $questionname, 'table_row']);
+            [get_string('edit'), 'button', $questionname, 'table_row']);
+        // echo '2';
 
+        // return;
         // Click the action from the menu.
         $this->execute("behat_general::i_click_on_in_the",
             ['Preview', 'link', $questionname, 'table_row']);
+        // echo '3';
 
         // Switch to window if it exists
         try {
