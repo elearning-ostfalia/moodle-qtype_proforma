@@ -22,6 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
+
+
 use Behat\Mink\Exception\ExpectationException as ExpectationException;
 use Behat\Gherkin\Node\PyStringNode as PyStringNode;
 
@@ -44,36 +47,64 @@ class behat_proforma extends behat_base {
         $node->rightClick();
     }
 
+    public function i_click_on_general($element, $selectortype) {
+
+        // Gets the node based on the requested selector type and locator.
+        $node = $this->get_selected_node($selectortype, $element);
+        $this->ensure_node_is_visible($node);
+        $node->click();
+    }
+
     /**
      * @When /^I click on "([^"]*)" in "([^"]*)" contextmenu$/
      */
     public function i_click_on_menu($menuelement, $nodename) {
+        echo 'wait ' . PHP_EOL;
+        $this->execute("behat_general::i_wait_seconds", [1]);
         $xpath = "//*[text() = '". $nodename . "']";
+        echo 'click on ' . $xpath . PHP_EOL;
         $this->i_rightclick_on($xpath, 'xpath_element');
         $this->execute("behat_general::i_wait_seconds", [1]);
 
         // two clicks because the localized strings must be retrieved from server
         $this->i_rightclick_on($xpath, 'xpath_element');
+        echo 'click on ' . $xpath . PHP_EOL;
         $xpath = "//*[text() = '". $menuelement . "']";
-        $this->execute("behat_general::i_wait_seconds", [2]);
-
-        $page = $this->getSession()->getPage();
-        echo $xpath . PHP_EOL;
-
-        $session = $this->getSession();
-        $driver = $session->getDriver();
-        $webDriver = $session->getDriver()->getWebDriver();
-        $cap = $webDriver->getCapabilities();
-        // var_dump($cap);
-
-        /* $dc = new Facebook\WebDriver\Remote\DesiredCapabilities();
-        $dc->setCapability(CapabilityType::UNEXPECTED_ALERT_BEHAVIOUR,
-                UnexpectedAlertBehaviour::IGNORE);
-        */
-
         try {
+            $this->execute("behat_general::i_wait_seconds", [2]);
+        }  catch (Exception $f) {
+
+        }
+
+        /*        $page = $this->getSession()->getPage();
+
+                $session = $this->getSession();
+                $driver = $session->getDriver();
+                $webDriver = $session->getDriver()->getWebDriver();
+                $cap = $webDriver->getCapabilities();
+                var_dump($cap);
+
+                $dc = new Facebook\WebDriver\Remote\DesiredCapabilities();
+                $dc->setCapability(CapabilityType::UNEXPECTED_ALERT_BEHAVIOUR,
+                        UnexpectedAlertBehaviour::IGNORE);
+        */
+        // unhandledPromptBehavior => ignore, default is "dismiss and notify state" (chrome)
+        try {
+            echo 'click on ' . $xpath . PHP_EOL;
+            // $this->i_click_on_general($xpath, 'xpath_element');
+            // Wait for pending js.
+            // $this->wait_for_pending_js();
             $this->execute("behat_general::i_click_on", [$xpath, 'xpath_element']);
-        } catch (Exception /*UnexpectedAlertOpenException*/ $f) {
+        } catch (/* Exception*/ UnexpectedAlertOpenException $f) {
+            echo 'UnexpectedAlertOpenException' . PHP_EOL;
+            /*            try {
+                            Alert alert = driver.switchTo().alert();
+                            String alertText = alert.getText();
+                            System.out.println("Alert data: " + alertText);
+                            alert.accept();
+                        } catch (NoAlertPresentException e) {
+                            e.printStackTrace();
+                        }*/
             return;
             $session = $this->getSession();
             $driver = $session->getDriver();
@@ -93,10 +124,10 @@ class behat_proforma extends behat_base {
 #            self::assertEquals('Can you handle this?', $alert->getText());
             $alert->sendKeys('MyString.java');
             $alert->accept();
-  //              });
+            //              });
 //            }
 
-  //          $session->switchToWindow('New filename:');
+            //          $session->switchToWindow('New filename:');
 
             /*
             try {
@@ -108,9 +139,13 @@ class behat_proforma extends behat_base {
                 e.printStackTrace();
             }*/
         }
+
+        echo 'no exception' . PHP_EOL;
+
         // $session->expectDialog(Session::PROMPT_DIALOG)->withText('dialog text here')->typeText('some text here')->thenPressOK();
         // $session->expectDialog(Session::PROMPT_DIALOG)->withText('dialog text here')->typeText('some text here')->thenPressOK();
     }
+
 
     /**
      * @When /^I select "([^"]*)" radio button$/
