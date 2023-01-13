@@ -168,7 +168,8 @@ class behat_proforma extends behat_base {
         if ($actualsize < $minexpectedsize || $actualsize > $maxexpectedsize) {
             throw new ExpectationException('Downloaded data was ' . $actualsize .
                     ' bytes, expecting between ' . $minexpectedsize . ' and ' .
-                    $maxexpectedsize, $this->getSession());
+                    $maxexpectedsize . ' (check ' .  $this->downloadfile.  ')',
+                $this->getSession());
         }
     }
 
