@@ -67,6 +67,9 @@ jobs:
       - name: Install qbehaviour_adaptiveexternalgrading
         run: |
           moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading
+
+      - name: Install qformat_proforma
+        run: |
           moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qformat_proforma
 
       - name: PHP Lint
