@@ -58,17 +58,13 @@ jobs:
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
       - name: Install moodle-plugin-ci
         run: |
+          moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading
+          moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qformat_proforma
+          
           moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
-
-        # plugin requires special behaviour to run unit and behat tests
-      - name: Install qbehaviour_adaptiveexternalgrading
-        run: moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qbehaviour_adaptiveexternalgrading
-
-      - name: Install qformat_proforma
-        run: moodle-plugin-ci add-plugin elearning-ostfalia/moodle-qformat_proforma
 
       - name: PHP Lint
         if: ${{ always() }}
