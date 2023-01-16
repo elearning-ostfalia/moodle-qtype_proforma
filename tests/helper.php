@@ -51,6 +51,7 @@ class qtype_proforma_test_helper extends question_test_helper {
             // Different response formats.
             'editor',
             'filepicker',
+            'explorer',
             'vcs_git',
             'vcs_svn',
             // Java.
@@ -434,6 +435,23 @@ class qtype_proforma_test_helper extends question_test_helper {
         return $q;
     }
 
+    /**
+     * Makes a proforma question using the explorer.
+     * @return qtype_proforma_question
+     */
+    public function make_proforma_question_explorer() {
+        $q = $this->initialise_proforma_question();
+        $q->responseformat = 'explorer';
+        $q->attachments = 3;
+        $q->inlinemessages = 0;
+
+        $q->templates = self::QUESTION_TEMPLATES_2;
+        $q->programminglanguage = 'python';
+        $q->responsetemplate = '#code snippet for python';
+        $q->uuid = 'UUID 2';
+
+        return $q;
+    }
 
     public function make_proforma_question_weightedsum() {
         $q = $this->initialise_proforma_question();
@@ -489,6 +507,27 @@ class qtype_proforma_test_helper extends question_test_helper {
         $fromform->$property = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
                 '#code snippet for python');
+
+        $fromform->programminglanguage = 'python';
+        //$fromform->responsetemplate = '';
+
+        $fromform->uuid = 'UUID 2';
+
+        return $fromform;
+    }
+
+    public function get_proforma_question_form_data_explorer() {
+        $fromform = new stdClass();
+        $this->get_form_data($fromform);
+        $fromform->responseformat = 'explorer';
+        $fromform->attachments = 3;
+        $fromform->inlinemessages = 0;
+
+        $fromform->templates = self::QUESTION_TEMPLATES_2;
+        $property = qtype_proforma::FILEAREA_TEMPLATE;
+        $fromform->$property = file_get_unused_draft_itemid();
+        $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
+            '#code snippet for python');
 
         $fromform->programminglanguage = 'python';
         //$fromform->responsetemplate = '';

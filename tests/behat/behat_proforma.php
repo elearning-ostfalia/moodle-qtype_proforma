@@ -23,10 +23,12 @@
  */
 
 require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
+require_once(__DIR__ . '/../../../../../vendor/php-webdriver/webdriver/lib/WebDriverExpectedCondition.php');
 
 
 use Behat\Mink\Exception\ExpectationException as ExpectationException;
 use Behat\Gherkin\Node\PyStringNode as PyStringNode;
+use Facebook\WebDriver\WebDriverExpectedCondition as WebDriverExpectedCondition;
 
 class behat_proforma extends behat_base {
 
@@ -47,12 +49,82 @@ class behat_proforma extends behat_base {
         $node->rightClick();
     }
 
-    public function i_click_on_general($element, $selectortype) {
+    public function click_on_contextmenue_item($menuelement) {
+        $session = $this->getSession();
+        $driver = $session->getDriver();
+        $webDriver = $session->getDriver()->getWebDriver();
 
         // Gets the node based on the requested selector type and locator.
-        $node = $this->get_selected_node($selectortype, $element);
-        $this->ensure_node_is_visible($node);
-        $node->click();
+        // $node = $this->get_selected_node($selectortype, $element);
+        // $this->ensure_node_is_visible($node);
+        // $node->click();
+        // $this->js_trigger_click($node);
+
+        // $js = 'document.getElementById('elementID').click()';
+        $element = "//*[text() = '" . $menuelement . "']";
+        echo $element .PHP_EOL;
+        // The popup (alert) is created as async process because of some
+        // Ajax calls for string localization.
+        // This seems to make problems...
+        // Selenium hangs...
+        echo 'click on menu item' . PHP_EOL;
+        $js = "document.evaluate(\"".$element."\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()";
+        $webDriver->executeAsyncScript($js);
+
+        sleep(2000);
+
+        echo 'switch to alert' . PHP_EOL;
+        $alert = $webDriver->switchTo()->alert();
+
+        echo 'get state' . PHP_EOL;
+        $state = $webDriver->executeAsyncScript('return document.readyState');
+        echo 'state async ' . $state . PHP_EOL;
+
+//        $state = $this->evaluate_script('return document.readyState');
+//        echo 'state ' . $state . PHP_EOL;
+
+
+//        $state = $this->evaluate_script('return document.readyState');
+//        echo 'state ' . $state . PHP_EOL;
+
+
+//        $state = $webDriver->executeAsyncScript('return document.readyState');
+//        echo 'state async ' . $state . PHP_EOL;
+        return;
+
+        $alert = $webDriver->switchTo()->alert();
+        var_dump($alert);
+        $alert->dismiss();
+        return;
+
+        echo 'Send to alert alert' . PHP_EOL;
+        $alert->sendKeys('filename.java');
+        // echo 'Accept alert' . PHP_EOL;
+        // $alert->accept();
+
+        return;
+
+
+        echo 'Switch to alert' . PHP_EOL;
+        sleep(2000);
+        // $js = "browser.switchTo().activeElement().sendKeys('Test')";
+        // browser.actions().sendKeys('Test').perform();
+        $this->execute_script($js);
+        // self::type_keys($session, 'filename.java');
+        $webDriver->switchTo()->activeElement()->sendKeys('Test');
+
+        $alert = $webDriver->switchTo()->alert();
+        // $this->wait_for_pending_js();
+
+        ob_flush();
+        var_dump($alert);
+        ob_flush();
+        $text = $alert->getText();
+        echo 'Text: ' . $text . PHP_EOL;
+        echo 'Type into alert' . PHP_EOL;
+        $alert->sendKeys('filename.java');
+        echo 'Accept alert' . PHP_EOL;
+        $alert->accept();
     }
 
     /**
@@ -60,41 +132,69 @@ class behat_proforma extends behat_base {
      */
     public function i_click_on_menu($menuelement, $nodename) {
         echo 'wait ' . PHP_EOL;
-        $this->execute("behat_general::i_wait_seconds", [1]);
+        $this->execute("behat_general::i_wait_seconds", [0.5]);
         $xpath = "//*[text() = '". $nodename . "']";
         echo 'click on ' . $xpath . PHP_EOL;
         $this->i_rightclick_on($xpath, 'xpath_element');
-        $this->execute("behat_general::i_wait_seconds", [1]);
+        // $this->execute("behat_general::i_wait_seconds", [1]);
 
         // two clicks because the localized strings must be retrieved from server
+        $this->execute("behat_general::i_wait_seconds", [0.5]);
         $this->i_rightclick_on($xpath, 'xpath_element');
+        $this->execute("behat_general::i_wait_seconds", [0.5]);
+
         echo 'click on ' . $xpath . PHP_EOL;
         $xpath = "//*[text() = '". $menuelement . "']";
-        try {
-            $this->execute("behat_general::i_wait_seconds", [2]);
-        }  catch (Exception $f) {
-
-        }
-
-        /*        $page = $this->getSession()->getPage();
 
                 $session = $this->getSession();
                 $driver = $session->getDriver();
                 $webDriver = $session->getDriver()->getWebDriver();
-                $cap = $webDriver->getCapabilities();
+/*                $cap = $webDriver->getCapabilities();
                 var_dump($cap);
 
                 $dc = new Facebook\WebDriver\Remote\DesiredCapabilities();
                 $dc->setCapability(CapabilityType::UNEXPECTED_ALERT_BEHAVIOUR,
                         UnexpectedAlertBehaviour::IGNORE);
-        */
+//WebDriverCapabilityType::HANDLES_ALERTS
+*/
         // unhandledPromptBehavior => ignore, default is "dismiss and notify state" (chrome)
         try {
-            echo 'click on ' . $xpath . PHP_EOL;
-            // $this->i_click_on_general($xpath, 'xpath_element');
+            $state = $this->evaluate_script('return document.readyState');
+            echo 'state ' . $state . PHP_EOL;
+
+            // echo 'click on ' . $xpath . PHP_EOL;
+            // $this->execute("behat_general::i_click_on", [$xpath, 'xpath_element']);
+
+            // Get required context and execute the api.
+            // $context = behat_context_helper::get('behat_general');
+            // call_user_func_array(array($context, 'i_click_on'), [$xpath, 'xpath_element']);
+            $this->click_on_contextmenue_item($menuelement);
+//            behat_base::execute_in_matching_contexts('general', 'i_click_on',  [$xpath, 'xpath_element']);
+            return;
+
+            // $this->execute("behat_general::i_wait_seconds", [1]);
+            sleep(3000);
+
+            $state = $this->evaluate_script('return document.readyState');
+            echo 'state ' . $state . PHP_EOL;
+
+            echo 'switch to alert ' . PHP_EOL;
+            $alert = $webDriver->switchTo()->alert();
+            var_dump($alert);
+            // $text = $alert->getText();
+            // echo 'Text: ' . $text . PHP_EOL;
+            $alert->sendKeys('filename.java');
+            $alert->accept();
+
+
+/*            $webDriver->wait(20, 1000)->until(
+                WebDriverExpectedCondition::alertIsPresent()
+            );
+*/
+
             // Wait for pending js.
             // $this->wait_for_pending_js();
-            $this->execute("behat_general::i_click_on", [$xpath, 'xpath_element']);
+            echo 'hurra';
         } catch (/* Exception*/ UnexpectedAlertOpenException $f) {
             echo 'UnexpectedAlertOpenException' . PHP_EOL;
             /*            try {

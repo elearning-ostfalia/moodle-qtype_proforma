@@ -83,6 +83,7 @@ public class PalindromTest {
     # And I press "Attempt quiz now"
     And I press "Attempt quiz"
     And I should see "Solution"
+    And I pause
     # The following code does not work!!!
     And I click on "New empty file..." in "Solution" contextmenu
     # two clicks because the localized strings must be retrieved from server
