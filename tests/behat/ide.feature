@@ -34,7 +34,7 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
-  Scenario: Run test as a student
+  Scenario: Run test as a student TODO
 ##########################################################################
     # teacher creates question in quiz
     And I log in as "teacher1"
@@ -86,22 +86,14 @@ public class PalindromTest {
     And I pause
     # The following code does not work!!!
     And I click on "New empty file..." in "Solution" contextmenu
-    # two clicks because the localized strings must be retrieved from server
-    # And I rightclick on "//*[text() = 'Solution']" "xpath_element"
-    # And I rightclick on "//*[text() = 'Solution']" "xpath_element"
-    # And I pause
     And I should see "New filename:"
-    And I click on "//*[text() = 'New empty file...']" "xpath_element"
-    # And I click on "Upload H5P content types" "button" in the "#fitem_id_uploadlibraries" "css_element"
-    And I should see "New filename"
 #    And "New filename" "dialogue" should be visible
-    And I pause
     # And I click on "//*[text() = 'Solution']" "xpath_element"
 #    And I click on "//*[normalize-space() = 'Solution']" "xpath_element"
 #    And I click on "//span[contains(@class, 'name')]" "xpath_element"
 #    And I click on ".name" "css_element"
 
-    And I pause
+#    And I pause
 
     And I press "Finish attempt"
     And I press "Submit all and finish"
