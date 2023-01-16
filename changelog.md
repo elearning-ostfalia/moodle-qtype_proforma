@@ -1,3 +1,7 @@
+## v2.10.0
+
+new: Allow external responses from git
+
 ## v2.9.0
 
 new: Explorer response format
