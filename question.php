@@ -327,6 +327,29 @@ class qtype_proforma_question extends question_graded_automatically {
         return '-';
     }
 
+    /**
+     * convert summerized response into response fields (needed for testing)
+     * @param string $summary
+     * @return array
+     */
+    public function un_summarise_response(string $summary) {
+        if (!empty($summary)) {
+            switch ($this->responseformat) {
+                case qtype_proforma::RESPONSE_EDITOR:
+                    return [ANSWER => $summary ];
+                case qtype_proforma::RESPONSE_FILEPICKER:
+                case qtype_proforma::RESPONSE_EXPLORER:
+/*                    $expecteddata[ATTACHMENTS] = question_attempt::PARAM_FILES;
+                    break;*/
+                case qtype_proforma::RESPONSE_VERSION_CONTROL:
+                default:
+                    throw new coding_exception('unsupported responseformat '. $this->responseformat);
+            }
+        } else {
+            return [];
+        }
+    }
+
     /** Base comment from question_definition (abstract)
      * What data would need to be submitted to get this question correct.
      * If there is more than one correct answer, this method should just
