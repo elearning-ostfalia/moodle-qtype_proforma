@@ -37,7 +37,7 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
     * editor with programming language support such as syntax highlighting or automatic indentation
     * explorer/IDE-like environment for creating and editing multiple files, also with programming language support
     * file upload (for more than one file)
-    * external repository (SVN in case of using Praktomat) 
+    * external repository (git or SVN in case of using Praktomat) 
 - code snippet as starting point for student in editor
 - immediate feedback for students (optional) 
 - supported programming languages are only limited by the available grader back-ends 
