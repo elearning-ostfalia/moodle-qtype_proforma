@@ -44,10 +44,21 @@ define("PHUSERNAME", "{username}");
 define("PHGROUP",    "{group}");
 define("PHGROUPL",   "{groupl}");
 
+// Initialise static variable.
+qtype_proforma_question::$sutstate =question_state::$gradedwrong;
+
 /**
  * Represents the proforma question.
  */
 class qtype_proforma_question extends question_graded_automatically {
+
+    /** @var bool Flag indicates that the grading behaviour is externally controlled
+    for testing */
+    public static $systemundertest = false;
+    /** @var float grading result fraction when $systemundertest is set to true */
+    public static $sutfraction = 0.0;
+    /** @var float grading result state when $systemundertest is set to true */
+    public static $sutstate;
 
     // Defines the maximum number of char shown in the response summary.
     const SUMMARY_LENGTH = 500;
@@ -476,6 +487,10 @@ class qtype_proforma_question extends question_graded_automatically {
      * @return array (float, integer) the fraction, and the state.
      */
     public function grade_response(array $response) {
+        if (self::$systemundertest) {
+            // System is under test => do not call actual grading functions.
+            return array(self::$sutfraction, self::$sutstate, []);
+        }
 
         if (!$this->is_complete_response($response)) {
             throw new coding_exception('complete response expected');
