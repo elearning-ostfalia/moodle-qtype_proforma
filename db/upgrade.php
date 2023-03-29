@@ -337,7 +337,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
 
         $DB->execute('UPDATE {qtype_proforma_options} '.
             'SET vcssystem = "2" ' .
-            'WHERE responseformat = "versioncontrol"');
+            'WHERE responseformat = :responseformat', ['responseformat' => 'versioncontrol']);
 
         // ProFormA savepoint reached.
         upgrade_plugin_savepoint(true, 2022111100, 'qtype', 'proforma');
