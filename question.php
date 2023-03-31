@@ -504,8 +504,7 @@ class qtype_proforma_question extends question_graded_automatically {
                 $uri = str_replace('{input}', $response[VCSINPUT], $this->vcsuritemplate);
             } else if (array_key_exists(VCSGROUP, $response)) {
                 $uri = str_replace('{group}', $response[VCSGROUP], $this->vcsuritemplate);
-            } else if (array_key_exists(VCSGROUP, $response)) {
-                $uri = str_replace('{groupl}', mb_strtolower($response[VCSGROUP]), $this->vcsuritemplate);
+                $uri = str_replace('{groupl}', mb_strtolower($response[VCSGROUP]), $uri);
             } else if (array_key_exists(VCSUSERNAME, $response)) {
                 $uri = str_replace('{username}', $response[VCSUSERNAME], $this->vcsuritemplate);
             } else {

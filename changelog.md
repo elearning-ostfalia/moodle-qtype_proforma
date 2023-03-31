@@ -1,6 +1,13 @@
+## 2.10.1
+
+Bugfix: groupl parameter for version control system did not work
+
+
 ## v2.10.0
 
-new: Allow external responses from git
+new: support for git for external submissions from source control system
+implement new proforma 2.1 format for grader requests
+proforma format 2.0 is no longer supported for grader requests
 
 ## v2.9.0
 
