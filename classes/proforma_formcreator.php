@@ -317,6 +317,15 @@ class proforma_form_creator extends base_form_creator {
 
         // Show Proforma version.
         $this->add_static_field($question, 'proformaversion', 'ProFormA Version', 6);
+
+        // Add upload button.
+        $mform->addElement('button', 'uploadbutton', 'Upload');
+        // Add js.
+        // $mform->addElement('hidden', 'uploadconfiguration', '', array('id' => 'proforma_uploadconfiguration'));
+        // $mform->setType('uploadconfiguration', PARAM_RAW);
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton',
+            'proforma_uploadconfiguration'));
     }
 
     /**
