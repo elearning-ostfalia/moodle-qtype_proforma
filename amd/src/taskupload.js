@@ -44,7 +44,7 @@ export const upload = (buttonid, task) => {
         const response = await uploadTask(questionId); // , userId);
         window.console.log(response);
 
-        alert('pressed');
+        alert(response.message);
     }
     // Initialise.
 

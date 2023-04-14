@@ -259,6 +259,56 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         }
     }
 
+    protected function post_to_grader_and_stream_result(&$postfields, $question) {
+        // Get timeout.
+        $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'grading_timeout');
+        // $options['CURLOPT_WRITEFUNCTION'] = ;
+
+        // Add task file.
+        if (isset($question)) {
+            $task = $question->get_task_file();
+            if (!$task instanceof stored_file) {
+                throw new coding_exception("task variable has wrong class");
+            }
+            $postfields['task-file'] = $task;
+        } else {
+//            if (!isset($taskfile)) {
+                throw new coding_exception('task is missing');
+//            }
+/*            if (!$taskfile instanceof stored_file) {
+                throw new coding_exception("task variable has wrong class");
+            }
+            $postfields['task-file'] = $taskfile;*/
+        }
+
+        // Get URI.
+//        if (!isset($this->_uri)) {
+            $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
+            // $path = trim(get_config('qtype_proforma', 'graderuri_path'));
+            $path = '/api/v2/upload';
+
+            $uri = $protocolhost . $path;
+/*        } else {
+            $uri = $this->_uri;
+        }
+*/
+        debugging($uri);
+        // return array($this->set_dummy_result3(), 200); // Fake.
+
+        // Send task and submission to grader with Curl with a configured timeout.
+        $curl = new curl();
+        $output = $curl->post($uri, $postfields, $options);
+        $info = $curl->get_info();
+        $httpcode = $info["http_code"];
+        if ($output === false) {
+            // In case of a curl error get the erro number.
+            $msg = 'curl request failed: Errno = ' . $curl->get_errno() . ', error = "' . $curl->error . '"';
+            return array($msg, $httpcode);
+        } else {
+            return array($output, $httpcode);
+        }
+    }
+
     /**
      * send file upload submission to grader
      *
@@ -338,6 +388,28 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         return $this->post_to_grader($postfields, $question);
     }
+
+    /**
+     * Function uploads the task associated to question to the grader.
+     * It is assumed that this may take longer. So the response is not buffered.
+     *
+     * @param qtype_proforma_question $question
+     * @return array
+     * @throws coding_exception
+     */
+    public function upload_task_to_grader(qtype_proforma_question $question) {
+        $filename = $question->responsefilename;
+
+        $submissionxml = $this->create_submission_xml('', null, $filename, null, $question);
+
+        $postfields = array(
+            'submission.xml' => $submissionxml,
+            $filename => ''
+        );
+
+        return $this->post_to_grader_and_stream_result($postfields, $question);
+    }
+
 
     /**
      * checks if the connection to the grader is valid.
