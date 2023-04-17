@@ -301,7 +301,9 @@ class proforma_form_creator extends base_form_creator {
     public function add_grader_settings($question, $context) {
         // ProFormA fields.
         $mform = $this->_form;
-        $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
+        $mform->addElement('header', 'graderoptions_header',
+            get_string('graderoptions_header', 'qtype_proforma'));
+        $mform->setExpanded('graderoptions_header');
 
         // Task Filename.
         // Remove hidden element in base class.
@@ -319,13 +321,10 @@ class proforma_form_creator extends base_form_creator {
         $this->add_static_field($question, 'proformaversion', 'ProFormA Version', 6);
 
         // Add upload button.
-        $mform->addElement('button', 'uploadbutton', 'Upload');
+        $mform->addElement('button', 'uploadbutton', get_string('upload', 'qtype_proforma'));
         // Add js.
-        // $mform->addElement('hidden', 'uploadconfiguration', '', array('id' => 'proforma_uploadconfiguration'));
-        // $mform->setType('uploadconfiguration', PARAM_RAW);
         global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton',
-            'proforma_uploadconfiguration'));
+        $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton'));
     }
 
     /**

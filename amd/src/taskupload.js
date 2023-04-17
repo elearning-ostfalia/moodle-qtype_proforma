@@ -37,9 +37,10 @@ import {uploadTask} from './repository';
  */
 export const upload = (buttonid, task) => {
     async function performUpload() {
-        const questionId = 134; // getAssigmentId();
+        let questionId = document.querySelector("input[name='id']").value;
+        // const questionId = 134; // getAssigmentId();
         // const userId = 2456; // getUserId();
-        console.log('upload task');
+        console.log('upload task ' + questionId);
 
         const response = await uploadTask(questionId); // , userId);
         window.console.log(response);

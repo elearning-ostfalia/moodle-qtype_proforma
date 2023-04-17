@@ -48,6 +48,8 @@ $string['responsefieldlines'] = 'Input box size';
 $string['responseformat'] = 'Response format';
 $string['responseoptions'] = 'Response Options';
 $string['graderoptions_header'] = 'Grader Settings';
+$string['upload'] = 'Upload taskfile to grader';
+
 $string['responsetemplateheader'] = 'Response Templates';
 $string['responsetemplate'] = 'Response template';
 $string['responsetemplate_help'] = 'Any text entered here will be displayed in the response input box when a new attempt at the question starts. If more than one template exists only the first one can be edited.';

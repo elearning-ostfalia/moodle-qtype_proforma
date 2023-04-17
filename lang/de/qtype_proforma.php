@@ -45,6 +45,7 @@ $string['responsefieldlines'] = 'Anzahl Zeilen';
 $string['responseformat'] = 'Eingabeform';
 $string['responseoptions'] = 'Einreichung';
 $string['graderoptions_header'] = 'Grader';
+$string['upload'] = 'Aufgabendatei zum Grader hochladen';
 $string['responsetemplateheader'] = 'Codevorlagen';
 $string['responsetemplate'] = 'Codevorlage';
 $string['responsetemplate_help'] = 'Text wird bei Beginn eines neuen Versuchs im Editor für den Studierenden angezeigt (bzw. als Download angeboten). Wenn mehr als eine Vorlage existiert, ist nur die erste hier änderbar.';

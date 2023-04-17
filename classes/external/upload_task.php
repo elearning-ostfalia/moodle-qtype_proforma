@@ -51,27 +51,29 @@ class upload_task extends /* \core_external\*/ \external_api {
      * @param int $questionid proforma question id
      * @return array result (boolean) with log messages
      */
-    public static function execute($questionid) {
+    public static function execute($questionidparam) {
         global $CFG, $DB;
 
-        $params = self::validate_parameters(self::execute_parameters(), ['questionid' => $questionid]);
+        $params = self::validate_parameters(self::execute_parameters(), ['questionid' => $questionidparam]);
+        if (empty($params) or count($params) == 0) {
+            throw new \invalid_parameter_exception('invalid question id');
+        }
 
-        // TODO: use correct id.
-        $questionid = 10814; // FAKE
+        $questionid = $params['questionid'];
         $question = \question_bank::load_question($questionid);
         if ($question == null) {
-            return [
-                'questionid' => $questionid,
-                'result' => false,
-                'message' => 'invalid question id'
-            ];
+            throw new \invalid_parameter_exception('no question');
         }
         if (get_class($question) != 'qtype_proforma_question') {
-            return [
-                'questionid' => $questionid,
-                'result' => false,
-                'message' => 'invalid question type: ' . get_class($question)
-            ];
+            throw new \invalid_parameter_exception('invalid question type');
+        }
+
+        // security checks
+        $contextid = $DB->get_field('question_categories', 'contextid', array('id'=>$question->category));
+        $context = \context::instance_by_id($contextid, IGNORE_MISSING);
+        if (isset($context)) {
+            self::validate_context($context);
+            require_capability('moodle/question:editmine', $context);
         }
 
         $grader = new \qtype_proforma_grader_2($question->get_uri('/api/v2/upload'));
@@ -82,39 +84,6 @@ class upload_task extends /* \core_external\*/ \external_api {
             'message' => $graderoutput
         ];
 
-
-        // now security checks
-        // $context = get_context_instance(CONTEXT_COURSE, $group->courseid);
-        // self::validate_context($context);
-        // require_capability('moodle/course:managegroups', $context);
-
-
-/*        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
-
-        $questionid = array();
-
-        foreach ($params['groups'] as $group) {
-            $group = (object)$group;
-
-            if (trim($group->name) == '') {
-                throw new invalid_parameter_exception('Invalid group name');
-            }
-            if ($DB->get_record('groups', ['courseid' => $group->courseid, 'name' => $group->name])) {
-                throw new invalid_parameter_exception('Group with the same name already exists in the course');
-            }
-
-            // now security checks
-            $context = get_context_instance(CONTEXT_COURSE, $group->courseid);
-            self::validate_context($context);
-            require_capability('moodle/course:managegroups', $context);
-
-            // finally create the group
-            $group->id = groups_create_group($group, false);
-            $questionid[] = (array) $group;
-        }
-
-        $transaction->allow_commit();
-*/
         return [
             'questionid' => $questionid,
             'result' => true,
