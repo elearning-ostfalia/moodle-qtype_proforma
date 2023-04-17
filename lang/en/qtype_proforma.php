@@ -146,7 +146,7 @@ $string['sumweightzero'] = 'The sum of all weights must not be zero.';
 $string['notaskfile'] = 'Taskfile is missing.';
 
 
-
+// Settings
 $string['miscellaneousheader'] = 'Miscellaneous';
 $string['defaultpenalty'] = 'Default penalty';
 $string['defaultpenalty_desc'] = 'Penalty for each wrong submission (if question behaviour is set to adaptive with penalty)';
@@ -156,6 +156,8 @@ $string['graderuri_host'] = 'URI: Protocol and Server';
 $string['graderuri_host_desc'] = 'Protocol (Scheme) and Server (Host) Part of Grader URI';
 $string['graderuri_path'] = 'URI: Path';
 $string['graderuri_path_desc'] = 'Path Part of Grader URI';
+$string['uploaduri_path'] = 'URI: Path for uploading task';
+$string['uploaduri_path_desc'] = 'Path Part of Grader URI for uploads';
 $string['c_graderuri_host'] = 'Grader for c';
 $string['c_graderuri_host_desc'] = '';
 $string['cpp_graderuri_host'] = 'Grader for C++';
@@ -212,8 +214,10 @@ $string['javaversion_desc'] = 'Comma separated list with Java versions that are 
 $string['junitversion'] = 'JUnit version';
 $string['junitversion_desc'] = 'Comma separated list with JUnit versions that are supported by the grader. First one is default.';
 
-$string['grading_timeout'] = 'Grading Timeout';
-$string['grading_timeout_desc'] = 'Timout for grading request in seconds';
+$string['grading_timeout'] = 'Grading timeout';
+$string['grading_timeout_desc'] = 'Timout for grading request [sec]';
+$string['upload_timeout'] = 'Upload timeout';
+$string['upload_timeout_desc'] = 'Timout for uploading tasks [sec]';
 
 $string['passed'] = 'PASSED';
 $string['failed'] = 'FAILED';

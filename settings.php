@@ -43,10 +43,20 @@ $settings->add(new admin_setting_configtext('qtype_proforma/graderuri_path',
         get_string('graderuri_path_desc', 'qtype_proforma'),
         '/api/v2/submissions', PARAM_PATH, 80));
 
+$settings->add(new admin_setting_configtext('qtype_proforma/uploaduri_path',
+    get_string('uploaduri_path', 'qtype_proforma'),
+    get_string('uploaduri_path_desc', 'qtype_proforma'),
+    '/api/v2/upload', PARAM_PATH, 80));
+
 $settings->add(new admin_setting_configtext('qtype_proforma/grading_timeout',
         get_string('grading_timeout', 'qtype_proforma'),
         get_string('grading_timeout_desc', 'qtype_proforma'), 40,
         PARAM_INT, 3));
+
+$settings->add(new admin_setting_configtext('qtype_proforma/upload_timeout',
+    get_string('upload_timeout', 'qtype_proforma'),
+    get_string('upload_timeout_desc', 'qtype_proforma'), 300,
+    PARAM_INT, 3));
 
 $proformaversions = array(
 //        '2.0' => '2.0',

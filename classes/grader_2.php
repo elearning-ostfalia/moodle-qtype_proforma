@@ -29,6 +29,8 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/grader.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.php');
 
 
+
+
 class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
     /** @var programming|null programming language (for selecting grader) */
@@ -259,10 +261,29 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         }
     }
 
+
+    /**
+     * CURLOPT_WRITEFUNCTION which flushes the output buffer.
+     *
+     * @param resource $curl_handle
+     * @param string   $chunk
+     */
+    function curl_write_flush($curl_handle, $chunk)
+    {
+        echo $chunk;
+
+        ob_flush();
+        flush();
+
+        return strlen($chunk); // tell curl how much data was handled.
+    }
+
     protected function post_to_grader_and_stream_result(&$postfields, $question) {
         // Get timeout.
-        $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'grading_timeout');
-        // $options['CURLOPT_WRITEFUNCTION'] = ;
+        $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'upload_timeout');
+        // $options['CURLOPT_SUPPRESS_CONNECT_HEADERS'] = True;
+        $options['CURLOPT_WRITEFUNCTION'] =  // array($this, "curl_write_flush"); // 'curl_write_flush';
+            array(&$this, 'curl_write_flush');
 
         // Add task file.
         if (isset($question)) {
@@ -282,16 +303,10 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         }
 
         // Get URI.
-//        if (!isset($this->_uri)) {
-            $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
-            // $path = trim(get_config('qtype_proforma', 'graderuri_path'));
-            $path = '/api/v2/upload';
+        $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
+        $path = trim(get_config('qtype_proforma', 'uploaduri_path'));
+        $uri = $protocolhost . $path;
 
-            $uri = $protocolhost . $path;
-/*        } else {
-            $uri = $this->_uri;
-        }
-*/
         debugging($uri);
         // return array($this->set_dummy_result3(), 200); // Fake.
 
@@ -400,7 +415,8 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     public function upload_task_to_grader(qtype_proforma_question $question) {
         $filename = $question->responsefilename;
 
-        $submissionxml = $this->create_submission_xml('', null, $filename, null, $question);
+        $submissionxml = $this->create_submission_xml('no source code available',
+            null, $filename, null, $question);
 
         $postfields = array(
             'submission.xml' => $submissionxml,
