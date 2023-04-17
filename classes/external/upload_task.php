@@ -77,17 +77,20 @@ class upload_task extends /* \core_external\*/ \external_api {
         }
 
         $grader = new \qtype_proforma_grader_2($question->get_uri('/api/v2/upload'));
-        list($graderoutput, $httpcode) = $grader->upload_task_to_grader($question);
+//        try {
+            list($graderoutput, $httpcode) = $grader->upload_task_to_grader($question);
+            if ($graderoutput === True) {
+                $graderoutput = 'successfully started';
+            }
+/*        } catch (\Exception $ex) {
+           // Convert exception.
+            $graderoutput = str($ex);
+        }
+*/
         return [
             'questionid' => $questionid,
             'result' => ($httpcode == 200),
             'message' => $graderoutput
-        ];
-
-        return [
-            'questionid' => $questionid,
-            'result' => true,
-            'message' => 'alles paletti'
         ];
     }
 

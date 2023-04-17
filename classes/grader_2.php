@@ -271,7 +271,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     function curl_write_flush($curl_handle, $chunk)
     {
         echo $chunk;
-
         ob_flush();
         flush();
 
@@ -282,8 +281,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         // Get timeout.
         $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'upload_timeout');
         // $options['CURLOPT_SUPPRESS_CONNECT_HEADERS'] = True;
-        $options['CURLOPT_WRITEFUNCTION'] =  // array($this, "curl_write_flush"); // 'curl_write_flush';
-            array(&$this, 'curl_write_flush');
+        $options['CURLOPT_WRITEFUNCTION'] = array(&$this, 'curl_write_flush');
 
         // Add task file.
         if (isset($question)) {

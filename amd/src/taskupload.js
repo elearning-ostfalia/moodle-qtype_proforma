@@ -36,21 +36,64 @@ import {uploadTask} from './repository';
  * @returns {undefined}
  */
 export const upload = (buttonid, task) => {
+    async function noAjaxUpload() {
+        let questionId = document.querySelector("input[name='id']").value;
+
+        var that = this;
+        var page_url = 'http://10.235.1.41/moodle/lib/ajax/service.php?info=qtype_proforma_upload_task';
+
+        let ajaxRequestData = [];
+        // for (i = 0; i < requests.length; i++) {
+            ajaxRequestData.push({
+                index: 0,
+                methodname: 'qtype_proforma_upload_task',
+                args: {questionId, }
+            });
+        // }
+        ajaxRequestData = JSON.stringify(ajaxRequestData);
+
+        var req = new XMLHttpRequest();
+        req.open("POST", page_url, true);
+        req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        req.addEventListener("progress", function (evt) {
+            console.log(evt);
+        }, false);
+
+        req.responseType = "blob";
+        req.onreadystatechange = function () {
+            console.log('onreadystatechange');
+        };
+        req.send(JSON.stringify(ajaxRequestData));
+    }
+
     async function performUpload() {
         let questionId = document.querySelector("input[name='id']").value;
-        // const questionId = 134; // getAssigmentId();
-        // const userId = 2456; // getUserId();
         console.log('upload task ' + questionId);
 
-        const response = await uploadTask(questionId); // , userId);
-        window.console.log(response);
+        const promise = await uploadTask(questionId);
+        console.log('upload task finished, handle result 1');
 
-        alert(response.message);
+        window.console.log(promise);
+
+        console.log('upload task finished, handle result 2');
+
+/*
+        promise.then((response) => {
+            window.console.log(response);
+        })
+        .catch( error => {
+            window.console.error(error);
+            // console.error('error:', error);
+            // alert(error);
+        });
+*/
+
+        // alert(response.message);
     }
+
     // Initialise.
-
-
     document.getElementById(buttonid).addEventListener('click', function () {
-        performUpload();
+        noAjaxUpload();
+        // performUpload();
     });
 };
