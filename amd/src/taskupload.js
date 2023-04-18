@@ -39,33 +39,49 @@ import config from 'core/config';
 export const upload = (buttonid, task) => {
 
     const msgBoxId = 'proforma-notification-bar';
+    var source = null;
 
     function showMessageBar(buttonid, message) {
-        console.log('showNotificationBar');
-
         const duration = 1500;
         const txtColor = "#101010";
-        let height = 100;
+        let height = "100px";
 
         let box = document.getElementById(msgBoxId);
-        console.log(box);
-
         if (box === null) {
-            console.log('create messagebox');
-            let boxHtml = "<div id='" + msgBoxId + "' style='width:100%; height:" + height +
-            "px; position: fixed; z-index: 10000; background-color: #E0E2E4; border: 1px solid " + txtColor + "'>" + message + "</div>";
-
             let node = document.createElement('div');
-            node.innerHTML = boxHtml;
+            node.style.width = "100%";
+            // node.style.height = height;
+            node.style.position = "fixed";
+            node.style.zIndex = "10000";
+            node.style.background = "#E0E2E4";
+            node.style.border = "1px solid " + txtColor;
             node.style.transition = "all 2s ease-in-out";
             node.style.height  = "0px"; // => height
-
-            document.body.prepend(node); // appendChild(node);
-            let button = document.getElementById(buttonid);
+            document.body.prepend(node);
             console.log('appended');
+
+            let span = document.createElement('span');
+            span.id = msgBoxId;
+            span.innerHTML = message;
+            node.appendChild(span);
+
+            let button = document.createElement('button');
+            button.innerHTML = "close";
+            button.addEventListener('click', function() {
+                if (source != null) {
+                    source.close();
+                }
+                node.remove();
+            });
+            node.appendChild(button);
+
+            // Transistion
+            node.style.height = height;
+
         } else {
             // Delete output
             box.innerHTML = message;
+
         }
     }
 
@@ -75,7 +91,7 @@ export const upload = (buttonid, task) => {
         let url = config.wwwroot + '/question/type/proforma/upload_sse.php';
         url += '?sesskey=' + config.sesskey + '&id=' + questionId;
 
-        var source = new EventSource(url);
+        source = new EventSource(url);
         source.onmessage = function(event) {
             console.log(event.data);
             // console.log(event);
@@ -102,6 +118,7 @@ export const upload = (buttonid, task) => {
                     break;
             }*/
             source.close();
+            // source = null;
             // document.getElementById("result").innerHTML += event.data + "<br>";
         };
         source.onopen = function(event) {
