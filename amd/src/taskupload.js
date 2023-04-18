@@ -27,6 +27,7 @@
 
 
 import {uploadTask} from './repository';
+import config from 'core/config';
 
 /**
  * upload task to grader
@@ -36,21 +37,56 @@ import {uploadTask} from './repository';
  * @returns {undefined}
  */
 export const upload = (buttonid, task) => {
-    async function testSse() {
-        let questionId = document.querySelector("input[name='id']").value;
 
-        var source = new EventSource("http://10.235.1.41/moodle/question/type/proforma/upload_sse.php?id=" + questionId);
+    const msgBoxId = 'proforma-notification-bar';
+
+    function showMessageBar(buttonid, message) {
+        console.log('showNotificationBar');
+
+        const duration = 1500;
+        const txtColor = "#101010";
+        let height = 100;
+
+        let box = document.getElementById(msgBoxId);
+        console.log(box);
+
+        if (box === null) {
+            console.log('create messagebox');
+            let boxHtml = "<div id='" + msgBoxId + "' style='width:100%; height:" + height +
+            "px; position: fixed; z-index: 10000; background-color: #E0E2E4; border: 1px solid " + txtColor + "'>" + message + "</div>";
+
+            let node = document.createElement('div');
+            node.innerHTML = boxHtml;
+            node.style.transition = "all 2s ease-in-out";
+            node.style.height  = "0px"; // => height
+
+            document.body.prepend(node); // appendChild(node);
+            let button = document.getElementById(buttonid);
+            console.log('appended');
+        } else {
+            // Delete output
+            box.innerHTML = message;
+        }
+    }
+
+
+    async function uploadWithSse() {
+        const questionId = document.querySelector("input[name='id']").value;
+        let url = config.wwwroot + '/question/type/proforma/upload_sse.php';
+        url += '?sesskey=' + config.sesskey + '&id=' + questionId;
+
+        var source = new EventSource(url);
         source.onmessage = function(event) {
             console.log(event.data);
             // console.log(event);
-            // document.getElementById("result").innerHTML += event.data + "<br>";
+            document.getElementById(msgBoxId).innerHTML += event.data + "<br>";
         };
         source.onerror = function(event) {
             // Unfortunately, we cannot see on this level whether an error has occurred or
             // whether the upload was simply completed successfully.
-            console.error("An error occured");
-            console.log(event);
-            console.log(source);
+            // console.error("An error occured");
+            // console.log(event);
+            // console.log(source);
 /*            switch (source.readyState) {
                 case EventSource.CLOSED:
                     console.log('Close connection');
@@ -69,38 +105,9 @@ export const upload = (buttonid, task) => {
             // document.getElementById("result").innerHTML += event.data + "<br>";
         };
         source.onopen = function(event) {
-            console.log("The connection has been established. ");
+            // console.log("The connection has been established. ");
             // document.getElementById("result").innerHTML += event.data + "<br>";
         };
-    }
-
-    async function noAjaxUpload() {
-        let questionId = document.querySelector("input[name='id']").value;
-
-        var page_url = 'http://10.235.1.41/moodle/lib/ajax/service.php?info=qtype_proforma_upload_task';
-
-        let ajaxRequestData = [];
-        // for (i = 0; i < requests.length; i++) {
-            ajaxRequestData.push({
-                index: 0,
-                methodname: 'qtype_proforma_upload_task',
-                args: {questionId, }
-            });
-        // }
-        ajaxRequestData = JSON.stringify(ajaxRequestData);
-
-        var req = new XMLHttpRequest();
-        req.open("POST", page_url, true);
-        req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        req.addEventListener("progress", function (evt) {
-            console.log(evt);
-        }, false);
-
-        req.responseType = "blob";
-        req.onreadystatechange = function () {
-            console.log('onreadystatechange');
-        };
-        req.send(JSON.stringify(ajaxRequestData));
     }
 
     async function performUpload() {
@@ -114,24 +121,12 @@ export const upload = (buttonid, task) => {
 
         console.log('upload task finished, handle result 2');
 
-/*
-        promise.then((response) => {
-            window.console.log(response);
-        })
-        .catch( error => {
-            window.console.error(error);
-            // console.error('error:', error);
-            // alert(error);
-        });
-*/
-
         // alert(response.message);
     }
 
     // Initialise.
     document.getElementById(buttonid).addEventListener('click', function () {
-        testSse();
-        // noAjaxUpload();
-        // performUpload();
+        showMessageBar(buttonid, '');
+        uploadWithSse();
     });
 };
