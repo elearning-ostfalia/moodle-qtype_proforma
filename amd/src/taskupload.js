@@ -101,7 +101,7 @@ export const upload = (buttonid, task) => {
             let dialog = document.querySelector(".modal-body");
             // console.log(dialog);
             if (dialog != null) {
-                dialog.innerHTML += event.data + "<br>";
+                dialog.innerHTML += event.data.trim() + "<br>";
             }
 
             // document.getElementById(msgBoxId).innerHTML += event.data + "<br>";
