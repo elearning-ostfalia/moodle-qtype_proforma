@@ -28,6 +28,8 @@
 
 import {uploadTask} from './repository';
 import config from 'core/config';
+import ModalFactory from 'core/modal_factory';
+import ModalEvents from 'core/modal_events';
 
 /**
  * upload task to grader
@@ -40,6 +42,8 @@ export const upload = (buttonid, task) => {
 
     const msgBoxId = 'proforma-notification-bar';
     var source = null;
+    var modalroot = null;
+    const maxLogLines = 20;
 
     function showMessageBar(buttonid, message) {
         const duration = 1500;
@@ -94,8 +98,13 @@ export const upload = (buttonid, task) => {
         source = new EventSource(url);
         source.onmessage = function(event) {
             console.log(event.data);
-            // console.log(event);
-            document.getElementById(msgBoxId).innerHTML += event.data + "<br>";
+            let dialog = document.querySelector(".modal-body");
+            // console.log(dialog);
+            if (dialog != null) {
+                dialog.innerHTML += event.data + "<br>";
+            }
+
+            // document.getElementById(msgBoxId).innerHTML += event.data + "<br>";
         };
         source.onerror = function(event) {
             // Unfortunately, we cannot see on this level whether an error has occurred or
@@ -118,6 +127,13 @@ export const upload = (buttonid, task) => {
                     break;
             }*/
             source.close();
+            let dialog = document.querySelector(".modal");
+            if (dialog) {
+                let button = dialog.querySelector(".btn-secondary");
+                if (button) {
+                    button.innerHTML = 'Close';
+                }
+            }
             // source = null;
             // document.getElementById("result").innerHTML += event.data + "<br>";
         };
@@ -142,8 +158,25 @@ export const upload = (buttonid, task) => {
     }
 
     // Initialise.
-    document.getElementById(buttonid).addEventListener('click', function () {
-        showMessageBar(buttonid, '');
-        uploadWithSse();
+    document.getElementById(buttonid).addEventListener('click', function (e) {
+        // Create Moodle modal dialog.
+        ModalFactory.create({
+            type: ModalFactory.types.CANCEL,
+            title: 'Upload Log',
+            body: '',
+        })
+            .then(function(modal) {
+                modalroot = modal.getRoot();
+                modalroot.on(ModalEvents.cancel, function() {
+                    source.close();
+                    source = null;
+                    modalroot.remove();
+                });
+                modal.show();
+                uploadWithSse();
+            });
+
+        // showMessageBar(buttonid, '');
+        // uploadWithSse();
     });
 };
