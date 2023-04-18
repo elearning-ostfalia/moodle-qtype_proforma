@@ -36,10 +36,47 @@ import {uploadTask} from './repository';
  * @returns {undefined}
  */
 export const upload = (buttonid, task) => {
+    async function testSse() {
+        let questionId = document.querySelector("input[name='id']").value;
+
+        var source = new EventSource("http://10.235.1.41/moodle/question/type/proforma/upload_sse.php?id=" + questionId);
+        source.onmessage = function(event) {
+            console.log(event.data);
+            // console.log(event);
+            // document.getElementById("result").innerHTML += event.data + "<br>";
+        };
+        source.onerror = function(event) {
+            // Unfortunately, we cannot see on this level whether an error has occurred or
+            // whether the upload was simply completed successfully.
+            console.error("An error occured");
+            console.log(event);
+            console.log(source);
+/*            switch (source.readyState) {
+                case EventSource.CLOSED:
+                    console.log('Close connection');
+                    break;
+                case EventSource.OPEN:
+                    console.log('Open connection');
+                    break;
+                case EventSource.CONNECTING:
+                    console.log('Connecting connection');
+                    break;
+                default:
+                    console.log('Unknown connection state ' + source.readyState);
+                    break;
+            }*/
+            source.close();
+            // document.getElementById("result").innerHTML += event.data + "<br>";
+        };
+        source.onopen = function(event) {
+            console.log("The connection has been established. ");
+            // document.getElementById("result").innerHTML += event.data + "<br>";
+        };
+    }
+
     async function noAjaxUpload() {
         let questionId = document.querySelector("input[name='id']").value;
 
-        var that = this;
         var page_url = 'http://10.235.1.41/moodle/lib/ajax/service.php?info=qtype_proforma_upload_task';
 
         let ajaxRequestData = [];
@@ -93,7 +130,8 @@ export const upload = (buttonid, task) => {
 
     // Initialise.
     document.getElementById(buttonid).addEventListener('click', function () {
-        noAjaxUpload();
+        testSse();
+        // noAjaxUpload();
         // performUpload();
     });
 };

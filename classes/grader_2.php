@@ -270,7 +270,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      */
     function curl_write_flush($curl_handle, $chunk)
     {
-        echo $chunk;
+        echo "data: {$chunk}\n\n";
         ob_flush();
         flush();
 

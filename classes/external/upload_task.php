@@ -37,13 +37,14 @@ use external_multiple_structure;
 use external_single_structure;
 use external_value;
 
-
+/*
 function curl_write_flush($curl_handle, $chunk) {
     echo $chunk;
     ob_flush();
     flush();
     return strlen($chunk);
 }
+*/
 
 class upload_task extends /* \core_external\*/ \external_api {
     /**
