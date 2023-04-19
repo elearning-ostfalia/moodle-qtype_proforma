@@ -7,6 +7,8 @@ require_once($CFG->libdir . '/externallib.php');
 // Create events.
 header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
+header('X-Accel-Buffering: no');
+
 
 
 try {
