@@ -52,8 +52,4 @@ try {
 
 
 
-// $time = date('r');
-// echo "data: {$id} The server time is: {$time}\n\n";
-// flush();
-
 
