@@ -316,6 +316,11 @@ from https://codepen.io/cksachdev/pen/YNPmqe */
     color: #333;
 }
 
+/* default color is red for code (in log message box), switch to something like black */
+code#proforma-modal-message {
+    color: #111111;
+}
+
 /* Styles for the editing form. */
 
 /* first field */

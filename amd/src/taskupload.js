@@ -98,7 +98,7 @@ export const upload = (buttonid, task) => {
         source = new EventSource(url);
         source.onmessage = function(event) {
             console.log(event.data);
-            let dialog = document.querySelector(".modal-body");
+            let dialog = document.querySelector("#proforma-modal-message");
             // console.log(dialog);
             if (dialog != null) {
                 dialog.innerHTML += event.data.trim() + "<br>";
@@ -163,7 +163,8 @@ export const upload = (buttonid, task) => {
         ModalFactory.create({
             type: ModalFactory.types.CANCEL,
             title: 'Upload Log',
-            body: '',
+            body: '<span><code id ="proforma-modal-message"></code></span>',
+            large: true
         })
             .then(function(modal) {
                 modalroot = modal.getRoot();
