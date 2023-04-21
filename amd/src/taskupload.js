@@ -30,6 +30,7 @@ import {uploadTask} from './repository';
 import config from 'core/config';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
+import {get_string as getString} from 'core/str';
 
 /**
  * upload task to grader
@@ -44,6 +45,7 @@ export const upload = (buttonid, task) => {
     var source = null;
     var modalroot = null;
     const maxLogLines = 20;
+    var closeString = 'close';
 
     function showMessageBar(buttonid, message) {
         const duration = 1500;
@@ -69,26 +71,17 @@ export const upload = (buttonid, task) => {
             span.innerHTML = message;
             node.appendChild(span);
 
-            let button = document.createElement('button');
-            button.innerHTML = "close";
-            button.addEventListener('click', function() {
-                if (source != null) {
-                    source.close();
-                }
-                node.remove();
-            });
-            node.appendChild(button);
-
-            // Transistion
             node.style.height = height;
 
         } else {
             // Delete output
             box.innerHTML = message;
-
         }
     }
 
+    async function init() {
+        closeString = await getString('close', 'editor');
+    }
 
     async function uploadWithSse() {
         const questionId = document.querySelector("input[name='id']").value;
@@ -101,83 +94,54 @@ export const upload = (buttonid, task) => {
             let dialog = document.querySelector("#proforma-modal-message");
             // console.log(dialog);
             if (dialog != null) {
-                dialog.innerHTML += event.data.trim() + "<br>";
+                let message = event.data.trim();
+                if (message.startsWith("b'")) {
+                    message = '<b>' + message.substring(2, message.length - 3) + '</b>';
+                }
+                dialog.innerHTML += message + "<br>";
             }
-
-            // document.getElementById(msgBoxId).innerHTML += event.data + "<br>";
         };
         source.onerror = function(event) {
-            // Unfortunately, we cannot see on this level whether an error has occurred or
-            // whether the upload was simply completed successfully.
-            // console.error("An error occured");
-            // console.log(event);
-            // console.log(source);
-/*            switch (source.readyState) {
-                case EventSource.CLOSED:
-                    console.log('Close connection');
-                    break;
-                case EventSource.OPEN:
-                    console.log('Open connection');
-                    break;
-                case EventSource.CONNECTING:
-                    console.log('Connecting connection');
-                    break;
-                default:
-                    console.log('Unknown connection state ' + source.readyState);
-                    break;
-            }*/
             source.close();
             let dialog = document.querySelector(".modal");
             if (dialog) {
                 let button = dialog.querySelector(".btn-secondary");
                 if (button) {
-                    button.innerHTML = 'Close';
+                    button.innerHTML = closeString;
                 }
             }
-            // source = null;
-            // document.getElementById("result").innerHTML += event.data + "<br>";
-        };
-        source.onopen = function(event) {
-            // console.log("The connection has been established. ");
-            // document.getElementById("result").innerHTML += event.data + "<br>";
         };
     }
 
+    /*
     async function performUpload() {
         let questionId = document.querySelector("input[name='id']").value;
         console.log('upload task ' + questionId);
-
         const promise = await uploadTask(questionId);
         console.log('upload task finished, handle result 1');
-
         window.console.log(promise);
-
         console.log('upload task finished, handle result 2');
-
         // alert(response.message);
-    }
+    }*/
 
     // Initialise.
     document.getElementById(buttonid).addEventListener('click', function (e) {
+        init();
         // Create Moodle modal dialog.
         ModalFactory.create({
             type: ModalFactory.types.CANCEL,
             title: 'Upload Log',
             body: '<span><code id ="proforma-modal-message"></code></span>',
             large: true
-        })
-            .then(function(modal) {
-                modalroot = modal.getRoot();
-                modalroot.on(ModalEvents.cancel, function() {
-                    source.close();
-                    source = null;
-                    modalroot.remove();
-                });
-                modal.show();
-                uploadWithSse();
+        }).then(function(modal) {
+            modalroot = modal.getRoot();
+            modalroot.on(ModalEvents.cancel, function() {
+                source.close();
+                source = null;
+                modalroot.remove();
             });
-
-        // showMessageBar(buttonid, '');
-        // uploadWithSse();
+            modal.show();
+            uploadWithSse();
+        });
     });
 };
