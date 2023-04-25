@@ -253,10 +253,18 @@ abstract class base_form_creator {
         // ProFormA fields.
         $mform = $this->_form;
         $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
+        $mform->setExpanded('graderoptions_header');
 
         // Task Filename.
         $this->add_static_text($question, 'link', 'taskfilename', 'qtype_proforma');
         $mform->addHelpButton('link', 'createdtask_hint', 'qtype_proforma');
+
+        // Add upload button.
+        $mform->addElement('button', 'uploadbutton', get_string('upload', 'qtype_proforma'));
+        // Add js.
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton'));
+
     }
 
     /**

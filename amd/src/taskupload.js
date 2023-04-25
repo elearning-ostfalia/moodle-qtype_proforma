@@ -26,7 +26,7 @@
  */
 
 
-import {uploadTask} from './repository';
+// import {uploadTask} from './repository';
 import config from 'core/config';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
@@ -41,12 +41,12 @@ import {get_string as getString} from 'core/str';
  */
 export const upload = (buttonid, task) => {
 
-    const msgBoxId = 'proforma-notification-bar';
+    // const msgBoxId = 'proforma-notification-bar';
     var source = null;
     var modalroot = null;
-    const maxLogLines = 20;
     var closeString = 'close';
 
+    /*
     function showMessageBar(buttonid, message) {
         const duration = 1500;
         const txtColor = "#101010";
@@ -78,35 +78,49 @@ export const upload = (buttonid, task) => {
             box.innerHTML = message;
         }
     }
+     */
 
+    /**
+     * get localized string for cancel/close button
+     * @returns {Promise<void>}
+     */
     async function init() {
         closeString = await getString('close', 'editor');
     }
 
+    /**
+     * upload current question to grader
+     * @returns {Promise<void>}
+     */
     async function uploadWithSse() {
+        // Get question id from form fields.
         const questionId = document.querySelector("input[name='id']").value;
         let url = config.wwwroot + '/question/type/proforma/upload_sse.php';
         url += '?sesskey=' + config.sesskey + '&id=' + questionId;
 
+        // Create Eventsource with callbacks
         source = new EventSource(url);
         source.onmessage = function(event) {
             console.log(event.data);
             let dialog = document.querySelector("#proforma-modal-message");
-            // console.log(dialog);
             if (dialog != null) {
                 let message = event.data.trim();
-                if (message.startsWith("b'")) {
+                // handle binary prefix (direct output from Popen)
+                if (message.startsWith("b'") || message.startsWith("b\"")) {
                     message = '<b>' + message.substring(2, message.length - 3) + '</b>';
                 }
+                // Append new message
                 dialog.innerHTML += message + "<br>";
             }
         };
         source.onerror = function(event) {
+            // Upload is complete (with or without error)
             source.close();
             let dialog = document.querySelector(".modal");
             if (dialog) {
                 let button = dialog.querySelector(".btn-secondary");
                 if (button) {
+                    // Change cancel button to close button
                     button.innerHTML = closeString;
                 }
             }
@@ -134,6 +148,7 @@ export const upload = (buttonid, task) => {
             body: '<span><code id ="proforma-modal-message"></code></span>',
             large: true
         }).then(function(modal) {
+            // close eventsource on cancel
             modalroot = modal.getRoot();
             modalroot.on(ModalEvents.cancel, function() {
                 source.close();
