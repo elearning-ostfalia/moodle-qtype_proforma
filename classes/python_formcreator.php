@@ -65,7 +65,17 @@ class python_form_creator extends base_form_creator {
         return $this->add_test_fields($question, $questioneditform, 'python');
     }
 
-
+    /**
+     * Add grader options/information.
+     *
+     * @param qtype_proforma_question $question question
+     * @param type $context
+     */
+    public function add_grader_settings($question, $context) {
+        parent::add_grader_settings($question, $context);
+        $mform = $this->_form;
+        $mform->setExpanded('graderoptions_header');
+    }
 
     /**
      * Validate form fields.

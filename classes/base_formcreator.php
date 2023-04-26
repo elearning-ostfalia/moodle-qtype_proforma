@@ -250,10 +250,10 @@ abstract class base_form_creator {
       * @param type $context
       */
     public function add_grader_settings($question, $context) {
-        // ProFormA fields.
+        // Grader/ProFormA fields.
         $mform = $this->_form;
         $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
-        $mform->setExpanded('graderoptions_header');
+        $mform->setExpanded('graderoptions_header', false);
 
         // Task Filename.
         $this->add_static_text($question, 'link', 'taskfilename', 'qtype_proforma');

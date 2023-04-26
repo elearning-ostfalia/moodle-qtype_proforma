@@ -101,7 +101,7 @@ export const upload = (buttonid, task) => {
         // Create Eventsource with callbacks
         source = new EventSource(url);
         source.onmessage = function(event) {
-            console.log(event.data);
+            // console.log(event.data);
             let dialog = document.querySelector("#proforma-modal-message");
             if (dialog != null) {
                 let message = event.data.trim();
@@ -139,8 +139,8 @@ export const upload = (buttonid, task) => {
     }*/
 
     // Initialise.
+    init();
     document.getElementById(buttonid).addEventListener('click', function (e) {
-        init();
         // Create Moodle modal dialog.
         ModalFactory.create({
             type: ModalFactory.types.CANCEL,
