@@ -88,6 +88,18 @@ export const upload = (buttonid, task) => {
         closeString = await getString('close', 'editor');
     }
 
+    function closeSse() {
+        source.close();
+        let dialog = document.querySelector(".modal");
+        if (dialog) {
+            let button = dialog.querySelector(".btn-secondary");
+            if (button) {
+                // Change cancel button to close button
+                button.innerHTML = closeString;
+            }
+        }
+    }
+    
     /**
      * upload current question to grader
      * @returns {Promise<void>}
@@ -109,21 +121,17 @@ export const upload = (buttonid, task) => {
                 if (message.startsWith("b'") || message.startsWith("b\"")) {
                     message = '<b>' + message.substring(2, message.length - 3) + '</b>';
                 }
-                // Append new message
-                dialog.innerHTML += message + "<br>";
+                if (message.endsWith('####') && !message.startsWith('####')) { // got line ending with special keys
+                    closeSse();
+                } else {
+                    // Append new message
+                    dialog.innerHTML += message + "<br>";
+                }
             }
         };
         source.onerror = function(event) {
             // Upload is complete (with or without error)
-            source.close();
-            let dialog = document.querySelector(".modal");
-            if (dialog) {
-                let button = dialog.querySelector(".btn-secondary");
-                if (button) {
-                    // Change cancel button to close button
-                    button.innerHTML = closeString;
-                }
-            }
+            closeSse();
         };
     }
 
