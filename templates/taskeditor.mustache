@@ -30,6 +30,8 @@
 
     Example context (json):
     {
+        tests
+        files
     }
 }}
 
@@ -40,7 +42,7 @@
                 data-toggle="tab"
                 href="#proforma-tests-{{uniqid}}"
                 role="tab">
-                {{#str}} taskedtortests, qtype_proforma {{/str}}
+                {{#str}} taskeditortests, qtype_proforma {{/str}}
             </a>
         </li>
         <li class="nav-item">
@@ -48,7 +50,7 @@
                 data-toggle="tab"
                 href="#proforma-files-{{uniqid}}"
                 role="tab">
-                {{#str}} taskedtorfiles, qtype_proforma {{/str}}
+                {{#str}} taskeditorfiles, qtype_proforma {{/str}}
             </a>
         </li>
     </ul>
@@ -60,16 +62,23 @@
             data-region="tests-container">
             {{> qtype_proforma/taskeditor_tests }}
 
-            {{> qtype_proforma/taskeditor_junit }}
-            {{> qtype_proforma/taskeditor_junit }}
+            {{{ tests }}}
+
+  {{> qtype_proforma/taskeditor_junit }}
+
         </div>
         <div class="tab-pane pt-3"
             id="proforma-files-{{uniqid}}"
             role="tabpanel"
             data-region="files-container">
-            {{> qtype_proforma/taskeditor_file }}
-            {{> qtype_proforma/taskeditor_file }}
+
+            {{{ files }}}
+
+           {{> qtype_proforma/taskeditor_file }}
+	   
         </div>
     </div>
 </div>
+
+
 

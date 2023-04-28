@@ -332,35 +332,47 @@ class proforma_form_creator extends base_form_creator {
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton'));
 
-        $context =  (object) [
-            'tabs' =>  [
-            [
-                "id" => "tab-tests",
-                "name" => "Tab Tests",
-                "content" => "This is tab 1 content <a href=\"#\">test</a>"
-            ],
-            [
-                "id" => "tab-files",
-                "name" =>"Tab Files",
-                "content" => "This is tab 2 content <a href=\"#\">test</a>"
-            ]
-            ]];
 
-        $context =  (object) [
-                "title" => "Example modal",
-                "options" =>             [
-                    "label" => "tab-tests",
-                    "description" => "Tab Tests",
-                    "icon" => "<img class='icon' src='http://urltooptionicon'>",
-                    "urls" => [
-                        "addoption" => "http://addoptionurl.com"
-                    ]
-                ]
-        ];
 
         global $OUTPUT;
-        $previewhtml = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
-        $mform->addElement('html', $previewhtml);
+
+        $context =  (object) [
+            "testid" => "Testid 1",
+            "testname" => "Testname 1",
+            "options" =>             [
+                "label" => "tab-tests",
+                "description" => "Tab Tests",
+                "icon" => "<img class='icon' src='http://urltooptionicon'>",
+                "urls" => [
+                    "addoption" => "http://addoptionurl.com"
+                ]
+            ]
+        ];
+        $junit1 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
+
+        $context =  (object) [
+            "testid" => "Testid 2",
+            "testname" => "Testname 2",
+        ];
+        $junit2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
+
+        $context =  (object) [
+            "fileid" => "Fileid 1",
+            "filename" => "Filename 1",
+        ];
+        $file1 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_file', $context);
+        $context =  (object) [
+            "fileid" => "Fileid 2",
+            "filename" => "Filename 2",
+        ];
+        $file2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_file', $context);
+
+        $context =  (object) [
+            "tests" => $junit1 . $junit2,
+            "files" => $file1 . $file2,
+        ];
+        $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
+        $mform->addElement('html', $taskeditor);
     }
 
 

@@ -50,8 +50,8 @@ $string['responseoptions'] = 'Response Options';
 $string['graderoptions_header'] = 'Grader Settings';
 $string['upload'] = 'Upload taskfile to grader';
 $string['taskeditor'] = 'Edit task';
-$string['taskedtortests'] = 'Tests';
-$string['taskedtorfiles'] = 'Files';
+$string['taskeditortests'] = 'Tests';
+$string['taskeditorfiles'] = 'Files';
 
 
 $string['responsetemplateheader'] = 'Response Templates';

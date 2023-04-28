@@ -30,6 +30,8 @@
 
     Example context (json):
     {
+        testid
+        testname
     }
 
 
@@ -42,24 +44,23 @@
 }}
 
 
-<div id='test_ {{ #testid }}' class='xml_test'>
+<div id='test_ {{ testid }}' class='xml_test'>
 
-    <h3 class='ui-widget-header'> {{ #TestName }} (Test #" {{ #testid }} ")<span
+    <h3 class='ui-widget-header'> {{ testname }} (Test #" {{ testid }} ")<span
         class='rightButton'><button onclick='TestWrapper.delete($(this));'>x</button></span>
     </h3>
 
     <p>
         <label for='xml_test_id'>ID<span class='red'>*</span>: </label>
-        <input class='tinyinput xml_test_id' value='{{ #testid }}' readonly/>
+        <input class='tinyinput xml_test_id' value='{{ testid }}' readonly/>
 
         <p><label for='xml_test_type'>{{#str}} testtype, qtype_proforma {{/str}}: </label>
         <select class='xml_test_type'> testTypes </select>
-
     </p>
 
     <p>
         <label for='xml_test_title'>{{#str}} testtitle, qtype_proforma {{/str}}<span class='red'>*</span>: </label>
-        <input class='maxinput xml_test_title' value=' {{ #TestName }} '/>
+        <input class='maxinput xml_test_title' value=' {{ testname }} '/>
     </p>
 
 <p>

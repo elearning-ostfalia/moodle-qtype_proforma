@@ -41,19 +41,20 @@
 
 }}
 
-<div id='file_ {{ #fileid }}' class='xml_file drop_zone fcontainer clearfix'>
+<div id='file_ {{ fileid }}' class='xml_file drop_zone fcontainer clearfix'>
 <h3 class='ui-widget-header'>
-    <span class ='xml_filename_header'></span>
-        <b>(File #" {{ #fileid }} ")</b>
+    <span class ='xml_filename_header'></span> {{ filename }}
+        <b>(File #" {{ fileid }} ")</b>
     <span class='rightButton'><button onclick='FileWrapper.removeFile($(this));'>x</button></span>
 </h3>
 
 <p>
     <label for='xml_file_filename'>Filename<span class='red'>*</span>: </label>
-    <input class='mediuminput xml_file_filename' onchange='FileWrapper.onFilenameChangedCallback(this)' title='with extension'/>
+    <input class='mediuminput xml_file_filename' onchange='FileWrapper.onFilenameChangedCallback(this)' title='with extension'>
+    </input>
 
     <label for='xml_file_id'>ID: </label>
-    <input class='tinyinput xml_file_id' value=' {{ #fileid }} '/>
+    <input class='tinyinput xml_file_id' value=' {{ fileid }} '/>
 
     <label for='xml_file_type'>Store </label>
     <select class='xml_file_type' onchange='FileWrapper.onFiletypeChanged(this)'>

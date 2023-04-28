@@ -45,10 +45,8 @@ import Templates from 'core/templates';
  */
 export const edit = (buttonid, task) => {
 
-    var source = null;
     var modalroot = null;
     var closeString = 'close';
-
 
     /**
      * get localized string for cancel/close button
@@ -124,89 +122,60 @@ export const edit = (buttonid, task) => {
 
         var stringsPromise = getStrings([
             {
-                // All string beginning with export.
+                // All string beginning with taskeditor.
                 key: 'taskeditor',
                 component: 'qtype_proforma'
             }
         ]);
-        var modalPromise = ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL});
-
-/*        let context = {
-            "name": "test",
-            "value": "/my-super-secret-path/file",
-            "id": "test0",
-            "readonly": true,
-            "showvalidity": true,
-            "valid": false,
-            "response": "OK"
-        };
-*/
-        let context = {
-            "tabs": [
+        var modalPromise = ModalFactory.create(
             {
-                "id": "tab-tests",
-                "name": "Tab Tests",
-                "content": "This is tab 1 content <a href=\"#\">test</a>"
-            },
-            {
-                "id": "tab-files",
-                "name": "Tab Files",
-                "content": "This is tab 2 content <a href=\"#\">test</a>"
-            },
-        ]
-        }
+                type: ModalFactory.types.SAVE_CANCEL,
+                large: true
+            }
+        );
 
         // var bodyPromise = Templates.render('tool_analytics/export_options', {});
         // var bodyPromise = Templates.render('core_user/send_bulk_message', {});
         // var bodyPromise = Templates.render('qtype_proforma/setting_configproformagrader', context);
+        let context = {
+            "tests": "todo tests",
+            "files": "todo files"
+        }
+        // const bodyPromise = Templates.renderForPromise('qtype_proforma/taskeditor', context);
         var bodyPromise = Templates.render('qtype_proforma/taskeditor', context);
 
-        $.when(stringsPromise, modalPromise).then(function(strings, modal) {
+/*
+        // Wait for the content to be ready, and for the transition to be complet.
+        Promise.all([stringsPromise, modalPromise, bodyPromise])
+            .then(([{html, js}]) => {
+                modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
+
+                modal.setTitle(strings[0]);
+                // modal.setSaveButtonText(strings[0]);
+                // modal.setBody(bodyPromise);
+                Templates.appendNodeContents(modal.getRoot(), html, js);
+                // Templates.replaceNodeContents(help, html, js)
+
+                modal.getRoot().on(ModalEvents.save, function() {
+                });
+                modal.show();
+                return modal;
+
+            })
+            .catch(Notification.exception);
+            
+ */
+
+        $.when(stringsPromise, modalPromise, bodyPromise).then(function(strings, modal, body) {
 
             modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
-
             modal.setTitle(strings[0]);
-            // modal.setSaveButtonText(strings[0]);
-            modal.setBody(bodyPromise);
+            modal.setBody(body);
 
             modal.getRoot().on(ModalEvents.save, function() {
-/*
-                var exportOption = $("input[name='exportoption']:checked").val();
-
-                if (exportOption == 'exportdata') {
-                    a.attr('href', a.attr('href') + '&action=exportdata');
-
-                } else {
-                    a.attr('href', a.attr('href') + '&action=exportmodel');
-                    if ($("#id-includeweights").is(':checked')) {
-                        a.attr('href', a.attr('href') + '&includeweights=1');
-                    } else {
-                        a.attr('href', a.attr('href') + '&includeweights=0');
-                    }
-                }
-
-                window.location.href = a.attr('href');
-                return;*/
             });
             modal.show();
             return modal;
         }).fail(Notification.exception);
-
-/*
-        // Create Moodle modal dialog.
-        ModalFactory.create({
-            type: ModalFactory.types.SAVE_CANCEL,
-            title: 'Task editor',
-            body: '<span id ="proforma-task-editor">Here it goes</span>',
-            large: true
-        }).then(function(modal) {
-            modalroot = modal.getRoot();
-            modalroot.on(ModalEvents.cancel, function() {
-//                source.close();
-//                source = null;
-                modalroot.remove();
-            });
-            modal.show();
-        }).fail(Notification.exception);*/
     });
 };

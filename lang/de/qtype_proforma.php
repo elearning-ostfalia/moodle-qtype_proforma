@@ -47,7 +47,8 @@ $string['responseoptions'] = 'Einreichung';
 $string['graderoptions_header'] = 'Grader';
 $string['upload'] = 'Aufgabendatei zum Grader hochladen';
 $string['taskeditor'] = 'Aufgabe bearbeiten';
-
+$string['taskeditortests'] = 'Tests';
+$string['taskeditorfiles'] = 'Dateien';
 
 $string['responsetemplateheader'] = 'Codevorlagen';
 $string['responsetemplate'] = 'Codevorlage';
