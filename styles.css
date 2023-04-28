@@ -1,3 +1,16 @@
+/* Styles for Task editor */
+
+/* use bold font for unit test label */
+/* body#page-question-type-proforma p[id^=fgroup_id_testfile_][id*=label] { */
+body#page-question-type-proforma.xml_filename_header {
+    font-weight: bold;
+}
+
+body#page-question-type-proforma p[id^=file_][id*=label] {
+    font-weight: bold;
+}
+
+
 /* Styles for explorer */
 
 /* In order to have those Styles in the question history review

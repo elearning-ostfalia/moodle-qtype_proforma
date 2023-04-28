@@ -31,8 +31,6 @@
     Example context (json):
     {
     }
-
-
 }}
 
 <div>
@@ -60,13 +58,17 @@
             id="proforma-tests-{{uniqid}}"
             role="tabpanel"
             data-region="tests-container">
-            text
+            {{> qtype_proforma/taskeditor_tests }}
+
+            {{> qtype_proforma/taskeditor_junit }}
+            {{> qtype_proforma/taskeditor_junit }}
         </div>
         <div class="tab-pane pt-3"
             id="proforma-files-{{uniqid}}"
             role="tabpanel"
             data-region="files-container">
-            noch mehr Text
+            {{> qtype_proforma/taskeditor_file }}
+            {{> qtype_proforma/taskeditor_file }}
         </div>
     </div>
 </div>

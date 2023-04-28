@@ -329,8 +329,8 @@ class proforma_form_creator extends base_form_creator {
         // Add task edit button.
         $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
         // Add js.
-//        global $PAGE;
-//        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton'));
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton'));
 
         $context =  (object) [
             'tabs' =>  [

@@ -1,0 +1,87 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template qtype_proforma/taskeditor_file
+
+    The purpose of this template is to render a file in ProFormA task editor
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * none
+
+    Example context (json):
+    {
+    }
+
+
+    Ursprüngliche Klassen für das Top-Level-Div:
+    class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'
+
+    Ursprüngliche Klassen für den Header:
+    class='ui-widget-header'
+
+}}
+
+<div id='file_ {{ #fileid }}' class='xml_file drop_zone fcontainer clearfix'>
+<h3 class='ui-widget-header'>
+    <span class ='xml_filename_header'></span>
+        <b>(File #" {{ #fileid }} ")</b>
+    <span class='rightButton'><button onclick='FileWrapper.removeFile($(this));'>x</button></span>
+</h3>
+
+<p>
+    <label for='xml_file_filename'>Filename<span class='red'>*</span>: </label>
+    <input class='mediuminput xml_file_filename' onchange='FileWrapper.onFilenameChangedCallback(this)' title='with extension'/>
+
+    <label for='xml_file_id'>ID: </label>
+    <input class='tinyinput xml_file_id' value=' {{ #fileid }} '/>
+
+    <label for='xml_file_type'>Store </label>
+    <select class='xml_file_type' onchange='FileWrapper.onFiletypeChanged(this)'>
+        <option value = 'embedded' selected='selected'>embedded</option>
+        <option value = 'file'>attached</option>
+    </select>
+
+    <span class='drop_zone_text'>Drop Your File Here!</span>
+</p>
+
+<p>
+    <label for='xml_internal_description'>Internal Description:</label>
+    <textarea rows='1' class='xml_internal_description'></textarea>
+</p>
+
+<p>
+
+    <span class='xml_file_binary'>(Binary file)<span class='xml_file_size'>File size: ???</span></span>
+
+    <span class='xml_file_non_binary'>
+        <button class='xml_file_edit' onclick='FileWrapper.showEditor($(this));'>Edit</button>
+        <label for='xml_file_editor_close'>
+            <button class='xml_file_editor_close' onclick='FileWrapper.hideEditor($(this));'>Hide</button>
+        </label>
+        <span>
+            <textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>
+        </span>
+    </span>
+</p>
+</div>
+

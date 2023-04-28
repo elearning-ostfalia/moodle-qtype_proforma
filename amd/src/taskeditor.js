@@ -125,8 +125,8 @@ export const edit = (buttonid, task) => {
         var stringsPromise = getStrings([
             {
                 // All string beginning with export.
-                key: 'export',
-                component: 'tool_analytics'
+                key: 'taskeditor',
+                component: 'qtype_proforma'
             }
         ]);
         var modalPromise = ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL});
@@ -166,7 +166,7 @@ export const edit = (buttonid, task) => {
             modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
 
             modal.setTitle(strings[0]);
-            modal.setSaveButtonText(strings[0]);
+            // modal.setSaveButtonText(strings[0]);
             modal.setBody(bodyPromise);
 
             modal.getRoot().on(ModalEvents.save, function() {

@@ -1,0 +1,102 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template qtype_proforma/taskeditor_file
+
+    The purpose of this template is to render a file in ProFormA task editor
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * none
+
+    Example context (json):
+    {
+    }
+
+
+    Ursprüngliche Klassen für das Top-Level-Div:
+    class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'
+
+    Ursprüngliche Klassen für den Header:
+    class='ui-widget-header'
+
+}}
+
+
+<div id='test_ {{ #testid }}' class='xml_test'>
+
+    <h3 class='ui-widget-header'> {{ #TestName }} (Test #" {{ #testid }} ")<span
+        class='rightButton'><button onclick='TestWrapper.delete($(this));'>x</button></span>
+    </h3>
+
+    <p>
+        <label for='xml_test_id'>ID<span class='red'>*</span>: </label>
+        <input class='tinyinput xml_test_id' value='{{ #testid }}' readonly/>
+
+        <p><label for='xml_test_type'>{{#str}} testtype, qtype_proforma {{/str}}: </label>
+        <select class='xml_test_type'> testTypes </select>
+
+    </p>
+
+    <p>
+        <label for='xml_test_title'>{{#str}} testtitle, qtype_proforma {{/str}}<span class='red'>*</span>: </label>
+        <input class='maxinput xml_test_title' value=' {{ #TestName }} '/>
+    </p>
+
+<p>
+    <label for='xml_description'>{{#str}} testdescription, qtype_proforma {{/str}} : </label>
+    <textarea rows='2' class='xml_description' title = 'Visible description'>description</textarea>
+</p>
+
+<p>
+    <label for='xml_internal_description'  class='leftlabel'>Internal Description:</label>
+    <textarea rows='2'  class='xml_internal_description' "title = 'Internal description (not visible for students)'>comment</textarea>
+</p
+
+
+
+<p>
+    <label for='xml_ju_mainclass'>Entry Point<span class='red'>*</span>: </label>
+    <input class='mediuminput xml_ju_mainclass'
+    title='usually name of class containing main method, including full package path (e.g. de.ostfalia.zell.editor)'/>
+
+    <label for='xml_ju_framew'>Framework<span class='red'>*</span>: </label>
+    <select class='xml_ju_framew'><option selected='selected' value='JUnit'>JUnit</option></select>
+
+    <label for='xml_ju_version'>Version<span class='red'>*</span>: </label>
+    <select class='xml_ju_version'>
+        <option value='5'>5</option>
+        <option selected='selected' value='4.12'>4.12</option>
+        <option value='4.12-gruendel'>4.12-gruendel</option>
+        <option value='4.10'>4.10</option>
+        <option value='3'>3</option>
+    </select>
+</p>
+
+
+
+<p> TODO TestFileReference.getInstance().getTableString() </p>
+<p>
+    <label>{{#str}} weight, qtype_proforma {{/str}}<span class='red'>*</span>:</label>
+    <input class='tinyinput xml_test_weight' value=' {{ #weight }} '/>
+</p>
+</div>
