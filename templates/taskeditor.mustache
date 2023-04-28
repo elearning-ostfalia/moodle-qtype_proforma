@@ -31,36 +31,43 @@
     Example context (json):
     {
     }
+
+
 }}
 
-<div id="{{ uniqid }}-tab-container">
-    <ul role="tablist" class="nav nav-tabs">
-  {{# tabs }}
-   <li role="tab"
-     data-target="{{ uniqid }}-{{ id }}"
-     data-selected-class="active"
-     aria-controls="{{ uniqid }}-{{ id }}"
-     aria-selected="false" tabindex="-1">
+<div>
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active"
+                data-toggle="tab"
+                href="#proforma-tests-{{uniqid}}"
+                role="tab">
+                {{#str}} taskedtortests, qtype_proforma {{/str}}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+                data-toggle="tab"
+                href="#proforma-files-{{uniqid}}"
+                role="tab">
+                {{#str}} taskedtorfiles, qtype_proforma {{/str}}
+            </a>
+        </li>
+    </ul>
 
-    <a href="#">{{{ name }}}</a>
-   </li>
-  {{/ tabs }}
- </ul>
-    <div class="tab-content">
-  {{# tabs }}
-   <div role="tabpanel"
-    class="tab-pane"
-    id="{{ uniqid }}-{{ id }}">
-
-    {{{ content }}}
-   </div>
-  {{/ tabs }}
- </div>
+    <div class="tab-content" data-region="tab-content">
+        <div class="tab-pane active pt-3"
+            id="proforma-tests-{{uniqid}}"
+            role="tabpanel"
+            data-region="tests-container">
+            text
+        </div>
+        <div class="tab-pane pt-3"
+            id="proforma-files-{{uniqid}}"
+            role="tabpanel"
+            data-region="files-container">
+            noch mehr Text
+        </div>
+    </div>
 </div>
-{{#js}}
-    require(['jquery','core/tabs'], function($, tabs) {
 
-        var container = $("#{{ uniqid }}-tab-container");
-        tabs.create(container);
-    });
-{{/js}}

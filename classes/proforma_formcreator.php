@@ -329,8 +329,8 @@ class proforma_form_creator extends base_form_creator {
         // Add task edit button.
         $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
         // Add js.
-        global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton'));
+//        global $PAGE;
+//        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton'));
 
         $context =  (object) [
             'tabs' =>  [
@@ -346,10 +346,23 @@ class proforma_form_creator extends base_form_creator {
             ]
             ]];
 
+        $context =  (object) [
+                "title" => "Example modal",
+                "options" =>             [
+                    "label" => "tab-tests",
+                    "description" => "Tab Tests",
+                    "icon" => "<img class='icon' src='http://urltooptionicon'>",
+                    "urls" => [
+                        "addoption" => "http://addoptionurl.com"
+                    ]
+                ]
+        ];
+
         global $OUTPUT;
         $previewhtml = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
         $mform->addElement('html', $previewhtml);
     }
+
 
     /**
      * Modify respeatoptions
