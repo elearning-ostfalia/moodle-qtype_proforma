@@ -1,3 +1,7 @@
+## 2.11.0
+
+new: separate upload task function 
+
 ## 2.10.1
 
 Bugfix: groupl parameter for version control system did not work
