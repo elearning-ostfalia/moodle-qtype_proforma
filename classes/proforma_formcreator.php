@@ -325,6 +325,30 @@ class proforma_form_creator extends base_form_creator {
         // Add js.
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton'));
+
+        // Add task edit button.
+        $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
+        // Add js.
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton'));
+
+        $context =  (object) [
+            'tabs' =>  [
+            [
+                "id" => "tab-tests",
+                "name" => "Tab Tests",
+                "content" => "This is tab 1 content <a href=\"#\">test</a>"
+            ],
+            [
+                "id" => "tab-files",
+                "name" =>"Tab Files",
+                "content" => "This is tab 2 content <a href=\"#\">test</a>"
+            ]
+            ]];
+
+        global $OUTPUT;
+        $previewhtml = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
+        $mform->addElement('html', $previewhtml);
     }
 
     /**

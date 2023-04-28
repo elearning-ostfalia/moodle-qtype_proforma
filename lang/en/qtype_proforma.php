@@ -49,6 +49,8 @@ $string['responseformat'] = 'Response format';
 $string['responseoptions'] = 'Response Options';
 $string['graderoptions_header'] = 'Grader Settings';
 $string['upload'] = 'Upload taskfile to grader';
+$string['taskeditor'] = 'Edit task';
+
 
 $string['responsetemplateheader'] = 'Response Templates';
 $string['responsetemplate'] = 'Response template';
