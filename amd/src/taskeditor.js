@@ -171,9 +171,13 @@ export const edit = (buttonid, task) => {
             modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
             modal.setTitle(strings[0]);
             modal.setBody(body);
+            // Change size (TODO: actually do with css)
+            modal.getModal().css('max-width', '70%');
+            modal.getModal().css('max-height', '90%');
 
             modal.getRoot().on(ModalEvents.save, function() {
             });
+
             modal.show();
             return modal;
         }).fail(Notification.exception);
