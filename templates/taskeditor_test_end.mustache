@@ -45,44 +45,19 @@
 {{! create table for referenced files }}
 <table class="dynamic_table xml_fileref_table" cellpadding="0">
     <tbody>
-        <tr>
-            <td>
-                <label for="xml_test_filename">Junit and other file(s)<span class="red">*</span>: </label>
-            </td>
-            <td>
-                <select class="mediuminput fileref_filename xml_test_filename"
-                    onchange="TestFileReference.getInstance().onFileSelectionChanged($(this))"
-                    title="file containing test cases, test configuration, libraries etc."><option> </option><option>&lt;open...&gt;</option>
-                </select>
-            </td>
-            <td>
-                <label for="fileref_fileref" style="display: none;">Fileref: </label>
-                <input class="tinyinput fileref_fileref" readonly="" style="display: none;">
-            </td>
-            <td>
-                <button class="collapse" title="show content" onclick="TestFileReference.getInstance().toggleEditor($(this))"
-                    disabled="">View</button>
-                    <br>
-            </td>
-            <td>
-                <button class="remove_item" onclick="TestFileReference.getInstance().removeItem($(this))" style="display: none;">x</button>
-            </td>
-            <td>
-                <button class="add_test_fileref" title="add another filename" onclick="TestFileReference.getInstance().addItem($(this))">+</button>
-                <br>
-            </td>
-            <td>
-            </td>
-        </tr>
+
+            {{> qtype_proforma/taskeditor_testfile_row }}
+
     </tbody>
 </table>
 
 <p>
 
-
 </p>
+
     <div id="{{uniqid}}-testfilereftable">
     </div>
+
 <p>
     <label>{{#str}} weight, qtype_proforma {{/str}}<span class='red'>*</span>:</label>
     <input class='tinyinput xml_test_weight' value=' weight'></input>
@@ -91,6 +66,6 @@
 
 {{#js}}
     require(['qtype_proforma/taskeditortest'], function(t) {
-        t.test("{{uniqid}}-testfilereftable", 'test_{{ testid }}');
+        t.test('test_{{ testid }}', "{{uniqid}}-testfilereftable");
     });
 {{/js}}

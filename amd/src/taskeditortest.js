@@ -29,7 +29,7 @@ import {TestFileReference, FileReferenceList} from "./filereflist";
 
 
 
-export const test = (filereftableid, testid) => {
+export const test = (testid, filereftableid) => {
 
     function init(testid) {
         console.log(testid);
@@ -62,19 +62,20 @@ export const test = (filereftableid, testid) => {
     }
 
 
-    function init2(filereftableid, testid) {
+    function init2(testid, filereftableid) {
         let testroot = document.getElementById(testid);
+        let table = testroot.querySelector('.xml_fileref_table');
+        TestFileReference.attach(table);
 
-        TestFileReference.getInstance().createTableString('TestFileReference',
-            'Testfile Label'/*config.fileRefLabel*/,
-            true /*config.manadatoryFile*/, 'xml_fileref_table');
-        let html = TestFileReference.getInstance().getTableString();
-        console.log(html);
-        let table = document.getElementById(filereftableid);
-        table.innerHTML = html;
+        // let table = document.getElementById(filereftableid);
 
-        FileReferenceList.init(null, null, TestFileReference, testroot);
+//        TestFileReference.getInstance().configure('TestFileReference',
+//            'Testfile Label'/*config.fileRefLabel*/,
+//            true /*config.manadatoryFile*/, 'xml_fileref_table');
+//        TestFileReference.getInstance().createTable(table);
+
+//        FileReferenceList.init(null, null, TestFileReference, testroot);
     }
 
-    init2(filereftableid, testid);
+    init2(testid, filereftableid);
 };

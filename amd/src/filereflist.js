@@ -18,7 +18,9 @@
 // todo: replace table solution with something without table!
 
 import {DynamicList} from "./dynamic-list";
-import jQuery from 'jquery';
+import $ from 'jquery';
+import {exception as displayException} from 'core/notification';
+import Templates from 'core/templates';
 
 
 const loadFileOption = "<open...>";
@@ -47,16 +49,16 @@ export class FileReferenceList extends DynamicList {
 
 
     // override
-    getTableString() {
-        return super.getTableString()  +
-            "<span class='drop_zone_text drop_zone'>Drop Your File(s) Here!</span>";
+    createTable(node) {
+        super.createTable(node);
+        node.innerHTML += "<span class='drop_zone_text drop_zone'>Drop Your File(s) Here!</span>";
     }
 
     createExtraContent() { return ''; }
 
     createRowContent() {
         const tdFilename = "<td><select class='mediuminput fileref_filename " + this.classFilename + "' " +
-            "onchange = '" +
+            "onchange = 'console.log(abcxxx); " +
             this.className + ".getInstance().onFileSelectionChanged($(this))' title='" + this.help + "'></select></td>"+
             "<td><label for='fileref_fileref'>Fileref: </label>"+ // fileref
             "<input class='tinyinput fileref_fileref' readonly/></td>";
@@ -104,15 +106,15 @@ export class FileReferenceList extends DynamicList {
     init(root, DEBUG_MODE) {
         if (!this.root)
             this.root = root;
-        FileReferenceList.updateFilenameList(jQuery(root).find("." + this.classFilename).last());
+        FileReferenceList.updateFilenameList($(root).find("." + this.classFilename).last());
         FileReferenceList.rowEnableEditorButton(root, false);
         if (!DEBUG_MODE) {
-            jQuery(root).find(".fileref_fileref").hide();
-            jQuery(root).find("label[for='fileref_fileref']").hide();
+            $(root).find(".fileref_fileref").hide();
+            $(root).find("label[for='fileref_fileref']").hide();
         }
 
         // register dragenter, dragover.
-        jQuery(root).on({
+        $(root).on({
             dragover: function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -195,7 +197,7 @@ export class FileReferenceList extends DynamicList {
             //console.log('enable view button in fileref for ' + ui_file.filename + ', enabled = ' + enabled);
         }
 
-        jQuery(row).find(".collapse").last().prop('disabled', !enabled);
+        $(row).find(".collapse").last().prop('disabled', !enabled);
     }
 
     addItem(element) {
@@ -219,8 +221,8 @@ export class FileReferenceList extends DynamicList {
 
         if (!DEBUG_MODE) {
             // hide new fileref fields
-            jQuery(table_body).find(".fileref_fileref").hide();
-            jQuery(table_body).find("label[for='fileref_fileref']").hide();
+            $(table_body).find(".fileref_fileref").hide();
+            $(table_body).find("label[for='fileref_fileref']").hide();
         }
     }
 
@@ -390,6 +392,7 @@ export class FileReferenceList extends DynamicList {
 
         // var found = false;
         const selectedFilename = $(tempSelElem).val();
+        console.log('selectedFilename ' + selectedFilename);
         // get old file id
         const nextTd = $(tempSelElem).parent().next('td');
         const row = $(tempSelElem).closest('tr');
@@ -598,7 +601,7 @@ export class FileReferenceList extends DynamicList {
         }
 
         classname.getInstance().init(root, DEBUG_MODE);
-        jQuery(root).on({
+        $(root).on({
             drop: function(e){
                 if(e.originalEvent.dataTransfer){
                     if(e.originalEvent.dataTransfer.files.length) {
@@ -626,6 +629,53 @@ export class TestFileReference extends FileReferenceList {
     }
 
     static getInstance() {return testFileRefSingleton;}
+
+    static addRow(element) {
+        let table = element.closest('.xml_fileref_table');
+        let tbody = table.querySelector('tbody');
+        tbody.append();
+
+        // add new line for selecting a file for a test
+        let td = element.parent();
+        let tr = td.parent();
+        let table_body = tr.parent();
+        let newRow = table_body.append(this.createRow(false));
+//        element.remove(); // remove current +-button
+//        $(table_body).find("." + this.classRemoveItem).show(); // show all remove file buttons
+        return newRow;
+    }
+
+    static attach(tablenode) {
+        // Add callbacks:
+        let addButton = tablenode.querySelector('.add_test_fileref');
+        addButton.onclick = function(event) {
+            event.preventDefault();
+            let element = event.target;
+
+            const context = {
+            };
+            Templates.renderForPromise('qtype_proforma/taskeditor_testfile_row', context)
+                .then(({html, js}) => {
+                    // Here eventually I have my compiled template, and any javascript that it generated.
+                    // The templates object has append, prepend and replace functions.
+                    let table = element.closest('.xml_fileref_table');
+                    let tbody = table.querySelector('tbody');
+                    Templates.appendNodeContents(tbody, html, js);
+                    element.remove(); // remove current +-button
+                    tbody.querySelectorAll("." + DynamicList.classRemoveItem).
+                        forEach(e => {
+                            e.style.display = '';
+                    }); // show all remove file buttons
+                })
+                // Deal with this exception (Using core/notify exception function is recommended).
+                .catch((error) => {
+                    console.error('Error occured');
+                    console.error(error);
+                    displayException(error);
+                });
+        }
+    }
+
 /*
     onFileUpload(filename, uploadBox) {
         super.onFileUpload(filename, uploadBox);

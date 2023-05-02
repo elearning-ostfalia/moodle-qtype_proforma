@@ -17,19 +17,19 @@
 
 // todo: replace table solution with something without table!
 
-import jQuery from 'jquery';
+import $ from 'jquery';
 
 
 // abstract class for a filename reference input
 export class DynamicList {
+    static classRemoveItem = 'remove_item'; // css_classname.replace('xml_', 'remove_'); // classRemoveItem;
 
     constructor(classFilename, css_classname, jsClassName, label, help, mandatory, extra_css_class) {
         this.classFilename = classFilename;
         this.classAddItem = css_classname.replace('xml_', 'add_'); // classAddItem;
-        this.classRemoveItem = 'remove_item'; // css_classname.replace('xml_', 'remove_'); // classRemoveItem;
         this.help = help;
 
-        this.createTableString(jsClassName, label, mandatory, extra_css_class);
+        this.configure(jsClassName, label, mandatory, extra_css_class);
     }
 
     getClassFilename() { return this.classFilename; }
@@ -37,7 +37,18 @@ export class DynamicList {
     // virtual
     createRowContent() { return '';}
 
-    createRow(first) {
+    createRow(node, first) {
+        let td = document.createElement('td');
+        let removeButton = td.createElement('button');
+        removeButton.classList.add(this.classRemoveItem);
+        // removeButton.onclick = TODO
+        removeButton.style.display = 'none';
+        removeButton.innerHTML = 'x';
+        // node.append(td);
+
+        let row = document.createElement('tr');
+        row.createElement('');
+
         // hide first remove file button
         const tdFirstRemoveButton = "<td><button class='" + this.classRemoveItem +
             "' onclick='" + this.className + ".getInstance().removeItem($(this))' style='display: none;'>x</button></td>";
@@ -63,27 +74,34 @@ export class DynamicList {
         }
     }
 
-    createTableString(className, label, mandatory, extra_css_class) {
+    configure(className, label, mandatory, extra_css_class) {
         this.className = className;
         this.mandatory = mandatory;
         this.label = this.getLabelString(label);
-
+        this.extra_css_class = extra_css_class;
 
         this.tdAddButton = "<td><button class='" + this.classAddItem +
             "' title='add another filename' onclick='" + className + ".getInstance().addItem($(this))'>+</button><br></td>";
-
-        if (extra_css_class)
-            this.table = "<table class='dynamic_table " + extra_css_class + "' cellpadding='0'>" + // cellspacing='0' >" +
-                this.createRow(true) +
-                "</table>";
-        else
-            this.table = "<table class='dynamic_table' cellpadding='0'>" + // cellspacing='0' >" +
-                this.createRow(true) +
-                "</table>";
     }
 
-    getTableString() {
-        return this.table;
+    createTable(node) {
+        // node.innerHTML = this.table;
+            let table = document.createElement('table');
+            table.classList.add('dynamic_table');
+            if (this.extra_css_class) {
+                table.classList.add(this.extra_css_class);
+                // table.style.padding('0');
+            }
+            // this.createRow(table, true);
+            node.append(table);
+/*            node.innerHTML = "<table class='dynamic_table " + this.extra_css_class + "' cellpadding='0'>" + // cellspacing='0' >" +
+                this.createRow(true) +
+                "</table>";
+        } else {
+            node.innerHTML = "<table class='dynamic_table' cellpadding='0'>" + // cellspacing='0' >" +
+                this.createRow(true) +
+                "</table>";
+        }*/
     }
 
     addItem(element) {
@@ -93,7 +111,7 @@ export class DynamicList {
         let table_body = tr.parent();
         let newRow = table_body.append(this.createRow(false));
         element.remove(); // remove current +-button
-        table_body.find("." + this.classRemoveItem).show(); // show all remove file buttons
+        $(table_body).find("." + this.classRemoveItem).show(); // show all remove file buttons
         return newRow;
     }
 
@@ -104,7 +122,7 @@ export class DynamicList {
 
     // virtual
     getItemCount(table_body) {
-        return table_body.find("tr").length;
+        return $(table_body).find("tr").length;
     }
 
     removeItem(element) {
@@ -129,16 +147,16 @@ export class DynamicList {
         if (hasPrevTr.length === 0) {
             // row to be deleted is first row
             // => add filename label to first column
-            let firstCell = table_body.find("td").first();
+            let firstCell = $(table_body).find("td").first();
             firstCell.append(this.label); // without td
         }
 
         // check if previousRow is first row
-        let firstRow = table_body.find("tr")[0];
+        let firstRow = $(table_body).find("tr")[0];
         if (this.getItemCount(table_body) === 1) {
             // table has exactly one row left
             // => hide all remove file buttons
-            table_body.find("." + this.classRemoveItem).hide();
+            $(table_body).find("." + this.classRemoveItem).hide();
         }
     }
 }

@@ -1,0 +1,68 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template qtype_proforma/taskeditor_testfile_row
+
+    The purpose of this template is to render a file in ProFormA task editor
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * none
+
+    Example context (json):
+    {
+    }
+}}
+
+<tr>
+    <td>
+        <label for="xml_test_filename">Junit and other file(s)<span class="red">*</span>: </label>
+    </td>
+    <td>
+        <!-- onchange: TestFileReference.getInstance().onFileSelectionChanged($(this)) -->
+        <select class="mediuminput fileref_filename xml_test_filename" title="file containing test cases, test configuration, libraries etc.">
+            <option> </option>
+            <option>&lt;open...&gt;</option>
+        </select>
+    </td>
+    <td>
+        <label for="fileref_fileref" style="display: none;">Fileref: </label>
+        <input class="tinyinput fileref_fileref" readonly="" style="display: none;">
+    </td>
+    <td>
+        <!-- onclick: TestFileReference.getInstance().toggleEditor($(this)) -->
+        <button class="collapse" title="show content"
+            disabled="">View</button>
+            <br>
+    </td>
+    <td>
+        <!-- onclick: TestFileReference.getInstance().removeItem($(this)) -->
+        <button class="remove_item"  style="display: none;">x</button>
+    </td>
+    <td>
+        <!-- onclick: TestFileReference.getInstance().addItem($(this)) -->
+        <button class="add_test_fileref" title="add another filename">+</button>
+        <br>
+    </td>
+    <td>
+    </td>
+</tr>
