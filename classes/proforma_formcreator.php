@@ -337,7 +337,7 @@ class proforma_form_creator extends base_form_creator {
         global $OUTPUT;
 
         $context =  (object) [
-            "testid" => "Testid 1",
+            "testid" => "1",
             "testname" => "Testname 1",
             "options" =>             [
                 "label" => "tab-tests",

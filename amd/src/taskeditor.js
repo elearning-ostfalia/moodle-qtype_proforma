@@ -37,7 +37,7 @@ import Notification from 'core/notification';
 import Templates from 'core/templates';
 
 /**
- * upload task to grader
+ * edit task
  *
  * @param {string} buttonid: button id
  * @param {string} task: name of task

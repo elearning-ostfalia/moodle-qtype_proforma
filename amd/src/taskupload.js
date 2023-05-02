@@ -99,7 +99,7 @@ export const upload = (buttonid, task) => {
             }
         }
     }
-    
+
     /**
      * upload current question to grader
      * @returns {Promise<void>}
