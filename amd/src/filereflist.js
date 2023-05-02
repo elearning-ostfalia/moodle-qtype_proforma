@@ -630,21 +630,6 @@ export class TestFileReference extends FileReferenceList {
 
     static getInstance() {return testFileRefSingleton;}
 
-    static addRow(element) {
-        let table = element.closest('.xml_fileref_table');
-        let tbody = table.querySelector('tbody');
-        tbody.append();
-
-        // add new line for selecting a file for a test
-        let td = element.parent();
-        let tr = td.parent();
-        let table_body = tr.parent();
-        let newRow = table_body.append(this.createRow(false));
-//        element.remove(); // remove current +-button
-//        $(table_body).find("." + this.classRemoveItem).show(); // show all remove file buttons
-        return newRow;
-    }
-
     static attach(tablenode) {
         // Add callbacks:
         let addButton = tablenode.querySelector('.add_test_fileref');
@@ -661,14 +646,9 @@ export class TestFileReference extends FileReferenceList {
 
         // remove line in file table for test
 
-        let previousRow = tr.previousSibling; // this.getPreviousItem(tr); // tr.prev("tr");
-        console.log('next sibling');
-        console.log(tr.nextElementSibling);
-        let hasNextTr = (tr.nextElementSibling !== null); // tr.nextAll("tr");
-        console.log('previousSibling');
-        console.log(tr.previousElementSibling);
-        let hasPrevTr = (tr.previousElementSibling !== null); // tr.prevAll("tr");
-
+        // let previousRow = tr.previousSibling; // this.getPreviousItem(tr); // tr.prev("tr");
+        let hasNextTr = (tr.nextElementSibling !== null);
+        let hasPrevTr = (tr.previousElementSibling !== null);
 
         if (!hasNextTr) { //.length === 0) {
             console.log('no successor => readd add button');
@@ -711,7 +691,6 @@ export class TestFileReference extends FileReferenceList {
                     let table = element.closest('.xml_fileref_table');
                     let tbody = table.querySelector('tbody');
                     let newrow = Templates.appendNodeContents(tbody, html, js)[0];
-                    // console.log(newrow);
                     // Remove current +-button
                     element.style.display = 'None'; // element.remove();
                     // Hide label.
