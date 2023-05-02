@@ -647,7 +647,8 @@ export class TestFileReference extends FileReferenceList {
 
     static attach(tablenode) {
         // Add callbacks:
-        this.addFileCallback(tablenode);
+        let addButton = tablenode.querySelector('.add_test_fileref');
+        this.addFileCallback(addButton);
     }
 
     static removeItemCallback(removeevent) {
@@ -656,35 +657,37 @@ export class TestFileReference extends FileReferenceList {
 
         let td = element.closest('td');
         let tr = element.closest('tr');
+        let tbody = element.closest('.xml_fileref_table').querySelector('tbody');
 
         // remove line in file table for test
-        let table = element.closest('.xml_fileref_table');
-        let tbody = table.querySelector('tbody');
 
         let previousRow = tr.previousSibling; // this.getPreviousItem(tr); // tr.prev("tr");
-        let hasNextTr = (tr.nextSibling !== "undefined"); // tr.nextAll("tr");
-        let hasPrevTr = (tr.previousSibling !== "undefined"); // tr.prevAll("tr");
+        console.log('next sibling');
+        console.log(tr.nextElementSibling);
+        let hasNextTr = (tr.nextElementSibling !== null); // tr.nextAll("tr");
+        console.log('previousSibling');
+        console.log(tr.previousElementSibling);
+        let hasPrevTr = (tr.previousElementSibling !== null); // tr.prevAll("tr");
 
-        tr.remove(); // remove row
 
         if (!hasNextTr) { //.length === 0) {
+            console.log('no successor => readd add button');
             // if row to be deleted is last row then add +-button to last row
-            //let tds = previousRow.find("td");
-            //let td = tds.last();
-            // TODO: previousRow.querySelector('td');
-            $(this.tdAddButton).insertBefore(previousRow.find("td").last());
+            tr.previousElementSibling.querySelector('.add_test_fileref').style.display = '';
         }
+
+        tr.remove(); // remove row
         if (!hasPrevTr) { // .length === 0) {
+            console.log('no predecessor => readd label');
             // row to be deleted is first row
             // => add filename label to first column
-            let firstCell = tbody.querySelector('td');
-            // let firstCell = $(table_body).find("td").first();
-            firstCell.append('TODO this.label'); // without td
+            tbody.querySelector('label').style.display = '';
         }
 
         // check if previousRow is first row
-        let firstRow = $(table_body).find("tr")[0];
-        if (this.getItemCount(table_body) === 1) {
+        let firstRow = tbody.querySelectorAll('tr')[0];
+        if (tbody.querySelectorAll('tr').length === 1) {
+            console.log('just one row left => hide remove buttons');
             // table has exactly one row left
             // => hide all remove file buttons
             tbody.querySelectorAll("." + DynamicList.classRemoveItem).forEach(
@@ -693,10 +696,9 @@ export class TestFileReference extends FileReferenceList {
                 }
             );
         }
-
     }
-    static addFileCallback(tablenode) {
-        let addButton = tablenode.querySelector('.add_test_fileref');
+
+    static addFileCallback(addButton) {
         addButton.onclick = function (addevent) {
             addevent.preventDefault();
             let element = addevent.target;
@@ -708,17 +710,23 @@ export class TestFileReference extends FileReferenceList {
                     // The templates object has append, prepend and replace functions.
                     let table = element.closest('.xml_fileref_table');
                     let tbody = table.querySelector('tbody');
-                    Templates.appendNodeContents(tbody, html, js);
-                    element.remove(); // remove current +-button
+                    let newrow = Templates.appendNodeContents(tbody, html, js)[0];
+                    // console.log(newrow);
+                    // Remove current +-button
+                    element.style.display = 'None'; // element.remove();
+                    // Hide label.
+                    newrow.querySelector('label').style.display = 'None';
+                    // Add callback to remove button(s).
                     tbody.querySelectorAll("." + DynamicList.classRemoveItem).forEach(e => {
+                        // show all remove file buttons
                         e.style.display = '';
+                        // Add callback for remove
                         e.onclick = function (removeevent) {
                             TestFileReference.removeItemCallback(removeevent);
                         }
-                    }); // show all remove file buttons
-
+                    });
                     // Add callback for new button.
-                    TestFileReference.addFileCallback(tablenode);
+                    TestFileReference.addFileCallback(newrow.querySelector('.add_test_fileref'));
                 })
                 // Deal with this exception (Using core/notify exception function is recommended).
                 .catch((error) => {
