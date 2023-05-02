@@ -647,13 +647,61 @@ export class TestFileReference extends FileReferenceList {
 
     static attach(tablenode) {
         // Add callbacks:
-        let addButton = tablenode.querySelector('.add_test_fileref');
-        addButton.onclick = function(event) {
-            event.preventDefault();
-            let element = event.target;
+        this.addFileCallback(tablenode);
+    }
 
-            const context = {
-            };
+    static removeItemCallback(removeevent) {
+        removeevent.preventDefault();
+        let element = removeevent.target;
+
+        let td = element.closest('td');
+        let tr = element.closest('tr');
+
+        // remove line in file table for test
+        let table = element.closest('.xml_fileref_table');
+        let tbody = table.querySelector('tbody');
+
+        let previousRow = tr.previousSibling; // this.getPreviousItem(tr); // tr.prev("tr");
+        let hasNextTr = (tr.nextSibling !== "undefined"); // tr.nextAll("tr");
+        let hasPrevTr = (tr.previousSibling !== "undefined"); // tr.prevAll("tr");
+
+        tr.remove(); // remove row
+
+        if (!hasNextTr) { //.length === 0) {
+            // if row to be deleted is last row then add +-button to last row
+            //let tds = previousRow.find("td");
+            //let td = tds.last();
+            // TODO: previousRow.querySelector('td');
+            $(this.tdAddButton).insertBefore(previousRow.find("td").last());
+        }
+        if (!hasPrevTr) { // .length === 0) {
+            // row to be deleted is first row
+            // => add filename label to first column
+            let firstCell = tbody.querySelector('td');
+            // let firstCell = $(table_body).find("td").first();
+            firstCell.append('TODO this.label'); // without td
+        }
+
+        // check if previousRow is first row
+        let firstRow = $(table_body).find("tr")[0];
+        if (this.getItemCount(table_body) === 1) {
+            // table has exactly one row left
+            // => hide all remove file buttons
+            tbody.querySelectorAll("." + DynamicList.classRemoveItem).forEach(
+                e => {
+                    e.style.display = 'None';
+                }
+            );
+        }
+
+    }
+    static addFileCallback(tablenode) {
+        let addButton = tablenode.querySelector('.add_test_fileref');
+        addButton.onclick = function (addevent) {
+            addevent.preventDefault();
+            let element = addevent.target;
+
+            const context = {};
             Templates.renderForPromise('qtype_proforma/taskeditor_testfile_row', context)
                 .then(({html, js}) => {
                     // Here eventually I have my compiled template, and any javascript that it generated.
@@ -662,10 +710,15 @@ export class TestFileReference extends FileReferenceList {
                     let tbody = table.querySelector('tbody');
                     Templates.appendNodeContents(tbody, html, js);
                     element.remove(); // remove current +-button
-                    tbody.querySelectorAll("." + DynamicList.classRemoveItem).
-                        forEach(e => {
-                            e.style.display = '';
+                    tbody.querySelectorAll("." + DynamicList.classRemoveItem).forEach(e => {
+                        e.style.display = '';
+                        e.onclick = function (removeevent) {
+                            TestFileReference.removeItemCallback(removeevent);
+                        }
                     }); // show all remove file buttons
+
+                    // Add callback for new button.
+                    TestFileReference.addFileCallback(tablenode);
                 })
                 // Deal with this exception (Using core/notify exception function is recommended).
                 .catch((error) => {
@@ -676,21 +729,21 @@ export class TestFileReference extends FileReferenceList {
         }
     }
 
-/*
-    onFileUpload(filename, uploadBox) {
-        super.onFileUpload(filename, uploadBox);
-        // set classname if exactly one file is assigned
-        // todo: this should be part of the configuration
-        // const ui_classname = $(uploadBox).find(".xml_ju_mainclass");
-        // if (ui_classname.length === 1) {
-        //     $.each(ui_classname, function(index, element) {
-        //         const currentFilename = $(element).val();
-        //         if (currentFilename === "" && !readXmlActive) {
-        //             $(element).val(javaParser.getFullClassnameFromFilename(filename)).change();
-        //         }
-        //     });
-        // }
-    }*/
+    /*
+        onFileUpload(filename, uploadBox) {
+            super.onFileUpload(filename, uploadBox);
+            // set classname if exactly one file is assigned
+            // todo: this should be part of the configuration
+            // const ui_classname = $(uploadBox).find(".xml_ju_mainclass");
+            // if (ui_classname.length === 1) {
+            //     $.each(ui_classname, function(index, element) {
+            //         const currentFilename = $(element).val();
+            //         if (currentFilename === "" && !readXmlActive) {
+            //             $(element).val(javaParser.getFullClassnameFromFilename(filename)).change();
+            //         }
+            //     });
+            // }
+        }*/
 }
 let testFileRefSingleton = new TestFileReference();
 
