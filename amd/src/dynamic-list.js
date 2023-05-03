@@ -39,7 +39,8 @@ export class DynamicList {
     createRow(first) {
         // hide first remove file button
         const tdFirstRemoveButton = "<td><button class='" + this.classRemoveItem +
-            "' onclick='" + this.className + ".getInstance().removeItem($(this))' style='display: none;'>x</button></td>";
+            "' style='display: none;'>x</button></td>";
+//        "' onclick='" + this.className + ".getInstance().removeItem($(this))' style='display: none;'>x</button></td>";
 
         return "<tr>" +
             "<td>" + (first?this.label:'') + "</td>" + // label
@@ -78,9 +79,7 @@ export class DynamicList {
         this.mandatory = mandatory;
         this.label = this.getLabelString(label);
 
-
-        this.tdAddButton = "<td><button class='" + this.classAddItem +
-            "' title='add another filename' onclick='" + className + ".getInstance().addItem($(this))'>+</button><br></td>";
+        this.tdAddButton = "<td><button class='" + this.classAddItem + "' title='add another filename'>+</button><br></td>";
 
         if (extra_css_class)
             this.table = "<table class='dynamic_table " + extra_css_class + "' cellpadding='0'>" + // cellspacing='0' >" +
@@ -101,9 +100,15 @@ export class DynamicList {
         let td = element.parent();
         let tr = td.parent();
         let table_body = tr.parent();
+/*        let newRow = document.createElement('span');
+        newRow.innerHTML = this.createRow(false);
+        // newRow = newRow.firstChild;
+*/
         let newRow = table_body.append(this.createRow(false));
+        // table_body.append(newRow);
         element.remove(); // remove current +-button
         table_body.find("." + this.classRemoveItem).show(); // show all remove file buttons
+        console.log('TODO: Das liefert die tabelle und nicht die neu erzeugte Zeile!');
         return newRow;
     }
 

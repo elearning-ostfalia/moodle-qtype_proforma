@@ -209,6 +209,8 @@ export class FileReferenceList extends DynamicList {
         let table_body = tr.parent();
 
         let newRow = super.addItem(element);
+        console.log('returned new row is');
+        console.log(newRow);
         FileReferenceList.rowEnableEditorButton(newRow, false);
 /*
         // add new line for selecting a file for a test
@@ -227,6 +229,7 @@ export class FileReferenceList extends DynamicList {
             table_body.find(".fileref_fileref").hide();
             table_body.find("label[for='fileref_fileref']").hide();
         }
+        FileReferenceList.addCallbacks(newRow[0]);
     }
 
 
@@ -618,14 +621,25 @@ export class FileReferenceList extends DynamicList {
         });
     }
 
-    static addCallbacks(tablenode) {
-        // Add callback for onlick of '+' button.
-        console.log(tablenode);
-        tablenode.querySelector('.add_test_fileref').onclick = function (addevent) {
+    static addCallbacks(node) {
+        // Add callback for onclick of '+' button.
+        console.log('Add callbacks for');
+        console.log(node);
+        node.querySelector('.add_test_fileref').onclick = function (addevent) {
             console.log('callback for + button');
             addevent.preventDefault();
             // TODO: use static or global function!
             TestFileReference.getInstance().addItem($(addevent.target));
+        }
+        // Add callback for onclick of 'x' button.
+//        node.querySelector(".remove_item").onclick = function (removeevent) {
+        let removeBut = node.querySelector("." + TestFileReference.getInstance().classRemoveItem);
+        console.log(removeBut);
+
+        node.querySelector("." + TestFileReference.getInstance().classRemoveItem).onclick = function (removeevent) {
+            console.log('callback for x button');
+            removeevent.preventDefault();
+            TestFileReference.getInstance().removeItem($(removeevent.target));
         }
     }
 }
