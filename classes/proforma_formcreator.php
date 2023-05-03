@@ -350,15 +350,15 @@ class proforma_form_creator extends base_form_creator {
         $junit1 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
 
         $context =  (object) [
-            "testid" => "Testid 2",
+            "testid" => "2",
             "testname" => "Testname 2",
         ];
-        $junit2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
+/*        $junit2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
 
         $context =  (object) [
             "fileid" => "2222",
             "filename" => "Filename 1",
-        ];
+        ];*/
         $file1 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_file', $context);
         $context =  (object) [
             "fileid" => "2223",
@@ -367,7 +367,7 @@ class proforma_form_creator extends base_form_creator {
         $file2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_file', $context);
 
         $context =  (object) [
-            "tests" => $junit1 . $junit2,
+            "tests" => $junit1, //  . $junit2,
             "files" => $file1 . $file2,
         ];
         $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);

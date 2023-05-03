@@ -38,7 +38,7 @@ function getInternalDescriptionString(comment) {
         "title = 'Internal description (not visible for students)'>"+comment+"</textarea></p>";
 }
 
-function getDescriptionHtmlString(description, comment) {
+export function getDescriptionHtmlString(description, comment) {
     return "<p><label for='xml_description'>Description: </label>" +
     "<textarea rows='2'  class='xml_description' " +
     "title = 'Visible description'>"+description+"</textarea>" +

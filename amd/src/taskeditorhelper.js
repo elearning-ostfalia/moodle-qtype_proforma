@@ -25,6 +25,24 @@ import {config} from "./taskeditorconfig";
 
 export var readXmlActive = false;
 
+export const testTypes = 'EMPTY LIST'; // getTesttypeOptions();
+
+// create option list string with all test types
+function getTesttypeOptions() {
+    let list = "";
+    let first = true;
+    $.each(config.testInfos, function (index, item) {
+        list = list + "<option";
+        if (first) {
+            list = list + " selected='selected'";
+            first = false;
+        }
+        list = list + ">" + item.testType;
+        list = list + "</option>";
+    });
+    return list;
+}
+
 export function readAndCreateFileData(file, fileId, callback) {
     if (!file)
         return;
