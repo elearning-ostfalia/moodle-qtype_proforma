@@ -66,6 +66,7 @@
 
 {{#js}}
     require(['qtype_proforma/taskeditortest'], function(t) {
+        console.log('attach');
         t.test('test_{{ testid }}', "{{uniqid}}-testfilereftable");
     });
 {{/js}}

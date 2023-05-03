@@ -19,6 +19,7 @@
 
 import {DynamicList} from "./dynamic-list";
 import $ from 'jquery';
+import {readAndCreateFileData} from "./taskeditorhelper";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 
@@ -372,8 +373,9 @@ export class FileReferenceList extends DynamicList {
 
     onFilerefChanged(ui_file, fileid) {}
 
-    onFileSelectionChanged (tempSelElem) {              // changing a filename in the drop-down
-
+    static onFileSelectionChanged (tempSelElem) {              // changing a filename in the drop-down
+        // console.log(tempSelElem);
+        // console.log('Value is ' + tempSelElem.value);
         function isDuplicateId(fileid) {
             const filerefs = $(tempSelElem).closest('table').find(".fileref_fileref");
             let found = false;
@@ -391,7 +393,8 @@ export class FileReferenceList extends DynamicList {
 
 
         // var found = false;
-        const selectedFilename = $(tempSelElem).val();
+        const selectedFilename = tempSelElem.value;
+        // const selectedFilename = $(tempSelElem).val();
         console.log('selectedFilename ' + selectedFilename);
         // get old file id
         const nextTd = $(tempSelElem).parent().next('td');
@@ -403,6 +406,7 @@ export class FileReferenceList extends DynamicList {
         switch (selectedFilename) {
             case loadFileOption:
                 // read new file
+                console.log('read new file ');
                 // reset selection in case choosing a file fails
                 //$(tempSelElem).val(emptyFileOption); // do not call change!
                 FileReferenceList.removeContent(tempSelElem, false);
@@ -460,7 +464,7 @@ export class FileReferenceList extends DynamicList {
                                 config.handleFilenameChangeInTest(selectedFilename, tempSelElem);
                             }
                         } else {
-                            this.onFilerefChanged(ui_file, fileid);
+                            TestFileReference.onFilerefChanged(ui_file, fileid);
                         }
                     }
                 }
@@ -623,30 +627,26 @@ export class FileReferenceList extends DynamicList {
 
 export class TestFileReference extends FileReferenceList {
 
-    constructor() {
+    constructor(tablenode) {
         super('xml_test_filename', 'xml_test_fileref', 'TestFileReference', 'File',
             'file containing test cases, test configuration, libraries etc.', true);
+        this.tablenode = tablenode;
+        // Add callbacks:
+        TestFileReference.addFileCallback(tablenode.querySelector('.add_test_fileref'));
+        tablenode.querySelector('.fileref_filename').onchange = function(changeevent) {
+            TestFileReference.onFileSelectionChanged(changeevent.target);
+        }
     }
 
     static getInstance() {return testFileRefSingleton;}
 
-    static attach(tablenode) {
-        // Add callbacks:
-        let addButton = tablenode.querySelector('.add_test_fileref');
-        this.addFileCallback(addButton);
-    }
-
-    static removeItemCallback(removeevent) {
+    static removeRowCallback(removeevent) {
         removeevent.preventDefault();
         let element = removeevent.target;
 
-        let td = element.closest('td');
         let tr = element.closest('tr');
         let tbody = element.closest('.xml_fileref_table').querySelector('tbody');
 
-        // remove line in file table for test
-
-        // let previousRow = tr.previousSibling; // this.getPreviousItem(tr); // tr.prev("tr");
         let hasNextTr = (tr.nextElementSibling !== null);
         let hasPrevTr = (tr.previousElementSibling !== null);
 
@@ -656,7 +656,7 @@ export class TestFileReference extends FileReferenceList {
             tr.previousElementSibling.querySelector('.add_test_fileref').style.display = '';
         }
 
-        tr.remove(); // remove row
+        tr.remove(); // remove complete row
         if (!hasPrevTr) { // .length === 0) {
             console.log('no predecessor => readd label');
             // row to be deleted is first row
@@ -665,7 +665,6 @@ export class TestFileReference extends FileReferenceList {
         }
 
         // check if previousRow is first row
-        let firstRow = tbody.querySelectorAll('tr')[0];
         if (tbody.querySelectorAll('tr').length === 1) {
             console.log('just one row left => hide remove buttons');
             // table has exactly one row left
@@ -701,11 +700,14 @@ export class TestFileReference extends FileReferenceList {
                         e.style.display = '';
                         // Add callback for remove
                         e.onclick = function (removeevent) {
-                            TestFileReference.removeItemCallback(removeevent);
+                            TestFileReference.removeRowCallback(removeevent);
                         }
                     });
-                    // Add callback for new button.
+                    // Add callbacks
                     TestFileReference.addFileCallback(newrow.querySelector('.add_test_fileref'));
+                    newrow.querySelector('.fileref_filename').onchange = function(changeevent) {
+                        TestFileReference.onFileSelectionChanged(changeevent.target);
+                    }
                 })
                 // Deal with this exception (Using core/notify exception function is recommended).
                 .catch((error) => {
@@ -732,7 +734,7 @@ export class TestFileReference extends FileReferenceList {
             // }
         }*/
 }
-let testFileRefSingleton = new TestFileReference();
+// let testFileRefSingleton = new TestFileReference();
 
 
 

@@ -31,51 +31,12 @@ import {TestFileReference, FileReferenceList} from "./filereflist";
 
 export const test = (testid, filereftableid) => {
 
-    function init(testid) {
-        console.log(testid);
-        let testcontainer = document.getElementById(testid);
-        console.log(testcontainer);
-
-        // register dragenter, dragover.
-        testcontainer.ondragover = function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            //e.dataTransfer.dropEffect = 'copy';
-        };
-
-        testcontainer.ondragenter = function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        };
-            /*
-                        drop: function(e){
-                            if(e.originalEvent.dataTransfer){
-                                if(e.originalEvent.dataTransfer.files.length) {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    //UPLOAD FILES HERE
-                                    this.JsClassname.uploadFiles(e.originalEvent.dataTransfer.files, e.currentTarget);
-                                }
-                            }
-                        } */
-
-    }
-
-
-    function init2(testid, filereftableid) {
+    function init(testid, filereftableid) {
         let testroot = document.getElementById(testid);
         let table = testroot.querySelector('.xml_fileref_table');
-        TestFileReference.attach(table);
-
-        // let table = document.getElementById(filereftableid);
-
-//        TestFileReference.getInstance().configure('TestFileReference',
-//            'Testfile Label'/*config.fileRefLabel*/,
-//            true /*config.manadatoryFile*/, 'xml_fileref_table');
-//        TestFileReference.getInstance().createTable(table);
-
-//        FileReferenceList.init(null, null, TestFileReference, testroot);
+        let inst = new TestFileReference(table);
     }
 
-    init2(testid, filereftableid);
+    // console.log('create test instance');
+    init(testid, filereftableid);
 };
