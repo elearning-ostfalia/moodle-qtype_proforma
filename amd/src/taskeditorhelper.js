@@ -369,7 +369,7 @@ var enableTestMode = false;
 
     // enable dropping files in the file section
     // with creating new file boxes
-    var filesection = $("#proforma-tests-section").parent();
+    var filesection = $("#proforma-files-section").parent();
     // use parent instead of filesection here because
     // the acual file section is too small and is not what is expected
     filesection.on({

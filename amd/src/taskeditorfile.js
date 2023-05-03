@@ -540,7 +540,7 @@ export class FileWrapper {
             fileIDs[fileid] = 1;
         }
 //        alert('TODO: Create file view for file ' + fileid);
-        $("#proforma-tests-section").append("<div "+
+        $("#proforma-files-section").append("<div "+
             "id='file_" + fileid + "'" +
             "class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'>"+
             "<h3 class='ui-widget-header'><span class ='xml_filename_header'></span> (File #"+fileid+")<span "+
@@ -577,7 +577,7 @@ export class FileWrapper {
             "</p>"+
 
             "<p><label for='xml_internal_description'>Internal Description:</label>"+
-            "<textarea rows='1' class='xml_internal_description'/></p>"+
+            "<textarea rows='1' class='xml_internal_description'></textarea></p>"+
 
             "<p>" +
 //            "<label>File content<span class='red'>*</span>: </label>"+
@@ -654,6 +654,6 @@ export class FileWrapper {
         fileStorages = []; // empty array
         fileIDs = {};
 
-        $("#proforma-tests-section")[0].textContent = "";                     // delete previous content
+        $("#proforma-files-section")[0].textContent = "";                     // delete previous content
     }
 }

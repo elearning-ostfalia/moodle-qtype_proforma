@@ -327,11 +327,11 @@ class proforma_form_creator extends base_form_creator {
         $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton'));
 
         // Add task edit button.
-        $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
+/*        $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
         // Add js.
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton'));
-
+*/
 
         global $OUTPUT;
 
@@ -356,12 +356,12 @@ class proforma_form_creator extends base_form_creator {
         $junit2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
 
         $context =  (object) [
-            "fileid" => "Fileid 1",
+            "fileid" => "2222",
             "filename" => "Filename 1",
         ];
         $file1 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_file', $context);
         $context =  (object) [
-            "fileid" => "Fileid 2",
+            "fileid" => "2223",
             "filename" => "Filename 2",
         ];
         $file2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_file', $context);

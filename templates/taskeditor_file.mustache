@@ -41,10 +41,10 @@
 
 }}
 
-<div id='file_ {{ fileid }}' class='xml_file drop_zone fcontainer clearfix'>
+<div id='file_{{ fileid }}' class='xml_file drop_zone fcontainer clearfix'>
 <h3 class='ui-widget-header'>
     <span class ='xml_filename_header'></span> {{ filename }}
-        <b>(File #" {{ fileid }} ")</b>
+        <b>(File #"{{ fileid }}")</b>
     <span class='rightButton'><button onclick='FileWrapper.removeFile($(this));'>x</button></span>
 </h3>
 
@@ -54,7 +54,7 @@
     </input>
 
     <label for='xml_file_id'>ID: </label>
-    <input class='tinyinput xml_file_id' value=' {{ fileid }} '/>
+    <input class='tinyinput xml_file_id' value='{{ fileid }}'/>
 
     <label for='xml_file_type'>Store </label>
     <select class='xml_file_type' onchange='FileWrapper.onFiletypeChanged(this)'>
