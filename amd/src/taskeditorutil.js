@@ -15,20 +15,21 @@
  * Karin Borm, Dr. Uta Priss
  */
 
+import {config} from "./taskeditorconfig";
 
-const DEBUG_MODE       = false;
-const TEST_MODE        = false;
-const SUBMISSION_TEST  = false;
-const USE_VISIBLES     = false;
+export const DEBUG_MODE       = false;
+export const TEST_MODE        = false;
+export const SUBMISSION_TEST  = false;
+export const USE_VISIBLES     = false;
 
 
 const codeversion   = '3.1.2 [230313]';    // current version of this code
 
 
-const version094    = 'xsd/taskxml0.9.4.xsd';                // name of schema files
-const version101    = 'xsd/taskxml1.0.1.xsd';
+export const version094    = 'xsd/taskxml0.9.4.xsd';                // name of schema files
+export const version101    = 'xsd/taskxml1.0.1.xsd';
 
-import {config} from "./taskeditorconfig";
+
 
 function getInternalDescriptionString(comment) {
     return "<p>" +

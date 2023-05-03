@@ -18,9 +18,12 @@
 // Known bugs: search the code for the string "ToDo" below and check faq.html and installationFAQ.html
 
 import $ from 'jquery';
-import {FileWrapper} from "./taskeditorfile";
+import {FileWrapper, FileStorage, fileStorages} from "./taskeditorfile";
 import {getMimeType, getExtension} from "./taskeditorutil";
+import {config} from "./taskeditorconfig";
 
+
+export var readXmlActive = false;
 
 export function readAndCreateFileData(file, fileId, callback) {
     if (!file)
@@ -62,10 +65,10 @@ export function readAndCreateFileData(file, fileId, callback) {
         // set filename
         ui_file.filename = filename;
 
-        if (size > config.maxSizeForEditor) {
+/*        if (size > config.maxSizeForEditor) {
             //console.log('file '+ filename + ' is too large => no editor support');
             //isBinaryFile = true;
-        }
+        }*/
 
         if (isBinaryFile) {
             // binary file
@@ -241,7 +244,7 @@ function createSubmissionXml() {
 
 
     ///////////////////////////////////////////////////////// function: readXML
-var readXmlActive = false;
+
  function readXMLWithLock () {
     readXmlActive = true; // lock automatic input field update
     try {
@@ -366,7 +369,7 @@ var enableTestMode = false;
 
     // enable dropping files in the file section
     // with creating new file boxes
-    var filesection = $("#filesection").parent();
+    var filesection = $("#proforma-tests-section").parent();
     // use parent instead of filesection here because
     // the acual file section is too small and is not what is expected
     filesection.on({

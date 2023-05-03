@@ -22,6 +22,8 @@ import $ from 'jquery';
 import {readAndCreateFileData} from "./taskeditorhelper";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
+import {FileWrapper} from "./taskeditorfile";
+import {config} from "./taskeditorconfig";
 
 
 const loadFileOption = "<open...>";

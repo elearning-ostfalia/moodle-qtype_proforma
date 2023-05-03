@@ -16,11 +16,13 @@
  */
 
 import $ from 'jquery';
-import {setcounter} from "./taskeditorutil";
+import {setcounter, DEBUG_MODE} from "./taskeditorutil";
+import {config} from "./taskeditorconfig";
+import {FileReferenceList} from "./filereflist";
 
-var fileStorages = [];
-var fileIDs = {};
-var codemirror = {};
+export var fileStorages = [];
+export var fileIDs = {};
+export var codemirror = {};
 
 
 /**
@@ -417,7 +419,8 @@ export class FileWrapper {
             let editor = codemirror[ui_file.id];
             $(editor.getWrapperElement()).hide();
         } else {
-            root.find('.xml_file_text').hide();
+            // TODO:
+            // root.find('.xml_file_text').hide();
         }
 
         ui_file.root.find('.xml_file_editor_close').hide();
@@ -503,6 +506,8 @@ export class FileWrapper {
      * The global codemirror hash above uses the fileID to identify the codemirror element.
      */
     static addCodemirrorElement(cmID) {                     // cmID is determined by setcounter(), starts at 1
+        console.error('TODO addCodemirrorElement');
+        return;
         codemirror[cmID] = CodeMirror.fromTextArea(
 //            $(".xml_file_id[value='"+ cmID +"']").parent().parent().find(".xml_file_text")[0],{
             FileWrapper.constructFromId(cmID).root.find(".xml_file_text")[0],{
@@ -534,9 +539,8 @@ export class FileWrapper {
             // (from reading task.xml). So we nned to keep the fileIDs in sync!
             fileIDs[fileid] = 1;
         }
-        alert('TODO: Create file view for file ' + fileid);
-        return;
-        $("#filesection").append("<div "+
+//        alert('TODO: Create file view for file ' + fileid);
+        $("#proforma-tests-section").append("<div "+
             "id='file_" + fileid + "'" +
             "class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'>"+
             "<h3 class='ui-widget-header'><span class ='xml_filename_header'></span> (File #"+fileid+")<span "+
@@ -639,9 +643,7 @@ export class FileWrapper {
         });
 
 
-        if (config.useCodemirror) {
-            FileWrapper.addCodemirrorElement(fileid);
-        }
+        FileWrapper.addCodemirrorElement(fileid);
 
         FileWrapper.hideEditor(undefined, ui_file);
         return ui_file;
@@ -652,6 +654,6 @@ export class FileWrapper {
         fileStorages = []; // empty array
         fileIDs = {};
 
-        $("#filesection")[0].textContent = "";                     // delete previous content
+        $("#proforma-tests-section")[0].textContent = "";                     // delete previous content
     }
 }

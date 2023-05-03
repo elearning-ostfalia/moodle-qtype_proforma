@@ -16,6 +16,8 @@
  */
 
 import {CustomTest} from "./taskeditorutil";
+import {javaParser} from "./taskeditorjava";
+import {readXmlActive} from "./taskeditorhelper";
 
 // const configXsdSchemaFile = version101;   // choose version for output
 /*
@@ -500,8 +502,8 @@ export const config = (function(testConfigNode) {
 //        createFurtherUiElements: createFurtherUiElements,
         getMimetype: getMimetype,
         isBinaryFile: isBinaryFile,
-/*        handleFilenameChangeInTest: handleFilenameChangeInTest,
-        writeXmlExtra: writeXmlExtra,
+        handleFilenameChangeInTest: handleFilenameChangeInTest,
+/*        writeXmlExtra: writeXmlExtra,
         onProglangChanged: onProglangChanged,
 
         //writeNamespaces: writeNamespaces,
@@ -510,9 +512,9 @@ export const config = (function(testConfigNode) {
         proglangInfos: proglangInfos,
         testInfos: testInfos,
         xsds: xsds,
-        // switches, constants...
-        useCodemirror: true,         // setting this to false turns Codemirror off
-        // xsdSchemaFile: configXsdSchemaFile,
+        // switches, constants...*/
+        useCodemirror: false,         // setting this to false turns Codemirror off
+/*        // xsdSchemaFile: configXsdSchemaFile,
         maxSizeForEditor: 100000, // maximum file size to enable editing
 */
     }

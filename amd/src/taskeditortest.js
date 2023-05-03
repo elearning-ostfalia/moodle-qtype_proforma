@@ -25,7 +25,7 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-import {TestFileReference, FileReferenceList} from "./filereflist";
+import {TestFileReference} from "./filereflist";
 
 
 
