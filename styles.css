@@ -13,6 +13,11 @@ body .proforma-taskeditor{
     /* background-color: orangered;*/
 }
 
+.proforma-taskeditor .xml_test,
+.proforma-taskeditor .xml_file {
+    background: #e9ecef;
+}
+
 /* left side labels */
 .proforma-taskeditor p label:first-child,
 .proforma-taskeditor br + label,
@@ -21,6 +26,13 @@ body .proforma-taskeditor{
     display: inline-block;
     width: var(--labelwith); /*130px;*/
     text-align: left;
+}
+
+/* first column should have label width */
+.proforma-taskeditor .xml_fileref_table td:first-child,
+.proforma-taskeditor .dynamic_table td:first-child {
+    /*background-color: blue;*/
+    width: var(--labelwith);
 }
 
 /* use bold font for unit test label */
@@ -41,7 +53,11 @@ body#page-question-type-proforma p[id^=file_][id*=label] {
 }
 
 
-
+.fileref_viewer {
+    width: var(--inputwidth);
+    float:right;
+    background-color: #F7F7F7;
+}
 
 .proforma-taskeditor .maxinput{
     vertical-align: middle;
@@ -51,9 +67,22 @@ body#page-question-type-proforma p[id^=file_][id*=label] {
     vertical-align: middle;
     width: 80%;
 }
-/* .proforma-taskeditor .mediuminput{	width: 40%;     }*/
+.proforma-taskeditor .mediuminput{	width: 40%;     }
 .proforma-taskeditor .shortinput{	width: 10%;     }
 .proforma-taskeditor .tinyinput{		width: 5%;     }
+
+.proforma-taskeditor .rightButton{	float:right   }
+
+.proforma-taskeditor p { padding-left:0.3em;  }
+
+.proforma-taskeditor .drop_zone_text {
+    float:right; 	font-size: 65%;
+}
+
+.proforma-taskeditor .xml_restrict_filename { width: 400px; }
+
+.proforma-taskeditor .fileref_filename{	width: 400px;     }
+.proforma-taskeditor .fileref_fileref{	width: 50px;     }
 
 /* Styles for explorer */
 
