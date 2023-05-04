@@ -35,7 +35,7 @@
     }
 }}
 
-<div>
+<div class="proforma-taskeditor">
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item">
             <a class="nav-link active"
@@ -53,6 +53,14 @@
                 {{#str}} taskeditorfiles, qtype_proforma {{/str}}
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link"
+                data-toggle="tab"
+                href="#proforma-model-solution-section"
+                role="tab">
+                {{#str}} modelsolution, qtype_proforma {{/str}}
+            </a>
+        </li>
     </ul>
 
     <div class="tab-content" data-region="tab-content">
@@ -60,6 +68,7 @@
             id="proforma-tests-section"
             role="tabpanel"
             data-region="tests-container">
+
             {{> qtype_proforma/taskeditor_tests }}
 
             {{{ tests }}}
@@ -71,6 +80,12 @@
             data-region="files-container">
 
             {{{ files }}}
+
+        </div>
+        <div class="tab-pane pt-3"
+            id="proforma-model-solution-section"
+            role="tabpanel"
+            data-region="model-solution-container">
 
         </div>
     </div>
