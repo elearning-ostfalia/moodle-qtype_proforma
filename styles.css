@@ -28,12 +28,21 @@ body .proforma-taskeditor{
     text-align: left;
 }
 
-/* first column should have label width */
+
+.proforma-taskeditor .xml_fileref_table td,
+.proforma-taskeditor .dynamic_table td {
+    padding-left:0.1em;
+}
+
+/* first column should have label width and be more indented  */
 .proforma-taskeditor .xml_fileref_table td:first-child,
 .proforma-taskeditor .dynamic_table td:first-child {
     /*background-color: blue;*/
     width: var(--labelwith);
+    padding-left:0.3em;
 }
+
+
 
 /* use bold font for unit test label */
 /* body#page-question-type-proforma p[id^=fgroup_id_testfile_][id*=label] { */
