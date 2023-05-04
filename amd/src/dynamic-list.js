@@ -42,15 +42,15 @@ export class DynamicList {
             "' style='display: none;'>x</button></td>";
 //        "' onclick='" + this.className + ".getInstance().removeItem($(this))' style='display: none;'>x</button></td>";
 
-        return "<tr>" +
-            "<td>" + (first?this.label:'') + "</td>" + // label
+        // return "<tr>" +
+        return "<td>" + this.label + "</td>" + // label
 
             this.createRowContent() +
 
             tdFirstRemoveButton + // x-button
             this.tdAddButton +
-            '<td></td>' +
-        "</tr>";
+            '<td></td>'; // +
+        // "</tr>";
 /*
         let element = document.createElement('tr');
         element.innerHTML = "<td>" + (first?this.label:'') + "</td>" + // label
@@ -100,16 +100,14 @@ export class DynamicList {
         let td = element.parent();
         let tr = td.parent();
         let table_body = tr.parent();
-/*        let newRow = document.createElement('span');
+
+        let newRow = document.createElement('tr');
         newRow.innerHTML = this.createRow(false);
-        // newRow = newRow.firstChild;
-*/
-        let newRow = table_body.append(this.createRow(false));
-        // table_body.append(newRow);
-        element.remove(); // remove current +-button
+        table_body.append(newRow);
+        element.hide(); // hide current +-button
+        $(newRow).find("label").first().hide();
         table_body.find("." + this.classRemoveItem).show(); // show all remove file buttons
-        console.log('TODO: Das liefert die tabelle und nicht die neu erzeugte Zeile!');
-        return newRow;
+        return $(newRow);
     }
 
     // virtual
@@ -127,7 +125,7 @@ export class DynamicList {
         let tr = td.parent();
 
         // remove line in file table for test
-        let table_body = tr.parent();
+        let table_body = tr.closest('tbody');
 
         let previousRow = this.getPreviousItem(tr); // tr.prev("tr");
         let hasNextTr = tr.nextAll("tr");
@@ -139,13 +137,18 @@ export class DynamicList {
             // if row to be deleted is last row then add +-button to last row
             //let tds = previousRow.find("td");
             //let td = tds.last();
-            $(this.tdAddButton).insertBefore(previousRow.find("td").last());
+            // $(this.tdAddButton).insertBefore(previousRow.find("td").last());
+            console.log('row to be deleted is last row then add +-button to last row');
+
+            previousRow.find("." + this.classAddItem).show();
         }
         if (hasPrevTr.length === 0) {
             // row to be deleted is first row
             // => add filename label to first column
-            let firstCell = table_body.find("td").first();
-            firstCell.append(this.label); // without td
+            console.log('row to be deleted is first row => add filename label to first column');
+            table_body.find("label").first().show();
+            // let firstCell = table_body.find("td").first();
+            // firstCell.append(this.label); // without td
         }
 
         // check if previousRow is first row
@@ -153,6 +156,7 @@ export class DynamicList {
         if (this.getItemCount(table_body) === 1) {
             // table has exactly one row left
             // => hide all remove file buttons
+            console.log('table has exactly one row left => hide all remove file buttons');
             table_body.find("." + this.classRemoveItem).hide();
         }
     }

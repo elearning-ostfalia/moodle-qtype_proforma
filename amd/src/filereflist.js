@@ -61,14 +61,16 @@ export class FileReferenceList extends DynamicList {
 
     createRowContent() {
         const tdFilename = "<td><select class='mediuminput fileref_filename " + this.classFilename + "' " +
-            "onchange = '" +
-            this.className + ".getInstance().onFileSelectionChanged($(this))' title='" + this.help + "'></select></td>"+
+            // "onchange = '" +
+            // this.className + ".getInstance().onFileSelectionChanged($(this))' " +
+            "title='" + this.help + "'></select></td>"+
             "<td><label for='fileref_fileref'>Fileref: </label>"+ // fileref
             "<input class='tinyinput fileref_fileref' readonly/></td>";
 
 
-        const tdExpandButton = "<td><button class='collapse' title='show content' onclick='" +
-            this.className + ".getInstance().toggleEditor($(this))'>"+showEditorText+"</button><br></td>";
+        const tdExpandButton = "<td><button class='taskeditor-collapse' title='show content'" + // onclick='" +
+            // this.className + ".getInstance().toggleEditor($(this))'" +
+            ">"+showEditorText+"</button><br></td>";
 
         return tdFilename + tdExpandButton + this.createExtraContent();
     }
@@ -200,7 +202,7 @@ export class FileReferenceList extends DynamicList {
             //console.log('enable view button in fileref for ' + ui_file.filename + ', enabled = ' + enabled);
         }
 
-        row.find(".collapse").last().prop('disabled', !enabled);
+        row.find(".taskeditor-collapse").last().prop('disabled', !enabled);
     }
 
     addItem(element) {
@@ -292,7 +294,7 @@ export class FileReferenceList extends DynamicList {
         $(filenameItem).val(emptyFileOption); // do not call change!
         let tr = $(filenameItem).closest('tr');
         tr.find('.fileref_fileref').first().val('');
-        let button = tr.find('.collapse');
+        let button = tr.find('.taskeditor-collapse');
         if (button.html() === hideEditorText) {
             // remove editor
             button.html(showEditorText);
@@ -633,13 +635,22 @@ export class FileReferenceList extends DynamicList {
         }
         // Add callback for onclick of 'x' button.
 //        node.querySelector(".remove_item").onclick = function (removeevent) {
-        let removeBut = node.querySelector("." + TestFileReference.getInstance().classRemoveItem);
-        console.log(removeBut);
-
         node.querySelector("." + TestFileReference.getInstance().classRemoveItem).onclick = function (removeevent) {
             console.log('callback for x button');
             removeevent.preventDefault();
             TestFileReference.getInstance().removeItem($(removeevent.target));
+        }
+
+        node.querySelector(".fileref_filename").onchange = function (changeevent) {
+            console.log('callback for change selection');
+            changeevent.preventDefault();
+            TestFileReference.getInstance().onFileSelectionChanged($(changeevent.target));
+        }
+
+        node.querySelector(".taskeditor-collapse").onclick = function (toggleevent) {
+            console.log('callback for toggle editor');
+            toggleevent.preventDefault();
+            TestFileReference.getInstance().toggleEditor($(toggleevent.target));
         }
     }
 }
