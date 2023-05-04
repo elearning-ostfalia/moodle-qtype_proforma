@@ -16,7 +16,7 @@
  */
 
 import $ from 'jquery';
-import {setcounter, DEBUG_MODE} from "./taskeditorutil";
+import {setcounter, DEBUG_MODE, getExtension} from "./taskeditorutil";
 import {config} from "./taskeditorconfig";
 import {FileReferenceList} from "./filereflist";
 
@@ -371,8 +371,9 @@ export class FileWrapper {
 
 
     static removeFile(button) {                                       // ask before removing
-        let root = button.parent().parent().parent(); // arrgh!
-        let ui_file = FileWrapper.constructFromRoot(root);
+        console.log('remove file');
+        // let root = button.parent().parent().parent(); // arrgh!
+        let ui_file = FileWrapper.constructFromRoot(button.closest('.xml_file')/*root*/);
 
         let ok = false;
         if (FileReferenceList.getCountFileIdReferenced(ui_file.id)) {
@@ -399,7 +400,7 @@ export class FileWrapper {
             let editor = codemirror[ui_file.id];
             $(editor.getWrapperElement()).show();
         } else {
-            root.find('.xml_file_text').show();
+            ui_file.root.find('.xml_file_text').show();
         }
 
 
@@ -419,8 +420,7 @@ export class FileWrapper {
             let editor = codemirror[ui_file.id];
             $(editor.getWrapperElement()).hide();
         } else {
-            // TODO:
-            // root.find('.xml_file_text').hide();
+            ui_file.root.find('.xml_file_text').hide();
         }
 
         ui_file.root.find('.xml_file_editor_close').hide();
@@ -539,38 +539,25 @@ export class FileWrapper {
             // (from reading task.xml). So we nned to keep the fileIDs in sync!
             fileIDs[fileid] = 1;
         }
-//        alert('TODO: Create file view for file ' + fileid);
         $("#proforma-files-section").append("<div "+
             "id='file_" + fileid + "'" +
             "class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'>"+
             "<h3 class='ui-widget-header'><span class ='xml_filename_header'></span> (File #"+fileid+")<span "+
-            "class='rightButton'><button onclick='FileWrapper.removeFile($(this));'>x</button></span></h3>"+
+            "class='rightButton'><button" /* onclick='FileWrapper.removeFile($(this));'*/ +">x</button></span></h3>"+
 
             "<p>" +
             " <label for='xml_file_filename'>Filename<span class='red'>*</span>: </label>"+
-            "<input class='mediuminput xml_file_filename' onchange='FileWrapper.onFilenameChangedCallback(this)' title='with extension'/>"+
+            "<input class='mediuminput xml_file_filename' title='with extension'> </input>"+
 
             "<label for='xml_file_id'>ID: </label>"+ // do not set at first position because of layout (css)
-            "<input class='tinyinput xml_file_id' value='"+fileid+"'/>"+
+            "<input class='tinyinput xml_file_id' value='"+fileid+"'></input>"+
 
             " <label for='xml_file_class'>Usage: " +
             // "<span class='red'>*</span>: " +
             "</label>"+
-/*
-            "<select class='xml_file_class' disabled onchange='FileWrapper.onFileclassChanged(this)' >"+
-                "<option selected='selected'>internal</option>"+
-                "<option>template</option>"+
-                "<option>library</option>"+
-                //  "<option>inputdata</option>"+                      // not used at the moment
-                "<option>internal-library</option>"+
-                "<option>instruction</option>" +
-            "</select>"+
-*/
-            // not nice!!
-//            " Library:<input type='checkbox' class='file_library' >" + // onclick='FileWrapper.onLibrary(this)'>"+
 
             " <label for='xml_file_type'>Store </label>"+
-            "<select class='xml_file_type' onchange='FileWrapper.onFiletypeChanged(this)'>"+
+            "<select class='xml_file_type'" + /* onchange='FileWrapper.onFiletypeChanged(this)'*/ ">"+
                 "<option value = 'embedded' selected='selected'>embedded</option>"+
                 "<option value = 'file'>attached</option></select>"+
             "<span class='drop_zone_text'>Drop Your File Here!</span>" +
@@ -586,9 +573,9 @@ export class FileWrapper {
             "</span>" +
 
             "<span class='xml_file_non_binary'>" +
-            "<button class='xml_file_edit' onclick='FileWrapper.showEditor($(this));'>Edit</button>" +
+            "<button class='xml_file_edit'" + /* onclick='FileWrapper.showEditor($(this));'*/ ">Edit</button>" +
             "<label for='xml_file_editor_close'>" +
-            "<button class='xml_file_editor_close' onclick='FileWrapper.hideEditor($(this));'>Hide</button>" +
+            "<button class='xml_file_editor_close'" + /* onclick='FileWrapper.hideEditor($(this));'*/ ">Hide</button>" +
             "</label>" +
             "<span>" +
             "<textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>" +
@@ -611,13 +598,41 @@ export class FileWrapper {
             ui_file.root.find(".xml_file_class").hide();
             ui_file.root.find("label[for='xml_file_class']").hide();
         }
-
 /*
         ui_file.root.find(".xml_dummy_upload_file").hide();
         ui_file.root.find(".xml_dummy_upload_file").click(function(){
             ui_file.root.find(".xml_upload_file").click();
         });
 */
+        console.log('add file callbacks');
+        // add callbacks:
+        ui_file.root.find('button').first().on("click",
+            function(event) {
+                event.preventDefault();
+                FileWrapper.removeFile($(this));
+        });
+        ui_file.root.find('.xml_file_filename').on("change",
+            function(event) {
+                event.preventDefault();
+                FileWrapper.onFilenameChangedCallback(this);
+        });
+        ui_file.root.find('.xml_file_type').on("change",
+            function(event) {
+                event.preventDefault();
+                FileWrapper.onFiletypeChanged(this);
+        });
+        ui_file.root.find('.xml_file_edit').on("click",
+            function(event) {
+                event.preventDefault();
+                FileWrapper.showEditor($(this));
+        });
+        ui_file.root.find('.xml_file_editor_close').on("click",
+            function(event) {
+                event.preventDefault();
+                FileWrapper.hideEditor($(this));
+        });
+
+
 
         // enable drag & drop
         ui_file.root.on({
