@@ -26,15 +26,16 @@
  */
 
 
-// import {uploadTask} from './repository';
 import config from 'core/config';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 // import {get_string as getString} from 'core/str';
 // import Str from 'core/str';
 import {get_strings as getStrings} from 'core/str';
-import Notification from 'core/notification';
+import Notification, {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
+import {TestWrapper } from "./taskeditortest";
+import {CustomTest, setcounter, DEBUG_MODE, getDescriptionHtmlString} from "./taskeditorutil";
 
 /**
  * edit task
@@ -46,7 +47,6 @@ import Templates from 'core/templates';
 export const edit = (buttonid, task) => {
 
     var modalroot = null;
-    var closeString = 'close';
 
     /**
      * get localized string for cancel/close button
@@ -55,53 +55,6 @@ export const edit = (buttonid, task) => {
     async function init() {
         // closeString = await getString('close', 'editor');
     }
-
-/*    function closeSse() {
-        source.close();
-        let dialog = document.querySelector(".modal");
-        if (dialog) {
-            let button = dialog.querySelector(".btn-secondary");
-            if (button) {
-                // Change cancel button to close button
-                button.innerHTML = closeString;
-            }
-        }
-    }*/
-    
-    /**
-     * upload current question to grader
-     * @returns {Promise<void>}
-     */
-/*    async function uploadWithSse() {
-        // Get question id from form fields.
-        const questionId = document.querySelector("input[name='id']").value;
-        let url = config.wwwroot + '/question/type/proforma/upload_sse.php';
-        url += '?sesskey=' + config.sesskey + '&id=' + questionId;
-
-        // Create Eventsource with callbacks
-        source = new EventSource(url);
-        source.onmessage = function(event) {
-            // console.log(event.data);
-            let dialog = document.querySelector("#proforma-modal-message");
-            if (dialog != null) {
-                let message = event.data.trim();
-                // handle binary prefix (direct output from Popen)
-                if (message.startsWith("b'") || message.startsWith("b\"")) {
-                    message = '<b>' + message.substring(2, message.length - 3) + '</b>';
-                }
-                if (message.endsWith('####') && !message.startsWith('####')) { // got line ending with special keys
-                    closeSse();
-                } else {
-                    // Append new message
-                    dialog.innerHTML += message + "<br>";
-                }
-            }
-        };
-        source.onerror = function(event) {
-            // Upload is complete (with or without error)
-            closeSse();
-        };
-    }*/
 
     /*
     async function performUpload() {
@@ -185,22 +138,63 @@ export const edit = (buttonid, task) => {
 };
 
 
-export const initproglang = (proglangdiv, langselect) => {
+export const initproglang = (proglangdiv, buttondiv, langselect) => {
+    function addButtonCallbacks() {
+        // Add Junit testcase
+        document.querySelector('#addJUnitTest').onclick = function (e) {
+            e.preventDefault();
+            let config = new CustomTest("JUnit_Default_Title", "unittest", "", ['java']);
+            let ui_test = TestWrapper.create(null, 'JUnit Test', config, 1);
+
+/*
+            const context = { 'testname': 'JUnit Test'};
+            Templates.renderForPromise('qtype_proforma/taskeditor_junit', context)
+                .then(({html, js}) => {
+                    Templates.appendNodeContents('#proforma-tests-section', html, js);
+                })
+                .catch((error) => { alert('error');displayException(error); });
+
+ */
+        }
+    }
+
     let langselectelem = document.getElementById(langselect);
     const lang = langselectelem.value;
+    // show versions
     document.querySelector('#xml_programming-language-' + lang).style.display = '';
+    // show buttons
+    document.querySelectorAll('#' + buttondiv + ' .' + lang).forEach(
+        e => {
+            e.style.display = '';
+        }
+    );
 
     // Add change callback.
     langselectelem.onchange = function() {
         const lang = langselectelem.value;
+        // Show versions for this language
         document.querySelector('#xml_programming-language-' + lang).style.display = '';
-        document.querySelectorAll('#' + proglangdiv + ' :not(#xml_programming-language-' + lang + ')').forEach(
+        // Show buttons for this language
+        document.querySelectorAll('#' + buttondiv + ' .' + lang).forEach(
+            e => {
+                e.style.display = '';
+            }
+        );
+        // Hide other versions
+        document.querySelectorAll('#' + proglangdiv + ' select:not(#xml_programming-language-' + lang + ')').forEach(
+            e => {
+                e.style.display = 'None';
+            }
+        );
+        // Hide other buttons
+        document.querySelectorAll('#' + buttondiv + ' :not(.' + lang + ')').forEach(
             e => {
                 e.style.display = 'None';
             }
         );
     };
 
-
+    // Add button callbacks.
+    addButtonCallbacks();
 
 }

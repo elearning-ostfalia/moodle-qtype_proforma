@@ -62,7 +62,7 @@
 <div>
     <label for="xml_programming-language">Programming Language:</label>
 
-    <select id="xml_programming-language">
+    <select id="xml_programming-language" class="custom-select">
         {{#proglang}}
             <option value="{{ value }}">{{ language }}</option>
         {{/proglang}}
@@ -71,7 +71,7 @@
     <label >Version:</label>
     <span id="proglangversion-{{uniqid}}">
         {{#proglang}}
-            <select id="xml_programming-language-{{ value }}" style='display: none'>
+            <select id="xml_programming-language-{{ value }}" style='display: none' class="custom-select">
                 {{#version}}
                     <option value="{{ . }}">{{ . }}</option>
                 {{/version}}
@@ -80,12 +80,35 @@
     <span/">
 </div>
 
+<p>
+</p>
+
+<div id="testbuttons-{{uniqid}}">
+    <button id="addCompilerTest" class="btn btn-secondary java" style="display: none;">New Compiler Test</button>
+    <button id="addJUnitTest" class="btn btn-secondary java" style="display: none;">New JUnit Test</button>
+    <button id="addCheckStyleTest" class="btn btn-secondary java" style="display: inline-block;">New CheckStyle Test</button>
+
+    <button id="addGoogleTest" class="btn btn-secondary cpp c" style="display: none;">New Google Test</button>
+    <button id="addCUnitTest" class="btn btn-secondary c" style="display: none;">New CUnit Test</button>
+    <!--<button id="addCCompilerTest" class="btn btn-secondary c" style="display: none;">New C Compiler Test</button>-->
+
+    <button id="addPythonUnittest" class="btn btn-secondary python" style="display: none;">New Python Unittest</button>
+    <button id="addPythonDocTest" class="btn btn-secondary python" style="display: none;">New Python DocTest</button>
+
+    <button id="addSetlXTest" class="btn btn-secondary setlx" style="display: none;">New SetlX Test</button>
+    <button id="addSetlXSyntaxTest" class="btn btn-secondary setlx" style="display: none;">New SetlX Syntax Test</button>
+
+</div>
+
+<p>
+</p>
+
 <input type='file' id='dummy_file_upload_button' style="display: none"/>
 
 
 {{#js}}
     require(['qtype_proforma/taskeditor'], function(editor) {
         console.log('attach');
-        editor.initproglang("proglangversion-{{uniqid}}", "xml_programming-language");
+        editor.initproglang("proglangversion-{{uniqid}}", id="testbuttons-{{uniqid}}", "xml_programming-language");
     });
 {{/js}}

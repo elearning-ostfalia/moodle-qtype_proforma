@@ -347,7 +347,7 @@ class proforma_form_creator extends base_form_creator {
                 ]
             ]
         ];
-        $junit1 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
+//        $junit1 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
 
         $context =  (object) [
             "testid" => "2",
@@ -367,8 +367,6 @@ class proforma_form_creator extends base_form_creator {
         $file2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_file', $context);
 
         $context =  (object) [
-            "tests" => $junit1, //  . $junit2,
-            "files" => $file1 . $file2,
             "proglang" => [
             [
                 "language" => "Java",
@@ -385,7 +383,9 @@ class proforma_form_creator extends base_form_creator {
                 "value" => "cpp",
                 "version" => []
             ]
-            ]
+            ],
+            "tests" => '',
+            "files" => '',
         ];
         $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
         $mform->addElement('html', $taskeditor);

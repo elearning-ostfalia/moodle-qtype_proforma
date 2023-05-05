@@ -33,7 +33,7 @@ import {testTypes} from "./taskeditorhelper";
 var testIDs = {};
 
 
-class TestWrapper {
+export class TestWrapper {
     static constructFromRoot(root) {
         let test = new TestWrapper();
         test._root = root;
@@ -119,7 +119,7 @@ class TestWrapper {
             "id='test_" + testid + "'" +
             "class='ui-widget ui-widget-content ui-corner-all xml_test'>"+
             "<h3 class='ui-widget-header'>" + TestName + " (Test #"+testid+")<span "+
-            "class='rightButton'><button onclick='TestWrapper.delete($(this));'>x</button></span></h3>"+
+            "class='rightButton'><button>x</button></span></h3>"+
 
             "<p><label for='xml_test_id'>ID<span class='red'>*</span>: </label>"+
             "<input class='tinyinput xml_test_id' value='" + testid + "' readonly/>"+
@@ -145,7 +145,8 @@ class TestWrapper {
             "</div>");
 
         // hide fields that exist only for technical reasons
-        var testroot = $(".xml_test_id[value='" + testid + "']").parent().parent();
+        var testroot = $("#test_" + testid);
+        // var testroot = $(".xml_test_id[value='" + testid + "']").parent().parent();
         testroot.find(".xml_test_type").val(config.testType);
         let test = TestWrapper.constructFromRoot(testroot);
         console.log(testroot);
@@ -153,6 +154,12 @@ class TestWrapper {
 
         FileReferenceList.init(null, null, TestFileReference, testroot);
         FileReferenceList.addCallbacks($(testroot)[0]);
+        testroot.find('button').first().on("click",
+            function(event) {
+                event.preventDefault();
+                TestWrapper.delete($(this));
+            });
+
         // TestFileReference.getInstance().init(testroot, DEBUG_MODE);
 
         if (!DEBUG_MODE) {
@@ -195,18 +202,10 @@ export const test = (testid, filereftableid) => {
 
     function init(testid, filereftableid) {
         /*
-        let testroot = document.getElementById(testid);
-        let table = testroot.querySelector('.xml_fileref_table');
-        let inst = new TestFileReference(table);
+        let config = new CustomTest("JUnit_Default_Title", "unittest", "", ['java']);
+        let ui_test = TestWrapper.create(testid, 'Dummy title', config, 7);
 
          */
-
-        // let ui_test = TestWrapper.create(null, item.title, item); // item.htmlExtraFields, item.testType, item.withFileRef);
-        let config = new CustomTest("JUnit_Default_Title", "unittest", "", ['java']);
-
-        let ui_test = TestWrapper.create(testid, 'Dummy title', config, 7);
-        // item.onCreate(ui_test.id);
-        // $("#tabs").tabs("option", "active", tab_page.TESTS);
     }
 
     // console.log('create test instance');

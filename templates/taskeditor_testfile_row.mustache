@@ -38,7 +38,6 @@
         <label for="xml_test_filename">Junit and other file(s)<span class="red">*</span>: </label>
     </td>
     <td>
-        <!-- onchange: TestFileReference.getInstance().onFileSelectionChanged($(this)) -->
         <select class="mediuminput fileref_filename xml_test_filename" title="file containing test cases, test configuration, libraries etc.">
             <option> </option>
             <option>&lt;open...&gt;</option>
@@ -49,10 +48,8 @@
         <input class="tinyinput fileref_fileref" readonly="" style="display: none;">
     </td>
     <td>
-        <!-- onclick: TestFileReference.getInstance().toggleEditor($(this)) -->
-        <button class="collapse" title="show content"
-            disabled="">View</button>
-            <br>
+        <button class="taskeditor-collapse" title="show content" disabled="">View</button>
+	<br>
     </td>
     <td>
         <button class="remove_item"  style="display: none;">x</button>
