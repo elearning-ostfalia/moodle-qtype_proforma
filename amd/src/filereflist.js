@@ -623,32 +623,33 @@ export class FileReferenceList extends DynamicList {
         });
     }
 
-    static addCallbacks(node) {
+    static addCallbacks(rootnode) {
         // Add callback for onclick of '+' button.
         console.log('Add callbacks for');
-        console.log(node);
-        node.querySelector('.add_test_fileref').onclick = function (addevent) {
-            console.log('callback for + button');
+        console.log(rootnode);
+        // console.log('callback for + button');
+        rootnode.querySelector('.add_test_fileref').onclick = function (addevent) {
             addevent.preventDefault();
             // TODO: use static or global function!
             TestFileReference.getInstance().addItem($(addevent.target));
         }
         // Add callback for onclick of 'x' button.
-//        node.querySelector(".remove_item").onclick = function (removeevent) {
-        node.querySelector("." + TestFileReference.getInstance().classRemoveItem).onclick = function (removeevent) {
-            console.log('callback for x button');
+    //        rootnode.querySelector(".remove_item").onclick = function (removeevent) {
+        // console.log('callback for x button');
+        rootnode.querySelector("." + TestFileReference.getInstance().classRemoveItem).onclick = function (removeevent) {
             removeevent.preventDefault();
             TestFileReference.getInstance().removeItem($(removeevent.target));
         }
 
-        node.querySelector(".fileref_filename").onchange = function (changeevent) {
-            console.log('callback for change selection');
+        // console.log('callback for change selection');
+        rootnode.querySelector(".fileref_filename").onchange = function (changeevent) {
             changeevent.preventDefault();
             TestFileReference.getInstance().onFileSelectionChanged($(changeevent.target));
         }
 
-        node.querySelector(".taskeditor-collapse").onclick = function (toggleevent) {
-            console.log('callback for toggle editor');
+        // console.log('callback for toggle editor');
+        // console.error('TODO taskeditor-collapse');
+        rootnode.querySelector(".taskeditor-collapse").onclick = function (toggleevent) {
             toggleevent.preventDefault();
             TestFileReference.getInstance().toggleEditor($(toggleevent.target));
         }

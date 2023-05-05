@@ -26,16 +26,17 @@
     * none
 
     Context variables required for this template:
-    * none
+    * filenamelabel
 
     Example context (json):
     {
+        "filenamelabel" : "Junit and other file(s)"
     }
 }}
 
 <tr>
     <td>
-        <label for="xml_test_filename">Junit and other file(s)<span class="red">*</span>: </label>
+        <label for="xml_test_filename">{{ filenamelabel }}<span class="red">*</span>: </label>
     </td>
     <td>
         <select class="mediuminput fileref_filename xml_test_filename" title="file containing test cases, test configuration, libraries etc.">
@@ -45,7 +46,7 @@
     </td>
     <td>
         <label for="fileref_fileref" style="display: none;">Fileref: </label>
-        <input class="tinyinput fileref_fileref" readonly="" style="display: none;">
+        <input class="tinyinput fileref_fileref" readonly="" style="display: none;"></input>
     </td>
     <td>
         <button class="taskeditor-collapse" title="show content" disabled="">View</button>

@@ -26,8 +26,8 @@ export class DynamicList {
         this.classFilename = classFilename;
         this.classAddItem = css_classname.replace('xml_', 'add_'); // classAddItem;
         this.classRemoveItem = 'remove_item'; // css_classname.replace('xml_', 'remove_'); // classRemoveItem;
+//        this.classRemoveItem = 'remove_item'; // css_classname.replace('xml_', 'remove_'); // classRemoveItem;
         this.help = help;
-
         this.createTableString(jsClassName, label, mandatory, extra_css_class);
     }
 

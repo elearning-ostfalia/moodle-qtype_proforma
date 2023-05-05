@@ -28,6 +28,9 @@
 import {TestFileReference, FileReferenceList } from "./filereflist";
 import {CustomTest, setcounter, DEBUG_MODE, getDescriptionHtmlString} from "./taskeditorutil";
 import {testTypes} from "./taskeditorhelper";
+import Notification, {exception as displayException} from 'core/notification';
+import Templates from 'core/templates';
+import {config} from "./taskeditorconfig";
 
 
 var testIDs = {};
@@ -100,6 +103,79 @@ export class TestWrapper {
         let instance = TestWrapper.constructFromRoot(button.closest('.xml_test'));
         // remove instance
         instance.delete();
+    }
+
+    /**
+     *
+     * @param id test identfier
+     * @param template mustache template name
+     * @param context context for mustache template
+     * @param withFileRef with file references
+     */
+    static createFromTemplate(id, template, context, withFileRef) {
+        let testid = id;
+        if (!testid)
+            testid = setcounter(testIDs);
+        context['testid'] = testid;
+        console.log("context");
+        console.log(context);
+
+        Templates.renderForPromise(template, context)
+            .then(({html, js}) => {
+                Templates.appendNodeContents('#proforma-tests-section', html, js);
+
+                // hide fields that exist only for technical reasons
+                var testroot = $("#test_" + testid);
+
+                // testroot.find(".xml_test_type").val(config.testType);
+                let test = TestWrapper.constructFromRoot(testroot);
+
+                FileReferenceList.init(null, null, TestFileReference, testroot);
+                testroot.find('.dynamic_table').show();
+                FileReferenceList.addCallbacks($(testroot)[0]);
+                console.log('callback delete test button');
+                testroot.find('button').first().on("click",
+                    function(event) {
+                        event.preventDefault();
+                        TestWrapper.delete($(this));
+                    });
+
+                // TestFileReference.getInstance().init(testroot, DEBUG_MODE);
+
+                if (!DEBUG_MODE) {
+                    console.log('hide debug fields');
+                    testroot.find(".xml_test_type").hide();
+                    testroot.find("label[for='xml_test_type']").hide();
+                    testroot.find(".xml_test_id").hide();
+                    testroot.find("label[for='xml_test_id']").hide();
+                }
+                if (!withFileRef) {
+                    console.log('hide fileref fields');
+                    testroot.find("table").hide();
+                    testroot.find(".drop_zone").hide();
+                }
+                else
+                {
+                    // TODO: disable drag & drop!
+                    /*
+                            testroot.on({
+                                drop: function(e){
+                                    if(e.originalEvent.dataTransfer){
+                                        if(e.originalEvent.dataTransfer.files.length) {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            //UPLOAD FILES HERE
+                                            FileReferenceList.uploadFiles(e.originalEvent.dataTransfer.files, e.currentTarget,
+                                                TestFileReference.getInstance());
+                                        }
+                                    }
+                                }
+                            });
+                    */
+                }
+                // return test;
+            })
+            .catch((error) => { displayException(error); });
     }
 
 //    static create(id, TestName, MoreText, TestType, WithFileRef) {

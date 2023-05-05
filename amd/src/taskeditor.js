@@ -143,8 +143,14 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
         // Add Junit testcase
         document.querySelector('#addJUnitTest').onclick = function (e) {
             e.preventDefault();
-            let config = new CustomTest("JUnit_Default_Title", "unittest", "", ['java']);
-            let ui_test = TestWrapper.create(null, 'JUnit Test', config, 1);
+            let context = {
+                'testname' : 'JUnit Test',
+                'filenamelabel' : 'Junit and other file(s)'
+            };
+            // let config = new CustomTest("JUnit_Default_Title", "unittest", "", ['java']);
+            // let ui_test = TestWrapper.create(null, 'JUnit Test', config, 1);
+            let ui_test = TestWrapper.createFromTemplate(null,
+                'qtype_proforma/taskeditor_junit', context, true);
 
 /*
             const context = { 'testname': 'JUnit Test'};
