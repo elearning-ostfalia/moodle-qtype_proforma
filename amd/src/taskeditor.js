@@ -147,20 +147,19 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
                 'testname' : 'JUnit Test',
                 'filenamelabel' : 'Junit and other file(s)'
             };
-            // let config = new CustomTest("JUnit_Default_Title", "unittest", "", ['java']);
-            // let ui_test = TestWrapper.create(null, 'JUnit Test', config, 1);
-            let ui_test = TestWrapper.createFromTemplate(null,
+            TestWrapper.createFromTemplate(null,
                 'qtype_proforma/taskeditor_junit', context, true);
+        }
 
-/*
-            const context = { 'testname': 'JUnit Test'};
-            Templates.renderForPromise('qtype_proforma/taskeditor_junit', context)
-                .then(({html, js}) => {
-                    Templates.appendNodeContents('#proforma-tests-section', html, js);
-                })
-                .catch((error) => { alert('error');displayException(error); });
-
- */
+        // Add Junit testcase
+        document.querySelector('#addCheckStyleTest').onclick = function (e) {
+            e.preventDefault();
+            let context = {
+                'testname' : 'Checkstyle Test',
+                'filenamelabel' : 'Configuration file'
+            };
+            TestWrapper.createFromTemplate(null,
+                'qtype_proforma/taskeditor_checkstyle', context, true);
         }
     }
 
