@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template qtype_proforma/taskeditor_item
+    @template qtype_proforma/taskeditor_tests
 
-    The purpose of this template is to render the ProFormA task editor
+    The purpose of this template is to render the ProFormA task editor test section
 
     Classes required for JS:
     * none
@@ -26,19 +26,29 @@
     * none
 
     Context variables required for this template:
-    * none
+    * proglang programming languages with optional versions
 
     Example context (json):
     {
+        "proglang": [
+            {
+                "language": "Java",
+                "value": "java",
+                "version": ["1.8", "11"]
+            },
+            {
+                "language": "Python",
+                "value": "python",
+                "version": ["3", "3.11"]
+            },
+            {
+                "language": "C++",
+                "value": "cpp",
+                "version": []
+            }
+       ]
     }
 
-
-}}
-
-<span>
-<label for="xml_programming-language">Programming Language:</label>
-
-<select id="xml_programming-language">
     <option selected="selected" value="java/17">java/17</option>
     <option value="python/3">python/3</option>
     <option value="cpp">cpp</option><option value="c">c</option>
@@ -46,7 +56,36 @@
     <option value="java/11">java/11</option>
     <option value="java/1.8">java/1.8</option>
     <option value="java/1.6">java/1.6</option>
-</select>
-</span>
+
+}}
+
+<div>
+    <label for="xml_programming-language">Programming Language:</label>
+
+    <select id="xml_programming-language">
+        {{#proglang}}
+            <option value="{{ value }}">{{ language }}</option>
+        {{/proglang}}
+    </select>
+
+    <label >Version:</label>
+    <span id="proglangversion-{{uniqid}}">
+        {{#proglang}}
+            <select id="xml_programming-language-{{ value }}" style='display: none'>
+                {{#version}}
+                    <option value="{{ . }}">{{ . }}</option>
+                {{/version}}
+            </select>
+        {{/proglang}}
+    <span/">
+</div>
 
 <input type='file' id='dummy_file_upload_button' style="display: none"/>
+
+
+{{#js}}
+    require(['qtype_proforma/taskeditor'], function(editor) {
+        console.log('attach');
+        editor.initproglang("proglangversion-{{uniqid}}", "xml_programming-language");
+    });
+{{/js}}

@@ -369,6 +369,23 @@ class proforma_form_creator extends base_form_creator {
         $context =  (object) [
             "tests" => $junit1, //  . $junit2,
             "files" => $file1 . $file2,
+            "proglang" => [
+            [
+                "language" => "Java",
+                "value" => "java",
+                "version" => ["1.8", "11"]
+            ],
+            [
+                "language" => "Python",
+                "value" => "python",
+                "version" => ["3", "3.11"]
+            ],
+            [
+                "language" => "C++",
+                "value" => "cpp",
+                "version" => []
+            ]
+            ]
         ];
         $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
         $mform->addElement('html', $taskeditor);

@@ -183,3 +183,24 @@ export const edit = (buttonid, task) => {
         }).fail(Notification.exception);
     });
 };
+
+
+export const initproglang = (proglangdiv, langselect) => {
+    let langselectelem = document.getElementById(langselect);
+    const lang = langselectelem.value;
+    document.querySelector('#xml_programming-language-' + lang).style.display = '';
+
+    // Add change callback.
+    langselectelem.onchange = function() {
+        const lang = langselectelem.value;
+        document.querySelector('#xml_programming-language-' + lang).style.display = '';
+        document.querySelectorAll('#' + proglangdiv + ' :not(#xml_programming-language-' + lang + ')').forEach(
+            e => {
+                e.style.display = 'None';
+            }
+        );
+    };
+
+
+
+}
