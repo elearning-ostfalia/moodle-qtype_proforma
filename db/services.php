@@ -32,12 +32,12 @@ defined('MOODLE_INTERNAL') || die();
 $functions = array(
 
     // ProformA question type webservice functions.
-    'qtype_proforma_upload_task' => array(
-        'classname'    => 'qtype_proforma\external\upload_task',
+    'qtype_proforma_taskeditor' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
 //        'methodname'   => 'upload_task',
         'classpath'    => '',
-        'description'  => 'uploads a task to Praktomat',
-        'type'         => 'read', // Read from Moodle, but write to Praktomat???
+        'description'  => 'read task from Moodle',
+        'type'         => 'read', // Read from Moodle
         // 'capabilities' => 'moodle/question:usemine',
         'ajax'         => true,
     ),

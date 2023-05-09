@@ -326,67 +326,53 @@ class proforma_form_creator extends base_form_creator {
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton'));
 
+        $context =  (object) [
+            "proglang" => [
+                [
+                    "language" => "Java",
+                    "value" => "java",
+                    "version" => ["1.8", "11"]
+                ],
+                [
+                    "language" => "Python",
+                    "value" => "python",
+                    "version" => ["3", "3.11"]
+                ],
+                [
+                    "language" => "C++",
+                    "value" => "cpp",
+                    "version" => []
+                ]
+            ],
+            "tests" => '',
+            "files" => '',
+        ];
+
+
+
         // Add task edit button.
-/*        $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
+        $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
         // Add js.
         global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton'));
-*/
+        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton', $context));
+
 
         global $OUTPUT;
 
-        $context =  (object) [
-            "testid" => "1",
-            "testname" => "Testname 1",
-            "options" =>             [
-                "label" => "tab-tests",
-                "description" => "Tab Tests",
-                "icon" => "<img class='icon' src='http://urltooptionicon'>",
-                "urls" => [
-                    "addoption" => "http://addoptionurl.com"
-                ]
-            ]
-        ];
-//        $junit1 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
-
+/*
         $context =  (object) [
             "testid" => "2",
             "testname" => "Testname 2",
         ];
-/*        $junit2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
+//        $junit2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
 
-        $context =  (object) [
-            "fileid" => "2222",
-            "filename" => "Filename 1",
-        ];*/
-        $file1 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_file', $context);
         $context =  (object) [
             "fileid" => "2223",
             "filename" => "Filename 2",
         ];
         $file2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_file', $context);
+*/
 
-        $context =  (object) [
-            "proglang" => [
-            [
-                "language" => "Java",
-                "value" => "java",
-                "version" => ["1.8", "11"]
-            ],
-            [
-                "language" => "Python",
-                "value" => "python",
-                "version" => ["3", "3.11"]
-            ],
-            [
-                "language" => "C++",
-                "value" => "cpp",
-                "version" => []
-            ]
-            ],
-            "tests" => '',
-            "files" => '',
-        ];
         $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
         $mform->addElement('html', $taskeditor);
     }

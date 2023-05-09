@@ -30,6 +30,16 @@ export const version094    = 'xsd/taskxml0.9.4.xsd';                // name of s
 export const version101    = 'xsd/taskxml1.0.1.xsd';
 
 
+export function setErrorMessage(errormess, exception) { // setting the error console
+    console.log('setErrorMessage');
+    console.log(errormess);
+    console.log(exception);
+}
+
+export function clearErrorMessage() {
+
+}
+
 
 function getInternalDescriptionString(comment) {
     return "<p>" +

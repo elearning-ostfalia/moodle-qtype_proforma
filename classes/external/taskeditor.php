@@ -38,9 +38,9 @@ use external_single_structure;
 use external_value;
 
 
-class upload_task extends /* \core_external\*/ \external_api {
+class taskeditor extends \external_api {
     /**
-     * Upload the task
+     * Download and upload task for edting
      * @param int $questionid proforma question id
      * @return array result (boolean) with log messages
      */
@@ -69,21 +69,21 @@ class upload_task extends /* \core_external\*/ \external_api {
             require_capability('moodle/question:editmine', $context);
         }
 
-        $grader = new \qtype_proforma_grader_2($question->get_uri('/api/v2/upload'));
-//        try {
-            list($graderoutput, $httpcode) = $grader->upload_task_to_grader($question);
-            if ($graderoutput === True) {
-                $graderoutput = 'successfully started';
-            }
-/*        } catch (\Exception $ex) {
-           // Convert exception.
-            $graderoutput = str($ex);
+
+        $task = $question->get_task_file();
+        if (!$task instanceof \stored_file) {
+            throw new \coding_exception("task variable has wrong class");
         }
-*/
+        $filename = trim($task->get_filename());
+        $filearea = trim($task->get_filearea());
+        $fileurl = \moodle_url::make_pluginfile_url($contextid /*$question->contextid*/, 'qtype_proforma',
+            $filearea, $question->id, '/', $filename);
+        // return '<a href="' . $url->out() . '">' . $filename . '</a> ';
+
         return [
             'questionid' => $questionid,
-            'result' => ($httpcode == 200),
-            'message' => $graderoutput
+            'fileurl' => $fileurl->out(),
+            'message' => 'ok'
         ];
     }
 
@@ -100,8 +100,8 @@ class upload_task extends /* \core_external\*/ \external_api {
     public static function execute_returns() {
         return new external_function_parameters([
             'questionid' => new external_value(PARAM_INT, 'question id'),
-            'result' => new external_value(PARAM_BOOL, 'result'),
-            'message' => new external_value(PARAM_RAW, 'upload message'),
+            'fileurl' => new external_value(PARAM_URL, 'Taskfile URL'),
+            'message' => new external_value(PARAM_RAW, 'error message if any'),
         ]);
     }
 }

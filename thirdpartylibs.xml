@@ -6,4 +6,10 @@
         <version>5.49.2</version>
         <license>MIT, http://codemirror.net/LICENSE</license>
     </library>
+    <library>
+        <location>amd/src</location>
+        <name>zip.js</name>
+        <version>2.7.7</version>
+        <license>???</license>
+    </library>
 </libraries>

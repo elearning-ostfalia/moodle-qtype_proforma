@@ -684,6 +684,16 @@ export class TestFileReference extends FileReferenceList {
 let testFileRefSingleton = new TestFileReference();
 
 
+class ModelSolutionFileReference extends FileReferenceList {
+
+    constructor() {
+        super('xml_model-solution_filename', 'xml_model-solution_fileref',
+            'ModelSolutionFileReference', 'File',
+            'file belonging to a model solution', true);
+    }
+    static getInstance() {return modelSolutionFileRefSingleton;}
+}
+let modelSolutionFileRefSingleton = new ModelSolutionFileReference();
 
 
 

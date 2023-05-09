@@ -33,7 +33,7 @@ import Templates from 'core/templates';
 import {config} from "./taskeditorconfig";
 
 
-var testIDs = {};
+export var testIDs = {};
 
 
 export class TestWrapper {

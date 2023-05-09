@@ -35,18 +35,21 @@ import {get_strings as getStrings} from 'core/str';
 import Notification, {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import {TestWrapper } from "./taskeditortest";
-import {CustomTest, setcounter, DEBUG_MODE, getDescriptionHtmlString} from "./taskeditorutil";
+import {downloadTask} from "./repository";
+import {getExtension} from "./taskeditorutil";
+import {unzipme} from "./zipper";
+import {readXMLWithLock} from "./taskeditorhelper";
+
 
 /**
  * edit task
  *
  * @param {string} buttonid: button id
- * @param {string} task: name of task
  * @returns {undefined}
  */
-export const edit = (buttonid, task) => {
+export const edit = (buttonid, context) => {
 
-    var modalroot = null;
+    console.log(context);
 
     /**
      * get localized string for cancel/close button
@@ -56,20 +59,56 @@ export const edit = (buttonid, task) => {
         // closeString = await getString('close', 'editor');
     }
 
-    /*
-    async function performUpload() {
+    async function downloadTaskFromServer() {
         let questionId = document.querySelector("input[name='id']").value;
-        console.log('upload task ' + questionId);
-        const promise = await uploadTask(questionId);
-        console.log('upload task finished, handle result 1');
-        window.console.log(promise);
-        console.log('upload task finished, handle result 2');
-        // alert(response.message);
-    }*/
+        console.log('download task ' + questionId);
+        const response = await downloadTask(questionId);
+        console.log(response.fileurl);
+        if (!response.fileurl) {
+            console.error('invalid fileurl ' + response.fileurl);
+            return;
+        }
+
+        const extension = getExtension(response.fileurl);
+        const isZipped = (extension === 'zip');
+
+        if (isZipped) {
+            fetch(response.fileurl, { method: 'GET' })
+                .then( response => response.blob())
+                .then( responseblob => {
+                    let text = unzipme(responseblob, function (text) {
+                        console.log('readycallback');
+                        // console.log(text);
+                        readXMLWithLock(text);
+                    });
+                    console.log(text);
+                })
+                .catch( error => {
+                    console.error('error:', error);
+                    alert(error);
+                });
+        } else {
+            const promise = fetch(response.fileurl, { method: 'GET' })
+                .then( response => response.text())
+                .then( responsetext => {
+                    console.log(responsetext);
+                    readXMLWithLock(responsetext);
+                })
+                .catch( error => {
+                    console.error('error:', error);
+                    alert(error);
+                });
+            
+        }
+
+        // return promise;
+
+
+    }
 
     // Initialise.
     console.log('edit task');
-    init();
+    downloadTaskFromServer();
     document.getElementById(buttonid).addEventListener('click', function (e) {
         console.log('click');
 
@@ -87,51 +126,29 @@ export const edit = (buttonid, task) => {
             }
         );
 
-        // var bodyPromise = Templates.render('tool_analytics/export_options', {});
-        // var bodyPromise = Templates.render('core_user/send_bulk_message', {});
-        // var bodyPromise = Templates.render('qtype_proforma/setting_configproformagrader', context);
-        let context = {
-            "tests": "todo tests",
-            "files": "todo files"
-        }
-        // const bodyPromise = Templates.renderForPromise('qtype_proforma/taskeditor', context);
-        var bodyPromise = Templates.render('qtype_proforma/taskeditor', context);
+        context['tests'] = '';
+        context['files'] = '';
+        var bodyPromise = Templates.renderForPromise('qtype_proforma/taskeditor', context);
 
-/*
-        // Wait for the content to be ready, and for the transition to be complet.
-        Promise.all([stringsPromise, modalPromise, bodyPromise])
-            .then(([{html, js}]) => {
-                modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
-
-                modal.setTitle(strings[0]);
-                // modal.setSaveButtonText(strings[0]);
-                // modal.setBody(bodyPromise);
-                Templates.appendNodeContents(modal.getRoot(), html, js);
-                // Templates.replaceNodeContents(help, html, js)
-
-                modal.getRoot().on(ModalEvents.save, function() {
-                });
-                modal.show();
-                return modal;
-
-            })
-            .catch(Notification.exception);
-            
- */
-
-        $.when(stringsPromise, modalPromise, bodyPromise).then(function(strings, modal, body) {
+        $.when(stringsPromise, modalPromise, bodyPromise).then(function(strings, modal, {html, js}) {
+            console.log(html);
+            console.log(js);
 
             modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
             modal.setTitle(strings[0]);
-            modal.setBody(body);
+
+            modal.setBody(html);
             // Change size (TODO: actually do with css)
-            modal.getModal().css('max-width', '70%');
-            modal.getModal().css('max-height', '90%');
+            modal.getModal().css('min-width', '70%');
+            modal.getModal().css('min-height', '90%');
 
             modal.getRoot().on(ModalEvents.save, function() {
             });
 
             modal.show();
+            if (js) {
+                Templates.runTemplateJS(js);
+            }
             return modal;
         }).fail(Notification.exception);
     });

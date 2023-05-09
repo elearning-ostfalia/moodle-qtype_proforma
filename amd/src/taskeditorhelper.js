@@ -21,6 +21,8 @@ import $ from 'jquery';
 import {FileWrapper, FileStorage, fileStorages} from "./taskeditorfile";
 import {getMimeType, getExtension} from "./taskeditorutil";
 import {config} from "./taskeditorconfig";
+import {readAndDisplayXml} from "./taskeditortask";
+import {setErrorMessage} from "./taskeditorutil";
 
 
 export var readXmlActive = false;
@@ -263,12 +265,13 @@ function createSubmissionXml() {
 
     ///////////////////////////////////////////////////////// function: readXML
 
- function readXMLWithLock () {
+export function readXMLWithLock (taskXmlText) {
     readXmlActive = true; // lock automatic input field update
     try {
-        readAndDisplayXml();
+        readAndDisplayXml(taskXmlText);
         // show/hide buttons according to new programming language
-        switchProgLang();
+        // TODO:
+        // switchProgLang();
 
     } catch (err) {
         setErrorMessage("uncaught exception", err);
