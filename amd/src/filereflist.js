@@ -52,10 +52,11 @@ export class FileReferenceList extends DynamicList {
 
 
     // override
+    /*
     getTableString() {
         return super.getTableString()  +
             "<span class='drop_zone_text drop_zone'>Drop Your File(s) Here!</span>";
-    }
+    }*/
 
     createExtraContent() { return ''; }
 
@@ -599,14 +600,14 @@ export class FileReferenceList extends DynamicList {
 
     static init(dropzoneSelector, sectionSelector, classname, dropZoneObject) {
         let root = dropZoneObject;
-        if (dropzoneSelector)
+/*        if (dropzoneSelector)
             root = $(dropzoneSelector); // find approach that fits all classes
 
         if (sectionSelector) {
             $(sectionSelector)[0].textContent = "";
             $(sectionSelector).append(classname.getInstance().getTableString());
         }
-
+*/
         classname.getInstance().init(root, DEBUG_MODE);
         root.on({
             drop: function(e){

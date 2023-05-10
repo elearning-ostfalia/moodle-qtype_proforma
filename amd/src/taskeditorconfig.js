@@ -76,7 +76,7 @@ export const config = (function(testConfigNode) {
     }
 
     function onProglangChanged(newProglang) {
-        if (newProglang == 'cpp') {
+        if (newProglang === 'cpp') {
             // Add GoogleTest
             $(".xml_u_framew option[value='GoogleTest']").remove();
             $(".xml_u_framew").append(`<option value="GoogleTest">GoogleTest</option>`);
@@ -349,21 +349,6 @@ export const config = (function(testConfigNode) {
     const testSetlXSyntax = new setlXSyntaxTest();
 
     // -------------------------------
-    // SUPPORTED PROGRAMMING LANGUAGES
-    // -------------------------------
-    const proglangInfos = [
-        new ProglangInfo("java/17",    [testJavaComp, testJavaJUnit,   testCheckStyle]),
-        new ProglangInfo("python/3",   [testPython, testPythonDoctest]),
-        new ProglangInfo("cpp",        [testGoogleTest]),
-        new ProglangInfo("c",          [testGoogleTest, testCUnit]),
-        new ProglangInfo("setlX/2.40", [testSetlX,    testSetlXSyntax, testCheckStyle]),
-        new ProglangInfo("java/11",    [testJavaComp, testJavaJUnit,   testCheckStyle]),
-        new ProglangInfo("java/1.8",   [testJavaComp, testJavaJUnit,   testCheckStyle]),
-        new ProglangInfo("java/1.6",   [testJavaComp, testJavaJUnit,   testCheckStyle]),
-    ];
-
-
-    // -------------------------------
     // Test buttons
     // -------------------------------
     // Reihenfolge: in der Reihenfolge, in der die Test in testInfos angelegt werden, werden auch die Testbuttons erzeugt!
@@ -488,7 +473,6 @@ export const config = (function(testConfigNode) {
 
         //writeNamespaces: writeNamespaces,
         // data
-        proglangInfos: proglangInfos,
         xsds: xsds,
         // switches, constants...*/
         useCodemirror: false,         // setting this to false turns Codemirror off

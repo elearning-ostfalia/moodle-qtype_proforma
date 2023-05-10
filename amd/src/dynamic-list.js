@@ -91,9 +91,9 @@ export class DynamicList {
                 "</table>";
     }
 
-    getTableString() {
+/*    getTableString() {
         return this.table;
-    }
+    }*/
 
     addItem(element) {
         // add new line for selecting a file for a test

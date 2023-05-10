@@ -20,6 +20,7 @@
 import $ from 'jquery';
 import {FileWrapper, FileStorage, fileStorages} from "./taskeditorfile";
 import {getExtension, setErrorMessage} from "./taskeditorutil";
+import {javaParser} from "./taskeditorjava";
 import {config} from "./taskeditorconfig";
 import {readAndDisplayXml} from "./taskeditortask";
 
@@ -61,6 +62,34 @@ export function readAndCreateFileData(file, fileId, callback) {
     let isBinaryFile = false; // TODO: config.isBinaryFile(file, mimetype);
     let reader = new FileReader();
     reader.onload = function (e) {
+        function finishFile(ui_file) {
+            // set filename
+            ui_file.filename = filename;
+
+            /*        if (size > config.maxSizeForEditor) {
+                        //console.log('file '+ filename + ' is too large => no editor support');
+                        //isBinaryFile = true;
+                    }*/
+
+            if (isBinaryFile) {
+                // binary file
+                // at first update fileStorages because
+                // it is needed for changing file type
+                let fileObject = new FileStorage(isBinaryFile, mimetype, e.target.result, filename);
+                fileObject.setSize(size);
+                fileStorages[ui_file.id] = fileObject;
+                ui_file.type = 'file';
+            } else {
+                // assume non binary file
+                let fileObject = new FileStorage(isBinaryFile, mimetype, 'text is in editor', filename);
+                fileStorages[ui_file.id] = fileObject;
+                ui_file.text = e.target.result;
+                ui_file.type = 'embedded';
+            }
+
+            if (callback)
+                callback(filename, ui_file.id);
+        }
 
         // special handling for JAVA: extract class name and package name and
         // recalc filename!
@@ -75,38 +104,16 @@ export function readAndCreateFileData(file, fileId, callback) {
             return;
         }
 
-        let ui_file = undefined;
         if (!fileId) {
-            ui_file = FileWrapper.create(); // create file box
+            // create new file box
+            FileWrapper.createFromTemplate()
+                .then(ui_file => {
+                    finishFile(ui_file);
+                });
         } else {
-            ui_file = FileWrapper.constructFromId(fileId); // file box already exists
+            // file box already exists
+            finishFile(FileWrapper.constructFromId(fileId));
         }
-        // set filename
-        ui_file.filename = filename;
-
-/*        if (size > config.maxSizeForEditor) {
-            //console.log('file '+ filename + ' is too large => no editor support');
-            //isBinaryFile = true;
-        }*/
-
-        if (isBinaryFile) {
-            // binary file
-            // at first update fileStorages because
-            // it is needed for changing file type
-            let fileObject = new FileStorage(isBinaryFile, mimetype, e.target.result, filename);
-            fileObject.setSize(size);
-            fileStorages[ui_file.id] = fileObject;
-            ui_file.type = 'file';
-        } else {
-            // assume non binary file
-            let fileObject = new FileStorage(isBinaryFile, mimetype, 'text is in editor', filename);
-            fileStorages[ui_file.id] = fileObject;
-            ui_file.text = e.target.result;
-            ui_file.type = 'embedded';
-        }
-
-        if (callback)
-            callback(filename, ui_file.id);
     };
 
     //console.log("read file");
@@ -124,6 +131,7 @@ function uploadFilesWhenDropped(files) {
     });
 }
 
+/*
 function addTestButtons() {
     $.each(config.testInfos, function (index, item) {
         $("#testbuttons").append("<button id='" + item.buttonJQueryId + "'>New " + item.title + "</button> ");
@@ -138,6 +146,8 @@ function addTestButtons() {
     });
 }
 
+ */
+/*
 function switchProgLang() {
     let progLang = $("#xml_programming-language").val();
     console.log("changing programming language to " + progLang);
@@ -181,6 +191,8 @@ function switchProgLang() {
     }
 }
 
+ */
+/*
 function createSubmissionXml() {
     let submissionXml = '';
     const xmlns = "urn:proforma:v2.0";
@@ -215,10 +227,10 @@ function createSubmissionXml() {
         //            if (item.filetype === 'embedded') {
 
 
-        /*            } else {
-        xmlWriter.createTextElement(fileElem, 'attached-bin-file', item.filename);
-        }
-         */
+        //            } else {
+        // xmlWriter.createTextElement(fileElem, 'attached-bin-file', item.filename);
+        // }
+
 
         let resultspec = xmlWriter.createTextElement(submission, 'result-spec', '');
         resultspec.setAttribute("format", 'xml');
@@ -260,7 +272,7 @@ function createSubmissionXml() {
     console.log(submissionXml);
     return submissionXml;
 }
-
+*/
 
     ///////////////////////////////////////////////////////// function: readXML
 

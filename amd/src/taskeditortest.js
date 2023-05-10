@@ -26,11 +26,10 @@
  */
 
 import {TestFileReference, FileReferenceList } from "./filereflist";
-import {CustomTest, setcounter, DEBUG_MODE, getDescriptionHtmlString} from "./taskeditorutil";
+import {setcounter, DEBUG_MODE} from "./taskeditorutil";
 import {TaskClass} from "./taskeditortaskdata";
 import Notification, {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
-import {config} from "./taskeditorconfig";
 
 
 export var testIDs = {};
@@ -129,7 +128,6 @@ export class TestWrapper {
                 // hide fields that exist only for technical reasons
                 var testroot = $("#test_" + testid);
 
-                // testroot.find(".xml_test_type").val(config.testType);
                 test = TestWrapper.constructFromRoot(testroot);
 
                 FileReferenceList.init(null, null, TestFileReference, testroot);
@@ -191,17 +189,8 @@ export class TestWrapper {
     }
 }
 
-
+/*
 export const test = (testid, filereftableid) => {
-
-    function init(testid, filereftableid) {
-        /*
-        let config = new CustomTest("JUnit_Default_Title", "unittest", "", ['java']);
-        let ui_test = TestWrapper.create(testid, 'Dummy title', config, 7);
-
-         */
-    }
-
-    // console.log('create test instance');
-    init(testid, filereftableid);
 };
+
+ */
