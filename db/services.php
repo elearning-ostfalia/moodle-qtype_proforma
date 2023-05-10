@@ -30,15 +30,25 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
-
     // ProformA question type webservice functions.
-    'qtype_proforma_taskeditor' => array(
+
+    'qtype_proforma_get_task_url' => array(
         'classname'    => 'qtype_proforma\external\taskeditor',
-//        'methodname'   => 'upload_task',
+        'methodname'   => 'get_task_url',
         'classpath'    => '',
         'description'  => 'read task from Moodle',
-        'type'         => 'read', // Read from Moodle
-        // 'capabilities' => 'moodle/question:usemine',
+        'type'         => 'read',
+        'capabilities' => 'moodle/question:editmine',
+        'ajax'         => true,
+    ),
+
+    'qtype_proforma_get_junit_versions' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
+        'methodname'   => 'get_junit_versions',
+        'classpath'    => '',
+        'description'  => 'read JUnit versions from Moodle',
+        'type'         => 'read',
+        // 'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
     ),
 );

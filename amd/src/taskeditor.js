@@ -35,7 +35,7 @@ import {get_strings as getStrings} from 'core/str';
 import Notification, {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import {TestWrapper } from "./taskeditortest";
-import {downloadTask} from "./repository";
+import {downloadTask, getJunitVersions} from "./repository";
 import {getExtension} from "./taskeditorutil";
 import {unzipme} from "./zipper";
 import {readXMLWithLock} from "./taskeditorhelper";
@@ -148,6 +148,27 @@ export const edit = (buttonid, context) => {
     });
 };
 
+
+/**
+ * get JUnit version from Moodle configuration and add to JUnit list
+ */
+export const setJunitVersions = () => {
+    // console.log('setJunitVersions');
+    getJunitVersions()
+        .then(response => {
+            // console.log(response['junitversions']);
+            document.querySelectorAll('.xml_ju_version').forEach(
+                selectElem => {
+                    response['junitversions'].forEach(version => {
+                        let option = document.createElement("option");
+                        option.text = version;
+                        selectElem.add(option);
+                    });
+                }
+            );
+        })
+        .fail(Notification.exception);
+}
 
 export const initproglang = (proglangdiv, buttondiv, langselect) => {
     function addButtonCallbacks() {

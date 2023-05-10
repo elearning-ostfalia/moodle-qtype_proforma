@@ -29,8 +29,16 @@ import Ajax from 'core/ajax';
 
 export const downloadTask = (questionid
 ) => Ajax.call([{
-    methodname: 'qtype_proforma_taskeditor',
+    methodname: 'qtype_proforma_get_task_url',
     args: {
         questionid
+    },
+}])[0];
+
+
+export const getJunitVersions = (
+) => Ajax.call([{
+    methodname: 'qtype_proforma_get_junit_versions',
+    args: {
     },
 }])[0];

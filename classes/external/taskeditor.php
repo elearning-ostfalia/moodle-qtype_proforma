@@ -40,14 +40,14 @@ use external_value;
 
 class taskeditor extends \external_api {
     /**
-     * Download and upload task for edting
+     * Get task URL
      * @param int $questionid proforma question id
      * @return array result (boolean) with log messages
      */
-    public static function execute($questionidparam) {
-        global $CFG, $DB;
+    public static function get_task_url($questionidparam) {
+        global $DB;
 
-        $params = self::validate_parameters(self::execute_parameters(), ['questionid' => $questionidparam]);
+        $params = self::validate_parameters(self::get_task_url_parameters(), ['questionid' => $questionidparam]);
         if (empty($params) or count($params) == 0) {
             throw new \invalid_parameter_exception('invalid question id');
         }
@@ -88,20 +88,54 @@ class taskeditor extends \external_api {
     }
 
     /**
+     * Get supported JUnit versions
+     * @return array with Junit Versions
+     */
+    public static function get_junit_versions() {
+        require_login();
+
+        $versionlist = get_config('qtype_proforma', 'junitversion');
+        $versions = [];
+        foreach (explode(',', $versionlist) as $version) {
+            $versions[] = $version;
+        }
+
+        return [
+            'junitversions' => $versions
+        ];
+    }
+
+    /**
      * Returns description of method parameters
      * @return external_function_parameters
      */
-    public static function execute_parameters() {
+    public static function get_task_url_parameters() {
         return new external_function_parameters([
             "questionid"=> new external_value(PARAM_INT, 'ID of ProformA question', VALUE_REQUIRED),
         ]);
     }
 
-    public static function execute_returns() {
+    public static function get_junit_versions_parameters() {
+        return new external_function_parameters([
+        ]);
+    }
+
+    public static function get_task_url_returns() {
         return new external_function_parameters([
             'questionid' => new external_value(PARAM_INT, 'question id'),
             'fileurl' => new external_value(PARAM_URL, 'Taskfile URL'),
             'message' => new external_value(PARAM_RAW, 'error message if any'),
         ]);
+    }
+
+    public static function get_junit_versions_returns() {
+        return new external_function_parameters (
+            array(
+                'junitversions' => new external_multiple_structure(
+                    new external_value(PARAM_TEXT, 'JUnit version',
+                    VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
+                    'Array of JUnit versions', VALUE_DEFAULT, array()),
+            )
+        );
     }
 }
