@@ -76,19 +76,17 @@ export const edit = (buttonid, context) => {
             fetch(response.fileurl, { method: 'GET' })
                 .then( response => response.blob())
                 .then( responseblob => {
-                    let text = unzipme(responseblob, function (text) {
-                        console.log('readycallback');
-                        // console.log(text);
+                    unzipme(responseblob, function (text) {
+                        // console.log('readycallback');
                         readXMLWithLock(text);
                     });
-                    console.log(text);
                 })
                 .catch( error => {
                     console.error('error:', error);
                     alert(error);
                 });
         } else {
-            const promise = fetch(response.fileurl, { method: 'GET' })
+            fetch(response.fileurl, { method: 'GET' })
                 .then( response => response.text())
                 .then( responsetext => {
                     console.log(responsetext);
@@ -100,10 +98,6 @@ export const edit = (buttonid, context) => {
                 });
             
         }
-
-        // return promise;
-
-
     }
 
     // Initialise.

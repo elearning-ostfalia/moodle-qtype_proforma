@@ -173,31 +173,10 @@ export function unzipme(blob, readyCallback) {
             if (filesRead === filesToBeRead) {
                 onFilesRead();
             }
-            /*
-            let readfi = new FileReader();
-            readfi.onload = function(e) {
-                unzipped_text = e.target.result;
-                // callback for task.xml
-                // todo: check for racing
-                // muss man zum Auswerten der task.xml bereits Daten haben aus den
-                // attached files? Falls ja, dann muss hier etwas geändert werden!!
-                if (debug_unzip) console.log('call readyCallback');
-                if (readyCallback)
-                    readyCallback(unzipped_text);
-
-                if (debug_unzip) console.log('set taskfile_read = true');
-                taskfile_read = true;
-                filesRead++;
-                if (debug_unzip) console.log('filesRead value: ' + filesRead + ' filesToBeRead=' + filesToBeRead);
-                if (filesRead === filesToBeRead) {
-                    onFilesRead(zipReader);
-                }
-
-            };
-            readfi.readAsText(unzippedBlob);*/
         },
         // callback for attached files
         function (unzippedBlob, entry /*, zipReader*/) {
+            console.log('attached file ' + entry.filename);
             // let readfi = new FileReader();
             // readfi.onload = function (e) {
                 // read file header and derive mime type

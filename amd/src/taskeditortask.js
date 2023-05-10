@@ -17,11 +17,11 @@
 
 import $ from 'jquery';
 import {TaskClass} from "./taskeditortaskdata";
-import {ModelSolutionFileReference} from "./filereflist";
 import {testIDs} from "./taskeditortest";
 import {FileWrapper} from "./taskeditorfile";
 import {setErrorMessage, clearErrorMessage} from "./taskeditorutil";
-
+import {TestWrapper } from "./taskeditortest";
+import {TestFileReference, FileReferenceList,ModelSolutionFileReference } from "./filereflist";
 
 
 
@@ -323,6 +323,64 @@ export function readAndDisplayXml(taskXml) {
         testIDs[item.id] = 1;
 
         let ui_test = undefined;
+        console.log(item.testtype);
+
+        let context = {
+
+        };
+/*        console.log('found ' + configItem.title);
+        ui_test = TestWrapper.create(item.id, item.title, configItem, item.weight);
+        task.readTestConfig(taskXml, item.id, configItem, ui_test.root);
+        ui_test.comment = item.comment;
+        ui_test.description = item.description;
+*/
+        switch(task.proglang.toLowerCase()) {
+            case 'python':
+                switch(item.testtype) {
+                    case 'unittest':
+                        context['testname'] = 'Python UnitTest';
+                        context['filenamelabel'] = 'Python unittest file(s)';
+                        console.log('create Python UnitTest');
+                        ui_test = TestWrapper.createFromTemplate(item.id,
+                            'qtype_proforma/taskeditor_pythonunit', context, true);
+                        break;
+                    default:
+                        console.error('unsupported test type: ' + item.testtype);
+                        break;
+                }
+                break;
+            case 'java':
+                switch(item.testtype) {
+                    case 'unittest':
+                        console.log('create JUnitTest');
+                        context['testname'] = 'JUnit Test';
+                        context['filenamelabel'] = 'Junit and other file(s)';
+                        ui_test = TestWrapper.createFromTemplate(item.id,
+                            'qtype_proforma/taskeditor_junit', context, true);
+                        break;
+                    case 'checkstyle':
+                        console.log('create Checkstyle');
+                        context['testname'] = 'Checkstyle Test';
+                        context['filenamelabel'] = 'Configuration file';
+                        ui_test = TestWrapper.createFromTemplate(item.id,
+                            'qtype_proforma/taskeditor_checkstyle', context, true);
+                        break;
+                    default:
+                        console.error('unsupported test type: ' + item.testtype);
+                        break;
+                }
+                break;
+            case 'c++':
+                console.error('unsupported test type: ' + item.testtype);
+                break;
+            case 'c':
+                console.error('unsupported test type: ' + item.testtype);
+                break;
+            default:
+                console.error('unsupported programming language: ' + task.proglang.toLowerCase());
+                break;
+        }
+/*
         $.each(config.testInfos, function(index, configItem) {
             if (!ui_test && item.testtype === configItem.testType) {
                 // Check if proglang is set in configured test. If true then compare
@@ -333,14 +391,6 @@ export function readAndDisplayXml(taskXml) {
                         return;
                     }
                 }
-                /*
-                if (configItem.getFramework() !== undefined) {
-                    if (!configItem.getFramework() == ) {
-                        // Language does not match
-                        return;
-                    }
-                }
-                */
                 console.log('found ' + configItem.title);
                 ui_test = TestWrapper.create(item.id, item.title, configItem, item.weight);
                 task.readTestConfig(taskXml, item.id, configItem, ui_test.root);
@@ -369,15 +419,20 @@ export function readAndDisplayXml(taskXml) {
                 return; // wrong test-type
             }
         }
+*/
 
-
-        let counter = 0;
-        item.filerefs.forEach(function(itemFileref, indexFileref) {
-            let filename = task.findFilenameForId(itemFileref.refid);
-            TestFileReference.getInstance().setFilenameOnCreation(ui_test.root, counter++, filename);
-        });
+        if (ui_test) {
+            let counter = 0;
+            item.filerefs.forEach(function(itemFileref, indexFileref) {
+                let filename = task.findFilenameForId(itemFileref.refid);
+                TestFileReference.getInstance().setFilenameOnCreation(ui_test.root, counter++, filename);
+            });
+        } else {
+            setErrorMessage("Test " + item.testtype + " not imported");
+            testIDs[item.id] = 0;
+        }
     }
-
+/*
     function createFileRestriction(item, index) {
         if (index > 0) {
             // create new row
@@ -387,7 +442,7 @@ export function readAndDisplayXml(taskXml) {
         SubmissionFileList.getInstance().setLastRowContent(item.restriction, !item.required,
             item.format===T_FILERESTRICTION_FORMAT.POSIX);
     }
-
+*/
     if (taskXml.length === 0) {
         setErrorMessage("Task.xml is empty.");
         return;
@@ -414,21 +469,26 @@ export function readAndDisplayXml(taskXml) {
 
  */
 
+    console.log(task.proglang);
     console.log(task.proglangVersion);
-    // $("#xml_programming-language").val(task.proglang);
-    /* TODO: Programmiersprache
-    if (task.proglangVersion)
-        $("#xml_programming-language").val(task.proglang + '/' + task.proglangVersion);
-    else
-        $("#xml_programming-language").val(task.proglang);
+    let proglangElement = $("#xml_programming-language");
+    proglangElement.val(task.proglang.toLowerCase());
+    proglangElement.trigger('change');
+    let versionElement = $("#xml_programming-language-" + task.proglang.toLowerCase());
+    if (!versionElement) {
+        console.error('cannot find element #xml_programming-language-' + task.proglang.toLowerCase());
+    } else {
+        versionElement.val(task.proglangVersion);
+        if (versionElement.val() !== task.proglangVersion) {
+            alert('check programming language version (' + task.proglangVersion + ')');
+        }
+    }
 
-    $("#xml_lang").val(task.lang);
+
+    /*
+
     codeskeleton.setValue(task.codeskeleton);
-
-    // check proglang
-    if ($("#xml_programming-language").val() === null) {
-        setErrorMessage("This combination of programming language and version is not supported.");
-    }*/
+*/
 
     task.files.forEach(createFile);
     task.tests.forEach(createTest);

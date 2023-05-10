@@ -119,6 +119,7 @@ export class TestWrapper {
         context['testid'] = testid;
         console.log("context");
         console.log(context);
+        let test = undefined;
 
         Templates.renderForPromise(template, context)
             .then(({html, js}) => {
@@ -128,7 +129,7 @@ export class TestWrapper {
                 var testroot = $("#test_" + testid);
 
                 // testroot.find(".xml_test_type").val(config.testType);
-                let test = TestWrapper.constructFromRoot(testroot);
+                test = TestWrapper.constructFromRoot(testroot);
 
                 FileReferenceList.init(null, null, TestFileReference, testroot);
                 testroot.find('.dynamic_table').show();
@@ -173,9 +174,9 @@ export class TestWrapper {
                             });
                     */
                 }
-                // return test;
             })
             .catch((error) => { displayException(error); });
+        return test;
     }
 
 //    static create(id, TestName, MoreText, TestType, WithFileRef) {

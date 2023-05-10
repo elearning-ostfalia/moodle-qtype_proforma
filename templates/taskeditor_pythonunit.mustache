@@ -17,7 +17,7 @@
 {{!
     @template qtype_proforma/taskeditor_file
 
-    The purpose of this template is to render a file in ProFormA task editor
+    The purpose of this template is to render a Junit test in ProFormA task editor
 
     Classes required for JS:
     * none
@@ -34,20 +34,9 @@
 }}
 
 
-{{! create table for referenced files }}
-
-<table class="dynamic_table xml_fileref_table" cellpadding="0">
-    <tbody>
-            {{> qtype_proforma/taskeditor_testfile_row }}
-    </tbody>
-</table>
+{{> qtype_proforma/taskeditor_test_start }}
 
 <p>
 </p>
 
-<p>
-    <label>{{#str}} weight, qtype_proforma {{/str}}<span class='red'>*</span>:</label>
-    <input class='tinyinput xml_test_weight' value=' weight'></input>
-</p>
-</div>
-
+{{> qtype_proforma/taskeditor_test_end }}
