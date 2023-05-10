@@ -19,6 +19,8 @@ import $ from 'jquery';
 import {setcounter, DEBUG_MODE, getExtension} from "./taskeditorutil";
 import {config} from "./taskeditorconfig";
 import {FileReferenceList} from "./filereflist";
+import Templates from 'core/templates';
+import Notification, {exception as displayException} from 'core/notification';
 
 export var fileStorages = [];
 export var fileIDs = {};
@@ -530,6 +532,97 @@ export class FileWrapper {
         });
     }
 
+    // TODO: Problem: Hier wird das html async erzeugt!
+    static createFromTemplate(id) {
+        let fileid = id;
+        if (!fileid) {
+            fileid = setcounter(fileIDs);    // adding a file for the test
+        } else {
+            // this means that it is created with a known id
+            // (from reading task.xml). So we nned to keep the fileIDs in sync!
+            fileIDs[fileid] = 1;
+        }
+        let context = {
+            'fileid': fileid
+        };
+
+        Templates.renderForPromise('qtype_proforma/taskeditor_file', context)
+            .then(({html, js}) => {
+                Templates.appendNodeContents('#proforma-files-section', html, js);
+                let ui_file = FileWrapper.constructFromId(fileid);
+                fileStorages[fileid] = new FileStorage(false, '', '', '');
+
+                // hide fields that exist only for technical reasons
+                ui_file.root.find(".xml_file_binary").hide(); // hide binary text
+                if (!DEBUG_MODE) {
+                    ui_file.root.find(".xml_file_id").hide();
+                    ui_file.root.find("label[for='xml_file_id']").hide();
+                    ui_file.root.find(".xml_file_class").hide();
+                    ui_file.root.find("label[for='xml_file_class']").hide();
+                }
+                console.log('add file callbacks');
+                // add callbacks:
+                ui_file.root.find('button').first().on("click",
+                    function (event) {
+                        event.preventDefault();
+                        FileWrapper.removeFile($(this));
+                    });
+                ui_file.root.find('.xml_file_filename').on("change",
+                    function (event) {
+                        event.preventDefault();
+                        FileWrapper.onFilenameChangedCallback(this);
+                    });
+                ui_file.root.find('.xml_file_type').on("change",
+                    function (event) {
+                        event.preventDefault();
+                        FileWrapper.onFiletypeChanged(this);
+                    });
+                ui_file.root.find('.xml_file_edit').on("click",
+                    function (event) {
+                        event.preventDefault();
+                        FileWrapper.showEditor($(this));
+                    });
+                ui_file.root.find('.xml_file_editor_close').on("click",
+                    function (event) {
+                        event.preventDefault();
+                        FileWrapper.hideEditor($(this));
+                    });
+
+                // enable drag & drop
+                ui_file.root.on({
+                    dragover: function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        //e.dataTransfer.dropEffect = 'copy';
+                    },
+                    dragenter: function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    },
+                    drop: function (e) {
+                        if (e.originalEvent.dataTransfer) {
+                            if (e.originalEvent.dataTransfer.files.length) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                /*UPLOAD FILES HERE*/
+                                FileWrapper.uploadFileWhenDropped(e.originalEvent.dataTransfer.files, e.currentTarget);
+                            }
+                        }
+                    }
+                });
+
+
+                FileWrapper.addCodemirrorElement(fileid);
+
+                FileWrapper.hideEditor(undefined, ui_file);
+                return ui_file;
+            })
+            .catch((error) => {
+                displayException(error);
+            });
+    }
+
+
     static create(id) {
         let fileid = id;
         if (!fileid) {
@@ -539,6 +632,7 @@ export class FileWrapper {
             // (from reading task.xml). So we nned to keep the fileIDs in sync!
             fileIDs[fileid] = 1;
         }
+
         $("#proforma-files-section").append("<div "+
             "id='file_" + fileid + "'" +
             "class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'>"+

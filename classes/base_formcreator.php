@@ -755,6 +755,38 @@ abstract class base_form_creator {
         get_string('penaltyforeachincorrecttry', 'question'), $penaltyoptions);
         $mform->addHelpButton('penalty', 'penaltyforeachincorrecttry', 'question');
         $mform->setDefault('penalty', get_config('qtype_proforma', 'defaultpenalty'));
+
+        $context =  (object) [
+            "proglang" => [
+                [
+                    "language" => "Java",
+                    "value" => "java",
+                    "version" => ["1.8", "11"]
+                ],
+                [
+                    "language" => "Python",
+                    "value" => "python",
+                    "version" => ["3", "3.11"]
+                ],
+                [
+                    "language" => "C++",
+                    "value" => "cpp",
+                    "version" => []
+                ]
+            ],
+            "tests" => '',
+            "files" => '',
+        ];
+
+        // Add task edit button.
+        $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
+        // Add js.
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton', $context));
+
+        global $OUTPUT;
+        $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
+        $mform->addElement('html', $taskeditor);
     }
 
     public function add_feedback_options($question, $questioneditform) {

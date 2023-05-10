@@ -332,25 +332,25 @@ export function readAndDisplayXml(taskXml) {
         };
 
         console.log('iterate through all configured test templates, look for ' + item.testtype);
+        let found = false;
         $.each(config.testInfos, function(index, configItem) {
-            console.log(configItem);
+            // console.log(configItem);
             if (!ui_test && item.testtype === configItem.testType) {
                 // Check if proglang is set in configured test. If true then compare
                 // Check Programming language
                 if (configItem.proglang !== undefined) {
                     if (!configItem.proglang.includes(task.proglang)) {
                         // Language does not match
-                        console.log('language does not match');
+                        // console.log('language does not match');
                         return;
                     }
                 }
                 console.log('found ' + configItem.title);
                 context['filenamelabel'] = configItem.fileRefLabel;
                 task.readTestConfig(taskXml, item.id, configItem, context);
-                console.log('context =>');
-                console.log(context);
                 ui_test = TestWrapper.createFromTemplate(item.id,
-                    configItem.getMustacheTemplate(), context, true);
+                    configItem.getMustacheTemplate(), context, true, item, task);
+                found = true;
             }
         });
 
@@ -370,13 +370,7 @@ export function readAndDisplayXml(taskXml) {
         }
 */
 
-        if (ui_test) {
-            let counter = 0;
-            item.filerefs.forEach(function(itemFileref, indexFileref) {
-                let filename = task.findFilenameForId(itemFileref.refid);
-                TestFileReference.getInstance().setFilenameOnCreation(ui_test.root, counter++, filename);
-            });
-        } else {
+        if (!found) {
             setErrorMessage("Test " + item.testtype + " not imported");
             testIDs[item.id] = 0;
         }

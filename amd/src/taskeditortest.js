@@ -27,7 +27,7 @@
 
 import {TestFileReference, FileReferenceList } from "./filereflist";
 import {CustomTest, setcounter, DEBUG_MODE, getDescriptionHtmlString} from "./taskeditorutil";
-import {testTypes} from "./taskeditorhelper";
+import {TaskClass} from "./taskeditortaskdata";
 import Notification, {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import {config} from "./taskeditorconfig";
@@ -111,8 +111,9 @@ export class TestWrapper {
      * @param template mustache template name
      * @param context context for mustache template
      * @param withFileRef with file references
+     * @param item object to create from
      */
-    static createFromTemplate(id, template, context, withFileRef) {
+    static createFromTemplate(id, template, context, withFileRef, item, task) {
         let testid = id;
         if (!testid)
             testid = setcounter(testIDs);
@@ -174,88 +175,20 @@ export class TestWrapper {
                             });
                     */
                 }
+                if (item) {
+                    console.log('update filelist');
+                    let counter = 0;
+                    item.filerefs.forEach(function(itemFileref, indexFileref) {
+                        console.log('id ' + itemFileref.refid);
+                        let filename = task.findFilenameForId(itemFileref.refid);
+                        console.log('filename ' + filename);
+                        TestFileReference.getInstance().setFilenameOnCreation(test.root, counter++, filename);
+                    });
+                }
             })
             .catch((error) => { displayException(error); });
         return test;
     }
-
-//    static create(id, TestName, MoreText, TestType, WithFileRef) {
-    // create a new test HTML form element
-    /*
-    static create(id, TestName, config, weight) {
-        let theWeight =  config.gradingWeight;
-        if (typeof weight !== 'undefined')
-            theWeight = weight;
-
-        let testid = id;
-        if (!testid)
-            testid = setcounter(testIDs);
-
-        TestFileReference.getInstance().createTableString('TestFileReference', config.fileRefLabel,
-            config.manadatoryFile, 'xml_fileref_table');
-        $("#proforma-tests-section").append("<div "+
-            "id='test_" + testid + "'" +
-            "class='ui-widget ui-widget-content ui-corner-all xml_test'>"+
-            "<h3 class='ui-widget-header'>" + TestName + " (Test #"+testid+")<span "+
-            "class='rightButton'><button>x</button></span></h3>"+
-
-            "<p><label for='xml_test_id'>ID<span class='red'>*</span>: </label>"+
-            "<input class='tinyinput xml_test_id' value='" + testid + "' readonly/>"+
-            //    " <label for='xml_test_validity'>Validity: </label>"+
-            //    "<input class='shortinput xml_test_validity'/>"+
-            "<p><label for='xml_test_type'>Type: </label>"+
-            "<select class='xml_test_type'>"+ testTypes + "</select>"+
-
-            "</p>" +
-
-            "<p><label for='xml_test_title'>Title<span class='red'>*</span>: </label>"+
-            "<input class='maxinput xml_test_title' value='"+ TestName +"'/>" +
-            "</p>"+
-            getDescriptionHtmlString('', '') +
-
-            config.getExtraHtmlField() +
-            "<p>" + TestFileReference.getInstance().getTableString() + "</p>" +
-
-            "<p><label>Grading Weight<span class='red'>*</span>:</label>"+
-            "<input class='tinyinput xml_test_weight' value='"+ theWeight +"'/>" +
-            "</p>"+
-
-            "</div>");
-
-        // hide fields that exist only for technical reasons
-        var testroot = $("#test_" + testid);
-        // var testroot = $(".xml_test_id[value='" + testid + "']").parent().parent();
-        testroot.find(".xml_test_type").val(config.testType);
-        let test = TestWrapper.constructFromRoot(testroot);
-        console.log(testroot);
-        console.log(test);
-
-        FileReferenceList.init(null, null, TestFileReference, testroot);
-        FileReferenceList.addCallbacks($(testroot)[0]);
-        testroot.find('button').first().on("click",
-            function(event) {
-                event.preventDefault();
-                TestWrapper.delete($(this));
-            });
-
-        // TestFileReference.getInstance().init(testroot, DEBUG_MODE);
-
-        if (!DEBUG_MODE) {
-            testroot.find(".xml_test_type").hide();
-            testroot.find("label[for='xml_test_type']").hide();
-            testroot.find(".xml_test_id").hide();
-            testroot.find("label[for='xml_test_id']").hide();
-        }
-        if (!config.withFileRef) {
-            testroot.find("table").hide();
-            testroot.find(".drop_zone").hide();
-        }
-
-        return test;
-    };
-
-     */
-
 }
 
 

@@ -110,7 +110,11 @@ export class CustomTest {
     constructor(title, testType, template, proglang) {
         this.title = title; // title in html output
         this.testType = testType; // test type in XML
-        this.mustacheTemplate = template; // html extra input elements
+        if (template) {
+            this.mustacheTemplate = template; // html extra input elements
+        } else {
+            this.mustacheTemplate = 'qtype_proforma/taskeditor_test';
+        }
         this.proglang = proglang; // array of programming languages that the test can be used with
 
         this.withFileRef = true; // default: with test script(s)

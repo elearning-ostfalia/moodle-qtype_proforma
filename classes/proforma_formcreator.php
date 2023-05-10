@@ -325,58 +325,7 @@ class proforma_form_creator extends base_form_creator {
         // Add js.
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton'));
-
-        $context =  (object) [
-            "proglang" => [
-                [
-                    "language" => "Java",
-                    "value" => "java",
-                    "version" => ["1.8", "11"]
-                ],
-                [
-                    "language" => "Python",
-                    "value" => "python",
-                    "version" => ["3", "3.11"]
-                ],
-                [
-                    "language" => "C++",
-                    "value" => "cpp",
-                    "version" => []
-                ]
-            ],
-            "tests" => '',
-            "files" => '',
-        ];
-
-
-
-        // Add task edit button.
-        $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
-        // Add js.
-        global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton', $context));
-
-
-        global $OUTPUT;
-
-/*
-        $context =  (object) [
-            "testid" => "2",
-            "testtitle" => "Testname 2",
-        ];
-//        $junit2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
-
-        $context =  (object) [
-            "fileid" => "2223",
-            "filename" => "Filename 2",
-        ];
-        $file2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_file', $context);
-*/
-
-        $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
-        $mform->addElement('html', $taskeditor);
     }
-
 
     /**
      * Modify respeatoptions
@@ -391,7 +340,6 @@ class proforma_form_creator extends base_form_creator {
         // Hide weight for case of all-or-nothing.
         $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
     }
-
 
     /**
      * Modify repeatarray in add_tests.

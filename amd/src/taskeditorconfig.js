@@ -108,21 +108,20 @@ export const config = (function(testConfigNode) {
 
 
     // Tests objects
-/*
-    class CCompilerTest extends CustomTest {
+/*    class CCompilerTest extends CustomTest {
         constructor() {
-            super("C Compiler Test", "c-compilation", '');
-            this.gradingWeight = weightCompilation;
-            this.manadatoryFile = false;
-        }
-    }
-    class JavaCompilerTest extends CustomTest {
-        constructor() {
-            super("Compiler Test", "java-compilation", '');
+            super("C Compiler Test", "c-compilation");
             this.gradingWeight = weightCompilation;
             this.manadatoryFile = false;
         }
     }*/
+    class JavaCompilerTest extends CustomTest {
+        constructor() {
+            super("Compiler Test", "java-compilation");
+            this.gradingWeight = weightCompilation;
+            this.manadatoryFile = false;
+        }
+    }
 
     class JUnitTest extends CustomTest  {
         static DefaultTitle = "JUnit Test";
@@ -163,7 +162,7 @@ export const config = (function(testConfigNode) {
             unittestNode.setAttribute("version", $(root).find(".xml_ju_version").val());
         }
     }
-/*
+
     class GeneralUnitTest extends CustomTest  {
         withRunCommand = true;
         constructor(title, proglang, framework, withRunCommand = true) {
@@ -172,7 +171,7 @@ export const config = (function(testConfigNode) {
             this.framework = framework;
             this.withRunCommand = withRunCommand;
         }
-
+/*
         getExtraHtmlField() {
             let output = '';
             if (this.withRunCommand) {
@@ -189,8 +188,8 @@ export const config = (function(testConfigNode) {
                 "</select>"+
                 "</p>";
         }
-
-        onReadXml(test, xmlReader, testConfigNode, testroot) {
+*/
+        onReadXml(test, xmlReader, testConfigNode, context) {
             let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
             if (!unitNode)
                 throw new Error('element unit:unittest not found in unittest or unittest namespace invalid');
@@ -221,11 +220,12 @@ export const config = (function(testConfigNode) {
                     this.proglang = ['c'];
                     break;
             }
-            $(testroot).find(".xml_u_version").val(xmlReader.readSingleText("@version", unitNode));
+            // $(testroot).find(".xml_u_version").val(xmlReader.readSingleText("@version", unitNode));
+            context['framework_version'] = xmlReader.readSingleText("@version", unitNode);
             // Update framework value
-            $(testroot).find(".xml_u_framew").html("<option selected='selected' value='" + this.framework +
-                "'>" + this.framework + "</option>");
-            $(testroot).find(".xml_u_framew").val(this.framework);
+            // $(testroot).find(".xml_u_framew").html("<option selected='selected' value='" + this.framework +
+            //     "'>" + this.framework + "</option>");
+            context['framework'] = this.framework;
         }
 
         onWriteXml(test, uiElement, testConfigNode, xmlDoc, xmlWriter, task) {
@@ -261,7 +261,7 @@ export const config = (function(testConfigNode) {
             this.fileRefLabel = 'Python unittest file(s)';
 
         }
-    }*/
+    }
 
     class CheckstyleTest extends CustomTest {
         constructor() {
@@ -303,14 +303,13 @@ export const config = (function(testConfigNode) {
 
         }
     }
-/*
+
     class PythonDocTest extends CustomTest {
         constructor() {
-            super("Python DocTest", "python-doctest", '');
+            super("Python DocTest", "python-doctest");
             // this.alternativeTesttypes = ['python'];
         }
     }
-*/
     /*
     class setlXTest extends CustomTest {
         constructor() {
@@ -337,19 +336,16 @@ export const config = (function(testConfigNode) {
     }
 
 
-    const testCComp       = new CCompilerTest();
-    const testJavaComp    = new JavaCompilerTest();
     */
+    // const testCComp       = new CCompilerTest();
+    const testJavaComp    = new JavaCompilerTest();
     const testJavaJUnit   = new JUnitTest();
-    /*
     const testCUnit       = new CUnitTest();
-    const testGoogleTest  = new GoogleTest();*/
+    const testGoogleTest  = new GoogleTest();
     const testCheckStyle  = new CheckstyleTest();
-/*    const testPython      = new PythonUnittest();
+    const testPython      = new PythonUnittest();
     const testPythonDoctest = new PythonDocTest();
-    //const testDgSetup     = new DgSetupTest(DgSetupTest);
-    //const testDGTester    = new DgTesterTest(DgTesterTest);
-    const testSetlX       = new setlXTest(setlXTest);
+/*   const testSetlX       = new setlXTest(setlXTest);
     const testSetlXSyntax = new setlXSyntaxTest();
 
     // -------------------------------
@@ -374,12 +370,13 @@ export const config = (function(testConfigNode) {
     // beachten, das bei gleichen XML-Testtypen derjenige zuerst eingetragen wird, der ein Einlesen einer Datei erzeugt werden soll.
 */
     const testInfos = [
-//        testJavaComp,
+        testJavaComp,
         testJavaJUnit,
-/*        testGoogleTest,
+        testGoogleTest,
         testCUnit,
-        testPython, testPythonDoctest,
-        testSetlX, testSetlXSyntax,
+        testPython,
+        testPythonDoctest,
+/*        testSetlX, testSetlXSyntax,
         testCComp,*/
         testCheckStyle
     ];

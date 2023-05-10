@@ -202,7 +202,7 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
                 'qtype_proforma/taskeditor_junit', context, true);
         }
 
-        // Add Junit testcase
+        // Add Checkstyle testcase
         document.querySelector('#addCheckStyleTest').onclick = function (e) {
             e.preventDefault();
             let context = {
