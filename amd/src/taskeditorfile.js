@@ -365,11 +365,13 @@ export class FileWrapper {
         readAndCreateFileData(filenew, fileId);
     }
 */
+
+    /*
     static onReadAndCreateFile(inputbutton) {             // read a file and create a new file item
         let filenew = inputbutton.files[0];
         let ui_file = FileWrapper.create();
         readAndCreateFileData(filenew, ui_file.id);
-    }
+    }*/
 
 
     static removeFile(button) {                                       // ask before removing
@@ -546,7 +548,7 @@ export class FileWrapper {
             'fileid': fileid
         };
 
-        Templates.renderForPromise('qtype_proforma/taskeditor_file', context)
+        return Templates.renderForPromise('qtype_proforma/taskeditor_file', context)
             .then(({html, js}) => {
                 Templates.appendNodeContents('#proforma-files-section', html, js);
                 let ui_file = FileWrapper.constructFromId(fileid);

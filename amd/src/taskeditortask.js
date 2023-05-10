@@ -310,14 +310,24 @@ export function readAndDisplayXml(taskXml) {
     }
 
     function createFile(item, index) {
-        let ui_file = FileWrapper.create(item.id);
-        //let ui_file = FileWrapper.constructFromId(item.id);
+        // let ui_file = FileWrapper.create(item.id);
+        return FileWrapper.createFromTemplate(item.id)
+            .then(ui_file => {
+                ui_file.filename = item.filename;
+                ui_file.class = item.fileclass;
+                ui_file.type = item.filetype;
+                ui_file.comment = item.comment;
+                if (ui_file.type === 'embedded')
+                    ui_file.text = item.content;
+                return ui_file;
+            });
+/*        let ui_file = FileWrapper.createFromTemplate(item.id);
         ui_file.filename = item.filename;
         ui_file.class = item.fileclass;
         ui_file.type = item.filetype;
         ui_file.comment = item.comment;
         if (ui_file.type === 'embedded')
-            ui_file.text = item.content;
+            ui_file.text = item.content;*/
     }
 
     function createTest(item, index) {
@@ -433,8 +443,17 @@ export function readAndDisplayXml(taskXml) {
     codeskeleton.setValue(task.codeskeleton);
 */
 
-    task.files.forEach(createFile);
-    task.tests.forEach(createTest);
+    let promises = [];
+    task.files.forEach(file => {
+        promises.push(createFile(file));
+    });
+    Promise.all(promises)
+        .then(() => {
+            console.log('all files are created');
+            task.tests.forEach(createTest);
+            // fill filename lists in empty file refences
+            FileReferenceList.updateAllFilenameLists();
+        });
     // task.modelsolutions.forEach(createMs);
     // task.fileRestrictions.forEach(createFileRestriction);
 
@@ -480,5 +499,5 @@ export function readAndDisplayXml(taskXml) {
      */
 
     // fill filename lists in empty file refences
-    FileReferenceList.updateAllFilenameLists();
+    // FileReferenceList.updateAllFilenameLists();
 }
