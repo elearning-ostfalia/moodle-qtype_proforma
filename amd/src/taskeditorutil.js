@@ -15,7 +15,6 @@
  * Karin Borm, Dr. Uta Priss
  */
 
-import {config} from "./taskeditorconfig";
 
 export const DEBUG_MODE       = false;
 export const TEST_MODE        = false;
@@ -68,17 +67,7 @@ export function getExtension(filename) {
     return filename.split('.').pop().toLowerCase();
 }
 
-// convert to mimetype that can be directely handeled by codemirror
-export function getMimeType(mimetype, filename) {
-    const extension = getExtension(filename);
-    switch (extension.toLowerCase()) {
-        // case 'log':
-        // case 'txt':
-        case 'xml':  return 'application/xml';
-        case 'html':  return 'text/html';
-        default: return config.getMimetype(mimetype, extension);
-    }
-}
+
 
 //////////////////////////////////////////////////////////////////////////////
 /* Each newly exported task needs its own UUID.
@@ -118,10 +107,10 @@ export function setcounter(temphash) {
 
 export class CustomTest {
 
-    constructor(title, testType, extraFields, proglang) {
+    constructor(title, testType, template, proglang) {
         this.title = title; // title in html output
         this.testType = testType; // test type in XML
-        this.htmlExtraFields = extraFields; // html extra input elements
+        this.mustacheTemplate = template; // html extra input elements
         this.proglang = proglang; // array of programming languages that the test can be used with
 
         this.withFileRef = true; // default: with test script(s)
@@ -140,10 +129,10 @@ export class CustomTest {
 
     // override
     onCreate(testId) {}
-    onReadXml(test, xmlReader, testConfigNode, testroot) {}
+    onReadXml(test, xmlReader, testConfigNode, context) {}
     onWriteXml(test, uiElement, testConfigNode, xmlDoc, xmlWriter) {}
     getFramework() {return undefined;}
-    getExtraHtmlField() { return this.htmlExtraFields; }
+    getMustacheTemplate() { return this.mustacheTemplate; }
 }
 
 

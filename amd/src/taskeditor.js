@@ -195,7 +195,7 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
         document.querySelector('#addJUnitTest').onclick = function (e) {
             e.preventDefault();
             let context = {
-                'testname' : 'JUnit Test',
+                'testtitle' : 'JUnit Test',
                 'filenamelabel' : 'Junit and other file(s)'
             };
             TestWrapper.createFromTemplate(null,
@@ -206,7 +206,7 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
         document.querySelector('#addCheckStyleTest').onclick = function (e) {
             e.preventDefault();
             let context = {
-                'testname' : 'Checkstyle Test',
+                'testtitle' : 'Checkstyle Test',
                 'filenamelabel' : 'Configuration file'
             };
             TestWrapper.createFromTemplate(null,

@@ -50,3 +50,11 @@ export const getCheckstyleVersions = (
     args: {
     },
 }])[0];
+
+// TODO
+export const getJavaVersions = (
+) => Ajax.call([{
+    methodname: 'qtype_proforma_get_java_versions',
+    args: {
+    },
+}])[0];

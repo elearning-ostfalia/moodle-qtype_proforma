@@ -15,7 +15,7 @@
  * Karin Borm (Dr. Uta Priss)
  */
 
-import {CustomTest} from "./taskeditorutil";
+import {CustomTest, getExtension} from "./taskeditorutil";
 import {javaParser} from "./taskeditorjava";
 import {readXmlActive} from "./taskeditorhelper";
 
@@ -97,7 +97,7 @@ export const config = (function(testConfigNode) {
     // TESTS
     // -------------------------
 
-    const JUnit_Default_Title = "JUnit Test";
+
     const CUnit_Default_Title = "CUnit Test";
     const GoogleTest_Default_Title = "Google Test";
     const PythonUnittest_Default_Title = "Python Unittest";
@@ -122,47 +122,34 @@ export const config = (function(testConfigNode) {
             this.gradingWeight = weightCompilation;
             this.manadatoryFile = false;
         }
-    }
+    }*/
 
     class JUnitTest extends CustomTest  {
+        static DefaultTitle = "JUnit Test";
+
         constructor() {
-            super(JUnit_Default_Title, "unittest", "", ['java']);
+            super(JUnitTest.DefaultTitle, "unittest",
+                "qtype_proforma/taskeditor_junit", ['java']);
             this.fileRefLabel = 'Junit and other file(s)';
         }
-
-        getExtraHtmlField() {
-            return "<p><label for='xml_ju_mainclass'>Entry Point<span class='red'>*</span>: </label>"+
-                "<input class='mediuminput xml_ju_mainclass' " +
-                "title='usually name of class containing main method, including full package path (e.g. de.ostfalia.zell.editor)'/>"+
-                " <label for='xml_ju_framew'>Framework<span class='red'>*</span>: </label>"+
-                "<select class='xml_ju_framew'><option selected='selected' value='JUnit'>JUnit</option></select>"+
-                " <label for='xml_ju_version'>Version<span class='red'>*</span>: </label>"+
-                "<select class='xml_ju_version'>" +
-                "<option value='5'>5</option>"+
-                "<option selected='selected' value='4.12'>4.12</option>" +
-                "<option value='4.12-gruendel'>4.12-gruendel</option>" +
-                "<option value='4.10'>4.10</option>"+
-                "<option value='3'>3</option>" +
-                "</select></p>";
-        }
-        onReadXml(test, xmlReader, testConfigNode, testroot) {
+        onReadXml(test, xmlReader, testConfigNode, context) {
             let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
             if (!unitNode)
                 throw new Error('element unit:unittest not found in unittest or unittest namespace invalid');
 
             switch (unitNode.namespaceURI) {
                 case unittestns_old:
-                    $(testroot).find(".xml_ju_mainclass").val(xmlReader.readSingleText("unit:main-class", unitNode));
+                    context['entrypoint'] = xmlReader.readSingleText("unit:main-class", unitNode);
                     break;
                 case unittestns_new:
-                    $(testroot).find(".xml_ju_mainclass").val(xmlReader.readSingleText("unit:entry-point", unitNode));
+                    context['entrypoint'] = xmlReader.readSingleText("unit:entry-point", unitNode);
                     break;
                 default:
                     throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in JUnitTest');
             }
 
-            $(testroot).find(".xml_ju_version").val(xmlReader.readSingleText("@version", unitNode));
-            $(testroot).find(".xml_ju_framew").val(xmlReader.readSingleText("@framework", unitNode));
+            context['junit_version'] = xmlReader.readSingleText("@version", unitNode);
+            context['junit_framework'] = xmlReader.readSingleText("@framework", unitNode);
         }
         onWriteXml(test, uiElement, testConfigNode, xmlDoc, xmlWriter, task) {
             let root = uiElement.root;
@@ -176,7 +163,7 @@ export const config = (function(testConfigNode) {
             unittestNode.setAttribute("version", $(root).find(".xml_ju_version").val());
         }
     }
-
+/*
     class GeneralUnitTest extends CustomTest  {
         withRunCommand = true;
         constructor(title, proglang, framework, withRunCommand = true) {
@@ -274,42 +261,29 @@ export const config = (function(testConfigNode) {
             this.fileRefLabel = 'Python unittest file(s)';
 
         }
-    }
+    }*/
 
     class CheckstyleTest extends CustomTest {
         constructor() {
-            super("CheckStyle Test", "java-checkstyle", "");
+            super("CheckStyle Test", "java-checkstyle",
+                "qtype_proforma/taskeditor_checkstyle");
             this.gradingWeight = weightStaticTest;
             this.fileRefLabel = 'Configuration File';
         }
 
-        getExtraHtmlField() {
-            return "<p><label for='xml_pr_CS_version'>Version<span class='red'>*</span>: </label>"+
-                "<select class='xml_pr_CS_version'>" +
-                "<option value='5.4'>5.4</option>" +
-                "<option value='6.2'>6.2</option>" +
-                "<option value='7.6'>7.6</option>" +
-                "<option value='8.23'>8.23</option>" +
-                "<option value='8.29'>8.29</option>" +
-                "<option selected='selected' value='10.1'>10.1</option>" +
-                "</select>"+
-                " <label for='xml_pr_CS_warnings'> Maximum warnings allowed<span class='red'>*</span>: </label>"+
-                "<input class='tinyinput xml_pr_CS_warnings' value='4'/></p>";
-        }
-
-        onReadXml(test, xmlReader, testConfigNode, testroot) {
+        onReadXml(test, xmlReader, testConfigNode, context) {
             let csNode = xmlReader.readSingleNode("cs:java-checkstyle", testConfigNode);
             if (!csNode) {
                 // task version 1.0.1
                 // todo: check version
                 let praktomatNode = xmlReader.readSingleNode("dns:test-meta-data", testConfigNode);
-                $(testroot).find(".xml_pr_CS_warnings").val(xmlReader.readSingleText("praktomat:max-checkstyle-warnings", praktomatNode));
-                $(testroot).find(".xml_pr_CS_version").val(xmlReader.readSingleText("praktomat:version", testConfigNode));
+                context['warnings'] = xmlReader.readSingleText("praktomat:max-checkstyle-warnings", praktomatNode);
+                context['cs_version'] = xmlReader.readSingleText("praktomat:version", testConfigNode);
             } else {
                 switch (csNode.namespaceURI) {
                     case checkstylens:
-                        $(testroot).find(".xml_pr_CS_version").val(xmlReader.readSingleText("@version", csNode));
-                        $(testroot).find(".xml_pr_CS_warnings").val(xmlReader.readSingleText("cs:max-checkstyle-warnings", csNode));
+                        context['cs_version'] = xmlReader.readSingleText("@version", csNode);
+                        context['warnings'] = xmlReader.readSingleText("cs:max-checkstyle-warnings", csNode);
                         break;
                     default:
                         throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in JUnitTest');
@@ -329,7 +303,7 @@ export const config = (function(testConfigNode) {
 
         }
     }
-
+/*
     class PythonDocTest extends CustomTest {
         constructor() {
             super("Python DocTest", "python-doctest", '');
@@ -365,11 +339,13 @@ export const config = (function(testConfigNode) {
 
     const testCComp       = new CCompilerTest();
     const testJavaComp    = new JavaCompilerTest();
+    */
     const testJavaJUnit   = new JUnitTest();
+    /*
     const testCUnit       = new CUnitTest();
-    const testGoogleTest  = new GoogleTest();
+    const testGoogleTest  = new GoogleTest();*/
     const testCheckStyle  = new CheckstyleTest();
-    const testPython      = new PythonUnittest();
+/*    const testPython      = new PythonUnittest();
     const testPythonDoctest = new PythonDocTest();
     //const testDgSetup     = new DgSetupTest(DgSetupTest);
     //const testDGTester    = new DgTesterTest(DgTesterTest);
@@ -396,17 +372,18 @@ export const config = (function(testConfigNode) {
     // -------------------------------
     // Reihenfolge: in der Reihenfolge, in der die Test in testInfos angelegt werden, werden auch die Testbuttons erzeugt!
     // beachten, das bei gleichen XML-Testtypen derjenige zuerst eingetragen wird, der ein Einlesen einer Datei erzeugt werden soll.
+*/
     const testInfos = [
-        testJavaComp, testJavaJUnit,
-        testGoogleTest,
+//        testJavaComp,
+        testJavaJUnit,
+/*        testGoogleTest,
         testCUnit,
         testPython, testPythonDoctest,
         testSetlX, testSetlXSyntax,
-        testCComp,
-        testCheckStyle,
-        //testDgSetup, testDGTester
+        testCComp,*/
+        testCheckStyle
     ];
-
+/*
     // list of XML schema files that shall be used for validation
     const xsds = [
         // "proforma-test.xsd",
@@ -424,7 +401,9 @@ export const config = (function(testConfigNode) {
     }
 */
 
-    function getMimetype(mimetype, extension) {
+    // convert to mimetype that can be directely handeled by codemirror
+    function getMimeType(mimetype, filename) {
+        const extension = filename.split('.').pop().toLowerCase();
         switch (extension) {
             case 'h':    return 'text/x-chdr';
             case 'c':    return 'text/x-csrc';
@@ -432,6 +411,8 @@ export const config = (function(testConfigNode) {
             case 'java': return 'text/x-java';
             case 'py':   return 'text/x-python';
             case 'stlx': return 'text/x-setlx'; // no actual mode availble
+            case 'xml':  return 'application/xml';
+            case 'html':  return 'text/html';
             default: return mimetype;
         }
     }
@@ -484,7 +465,7 @@ export const config = (function(testConfigNode) {
             if (ui_title.length === 1) {
                 $.each(ui_title, function(index, element) {
                     let currentTitle = $(element).val();
-                    if (!readXmlActive && currentTitle === JUnit_Default_Title)
+                    if (!readXmlActive && currentTitle === JUnitTest.DefaultTitle)
                         $(element).val("Junit Test " + javaParser.getPureClassnameFromFilename(newFilename)).change();
                 });
             }
@@ -500,17 +481,17 @@ export const config = (function(testConfigNode) {
     return {
         // methods
 //        createFurtherUiElements: createFurtherUiElements,
-        getMimetype: getMimetype,
+        getMimeType: getMimeType,
         isBinaryFile: isBinaryFile,
         handleFilenameChangeInTest: handleFilenameChangeInTest,
+        testInfos: testInfos,
+        resolveNamespace: resolveNamespace,
 /*        writeXmlExtra: writeXmlExtra,
         onProglangChanged: onProglangChanged,
 
         //writeNamespaces: writeNamespaces,
-        resolveNamespace: resolveNamespace,
         // data
         proglangInfos: proglangInfos,
-        testInfos: testInfos,
         xsds: xsds,
         // switches, constants...*/
         useCodemirror: false,         // setting this to false turns Codemirror off

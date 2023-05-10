@@ -61,5 +61,15 @@ $functions = array(
         // 'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
     ),
+
+    'qtype_proforma_get_java_versions' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
+        'methodname'   => 'get_java_versions',
+        'classpath'    => '',
+        'description'  => 'read Java versions from Moodle',
+        'type'         => 'read',
+        // 'capabilities' => 'moodle/question:editmine',
+        'ajax'         => true,
+    ),
 );
 

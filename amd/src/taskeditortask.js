@@ -21,6 +21,7 @@ import {testIDs} from "./taskeditortest";
 import {FileWrapper} from "./taskeditorfile";
 import {setErrorMessage, clearErrorMessage} from "./taskeditorutil";
 import {TestWrapper } from "./taskeditortest";
+import {config } from "./taskeditorconfig";
 import {TestFileReference, FileReferenceList,ModelSolutionFileReference } from "./filereflist";
 
 
@@ -323,81 +324,37 @@ export function readAndDisplayXml(taskXml) {
         testIDs[item.id] = 1;
 
         let ui_test = undefined;
-        console.log(item.testtype);
-
         let context = {
-
+            'testtitle': item.title,
+            'weight': item.weight,
+            'description': item.description,
+            'comment': item.comment,
         };
-/*        console.log('found ' + configItem.title);
-        ui_test = TestWrapper.create(item.id, item.title, configItem, item.weight);
-        task.readTestConfig(taskXml, item.id, configItem, ui_test.root);
-        ui_test.comment = item.comment;
-        ui_test.description = item.description;
-*/
-        switch(task.proglang.toLowerCase()) {
-            case 'python':
-                switch(item.testtype) {
-                    case 'unittest':
-                        context['testname'] = 'Python UnitTest';
-                        context['filenamelabel'] = 'Python unittest file(s)';
-                        console.log('create Python UnitTest');
-                        ui_test = TestWrapper.createFromTemplate(item.id,
-                            'qtype_proforma/taskeditor_pythonunit', context, true);
-                        break;
-                    default:
-                        console.error('unsupported test type: ' + item.testtype);
-                        break;
-                }
-                break;
-            case 'java':
-                switch(item.testtype) {
-                    case 'unittest':
-                        console.log('create JUnitTest');
-                        context['testname'] = 'JUnit Test';
-                        context['filenamelabel'] = 'Junit and other file(s)';
-                        ui_test = TestWrapper.createFromTemplate(item.id,
-                            'qtype_proforma/taskeditor_junit', context, true);
-                        break;
-                    case 'checkstyle':
-                        console.log('create Checkstyle');
-                        context['testname'] = 'Checkstyle Test';
-                        context['filenamelabel'] = 'Configuration file';
-                        ui_test = TestWrapper.createFromTemplate(item.id,
-                            'qtype_proforma/taskeditor_checkstyle', context, true);
-                        break;
-                    default:
-                        console.error('unsupported test type: ' + item.testtype);
-                        break;
-                }
-                break;
-            case 'c++':
-                console.error('unsupported test type: ' + item.testtype);
-                break;
-            case 'c':
-                console.error('unsupported test type: ' + item.testtype);
-                break;
-            default:
-                console.error('unsupported programming language: ' + task.proglang.toLowerCase());
-                break;
-        }
-/*
+
+        console.log('iterate through all configured test templates, look for ' + item.testtype);
         $.each(config.testInfos, function(index, configItem) {
+            console.log(configItem);
             if (!ui_test && item.testtype === configItem.testType) {
                 // Check if proglang is set in configured test. If true then compare
                 // Check Programming language
                 if (configItem.proglang !== undefined) {
                     if (!configItem.proglang.includes(task.proglang)) {
                         // Language does not match
+                        console.log('language does not match');
                         return;
                     }
                 }
                 console.log('found ' + configItem.title);
-                ui_test = TestWrapper.create(item.id, item.title, configItem, item.weight);
-                task.readTestConfig(taskXml, item.id, configItem, ui_test.root);
-                ui_test.comment = item.comment;
-                ui_test.description = item.description;
+                context['filenamelabel'] = configItem.fileRefLabel;
+                task.readTestConfig(taskXml, item.id, configItem, context);
+                console.log('context =>');
+                console.log(context);
+                ui_test = TestWrapper.createFromTemplate(item.id,
+                    configItem.getMustacheTemplate(), context, true);
             }
         });
+
+/*
         if (!ui_test) {
             // try alternative test types
             $.each(config.testInfos, function(index, configItem) {
@@ -408,16 +365,8 @@ export function readAndDisplayXml(taskXml) {
                         ui_test.comment = item.comment;
                         ui_test.description = item.description;
                     }
-
                 });
             });
-
-
-            if (!ui_test) {
-                setErrorMessage("Test " + item.testtype + " not imported");
-                testIDs[item.id] = 0;
-                return; // wrong test-type
-            }
         }
 */
 

@@ -40,12 +40,13 @@
 <p>
     <label for='xml_ju_mainclass'>Entry Point<span class='red'>*</span>: </label>
     <input class='mediuminput xml_ju_mainclass'
-    title='usually name of class containing main method, including full package path (e.g. de.ostfalia.zell.editor)'/>
+        title='usually name of class containing main method, including full package path (e.g. de.ostfalia.zell.editor)'
+        value='{{ entrypoint }}'></input>
 
     <label for='xml_ju_framew'>Framework<span class='red'>*</span>: </label>
     <select class='xml_ju_framew'><option selected='selected' value='JUnit'>JUnit</option></select>
 
-    <label for='xml_ju_version'>Version<span class='red'>*</span>: </label>
+    <label for='xml_ju_version'>{{#str}} version, qtype_proforma {{/str}}<span class='red'>*</span>: </label>
     <select class='xml_ju_version'>
     </select>
 </p>

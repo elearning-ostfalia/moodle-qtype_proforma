@@ -16,7 +16,8 @@
  */
 
 
-import {setErrorMessage, clearErrorMessage} from "./taskeditorutil";
+import {setErrorMessage} from "./taskeditorutil";
+import {config} from "./taskeditorconfig";
 
 const T_LMS_USAGE = {
     DISPLAY: 'display',
@@ -229,12 +230,12 @@ export class TaskClass {
         return filename;
     }
 
-    readTestConfig(xmlfile, testid, configItem, testroot) {
+    readTestConfig(xmlfile, testid, configItem, context) {
         try {
             let xmlReader = new XmlReader(xmlfile);
             xmlReader.setRootNode(xmlReader.readSingleNode("/dns:task/dns:tests/dns:test[@id="+testid+"]"));
             let configNodeNode = xmlReader.readSingleNode("dns:test-configuration");
-            configItem.onReadXml(this.tests[testid], xmlReader, configNodeNode, testroot);
+            configItem.onReadXml(this.tests[testid], xmlReader, configNodeNode, context);
         } catch (err){
             alert (err);
             setErrorMessage("Error while parsing test configuration in xml file", err);

@@ -19,10 +19,9 @@
 
 import $ from 'jquery';
 import {FileWrapper, FileStorage, fileStorages} from "./taskeditorfile";
-import {getMimeType, getExtension} from "./taskeditorutil";
+import {getExtension, setErrorMessage} from "./taskeditorutil";
 import {config} from "./taskeditorconfig";
 import {readAndDisplayXml} from "./taskeditortask";
-import {setErrorMessage} from "./taskeditorutil";
 
 
 export var readXmlActive = false;
@@ -57,7 +56,7 @@ export function readAndCreateFileData(file, fileId, callback) {
     }
 
     const size = file.size; //get file size
-    const mimetype = getMimeType(file.type, filename); //get mime type
+    const mimetype = config.getMimeType(file.type, filename); //get mime type
     // determine if we have a binary or non-binary file
     let isBinaryFile = false; // TODO: config.isBinaryFile(file, mimetype);
     let reader = new FileReader();

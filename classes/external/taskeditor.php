@@ -97,12 +97,26 @@ class taskeditor extends \external_api {
         $versionlist = get_config('qtype_proforma', 'junitversion');
         $versions = [];
         foreach (explode(',', $versionlist) as $version) {
-            $versions[] = $version;
+            $versions[] = trim($version);
         }
 
-        return [
-            'junitversions' => $versions
-        ];
+        return [ 'junitversions' => $versions ];
+    }
+
+    /**
+     * Get supported Java versions
+     * @return array with Junit Versions
+     */
+    public static function get_java_versions() {
+        require_login();
+
+        $versionlist = get_config('qtype_proforma', 'javaversion');
+        $versions = [];
+        foreach (explode(',', $versionlist) as $version) {
+            $versions[] = trim($version);
+        }
+
+        return [ 'javaversions' => $versions ];
     }
 
     /**
@@ -115,12 +129,10 @@ class taskeditor extends \external_api {
         $versionlist = get_config('qtype_proforma', 'checkstyleversion');
         $versions = [];
         foreach (explode(',', $versionlist) as $version) {
-            $versions[] = $version;
+            $versions[] = trim($version);
         }
 
-        return [
-            'checkstyleversions' => $versions
-        ];
+        return [ 'checkstyleversions' => $versions ];
     }
 
     /**
@@ -139,6 +151,11 @@ class taskeditor extends \external_api {
     }
 
     public static function get_checkstyle_versions_parameters() {
+        return new external_function_parameters([
+        ]);
+    }
+
+    public static function get_java_versions_parameters() {
         return new external_function_parameters([
         ]);
     }
@@ -169,6 +186,17 @@ class taskeditor extends \external_api {
                     new external_value(PARAM_TEXT, 'Checkstyle version',
                         VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
                     'Array of Checkstyle versions', VALUE_DEFAULT, array()),
+            )
+        );
+    }
+
+    public static function get_java_versions_returns() {
+        return new external_function_parameters (
+            array(
+                'javaversions' => new external_multiple_structure(
+                    new external_value(PARAM_TEXT, 'Java version',
+                        VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
+                    'Array of Java versions', VALUE_DEFAULT, array()),
             )
         );
     }

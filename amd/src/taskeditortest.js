@@ -181,6 +181,7 @@ export class TestWrapper {
 
 //    static create(id, TestName, MoreText, TestType, WithFileRef) {
     // create a new test HTML form element
+    /*
     static create(id, TestName, config, weight) {
         let theWeight =  config.gradingWeight;
         if (typeof weight !== 'undefined')
@@ -249,28 +250,11 @@ export class TestWrapper {
             testroot.find("table").hide();
             testroot.find(".drop_zone").hide();
         }
-        else
-        {
-            // TODO: disable drag & drop!
-            /*
-                    testroot.on({
-                        drop: function(e){
-                            if(e.originalEvent.dataTransfer){
-                                if(e.originalEvent.dataTransfer.files.length) {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    //UPLOAD FILES HERE
-                                    FileReferenceList.uploadFiles(e.originalEvent.dataTransfer.files, e.currentTarget,
-                                        TestFileReference.getInstance());
-                                }
-                            }
-                        }
-                    });
-            */
-        }
 
         return test;
     };
+
+     */
 
 }
 

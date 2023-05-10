@@ -362,7 +362,7 @@ class proforma_form_creator extends base_form_creator {
 /*
         $context =  (object) [
             "testid" => "2",
-            "testname" => "Testname 2",
+            "testtitle" => "Testname 2",
         ];
 //        $junit2 = $OUTPUT->render_from_template('qtype_proforma/taskeditor_junit', $context);
 
