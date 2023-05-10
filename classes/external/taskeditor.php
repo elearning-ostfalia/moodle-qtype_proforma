@@ -106,6 +106,24 @@ class taskeditor extends \external_api {
     }
 
     /**
+     * Get supported Checkstyle versions
+     * @return array with Junit Versions
+     */
+    public static function get_checkstyle_versions() {
+        require_login();
+
+        $versionlist = get_config('qtype_proforma', 'checkstyleversion');
+        $versions = [];
+        foreach (explode(',', $versionlist) as $version) {
+            $versions[] = $version;
+        }
+
+        return [
+            'checkstyleversions' => $versions
+        ];
+    }
+
+    /**
      * Returns description of method parameters
      * @return external_function_parameters
      */
@@ -116,6 +134,11 @@ class taskeditor extends \external_api {
     }
 
     public static function get_junit_versions_parameters() {
+        return new external_function_parameters([
+        ]);
+    }
+
+    public static function get_checkstyle_versions_parameters() {
         return new external_function_parameters([
         ]);
     }
@@ -135,6 +158,17 @@ class taskeditor extends \external_api {
                     new external_value(PARAM_TEXT, 'JUnit version',
                     VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
                     'Array of JUnit versions', VALUE_DEFAULT, array()),
+            )
+        );
+    }
+
+    public static function get_checkstyle_versions_returns() {
+        return new external_function_parameters (
+            array(
+                'checkstyleversions' => new external_multiple_structure(
+                    new external_value(PARAM_TEXT, 'Checkstyle version',
+                        VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
+                    'Array of Checkstyle versions', VALUE_DEFAULT, array()),
             )
         );
     }

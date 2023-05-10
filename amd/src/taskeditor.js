@@ -35,7 +35,7 @@ import {get_strings as getStrings} from 'core/str';
 import Notification, {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import {TestWrapper } from "./taskeditortest";
-import {downloadTask, getJunitVersions} from "./repository";
+import {downloadTask, getCheckstyleVersions, getJunitVersions} from "./repository";
 import {getExtension} from "./taskeditorutil";
 import {unzipme} from "./zipper";
 import {readXMLWithLock} from "./taskeditorhelper";
@@ -160,6 +160,25 @@ export const setJunitVersions = () => {
             document.querySelectorAll('.xml_ju_version').forEach(
                 selectElem => {
                     response['junitversions'].forEach(version => {
+                        let option = document.createElement("option");
+                        option.text = version;
+                        selectElem.add(option);
+                    });
+                }
+            );
+        })
+        .fail(Notification.exception);
+}
+
+
+export const setCheckstyleVersions = () => {
+    // console.log('setJunitVersions');
+    getCheckstyleVersions()
+        .then(response => {
+            // console.log(response['junitversions']);
+            document.querySelectorAll('.xml_pr_CS_version').forEach(
+                selectElem => {
+                    response['checkstyleversions'].forEach(version => {
                         let option = document.createElement("option");
                         option.text = version;
                         selectElem.add(option);
