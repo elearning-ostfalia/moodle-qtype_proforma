@@ -22,6 +22,8 @@ import {FileReferenceList} from "./filereflist";
 import Templates from 'core/templates';
 import * as CodeMirror from './codemirror';
 import Notification, {exception as displayException} from 'core/notification';
+import './clike';
+import './python';
 
 export var fileStorages = [];
 export var fileIDs = {};
@@ -110,13 +112,6 @@ export class FileStorage {
     }
 }
 
-/*
-const INTERNAL     = 'internal';
-const TEMPLATE     = 'template';
-const INSTRUCTION  = 'instruction';
-const INTERNAL_LIB = 'internal-library';
-const LIBRARY      = 'library';
-*/
 
 // class for simpler access to file members from user interface
 // todo: store 'data' in variables not in html
@@ -205,7 +200,7 @@ export class FileWrapper {
         if (config.useCodemirror) {
             codemirror[this.id].setValue(newText);
             const fileObject = fileStorages[this.id];
-            //alert('CodeMirror-Mode: ' + fileObject.mimetype);
+            console.log('CodeMirror-Mode: ' + fileObject.mimetype + ' ' + this.getCodemirrorMode());
             codemirror[this.id].setOption("mode", this.getCodemirrorMode());
         } else {
             this._root.find(".xml_file_text").val(newText);
@@ -437,11 +432,9 @@ export class FileWrapper {
 
     static doOnAllFiles(callback) {
         // todo: iterate through all files in variable
-        console.log('doOnAllFiles');
-        console.log(document.querySelectorAll(".xml_file_id"));
         $.each($(".xml_file_id"), function (indexOpt, item) {
-            console.log('.xml_file_id');
-            console.log(item);
+            // console.log('.xml_file_id');
+            // console.log(item);
             let uifile = FileWrapper.constructFromId(item.value);
             callback(uifile);
         });

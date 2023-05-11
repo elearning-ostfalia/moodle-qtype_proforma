@@ -128,7 +128,7 @@ export function unzipme(blob, readyCallback) {
                               entry.getData(blobWriter)
                                   .then(data => data.arrayBuffer())
                                   .then(data => {
-                                      console.log(data);
+                                      // console.log(data);
                                       if (debug_unzip)
                                           console.log('call callbackForFile ' + entry.filename);
                                       callbackForFile(data, entry);
@@ -169,7 +169,7 @@ export function unzipme(blob, readyCallback) {
         // callback for attached files
         function (unzippedBlob, entry) {
             console.log('attached file ' + entry.filename);
-            console.log(unzippedBlob);
+            // console.log(unzippedBlob);
             // read file header and derive mime type
             var arr = (new Uint8Array(unzippedBlob)).subarray(0, 4);
             var header = "";
@@ -196,7 +196,7 @@ export function unzipme(blob, readyCallback) {
                     break;
             }
 
-            console.log(header + " => " + type);
+            if (debug_unzip) console.log(header + " => " + type);
 
             // store file
             unzippedFiles[entry.filename] =
