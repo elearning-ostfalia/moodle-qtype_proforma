@@ -32,7 +32,8 @@
     {
         testid: "1",
         testtitle: "Name of test",
-        description: "This tests deals with..."
+        description: "This tests deals with...",
+        testtype: "java-checkstyle"
     }
 
 
@@ -47,29 +48,30 @@
 
 <div id='test_{{ testid }}' class='xml_test'>
 
-    <h3 class='ui-widget-header'>{{ testtitle }} (Test #"{{ testid }}")<span class='rightButton'><button>x</button></span>
-    </h3>
+    <span class='test-header'><span class='box-typ'>Test {{ testid }}</span>
+            <input type="text" value="{{ testid }}" size="2" disabled="disabled" class=''></input>
+            <label for='xml_test_type'>{{#str}} testtype, qtype_proforma {{/str}} </label>
+                <input class='xml_test_type' disabled="disabled">{{ testtype }}</input>
+
+            <label>{{#str}} weight, qtype_proforma {{/str}}<span class='red'>*</span></label>
+            <input class='tinyinput xml_test_weight' value='{{ weight }}'></input>
+
+
+        <span class='rightButton'><button>x</button></span>
+    </span>
 
     <p>
-        <label for='xml_test_id'>ID<span class='red'>*</span>: </label>
-        <input class='tinyinput xml_test_id' value='{{ testid }}' readonly/>
-
-        <p><label for='xml_test_type'>{{#str}} testtype, qtype_proforma {{/str}}: </label>
-        <select class='xml_test_type'> testTypes </select>
-    </p>
-
-    <p>
-        <label for='xml_test_title'>{{#str}} testtitle, qtype_proforma {{/str}}<span class='red'>*</span>: </label>
-        <input class='maxinput xml_test_title' value=' {{ testtitle }} '/>
+        <label for='xml_test_title'>{{#str}} testtitle, qtype_proforma {{/str}}<span class='red'>*</span> </label>
+        <input class='largeinput xml_test_title' value=' {{ testtitle }} '/>
     </p>
 
 <p>
-    <label for='xml_description'>{{#str}} testdescription, qtype_proforma {{/str}} : </label>
+    <label for='xml_description'>{{#str}} testdescription, qtype_proforma {{/str}} </label>
     <textarea rows='2' class='xml_description' title = 'Visible description'>{{ description }}</textarea>
 </p>
 
 <p>
-    <label for='xml_internal_description'  class='leftlabel' style='display: none'>Internal Description:</label>
+    <label for='xml_internal_description'  class='leftlabel' style='display: none'>Internal Description</label>
     <textarea rows='2' class='xml_internal_description' "title = 'Internal description (not visible for students)'
         style='display: none'>{{ comment }}</textarea>
 </p

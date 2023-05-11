@@ -142,13 +142,13 @@ export class TestWrapper {
 
                 // TestFileReference.getInstance().init(testroot, DEBUG_MODE);
 
-                if (!DEBUG_MODE) {
+/*                if (!DEBUG_MODE) {
                     console.log('hide debug fields');
                     testroot.find(".xml_test_type").hide();
                     testroot.find("label[for='xml_test_type']").hide();
                     testroot.find(".xml_test_id").hide();
                     testroot.find("label[for='xml_test_id']").hide();
-                }
+                }*/
                 if (!withFileRef) {
                     console.log('hide fileref fields');
                     testroot.find("table").hide();

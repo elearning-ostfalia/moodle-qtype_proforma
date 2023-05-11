@@ -774,19 +774,24 @@ abstract class base_form_creator {
                     "version" => []
                 ]
             ],
-            "tests" => '',
-            "files" => '',
         ];
 
-        // Add task edit button.
-        $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
-        // Add js.
-        global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton', $context));
+        if (true) { // Inline
+            global $OUTPUT;
+            $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
+            $mform->addElement('html', $taskeditor);
 
-        global $OUTPUT;
-        $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
-        $mform->addElement('html', $taskeditor);
+            global $PAGE;
+            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton', $context, true));
+
+        } else {
+            // Add task edit button.
+            $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
+            // Add js.
+            global $PAGE;
+            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton', $context, false));
+        }
+
     }
 
     public function add_feedback_options($question, $questioneditform) {

@@ -108,6 +108,7 @@ export function unzipme(blob, readyCallback) {
               let zipReader = new zip.ZipReader(zipFileReader);
 
               console.log('unzipBlob');
+              console.log(blob);
               zipReader.getEntries()
                   .then(entries => {
                       filesToBeRead = entries.length;

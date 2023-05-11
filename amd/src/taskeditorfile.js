@@ -216,7 +216,8 @@ export class FileWrapper {
             this._filename = this.root.find(".xml_file_filename").first();
         }
         this._filename.val(name);
-        this._root.find(".xml_filename_header").first().text(name);
+        this.filenameHeader = name;
+        // this._root.find(".xml_filename_header").first().text(name);
         fileStorages[this.id].filename = name;
         // FileWrapper.onFilenameChanged(); // this); // TODO check for endless recursion!!
         // update filenames in all file references
@@ -224,7 +225,7 @@ export class FileWrapper {
     }
 
     set filenameHeader(name) {
-        this._root.find(".xml_filename_header").first().text(name);
+        // this._root.find(".xml_filename_header").first().text(name);
     }
 
 /*    set class(newClass) {
@@ -624,7 +625,7 @@ export class FileWrapper {
             });
     }
 
-
+/*
     static create(id) {
         let fileid = id;
         if (!fileid) {
@@ -639,7 +640,7 @@ export class FileWrapper {
             "id='file_" + fileid + "'" +
             "class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'>"+
             "<h3 class='ui-widget-header'><span class ='xml_filename_header'></span> (File #"+fileid+")<span "+
-            "class='rightButton'><button" /* onclick='FileWrapper.removeFile($(this));'*/ +">x</button></span></h3>"+
+            "class='rightButton'><button">x</button></span></h3>"+
 
             "<p>" +
             " <label for='xml_file_filename'>Filename<span class='red'>*</span>: </label>"+
@@ -653,7 +654,7 @@ export class FileWrapper {
             "</label>"+
 
             " <label for='xml_file_type'>Store </label>"+
-            "<select class='xml_file_type'" + /* onchange='FileWrapper.onFiletypeChanged(this)'*/ ">"+
+            "<select class='xml_file_type'>" +
                 "<option value = 'embedded' selected='selected'>embedded</option>"+
                 "<option value = 'file'>attached</option></select>"+
             "<span class='drop_zone_text'>Drop Your File Here!</span>" +
@@ -669,9 +670,9 @@ export class FileWrapper {
             "</span>" +
 
             "<span class='xml_file_non_binary'>" +
-            "<button class='xml_file_edit'" + /* onclick='FileWrapper.showEditor($(this));'*/ ">Edit</button>" +
+            "<button class='xml_file_edit'>Edit</button>" +
             "<label for='xml_file_editor_close'>" +
-            "<button class='xml_file_editor_close'" + /* onclick='FileWrapper.hideEditor($(this));'*/ ">Hide</button>" +
+            "<button class='xml_file_editor_close'>Hide</button>" +
             "</label>" +
             "<span>" +
             "<textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>" +
@@ -694,12 +695,7 @@ export class FileWrapper {
             ui_file.root.find(".xml_file_class").hide();
             ui_file.root.find("label[for='xml_file_class']").hide();
         }
-/*
-        ui_file.root.find(".xml_dummy_upload_file").hide();
-        ui_file.root.find(".xml_dummy_upload_file").click(function(){
-            ui_file.root.find(".xml_upload_file").click();
-        });
-*/
+
         console.log('add file callbacks');
         // add callbacks:
         ui_file.root.find('button').first().on("click",
@@ -746,7 +742,6 @@ export class FileWrapper {
                     if(e.originalEvent.dataTransfer.files.length) {
                         e.preventDefault();
                         e.stopPropagation();
-                        /*UPLOAD FILES HERE*/
                         FileWrapper.uploadFileWhenDropped(e.originalEvent.dataTransfer.files, e.currentTarget);
                     }
                 }
@@ -758,7 +753,7 @@ export class FileWrapper {
 
         FileWrapper.hideEditor(undefined, ui_file);
         return ui_file;
-    }
+    }*/
 
     static deleteAllFiles() {
         codemirror = {};

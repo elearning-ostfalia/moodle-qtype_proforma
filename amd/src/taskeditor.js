@@ -47,7 +47,7 @@ import {readXMLWithLock} from "./taskeditorhelper";
  * @param {string} buttonid: button id
  * @returns {undefined}
  */
-export const edit = (buttonid, context) => {
+export async function edit(buttonid, context, inline) {
 
     console.log(context);
 
@@ -59,61 +59,78 @@ export const edit = (buttonid, context) => {
         // closeString = await getString('close', 'editor');
     }
 
-    async function downloadTaskFromServer() {
+    function downloadTaskFromServer() {
         let questionId = document.querySelector("input[name='id']").value;
         console.log('download task ' + questionId);
-        const response = await downloadTask(questionId);
-        console.log(response.fileurl);
-        if (!response.fileurl) {
-            console.error('invalid fileurl ' + response.fileurl);
-            return;
-        }
+        return downloadTask(questionId)
+            .then(response => {
+                console.log(response.fileurl);
+                if (!response.fileurl) {
+                    reject(new Error('invalid fileurl ' + response.fileurl));
+                }
+                return response.fileurl;
+            })
+            .then(url => fetch(url, {method: 'GET'}));
+/*
+            .then(response => {
+                console.log('response from fetch is');
+                console.log(response);
+                const extension = getExtension(response.url);
+                const isZipped = (extension === 'zip');
+                if (isZipped) {
+                    return response.blob()
+                        .then(blob => {
+                            console.log('blob is');
+                            console.log(blob);
+                            return unzipme(blob, undefined);
+                        });
+                } else {
+                    return response.text();
+                }
+            });*/
+            // .then(text => readXMLWithLock(text))
+/*            .catch( error => {
+                console.error('error:', error);
+                alert(error);
+            });*/
+    }
 
-        const extension = getExtension(response.fileurl);
+    function displayTaskdata(taskresponse) {
+        const extension = getExtension(taskresponse.url);
         const isZipped = (extension === 'zip');
-
         if (isZipped) {
-            fetch(response.fileurl, { method: 'GET' })
-                .then( response => response.blob())
-                .then( responseblob => {
-                    unzipme(responseblob, function (text) {
-                        // console.log('readycallback');
+            return taskresponse.blob()
+                .then(blob => {
+                    console.log('blob is');
+                    console.log(blob);
+                    unzipme(blob, function(text) {
                         readXMLWithLock(text);
                     });
-                })
-                .catch( error => {
-                    console.error('error:', error);
-                    alert(error);
                 });
         } else {
-            fetch(response.fileurl, { method: 'GET' })
-                .then( response => response.text())
-                .then( responsetext => {
-                    console.log(responsetext);
-                    readXMLWithLock(responsetext);
-                })
-                .catch( error => {
-                    console.error('error:', error);
-                    alert(error);
-                });
-            
+            readXMLWithLock(response.text());
         }
     }
 
-    // Initialise.
-    console.log('edit task');
-    downloadTaskFromServer();
-    document.getElementById(buttonid).addEventListener('click', function (e) {
-        console.log('click');
+    if (inline) {
+        downloadTaskFromServer()
+            .then(taskresponse => displayTaskdata(taskresponse))
+            .fail(Notification.exception);
+    }
 
-        var stringsPromise = getStrings([
+    document.getElementById(buttonid).addEventListener('click', function (e) {
+        console.log('edit task');
+
+        let taskPromise = downloadTaskFromServer();
+
+        let stringsPromise = getStrings([
             {
                 // All string beginning with taskeditor.
                 key: 'taskeditor',
                 component: 'qtype_proforma'
             }
         ]);
-        var modalPromise = ModalFactory.create(
+        let modalPromise = ModalFactory.create(
             {
                 type: ModalFactory.types.SAVE_CANCEL,
                 large: true
@@ -122,28 +139,52 @@ export const edit = (buttonid, context) => {
 
         context['tests'] = '';
         context['files'] = '';
-        var bodyPromise = Templates.renderForPromise('qtype_proforma/taskeditor', context);
+        let bodyPromise = Templates.renderForPromise('qtype_proforma/taskeditor', context);
 
-        $.when(stringsPromise, modalPromise, bodyPromise).then(function(strings, modal, {html, js}) {
-            console.log(html);
-            console.log(js);
+        $.when(stringsPromise, modalPromise, bodyPromise, taskPromise)
+            .then(function(strings, modal, {html, js}, taskresponse) {
+                // console.log(html);
+                // console.log(js);
 
-            modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
-            modal.setTitle(strings[0]);
+                modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
+                modal.setTitle(strings[0]);
 
-            modal.setBody(html);
-            // Change size (TODO: actually do with css)
-            modal.getModal().css('min-width', '70%');
-            modal.getModal().css('min-height', '90%');
+                modal.setBody(html);
+                // Change size (TODO: actually do with css)
+                modal.getModal().css('min-width', '70%');
+                modal.getModal().css('min-height', '90%');
 
-            modal.getRoot().on(ModalEvents.save, function() {
-            });
+                modal.getRoot().on(ModalEvents.save, function() {
+                });
 
-            modal.show();
-            if (js) {
-                Templates.runTemplateJS(js);
-            }
-            return modal;
+                modal.show();
+                if (js) {
+                    Templates.runTemplateJS(js);
+                }
+
+                // Fill modal with data
+                console.log('response from fetch is');
+                console.log(taskresponse);
+                displayTaskdata(taskresponse);
+                /*
+                const extension = getExtension(taskresponse.url);
+                const isZipped = (extension === 'zip');
+                if (isZipped) {
+                    return taskresponse.blob()
+                        .then(blob => {
+                            console.log('blob is');
+                            console.log(blob);
+                            unzipme(blob, function(text) {
+                                readXMLWithLock(text);
+                            });
+                        });
+                } else {
+                    readXMLWithLock(response.text());
+                }
+
+                 */
+
+                return modal;
         }).fail(Notification.exception);
     });
 };

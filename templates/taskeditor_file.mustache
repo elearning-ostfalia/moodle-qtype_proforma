@@ -43,22 +43,22 @@
 }}
 
 <div id='file_{{ fileid }}' class='xml_file drop_zone fcontainer clearfix'>
-<h3 class='ui-widget-header'>
-    <span class ='xml_filename_header'></span> {{ filename }}
-        <b>(File #"{{ fileid }}")</b>
-    <span class='rightButton'><button onclick='FileWrapper.removeFile($(this));'>x</button></span>
-</h3>
+
+<span class='file-header'><span class='box-typ'>File {{ fileid }}</span>
+    <span class ='xml_filename_header'></span>
+    <span class='rightButton'><button>x</button></span>
+</span>
 
 <p>
-    <label for='xml_file_filename'>Filename<span class='red'>*</span>: </label>
-    <input class='mediuminput xml_file_filename' onchange='FileWrapper.onFilenameChangedCallback(this)' title='with extension'>
+    <label for='xml_file_filename'>Filename<span class='red'>*</span> </label>
+    <input class='mediuminput xml_file_filename' title='with extension'>
     </input>
 
     <label for='xml_file_id'>ID: </label>
     <input class='tinyinput xml_file_id' value='{{ fileid }}'/>
 
     <label for='xml_file_type'>Store </label>
-    <select class='xml_file_type' onchange='FileWrapper.onFiletypeChanged(this)'>
+    <select class='xml_file_type'>
         <option value = 'embedded' selected='selected'>embedded</option>
         <option value = 'file'>attached</option>
     </select>
@@ -66,8 +66,8 @@
     <span class='drop_zone_text'>Drop Your File Here!</span>
 </p>
 
-<p>
-    <label for='xml_internal_description'>Internal Description:</label>
+<p style='display: none'>
+    <label for='xml_internal_description'>Internal Description</label>
     <textarea rows='1' class='xml_internal_description'></textarea>
 </p>
 
@@ -76,9 +76,9 @@
     <span class='xml_file_binary'>(Binary file)<span class='xml_file_size'>File size: ???</span></span>
 
     <span class='xml_file_non_binary'>
-        <button class='xml_file_edit' onclick='FileWrapper.showEditor($(this));'>Edit</button>
+        <button class='xml_file_edit'>Edit</button>
         <label for='xml_file_editor_close'>
-            <button class='xml_file_editor_close' onclick='FileWrapper.hideEditor($(this));'>Hide</button>
+            <button class='xml_file_editor_close'>Hide</button>
         </label>
         <span>
             <textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>
