@@ -147,7 +147,6 @@ export async function edit(buttonid, context, inline) {
                 // console.log(html);
                 // console.log(js);
 
-                modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
                 modal.setTitle(strings[0]);
 
                 modal.setBody(html);
@@ -155,8 +154,45 @@ export async function edit(buttonid, context, inline) {
                 modal.getModal().css('min-width', '70%');
                 modal.getModal().css('min-height', '90%');
 
-                modal.getRoot().on(ModalEvents.save, function() {
+                modal.getRoot().on(ModalEvents.save, function(e) {
+                    e.preventDefault();
+                    alert('TODO save');
+                    modal.destroy();
                 });
+
+                modal.getRoot().on(ModalEvents.cancel, function(e) {
+                    e.preventDefault();
+                    ModalFactory.create({
+                        type: ModalFactory.types.SAVE_CANCEL,
+                        title: 'Close task editor',
+                        body: 'Do you really want to close the task editor?',
+                    })
+                        .then(function(confirm) {
+                            confirm.setSaveButtonText('Close');
+                            confirm.getRoot().on(ModalEvents.save, function() {
+                                modal.destroy();
+                            });
+                            confirm.show();
+                        });
+                });
+
+                modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
+                modal.getRoot().on(ModalEvents.outsideClick, (e) => {
+                    console.log('click outside modal');
+                    e.preventDefault();
+                });
+                modal.getRoot().on(ModalEvents.destroyed, (e) => {
+                    console.log('destroyed');
+                    e.preventDefault();
+                });
+                // Hide close button
+                // modal.getRoot()[0].querySelector('.modal-header button .close').style.display = 'none';
+                let root = modal.getRoot()[0];
+                let header = root.querySelector('.modal-header');
+                /* console.log(root);
+                console.log(header);
+                console.log(header.querySelector('button'));*/
+                header.querySelector('button').style.display = 'none';
 
                 modal.show();
                 if (js) {
