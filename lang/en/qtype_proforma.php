@@ -49,9 +49,7 @@ $string['responseformat'] = 'Response format';
 $string['responseoptions'] = 'Response Options';
 $string['graderoptions_header'] = 'Grader Settings';
 $string['upload'] = 'Upload taskfile to grader';
-$string['taskeditor'] = 'Edit task';
-$string['taskeditortests'] = 'Tests';
-$string['taskeditorfiles'] = 'Files';
+
 
 
 $string['responsetemplateheader'] = 'Response Templates';
@@ -369,3 +367,9 @@ $string['errnotask'] = 'ProFormA task file is missing.';
 $string['erroldtask'] = 'Original ProFormA task file cannot be checked.';
 $string['errtasknotunique'] = 'ProFormA task file is not unique.';
 $string['errinvalidtaskxml'] = 'Task.xml within ProFormA file is invalid.';
+
+// Taskeditor
+$string['taskeditor'] = 'Edit task';
+$string['taskeditortests'] = 'Tests';
+$string['taskeditorfiles'] = 'Files';
+// $string['openfile'] = '<open...>';

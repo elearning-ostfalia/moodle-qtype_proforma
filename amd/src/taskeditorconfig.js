@@ -74,7 +74,7 @@ export const config = (function(testConfigNode) {
     function writeXmlExtra(metaDataNode, xmlDoc, xmlWriter) {
         //xmlWriter.createTextElement(metaDataNode, 'praktomat:allowed-upload-filename-mimetypes', '(text/.*)', praktomatns);
     }
-
+/*
     function onProglangChanged(newProglang) {
         if (newProglang === 'cpp') {
             // Add GoogleTest
@@ -82,6 +82,8 @@ export const config = (function(testConfigNode) {
             $(".xml_u_framew").append(`<option value="GoogleTest">GoogleTest</option>`);
         }
     }
+
+ */
 /*
     readXml(xmlfile) {
         let xmlReader = new XmlReader(xmlfile);
@@ -340,9 +342,11 @@ export const config = (function(testConfigNode) {
     // const testCComp       = new CCompilerTest();
     const testJavaComp    = new JavaCompilerTest();
     const testJavaJUnit   = new JUnitTest();
+    const testCheckStyle  = new CheckstyleTest();
+
     const testCUnit       = new CUnitTest();
     const testGoogleTest  = new GoogleTest();
-    const testCheckStyle  = new CheckstyleTest();
+
     const testPython      = new PythonUnittest();
     const testPythonDoctest = new PythonDocTest();
 /*   const testSetlX       = new setlXTest(setlXTest);
@@ -467,6 +471,13 @@ export const config = (function(testConfigNode) {
         isBinaryFile: isBinaryFile,
         handleFilenameChangeInTest: handleFilenameChangeInTest,
         testInfos: testInfos,
+        infoJavaComp: testJavaComp,
+        infoJavaJUnit: testJavaJUnit,
+        infoGoogleTest: testGoogleTest,
+        infoCUnit: testCUnit,
+        infoPython: testPython,
+        infoPythonDoctest: testPythonDoctest,
+        infoCheckStyle: testCheckStyle,
         resolveNamespace: resolveNamespace,
 /*        writeXmlExtra: writeXmlExtra,
         onProglangChanged: onProglangChanged,

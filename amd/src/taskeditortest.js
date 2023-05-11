@@ -123,6 +123,7 @@ export class TestWrapper {
 
         Templates.renderForPromise(template, context)
             .then(({html, js}) => {
+                // console.log(html);
                 Templates.appendNodeContents('#proforma-tests-section', html, js);
 
                 // hide fields that exist only for technical reasons
@@ -189,8 +190,3 @@ export class TestWrapper {
     }
 }
 
-/*
-export const test = (testid, filereftableid) => {
-};
-
- */

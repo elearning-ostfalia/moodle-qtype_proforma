@@ -26,7 +26,6 @@
  */
 
 
-import config from 'core/config';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 // import {get_string as getString} from 'core/str';
@@ -37,6 +36,7 @@ import Templates from 'core/templates';
 import {TestWrapper } from "./taskeditortest";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "./repository";
 import {getExtension} from "./taskeditorutil";
+import {config} from "./taskeditorconfig";
 import {unzipme} from "./zipper";
 import {readXMLWithLock} from "./taskeditorhelper";
 
@@ -116,6 +116,7 @@ export async function edit(buttonid, context, inline) {
         downloadTaskFromServer()
             .then(taskresponse => displayTaskdata(taskresponse))
             .fail(Notification.exception);
+        return;
     }
 
     document.getElementById(buttonid).addEventListener('click', function (e) {
@@ -194,6 +195,7 @@ export async function edit(buttonid, context, inline) {
  * get JUnit version from Moodle configuration and add to JUnit list
  */
 export const setJunitVersions = () => {
+    // TODO: kann man die JUnit version nicht besser über eine Core-Funktion holen??
     // console.log('setJunitVersions');
     getJunitVersions()
         .then(response => {
@@ -231,27 +233,41 @@ export const setCheckstyleVersions = () => {
 }
 
 export const initproglang = (proglangdiv, buttondiv, langselect) => {
+
     function addButtonCallbacks() {
-        // Add Junit testcase
         document.querySelector('#addJUnitTest').onclick = function (e) {
             e.preventDefault();
-            let context = {
-                'testtitle' : 'JUnit Test',
-                'filenamelabel' : 'Junit and other file(s)'
-            };
-            TestWrapper.createFromTemplate(null,
-                'qtype_proforma/taskeditor_junit', context, true);
+            config.infoJavaJUnit.createTestForm();
         }
 
-        // Add Checkstyle testcase
         document.querySelector('#addCheckStyleTest').onclick = function (e) {
             e.preventDefault();
-            let context = {
-                'testtitle' : 'Checkstyle Test',
-                'filenamelabel' : 'Configuration file'
-            };
-            TestWrapper.createFromTemplate(null,
-                'qtype_proforma/taskeditor_checkstyle', context, true);
+            config.infoCheckStyle.createTestForm();
+        }
+
+        document.querySelector('#addCompilerTest').onclick = function (e) {
+            e.preventDefault();
+            config.infoJavaComp.createTestForm();
+        }
+
+        document.querySelector('#addGoogleTest').onclick = function (e) {
+            e.preventDefault();
+            config.infoGoogleTest.createTestForm();
+        }
+
+        document.querySelector('#addCUnitTest').onclick = function (e) {
+            e.preventDefault();
+            config.infoCUnit.createTestForm();
+        }
+
+        document.querySelector('#addPythonUnittest').onclick = function (e) {
+            e.preventDefault();
+            config.infoPython.createTestForm();
+        }
+
+        document.querySelector('#addPythonDocTest').onclick = function (e) {
+            e.preventDefault();
+            config.infoPythonDoctest.createTestForm();
         }
     }
 
@@ -273,21 +289,15 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
         document.querySelector('#xml_programming-language-' + lang).style.display = '';
         // Show buttons for this language
         document.querySelectorAll('#' + buttondiv + ' .' + lang).forEach(
-            e => {
-                e.style.display = '';
-            }
+            e => e.style.display = ''
         );
         // Hide other versions
         document.querySelectorAll('#' + proglangdiv + ' select:not(#xml_programming-language-' + lang + ')').forEach(
-            e => {
-                e.style.display = 'None';
-            }
+            e => e.style.display = 'None'
         );
         // Hide other buttons
         document.querySelectorAll('#' + buttondiv + ' :not(.' + lang + ')').forEach(
-            e => {
-                e.style.display = 'None';
-            }
+            e => e.style.display = 'None'
         );
     };
 

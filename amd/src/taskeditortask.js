@@ -313,6 +313,7 @@ export function readAndDisplayXml(taskXml) {
         // let ui_file = FileWrapper.create(item.id);
         return FileWrapper.createFromTemplate(item.id)
             .then(ui_file => {
+                console.log('fileform ' + item.id + ' has been created');
                 ui_file.filename = item.filename;
                 ui_file.class = item.fileclass;
                 ui_file.type = item.filetype;

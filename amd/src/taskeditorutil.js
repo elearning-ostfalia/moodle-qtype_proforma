@@ -16,6 +16,8 @@
  */
 
 
+import {TestWrapper} from "./taskeditortest";
+
 export const DEBUG_MODE       = false;
 export const TEST_MODE        = false;
 export const SUBMISSION_TEST  = false;
@@ -137,6 +139,15 @@ export class CustomTest {
     onWriteXml(test, uiElement, testConfigNode, xmlDoc, xmlWriter) {}
     getFramework() {return undefined;}
     getMustacheTemplate() { return this.mustacheTemplate; }
+
+    createTestForm() {
+        let context = {
+            'testtitle' : this.title,
+            'filenamelabel' : this.fileRefLabel
+        };
+        TestWrapper.createFromTemplate(null,
+            this.mustacheTemplate, context, this.withFileRef);
+    }
 }
 
 

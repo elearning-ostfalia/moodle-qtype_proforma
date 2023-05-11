@@ -435,7 +435,11 @@ export class FileWrapper {
 
     static doOnAllFiles(callback) {
         // todo: iterate through all files in variable
+        console.log('doOnAllFiles');
+        console.log(document.querySelectorAll(".xml_file_id"));
         $.each($(".xml_file_id"), function (indexOpt, item) {
+            console.log('.xml_file_id');
+            console.log(item);
             let uifile = FileWrapper.constructFromId(item.value);
             callback(uifile);
         });

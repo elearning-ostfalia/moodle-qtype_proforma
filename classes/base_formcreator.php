@@ -772,11 +772,16 @@ abstract class base_form_creator {
                     "language" => "C++",
                     "value" => "cpp",
                     "version" => []
+                ],
+                [
+                    "language" => "C",
+                    "value" => "clang",
+                    "version" => []
                 ]
             ],
         ];
 
-        if (true) { // Inline
+        if (false) { // Inline
             global $OUTPUT;
             $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
             $mform->addElement('html', $taskeditor);

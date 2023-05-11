@@ -20,7 +20,7 @@ import {FileReferenceList } from "./filereflist";
 
 zip.workerScriptsPath = "./js/";
 
-const debug_unzip = false;
+const debug_unzip = true;
 
 
 /**
@@ -41,8 +41,6 @@ export function unzipme(blob, readyCallback) {
     let taskfile_read = false;
     let filesRead = 0;
     let filesToBeRead = undefined;
-
-
 
     /**
      * link files to fileStorages array
@@ -97,18 +95,16 @@ export function unzipme(blob, readyCallback) {
 
     function onFilesRead(zipReader) {
         relinkFiles();
-        // zipReader.close();
+        //zipReader.close();
         const t1 = performance.now();
         console.log("Call to unzipme took " + (t1 - t0) + " milliseconds.")
     }
 
-    async function unzipBlob(blob, callbackForTaskXml, callbackForFile) {
+    function unzipBlob(blob, callbackForTaskXml, callbackForFile) {
           try {
               const zipFileReader = new zip.BlobReader(blob);
               let zipReader = new zip.ZipReader(zipFileReader);
-
               console.log('unzipBlob');
-              console.log(blob);
               zipReader.getEntries()
                   .then(entries => {
                       filesToBeRead = entries.length;
@@ -119,29 +115,24 @@ export function unzipme(blob, readyCallback) {
                           if (entry.filename === 'task.xml') {
                               console.log('unzip task.xml');
                               const taskXmlWriter = new zip.TextWriter();
-                              entry.getData(taskXmlWriter).
-                                then(xmlContent => {
-                                  if (debug_unzip)
-                                      console.log('call callback For task.xml');
-                                  callbackForTaskXml(xmlContent);
-                              });
+                              entry.getData(taskXmlWriter)
+                                  .then(xmlContent => {
+                                        if (debug_unzip) console.log('call callback For task.xml');
+                                        callbackForTaskXml(xmlContent);
+                                    });
                           } else {
                               // handle attached files'
-                              console.log('unzip ' + entry.filename);
+                              console.log('unzip attached file ' + entry.filename);
                               // store file
                               const blobWriter = new zip.BlobWriter();
-                              entry.getData(blobWriter).
-                                  then(data => {
+                              entry.getData(blobWriter)
+                                  .then(data => data.arrayBuffer())
+                                  .then(data => {
+                                      console.log(data);
                                       if (debug_unzip)
                                           console.log('call callbackForFile ' + entry.filename);
                                       callbackForFile(data, entry);
                                   });
-
-/*                              entry.getData(new zip.BlobWriter(), function (data) {
-                                  if (debug_unzip)
-                                      console.log('call callbackForFile ' + entry.filename);
-                                  callbackForFile(data, entry, zipReader);
-                              });*/
                           }
                       });
                   })
@@ -149,7 +140,7 @@ export function unzipme(blob, readyCallback) {
                       console.error('error:', error);
                       alert(error);
                   });
-              await zipReader.close();
+              zipReader.close();
 
           } catch(e) {
               console.error(e);
@@ -160,7 +151,7 @@ export function unzipme(blob, readyCallback) {
 
     unzipBlob(blob,
         // callback for task.xml
-        function (taskXmlContent /*unzippedBlob, entry, zipReader*/) {
+        function (taskXmlContent) {
             unzipped_text = taskXmlContent;
             if (readyCallback) {
                 if (debug_unzip)
@@ -176,53 +167,50 @@ export function unzipme(blob, readyCallback) {
             }
         },
         // callback for attached files
-        function (unzippedBlob, entry /*, zipReader*/) {
+        function (unzippedBlob, entry) {
             console.log('attached file ' + entry.filename);
-            // let readfi = new FileReader();
-            // readfi.onload = function (e) {
-                // read file header and derive mime type
-                var arr = (new Uint8Array(unzippedBlob)).subarray(0, 4);
-                var header = "";
-                for(var i = 0; i < arr.length; i++) {
-                    let number = arr[i].toString(16);
-                    if (number.length === 1) {
-                        number = '0' + number;
-                    }
-                    header += number;
+            console.log(unzippedBlob);
+            // read file header and derive mime type
+            var arr = (new Uint8Array(unzippedBlob)).subarray(0, 4);
+            var header = "";
+            for(var i = 0; i < arr.length; i++) {
+                let number = arr[i].toString(16);
+                if (number.length === 1) {
+                    number = '0' + number;
                 }
+                header += number;
+            }
 
-                let type = unzippedBlob.type; // "unknown"; // Or you can use the blob.type as fallback
-                switch (header.toLowerCase()) {
-                    case '504b0304': type = 'application/zip'; break;
-                    case "25504446": type = 'application/pdf'; break;
-                    case "89504e47": type = "image/png"; break;
-                    case "47494638": type = "image/gif"; break;
-                    case "ffd8ffe0":
-                    case "ffd8ffe1":
-                    case "ffd8ffe2":
-                    case "ffd8ffe3":
-                    case "ffd8ffe8":
-                        type = "image/jpeg";
-                        break;
-                }
+            let type = unzippedBlob.type; // "unknown"; // Or you can use the blob.type as fallback
+            switch (header.toLowerCase()) {
+                case '504b0304': type = 'application/zip'; break;
+                case "25504446": type = 'application/pdf'; break;
+                case "89504e47": type = "image/png"; break;
+                case "47494638": type = "image/gif"; break;
+                case "ffd8ffe0":
+                case "ffd8ffe1":
+                case "ffd8ffe2":
+                case "ffd8ffe3":
+                case "ffd8ffe8":
+                    type = "image/jpeg";
+                    break;
+            }
 
-                console.log(header + " => " + type);
+            console.log(header + " => " + type);
 
-                // store file
-                unzippedFiles[entry.filename] =
-                    new FileStorage(true, type, unzippedBlob, entry.filename);
-                unzippedFiles[entry.filename].setZipperFlag();
-                unzippedFiles[entry.filename].setSize(entry.uncompressedSize);
-                filesRead++
-                if (debug_unzip) console.log('filesRead value: ' + filesRead + ' filesToBeRead=' + filesToBeRead);
-                if (filesRead === filesToBeRead) {
-                    onFilesRead();
-                }
-            // }
-            // readfi.readAsArrayBuffer(unzippedBlob);
+            // store file
+            unzippedFiles[entry.filename] =
+                new FileStorage(true, type, unzippedBlob, entry.filename);
+            unzippedFiles[entry.filename].setZipperFlag();
+            unzippedFiles[entry.filename].setSize(entry.uncompressedSize);
+            filesRead++
+            if (debug_unzip) console.log('filesRead value: ' + filesRead + ' filesToBeRead=' + filesToBeRead);
+            if (filesRead === filesToBeRead) {
+                onFilesRead();
+            }
     });
 
-    return unzipped_text;
+    // return unzipped_text;
 }
 
 
