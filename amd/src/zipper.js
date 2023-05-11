@@ -20,8 +20,61 @@ import {FileReferenceList } from "./filereflist";
 
 zip.workerScriptsPath = "./js/";
 
-const debug_unzip = true;
+const debug_unzip = false;
 
+let unzippedFiles = {};
+let taskfile_read = false;
+
+/**
+ * link files to fileStorages array
+ *
+ * This must be done after reading all files.
+ * Unfortunately file reading is performed asynchrously. So it is not clear
+ * in which order the files are read. Because of this the relinkFiles function
+ * is called after every processing of a single file in order to guarantee
+ * that all files are handled.
+ **/
+export function relinkFiles() {
+    if (!taskfile_read)
+        return; // wait and retry later
+    if (debug_unzip) console.log("relinkFiles ");
+
+    // store not-embedded files in correct location in fileStorages array
+    FileWrapper.doOnAllFiles(function(ui_file) {
+        if (debug_unzip) console.log("relink " + ui_file.filename + " type: " + ui_file.type);
+
+        if (ui_file.type === 'file') {
+            const fileid = ui_file.id; // fileroot.find(".xml_file_id").val();
+            const filename = ui_file.filename; //$(item).val();
+            if (unzippedFiles[filename] && !fileStorages[fileid].byZipper) {//!fileStorages[fileid].filename.length) {
+                // note that there is always a fileStorage object whenever there is a ui file object!
+                // file is not yet relinked => link to fileStorage
+                fileStorages[fileid] = unzippedFiles[filename];
+                unzippedFiles[filename] = undefined;
+                if (debug_unzip) console.log("relinkFiles " + filename + " -> " + fileid + " " + ui_file.type + " size: " + ui_file.size);
+                //ui_file.isBinary = true;
+                //ui_file.storeAsFile = true;
+                ui_file.type = ui_file.type; // needed...
+                //ui_file.disableTypeChange();
+            } else {
+                if (unzippedFiles[filename] && fileStorages[fileid].byZipper) { // fileStorages[fileid].filename.length) {
+                    // consistency check
+                    console.error("internal error: file is already relinked! filename " + filename + " -> " + fileid + " " + ui_file.type);
+                    alert('internal error: file ' + filename + ' is already relinked!');
+                } else {
+                    /*if (!unzippedFiles[filename])
+                        console.error("unzippedFiles[ " + filename + "] is missing");
+                    if (fileStorages[fileid].filename.length)
+                        console.error("fileStorages[ " + fileid + "] already mapped");
+                    */
+                }
+            }
+        }
+    });
+
+    // needed because files are read asynchronously
+    FileReferenceList.updateAllEditorButtons();
+}
 
 /**
  * unzips the {task}.zip file
@@ -37,61 +90,8 @@ const debug_unzip = true;
 export function unzipme(blob, readyCallback) {
     var unzipped_text = "???";
     // dictionary with files (name -> FileStorage)
-    let unzippedFiles = {};
-    let taskfile_read = false;
     let filesRead = 0;
     let filesToBeRead = undefined;
-
-    /**
-     * link files to fileStorages array
-     *
-     * This must be done after reading all files.
-     * Unfortunately file reading is performed asynchrously. So it is not clear
-     * in which order the files are read. Because of this the relinkFiles function
-     * is called after every processing of a single file in order to guarantee
-     * that all files are handled.
-     **/
-    function relinkFiles() {
-        if (!taskfile_read)
-            return; // wait and retry later
-        if (debug_unzip) console.log("relinkFiles ");
-
-        // store not-embedded files in correct location in fileStorages array
-        FileWrapper.doOnAllFiles(function(ui_file) {
-            if (debug_unzip) console.log("relink " + ui_file.filename + " type: " + ui_file.type);
-
-            if (ui_file.type === 'file') {
-                const fileid = ui_file.id; // fileroot.find(".xml_file_id").val();
-                const filename = ui_file.filename; //$(item).val();
-                if (unzippedFiles[filename] && !fileStorages[fileid].byZipper) {//!fileStorages[fileid].filename.length) {
-                    // note that there is always a fileStorage object whenever there is a ui file object!
-                    // file is not yet relinked => link to fileStorage
-                    fileStorages[fileid] = unzippedFiles[filename];
-                    unzippedFiles[filename] = undefined;
-                    if (debug_unzip) console.log("relinkFiles " + filename + " -> " + fileid + " " + ui_file.type + " size: " + ui_file.size);
-                    //ui_file.isBinary = true;
-                    //ui_file.storeAsFile = true;
-                    ui_file.type = ui_file.type; // needed...
-                    //ui_file.disableTypeChange();
-                } else {
-                    if (unzippedFiles[filename] && fileStorages[fileid].byZipper) { // fileStorages[fileid].filename.length) {
-                        // consistency check
-                        console.error("internal error: file is already relinked! filename " + filename + " -> " + fileid + " " + ui_file.type);
-                        alert('internal error: file ' + filename + ' is already relinked!');
-                    } else {
-                        /*if (!unzippedFiles[filename])
-                            console.error("unzippedFiles[ " + filename + "] is missing");
-                        if (fileStorages[fileid].filename.length)
-                            console.error("fileStorages[ " + fileid + "] already mapped");
-                        */
-                    }
-                }
-            }
-        });
-
-        // needed because files are read asynchronously
-        FileReferenceList.updateAllEditorButtons();
-    }
 
     function onFilesRead(zipReader) {
         relinkFiles();

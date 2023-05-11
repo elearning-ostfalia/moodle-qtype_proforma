@@ -18,10 +18,12 @@
 import $ from 'jquery';
 import {TaskClass} from "./taskeditortaskdata";
 import {testIDs} from "./taskeditortest";
-import {FileWrapper} from "./taskeditorfile";
 import {setErrorMessage, clearErrorMessage} from "./taskeditorutil";
+import {FileWrapper} from "./taskeditorfile";
 import {TestWrapper } from "./taskeditortest";
+import {ModelSolutionWrapper } from "./taskeditormodelsol";
 import {config } from "./taskeditorconfig";
+import {relinkFiles} from "./zipper";
 import {TestFileReference, FileReferenceList,ModelSolutionFileReference } from "./filereflist";
 
 
@@ -313,13 +315,16 @@ export function readAndDisplayXml(taskXml) {
         // let ui_file = FileWrapper.create(item.id);
         return FileWrapper.createFromTemplate(item.id)
             .then(ui_file => {
-                console.log('fileform ' + item.id + ' has been created');
+                // console.log('fileform ' + item.id + ' has been created');
                 ui_file.filename = item.filename;
                 ui_file.class = item.fileclass;
                 ui_file.type = item.filetype;
                 ui_file.comment = item.comment;
                 if (ui_file.type === 'embedded')
                     ui_file.text = item.content;
+                if (item.id) {
+                    relinkFiles();
+                }
                 return ui_file;
             });
 /*        let ui_file = FileWrapper.createFromTemplate(item.id);
@@ -452,10 +457,11 @@ export function readAndDisplayXml(taskXml) {
         .then(() => {
             console.log('all files are created');
             task.tests.forEach(createTest);
+            task.modelsolutions.forEach(createMs);
             // fill filename lists in empty file refences
             FileReferenceList.updateAllFilenameLists();
         });
-    // task.modelsolutions.forEach(createMs);
+
     // task.fileRestrictions.forEach(createFileRestriction);
 
     // POST PROCESSING

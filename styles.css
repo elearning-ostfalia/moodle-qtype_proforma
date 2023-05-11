@@ -1,8 +1,8 @@
 /* Styles for Task editor */
 
 :root {
-    --labelwith: 130px;
-    --inputwidth: calc(99% - var(--labelwith));
+    --labelwith: 135px;
+    --inputwidth: calc(98% - var(--labelwith));
 }
 
 body .proforma-taskeditor{
@@ -12,6 +12,38 @@ body .proforma-taskeditor{
     /* background-color: #F7F7F7;*/
     /* background-color: orangered;*/
 }
+
+/* Codemirror file editor */
+.proforma-taskeditor .xml_file_text + .CodeMirror{
+    vertical-align: top;
+    display: inline-block;
+    width: var(--inputwidth);
+    /*background-color: green;*/
+    resize: vertical; /* user can resize vertically, but width is fixed */
+}
+
+.proforma-taskeditor .xml_fileref_table { /* stretch viewer */
+    width: 100%;
+    /* background-color: yellow;*/
+}
+.proforma-taskeditor .fileref_viewer {
+    width: 99% /* var(--inputwidth)*/;
+    /* float: right;*/
+    background-color: #F7F7F7;
+}
+
+/* first column should have label width */
+.proforma-taskeditor .xml_fileref_table td:first-child, .dynamic_table td:first-child {
+    /*background-color: blue;*/
+    width: var(--labelwith);
+}
+.proforma-taskeditor .xml_fileref_table td {
+    /*background-color: green;*/
+    width: 1px;
+} /* min width, actually: this causes the width to fit the content */
+
+.proforma-taskeditor .xml_fileref_table td:last-child { width: var(--inputwidth); }
+
 
 body .proforma-taskeditor .test-header {
     cursor: move;
@@ -83,12 +115,6 @@ body#page-question-type-proforma p[id^=file_][id*=label] {
     top: 0px;
 }
 
-
-.fileref_viewer {
-    width: var(--inputwidth);
-    float:right;
-    background-color: #F7F7F7;
-}
 
 .proforma-taskeditor .maxinput{
     vertical-align: middle;

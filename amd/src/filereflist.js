@@ -180,7 +180,9 @@ export class FileReferenceList extends DynamicList {
             const numberOfColumns = 7 + this.getNumberOfExtraColumns();
             if (ui_file && !ui_file.isBinary) {
                 element.html(hideEditorText);
-                $( "<tr><td colspan='"+ numberOfColumns + "'><textarea disabled cols='80' rows='10' class='fileref_viewer'>"+
+                $( "<tr>" +
+                    "   <td></td>" +
+                    "   <td colspan='"+ numberOfColumns + "'><textarea disabled cols='80' rows='10' class='fileref_viewer'>"+
                     ui_file.text
                     +"</textarea></td></tr>" ).insertAfter(tr);
             }
@@ -685,7 +687,7 @@ export class TestFileReference extends FileReferenceList {
 let testFileRefSingleton = new TestFileReference();
 
 
-class ModelSolutionFileReference extends FileReferenceList {
+export class ModelSolutionFileReference extends FileReferenceList {
 
     constructor() {
         super('xml_model-solution_filename', 'xml_model-solution_fileref',

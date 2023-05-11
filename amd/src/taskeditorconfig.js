@@ -486,7 +486,7 @@ export const config = (function(testConfigNode) {
         // data
         xsds: xsds,
         // switches, constants...*/
-        useCodemirror: false,         // setting this to false turns Codemirror off
+        useCodemirror: true,         // setting this to false turns Codemirror off
 /*        // xsdSchemaFile: configXsdSchemaFile,
         maxSizeForEditor: 100000, // maximum file size to enable editing
 */

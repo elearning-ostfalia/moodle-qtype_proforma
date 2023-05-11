@@ -20,6 +20,7 @@ import {setcounter, DEBUG_MODE, getExtension} from "./taskeditorutil";
 import {config} from "./taskeditorconfig";
 import {FileReferenceList} from "./filereflist";
 import Templates from 'core/templates';
+import * as CodeMirror from './codemirror';
 import Notification, {exception as displayException} from 'core/notification';
 
 export var fileStorages = [];
@@ -404,6 +405,7 @@ export class FileWrapper {
         if (config.useCodemirror) {
             let editor = codemirror[ui_file.id];
             $(editor.getWrapperElement()).show();
+            editor.refresh();
         } else {
             ui_file.root.find('.xml_file_text').show();
         }
@@ -515,10 +517,10 @@ export class FileWrapper {
      * The global codemirror hash above uses the fileID to identify the codemirror element.
      */
     static addCodemirrorElement(cmID) {                     // cmID is determined by setcounter(), starts at 1
-        console.error('TODO addCodemirrorElement');
-        return;
+        // let textareaElem = FileWrapper.constructFromId(cmID).root.find(".xml_file_text")[0];
+        // console.log(textareaElem);
         codemirror[cmID] = CodeMirror.fromTextArea(
-//            $(".xml_file_id[value='"+ cmID +"']").parent().parent().find(".xml_file_text")[0],{
+//            textareaElem, {
             FileWrapper.constructFromId(cmID).root.find(".xml_file_text")[0],{
                 // todo: set mode depending on programming language resp. file extension
                 mode : "text/x-java", indentUnit: 4, lineNumbers: true, matchBrackets: true, tabMode : "shift",
@@ -539,7 +541,7 @@ export class FileWrapper {
         });
     }
 
-    // TODO: Problem: Hier wird das html async erzeugt!
+
     static createFromTemplate(id) {
         let fileid = id;
         if (!fileid) {
@@ -758,12 +760,12 @@ export class FileWrapper {
         FileWrapper.hideEditor(undefined, ui_file);
         return ui_file;
     }*/
-
+/*
     static deleteAllFiles() {
         codemirror = {};
         fileStorages = []; // empty array
         fileIDs = {};
 
         $("#proforma-files-section")[0].textContent = "";                     // delete previous content
-    }
+    }*/
 }

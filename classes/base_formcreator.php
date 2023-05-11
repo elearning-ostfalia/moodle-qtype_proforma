@@ -781,7 +781,7 @@ abstract class base_form_creator {
             ],
         ];
 
-        if (false) { // Inline
+        if (true) { // Inline
             global $OUTPUT;
             $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
             $mform->addElement('html', $taskeditor);
