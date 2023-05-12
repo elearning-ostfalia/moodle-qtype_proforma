@@ -28,7 +28,7 @@
 import {TestFileReference, FileReferenceList } from "./filereflist";
 import {setcounter, DEBUG_MODE} from "./taskeditorutil";
 import {TaskClass} from "./taskeditortaskdata";
-import Notification, {exception as displayException} from 'core/notification';
+import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 
 
@@ -121,13 +121,13 @@ export class TestWrapper {
         console.log(context);
         let test = undefined;
 
-        Templates.renderForPromise(template, context)
+        return Templates.renderForPromise(template, context)
             .then(({html, js}) => {
                 // console.log(html);
                 Templates.appendNodeContents('#proforma-tests-section', html, js);
 
                 // hide fields that exist only for technical reasons
-                var testroot = $("#test_" + testid);
+                const testroot = $("#test_" + testid);
 
                 test = TestWrapper.constructFromRoot(testroot);
 
@@ -175,8 +175,10 @@ export class TestWrapper {
                     */
                 }
                 if (item) {
-                    console.log('update filelist');
+                    console.log('update filelist for test');
                     let counter = 0;
+                    console.log(item.filerefs);
+
                     item.filerefs.forEach(function(itemFileref, indexFileref) {
                         console.log('id ' + itemFileref.refid);
                         let filename = task.findFilenameForId(itemFileref.refid);
@@ -186,7 +188,7 @@ export class TestWrapper {
                 }
             })
             .catch((error) => { displayException(error); });
-        return test;
+        // return test;
     }
 }
 

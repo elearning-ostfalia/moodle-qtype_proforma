@@ -16,9 +16,12 @@
  */
 
 import {ModelSolutionFileReference, FileReferenceList} from './filereflist'
-import {DEBUG_MODE,} from "./taskeditorutil";
+import {DEBUG_MODE} from "./taskeditorutil";
+import Templates from 'core/templates';
+import {exception as displayException} from 'core/notification';
+import * as Str from 'core/str';
 
-var modelSolIDs = {};
+export var modelSolIDs = {};
 
 // TODO : common base class with TestWrapper
 export class ModelSolutionWrapper {
@@ -84,7 +87,7 @@ export class ModelSolutionWrapper {
         instance.delete();
     }
 
-    static create(id, description, comment) {
+    static createFromTemplate(id, description, comment, item, task) {
         if (!comment)
             comment = '';
         if (!description)
@@ -99,33 +102,55 @@ export class ModelSolutionWrapper {
             modelSolIDs[modelsolid] = 1;
         }
 
+        let strings = [
+            { key: 'taskeditorfiles', component: 'qtype_proforma' },
+            { key: 'comment', component: 'qtype_proforma' }
+        ];
+        return Str.get_strings(strings)
+            .then(results => {
+                console.log(results);
+                let context = {
+                    'msid': modelsolid,
+                    'testtitle' : 'TODO Model Solution titel',
+                    'filenamelabel' : results[0]
+                };
+                return Templates.renderForPromise('qtype_proforma/taskeditor_modelsol', context);
+            })
+            .then(({html, js}) => {
+                console.log('model sol template rendered');
+                Templates.appendNodeContents('#proforma-model-solution-section', html, js);
+                console.log('model sol template appended');
 
-        $("#proforma-model-solution-section").append("<div " +
-            "id='modelsolution_" + modelsolid + "'" +
-            "class='ui-widget ui-widget-content ui-corner-all xml_model-solution'>" +
-            "<h3 class='ui-widget-header'>Model solution #" + modelsolid + "<span " +
-            "class='rightButton'><button" + /*onclick='ModelSolutionWrapper.delete($(this));'*/ ">x</button></span></h3>" +
-            "<p><label for='xml_model-solution_id'>ID<span class='red'>*</span>: </label>" +
-            "<input class='tinyinput xml_model-solution_id' value='" + modelsolid + "' readonly/>" +
+                // hide fields that exist only for technical reasons
+                const msroot = $("#modelsolution_" + modelsolid);
+                let ms = ModelSolutionWrapper.constructFromRoot(msroot);
 
-            'TODO DESCRIPTION ' + // getDescriptionHtmlString(description, comment) +
-            "<p>" +
-            "TODO files " +
-            // ModelSolutionFileReference.getInstance().getTableString() +
-            "</p>" +
+                FileReferenceList.init(null, null, ModelSolutionFileReference, msroot);
+                console.log('Add callbacks to fileref table in Modelsol ');
+                FileReferenceList.addCallbacks($(msroot)[0]);
+                console.log('callback delete ms button');
+                msroot.find('button').first().on("click",
+                    function(event) {
+                        event.preventDefault();
+                        ModelSolutionWrapper.delete($(this));
+                    });
 
-            "</div>");
+                if (!DEBUG_MODE) {
+                    // hide fields that exist only for technical reasons
+                    msroot.find(".xml_model-solution_id").hide();
+                    msroot.find("label[for='xml_model-solution_id']").hide();
+                }
 
-        const msroot = $(".xml_model-solution_id[value='" + modelsolid + "']").parent().parent();
-        FileReferenceList.init(null, null, ModelSolutionFileReference, msroot);
-        let modelsolution = ModelSolutionWrapper.constructFromRoot(msroot);
-
-        if (!DEBUG_MODE) {
-            // hide fields that exist only for technical reasons
-            msroot.find(".xml_model-solution_id").hide();
-            msroot.find("label[for='xml_model-solution_id']").hide();
-        }
-
-        return modelsolution;
+                if (item) {
+                    console.log('update filelist for model sol');
+                    let counter = 0;
+                    console.log(item.filerefs);
+                    item.filerefs.forEach(function(itemFileref, indexFileref) {
+                        let filename = task.findFilenameForId(itemFileref.refid);
+                        ModelSolutionFileReference.getInstance().setFilenameOnCreation(ms.root, counter++, filename);
+                    });
+                }
+            })
+            .catch((error) => { displayException(error); });
     }
 }

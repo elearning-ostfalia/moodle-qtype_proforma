@@ -1,0 +1,72 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template qtype_proforma/taskeditor_file
+
+    The purpose of this template is to render a file in ProFormA task editor
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * none
+
+    Example context (json):
+    {
+        msid: "1"
+    }
+
+}}
+
+
+<div id="modelsolution_{{ msid }}" class="xml_model-solution">
+    <span class='modelsol-header'><span class='box-typ'>{{#str}} modelsolution, qtype_proforma {{/str}} {{ msid }}</span>
+    <span class="rightButton"><button>x</button></span>
+    </span>
+
+    <p>
+        <label for="xml_model-solution_id" style="display: none;">ID<span class="red">*</span>: </label>
+        <input class="tinyinput xml_model-solution_id" value="1" readonly="" style="display: none;">
+    </p>
+    <p>
+        <label for="xml_description">{{#str}} testdescription, qtype_proforma {{/str}}</label>
+        <textarea rows="2" class="xml_description" title="Visible description"></textarea>
+    </p>
+
+    <p>
+        <label for="xml_internal_description" class="leftlabel" style='display: none'>Internal Description:</label>
+        <textarea rows="2" class="xml_internal_description" style='display: none' title="Internal description (not visible for students)"></textarea>
+    </p>
+
+    <p>
+    </p>
+
+
+    <table class="dynamic_table xml_fileref_table" cellpadding="0">
+    	<tbody>
+            {{> qtype_proforma/taskeditor_fileref_row }}
+    	</tbody>
+    </table>
+
+
+    <span class="drop_zone_text drop_zone">Drop Your File(s) Here!</span>
+    <p>
+    </p>
+</div>

@@ -372,4 +372,6 @@ $string['errinvalidtaskxml'] = 'Task.xml within ProFormA file is invalid.';
 $string['taskeditor'] = 'Edit task';
 $string['taskeditortests'] = 'Tests';
 $string['taskeditorfiles'] = 'Files';
+$string['taskeditorview'] = 'View';
+$string['taskeditorhide'] = 'Hide';
 // $string['openfile'] = '<open...>';

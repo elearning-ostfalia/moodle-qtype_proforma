@@ -180,7 +180,7 @@ let createFileWithContent = function(filename, content) {
 
 let addFileReferenceToTest = function(testId, filename) {
     let xml_test_root = $(".xml_test_id[value='"+testId+"']").parent().parent();
-    let element = xml_test_root.find(".xml_test_filename").last();
+    let element = xml_test_root.find(".xml_fileref_filename").last();
     element.val(filename).change();
 };
 

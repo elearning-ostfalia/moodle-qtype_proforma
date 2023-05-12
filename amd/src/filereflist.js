@@ -25,14 +25,15 @@ import Templates from 'core/templates';
 import {FileWrapper} from "./taskeditorfile";
 import {config} from "./taskeditorconfig";
 import {DEBUG_MODE,} from "./taskeditorutil";
+import * as Str from 'core/str';
 
 
 
 const loadFileOption = "<open...>";
 const emptyFileOption = " "; // must not be empty!!
 
-const showEditorText = 'View';
-const hideEditorText = 'Hide';
+const showEditorText = 'View'; // Str.get_string('taskeditorview', 'qtype_proforma'); // 'View';
+const hideEditorText = 'Hide'; // Str.get_string('taskeditorhide', 'qtype_proforma'); // 'Hide';
 
 let filenameClassList = [];
 let filerefClassList = [];
@@ -62,15 +63,12 @@ export class FileReferenceList extends DynamicList {
 
     createRowContent() {
         const tdFilename = "<td><select class='mediuminput fileref_filename " + this.classFilename + "' " +
-            // "onchange = '" +
-            // this.className + ".getInstance().onFileSelectionChanged($(this))' " +
             "title='" + this.help + "'></select></td>"+
             "<td><label for='fileref_fileref'>Fileref: </label>"+ // fileref
             "<input class='tinyinput fileref_fileref' readonly/></td>";
 
 
-        const tdExpandButton = "<td><button class='taskeditor-collapse' title='show content'" + // onclick='" +
-            // this.className + ".getInstance().toggleEditor($(this))'" +
+        const tdExpandButton = "<td><button class='taskeditor-collapse' title='show content'" +
             ">"+showEditorText+"</button><br></td>";
 
         return tdFilename + tdExpandButton + this.createExtraContent();
@@ -462,7 +460,7 @@ export class FileReferenceList extends DynamicList {
                         // set new file id
                         nextTd.find('.fileref_fileref')[0].value = fileid;
                         FileReferenceList.rowEnableEditorButton(row, true);
-                        if ($(tempSelElem).hasClass('xml_test_filename')) {   // is it a test or a model-solution
+                        if ($(tempSelElem).hasClass('xml_fileref_filename')) {   // is it a test or a model-solution
                             // call test specific configured handler
                             if (fileid) {
                                 // setJavaClassname(selectedFilename);
@@ -631,30 +629,51 @@ export class FileReferenceList extends DynamicList {
         console.log('Add callbacks for');
         console.log(rootnode);
         // console.log('callback for + button');
-        rootnode.querySelector('.add_test_fileref').onclick = function (addevent) {
-            addevent.preventDefault();
-            // TODO: use static or global function!
-            TestFileReference.getInstance().addItem($(addevent.target));
+        let subnode = rootnode.querySelector('.add_fileref');
+        if (!subnode)
+            console.error('could not find subnode .add_fileref');
+        else {
+            subnode.onclick = function (addevent) {
+                addevent.preventDefault();
+                // TODO: use static or global function!
+                TestFileReference.getInstance().addItem($(addevent.target));
+            }
         }
         // Add callback for onclick of 'x' button.
     //        rootnode.querySelector(".remove_item").onclick = function (removeevent) {
         // console.log('callback for x button');
-        rootnode.querySelector("." + TestFileReference.getInstance().classRemoveItem).onclick = function (removeevent) {
-            removeevent.preventDefault();
-            TestFileReference.getInstance().removeItem($(removeevent.target));
+//        rootnode.querySelector("." + TestFileReference.getInstance().classRemoveItem).onclick = function (removeevent) {
+        subnode = rootnode.querySelector('.remove_item');
+        if (!subnode)
+            console.error('could not find subnode .remove_item');
+        else {
+            subnode.onclick = function (removeevent) {
+                removeevent.preventDefault();
+                TestFileReference.getInstance().removeItem($(removeevent.target));
+            }
         }
 
         // console.log('callback for change selection');
-        rootnode.querySelector(".fileref_filename").onchange = function (changeevent) {
-            changeevent.preventDefault();
-            TestFileReference.getInstance().onFileSelectionChanged($(changeevent.target));
+        subnode = rootnode.querySelector('.fileref_filename');
+        if (!subnode)
+            console.error('could not find subnode .fileref_filename');
+        else {
+            subnode.onchange = function (changeevent) {
+                changeevent.preventDefault();
+                TestFileReference.getInstance().onFileSelectionChanged($(changeevent.target));
+            }
         }
 
         // console.log('callback for toggle editor');
+        subnode = rootnode.querySelector('.taskeditor-collapse');
         // console.error('TODO taskeditor-collapse');
-        rootnode.querySelector(".taskeditor-collapse").onclick = function (toggleevent) {
-            toggleevent.preventDefault();
-            TestFileReference.getInstance().toggleEditor($(toggleevent.target));
+        if (!subnode)
+            console.error('could not find subnode .taskeditor-collapse');
+        else {
+            rootnode.querySelector(".taskeditor-collapse").onclick = function (toggleevent) {
+                toggleevent.preventDefault();
+                TestFileReference.getInstance().toggleEditor($(toggleevent.target));
+            }
         }
     }
 }
@@ -663,7 +682,7 @@ export class FileReferenceList extends DynamicList {
 export class TestFileReference extends FileReferenceList {
 
     constructor() {
-        super('xml_test_filename', 'xml_test_fileref', 'TestFileReference', 'File',
+        super('xml_fileref_filename', 'xml_test_fileref', 'TestFileReference', 'File',
             'file containing test cases, test configuration, libraries etc.', true);
     }
 

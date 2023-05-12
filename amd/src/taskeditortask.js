@@ -303,12 +303,7 @@ export function readAndDisplayXml(taskXml) {
     let task = new TaskClass();
 
     function createMs(item, index) {
-        let ms = ModelSolutionWrapper.create(item.id, item.description, item.comment);
-        let counter = 0;
-        item.filerefs.forEach(function(itemFileref, indexFileref) {
-            let filename = task.findFilenameForId(itemFileref.refid);
-            ModelSolutionFileReference.getInstance().setFilenameOnCreation(ms.root, counter++, filename);
-        });
+        return ModelSolutionWrapper.createFromTemplate(item.id, item.description, item.comment, item, task);
     }
 
     function createFile(item, index) {
@@ -389,6 +384,8 @@ export function readAndDisplayXml(taskXml) {
         if (!found) {
             setErrorMessage("Test " + item.testtype + " not imported");
             testIDs[item.id] = 0;
+        } else {
+            return ui_test;
         }
     }
 /*
@@ -449,18 +446,32 @@ export function readAndDisplayXml(taskXml) {
     codeskeleton.setValue(task.codeskeleton);
 */
 
-    let promises = [];
+    let filepromises = [];
+    let refpromises = [];
     task.files.forEach(file => {
-        promises.push(createFile(file));
+        filepromises.push(createFile(file));
     });
-    Promise.all(promises)
+    Promise.all(filepromises)
         .then(() => {
-            console.log('all files are created');
-            task.tests.forEach(createTest);
-            task.modelsolutions.forEach(createMs);
-            // fill filename lists in empty file refences
+            console.log('** all files are created => create tests');
+            task.tests.forEach(item =>
+                refpromises.push(createTest(item))
+            );
+            console.log('=> create model solution(s)');
+            task.modelsolutions.forEach(item =>
+                refpromises.push(createMs(item))
+            );
+        });
+
+    // fill filename lists in empty file refences
+    console.log('=> wait');
+    Promise.all(refpromises)
+        .then(() => {
+            console.log('** all tests and model sols are created => add referenced files');
             FileReferenceList.updateAllFilenameLists();
         });
+    console.log('=> finished');
+
 
     // task.fileRestrictions.forEach(createFileRestriction);
 
