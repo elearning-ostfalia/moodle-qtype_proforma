@@ -71,9 +71,9 @@ export class FileReferenceList extends DynamicList {
             "<span class='drop_zone_text drop_zone'>Drop Your File(s) Here!</span>";
     }*/
 
-    createExtraContent() { return ''; }
+    // createExtraContent() { return ''; }
 
-    createRowContent() {
+/*    createRowContent() {
         const tdFilename = "<td><select class='mediuminput fileref_filename " + this.classFilename + "' " +
             "title='" + this.help + "'></select></td>"+
             "<td><label for='fileref_fileref'>Fileref: </label>"+ // fileref
@@ -85,7 +85,7 @@ export class FileReferenceList extends DynamicList {
 
         return tdFilename + tdExpandButton + this.createExtraContent();
     }
-
+*/
 
     doOnAll(callback, root) {
         if (root)
@@ -159,11 +159,17 @@ export class FileReferenceList extends DynamicList {
         // set filename
         if (index > 0) {
             // create new fileref if index > 0
-            this.addItem(box.find("." + this.classAddItem).first());
+            return this.addItem(box.find("." + this.classAddItem).first())
+                .then(() => {
+                    let element = box.find("." + this.classFilename);
+                    FileReferenceList.updateFilenameList(element.eq(index));
+                    element.eq(index).val(filename).change();
+            });
+        } else {
+            let element = box.find("." + this.classFilename);
+            FileReferenceList.updateFilenameList(element.eq(index));
+            element.eq(index).val(filename).change();
         }
-        let element = box.find("." + this.classFilename);
-        FileReferenceList.updateFilenameList(element.eq(index));
-        element.eq(index).val(filename).change();
     }
 
     getCountFilerefs(root) {
@@ -222,29 +228,30 @@ export class FileReferenceList extends DynamicList {
         let td = element.parent();
         let tr = td.parent();
         let table_body = tr.parent();
+        return super.addItem(element)
+            .then(newRow => {
+                console.log('returned new row is');
+                console.log(newRow);
+                FileReferenceList.rowEnableEditorButton(newRow, false);
+                /*
+                        // add new line for selecting a file for a test
+                        let td = element.parent();
+                        let tr = td.parent();
+                        let table_body = tr.parent();
+                        table_body.append(this.createRow(false));
+                        td.remove(); // remove current +-button
+                        table_body.find("." + this.classRemoveFileref).show(); // show all remove file buttons
+                */
+                // add filelist to new file option
+                FileReferenceList.updateFilenameList(table_body.find("." + this.classFilename).last());
 
-        let newRow = super.addItem(element);
-        console.log('returned new row is');
-        console.log(newRow);
-        FileReferenceList.rowEnableEditorButton(newRow, false);
-/*
-        // add new line for selecting a file for a test
-        let td = element.parent();
-        let tr = td.parent();
-        let table_body = tr.parent();
-        table_body.append(this.createRow(false));
-        td.remove(); // remove current +-button
-        table_body.find("." + this.classRemoveFileref).show(); // show all remove file buttons
-*/
-        // add filelist to new file option
-        FileReferenceList.updateFilenameList(table_body.find("." + this.classFilename).last());
-
-        if (!DEBUG_MODE) {
-            // hide new fileref fields
-            table_body.find(".fileref_fileref").hide();
-            table_body.find("label[for='fileref_fileref']").hide();
-        }
-        FileReferenceList.addCallbacks(newRow[0]);
+                if (!DEBUG_MODE) {
+                    // hide new fileref fields
+                    table_body.find(".fileref_fileref").hide();
+                    table_body.find("label[for='fileref_fileref']").hide();
+                }
+                FileReferenceList.addCallbacks(newRow[0]);
+            });
     }
 
 
@@ -384,10 +391,12 @@ export class FileReferenceList extends DynamicList {
 
         if (!done) { // no empty select option is found
             // append filename
-            let newRow = this.addItem($(uploadBox).find('.' + this.classAddItem).last());
-            // select filename
-            $(uploadBox).find("." + this.classFilename).last().val(filename).change();
-            // FileReferenceList.rowEnableEditorButton(newRow, true);
+            this.addItem($(uploadBox).find('.' + this.classAddItem).last())
+                .then(newRow => {
+                    // select filename
+                    $(uploadBox).find("." + this.classFilename).last().val(filename).change();
+                    // FileReferenceList.rowEnableEditorButton(newRow, true);
+                });
         }
     }
 

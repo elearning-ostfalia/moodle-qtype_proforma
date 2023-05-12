@@ -18,6 +18,7 @@
 // todo: replace table solution with something without table!
 
 import $ from 'jquery';
+import Templates from 'core/templates';
 
 // abstract class for a filename reference input
 export class DynamicList {
@@ -26,88 +27,52 @@ export class DynamicList {
         this.classFilename = 'xml_fileref_filename'; // classFilename;
         this.classAddItem = 'add_fileref'; // css_classname.replace('xml_', 'add_'); // classAddItem;
         this.classRemoveItem = 'remove_item'; // css_classname.replace('xml_', 'remove_'); // classRemoveItem;
-//        this.classRemoveItem = 'remove_item'; // css_classname.replace('xml_', 'remove_'); // classRemoveItem;
         this.help = help;
-        this.createTableString(jsClassName, label, mandatory, extra_css_class);
+        this.createTableString(jsClassName, mandatory);
+        this.rowTemplateHtml = null;
     }
 
     getClassFilename() { return this.classFilename; }
 
-    // virtual
-    createRowContent() { return '';}
-
-    createRow(first) {
-        // hide first remove file button
-        const tdFirstRemoveButton = "<td><button class='" + this.classRemoveItem +
-            "' style='display: none;'>x</button></td>";
-//        "' onclick='" + this.className + ".getInstance().removeItem($(this))' style='display: none;'>x</button></td>";
-
-        // return "<tr>" +
-        return "<td>" + this.label + "</td>" + // label
-
-            this.createRowContent() +
-
-            tdFirstRemoveButton + // x-button
-            this.tdAddButton +
-            '<td></td>'; // +
-        // "</tr>";
-/*
-        let element = document.createElement('tr');
-        element.innerHTML = "<td>" + (first?this.label:'') + "</td>" + // label
-
-            this.createRowContent() +
-
-            tdFirstRemoveButton + // x-button
-            this.tdAddButton +
-            '<td></td>';
-
-        return $(element);*/
-    }
-
-    getLabelString(label) {
-        if (label.length > 0) {
-            // label = label + '(s)';
-            return "<label for='" + this.classFilename +
-                "'>" + label + (this.mandatory?"<span class='red'>*</span>":"") + ": </label>";
-        } else {
-            return "<label></label>";
+    createRowFromTemplate() {
+        if (this.rowTemplateHtml) {
+            return Promise.resolve(this.rowTemplateHtml);
         }
+
+        let context = {
+            'filenamelabel' : '???'
+        };
+        return Templates.renderForPromise('qtype_proforma/taskeditor_fileref_row', context)
+            .then(({html, js}) => {
+                this.rowTemplateHtml = html;
+                return html;
+            });
     }
 
-    createTableString(className, label, mandatory, extra_css_class) {
+    createTableString(className, mandatory) {
         this.className = className;
         this.mandatory = mandatory;
-        this.label = this.getLabelString(label);
-
-        this.tdAddButton = "<td><button class='" + this.classAddItem + "' title='add another filename'>+</button><br></td>";
-
-        if (extra_css_class)
-            this.table = "<table class='dynamic_table " + extra_css_class + "' cellpadding='0'>" + // cellspacing='0' >" +
-                this.createRow(true) +
-                "</table>";
-        else
-            this.table = "<table class='dynamic_table' cellpadding='0'>" + // cellspacing='0' >" +
-                this.createRow(true) +
-                "</table>";
     }
 
-/*    getTableString() {
-        return this.table;
-    }*/
-
     addItem(element) {
-        // add new line for selecting a file for a test
-        let td = element.parent();
-        let tr = td.parent();
-        let table_body = tr.parent();
-
+        // add new line at the end
+        // let td = element.parent();
+        // let tr = td.parent();
+        let table_body = element.closest('tbody'); // tr.parent();
+        let label = table_body.find("label").first().html();
         let newRow = document.createElement('tr');
-        newRow.innerHTML = this.createRow(false);
         table_body.append(newRow);
         element.hide(); // hide current +-button
-        $(newRow).find("label").first().hide();
-        table_body.find("." + this.classRemoveItem).show(); // show all remove file buttons
-        return $(newRow);
+        return this.createRowFromTemplate()
+            .then(html => {
+                newRow.innerHTML = html;
+                $(newRow).find("label").first().hide();
+                $(newRow).find("label").first().html(label);
+                table_body.find("." + this.classRemoveItem).show(); // show all remove file buttons
+                table_body.find("." + this.classAddItem).hide(); // show all remove file buttons
+                $(newRow).find("." + this.classAddItem).show();
+                return $(newRow);
+            });
     }
 
     // virtual
@@ -126,6 +91,7 @@ export class DynamicList {
 
         // remove line in file table for test
         let table_body = tr.closest('tbody');
+
 
         let previousRow = this.getPreviousItem(tr); // tr.prev("tr");
         let hasNextTr = tr.nextAll("tr");

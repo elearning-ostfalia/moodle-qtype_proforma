@@ -92,7 +92,7 @@ body .proforma-taskeditor .box-typ {
 .proforma-taskeditor .dynamic_table td:first-child {
     background-color: lightskyblue;
     width: var(--labelwith);
-    padding-left: 0.3em;
+    /*padding-left: 0.3em;*/
     text-align: left;
 }
 

@@ -365,43 +365,10 @@ export class FileWrapper {
 
     static showEditor(button, ui_file_no_button) {
         FileWrapper.showHideEditor(button, ui_file_no_button, true);
-/*        let ui_file = undefined;
-        if (ui_file_no_button)
-            ui_file = ui_file_no_button;
-        else
-            ui_file = FileWrapper.constructFromRoot(button.closest('.xml_file'));
-
-        if (config.useCodemirror) {
-            let editor = codemirror[ui_file.id];
-            $(editor.getWrapperElement()).show();
-            editor.refresh();
-        } else {
-            ui_file.root.find('.xml_file_text').show();
-        }
-
-        ui_file.root.find('.xml_file_editor_close').show();
-        ui_file.root.find('.xml_file_edit').hide();*/
     };
 
     static hideEditor(button, ui_file_no_button) {
         FileWrapper.showHideEditor(button, ui_file_no_button, false);
-/*
-        let ui_file = undefined;
-        if (ui_file_no_button)
-            ui_file = ui_file_no_button;
-        else
-            ui_file = FileWrapper.constructFromRoot(button.closest('.xml_file'));
-
-        if (config.useCodemirror) {
-            const id = ui_file.id;
-            let editor = codemirror[ui_file.id];
-            $(editor.getWrapperElement()).hide();
-        } else {
-            ui_file.root.find('.xml_file_text').hide();
-        }
-
-        ui_file.root.find('.xml_file_editor_close').hide();
-        ui_file.root.find('.xml_file_edit').show();*/
     };
 
 
@@ -508,7 +475,6 @@ export class FileWrapper {
             console.log('codemirror drop: ' + e);
         });
     }
-
 
     static createFromTemplate(id) {
         let fileid = id;

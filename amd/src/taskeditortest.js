@@ -25,7 +25,7 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-import {TestFileReference, FileReferenceList } from "./filereflist";
+import {TestFileReference, FileReferenceList, ModelSolutionFileReference} from "./filereflist";
 import {setcounter, DEBUG_MODE} from "./taskeditorutil";
 import {TaskClass} from "./taskeditortaskdata";
 import {exception as displayException} from 'core/notification';
@@ -183,7 +183,11 @@ export class TestWrapper {
                         console.log('id ' + itemFileref.refid);
                         let filename = task.findFilenameForId(itemFileref.refid);
                         console.log('filename ' + filename);
-                        TestFileReference.getInstance().setFilenameOnCreation(test.root, counter++, filename);
+                        let promiseFactories = [TestFileReference.getInstance().setFilenameOnCreation(test.root, counter++, filename)];
+                        Promise.all(promiseFactories)
+                            .then(() => {
+                                console.log("promise completed");
+                            })
                     });
                 }
             })

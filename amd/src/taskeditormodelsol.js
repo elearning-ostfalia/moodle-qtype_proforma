@@ -151,7 +151,11 @@ export class ModelSolutionWrapper {
                     console.log(item.filerefs);
                     item.filerefs.forEach(function(itemFileref, indexFileref) {
                         let filename = task.findFilenameForId(itemFileref.refid);
-                        ModelSolutionFileReference.getInstance().setFilenameOnCreation(ms.root, counter++, filename);
+                        let promiseFactories = [ModelSolutionFileReference.getInstance().setFilenameOnCreation(ms.root, counter++, filename)];
+                        Promise.all(promiseFactories)
+                            .then(() => {
+                                console.log("promise completed");
+                            })
                     });
                 }
             })

@@ -169,7 +169,7 @@ export const config = (function(testConfigNode) {
         withRunCommand = true;
         constructor(title, proglang, framework, withRunCommand = true) {
             super(title, "unittest", "", proglang);
-            this.fileRefLabel = 'Testfile(s) and CMakeLists.txt/Makefile';
+            this.fileRefLabel = 'Testfile(s) and CMakeLists.txt/ Makefile';
             this.framework = framework;
             this.withRunCommand = withRunCommand;
         }
