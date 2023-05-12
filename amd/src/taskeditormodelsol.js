@@ -106,9 +106,9 @@ export class ModelSolutionWrapper {
             { key: 'taskeditorfiles', component: 'qtype_proforma' },
             { key: 'comment', component: 'qtype_proforma' }
         ];
-        return Str.get_strings(strings)
+        return FileReferenceList.getLocalisedStrings()
+            .then(() => Str.get_strings(strings))
             .then(results => {
-                console.log(results);
                 let context = {
                     'msid': modelsolid,
                     'testtitle' : 'TODO Model Solution titel',

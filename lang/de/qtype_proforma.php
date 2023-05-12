@@ -350,6 +350,6 @@ $string['errinvalidtaskxml'] = 'Task.xml in ProFormA-Datei ist ungültig.';
 // Taskeditor
 $string['taskeditor'] = 'Edit task';
 $string['taskeditortests'] = 'Tests';
-$string['taskeditorfiles'] = 'Files';
+$string['taskeditorfiles'] = 'Dateien';
 $string['taskeditorview'] = 'Ansehen';
 $string['taskeditorhide'] = 'Ausblenden';

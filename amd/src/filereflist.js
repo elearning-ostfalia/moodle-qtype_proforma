@@ -32,14 +32,26 @@ import * as Str from 'core/str';
 const loadFileOption = "<open...>";
 const emptyFileOption = " "; // must not be empty!!
 
-const showEditorText = 'View'; // Str.get_string('taskeditorview', 'qtype_proforma'); // 'View';
-const hideEditorText = 'Hide'; // Str.get_string('taskeditorhide', 'qtype_proforma'); // 'Hide';
+var showEditorText = 'View'; // Str.get_string('taskeditorview', 'qtype_proforma'); // 'View';
+var hideEditorText = 'Hide'; // Str.get_string('taskeditorhide', 'qtype_proforma'); // 'Hide';
 
 let filenameClassList = [];
 let filerefClassList = [];
 
 // abstract class for a filename reference input
 export class FileReferenceList extends DynamicList {
+
+    static getLocalisedStrings() {
+        let strings = [
+            { key: 'taskeditorview', component: 'qtype_proforma' },
+            { key: 'taskeditorhide', component: 'qtype_proforma' }
+        ];
+        return Str.get_strings(strings)
+            .then(results => {
+                showEditorText = results[0];
+                hideEditorText = results[1];
+            });
+    }
 
     constructor(classFilename, classFileref, jsClassName, label, help, mandatory) {
         super(classFilename, classFileref, jsClassName, label, help, mandatory, 'xml_fileref_table');
