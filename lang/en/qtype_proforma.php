@@ -373,5 +373,22 @@ $string['taskeditor'] = 'Edit task';
 $string['taskeditortests'] = 'Tests';
 $string['taskeditorfiles'] = 'Files';
 $string['taskeditorview'] = 'View';
+$string['taskeditoredit'] = 'Edit';
 $string['taskeditorhide'] = 'Hide';
+$string['taskeditorfile'] = 'File';
+$string['taskeditorattached'] = 'attached';
+$string['taskeditorembedded'] = 'embedded';
+$string['taskeditorstore'] = 'Store';
+$string['taskeditorbinary'] = 'Binary file';
+$string['taskeditorfilesize'] = 'File size';
+$string['taskeditordropzone'] = 'Drop zone';
+
+
+$string['taskeditornewjavacomp'] = 'New Compiler test';
+$string['taskeditornewjunit'] = 'New JUnit test';
+$string['taskeditornewcheckstyle'] = 'New Checkstyle test';
+$string['taskeditornewpythonunit'] = 'New Python unittest';
+$string['taskeditornewpythondoc'] = 'New Python doctest';
+$string['taskeditornewgoogletest'] = 'New Google test';
+$string['taskeditornewcunit'] = 'New CUnit test';
 // $string['openfile'] = '<open...>';

@@ -82,6 +82,10 @@ export class ModelSolutionWrapper {
     }
 
     static delete(button) {
+        if (document.querySelectorAll('.xml_model-solution').length == 1) {
+            window.alert('There must be at least one model solution');
+            return;
+        }
         let instance = ModelSolutionWrapper.constructFromRoot(button.closest('.xml_model-solution'));
         // remove instance
         instance.delete();

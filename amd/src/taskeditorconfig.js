@@ -200,7 +200,7 @@ export const config = (function(testConfigNode) {
                 throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in CUnitTest');
             }
             if (this.withRunCommand) {
-                $(testroot).find(".xml_u_mainclass").val(xmlReader.readSingleText("unit:entry-point", unitNode));
+                context['entrypoint'] = xmlReader.readSingleText("unit:entry-point", unitNode);
             }
 
             this.framework = xmlReader.readSingleText("@framework", unitNode);

@@ -142,6 +142,8 @@ export class FileWrapper {
             const fileObject = fileStorages[this.id];
             console.log('CodeMirror-Mode: ' + fileObject.mimetype + ' ' + this.getCodemirrorMode());
             codemirror[this.id].setOption("mode", this.getCodemirrorMode());
+            // let editor = codemirror[this.id];
+            // editor.refresh();
         } else {
             this._root.find(".xml_file_text").val(newText);
         }

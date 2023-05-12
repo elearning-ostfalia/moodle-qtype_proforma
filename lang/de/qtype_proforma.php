@@ -46,9 +46,6 @@ $string['responseformat'] = 'Eingabeform';
 $string['responseoptions'] = 'Einreichung';
 $string['graderoptions_header'] = 'Grader';
 $string['upload'] = 'Aufgabendatei zum Grader hochladen';
-$string['taskeditor'] = 'Aufgabe bearbeiten';
-$string['taskeditortests'] = 'Tests';
-$string['taskeditorfiles'] = 'Dateien';
 
 $string['responsetemplateheader'] = 'Codevorlagen';
 $string['responsetemplate'] = 'Codevorlage';
@@ -348,8 +345,25 @@ $string['errtasknotunique'] = 'ProFormA-task.xml ist nicht eindeutig.';
 $string['errinvalidtaskxml'] = 'Task.xml in ProFormA-Datei ist ungültig.';
 
 // Taskeditor
-$string['taskeditor'] = 'Edit task';
+$string['taskeditor'] = 'Aufgabe bearbeiten';
 $string['taskeditortests'] = 'Tests';
 $string['taskeditorfiles'] = 'Dateien';
 $string['taskeditorview'] = 'Ansehen';
+$string['taskeditoredit'] = 'Bearbeiten';
 $string['taskeditorhide'] = 'Ausblenden';
+$string['taskeditorfile'] = 'Datei';
+$string['taskeditorattached'] = 'angehängt';
+$string['taskeditorembedded'] = 'eingebettet';
+$string['taskeditorstore'] = 'Speichere';
+$string['taskeditorbinary'] = 'Binärdatei';
+$string['taskeditorfilesize'] = 'Dateigröße';
+$string['taskeditordropzone'] = 'Drop zone';
+
+
+$string['taskeditornewjavacomp'] = 'Neuer Java Compilertest';
+$string['taskeditornewjunit'] = 'Neuer JUnit Test';
+$string['taskeditornewcheckstyle'] = 'Neuer Checkstyle Test';
+$string['taskeditornewpythonunit'] = 'Neuer Python unittest';
+$string['taskeditornewpythondoc'] = 'Neuer Python Doctest';
+$string['taskeditornewgoogletest'] = 'Neuer Google Test';
+$string['taskeditornewcunit'] = 'Neuer CUnit Test';

@@ -143,7 +143,8 @@ export class CustomTest {
     createTestForm() {
         let context = {
             'testtitle' : this.title,
-            'filenamelabel' : this.fileRefLabel
+            'filenamelabel' : this.fileRefLabel,
+            'testtype': this.testType
         };
         TestWrapper.createFromTemplate(null,
             this.mustacheTemplate, context, this.withFileRef);

@@ -53,7 +53,7 @@
 }}
 
 <div>
-    <label for="xml_programming-language">Programming Language:</label>
+    <label for="xml_programming-language">{{#str}} proglang, qtype_proforma {{/str}} </label>
 
     <select id="xml_programming-language" class="custom-select">
         {{#proglang}}
@@ -61,7 +61,7 @@
         {{/proglang}}
     </select>
 
-    <label >Version:</label>
+    <label>{{#str}} version, qtype_proforma {{/str}} </label>
     <span id="proglangversion-{{uniqid}}">
         {{#proglang}}
             <select id="xml_programming-language-{{ value }}" style='display: none' class="custom-select">
@@ -77,16 +77,16 @@
 </p>
 
 <div id="testbuttons-{{uniqid}}">
-    <button id="addCompilerTest" class="btn btn-secondary java" style="display: none;">New Compiler Test</button>
-    <button id="addJUnitTest" class="btn btn-secondary java" style="display: none;">New JUnit Test</button>
-    <button id="addCheckStyleTest" class="btn btn-secondary java" style="display: inline-block;">New CheckStyle Test</button>
+    <button id="addCompilerTest" class="btn btn-secondary java" style="display: none;">{{#str}} taskeditornewjavacomp, qtype_proforma {{/str}}</button>
+    <button id="addJUnitTest" class="btn btn-secondary java" style="display: none;">{{#str}} taskeditornewjunit, qtype_proforma {{/str}}</button>
+    <button id="addCheckStyleTest" class="btn btn-secondary java" style="display: inline-block;">{{#str}} taskeditornewcheckstyle, qtype_proforma {{/str}}</button>
 
-    <button id="addGoogleTest" class="btn btn-secondary cpp clang" style="display: none;">New Google Test</button>
-    <button id="addCUnitTest" class="btn btn-secondary clang" style="display: none;">New CUnit Test</button>
-    <!--<button id="addCCompilerTest" class="btn btn-secondary c" style="display: none;">New C Compiler Test</button>-->
+    <button id="addGoogleTest" class="btn btn-secondary cpp clang" style="display: none;">{{#str}} taskeditornewgoogletest, qtype_proforma {{/str}}</button>
+    <button id="addCUnitTest" class="btn btn-secondary clang" style="display: none;">{{#str}} taskeditornewcunit, qtype_proforma {{/str}}</button>
+    <!--<button id="addCCompilerTest" class="btn btn-secondary c" style="display: none;">{{#str}} taskeditornewjunit, qtype_proforma {{/str}}</button>-->
 
-    <button id="addPythonUnittest" class="btn btn-secondary python" style="display: none;">New Python Unittest</button>
-    <button id="addPythonDocTest" class="btn btn-secondary python" style="display: none;">New Python DocTest</button>
+    <button id="addPythonUnittest" class="btn btn-secondary python" style="display: none;">{{#str}} taskeditornewpythonunit, qtype_proforma {{/str}}</button>
+    <button id="addPythonDocTest" class="btn btn-secondary python" style="display: none;">{{#str}} taskeditornewpythondoc, qtype_proforma {{/str}}</button>
 <!--
     <button id="addSetlXTest" class="btn btn-secondary setlx" style="display: none;">New SetlX Test</button>
     <button id="addSetlXSyntaxTest" class="btn btn-secondary setlx" style="display: none;">New SetlX Syntax Test</button>

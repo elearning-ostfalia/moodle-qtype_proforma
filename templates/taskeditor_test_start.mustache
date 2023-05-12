@@ -49,9 +49,11 @@
 <div id='test_{{ testid }}' class='xml_test'>
 
     <span class='test-header'><span class='box-typ'>Test {{ testid }}</span>
-            <input type="text" value="{{ testid }}" size="2" disabled="disabled" class=''></input>
+
+            <input type="text" value="{{ testid }}" size="2" disabled="disabled"></input>
+
             <label for='xml_test_type'>{{#str}} testtype, qtype_proforma {{/str}} </label>
-                <input class='xml_test_type' disabled="disabled">{{ testtype }}</input>
+            <input class='xml_test_type' disabled="disabled" value='{{ testtype }}'></input>
 
             <label>{{#str}} weight, qtype_proforma {{/str}}<span class='red'>*</span></label>
             <input class='tinyinput xml_test_weight' value='{{ weight }}'></input>
@@ -62,12 +64,12 @@
 
     <p>
         <label for='xml_test_title'>{{#str}} testtitle, qtype_proforma {{/str}}<span class='red'>*</span> </label>
-        <input class='largeinput xml_test_title' value=' {{ testtitle }} '/>
+        <input class='xml_test_title' size="80" value='{{ testtitle }}'/>
     </p>
 
 <p>
     <label for='xml_description'>{{#str}} testdescription, qtype_proforma {{/str}} </label>
-    <textarea rows='2' class='xml_description' title = 'Visible description'>{{ description }}</textarea>
+    <textarea rows='2' cols='80' class='xml_description' title = 'Visible description'>{{ description }}</textarea>
 </p>
 
 <p>

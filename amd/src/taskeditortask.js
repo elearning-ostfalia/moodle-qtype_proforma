@@ -358,6 +358,7 @@ export function readAndDisplayXml(taskXml) {
                 }
                 console.log('found ' + configItem.title);
                 context['filenamelabel'] = configItem.fileRefLabel;
+                context['testtype'] = configItem.testType;
                 task.readTestConfig(taskXml, item.id, configItem, context);
                 ui_test = TestWrapper.createFromTemplate(item.id,
                     configItem.getMustacheTemplate(), context, true, item, task);
