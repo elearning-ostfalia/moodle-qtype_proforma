@@ -41,7 +41,7 @@ export function clearErrorMessage() {
 
 }
 
-
+/*
 function getInternalDescriptionString(comment) {
     return "<p>" +
         "<label for='xml_internal_description'  class='leftlabel'>Internal Description:</label>" +
@@ -56,12 +56,7 @@ export function getDescriptionHtmlString(description, comment) {
         //"<br>" +
         "</p>" +
         getInternalDescriptionString(comment);
-
-/*        "<p>" +
-        "<label for='xml_internal_description'>Internal Description:</label>" +
-    "<textarea rows='2'  class='xml_internal_description' " +
-    "title = 'Internal description (not visible)'>"+comment+"</textarea></p>";*/
-}
+}*/
 
 // without . (MyString.Java = java)
 // to lowercase
@@ -110,6 +105,7 @@ export function setcounter(temphash) {
 export class CustomTest {
 
     constructor(title, testType, template, proglang) {
+        this.defaultTitle = title;
         this.title = title; // title in html output
         this.testType = testType; // test type in XML
         if (template) {
@@ -144,7 +140,8 @@ export class CustomTest {
         let context = {
             'testtitle' : this.title,
             'filenamelabel' : this.fileRefLabel,
-            'testtype': this.testType
+            'testtype': this.testType,
+            'testheader': this.defaultTitle
         };
         TestWrapper.createFromTemplate(null,
             this.mustacheTemplate, context, this.withFileRef);
@@ -159,16 +156,17 @@ export class CustomTest {
  * @param tests
  * @constructor
  */
+/*
 class ProglangInfo{
     constructor(name, tests) {
         this.name  = name;
         this.tests = tests;
     }
 }
-
+*/
 
 // -------------------------------------------------------------
-
+/*
 
 // helper function for custom test configuration
 let createFileWithContent = function(filename, content) {
@@ -189,3 +187,4 @@ let getTestField = function(testId, fieldClass) {
     let xml_test_root = $(".xml_test_id[value='"+testId+"']").parent().parent();
     return xml_test_root.parent().find(fieldClass).first();
 }
+*/

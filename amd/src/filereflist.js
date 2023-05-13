@@ -303,10 +303,10 @@ export class FileReferenceList extends DynamicList {
         let ui_file = FileWrapper.constructFromId(fileid);
         if (FileReferenceList.getCountFileIdReferenced(fileid) === 0) {
             // no reference at all => delete file
-            //if (confirm(ui_file.filename + " is no longer referenced.\n" +
-            //    "Shall it be removed from task?")) {
+            // if (window.confirm(ui_file.filename + " is no longer referenced.\n" +
+            //     "Shall it be removed from task?")) {
                 ui_file.delete();
-            //}
+            // }
         }
     }
 

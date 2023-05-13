@@ -51,15 +51,16 @@ body .proforma-taskeditor .test-header {
 
 body .proforma-taskeditor .box-typ {
     display: inline-block;
-    width: var(--labelwith); /*130px;*/
+    /* width: var(--labelwith); */
     text-align: left;
     font-weight: 700;
-    padding-left:0.3em;
-    line-height: 1.5;
+    /* padding-left:0.3em;*/
+    /* line-height: 1.5;*/
 }
 
 .proforma-taskeditor .xml_test,
-.proforma-taskeditor .xml_file {
+.proforma-taskeditor .xml_file,
+.proforma-taskeditor .xml_model-solution {
     background: #e9ecef;
     padding-top: 5px;
     padding-bottom: 5px;
@@ -87,10 +88,11 @@ body .proforma-taskeditor .box-typ {
 .proforma-taskeditor p label:first-child,
 .proforma-taskeditor br + label,
 .proforma-taskeditor .xml_file_non_binary label,
+.proforma-taskeditor .test-header label,
 
 .proforma-taskeditor .xml_fileref_table td:first-child,
 .proforma-taskeditor .dynamic_table td:first-child {
-    background-color: lightskyblue;
+    /* background-color: lightskyblue; */
     width: var(--labelwith);
     /*padding-left: 0.3em;*/
     text-align: left;

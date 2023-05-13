@@ -39,6 +39,7 @@ import {getExtension} from "./taskeditorutil";
 import {config} from "./taskeditorconfig";
 import {unzipme} from "./zipper";
 import {readXMLWithLock} from "./taskeditorhelper";
+import {convertToXML} from "./taskeditortask";
 
 
 /**
@@ -340,4 +341,13 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
     // Add button callbacks.
     addButtonCallbacks();
 
+}
+
+export const download = (buttonid) => {
+    let button = document.getElementById(buttonid);
+    button.onclick = function (e) {
+        e.preventDefault();
+        convertToXML();
+
+    }
 }

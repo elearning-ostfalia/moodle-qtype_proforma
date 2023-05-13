@@ -30,13 +30,13 @@
 
     Example context (json):
     {
-        "filenamelabel" : "Junit and other file(s)"
+       // "filenamelabel" : "Junit and other file(s)"
     }
 }}
 
 <tr>
     <td>
-        <label for="xml_fileref_filename">{{ filenamelabel }}<span class="red">*</span></label>
+        <label for="xml_fileref_filename">{{#str}} taskeditorfiles, qtype_proforma {{/str}}<span class="red">*</span></label>
     </td>
     <td>
         <select class="mediuminput fileref_filename xml_fileref_filename"

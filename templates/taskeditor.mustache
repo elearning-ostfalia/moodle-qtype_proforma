@@ -91,5 +91,13 @@
     </div>
 </div>
 
+<button id="download_task-{{uniqid}}" class="btn btn-secondary java">Download</button>
+
+{{#js}}
+    require(['qtype_proforma/taskeditor'], function(editor) {
+        console.log('attach');
+        editor.download("download_task-{{uniqid}}");
+    });
+{{/js}}
 
 

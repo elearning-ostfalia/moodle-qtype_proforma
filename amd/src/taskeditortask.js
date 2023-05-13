@@ -143,7 +143,7 @@ export function convertToXML(topLevelDoc, rootNode) {
     const t0 = performance.now();
     clearErrorMessage();
     let taskXml = undefined;
-    descriptionEditor.save();
+    // descriptionEditor.save();
 
     // check input
     if (!isInputComplete()) {
@@ -271,33 +271,6 @@ export function convertToXML(topLevelDoc, rootNode) {
     return taskXml;
 }
 
-/*
-function resetInputFields() {
-    console.log('Reset all input fields?? Not actually needed in Moodle');
-    return;
-/////TODO     gradingHintCounter = 1;                            // variable initialisation
-
-    clearErrorMessage();
-    FileWrapper.deleteAllFiles();
-
-    $("#modelsolutionsection")[0].textContent = "";
-    $("#testsection")[0].textContent = "";
-    $("#files_restriction")[0].textContent = "";
-    $("#files_restriction").append(SubmissionFileList.getInstance().getTableString());
-
-    codeskeleton.setValue('');
-
-    // initialise other sections
-    if (USE_VISIBLES) FileReferenceList.init("#visiblefiledropzone", '#visiblesection', VisibleFileReference);
-
-    //FileReferenceList.init("#multimediadropzone", '#multimediasection', MultimediaFileReference);
-    FileReferenceList.init("#downloaddropzone", '#downloadsection', DownloadableFileReference);
-    //FileReferenceList.init("#templatedropzone", '#templatesection', TemplateFileReference);
-///// TODO    modelSolIDs = {};
-    testIDs = {};
-}
-
- */
 
 export function readAndDisplayXml(taskXml) {
     let task = new TaskClass();
@@ -359,6 +332,7 @@ export function readAndDisplayXml(taskXml) {
                 console.log('found ' + configItem.title);
                 context['filenamelabel'] = configItem.fileRefLabel;
                 context['testtype'] = configItem.testType;
+                context['testheader'] = configItem.defaultTitle;
                 task.readTestConfig(taskXml, item.id, configItem, context);
                 ui_test = TestWrapper.createFromTemplate(item.id,
                     configItem.getMustacheTemplate(), context, true, item, task);

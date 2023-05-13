@@ -99,9 +99,11 @@ export class TestWrapper {
     }
 
     static delete(button) {
-        let instance = TestWrapper.constructFromRoot(button.closest('.xml_test'));
-        // remove instance
-        instance.delete();
+        if (window.confirm("Shall the test and all its files be removed from task?")) {
+            let instance = TestWrapper.constructFromRoot(button.closest('.xml_test'));
+            // remove instance
+            instance.delete();
+        }
     }
 
     /**
