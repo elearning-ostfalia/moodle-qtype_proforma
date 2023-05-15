@@ -37,7 +37,7 @@ import {TestWrapper } from "./taskeditortest";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "./repository";
 import {getExtension} from "./taskeditorutil";
 import {config} from "./taskeditorconfig";
-import {unzipme} from "./zipper";
+import {unzipme, zipme} from "./zipper";
 import {readXMLWithLock} from "./taskeditorhelper";
 import {convertToXML} from "./taskeditortask";
 
@@ -347,7 +347,7 @@ export const download = (buttonid) => {
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {
         e.preventDefault();
-        convertToXML();
-
+        var zipname = $("#id_name").val();
+        zipme(convertToXML(), zipname);
     }
 }

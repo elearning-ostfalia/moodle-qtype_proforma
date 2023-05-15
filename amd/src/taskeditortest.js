@@ -119,7 +119,7 @@ export class TestWrapper {
         if (!testid)
             testid = setcounter(testIDs);
         context['testid'] = testid;
-        console.log("context");
+        console.log("context for rendering template " + template);
         console.log(context);
         let test = undefined;
 

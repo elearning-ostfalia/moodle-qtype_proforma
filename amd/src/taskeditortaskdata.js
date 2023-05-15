@@ -16,22 +16,22 @@
  */
 
 
-import {setErrorMessage} from "./taskeditorutil";
+import {setErrorMessage, generateUUID} from "./taskeditorutil";
 import {config} from "./taskeditorconfig";
 
-const T_LMS_USAGE = {
+export const T_LMS_USAGE = {
     DISPLAY: 'display',
     DOWNLOAD: 'download',
     EDIT: 'edit'
 };
 
-const T_VISIBLE = {
+export const T_VISIBLE = {
     YES: 'yes',
     NO: 'no',
     DELAYED: 'delayed'
 };
 
-const T_FILERESTRICTION_FORMAT = {
+export const T_FILERESTRICTION_FORMAT = {
     POSIX: 'posix-ere',
     NONE: 'none'
 };
@@ -144,13 +144,13 @@ class XmlWriter {
 }
 
 // task data structures
-class TaskFileRef {
+export class TaskFileRef {
     constructor(id) {
         this.refid = id;
     }
 }
 
-class TaskFile {
+export class TaskFile {
     constructor() {
         this.filename = '';
         this.usedByGrader = false;
@@ -164,7 +164,7 @@ class TaskFile {
     }
 }
 
-class TaskFileRestriction {
+export class TaskFileRestriction {
     constructor(filename, required, format) {
         this.restriction = filename;
         this.required = required;
@@ -173,7 +173,7 @@ class TaskFileRestriction {
 }
 
 
-class TaskModelSolution {
+export class TaskModelSolution {
     constructor() {
         this.id = null;
         this.description = "";
@@ -183,7 +183,7 @@ class TaskModelSolution {
 }
 
 
-class TaskTest {
+export class TaskTest {
     constructor() {
         this.id = null;
         this.title = null;
@@ -777,7 +777,7 @@ export class TaskClass {
 
             let metadata = xmlDoc.createElementNS(xmlns, "meta-data");
             task.appendChild(metadata);
-            config.writeXmlExtra(metadata, xmlDoc, xmlWriter);
+///            config.writeXmlExtra(metadata, xmlDoc, xmlWriter);
             //xmlWriter.createTextElement(metadata, 'praktomat:allowed-upload-filename-mimetypes', '(text/.*)');
 
             let serializer = new XMLSerializer();
@@ -793,12 +793,12 @@ export class TaskClass {
             // resulting in an error message
             xsds = xsds.concat(config.xsds);
 
-
+/*
             if (!topLevelDoc) { // do not validate for XML part
                 // validate output
                 xsds.forEach(function (xsd_file, index) {
                     $.get(xsd_file, function (data, textStatus, jqXHR) {      // read XSD schema
-                        const valid = xmllint.validateXML({xml: result /*xmlString*/, schema: jqXHR.responseText});
+                        const valid = xmllint.validateXML({xml: result, schema: jqXHR.responseText});
                         if (valid.errors !== null) {                                // does not conform to schema
                             //alert(xsd_file);
                             setErrorMessage("Errors in XSD-Validation " + xsd_file + ":");
@@ -812,7 +812,7 @@ export class TaskClass {
                     });
                 });
             }
-
+*/
             return result;
         } catch (err){
             setErrorMessage("Error creating task xml file.", err);

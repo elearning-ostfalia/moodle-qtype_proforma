@@ -16,9 +16,9 @@
  */
 
 import $ from 'jquery';
-import {TaskClass} from "./taskeditortaskdata";
+import {TaskClass, TaskFile, TaskFileRestriction, TaskModelSolution, TaskFileRef, TaskTest, T_VISIBLE, T_LMS_USAGE} from "./taskeditortaskdata";
 import {testIDs} from "./taskeditortest";
-import {setErrorMessage, clearErrorMessage} from "./taskeditorutil";
+import {setErrorMessage, clearErrorMessage, generateUUID} from "./taskeditorutil";
 import {FileWrapper} from "./taskeditorfile";
 import {TestWrapper } from "./taskeditortest";
 import {ModelSolutionWrapper } from "./taskeditormodelsol";
@@ -29,6 +29,7 @@ import {TestFileReference, FileReferenceList,ModelSolutionFileReference } from "
 
 
 function isInputComplete() {
+/*
     let inputField = $("#xml_description");
     if (!inputField.val()) {
         setErrorMessage("Task description is empty.");
@@ -46,8 +47,9 @@ function isInputComplete() {
         inputField.focus();
         return false;
     }
-
-    if ((typeof $(".xml_file_id")[0] === "undefined") ||      //  check for missing form values
+*/
+/*
+    if ((typeof $("#proforma-model-solution-section .xml_file_id")[0] === "undefined") ||      //  check for missing form values
         ModelSolutionFileReference.getInstance().getCountFilerefs() === 0) {
         // (typeof $(".xml_model-solution_fileref")[0] === "undefined")) {
         setErrorMessage("Required elements are missing. " +
@@ -55,12 +57,12 @@ function isInputComplete() {
             "corresponding file element must be provided. ");
         return false;
     }
-
+*/
     let returnFromFunction = false;
     $.each($(".xml_file_filename"), function(index, item) {  // check whether filenames are provided
         if (!item.value) {
             setErrorMessage("Filename is empty.");
-            $("#tabs").tabs("option", "active",  tab_page.FILES);
+            // $("#tabs").tabs("option", "active",  tab_page.FILES);
             item.focus();
             returnFromFunction = true;
         }
@@ -70,7 +72,7 @@ function isInputComplete() {
 
     $.each($("." + ModelSolutionFileReference.getInstance().getClassFilename()), function(index, item) {   // check whether referenced filenames exists
         if (!item.value) {
-            $("#tabs").tabs("option", "active",  tab_page.MODEL_SOLUTION);
+            // $("#tabs").tabs("option", "active",  tab_page.MODEL_SOLUTION);
             setErrorMessage("Filename in model solution is missing.");
             item.focus();
             returnFromFunction = true;
@@ -108,7 +110,7 @@ function isInputComplete() {
     // todo: this should be part of the configuration
     $.each($(".xml_ju_mainclass"), function(index, item) {   // check whether main-class exists
         if (!item.value) {
-            $("#tabs").tabs("option", "active",  tab_page.TESTS);
+            // $("#tabs").tabs("option", "active",  tab_page.TESTS);
             setErrorMessage("Entry point is missing.");
             item.focus();
             returnFromFunction = true;
@@ -116,7 +118,7 @@ function isInputComplete() {
     });
     $.each($(".xml_u_mainclass"), function(index, item) {   // check whether main-class exists
         if (!item.value) {
-            $("#tabs").tabs("option", "active",  tab_page.TESTS);
+            // $("#tabs").tabs("option", "active",  tab_page.TESTS);
             setErrorMessage("Run command is missing.");
             item.focus();
             returnFromFunction = true;
@@ -146,13 +148,31 @@ export function convertToXML(topLevelDoc, rootNode) {
     // descriptionEditor.save();
 
     // check input
-    if (!isInputComplete()) {
+    console.log('TODO: validate input');
+/*    if (!isInputComplete()) {
         return;
     }
+
+ */
 
     // PRE PROCESSING
     // copy data to task class
     let task = new TaskClass();
+    task.title = $("#id_name").val();
+    task.comment = '';
+    task.description = $("#id_questiontexteditable").val();
+    task.proglang = $('#xml_programming-language').val();
+    task.proglangVersion = $("xml_programming-language-" + task.proglang).val();
+    task.parentuuid = null;
+    //task.uuid = $("#xml_uuid").val();
+    //if (!task.uuid)
+    task.uuid = generateUUID();
+    task.lang = 'en'; // $("#xml_lang").val();
+    task.sizeSubmission = 0; // $("#xml_submission_size").val();
+    task.filenameRegExpSubmission = ''; // $(".xml_restrict_filename").first().val();
+
+
+    /*
     task.title = $("#xml_title").val();
     task.comment = $("#xml_task_internal_description").find('.xml_internal_description').val();
     task.description = descriptionEditor.getValue();
@@ -172,6 +192,7 @@ export function convertToXML(topLevelDoc, rootNode) {
     task.lang = $("#xml_lang").val();
     task.sizeSubmission = $("#xml_submission_size").val();
     task.filenameRegExpSubmission = $(".xml_restrict_filename").first().val();
+     */
 
     // write files
     FileWrapper.doOnAllFiles(function(ui_file) {
@@ -245,12 +266,13 @@ export function convertToXML(topLevelDoc, rootNode) {
         task.tests[index] = test;
     })
 
-
+/*
     SubmissionFileList.doOnAll(function(filename, regexp, optional) {
         let restrict = new TaskFileRestriction(filename, !optional, regexp?T_FILERESTRICTION_FORMAT.POSIX:null);
         task.fileRestrictions.push(restrict);
     });
-
+*/
+    /*
     if (USE_VISIBLES) {
         VisibleFileReference.getInstance().doOnAllIds(function(id, displayMode) {
             task.files[id].visible = T_VISIBLE.YES;
@@ -262,7 +284,7 @@ export function convertToXML(topLevelDoc, rootNode) {
             task.files[id].usageInLms = T_LMS_USAGE.DOWNLOAD;
         });
         task.codeskeleton = codeskeleton.getValue();
-    }
+    }*/
 
 
     taskXml = task.writeXml(topLevelDoc, rootNode);
@@ -308,12 +330,12 @@ export function readAndDisplayXml(taskXml) {
         testIDs[item.id] = 1;
 
         let ui_test = undefined;
-        let context = {
+/*        let context = {
             'testtitle': item.title,
             'weight': item.weight,
             'description': item.description,
             'comment': item.comment,
-        };
+        };*/
 
         console.log('iterate through all configured test templates, look for ' + item.testtype);
         let found = false;
@@ -330,9 +352,12 @@ export function readAndDisplayXml(taskXml) {
                     }
                 }
                 console.log('found ' + configItem.title);
-                context['filenamelabel'] = configItem.fileRefLabel;
-                context['testtype'] = configItem.testType;
-                context['testheader'] = configItem.defaultTitle;
+                let context = configItem.getTemplateContext();
+                context['testtitle'] = item.title;
+                context['weight'] = item.weight;
+                context['description'] = item.description;
+                context['comment'] = item.comment;
+
                 task.readTestConfig(taskXml, item.id, configItem, context);
                 ui_test = TestWrapper.createFromTemplate(item.id,
                     configItem.getMustacheTemplate(), context, true, item, task);

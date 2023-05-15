@@ -36,7 +36,11 @@
 
 <tr>
     <td>
-        <label for="xml_fileref_filename">{{#str}} taskeditorfiles, qtype_proforma {{/str}}<span class="red">*</span></label>
+        <label for="xml_fileref_filename">{{#str}} taskeditorfiles, qtype_proforma {{/str}}
+        {{ #filemandatory }}
+            <span class="red">*</span>
+        {{ /filemandatory }}
+        </label>
     </td>
     <td>
         <select class="mediuminput fileref_filename xml_fileref_filename"

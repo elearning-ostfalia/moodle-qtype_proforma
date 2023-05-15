@@ -35,6 +35,7 @@ export function setErrorMessage(errormess, exception) { // setting the error con
     console.log('setErrorMessage');
     console.log(errormess);
     console.log(exception);
+    window.alert(errormess);
 }
 
 export function clearErrorMessage() {
@@ -136,15 +137,18 @@ export class CustomTest {
     getFramework() {return undefined;}
     getMustacheTemplate() { return this.mustacheTemplate; }
 
-    createTestForm() {
-        let context = {
+    getTemplateContext() {
+        return {
             'testtitle' : this.title,
             'filenamelabel' : this.fileRefLabel,
             'testtype': this.testType,
-            'testheader': this.defaultTitle
+            'testheader': this.defaultTitle,
+            'filemandatory': this.manadatoryFile
         };
+    }
+    createTestForm() {
         TestWrapper.createFromTemplate(null,
-            this.mustacheTemplate, context, this.withFileRef);
+            this.mustacheTemplate, this.getTemplateContext(), this.withFileRef);
     }
 }
 

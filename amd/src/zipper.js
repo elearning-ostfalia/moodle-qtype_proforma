@@ -233,16 +233,18 @@ export function taskTitleToFilename(title) {
 /**
  * create zip file
  */
-export function zipme() {
+export function zipme(TEXT_CONTENT, zipname) {
     // get task.xml content from user interface
-    var TEXT_CONTENT = taskXml; // $("#output").val();
-    if (!TEXT_CONTENT || TEXT_CONTENT.length == 0) {
-        console.log("zipme called with empty output");
+    // var TEXT_CONTENT = taskXml; // $("#output").val();
+    if (!TEXT_CONTENT || TEXT_CONTENT.length === 0) {
+        console.error("zipme called with empty output");
         return;
     }
+
+    console.log(TEXT_CONTENT);
     const FILENAME = "task.xml";
     var blob;
-    var zipname = $("#xml_title").val();
+    // var zipname = $("#xml_title").val();
     zipname = taskTitleToFilename(zipname); // zipname.replace(/[^a-z0-9]/gi, "");
     zipname = zipname + '.zip';
 
@@ -265,60 +267,31 @@ export function zipme() {
         }
     });
 
-    // bom: aus dem Internet gefunden
-    function onerror(message) {
-        console.error(message);
-        alert(message);
-    }
+    async function zipBlob(blob) {
+        const zipFileWriter = new zip.BlobWriter("application/zip");
+        const zipWriter = new zip.ZipWriter(zipFileWriter);
 
-    function zipBlob(blob, callback) {
-        zip.createWriter(new zip.BlobWriter("application/zip"), function (zipWriter) {
-
-            // bom: new
-            let f = 0;
-            function nextFile(f) {
-                if (f >= fileStorages.length) {
-                    // end of recursion => write task.xml
-                    zipWriter.add(FILENAME, new zip.BlobReader(blob), function () {
-                        zipWriter.close(callback);
-                    });
-                } else {
-                    const ui_file = FileWrapper.constructFromId(f);
-                    if (ui_file && ui_file.storeAsFile) {
-                        fblob = new Blob([ui_file.content], {type: ui_file.mimetype});
-                        zipWriter.add(ui_file.filename, new zip.BlobReader(fblob), function () {
-                            // callback
-                            f++;
-                            nextFile(f);
-                        });
-
-/*
-                    const fs = fileStorages[f];
-                    if (fs !== undefined && fs.storeAsFile) {
-                        fblob = new Blob([fs.content], {type: fs.mimetype});
-                        zipWriter.add(fs.filename, new zip.BlobReader(fblob), function () {
-                            // callback
-                            f++;
-                            nextFile(f);
-                        });
-                        */
-                    } else {
-                        f++;
-                        nextFile(f);
-                    }
-                }
+        console.log('fileStorages.length is ' + fileStorages.length);
+        let f = 0;
+        while (f < fileStorages.length) {
+            console.log('f is ' + f);
+            const ui_file = FileWrapper.constructFromId(f);
+            if (ui_file && ui_file.storeAsFile) {
+                let fblob = new Blob([ui_file.content], {type: ui_file.mimetype});
+                await zipWriter.add(ui_file.filename, new zip.BlobReader(fblob));
             }
-
-            /*zipWriter.add(FILENAME, new zip.BlobReader(blob), function () {
-                zipWriter.close(callback);
-            }); */
-            nextFile(f);
-        }, onerror);
+            f++;
+        }
+        await zipWriter.add(FILENAME, new zip.BlobReader(blob));
+        await zipWriter.close();
+        return await zipFileWriter.getData();
     }
+
     blob = new Blob([ TEXT_CONTENT ], {
         type : zip.getMimeType(FILENAME)
     });
-    zipBlob(blob, function(zippedBlob){
+    zipBlob(blob)
+        .then(zippedBlob => {
         // console.log(zippedBlob);
         url = window.URL.createObjectURL(zippedBlob);
         let a = document.createElement("a");
@@ -342,4 +315,4 @@ export function zipme() {
 */        // window.URL.revokeObjectURL(url);
         // window.navigator.msSaveBlob(zippedBlob, "task.zip");
     });
-};
+}
