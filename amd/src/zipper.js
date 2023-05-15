@@ -241,10 +241,9 @@ export function zipme(TEXT_CONTENT, zipname) {
         return;
     }
 
-    console.log(TEXT_CONTENT);
+    // console.log(TEXT_CONTENT);
     const FILENAME = "task.xml";
     var blob;
-    // var zipname = $("#xml_title").val();
     zipname = taskTitleToFilename(zipname); // zipname.replace(/[^a-z0-9]/gi, "");
     zipname = zipname + '.zip';
 
@@ -278,10 +277,12 @@ export function zipme(TEXT_CONTENT, zipname) {
             const ui_file = FileWrapper.constructFromId(f);
             if (ui_file && ui_file.storeAsFile) {
                 let fblob = new Blob([ui_file.content], {type: ui_file.mimetype});
+                console.log('add ' + ui_file.filename + ' to zip file');
                 await zipWriter.add(ui_file.filename, new zip.BlobReader(fblob));
             }
             f++;
         }
+        console.log('add ' + FILENAME + ' to zip file');
         await zipWriter.add(FILENAME, new zip.BlobReader(blob));
         await zipWriter.close();
         return await zipFileWriter.getData();

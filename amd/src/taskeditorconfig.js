@@ -480,8 +480,6 @@ export const config = (function(testConfigNode) {
         infoCheckStyle: testCheckStyle,
         resolveNamespace: resolveNamespace,
 /*        writeXmlExtra: writeXmlExtra,
-        onProglangChanged: onProglangChanged,
-
         //writeNamespaces: writeNamespaces,
         // data
         xsds: xsds,

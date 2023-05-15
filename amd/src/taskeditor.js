@@ -348,6 +348,9 @@ export const download = (buttonid) => {
     button.onclick = function (e) {
         e.preventDefault();
         var zipname = $("#id_name").val();
-        zipme(convertToXML(), zipname);
+        const context = convertToXML();
+        if (context) {
+            zipme(context, zipname);
+        }
     }
 }

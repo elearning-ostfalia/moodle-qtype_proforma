@@ -61,9 +61,16 @@ function isInputComplete() {
     let returnFromFunction = false;
     $.each($(".xml_file_filename"), function(index, item) {  // check whether filenames are provided
         if (!item.value) {
-            setErrorMessage("Filename is empty.");
+            let elem = $("a[hef='#proforma-files-section']");
+            console.log('switch to');
+            console.log(elem);
+            elem.trigger('click');
+            elem.click();
+            elem.parent().trigger('click');
+            elem.parent().parent().trigger('click');
             // $("#tabs").tabs("option", "active",  tab_page.FILES);
             item.focus();
+            setErrorMessage("Filename is empty.");
             returnFromFunction = true;
         }
     });
@@ -148,12 +155,12 @@ export function convertToXML(topLevelDoc, rootNode) {
     // descriptionEditor.save();
 
     // check input
-    console.log('TODO: validate input');
-/*    if (!isInputComplete()) {
-        return;
+    // console.log('TODO: validate input');
+    if (!isInputComplete()) {
+        return null;
     }
 
- */
+
 
     // PRE PROCESSING
     // copy data to task class
@@ -162,7 +169,10 @@ export function convertToXML(topLevelDoc, rootNode) {
     task.comment = '';
     task.description = $("#id_questiontexteditable").val();
     task.proglang = $('#xml_programming-language').val();
-    task.proglangVersion = $("xml_programming-language-" + task.proglang).val();
+    task.proglang = task.proglang.trim();
+    console.log('READ FROM UI: ' + task.proglang);
+    task.proglangVersion = $("#xml_programming-language-" + task.proglang).val();
+    console.log('READ FROM UI VERSION: ' + task.proglangVersion);
     task.parentuuid = null;
     //task.uuid = $("#xml_uuid").val();
     //if (!task.uuid)
