@@ -25,29 +25,40 @@ import {ModelSolutionWrapper } from "./taskeditormodelsol";
 import {config } from "./taskeditorconfig";
 import {relinkFiles} from "./zipper";
 import {TestFileReference, FileReferenceList,ModelSolutionFileReference } from "./filereflist";
+import * as Str from 'core/str';
 
+function switchToTab(hash) {
+    const tab = document.querySelector('.nav-link[href="' + hash + '"]');
+    if (tab) {
+        tab.click();
+    }
+}
 
+function addRequired(elem) {
+    elem.focus();
+    elem.classList.add('is-invalid');
+    elem.classList.add('form-control');
+
+    let sibling = document.createElement('div');
+    sibling.classList.add('form-control-feedback');
+    sibling.classList.add('invalid-feedback');
+    elem.after(sibling);
+
+    return Str.get_string('err_required', 'form')
+        .then((string) => {
+            sibling.innerHTML = string;
+        });
+}
 
 function isInputComplete() {
-/*
-    let inputField = $("#xml_description");
+    let inputField = $("#id_name");
     if (!inputField.val()) {
-        setErrorMessage("Task description is empty.");
+        // setErrorMessage("Task description is empty.");
         // switch to appropriate tab and set focus
-        $("#tabs").tabs("option", "active",  tab_page.MAIN);
         inputField.focus();
         return false;
     }
 
-    inputField = $("#xml_title");
-    if (!inputField.val()) {
-        setErrorMessage("Task title is empty.");
-        // switch to appropriate tab and set focus
-        $("#tabs").tabs("option", "active",  tab_page.MAIN);
-        inputField.focus();
-        return false;
-    }
-*/
 /*
     if ((typeof $("#proforma-model-solution-section .xml_file_id")[0] === "undefined") ||      //  check for missing form values
         ModelSolutionFileReference.getInstance().getCountFilerefs() === 0) {
@@ -58,76 +69,94 @@ function isInputComplete() {
         return false;
     }
 */
+    document.querySelectorAll(".proforma-taskeditor .is-invalid").forEach(item => {  // check whether filenames are provided
+        item.classList.remove('is-invalid');
+        item.classList.remove('form-control');
+    });
+    document.querySelectorAll(".proforma-taskeditor .invalid-feedback").forEach(item => {  // check whether filenames are provided
+        item.remove();
+    });
+
+
     let returnFromFunction = false;
-    $.each($(".xml_file_filename"), function(index, item) {  // check whether filenames are provided
+    document.querySelectorAll(".xml_file_filename").forEach(item => {  // check whether filenames are provided
+        console.log(item);
         if (!item.value) {
-            let elem = $("a[hef='#proforma-files-section']");
-            console.log('switch to');
-            console.log(elem);
-            elem.trigger('click');
-            elem.click();
-            elem.parent().trigger('click');
-            elem.parent().parent().trigger('click');
-            // $("#tabs").tabs("option", "active",  tab_page.FILES);
-            item.focus();
-            setErrorMessage("Filename is empty.");
+            switchToTab('#proforma-files-section');
+            addRequired(item);
+            // setErrorMessage("Filename is empty.");
             returnFromFunction = true;
         }
     });
-    if (returnFromFunction)
-        return false;
-
-    $.each($("." + ModelSolutionFileReference.getInstance().getClassFilename()), function(index, item) {   // check whether referenced filenames exists
+    document.querySelectorAll(".xml_test_title").forEach(item => {  // check whether filenames are provided
+        console.log(item);
         if (!item.value) {
-            // $("#tabs").tabs("option", "active",  tab_page.MODEL_SOLUTION);
-            setErrorMessage("Filename in model solution is missing.");
-            item.focus();
+            switchToTab('#proforma-tests-section');
+            addRequired(item);
+            // setErrorMessage("Filename is empty.");
             returnFromFunction = true;
         }
     });
-    if (returnFromFunction)
-        return false;
+    // if (returnFromFunction)
+    //    return false;
+
+    let query = "#proforma-model-solution-section .xml_fileref_filename";
+    document.querySelectorAll(query).forEach(item => {  // check whether referenced filenames exists
+        if (!item.value) {
+            switchToTab('#proforma-model-solution-section');
+            // setErrorMessage("Filename in model solution is missing.");
+            // console.log(item.value);
+            // console.log(item);
+            addRequired(item);
+            returnFromFunction = true;
+        }
+    });
+    // if (returnFromFunction)
+    //    return false;
 
 
-
-    $.each($("." + TestFileReference.getInstance().getClassFilename()), function(index, item) {   // check whether referenced filenames exists
-        // check if file is optional or mandatory
-        let mandatory = false;
-        if (true) { //$(item).is(":visible") ) {
+    query = "#proforma-tests-section .xml_fileref_filename";
+    document.querySelectorAll(query).forEach(item => {   // check whether referenced filenames exists
+        console.log(item.value);
+        if (!item.value) {
+            // check if file is optional or mandatory
+            // console.log('Missing test reference gefunden');
             // search label
-            let label = $(item).closest('tr').find('label').first();
-            
-            if (label.find('.red').length > 0)
-                mandatory = true;
-        }
-
-        if (mandatory && !item.value) {
-            $("#tabs").tabs("option", "active",  tab_page.TESTS);
-
-            //let title = $(item).closest('h3').first();
-
-            setErrorMessage("Filename in test is missing.");
-            item.focus();
-            returnFromFunction = true;
+            let label = item.closest('tr').querySelector('label');
+            // console.log('Label gefunden');
+            // console.log(label);
+            if (label.querySelectorAll('.red').length !== 0) {
+                // console.log('mandatory = true');
+                // console.log(label.querySelectorAll('.red'));
+                switchToTab('#proforma-tests-section');
+                // setErrorMessage("Filename in test is missing.");
+                addRequired(item);
+                // item.focus();
+                returnFromFunction = true;
+            }
         }
     });
-    if (returnFromFunction)
-        return false;
+    // if (returnFromFunction)
+    //    return false;
 
     // todo: this should be part of the configuration
     $.each($(".xml_ju_mainclass"), function(index, item) {   // check whether main-class exists
+        // console.log(item.value);
         if (!item.value) {
-            // $("#tabs").tabs("option", "active",  tab_page.TESTS);
-            setErrorMessage("Entry point is missing.");
-            item.focus();
+            switchToTab('#proforma-tests-section');
+            addRequired(item);
+            // setErrorMessage("Entry point is missing.");
+            // item.focus();
             returnFromFunction = true;
         }
     });
     $.each($(".xml_u_mainclass"), function(index, item) {   // check whether main-class exists
+        // console.log(item.value);
         if (!item.value) {
-            // $("#tabs").tabs("option", "active",  tab_page.TESTS);
-            setErrorMessage("Run command is missing.");
-            item.focus();
+            switchToTab('#proforma-tests-section');
+            addRequired(item);
+            // setErrorMessage("Run command is missing.");
+            // item.focus();
             returnFromFunction = true;
         }
     });
