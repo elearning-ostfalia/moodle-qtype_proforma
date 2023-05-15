@@ -105,8 +105,6 @@ function isInputComplete() {
         if (!item.value) {
             switchToTab('#proforma-model-solution-section');
             // setErrorMessage("Filename in model solution is missing.");
-            // console.log(item.value);
-            // console.log(item);
             addRequired(item);
             returnFromFunction = true;
         }
@@ -117,21 +115,12 @@ function isInputComplete() {
 
     query = "#proforma-tests-section .xml_fileref_filename";
     document.querySelectorAll(query).forEach(item => {   // check whether referenced filenames exists
-        console.log(item.value);
         if (!item.value) {
-            // check if file is optional or mandatory
-            // console.log('Missing test reference gefunden');
-            // search label
             let label = item.closest('tr').querySelector('label');
-            // console.log('Label gefunden');
-            // console.log(label);
             if (label.querySelectorAll('.red').length !== 0) {
-                // console.log('mandatory = true');
-                // console.log(label.querySelectorAll('.red'));
                 switchToTab('#proforma-tests-section');
                 // setErrorMessage("Filename in test is missing.");
                 addRequired(item);
-                // item.focus();
                 returnFromFunction = true;
             }
         }
@@ -141,22 +130,18 @@ function isInputComplete() {
 
     // todo: this should be part of the configuration
     $.each($(".xml_ju_mainclass"), function(index, item) {   // check whether main-class exists
-        // console.log(item.value);
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
             // setErrorMessage("Entry point is missing.");
-            // item.focus();
             returnFromFunction = true;
         }
     });
     $.each($(".xml_u_mainclass"), function(index, item) {   // check whether main-class exists
-        // console.log(item.value);
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
             // setErrorMessage("Run command is missing.");
-            // item.focus();
             returnFromFunction = true;
         }
     });

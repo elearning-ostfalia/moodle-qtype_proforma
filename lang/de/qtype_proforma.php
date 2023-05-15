@@ -358,6 +358,7 @@ $string['taskeditorstore'] = 'Speichere';
 $string['taskeditorbinary'] = 'Binärdatei';
 $string['taskeditorfilesize'] = 'Dateigröße';
 $string['taskeditordropzone'] = 'Drop zone';
+$string['taskeditorentrypointhelp'] = 'Name der Klasse, die die Main-Methode enthält - inkl. vollem Package-Pfad (z.B. de.ostfalia.zell.editor)';
 
 
 $string['taskeditornewjavacomp'] = 'Neuer Java Compilertest';

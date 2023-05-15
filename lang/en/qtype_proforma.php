@@ -382,7 +382,7 @@ $string['taskeditorstore'] = 'Store';
 $string['taskeditorbinary'] = 'Binary file';
 $string['taskeditorfilesize'] = 'File size';
 $string['taskeditordropzone'] = 'Drop zone';
-
+$string['taskeditorentrypointhelp'] = 'usually name of class containing main method, including full package path (e.g. de.ostfalia.zell.editor)';
 
 $string['taskeditornewjavacomp'] = 'New Compiler test';
 $string['taskeditornewjunit'] = 'New JUnit test';
