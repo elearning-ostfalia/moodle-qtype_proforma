@@ -30,6 +30,7 @@ import * as Str from 'core/str';
 
 
 const loadFileOption = "<open...>";
+const newFileOption = "<new file>";
 const emptyFileOption = " "; // must not be empty!!
 
 var showEditorText = 'View'; // Str.get_string('taskeditorview', 'qtype_proforma'); // 'View';
@@ -428,6 +429,14 @@ export class FileReferenceList extends DynamicList {
         FileReferenceList.rowEnableEditorButton(row, false);
 
         switch (selectedFilename) {
+            case newFileOption:
+                FileWrapper.createFromTemplate();
+                const hash = '#proforma-files-section';
+                const tab = document.querySelector('.nav-link[href="' + hash + '"]');
+                if (tab) {
+                    tab.click();
+                }
+                break;
             case loadFileOption:
                 // read new file
                 // reset selection in case choosing a file fails
@@ -602,6 +611,10 @@ export class FileReferenceList extends DynamicList {
         tempOption = $("<option></option>");
         tempOption[0].textContent = loadFileOption;
         $(tempSelElem).append(tempOption);
+        
+        let tempOptionNew = $("<option></option>");
+        tempOptionNew[0].textContent = newFileOption;
+        $(tempSelElem).append(tempOptionNew);
     }
 
 
