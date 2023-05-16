@@ -30,7 +30,8 @@
 
     Example context (json):
     {
-        fileid
+        fileid,
+        filesize
     }
 
 
@@ -73,7 +74,7 @@
 
 <p>
     <span class='xml_file_binary'>({{#str}} taskeditorbinary, qtype_proforma {{/str}}) <span
-        class='xml_file_size'>{{#str}} taskeditorfilesize, qtype_proforma {{/str}}: ???</span></span>
+        class='xml_file_size'>{{#str}} taskeditorfilesize, qtype_proforma {{/str}}: {{ filesize }}</span></span>
 
     <span class='xml_file_non_binary'>
         <button class='xml_file_edit'>{{#str}} taskeditoredit, qtype_proforma {{/str}}</button>

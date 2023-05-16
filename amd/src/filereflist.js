@@ -410,15 +410,13 @@ export class FileReferenceList extends DynamicList {
             $.each(filerefs, function(index, item) {
                 if (item.value === fileid) {
                     // fileref already in list!
-                    alert('file is already in this list!');
+                    // alert('file ' + item.value + ' is already in this list!');
                     found = true;
                     return false;
                 }
             });
             return found;
         }
-
-
 
         // var found = false;
         const selectedFilename = $(tempSelElem).val();
@@ -472,6 +470,7 @@ export class FileReferenceList extends DynamicList {
                     if (ui_file) { // can be undefined when no filename is selected
                         const fileid = ui_file.id;
                         if (isDuplicateId(fileid)) {
+                            alert('file ' + ui_file.filename + ' is already in this list!');
                             // clean input field
                             //$(tempSelElem).val(emptyFileOption).change();
                             FileReferenceList.removeContent(tempSelElem, false);

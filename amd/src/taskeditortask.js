@@ -319,6 +319,7 @@ export function convertToXML(topLevelDoc, rootNode) {
 
 
 export function readAndDisplayXml(taskXml) {
+    // console.log(taskXml);
     let task = new TaskClass();
 
     function createMs(item, index) {
@@ -334,7 +335,7 @@ export function readAndDisplayXml(taskXml) {
                 ui_file.class = item.fileclass;
                 ui_file.type = item.filetype;
                 ui_file.comment = item.comment;
-                if (ui_file.type === 'embedded')
+                // if (ui_file.type === 'embedded')
                     ui_file.text = item.content;
                 if (item.id) {
                     relinkFiles();
@@ -460,7 +461,7 @@ export function readAndDisplayXml(taskXml) {
     } else {
         versionElement.val(task.proglangVersion);
         if (versionElement.val() !== task.proglangVersion) {
-            alert('check programming language version (' + task.proglangVersion + ')');
+            alert('check programming language version "' + task.proglangVersion + '"');
         }
     }
 

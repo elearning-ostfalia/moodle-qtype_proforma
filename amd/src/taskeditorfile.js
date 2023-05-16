@@ -482,18 +482,21 @@ export class FileWrapper {
             fileid = setcounter(fileIDs);    // adding a file for the test
         } else {
             // this means that it is created with a known id
-            // (from reading task.xml). So we nned to keep the fileIDs in sync!
+            // (from reading task.xml). So we need to keep the fileIDs in sync!
             fileIDs[fileid] = 1;
         }
         let context = {
-            'fileid': fileid
+            'fileid': fileid,
+            'filesize': '???'
         };
 
         return Templates.renderForPromise('qtype_proforma/taskeditor_file', context)
             .then(({html, js}) => {
                 Templates.appendNodeContents('#proforma-files-section', html, js);
                 let ui_file = FileWrapper.constructFromId(fileid);
-                fileStorages[fileid] = new FileStorage(false, '', '', '');
+                if (fileStorages[fileid] === undefined) {
+                    fileStorages[fileid] = new FileStorage(false, '', '', '');
+                }
 
                 // hide fields that exist only for technical reasons
                 ui_file.root.find(".xml_file_binary").hide(); // hide binary text
@@ -564,142 +567,4 @@ export class FileWrapper {
                 displayException(error);
             });
     }
-
-/*
-    static create(id) {
-        let fileid = id;
-        if (!fileid) {
-            fileid = setcounter(fileIDs);    // adding a file for the test
-        } else {
-            // this means that it is created with a known id
-            // (from reading task.xml). So we nned to keep the fileIDs in sync!
-            fileIDs[fileid] = 1;
-        }
-
-        $("#proforma-files-section").append("<div "+
-            "id='file_" + fileid + "'" +
-            "class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'>"+
-            "<h3 class='ui-widget-header'><span class ='xml_filename_header'></span> (File #"+fileid+")<span "+
-            "class='rightButton'><button">x</button></span></h3>"+
-
-            "<p>" +
-            " <label for='xml_file_filename'>Filename<span class='red'>*</span>: </label>"+
-            "<input class='mediuminput xml_file_filename' title='with extension'> </input>"+
-
-            "<label for='xml_file_id'>ID: </label>"+ // do not set at first position because of layout (css)
-            "<input class='tinyinput xml_file_id' value='"+fileid+"'></input>"+
-
-            " <label for='xml_file_class'>Usage: " +
-            // "<span class='red'>*</span>: " +
-            "</label>"+
-
-            " <label for='xml_file_type'>Store </label>"+
-            "<select class='xml_file_type'>" +
-                "<option value = 'embedded' selected='selected'>embedded</option>"+
-                "<option value = 'file'>attached</option></select>"+
-            "<span class='drop_zone_text'>Drop Your File Here!</span>" +
-            "</p>"+
-
-            "<p><label for='xml_internal_description'>Internal Description:</label>"+
-            "<textarea rows='1' class='xml_internal_description'></textarea></p>"+
-
-            "<p>" +
-//            "<label>File content<span class='red'>*</span>: </label>"+
-            "<span class='xml_file_binary'>(Binary file) " +
-            "<span class='xml_file_size'>File size: ???</span>" +
-            "</span>" +
-
-            "<span class='xml_file_non_binary'>" +
-            "<button class='xml_file_edit'>Edit</button>" +
-            "<label for='xml_file_editor_close'>" +
-            "<button class='xml_file_editor_close'>Hide</button>" +
-            "</label>" +
-            "<span>" +
-            "<textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>" +
-            "</span>" +
-
-            "</span></p>" +
-            "</div>");
-
-        // const fileroot = $("#file_" + fileid);
-        //const fileroot = $(".xml_file_id[value='" + fileid + "']").closest(".xml_file");
-
-        let ui_file = FileWrapper.constructFromId(fileid); // constructFromRoot(fileroot);
-        fileStorages[fileid] = new FileStorage(false, '', '', '');
-
-        // hide fields that exist only for technical reasons
-        ui_file.root.find(".xml_file_binary").hide(); // hide binary text
-        if (!DEBUG_MODE) {
-            ui_file.root.find(".xml_file_id").hide();
-            ui_file.root.find("label[for='xml_file_id']").hide();
-            ui_file.root.find(".xml_file_class").hide();
-            ui_file.root.find("label[for='xml_file_class']").hide();
-        }
-
-        console.log('add file callbacks');
-        // add callbacks:
-        ui_file.root.find('button').first().on("click",
-            function(event) {
-                event.preventDefault();
-                FileWrapper.removeFile($(this));
-        });
-        ui_file.root.find('.xml_file_filename').on("change",
-            function(event) {
-                event.preventDefault();
-                FileWrapper.onFilenameChangedCallback(this);
-        });
-        ui_file.root.find('.xml_file_type').on("change",
-            function(event) {
-                event.preventDefault();
-                FileWrapper.onFiletypeChanged(this);
-        });
-        ui_file.root.find('.xml_file_edit').on("click",
-            function(event) {
-                event.preventDefault();
-                FileWrapper.showEditor($(this));
-        });
-        ui_file.root.find('.xml_file_editor_close').on("click",
-            function(event) {
-                event.preventDefault();
-                FileWrapper.hideEditor($(this));
-        });
-
-
-
-        // enable drag & drop
-        ui_file.root.on({
-            dragover: function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                //e.dataTransfer.dropEffect = 'copy';
-            },
-            dragenter: function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            },
-            drop: function(e){
-                if(e.originalEvent.dataTransfer){
-                    if(e.originalEvent.dataTransfer.files.length) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        FileWrapper.uploadFileWhenDropped(e.originalEvent.dataTransfer.files, e.currentTarget);
-                    }
-                }
-            }
-        });
-
-
-        FileWrapper.addCodemirrorElement(fileid);
-
-        FileWrapper.hideEditor(undefined, ui_file);
-        return ui_file;
-    }*/
-/*
-    static deleteAllFiles() {
-        codemirror = {};
-        fileStorages = []; // empty array
-        fileIDs = {};
-
-        $("#proforma-files-section")[0].textContent = "";                     // delete previous content
-    }*/
 }

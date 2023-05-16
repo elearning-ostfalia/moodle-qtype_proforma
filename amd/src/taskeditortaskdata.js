@@ -18,6 +18,7 @@
 
 import {setErrorMessage, generateUUID} from "./taskeditorutil";
 import {config} from "./taskeditorconfig";
+import {FileStorage, fileStorages } from "./taskeditorfile";
 
 export const T_LMS_USAGE = {
     DISPLAY: 'display',
@@ -425,7 +426,6 @@ export class TaskClass {
             thisNode = iterator.iterateNext();
             editCounter = 0;
             while (thisNode) {
-
                 let taskfile = new TaskFile();
                 taskfile.id = xmlReader.readSingleText("@id", thisNode);
                 //taskfile.fileclass = xmlReader.readSingleText("@class", thisNode);
@@ -447,11 +447,14 @@ export class TaskClass {
                             // taskfile.filetype = 'embedded';
                             taskfile.filetype = 'file';
                             taskfile.filename = xmlReader.readSingleText("@filename", content);
-                            // taskfile.content = atob(content.textContent);
+                            taskfile.content = atob(content.textContent);
                             taskfile.binary = true;
                             const filecontent =  atob(content.textContent);
                             console.log(taskfile.id + ' is embedded-bin-file');
-                            let fileObject = new FileStorage(true, '', filecontent, taskfile.filename);
+                            console.log(filecontent);
+                            console.log(filecontent.length);
+                            const mimetype = config.getMimeType('', taskfile.filename); //get mime type
+                            let fileObject = new FileStorage(true, mimetype, filecontent, taskfile.filename);
                             fileObject.setSize(filecontent.length);
                             fileStorages[taskfile.id] = fileObject;
                             break;

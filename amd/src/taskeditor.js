@@ -100,6 +100,7 @@ export async function edit(buttonid, context, inline) {
         const extension = getExtension(taskresponse.url);
         const isZipped = (extension === 'zip');
         if (isZipped) {
+            console.log('task file is zipped! => extract');
             return taskresponse.blob()
                 .then(blob => {
                     console.log('blob is');
@@ -109,7 +110,11 @@ export async function edit(buttonid, context, inline) {
                     });
                 });
         } else {
-            readXMLWithLock(response.text());
+            console.log('task file is not zipped');
+            taskresponse.text()
+                .then(text => {
+                    readXMLWithLock(text);
+                });
         }
     }
 
