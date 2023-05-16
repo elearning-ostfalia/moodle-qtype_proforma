@@ -46,6 +46,12 @@ body .proforma-taskeditor{
 
 
 body .proforma-taskeditor .test-header {
+    display: block;
+    cursor: move;
+    width: 100%;
+    /*background: red;*/
+}
+body .proforma-taskeditor .test-header label {
     cursor: move;
 }
 

@@ -26,6 +26,7 @@ import {FileWrapper} from "./taskeditorfile";
 import {config} from "./taskeditorconfig";
 import {DEBUG_MODE,} from "./taskeditorutil";
 import * as Str from 'core/str';
+import {TestWrapper} from "./taskeditortest";
 
 
 
@@ -611,7 +612,7 @@ export class FileReferenceList extends DynamicList {
         tempOption = $("<option></option>");
         tempOption[0].textContent = loadFileOption;
         $(tempSelElem).append(tempOption);
-        
+
         let tempOptionNew = $("<option></option>");
         tempOptionNew[0].textContent = newFileOption;
         $(tempSelElem).append(tempOptionNew);
@@ -644,7 +645,29 @@ export class FileReferenceList extends DynamicList {
         classname.getInstance().init(root, DEBUG_MODE);
         root.on({
             drop: function(e){
-                if(e.originalEvent.dataTransfer){
+                console.log('ondrop ');
+                console.log(e);
+                let data = e.originalEvent.dataTransfer.getData("text");
+                console.log(data);
+                if (data.startsWith('move_test ')) {
+                    // Move test
+                    let result = data.substring('move_test '.length);
+                    console.log('move ' + result);
+                    let test = TestWrapper.constructFromId(result);
+                    let thiselement = e.target.closest('.xml_test');
+                    console.log(thiselement.id);
+                    let otherelement = document.getElementById('test_' + result);
+                    let nextSibling = thiselement.nextElementSibling;
+                    if (nextSibling === otherelement) {
+                        thiselement.before(otherelement);
+                    } else {
+                        thiselement.after(otherelement);
+                    }
+                    return;
+                }
+
+                // drop file.
+                if (e.originalEvent.dataTransfer){
                     if(e.originalEvent.dataTransfer.files.length) {
                         e.preventDefault();
                         e.stopPropagation();

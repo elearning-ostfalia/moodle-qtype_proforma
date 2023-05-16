@@ -16,13 +16,14 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * functions for uploading a task.
+ * functions for representing a test in taskeditor.
  *
  * @package    qtype
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author     K.Borm <k.borm[at]ostfalia.de>
+ * @author     K.Borm
+ * @author     Dr.U.Priss
  */
 
 import {TestFileReference, FileReferenceList, ModelSolutionFileReference} from "./filereflist";
@@ -69,14 +70,10 @@ export class TestWrapper {
     get testtype() { return this.getValue(this._type,".xml_test_type" ); }
     get weight() { return this.getValue(this._type,".xml_test_weight" ); }
 
-
-
     // setter
     set comment(newComment) { this._root.find(".xml_internal_description").val(newComment); }
     set description(newDescription) { this._root.find(".xml_description").val(newDescription); }
     set weight(newWeight) { this._root.find(".xml_test_weight").val(newWeight); }
-
-
 
     static doOnAll(callback) {
         // todo: iterate through all tests in variable
@@ -132,6 +129,17 @@ export class TestWrapper {
                 const testroot = $("#test_" + testid);
 
                 test = TestWrapper.constructFromRoot(testroot);
+
+                let subnode = $(testroot)[0].querySelector('.test-header');
+                if (!subnode)
+                    console.error('could not find subnode .test-header');
+                else {
+                    subnode.ondragstart = function (event) {
+                        // event.preventDefault();
+                        console.log('On drag start ' + testid);
+                        event.dataTransfer.setData("text", 'move_test '  + testid);
+                    }
+                }
 
                 FileReferenceList.init(null, null, TestFileReference, testroot);
                 testroot.find('.dynamic_table').show();
