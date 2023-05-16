@@ -14,7 +14,7 @@
  * The version number of this software is in the file js/editor.js.
  */
 
-import * as zip from "./zip";
+import * as zip from "./zip/zip";
 import {FileStorage, FileWrapper, fileStorages } from "./taskeditorfile";
 import {FileReferenceList } from "./filereflist";
 
