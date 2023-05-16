@@ -109,9 +109,28 @@ function isInputComplete() {
             returnFromFunction = true;
         }
     });
+
+    document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {  // check whether referenced filenames exists
+        if (!item.value) {
+            switchToTab('#proforma-tests-section');
+            // setErrorMessage("Filename in model solution is missing.");
+            addRequired(item);
+            returnFromFunction = true;
+        }
+    });
     // if (returnFromFunction)
     //    return false;
 
+
+    let sumweight = 0;
+    document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {  // check whether referenced filenames exists
+        console.log(item);
+        sumweight += item.value;
+    });
+    if (sumweight === 0) {
+        alert('Sum of all weights must not be zero!');
+        returnFromFunction = true;
+    }
 
     query = "#proforma-tests-section .xml_fileref_filename";
     document.querySelectorAll(query).forEach(item => {   // check whether referenced filenames exists

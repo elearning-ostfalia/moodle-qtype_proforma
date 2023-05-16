@@ -261,17 +261,17 @@ export const setJunitVersions = () => {
 
 
 export const setCheckstyleVersions = () => {
-    // console.log('setJunitVersions');
     getCheckstyleVersions()
         .then(response => {
-            // console.log(response['junitversions']);
             document.querySelectorAll('.xml_pr_CS_version').forEach(
                 selectElem => {
-                    response['checkstyleversions'].forEach(version => {
-                        let option = document.createElement("option");
-                        option.text = version;
-                        selectElem.add(option);
-                    });
+                    if (selectElem.querySelectorAll('option').length === 0) {
+                        response['checkstyleversions'].forEach(version => {
+                            let option = document.createElement("option");
+                            option.text = version;
+                            selectElem.add(option);
+                        });
+                    }
                 }
             );
         })
@@ -356,10 +356,22 @@ export const download = (buttonid) => {
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {
         e.preventDefault();
-        var zipname = $("#id_name").val();
+        const zipname = $("#id_name").val();
         const context = convertToXML();
         if (context) {
-            zipme(context, zipname);
+            zipme(context, zipname, true);
+        }
+    }
+}
+
+export const savetask = (buttonid) => {
+    let button = document.getElementById(buttonid);
+    button.onclick = function (e) {
+        e.preventDefault();
+        const zipname = $("#id_name").val();
+        const context = convertToXML();
+        if (context) {
+            zipme(context, zipname, false);
         }
     }
 }

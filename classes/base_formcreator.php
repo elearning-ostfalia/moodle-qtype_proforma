@@ -734,9 +734,9 @@ abstract class base_form_creator {
         // Tests.
         // - test overview in case of imported task and
         // - test edit fields for tasks created with Moodle.
-        if (!defined('EDITORINLINE')) {
+        // if (!defined('EDITORINLINE')) {
             $this->add_tests($question, $questioneditform);
-        }
+        // }
 
         // Penalty.
         $penalties = array(

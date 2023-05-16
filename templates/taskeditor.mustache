@@ -92,11 +92,13 @@
 </div>
 
 <button id="download_task-{{uniqid}}" class="btn btn-secondary java">Download</button>
+<button id="save_task_-{{uniqid}}" class="btn btn-secondary java">Save task</button>
 
 {{#js}}
     require(['qtype_proforma/taskeditor'], function(editor) {
         console.log('attach');
         editor.download("download_task-{{uniqid}}");
+        editor.savetask("save_task_-{{uniqid}}");
     });
 {{/js}}
 

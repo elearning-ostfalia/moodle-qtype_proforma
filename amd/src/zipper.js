@@ -233,7 +233,7 @@ export function taskTitleToFilename(title) {
 /**
  * create zip file
  */
-export function zipme(TEXT_CONTENT, zipname) {
+export function zipme(TEXT_CONTENT, zipname, startdownload) {
     // get task.xml content from user interface
     // var TEXT_CONTENT = taskXml; // $("#output").val();
     if (!TEXT_CONTENT || TEXT_CONTENT.length === 0) {
@@ -293,27 +293,16 @@ export function zipme(TEXT_CONTENT, zipname) {
     });
     zipBlob(blob)
         .then(zippedBlob => {
-        // console.log(zippedBlob);
-        url = window.URL.createObjectURL(zippedBlob);
-        let a = document.createElement("a");
-        document.body.appendChild(a);
-        a.style = "display: none";
-        a.download = zipname;
-        a.href = url;
-        // a.dataset.downloadurl = ['application/zip', a.download, a.href].join(':');
-
-/*        var isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
-            navigator.userAgent && !navigator.userAgent.match('CriOS');
-*/
-        // var userAgent = navigator.userAgent;
-        // alert(userAgent);
-
-//	    if (!isSafari) {// navigator.userAgent.indexOf('Safari') <= 0) {
-	      a.click();
-/*	    } else {
-	      alert("zip does not work on this browser");
-	    }
-*/        // window.URL.revokeObjectURL(url);
-        // window.navigator.msSaveBlob(zippedBlob, "task.zip");
+            if (startdownload) {
+                const url = window.URL.createObjectURL(zippedBlob);
+                let a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display: none";
+                a.download = zipname;
+                a.href = url;
+                a.click();
+            } else {
+                alert('TODO: Save to Moodle server');
+            }
     });
 }
