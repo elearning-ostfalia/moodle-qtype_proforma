@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
+define('EDITORINLINE', true);
+
 /**
  * Bases class for rendering the question editor form for teachers
  */
@@ -728,10 +730,13 @@ abstract class base_form_creator {
         $mform->addHelpButton('aggregationstrategy', 'aggregationstrategy', 'qtype_proforma');
         $mform->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
 
+
         // Tests.
         // - test overview in case of imported task and
         // - test edit fields for tasks created with Moodle.
-        $this->add_tests($question, $questioneditform);
+        if (!defined('EDITORINLINE')) {
+            $this->add_tests($question, $questioneditform);
+        }
 
         // Penalty.
         $penalties = array(
@@ -781,7 +786,7 @@ abstract class base_form_creator {
             ],
         ];
 
-        if (true) { // Inline
+        if (defined('EDITORINLINE')) {
             global $OUTPUT;
             $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
             $mform->addElement('html', $taskeditor);

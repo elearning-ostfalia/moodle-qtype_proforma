@@ -244,11 +244,15 @@ export const setJunitVersions = () => {
             // console.log(response['junitversions']);
             document.querySelectorAll('.xml_ju_version').forEach(
                 selectElem => {
-                    response['junitversions'].forEach(version => {
-                        let option = document.createElement("option");
-                        option.text = version;
-                        selectElem.add(option);
-                    });
+                    // console.log(selectElem);
+                    if (selectElem.querySelectorAll('option').length === 0) {
+                        // No options yet.
+                        response['junitversions'].forEach(version => {
+                            let option = document.createElement("option");
+                            option.text = version;
+                            selectElem.add(option);
+                        });
+                    }
                 }
             );
         })
