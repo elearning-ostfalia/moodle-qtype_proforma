@@ -1,19 +1,30 @@
-/*
- * This proformaEditor was created by the eCULT-Team of Ostfalia University
- * http://ostfalia.de/cms/de/ecult/
- * The software is distributed under a CC BY-SA 3.0 Creative Commons license
- * https://creativecommons.org/licenses/by-sa/3.0/
+// This file is part of ProFormA Question Type for Moodle
+//
+// ProFormA Question Type for Moodle is free software:
+// you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// ProFormA Question Type for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with ProFormA Question Type for Moodle.
+// If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Javascript editor for ProFormA tasks
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * Author:
- * Karin Borm, Dr. Uta Priss
+ * @package    qtype
+ * @subpackage proforma
+ * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author     eCULT-Team of Ostfalia University, Dr.U.Priss, K.Borm
  */
+
 
 
 import {TestWrapper} from "./taskeditortest";
@@ -22,9 +33,6 @@ export const DEBUG_MODE       = false;
 export const TEST_MODE        = false;
 export const SUBMISSION_TEST  = false;
 export const USE_VISIBLES     = false;
-
-
-const codeversion   = '3.1.2 [230313]';    // current version of this code
 
 
 export const version094    = 'xsd/taskxml0.9.4.xsd';                // name of schema files
@@ -41,23 +49,6 @@ export function setErrorMessage(errormess, exception) { // setting the error con
 export function clearErrorMessage() {
 
 }
-
-/*
-function getInternalDescriptionString(comment) {
-    return "<p>" +
-        "<label for='xml_internal_description'  class='leftlabel'>Internal Description:</label>" +
-        "<textarea rows='2'  class='xml_internal_description' " +
-        "title = 'Internal description (not visible for students)'>"+comment+"</textarea></p>";
-}
-
-export function getDescriptionHtmlString(description, comment) {
-    return "<p><label for='xml_description'>Description: </label>" +
-    "<textarea rows='2'  class='xml_description' " +
-    "title = 'Visible description'>"+description+"</textarea>" +
-        //"<br>" +
-        "</p>" +
-        getInternalDescriptionString(comment);
-}*/
 
 // without . (MyString.Java = java)
 // to lowercase
@@ -143,7 +134,8 @@ export class CustomTest {
             'filenamelabel' : this.fileRefLabel,
             'testtype': this.testType,
             'testheader': this.defaultTitle,
-            'filemandatory': this.manadatoryFile
+            'filemandatory': this.manadatoryFile,
+            'weight': this.gradingWeight
         };
     }
     createTestForm() {

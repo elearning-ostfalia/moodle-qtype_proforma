@@ -96,6 +96,37 @@ export async function edit(buttonid, context, inline) {
             });*/
     }
 
+    /**
+     * Originally there was a way to enter the grading parameters
+     * separately from the task. If changes were made here,
+     * they must now be transferred to the form fields.
+     */
+    function mergeWithGradingHints() {
+        const gradinghints = document.querySelector('input[name="gradinghints"]');
+        if (!gradinghints) {
+            console.log('No gradinghints field found => ignore');
+            return;
+        }
+
+        const aggregationstrategy = document.querySelector('#id_aggregationstrategy');
+        console.log('aggregationstrategy ' + aggregationstrategy.value);
+
+        console.log(gradinghints.value);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(gradinghints.value, "application/xml");
+        doc.querySelectorAll('test-ref').forEach(test => {
+            let ui_test = TestWrapper.constructFromId(test.getAttribute('ref'));
+            if (aggregationstrategy.value === 2) {
+                ui_test.weight = test.getAttribute('weight');
+            }
+            ui_test.title = test.querySelector('title').innerHTML;
+            ui_test.description = test.querySelector('description').innerHTML;
+            if (test.querySelector('test-type').innerHTML != ui_test.testtype) {
+                console.error('Testtype for test ' + ui_test.id + ' does not match value from grading hints')
+            }
+        });
+    }
+
     function displayTaskdata(taskresponse) {
         const extension = getExtension(taskresponse.url);
         const isZipped = (extension === 'zip');
@@ -106,14 +137,16 @@ export async function edit(buttonid, context, inline) {
                     console.log('blob is');
                     console.log(blob);
                     unzipme(blob, function(text) {
-                        readXMLWithLock(text);
+                        readXMLWithLock(text)
+                            .then(() => mergeWithGradingHints());
                     });
                 });
         } else {
             console.log('task file is not zipped');
             taskresponse.text()
                 .then(text => {
-                    readXMLWithLock(text);
+                    readXMLWithLock(text)
+                        .then(() => mergeWithGradingHints());
                 });
         }
     }
@@ -230,7 +263,7 @@ export async function edit(buttonid, context, inline) {
                 return modal;
         }).fail(Notification.exception);
     });
-};
+}
 
 
 /**
@@ -364,6 +397,40 @@ export const download = (buttonid) => {
     }
 }
 
+
+function createGradingHints() {
+    let doc = document.implementation.createDocument(null, null, null);
+    let gh = doc.createElement("grading-hints");
+    let root = doc.createElement("root");
+    root.setAttribute('function', 'sum');
+    gh.appendChild(root);
+
+    TestWrapper.doOnAll(ui_test => {
+        let test = doc.createElement("test-ref");
+        root.appendChild(test);
+        test.setAttribute('ref', ui_test.id);
+        test.setAttribute('weight', ui_test.weight);
+        let title = doc.createElement("title");
+        title.innerHTML = ui_test.title;
+        test.appendChild(title);
+        let description = doc.createElement("description");
+        description.innerHTML = ui_test.description;
+        test.appendChild(description);
+        let testtype = doc.createElement("test-type");
+        testtype.innerHTML = ui_test.testtype;
+        test.appendChild(testtype);
+    });
+
+    console.log(doc);
+    console.log(gh);
+    const gradinghints = document.querySelector('input[name="gradinghints"]');
+    if (!gradinghints) {
+        console.log('No gradinghints field found => ignore');
+        return;
+    }
+    gradinghints.value = doc;
+}
+
 export const savetask = (buttonid) => {
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {
@@ -372,6 +439,7 @@ export const savetask = (buttonid) => {
         const context = convertToXML();
         if (context) {
             zipme(context, zipname, false);
+            createGradingHints();
         }
     }
 }

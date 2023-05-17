@@ -53,7 +53,6 @@ export class TestWrapper {
         return test;
     }
 
-
     getValue(member, xmlClass) {
         if (!member) {
             member = this.root.find(xmlClass).first();
@@ -74,6 +73,7 @@ export class TestWrapper {
     set comment(newComment) { this._root.find(".xml_internal_description").val(newComment); }
     set description(newDescription) { this._root.find(".xml_description").val(newDescription); }
     set weight(newWeight) { this._root.find(".xml_test_weight").val(newWeight); }
+    set title(newTitle) { this._root.find(".xml_test_title").val(newTitle); }
 
     static doOnAll(callback) {
         // todo: iterate through all tests in variable
@@ -116,8 +116,8 @@ export class TestWrapper {
         if (!testid)
             testid = setcounter(testIDs);
         context['testid'] = testid;
-        console.log("context for rendering template " + template);
-        console.log(context);
+        // console.log("context for rendering template " + template);
+        // console.log(context);
         let test = undefined;
 
         return Templates.renderForPromise(template, context)

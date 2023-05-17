@@ -302,7 +302,6 @@ export const config = (function(testConfigNode) {
 
             xmlWriter.createTextElement(csNode, 'cs:max-checkstyle-warnings', $(root).find(".xml_pr_CS_warnings").val(), checkstylens);
             csNode.setAttribute("version", $(root).find(".xml_pr_CS_version").val());
-
         }
     }
 

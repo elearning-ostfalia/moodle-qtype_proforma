@@ -290,6 +290,9 @@ abstract class base_form_creator {
 
         $mform->addElement('hidden', 'taskstorage', $this->_tasktype);
         $mform->setType('taskstorage', PARAM_RAW);
+
+        $mform->addElement('hidden', 'gradinghints');
+        $mform->setType('gradinghints', PARAM_TEXT);
     }
 
     /**

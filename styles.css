@@ -5,7 +5,7 @@
     --inputwidth: calc(98% - var(--labelwith));
 }
 
-body .proforma-taskeditor{
+.proforma-taskeditor{
     /*font-family: "Trebuchet MS", "Helvetica", "Arial", "Verdana", "sans-serif";
     font-size: 90%;*/
     /*font-size: 62.5%;*/
@@ -30,6 +30,10 @@ body .proforma-taskeditor{
     width: 99% /* var(--inputwidth)*/;
     /* float: right;*/
     background-color: #F7F7F7;
+}
+
+.proforma-taskeditor .form-control {
+    display: inline;
 }
 
 /* first column should have label width */
@@ -67,7 +71,7 @@ body .proforma-taskeditor .box-typ {
 .proforma-taskeditor .xml_test,
 .proforma-taskeditor .xml_file,
 .proforma-taskeditor .xml_model-solution {
-    background: #e9ecef;
+   background: #e9ecef;
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 15px;

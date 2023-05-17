@@ -279,7 +279,7 @@ function createSubmissionXml() {
 export function readXMLWithLock (taskXmlText) {
     readXmlActive = true; // lock automatic input field update
     try {
-        readAndDisplayXml(taskXmlText);
+        return readAndDisplayXml(taskXmlText);
         // show/hide buttons according to new programming language
         // TODO:
         // switchProgLang();

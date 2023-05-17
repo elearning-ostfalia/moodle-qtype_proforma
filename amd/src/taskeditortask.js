@@ -80,31 +80,33 @@ function isInputComplete() {
 
     let returnFromFunction = false;
     document.querySelectorAll(".xml_file_filename").forEach(item => {  // check whether filenames are provided
-        console.log(item);
         if (!item.value) {
             switchToTab('#proforma-files-section');
             addRequired(item);
-            // setErrorMessage("Filename is empty.");
             returnFromFunction = true;
         }
     });
     document.querySelectorAll(".xml_test_title").forEach(item => {  // check whether filenames are provided
-        console.log(item);
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
-            // setErrorMessage("Filename is empty.");
             returnFromFunction = true;
         }
     });
-    // if (returnFromFunction)
-    //    return false;
+
+    document.querySelectorAll(".xml_pr_CS_warnings").forEach(item => {
+        console.log(item.value);
+        if (!item.value) {
+            switchToTab('#proforma-tests-section');
+            addRequired(item);
+            returnFromFunction = true;
+        }
+    });
 
     let query = "#proforma-model-solution-section .xml_fileref_filename";
     document.querySelectorAll(query).forEach(item => {  // check whether referenced filenames exists
         if (!item.value) {
             switchToTab('#proforma-model-solution-section');
-            // setErrorMessage("Filename in model solution is missing.");
             addRequired(item);
             returnFromFunction = true;
         }
@@ -113,24 +115,10 @@ function isInputComplete() {
     document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {  // check whether referenced filenames exists
         if (!item.value) {
             switchToTab('#proforma-tests-section');
-            // setErrorMessage("Filename in model solution is missing.");
             addRequired(item);
             returnFromFunction = true;
         }
     });
-    // if (returnFromFunction)
-    //    return false;
-
-
-    let sumweight = 0;
-    document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {  // check whether referenced filenames exists
-        console.log(item);
-        sumweight += item.value;
-    });
-    if (sumweight === 0) {
-        alert('Sum of all weights must not be zero!');
-        returnFromFunction = true;
-    }
 
     query = "#proforma-tests-section .xml_fileref_filename";
     document.querySelectorAll(query).forEach(item => {   // check whether referenced filenames exists
@@ -138,21 +126,17 @@ function isInputComplete() {
             let label = item.closest('tr').querySelector('label');
             if (label.querySelectorAll('.red').length !== 0) {
                 switchToTab('#proforma-tests-section');
-                // setErrorMessage("Filename in test is missing.");
                 addRequired(item);
                 returnFromFunction = true;
             }
         }
     });
-    // if (returnFromFunction)
-    //    return false;
 
     // todo: this should be part of the configuration
     $.each($(".xml_ju_mainclass"), function(index, item) {   // check whether main-class exists
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
-            // setErrorMessage("Entry point is missing.");
             returnFromFunction = true;
         }
     });
@@ -164,6 +148,22 @@ function isInputComplete() {
             returnFromFunction = true;
         }
     });
+
+    if (returnFromFunction)
+        return false;
+
+    let sumweight = 0.0;
+    document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {  // check whether referenced filenames exists
+        console.log(item);
+        console.log(item.value);
+        console.log(item.innerHTML);
+        sumweight += parseFloat(item.value);
+    });
+    console.log('sumweight = ' + sumweight);
+    if (sumweight <= 0) {
+        alert('Sum of all weights must be a positive number!');
+        returnFromFunction = true;
+    }
 
     if (returnFromFunction)
         return false;
@@ -219,19 +219,6 @@ export function convertToXML(topLevelDoc, rootNode) {
     task.title = $("#xml_title").val();
     task.comment = $("#xml_task_internal_description").find('.xml_internal_description').val();
     task.description = descriptionEditor.getValue();
-    let proglangAndVersion = $("#xml_programming-language").val();
-    let proglangSplit = proglangAndVersion.split("/");
-
-    task.proglang = proglangSplit[0]; // proglangAndVersion.substr(0, proglangAndVersion.indexOf("/"));
-    if (proglangSplit.length > 1)
-        task.proglangVersion = proglangSplit[1]; // proglangAndVersion.substr(proglangAndVersion.indexOf("/")+1);
-    else
-        task.proglangVersion = '';
-
-    task.parentuuid = null;
-    //task.uuid = $("#xml_uuid").val();
-    //if (!task.uuid)
-        task.uuid = generateUUID();
     task.lang = $("#xml_lang").val();
     task.sizeSubmission = $("#xml_submission_size").val();
     task.filenameRegExpSubmission = $(".xml_restrict_filename").first().val();
@@ -337,7 +324,7 @@ export function convertToXML(topLevelDoc, rootNode) {
 }
 
 
-export function readAndDisplayXml(taskXml) {
+export async function readAndDisplayXml(taskXml) {
     // console.log(taskXml);
     let task = new TaskClass();
 
@@ -361,26 +348,12 @@ export function readAndDisplayXml(taskXml) {
                 }
                 return ui_file;
             });
-/*        let ui_file = FileWrapper.createFromTemplate(item.id);
-        ui_file.filename = item.filename;
-        ui_file.class = item.fileclass;
-        ui_file.type = item.filetype;
-        ui_file.comment = item.comment;
-        if (ui_file.type === 'embedded')
-            ui_file.text = item.content;*/
     }
 
     function createTest(item, index) {
         testIDs[item.id] = 1;
 
         let ui_test = undefined;
-/*        let context = {
-            'testtitle': item.title,
-            'weight': item.weight,
-            'description': item.description,
-            'comment': item.comment,
-        };*/
-
         console.log('iterate through all configured test templates, look for ' + item.testtype);
         let found = false;
         $.each(config.testInfos, function(index, configItem) {
@@ -398,11 +371,15 @@ export function readAndDisplayXml(taskXml) {
                 console.log('found ' + configItem.title);
                 let context = configItem.getTemplateContext();
                 context['testtitle'] = item.title;
-                context['weight'] = item.weight;
+                if (item.weight) {
+                    context['weight'] = item.weight;
+                }
                 context['description'] = item.description;
                 context['comment'] = item.comment;
 
                 task.readTestConfig(taskXml, item.id, configItem, context);
+                console.log('context for test template ');
+                console.log(context);
                 ui_test = TestWrapper.createFromTemplate(item.id,
                     configItem.getMustacheTemplate(), context, true, item, task);
                 found = true;
@@ -495,7 +472,7 @@ export function readAndDisplayXml(taskXml) {
     task.files.forEach(file => {
         filepromises.push(createFile(file));
     });
-    Promise.all(filepromises)
+    return Promise.all(filepromises)
         .then(() => {
             console.log('** all files are created => create tests');
             task.tests.forEach(item =>
@@ -505,16 +482,16 @@ export function readAndDisplayXml(taskXml) {
             task.modelsolutions.forEach(item =>
                 refpromises.push(createMs(item))
             );
-        });
 
-    // fill filename lists in empty file refences
-    console.log('=> wait');
-    Promise.all(refpromises)
-        .then(() => {
-            console.log('** all tests and model sols are created => add referenced files');
-            FileReferenceList.updateAllFilenameLists();
+            // fill filename lists in empty file refences
+            console.log('=> wait');
+            return Promise.all(refpromises)
+                .then(() => {
+                    console.log('** all tests and model sols are created => add referenced files');
+                    FileReferenceList.updateAllFilenameLists();
+                    console.log('=> finished');
+                });
         });
-    console.log('=> finished');
 
 
     // task.fileRestrictions.forEach(createFileRestriction);
