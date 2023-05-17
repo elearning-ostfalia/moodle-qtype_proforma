@@ -22,7 +22,7 @@ import {setErrorMessage, clearErrorMessage, generateUUID} from "./taskeditorutil
 import {FileWrapper} from "./taskeditorfile";
 import {TestWrapper } from "./taskeditortest";
 import {ModelSolutionWrapper } from "./taskeditormodelsol";
-import {config } from "./taskeditorconfig";
+import {taskeditorconfig } from "./taskeditorconfig";
 import {relinkFiles} from "./zipper";
 import {TestFileReference, FileReferenceList,ModelSolutionFileReference } from "./filereflist";
 import * as Str from 'core/str';
@@ -273,7 +273,7 @@ export function convertToXML(topLevelDoc, rootNode) {
             }
         }, uiTest.root);
 
-        $.each(config.testInfos, function(index, configItem) {
+        $.each(taskeditorconfig.testInfos, function(index, configItem) {
             // search for appropriate writexml function
             if (configItem.testType === test.testtype) {
                 if (configItem.proglang !== undefined) {
@@ -356,7 +356,7 @@ export async function readAndDisplayXml(taskXml) {
         let ui_test = undefined;
         console.log('iterate through all configured test templates, look for ' + item.testtype);
         let found = false;
-        $.each(config.testInfos, function(index, configItem) {
+        $.each(taskeditorconfig.testInfos, function(index, configItem) {
             // console.log(configItem);
             if (!ui_test && item.testtype === configItem.testType) {
                 // Check if proglang is set in configured test. If true then compare
@@ -389,7 +389,7 @@ export async function readAndDisplayXml(taskXml) {
 /*
         if (!ui_test) {
             // try alternative test types
-            $.each(config.testInfos, function(index, configItem) {
+            $.each(taskeditorconfig.testInfos, function(index, configItem) {
                 $.each(configItem.alternativeTesttypes, function(index, alternative) {
                     if (!ui_test && item.testtype === alternative) {
                         ui_test = TestWrapper.create(item.id, item.title, configItem, item.weight);

@@ -291,7 +291,7 @@ export function zipme(TEXT_CONTENT, zipname, startdownload) {
     blob = new Blob([ TEXT_CONTENT ], {
         type : zip.getMimeType(FILENAME)
     });
-    zipBlob(blob)
+    return zipBlob(blob)
         .then(zippedBlob => {
             if (startdownload) {
                 const url = window.URL.createObjectURL(zippedBlob);
@@ -302,7 +302,7 @@ export function zipme(TEXT_CONTENT, zipname, startdownload) {
                 a.href = url;
                 a.click();
             } else {
-                alert('TODO: Save to Moodle server');
+                return zippedBlob;
             }
     });
 }

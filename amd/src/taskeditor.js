@@ -36,11 +36,14 @@ import Templates from 'core/templates';
 import {TestWrapper } from "./taskeditortest";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "./repository";
 import {getExtension} from "./taskeditorutil";
-import {config} from "./taskeditorconfig";
+import {taskeditorconfig} from "./taskeditorconfig";
 import {unzipme, zipme} from "./zipper";
 import {readXMLWithLock} from "./taskeditorhelper";
 import {convertToXML} from "./taskeditortask";
+import Config from 'core/config';
 
+var draftitemid = null;
+var draftfilename = null;
 
 /**
  * edit task
@@ -64,13 +67,12 @@ export async function edit(buttonid, context, inline) {
         // Find file from {files} where itemid = value of #id_task
 
         // let questionId = document.querySelector("input[name='id']").value;
-        const itemid = document.querySelector("#id_task").value;
-        console.log('download task ' + itemid);
-        return downloadTask(itemid)
+        draftitemid = document.querySelector("#id_task").value;
+        console.log('download task ' + draftitemid);
+        return downloadTask(draftitemid)
             .then(response => {
-                console.log(response);
                 console.log(response.fileurl);
-                alert('Hurra, da ist sie ...' + response.fileurl);
+                draftfilename = decodeURIComponent(response.fileurl.split('/').reverse()[0]);
                 if (!response.fileurl) {
                     reject(new Error('invalid fileurl ' + response.fileurl));
                 }
@@ -299,37 +301,37 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
     function addButtonCallbacks() {
         document.querySelector('#addJUnitTest').onclick = function (e) {
             e.preventDefault();
-            config.infoJavaJUnit.createTestForm();
+            taskeditorconfig.infoJavaJUnit.createTestForm();
         }
 
         document.querySelector('#addCheckStyleTest').onclick = function (e) {
             e.preventDefault();
-            config.infoCheckStyle.createTestForm();
+            taskeditorconfig.infoCheckStyle.createTestForm();
         }
 
         document.querySelector('#addCompilerTest').onclick = function (e) {
             e.preventDefault();
-            config.infoJavaComp.createTestForm();
+            taskeditorconfig.infoJavaComp.createTestForm();
         }
 
         document.querySelector('#addGoogleTest').onclick = function (e) {
             e.preventDefault();
-            config.infoGoogleTest.createTestForm();
+            taskeditorconfig.infoGoogleTest.createTestForm();
         }
 
         document.querySelector('#addCUnitTest').onclick = function (e) {
             e.preventDefault();
-            config.infoCUnit.createTestForm();
+            taskeditorconfig.infoCUnit.createTestForm();
         }
 
         document.querySelector('#addPythonUnittest').onclick = function (e) {
             e.preventDefault();
-            config.infoPython.createTestForm();
+            taskeditorconfig.infoPython.createTestForm();
         }
 
         document.querySelector('#addPythonDocTest').onclick = function (e) {
             e.preventDefault();
-            config.infoPythonDoctest.createTestForm();
+            taskeditorconfig.infoPythonDoctest.createTestForm();
         }
     }
 
@@ -421,8 +423,52 @@ export const savetask = (buttonid) => {
         const zipname = $("#id_name").val();
         const context = convertToXML();
         if (context) {
-            zipme(context, zipname, false);
-            createGradingHints();
+            zipme(context, zipname, false)
+                .then(blob => {
+                    createGradingHints();
+
+                    const url = Config.wwwroot + '/repository/draftfiles_ajax.php';
+                    const action = 'updatefile';
+
+                    const formData = new FormData();
+                    formData.append('sesskey', Config.sesskey);
+                    formData.append('filepath', '/');
+                    formData.append('filename', draftfilename);
+
+                    formData.append('file', blob);
+                    formData.append('savepath', '/');
+                    formData.append('itemid', draftitemid);
+/*
+                    const url = Config.wwwroot + '/repository/repository_ajax.php';
+                    const formData = new FormData();
+                    formData.append('sesskey', Config.sesskey);
+                    formData.append('repo_upload_file', blob);
+                    formData.append('filepath', '/');
+                    // formData.append('client_id', this.options['client_id']);
+                    formData.append('title', draftfilename);
+                    formData.append('overwrite', true);
+                    // formData.append('maxbytes', this.options['maxbytes']);
+                    // since we are uploading the file to the 'draft area',
+                    // there is no point in limiting the size of the file area.
+                    // The draft area is used for all users.
+                    // formData.append('areamaxbytes', this.options['areamaxbytes']);
+                    formData.append('savepath', '/');
+                    // formData.append('repo_id', this.options['repo_id']);
+                    formData.append('itemid', draftitemid);
+
+                    // formData.append('file', blob, 'readme.txt');
+*/
+                    let request = new XMLHttpRequest();
+                    request.open('POST', url + '?action=' + action, false);
+                    request.send(formData);
+                    const jsonResponse = JSON.parse(request.responseText);
+                    console.log(jsonResponse);
+                    if (jsonResponse.error !== undefined) {
+                        console.error(request.responseText);
+                        alert(jsonResponse.error);
+                    }
+
+                });
         }
     }
 }

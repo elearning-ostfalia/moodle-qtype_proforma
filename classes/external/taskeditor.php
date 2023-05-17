@@ -85,7 +85,7 @@ class taskeditor extends \external_api {
             throw new \invalid_parameter_exception('invalid task itemid (no draft file)');
         }
 
-        var_dump($records);
+//        var_dump($records);
         $filename = '';
         $filepath = '';
         foreach($records as $record) {

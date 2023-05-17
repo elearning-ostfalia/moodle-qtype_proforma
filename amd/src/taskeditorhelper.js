@@ -21,7 +21,7 @@ import $ from 'jquery';
 import {FileWrapper, FileStorage, fileStorages} from "./taskeditorfile";
 import {getExtension, setErrorMessage} from "./taskeditorutil";
 import {javaParser} from "./taskeditorjava";
-import {config} from "./taskeditorconfig";
+import {taskeditorconfig} from "./taskeditorconfig";
 import {readAndDisplayXml} from "./taskeditortask";
 
 
@@ -33,7 +33,7 @@ export const testTypes = 'EMPTY LIST'; // getTesttypeOptions();
 function getTesttypeOptions() {
     let list = "";
     let first = true;
-    $.each(config.testInfos, function (index, item) {
+    $.each(taskeditorconfig.testInfos, function (index, item) {
         list = list + "<option";
         if (first) {
             list = list + " selected='selected'";
@@ -57,16 +57,16 @@ export function readAndCreateFileData(file, fileId, callback) {
     }
 
     const size = file.size; //get file size
-    const mimetype = config.getMimeType(file.type, filename); //get mime type
+    const mimetype = taskeditorconfig.getMimeType(file.type, filename); //get mime type
     // determine if we have a binary or non-binary file
-    let isBinaryFile = false; // TODO: config.isBinaryFile(file, mimetype);
+    let isBinaryFile = false; // TODO: taskeditorconfig.isBinaryFile(file, mimetype);
     let reader = new FileReader();
     reader.onload = function (e) {
         function finishFile(ui_file) {
             // set filename
             ui_file.filename = filename;
 
-            /*        if (size > config.maxSizeForEditor) {
+            /*        if (size > taskeditorconfig.maxSizeForEditor) {
                         //console.log('file '+ filename + ' is too large => no editor support');
                         //isBinaryFile = true;
                     }*/
@@ -133,7 +133,7 @@ function uploadFilesWhenDropped(files) {
 
 /*
 function addTestButtons() {
-    $.each(config.testInfos, function (index, item) {
+    $.each(taskeditorconfig.testInfos, function (index, item) {
         $("#testbuttons").append("<button id='" + item.buttonJQueryId + "'>New " + item.title + "</button> ");
         $("#" + item.buttonJQueryId).click(function () {
 
@@ -153,13 +153,13 @@ function switchProgLang() {
     console.log("changing programming language to " + progLang);
 
     // hide all test buttons
-    $.each(config.testInfos, function (index, test) {
+    $.each(taskeditorconfig.testInfos, function (index, test) {
         $("#" + test.buttonJQueryId).hide();
     });
 
     // show only test buttons needed for programming language
     let found = false;
-    $.each(config.proglangInfos, function (index, pl) {
+    $.each(taskeditorconfig.proglangInfos, function (index, pl) {
         if (pl.name === progLang) {
             found = true;
             $.each(pl.tests, function (index, test) {
@@ -186,7 +186,7 @@ function switchProgLang() {
             codeskeleton.setOption("mode", "text/x-c++src");
             // This does not work properly:
             // The unittest element is missing in task.xml output
-            // config.onProglangChanged('cpp');
+            // taskeditorconfig.onProglangChanged('cpp');
             break;
     }
 }

@@ -23,7 +23,7 @@ import {readAndCreateFileData} from "./taskeditorhelper";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import {FileWrapper} from "./taskeditorfile";
-import {config} from "./taskeditorconfig";
+import {taskeditorconfig} from "./taskeditorconfig";
 import {DEBUG_MODE,} from "./taskeditorutil";
 import * as Str from 'core/str';
 import {TestWrapper} from "./taskeditortest";
@@ -495,7 +495,7 @@ export class FileReferenceList extends DynamicList {
                             if (fileid) {
                                 // setJavaClassname(selectedFilename);
                                 // setJUnitDefaultTitle(selectedFilename);
-                                config.handleFilenameChangeInTest(selectedFilename, tempSelElem);
+                                taskeditorconfig.handleFilenameChangeInTest(selectedFilename, tempSelElem);
                             }
                         } else {
                             this.onFilerefChanged(ui_file, fileid);

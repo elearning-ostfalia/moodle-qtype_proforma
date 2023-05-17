@@ -17,7 +17,7 @@
 
 import $ from 'jquery';
 import {setcounter, DEBUG_MODE, getExtension} from "./taskeditorutil";
-import {config} from "./taskeditorconfig";
+import {taskeditorconfig} from "./taskeditorconfig";
 import {FileReferenceList} from "./filereflist";
 import Templates from 'core/templates';
 import * as CodeMirror from './codemirror';
@@ -128,7 +128,7 @@ export class FileWrapper {
 
 
     get text() {
-        if (config.useCodemirror) {
+        if (taskeditorconfig.useCodemirror) {
             return codemirror[this.id].getValue();
         } else {
             return this._root.find(".xml_file_text").val();
@@ -137,7 +137,7 @@ export class FileWrapper {
 
     // setter
     set text(newText) {
-        if (config.useCodemirror) {
+        if (taskeditorconfig.useCodemirror) {
             codemirror[this.id].setValue(newText);
             const fileObject = fileStorages[this.id];
             console.log('CodeMirror-Mode: ' + fileObject.mimetype + ' ' + this.getCodemirrorMode());
@@ -340,7 +340,7 @@ export class FileWrapper {
         else
             ui_file = FileWrapper.constructFromRoot(button.closest('.xml_file'));
 
-        if (config.useCodemirror) {
+        if (taskeditorconfig.useCodemirror) {
             let editor = codemirror[ui_file.id];
             if (show)
                 $(editor.getWrapperElement()).show();

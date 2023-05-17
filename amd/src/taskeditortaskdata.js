@@ -17,7 +17,7 @@
 
 
 import {setErrorMessage, generateUUID} from "./taskeditorutil";
-import {config} from "./taskeditorconfig";
+import {taskeditorconfig} from "./taskeditorconfig";
 import {FileStorage, fileStorages } from "./taskeditorfile";
 
 export const T_LMS_USAGE = {
@@ -70,7 +70,7 @@ class XmlReader {
 
             switch (prefix) {
                 case 'dns': return defaultns; // 'urn:proforma:task:v1.0.1';
-                default:    return config.resolveNamespace(prefix, defaultns);
+                default:    return taskeditorconfig.resolveNamespace(prefix, defaultns);
             }
         };
     }
@@ -453,7 +453,7 @@ export class TaskClass {
                             console.log(taskfile.id + ' is embedded-bin-file');
                             console.log(filecontent);
                             console.log(filecontent.length);
-                            const mimetype = config.getMimeType('', taskfile.filename); //get mime type
+                            const mimetype = taskeditorconfig.getMimeType('', taskfile.filename); //get mime type
                             let fileObject = new FileStorage(true, mimetype, filecontent, taskfile.filename);
                             fileObject.setSize(filecontent.length);
                             fileStorages[taskfile.id] = fileObject;
@@ -740,7 +740,7 @@ export class TaskClass {
 
             task.setAttribute("lang", this.lang);
             task.setAttribute("uuid", generateUUID());// this.uuid);
-            //config.writeNamespaces(task);
+            //taskeditorconfig.writeNamespaces(task);
 
             xmlWriter = new XmlWriter(xmlDoc, xmlns);
 
@@ -780,7 +780,7 @@ export class TaskClass {
 
             let metadata = xmlDoc.createElementNS(xmlns, "meta-data");
             task.appendChild(metadata);
-///            config.writeXmlExtra(metadata, xmlDoc, xmlWriter);
+///            taskeditorconfig.writeXmlExtra(metadata, xmlDoc, xmlWriter);
             //xmlWriter.createTextElement(metadata, 'praktomat:allowed-upload-filename-mimetypes', '(text/.*)');
 
             let serializer = new XMLSerializer();
@@ -794,7 +794,7 @@ export class TaskClass {
             let xsds = [ 'xsd/proforma.xsd' ];
             // do not add all xsds from configuration because not all of them may be used
             // resulting in an error message
-            xsds = xsds.concat(config.xsds);
+            xsds = xsds.concat(taskeditorconfig.xsds);
 
 /*
             if (!topLevelDoc) { // do not validate for XML part

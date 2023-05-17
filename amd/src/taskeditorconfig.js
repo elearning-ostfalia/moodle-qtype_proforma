@@ -30,7 +30,7 @@ import {readXmlActive} from "./taskeditorhelper";
 */
 
 
-export const config = (function(testConfigNode) {
+export const taskeditorconfig = (function(testConfigNode) {
     const praktomatns     = "urn:proforma:praktomat:v0.2"; // for checkstyle in task 1.0.1
     //const jartestns       = "urn:proforma:tests:jartest:v1"; // for reading 1.0.1
     const unittestns_old  = "urn:proforma:tests:unittest:v1";
