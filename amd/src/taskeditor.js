@@ -61,39 +61,22 @@ export async function edit(buttonid, context, inline) {
     }
 
     function downloadTaskFromServer() {
-        let questionId = document.querySelector("input[name='id']").value;
-        console.log('download task ' + questionId);
-        return downloadTask(questionId)
+        // Find file from {files} where itemid = value of #id_task
+
+        // let questionId = document.querySelector("input[name='id']").value;
+        const itemid = document.querySelector("#id_task").value;
+        console.log('download task ' + itemid);
+        return downloadTask(itemid)
             .then(response => {
+                console.log(response);
                 console.log(response.fileurl);
+                alert('Hurra, da ist sie ...' + response.fileurl);
                 if (!response.fileurl) {
                     reject(new Error('invalid fileurl ' + response.fileurl));
                 }
                 return response.fileurl;
             })
             .then(url => fetch(url, {method: 'GET'}));
-/*
-            .then(response => {
-                console.log('response from fetch is');
-                console.log(response);
-                const extension = getExtension(response.url);
-                const isZipped = (extension === 'zip');
-                if (isZipped) {
-                    return response.blob()
-                        .then(blob => {
-                            console.log('blob is');
-                            console.log(blob);
-                            return unzipme(blob, undefined);
-                        });
-                } else {
-                    return response.text();
-                }
-            });*/
-            // .then(text => readXMLWithLock(text))
-/*            .catch( error => {
-                console.error('error:', error);
-                alert(error);
-            });*/
     }
 
     /**

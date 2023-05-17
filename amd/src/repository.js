@@ -27,11 +27,11 @@
 
 import Ajax from 'core/ajax';
 
-export const downloadTask = (questionid
+export const downloadTask = (itemid
 ) => Ajax.call([{
     methodname: 'qtype_proforma_get_task_url',
     args: {
-        questionid
+        itemid
     },
 }])[0];
 

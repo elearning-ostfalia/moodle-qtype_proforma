@@ -44,14 +44,13 @@ class taskeditor extends \external_api {
      * @param int $questionid proforma question id
      * @return array result (boolean) with log messages
      */
-    public static function get_task_url($questionidparam) {
-        global $DB;
-
-        $params = self::validate_parameters(self::get_task_url_parameters(), ['questionid' => $questionidparam]);
+    public static function get_task_url($itemid) {
+        $params = self::validate_parameters(self::get_task_url_parameters(), ['itemid' => $itemid]);
         if (empty($params) or count($params) == 0) {
-            throw new \invalid_parameter_exception('invalid question id');
+            throw new \invalid_parameter_exception('invalid item id');
         }
-
+        $itemid = $params['itemid'];
+/*
         $questionid = $params['questionid'];
         $question = \question_bank::load_question($questionid);
         if ($question == null) {
@@ -76,13 +75,41 @@ class taskeditor extends \external_api {
         }
         $filename = trim($task->get_filename());
         $filearea = trim($task->get_filearea());
-        $fileurl = \moodle_url::make_pluginfile_url($contextid /*$question->contextid*/, 'qtype_proforma',
+        $fileurl = \moodle_url::make_pluginfile_url($contextid, 'qtype_proforma',
             $filearea, $question->id, '/', $filename);
         // return '<a href="' . $url->out() . '">' . $filename . '</a> ';
+*/
+        global $DB;
+        $records = $DB->get_records('files', ['itemid' => $itemid]);
+        if ($records == False || count($records) == 0) {
+            throw new \invalid_parameter_exception('invalid task itemid (no draft file)');
+        }
+
+        var_dump($records);
+        $filename = '';
+        $filepath = '';
+        foreach($records as $record) {
+            if ($record->filearea != 'draft') {
+                throw new \invalid_parameter_exception('invalid task itemid (no draft file)');
+            }
+            if ($record->component != 'user') {
+                throw new \invalid_parameter_exception('invalid task itemid (no user file)');
+            }
+            if ($record->filename == '.') {
+                // skip folder record
+                continue;
+            }
+            $filepath = $record->filepath;
+            $filename = $record->filename;
+        }
+
+        $fileurl = \moodle_url::make_draftfile_url($itemid, $filepath, $filename);
+        $fileurl = $fileurl->out();
+        // $fileurl = 'http://www.moodle.org/index.html';
 
         return [
-            'questionid' => $questionid,
-            'fileurl' => $fileurl->out(),
+            'itemid' => $itemid,
+            'fileurl' => $fileurl,
             'message' => 'ok'
         ];
     }
@@ -141,7 +168,7 @@ class taskeditor extends \external_api {
      */
     public static function get_task_url_parameters() {
         return new external_function_parameters([
-            "questionid"=> new external_value(PARAM_INT, 'ID of ProformA question', VALUE_REQUIRED),
+            "itemid"=> new external_value(PARAM_INT, 'draft ID of ProformA question', VALUE_REQUIRED),
         ]);
     }
 
@@ -162,7 +189,7 @@ class taskeditor extends \external_api {
 
     public static function get_task_url_returns() {
         return new external_function_parameters([
-            'questionid' => new external_value(PARAM_INT, 'question id'),
+            'itemid' => new external_value(PARAM_INT, 'draft itemid'),
             'fileurl' => new external_value(PARAM_URL, 'Taskfile URL'),
             'message' => new external_value(PARAM_RAW, 'error message if any'),
         ]);
