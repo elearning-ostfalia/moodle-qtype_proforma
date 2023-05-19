@@ -310,6 +310,7 @@ abstract class qtype_proforma_base_task {
         if (!$xmldoc->loadXML($question->gradinghints)) {
             // Fatal error: grading hints cannot be loaded!
             debugging('gradinghints are not valid XML');
+            debugging($question->gradinghints);
             return;
         }
 

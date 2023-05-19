@@ -127,12 +127,14 @@ abstract class base_form_creator {
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
-        $title = $fromform["testtitle"][0];
-        $titleavailable = strlen(trim($title)) > 0;
-        if (!$titleavailable) {
-            // At least one test must be defined. This is checked by
-            // checking if the first title is set.
-            $errors['testtitle[0]'] = get_string('titleempty', 'qtype_proforma');
+        if (!constant('EDITORINLINE')) {
+            $title = $fromform["testtitle"][0];
+            $titleavailable = strlen(trim($title)) > 0;
+            if (!$titleavailable) {
+                // At least one test must be defined. This is checked by
+                // checking if the first title is set.
+                $errors['testtitle[0]'] = get_string('titleempty', 'qtype_proforma');
+            }
         }
 
         // For deleting the last test by leaving all (relevant) fields empty.
@@ -149,20 +151,22 @@ abstract class base_form_creator {
             }
         }
 
-        // Check tests.
-        $repeats = $this->get_count_tests(null);
-        for ($i = 0; $i < $repeats; $i++) {
-            list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
-        }
+        if (!constant('EDITORINLINE')) {
+            // Check tests.
+            $repeats = $this->get_count_tests(null);
+            for ($i = 0; $i < $repeats; $i++) {
+                list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
+            }
 
-        // Ensure that sum of weights is > 0.
-        if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
-            $repeats = count($fromform["testweight"]);
-            $sumweight = $this->calc_sumweight($fromform);
-            if (/*$repeats > 0 && */$sumweight == 0) {
-                // Error message must be attached to testoptions group
-                // otherwise it is not visible.
-                $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
+            // Ensure that sum of weights is > 0.
+            if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
+                $repeats = count($fromform["testweight"]);
+                $sumweight = $this->calc_sumweight($fromform);
+                if (/*$repeats > 0 && */ $sumweight == 0) {
+                    // Error message must be attached to testoptions group
+                    // otherwise it is not visible.
+                    $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
+                }
             }
         }
 

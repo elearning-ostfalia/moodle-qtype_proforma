@@ -139,6 +139,54 @@ export async function edit(buttonid, context, repoparams, inline) {
         }
     }
 
+    async function newsave() { await saveBackToServer();}
+
+    console.log('change submit function');
+    let form = document.getElementById('id_submitbutton').closest('form');
+
+    console.log(form);
+    var realSubmit = form.submit;
+    console.log(realSubmit);
+/*    try {
+        var wrappedSubmit = form.submit = function () {
+            alert('do new submit');
+            newsave();
+            alert('do old submit');
+            form.submit = realSubmit;
+            form.submit();
+            form.submit = wrappedSubmit;
+        };
+    } catch(e) {}
+
+ */
+
+    if (form) {
+        console.log('change submit button');
+        // In student review there will be no button!
+        form.onsubmit  = (event) => {
+            // event.preventDefault();
+            console.log('save before submit');
+            saveBackToServer(); // synchronous action!
+            // alert('button submit');
+            console.log('saveBackToServer triggered');
+        };
+    }
+/*
+        let submitbutton = document.getElementById('id_updatebutton');
+        if (submitbutton !== null) {
+            console.log('change update button');
+            // In student review there will be no button!
+            submitbutton.onclick = async (event) => {
+                event.preventDefault();
+                console.log('save before submit');
+                // alert('button submit');
+                await saveBackToServer() // synchronous action!
+                console.log('saveBackToServer triggered');
+            };
+        }
+    */
+
+
     if (inline) {
         downloadTaskFromServer()
             .then(taskresponse => displayTaskdata(taskresponse))
@@ -251,6 +299,7 @@ export async function edit(buttonid, context, repoparams, inline) {
                 return modal;
         }).fail(Notification.exception);
     });
+
 }
 
 
@@ -409,6 +458,7 @@ function createGradingHints() {
         test.appendChild(testtype);
     });
 
+    console.log('create new grading hints');
     console.log(doc);
     console.log(gh);
     const gradinghints = document.querySelector('input[name="gradinghints"]');
@@ -416,69 +466,85 @@ function createGradingHints() {
         console.log('No gradinghints field found => ignore');
         return;
     }
-    gradinghints.value = doc;
+    let serializer = new XMLSerializer();
+    let result = serializer.serializeToString (gh);
+
+    if ((result.substring(0, 5) !== "<?xml")){
+        result = '<?xml version="1.0"?>' + result;
+        // result = "<?xml version='1.0' encoding='UTF-8'?>" + result;
+    }
+    console.log(result);
+    gradinghints.value = result;
+    console.log('grading hints are finished');
+}
+
+function saveBackToServer() {
+    const zipname = $("#id_name").val();
+    const context = convertToXML();
+    if (context) {
+        return zipme(context, zipname, false)
+            .then(blob => {
+                createGradingHints();
+                console.log('now let us update task in  Moodle server');
+                const url = Config.wwwroot + '/repository/repository_ajax.php';
+                const action = 'upload';
+
+                const formData = new FormData();
+                formData.append('sesskey', Config.sesskey);
+                formData.append('repo_upload_file', blob);
+                formData.append('filepath', '/');
+                formData.append('client_id', repositoryparams['client_id']);
+                formData.append('title', draftfilename);
+                formData.append('overwrite', true);
+                // formData.append('maxbytes', -1);
+                // since we are uploading the file to the 'draft area',
+                // there is no point in limiting the size of the file area.
+                // The draft area is used for all users.
+                // formData.append('areamaxbytes', this.options['areamaxbytes']);
+                formData.append('savepath', '/');
+                formData.append('repo_id', repositoryparams['repo_id']);
+                formData.append('itemid', draftitemid);
+
+                /*
+                                    const url = Config.wwwroot + '/repository/repository_ajax.php';
+                                    const formData = new FormData();
+                                    formData.append('sesskey', Config.sesskey);
+                                    formData.append('repo_upload_file', blob);
+                                    formData.append('filepath', '/');
+                                    // formData.append('client_id', this.options['client_id']);
+                                    formData.append('title', draftfilename);
+                                    formData.append('overwrite', true);
+                                    // formData.append('maxbytes', this.options['maxbytes']);
+                                    // since we are uploading the file to the 'draft area',
+                                    // there is no point in limiting the size of the file area.
+                                    // The draft area is used for all users.
+                                    // formData.append('areamaxbytes', this.options['areamaxbytes']);
+                                    formData.append('savepath', '/');
+                                    // formData.append('repo_id', this.options['repo_id']);
+                                    formData.append('itemid', draftitemid);
+
+                                    // formData.append('file', blob, 'readme.txt');
+                */
+                let request = new XMLHttpRequest();
+                request.open('POST', url + '?action=' + action, false);
+                request.send(formData);
+                const jsonResponse = JSON.parse(request.responseText);
+                console.log('response from Moodle');
+                console.log(jsonResponse);
+                alert('response from Moodle');
+                if (jsonResponse.error !== undefined) {
+                    console.error(request.responseText);
+                    alert(jsonResponse.error);
+                }
+            });
+    }
 }
 
 export const savetask = (buttonid) => {
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {
         e.preventDefault();
-        const zipname = $("#id_name").val();
-        const context = convertToXML();
-        if (context) {
-            zipme(context, zipname, false)
-                .then(blob => {
-                    createGradingHints();
+        saveBackToServer();
 
-                    const url = Config.wwwroot + '/repository/repository_ajax.php';
-                    const action = 'upload';
-
-                    const formData = new FormData();
-                    formData.append('sesskey', Config.sesskey);
-                    formData.append('repo_upload_file', blob);
-                    formData.append('filepath', '/');
-                    formData.append('client_id', repositoryparams['client_id']);
-                    formData.append('title', draftfilename);
-                    formData.append('overwrite', true);
-                    formData.append('maxbytes', -1);
-                    // since we are uploading the file to the 'draft area',
-                    // there is no point in limiting the size of the file area.
-                    // The draft area is used for all users.
-                    // formData.append('areamaxbytes', this.options['areamaxbytes']);
-                    formData.append('savepath', '/');
-                    formData.append('repo_id', repositoryparams['repo_id']);
-                    formData.append('itemid', draftitemid);
-
-/*
-                    const url = Config.wwwroot + '/repository/repository_ajax.php';
-                    const formData = new FormData();
-                    formData.append('sesskey', Config.sesskey);
-                    formData.append('repo_upload_file', blob);
-                    formData.append('filepath', '/');
-                    // formData.append('client_id', this.options['client_id']);
-                    formData.append('title', draftfilename);
-                    formData.append('overwrite', true);
-                    // formData.append('maxbytes', this.options['maxbytes']);
-                    // since we are uploading the file to the 'draft area',
-                    // there is no point in limiting the size of the file area.
-                    // The draft area is used for all users.
-                    // formData.append('areamaxbytes', this.options['areamaxbytes']);
-                    formData.append('savepath', '/');
-                    // formData.append('repo_id', this.options['repo_id']);
-                    formData.append('itemid', draftitemid);
-
-                    // formData.append('file', blob, 'readme.txt');
-*/
-                    let request = new XMLHttpRequest();
-                    request.open('POST', url + '?action=' + action, false);
-                    request.send(formData);
-                    const jsonResponse = JSON.parse(request.responseText);
-                    console.log(jsonResponse);
-                    if (jsonResponse.error !== undefined) {
-                        console.error(request.responseText);
-                        alert(jsonResponse.error);
-                    }
-                });
-        }
     }
 }

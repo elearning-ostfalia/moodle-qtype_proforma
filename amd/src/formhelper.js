@@ -60,13 +60,17 @@ export const showif = (id, dependend, needle, optionfield, option) => {
     // Initialise.
     showOrHide(id, dependend, needle, optionfield, option);
     // Check if key was pressed in URI text field.
-    document.getElementById(dependend).addEventListener('keyup', function () {
-        showOrHide(id, dependend, needle, optionfield, option);
-    });
+    if (document.getElementById(dependend)) {
+        document.getElementById(dependend).addEventListener('keyup', function () {
+            showOrHide(id, dependend, needle, optionfield, option);
+        });
+    }
     // Check if response option is changed.
-    document.getElementById(optionfield).addEventListener('change', function () {
-        showOrHide(id, dependend, needle, optionfield, option);
-    });
+    if (document.getElementById(optionfield)) {
+        document.getElementById(optionfield).addEventListener('change', function () {
+            showOrHide(id, dependend, needle, optionfield, option);
+        });
+    }
 };
 
 
