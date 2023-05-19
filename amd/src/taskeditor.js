@@ -44,6 +44,7 @@ import Config from 'core/config';
 
 var draftitemid = null;
 var draftfilename = null;
+var repositoryparams = null;
 
 /**
  * edit task
@@ -51,9 +52,11 @@ var draftfilename = null;
  * @param {string} buttonid: button id
  * @returns {undefined}
  */
-export async function edit(buttonid, context, inline) {
+export async function edit(buttonid, context, repoparams, inline) {
 
     console.log(context);
+    repositoryparams = repoparams;
+    console.log(repositoryparams);
 
     /**
      * get localized string for cancel/close button
@@ -427,17 +430,25 @@ export const savetask = (buttonid) => {
                 .then(blob => {
                     createGradingHints();
 
-                    const url = Config.wwwroot + '/repository/draftfiles_ajax.php';
-                    const action = 'updatefile';
+                    const url = Config.wwwroot + '/repository/repository_ajax.php';
+                    const action = 'upload';
 
                     const formData = new FormData();
                     formData.append('sesskey', Config.sesskey);
+                    formData.append('repo_upload_file', blob);
                     formData.append('filepath', '/');
-                    formData.append('filename', draftfilename);
-
-                    formData.append('file', blob);
+                    formData.append('client_id', repositoryparams['client_id']);
+                    formData.append('title', draftfilename);
+                    formData.append('overwrite', true);
+                    formData.append('maxbytes', -1);
+                    // since we are uploading the file to the 'draft area',
+                    // there is no point in limiting the size of the file area.
+                    // The draft area is used for all users.
+                    // formData.append('areamaxbytes', this.options['areamaxbytes']);
                     formData.append('savepath', '/');
+                    formData.append('repo_id', repositoryparams['repo_id']);
                     formData.append('itemid', draftitemid);
+
 /*
                     const url = Config.wwwroot + '/repository/repository_ajax.php';
                     const formData = new FormData();
@@ -467,7 +478,6 @@ export const savetask = (buttonid) => {
                         console.error(request.responseText);
                         alert(jsonResponse.error);
                     }
-
                 });
         }
     }

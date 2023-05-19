@@ -73,7 +73,8 @@ class proforma_form_creator extends base_form_creator {
             }
         }
 */
-        $errors = $this->validate_taskfile($editor, $fromform, $errors);
+
+        // $errors = $this->validate_taskfile($editor, $fromform, $errors);
 
         return $errors;
     }

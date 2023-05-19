@@ -764,6 +764,7 @@ abstract class base_form_creator {
         $mform->addHelpButton('penalty', 'penaltyforeachincorrecttry', 'question');
         $mform->setDefault('penalty', get_config('qtype_proforma', 'defaultpenalty'));
 
+        // Create context for mustache templates.
         $context =  (object) [
             "proglang" => [
                 [
@@ -789,20 +790,44 @@ abstract class base_form_creator {
             ],
         ];
 
+        global $USER;
+        $usercontext = context_user::instance($USER->id);
+        $clientid = uniqid();
+        $repoparams = array(
+            'type' => 'upload',
+            'currentcontext' => $usercontext,
+            'contextid' => $usercontext->id,
+            'return_types' => FILE_INTERNAL,
+            'userid' => $USER->id,
+            'accepted_types' => '.xml,.zip',
+            'client_id' => $clientid,
+            'subdirs' => 0,
+        );
+        $repo = repository::get_instances($repoparams);
+        if (empty($repo)) {
+            throw new moodle_exception('errornouploadrepo', 'moodle');
+        }
+        $repo = reset($repo); // Get the first (and only) upload repo.
+
+        $params = (object) $repoparams;
+        $params->repo_id = $repo->id;
+
         if (constant('EDITORINLINE')) {
             global $OUTPUT;
             $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
             $mform->addElement('html', $taskeditor);
 
             global $PAGE;
-            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton', $context, true));
+            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit',
+                array('id_taskeditbutton', $context, $params, true));
 
         } else {
             // Add task edit button.
             $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
             // Add js.
             global $PAGE;
-            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit', array('id_taskeditbutton', $context, false));
+            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit',
+                array('id_taskeditbutton', $context, $params, false));
         }
 
     }
