@@ -164,28 +164,33 @@ export async function edit(buttonid, context, repoparams, inline) {
         console.log('change submit button');
         // In student review there will be no button!
         form.onsubmit  = (event) => {
-            // event.preventDefault();
+            event.preventDefault();
             console.log('save before submit');
-            saveBackToServer(); // synchronous action!
-            // alert('button submit');
-            console.log('saveBackToServer triggered');
+            saveBackToServer().
+                then( () => {
+                console.log('saveBackToServer triggered');
+                form.submit = realSubmit;
+                form.submit();
+            });
         };
     }
-/*
-        let submitbutton = document.getElementById('id_updatebutton');
-        if (submitbutton !== null) {
-            console.log('change update button');
-            // In student review there will be no button!
-            submitbutton.onclick = async (event) => {
-                event.preventDefault();
-                console.log('save before submit');
-                // alert('button submit');
-                await saveBackToServer() // synchronous action!
-                console.log('saveBackToServer triggered');
-            };
-        }
-    */
 
+/*
+    let submitbutton = document.getElementById('id_updatebutton');
+    if (submitbutton !== null) {
+        console.log('change update button');
+        // In student review there will be no button!
+        submitbutton.onclick = (event) => {
+            event.preventDefault();
+            console.log('save before submit');
+            // alert('button submit');
+            saveBackToServer() // synchronous action!
+            console.log('saveBackToServer triggered');
+            console.log('now submit');
+            form.submit();
+        };
+    }
+*/
 
     if (inline) {
         downloadTaskFromServer()
@@ -474,17 +479,17 @@ function createGradingHints() {
         // result = "<?xml version='1.0' encoding='UTF-8'?>" + result;
     }
     console.log(result);
-    gradinghints.value = result;
+    gradinghints.value = encodeURIComponent(result);
     console.log('grading hints are finished');
 }
 
 function saveBackToServer() {
+    createGradingHints();
     const zipname = $("#id_name").val();
     const context = convertToXML();
     if (context) {
         return zipme(context, zipname, false)
             .then(blob => {
-                createGradingHints();
                 console.log('now let us update task in  Moodle server');
                 const url = Config.wwwroot + '/repository/repository_ajax.php';
                 const action = 'upload';
@@ -527,11 +532,23 @@ function saveBackToServer() {
                 */
                 let request = new XMLHttpRequest();
                 request.open('POST', url + '?action=' + action, false);
-                request.send(formData);
+                console.log('send');
+                try {
+                    request.send(formData);
+                    if (request.status !== 200) {
+                        alert(`Error ${request.status}: ${request.statusText}`);
+                    } else {
+                        console.log(request.response);
+                        // alert(request.response);
+                    }
+                } catch(err) { // instead of onerror
+                    alert("Request failed");
+                }
+                console.log('parse repsonse');
                 const jsonResponse = JSON.parse(request.responseText);
                 console.log('response from Moodle');
                 console.log(jsonResponse);
-                alert('response from Moodle');
+                // alert('response from Moodle');
                 if (jsonResponse.error !== undefined) {
                     console.error(request.responseText);
                     alert(jsonResponse.error);
