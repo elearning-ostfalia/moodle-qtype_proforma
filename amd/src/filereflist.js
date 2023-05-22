@@ -232,8 +232,8 @@ export class FileReferenceList extends DynamicList {
         let table_body = tr.parent();
         return super.addItem(element)
             .then(newRow => {
-                console.log('returned new row is');
-                console.log(newRow);
+                // console.log('returned new row is');
+                // console.log(newRow);
                 FileReferenceList.rowEnableEditorButton(newRow, false);
                 /*
                         // add new line for selecting a file for a test
@@ -682,8 +682,8 @@ export class FileReferenceList extends DynamicList {
 
     static addCallbacks(rootnode) {
         // Add callback for onclick of '+' button.
-        console.log('Add callbacks for');
-        console.log(rootnode);
+        // console.log('Add callbacks for');
+        // console.log(rootnode);
         // console.log('callback for + button');
         let subnode = rootnode.querySelector('.add_fileref');
         if (!subnode)

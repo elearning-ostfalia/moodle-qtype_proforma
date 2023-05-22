@@ -251,7 +251,7 @@ export class FileWrapper {
     }
 
     static onFilenameChanged(ui_file) {
-        console.log('onFilenameChanged');
+        // console.log('onFilenameChanged');
         // after change of filename update all filelists
 
         let changedId;
@@ -314,7 +314,7 @@ export class FileWrapper {
 
 
     static removeFile(button) {                                       // ask before removing
-        console.log('remove file');
+        // console.log('remove file');
         // let root = button.parent().parent().parent(); // arrgh!
         let ui_file = FileWrapper.constructFromRoot(button.closest('.xml_file')/*root*/);
 

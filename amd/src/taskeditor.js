@@ -41,10 +41,15 @@ import {unzipme, zipme} from "./zipper";
 import {readXMLWithLock} from "./taskeditorhelper";
 import {convertToXML} from "./taskeditortask";
 import Config from 'core/config';
+import {ModelSolutionWrapper} from "./taskeditormodelsol";
+import {T_VISIBLE, TaskFileRef, TaskModelSolution} from "./taskeditortaskdata";
+import {ModelSolutionFileReference} from "./filereflist";
+import {fileIDs, fileStorages, FileWrapper} from "./taskeditorfile";
 
 var draftitemid = null;
 var draftfilename = null;
-var repositoryparams = null;
+var taskrepositoryparams = null;
+var modelsolrepositoryparams = null;
 
 /**
  * edit task
@@ -52,11 +57,12 @@ var repositoryparams = null;
  * @param {string} buttonid: button id
  * @returns {undefined}
  */
-export async function edit(buttonid, context, repoparams, inline) {
+export async function edit(buttonid, context, taskrepoparams, msrepoparams, inline) {
 
     console.log(context);
-    repositoryparams = repoparams;
-    console.log(repositoryparams);
+    taskrepositoryparams = taskrepoparams;
+    modelsolrepositoryparams = msrepoparams;
+    console.log(taskrepositoryparams);
 
     /**
      * get localized string for cancel/close button
@@ -97,9 +103,9 @@ export async function edit(buttonid, context, repoparams, inline) {
         }
 
         const aggregationstrategy = document.querySelector('#id_aggregationstrategy');
-        console.log('aggregationstrategy ' + aggregationstrategy.value);
+        // console.log('aggregationstrategy ' + aggregationstrategy.value);
 
-        console.log(gradinghints.value);
+        // console.log(gradinghints.value);
         const parser = new DOMParser();
         const doc = parser.parseFromString(gradinghints.value, "application/xml");
         doc.querySelectorAll('test-ref').forEach(test => {
@@ -139,7 +145,7 @@ export async function edit(buttonid, context, repoparams, inline) {
         }
     }
 
-    async function newsave() { await saveBackToServer();}
+    async function newsave() { await uploadTaskToServer();}
 
     // Save task before submit/update.
     let updatebutton = document.getElementById('id_updatebutton');
@@ -148,9 +154,9 @@ export async function edit(buttonid, context, repoparams, inline) {
         updatebutton.onclick = (event) => {
             event.preventDefault();
             console.log('save before update');
-            saveBackToServer().
+            uploadTaskToServer().
                 then( () => {
-                    console.log('saveBackToServer returned');
+                    console.log('uploadTaskToServer returned');
                     updatebutton.onclick = realUpdateClick;
                     updatebutton.click();
                 });
@@ -166,9 +172,9 @@ export async function edit(buttonid, context, repoparams, inline) {
         submitbutton.onclick = (event) => {
             event.preventDefault();
             console.log('save before submit');
-            saveBackToServer().
+            uploadTaskToServer().
                 then( () => {
-                    console.log('saveBackToServer returned');
+                    console.log('uploadTaskToServer returned');
                     submitbutton.onclick = realSubmitClick;
                     submitbutton.click();
                 });
@@ -176,25 +182,6 @@ export async function edit(buttonid, context, repoparams, inline) {
     } else {
         console.error('Could not find submit button');
     }
-
-
-/*    if (form) {
-        console.log('change submit button');
-        // In student review there will be no button!
-        form.onsubmit  = (event) => {
-            console.log(event.target);
-            alert('got submit');
-            event.preventDefault();
-            console.log('save before submit');
-            saveBackToServer().
-                then( () => {
-                console.log('saveBackToServer triggered');
-                form.submit = realSubmit;
-                form.submit();
-            });
-        };
-    }*/
-
 
     if (inline) {
         downloadTaskFromServer()
@@ -487,8 +474,89 @@ function createGradingHints() {
     console.log('grading hints are finished');
 }
 
-function saveBackToServer() {
+function uploadModelSolutionToServer() {
+    const draftitemid = document.querySelector("input[name='modelsol']").value;
+    console.log('draftid for model sol is ' + draftitemid);
+
+    console.log('now let us model solution in Moodle server');
+
+    function uploadFile(formData) {
+        const url = Config.wwwroot + '/repository/repository_ajax.php';
+        const action = 'upload';
+
+        let request = new XMLHttpRequest();
+        request.open('POST', url + '?action=' + action, false);
+        console.log('send');
+        try {
+            request.send(formData);
+            if (request.status !== 200) {
+                alert(`Error ${request.status}: ${request.statusText}`);
+            } else {
+                console.log(request.response);
+                // alert(request.response);
+            }
+        } catch(err) { // instead of onerror
+            alert("Request failed");
+        }
+        console.log('parse repsonse');
+        const jsonResponse = JSON.parse(request.responseText);
+        console.log('response from Moodle');
+        console.log(jsonResponse);
+        // alert('response from Moodle');
+        if (jsonResponse.error !== undefined) {
+            console.error(request.responseText);
+            alert(jsonResponse.error);
+        }
+    }
+
+    // write model solutions
+    ModelSolutionWrapper.doOnAll(function(ms) {
+        let modelSolution = new TaskModelSolution();
+        modelSolution.id = ms.id;
+        let counter = 0;
+        console.log('MS id is ' + ms.id);
+        ModelSolutionFileReference.getInstance().doOnAll(function(id) {
+            modelSolution.filerefs[counter++] = new TaskFileRef(id);
+            console.log('MS Fileref is ' + id);
+            let file = FileWrapper.constructFromId(id);
+            console.log('filename is ' + fileStorages[id].filename);
+            const formData = new FormData();
+            console.log(fileStorages);
+            formData.append('sesskey', Config.sesskey);
+            formData.append('client_id', modelsolrepositoryparams['client_id']);
+            formData.append('overwrite', true);
+            formData.append('repo_id', modelsolrepositoryparams['repo_id']);
+            formData.append('itemid', draftitemid);
+            let filename = fileStorages[id].filename.split("/").pop();
+            let length = fileStorages[id].filename.length - filename.length;
+            let filepath = fileStorages[id].filename.substring(0, length);
+            formData.append('title', filename);
+            if (fileIDs[id].isBinary) {
+                formData.append('repo_upload_file', fileStorages[id].content);
+                formData.append('filepath', '/');
+            } else {
+                let content = file.text;
+                console.log('Content is ' + content);
+                formData.append('repo_upload_file', new Blob([content], { type : 'plain/text' }));
+
+                formData.append('filepath', '/');
+                // formData.append('maxbytes', -1);
+                // since we are uploading the file to the 'draft area',
+                // there is no point in limiting the size of the file area.
+                // The draft area is used for all users.
+                // formData.append('areamaxbytes', this.options['areamaxbytes']);
+                formData.append('savepath', filepath);
+            }
+            console.log(formData);
+            uploadFile(formData);
+        }, ms.root);
+    })
+}
+
+
+function uploadTaskToServer() {
     createGradingHints();
+    uploadModelSolutionToServer();
     const zipname = $("#id_name").val();
     const context = convertToXML();
     if (context) {
@@ -502,7 +570,7 @@ function saveBackToServer() {
                 formData.append('sesskey', Config.sesskey);
                 formData.append('repo_upload_file', blob);
                 formData.append('filepath', '/');
-                formData.append('client_id', repositoryparams['client_id']);
+                formData.append('client_id', taskrepositoryparams['client_id']);
                 formData.append('title', draftfilename);
                 formData.append('overwrite', true);
                 // formData.append('maxbytes', -1);
@@ -511,29 +579,8 @@ function saveBackToServer() {
                 // The draft area is used for all users.
                 // formData.append('areamaxbytes', this.options['areamaxbytes']);
                 formData.append('savepath', '/');
-                formData.append('repo_id', repositoryparams['repo_id']);
+                formData.append('repo_id', taskrepositoryparams['repo_id']);
                 formData.append('itemid', draftitemid);
-
-                /*
-                                    const url = Config.wwwroot + '/repository/repository_ajax.php';
-                                    const formData = new FormData();
-                                    formData.append('sesskey', Config.sesskey);
-                                    formData.append('repo_upload_file', blob);
-                                    formData.append('filepath', '/');
-                                    // formData.append('client_id', this.options['client_id']);
-                                    formData.append('title', draftfilename);
-                                    formData.append('overwrite', true);
-                                    // formData.append('maxbytes', this.options['maxbytes']);
-                                    // since we are uploading the file to the 'draft area',
-                                    // there is no point in limiting the size of the file area.
-                                    // The draft area is used for all users.
-                                    // formData.append('areamaxbytes', this.options['areamaxbytes']);
-                                    formData.append('savepath', '/');
-                                    // formData.append('repo_id', this.options['repo_id']);
-                                    formData.append('itemid', draftitemid);
-
-                                    // formData.append('file', blob, 'readme.txt');
-                */
                 let request = new XMLHttpRequest();
                 request.open('POST', url + '?action=' + action, false);
                 console.log('send');
@@ -565,7 +612,7 @@ export const savetask = (buttonid) => {
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {
         e.preventDefault();
-        saveBackToServer();
+        uploadTaskToServer();
 
     }
 }

@@ -177,6 +177,9 @@ function isInputComplete() {
 ///////////////////////////////////////////////////////// function: convertToXML
 
 
+
+
+
 /**
  * writes data from UI elements to xml string
  */
@@ -378,8 +381,8 @@ export async function readAndDisplayXml(taskXml) {
                 context['comment'] = item.comment;
 
                 task.readTestConfig(taskXml, item.id, configItem, context);
-                console.log('context for test template ');
-                console.log(context);
+                // console.log('context for test template ');
+                // console.log(context);
                 ui_test = TestWrapper.createFromTemplate(item.id,
                     configItem.getMustacheTemplate(), context, true, item, task);
                 found = true;

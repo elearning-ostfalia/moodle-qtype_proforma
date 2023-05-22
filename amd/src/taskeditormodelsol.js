@@ -121,18 +121,18 @@ export class ModelSolutionWrapper {
                 return Templates.renderForPromise('qtype_proforma/taskeditor_modelsol', context);
             })
             .then(({html, js}) => {
-                console.log('model sol template rendered');
+                // console.log('model sol template rendered');
                 Templates.appendNodeContents('#proforma-model-solution-section', html, js);
-                console.log('model sol template appended');
+                // console.log('model sol template appended');
 
                 // hide fields that exist only for technical reasons
                 const msroot = $("#modelsolution_" + modelsolid);
                 let ms = ModelSolutionWrapper.constructFromRoot(msroot);
 
                 FileReferenceList.init(null, null, ModelSolutionFileReference, msroot);
-                console.log('Add callbacks to fileref table in Modelsol ');
+                // console.log('Add callbacks to fileref table in Modelsol ');
                 FileReferenceList.addCallbacks($(msroot)[0]);
-                console.log('callback delete ms button');
+                // console.log('callback delete ms button');
                 msroot.find('button').first().on("click",
                     function(event) {
                         event.preventDefault();
@@ -146,15 +146,15 @@ export class ModelSolutionWrapper {
                 }
 
                 if (item) {
-                    console.log('update filelist for model sol');
+                    // console.log('update filelist for model sol');
                     let counter = 0;
-                    console.log(item.filerefs);
+                    // console.log(item.filerefs);
                     item.filerefs.forEach(function(itemFileref, indexFileref) {
                         let filename = task.findFilenameForId(itemFileref.refid);
                         let promiseFactories = [ModelSolutionFileReference.getInstance().setFilenameOnCreation(ms.root, counter++, filename)];
                         Promise.all(promiseFactories)
                             .then(() => {
-                                console.log("promise completed");
+                                // console.log("promise completed");
                             })
                     });
                 }

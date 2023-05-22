@@ -796,7 +796,8 @@ abstract class base_form_creator {
 
         global $USER;
         $usercontext = context_user::instance($USER->id);
-        $clientid = uniqid();
+
+        $taskclientid = uniqid();
         $repoparams = array(
             'type' => 'upload',
             'currentcontext' => $usercontext,
@@ -804,17 +805,35 @@ abstract class base_form_creator {
             'return_types' => FILE_INTERNAL,
             'userid' => $USER->id,
             'accepted_types' => '.xml,.zip',
-            'client_id' => $clientid,
+            'client_id' => $taskclientid,
             'subdirs' => 0,
         );
-        $repo = repository::get_instances($repoparams);
-        if (empty($repo)) {
+        $repo1 = repository::get_instances($repoparams);
+        if (empty($repo1)) {
             throw new moodle_exception('errornouploadrepo', 'moodle');
         }
-        $repo = reset($repo); // Get the first (and only) upload repo.
+        $repo1 = reset($repo1); // Get the first (and only) upload repo.
+        $params1 = (object) $repoparams;
+        $params1->repo_id = $repo1->id;
 
-        $params = (object) $repoparams;
-        $params->repo_id = $repo->id;
+        $msclientid = uniqid();
+        $repoparams = array(
+            'type' => 'upload',
+            'currentcontext' => $usercontext,
+            'contextid' => $usercontext->id,
+            'return_types' => FILE_INTERNAL,
+            'userid' => $USER->id,
+            'accepted_types' => '*',
+            'client_id' => $msclientid,
+            'subdirs' => 1,
+        );
+        $repo2 = repository::get_instances($repoparams);
+        if (empty($repo2)) {
+            throw new moodle_exception('errornouploadrepo', 'moodle');
+        }
+        $repo2 = reset($repo2); // Get the first (and only) upload repo.
+        $params2 = (object) $repoparams;
+        $params2->repo_id = $repo2->id;
 
         if (constant('EDITORINLINE')) {
             global $OUTPUT;
@@ -823,7 +842,7 @@ abstract class base_form_creator {
 
             global $PAGE;
             $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit',
-                array('id_taskeditbutton', $context, $params, true));
+                array('id_taskeditbutton', $context, $params1, $params2, true));
 
         } else {
             // Add task edit button.
