@@ -141,29 +141,49 @@ export async function edit(buttonid, context, repoparams, inline) {
 
     async function newsave() { await saveBackToServer();}
 
-    console.log('change submit function');
-    let form = document.getElementById('id_submitbutton').closest('form');
-
-    console.log(form);
-    var realSubmit = form.submit;
-    console.log(realSubmit);
-/*    try {
-        var wrappedSubmit = form.submit = function () {
-            alert('do new submit');
-            newsave();
-            alert('do old submit');
-            form.submit = realSubmit;
-            form.submit();
-            form.submit = wrappedSubmit;
+    // Save task before submit/update.
+    let updatebutton = document.getElementById('id_updatebutton');
+    if (updatebutton !== null) {
+        let realUpdateClick = updatebutton.onclick;
+        updatebutton.onclick = (event) => {
+            event.preventDefault();
+            console.log('save before update');
+            saveBackToServer().
+                then( () => {
+                    console.log('saveBackToServer returned');
+                    updatebutton.onclick = realUpdateClick;
+                    updatebutton.click();
+                });
         };
-    } catch(e) {}
+    } else {
+        console.error('Could not find update button');
+    }
 
- */
 
-    if (form) {
+    let submitbutton = document.getElementById('id_submitbutton');
+    if (submitbutton !== null) {
+        let realSubmitClick = submitbutton.onclick;
+        submitbutton.onclick = (event) => {
+            event.preventDefault();
+            console.log('save before submit');
+            saveBackToServer().
+                then( () => {
+                    console.log('saveBackToServer returned');
+                    submitbutton.onclick = realSubmitClick;
+                    submitbutton.click();
+                });
+        };
+    } else {
+        console.error('Could not find submit button');
+    }
+
+
+/*    if (form) {
         console.log('change submit button');
         // In student review there will be no button!
         form.onsubmit  = (event) => {
+            console.log(event.target);
+            alert('got submit');
             event.preventDefault();
             console.log('save before submit');
             saveBackToServer().
@@ -173,24 +193,8 @@ export async function edit(buttonid, context, repoparams, inline) {
                 form.submit();
             });
         };
-    }
+    }*/
 
-/*
-    let submitbutton = document.getElementById('id_updatebutton');
-    if (submitbutton !== null) {
-        console.log('change update button');
-        // In student review there will be no button!
-        submitbutton.onclick = (event) => {
-            event.preventDefault();
-            console.log('save before submit');
-            // alert('button submit');
-            saveBackToServer() // synchronous action!
-            console.log('saveBackToServer triggered');
-            console.log('now submit');
-            form.submit();
-        };
-    }
-*/
 
     if (inline) {
         downloadTaskFromServer()
