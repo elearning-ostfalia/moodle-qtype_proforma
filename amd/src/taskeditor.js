@@ -35,7 +35,7 @@ import Notification, {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import {TestWrapper } from "./taskeditortest";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "./repository";
-import {getExtension} from "./taskeditorutil";
+import {getExtension, setErrorMessage} from "./taskeditorutil";
 import {taskeditorconfig} from "./taskeditorconfig";
 import {unzipme, zipme} from "./zipper";
 import {readXMLWithLock} from "./taskeditorhelper";
@@ -45,6 +45,7 @@ import {ModelSolutionWrapper} from "./taskeditormodelsol";
 import {T_VISIBLE, TaskFileRef, TaskModelSolution} from "./taskeditortaskdata";
 import {ModelSolutionFileReference} from "./filereflist";
 import {fileIDs, fileStorages, FileWrapper} from "./taskeditorfile";
+import * as zip from "./zip/zip";
 
 var draftitemid = null;
 var draftfilename = null;
@@ -553,7 +554,7 @@ function uploadModelSolutionToServer() {
             let length = fileStorages[id].filename.length - filename.length;
             let filepath = fileStorages[id].filename.substring(0, length);
             formData.append('title', filename);
-            if (fileIDs[id].isBinary) {
+            if (fileStorages[id].isBinary) {
                 formData.append('repo_upload_file', fileStorages[id].content);
                 formData.append('filepath', '/');
             } else {
@@ -578,6 +579,94 @@ function uploadModelSolutionToServer() {
     document.querySelector("input[name='modelsol']").value = draftitemid;
 
 }
+
+export function checkModelsolution(buttonid) {
+    async function createModelSolutionZip() {
+        const zipFileWriter = new zip.BlobWriter("application/zip");
+        const zipWriter = new zip.ZipWriter(zipFileWriter);
+
+        // create zipfile with model solutions
+        ModelSolutionWrapper.doOnAll(function(ms) {
+            let modelSolution = new TaskModelSolution();
+            modelSolution.id = ms.id;
+            let counter = 0;
+            console.log('MS id is ' + ms.id);
+            ModelSolutionFileReference.getInstance().doOnAll(async function(id) {
+                const filename = fileStorages[id].filename;
+                let content = null;
+                if (fileStorages[id].isBinary) {
+                    content = fileStorages[id].content;
+                } else {
+                    let file = FileWrapper.constructFromId(id);
+                    content = new Blob([file.text], { type : 'plain/text' });
+                    // console.log('Content is ' + content);
+                    // formData.append('repo_upload_file', new Blob([content], { type : 'plain/text' }));
+                }
+                await zipWriter.add(filename, new zip.BlobReader(content));
+            }, ms.root);
+        })
+        await zipWriter.close();
+        return await zipFileWriter.getData();
+    }
+
+    let button = document.getElementById(buttonid);
+    button.onclick = function (e) {
+        e.preventDefault();
+        // create task zipfile
+        const taskxml = convertToXML();
+        if (taskxml) {
+            return zipme(taskxml, 'task.zip', false)
+                .then(blobtask => {
+                    console.log('created task zip');
+                    // blob is the zipped version of the whole task
+                    createModelSolutionZip()
+                        .then(modelsolutionzip => {
+                            console.log('created model solution zip');
+
+                            const url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php';
+                            const formData = new FormData();
+                            formData.append('sesskey', Config.sesskey);
+                            formData.append('task', blobtask, 'task.zip');
+                            formData.append('modelsolution', modelsolutionzip, 'modelsolution.zip');
+
+                            fetch(url, {
+                                method : "POST",
+                                body: formData,
+                            })
+                            .then(response => {
+                                console.log(response);
+                                return response.text()
+                            })
+                            .then(text => console.log(text))
+                            .catch(error => {
+                                console.log(error)
+                            });
+
+/*                            ).then(
+                                html => console.log(html)
+                            );*/
+
+/*
+                            let request = new XMLHttpRequest();
+                            request.open('POST', url, true);
+                            console.log('send');
+                            try {
+                                request.send(formData);
+                                if (request.status !== 200) {
+                                    alert(`Error ${request.status}: ${request.statusText}`);
+                                } else {
+                                    console.log(request.response);
+                                    // alert(request.response);
+                                }
+                            } catch(err) { // instead of onerror
+                                alert("Request failed");
+                            }*/
+                        });
+                });
+        }
+    }
+}
+
 
 
 function uploadTaskToServer() {
@@ -642,3 +731,4 @@ export const savetask = (buttonid) => {
 
     }
 }
+

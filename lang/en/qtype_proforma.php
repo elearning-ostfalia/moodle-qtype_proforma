@@ -50,6 +50,7 @@ $string['responseoptions'] = 'Response Options';
 $string['graderoptions_header'] = 'Grader Settings';
 $string['upload'] = 'Upload taskfile to grader';
 $string['edittestdetails'] = 'Edit test details';
+$string['checkmodelsol'] = 'Check modelsolution';
 
 
 
