@@ -475,7 +475,11 @@ function createGradingHints() {
 }
 
 function uploadModelSolutionToServer() {
-    const draftitemid = document.querySelector("input[name='modelsol']").value;
+    // Instead of using the current draftid and delete all files
+    // we use a new unused draftid.
+    const draftitemid = modelsolrepositoryparams['newitemid'];
+
+    // const draftitemid = document.querySelector("input[name='modelsol']").value;
     console.log('draftid for model sol is ' + draftitemid);
 
     console.log('now let us model solution in Moodle server');
@@ -551,6 +555,10 @@ function uploadModelSolutionToServer() {
             uploadFile(formData);
         }, ms.root);
     })
+
+    // set draftitemid to new value
+    document.querySelector("input[name='modelsol']").value = draftitemid;
+
 }
 
 

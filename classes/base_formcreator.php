@@ -798,7 +798,7 @@ abstract class base_form_creator {
         $usercontext = context_user::instance($USER->id);
 
         $taskclientid = uniqid();
-        $repoparams = array(
+        $taskrepoparams = array(
             'type' => 'upload',
             'currentcontext' => $usercontext,
             'contextid' => $usercontext->id,
@@ -808,16 +808,16 @@ abstract class base_form_creator {
             'client_id' => $taskclientid,
             'subdirs' => 0,
         );
-        $repo1 = repository::get_instances($repoparams);
+        $repo1 = repository::get_instances($taskrepoparams);
         if (empty($repo1)) {
             throw new moodle_exception('errornouploadrepo', 'moodle');
         }
         $repo1 = reset($repo1); // Get the first (and only) upload repo.
-        $params1 = (object) $repoparams;
+        $params1 = (object) $taskrepoparams;
         $params1->repo_id = $repo1->id;
 
         $msclientid = uniqid();
-        $repoparams = array(
+        $msrepoparams = array(
             'type' => 'upload',
             'currentcontext' => $usercontext,
             'contextid' => $usercontext->id,
@@ -826,13 +826,14 @@ abstract class base_form_creator {
             'accepted_types' => '*',
             'client_id' => $msclientid,
             'subdirs' => 1,
+            'newitemid' => file_get_unused_draft_itemid()
         );
-        $repo2 = repository::get_instances($repoparams);
+        $repo2 = repository::get_instances($msrepoparams);
         if (empty($repo2)) {
             throw new moodle_exception('errornouploadrepo', 'moodle');
         }
         $repo2 = reset($repo2); // Get the first (and only) upload repo.
-        $params2 = (object) $repoparams;
+        $params2 = (object) $msrepoparams;
         $params2->repo_id = $repo2->id;
 
         if (constant('EDITORINLINE')) {
@@ -850,7 +851,7 @@ abstract class base_form_creator {
             // Add js.
             global $PAGE;
             $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit',
-                array('id_taskeditbutton', $context, $params, false));
+                array('id_taskeditbutton', $context, $params1, $params2, false));
         }
 
     }
