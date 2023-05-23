@@ -90,15 +90,17 @@
         </div>
     </div>
 
-<button id="download_task-{{uniqid}}" class="btn btn-secondary java">Download</button>
-<!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary java">Save task</button> -->
+<button id="download_task-{{uniqid}}" class="btn btn-secondary">Download</button>
+<button id="upload_task-{{uniqid}}" class="btn btn-secondary">{{#str}} upload, qtype_proforma {{/str}}</button>
+<!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary">Save task</button> -->
 </div>
 
 
 {{#js}}
-    require(['qtype_proforma/taskeditor'], function(editor) {
+    require(['qtype_proforma/taskeditor', 'qtype_proforma/taskupload'], function(editor, taskupload) {
         console.log('attach');
         editor.download("download_task-{{uniqid}}");
+        taskupload.upload("upload_task-{{uniqid}}");
     });
 {{/js}}
 
