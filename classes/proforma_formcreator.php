@@ -359,9 +359,12 @@ class proforma_form_creator extends base_form_creator {
      * @return int
      */
     protected function add_tests($question, $questioneditform) {
-        if (!constant('EDITORINLINE')) {
-            return $this->add_test_fields($question, $questioneditform, 'unittest');
-        }
+        return $this->add_test_fields($question, $questioneditform, 'unittest');
+    }
+
+    public function add_test_settings($question, $questioneditform) {
+        parent::add_test_settings($question, $questioneditform);
+        $this->add_detail_edit_button();
     }
 
     /**

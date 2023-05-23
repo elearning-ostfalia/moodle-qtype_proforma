@@ -46,6 +46,8 @@ $string['responseformat'] = 'Eingabeform';
 $string['responseoptions'] = 'Einreichung';
 $string['graderoptions_header'] = 'Grader';
 $string['upload'] = 'Aufgabendatei zum Grader hochladen';
+$string['edittestdetails'] = 'Testdetails bearbeiten';
+
 
 $string['responsetemplateheader'] = 'Codevorlagen';
 $string['responsetemplate'] = 'Codevorlage';

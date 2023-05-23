@@ -53,9 +53,12 @@ var modelsolrepositoryparams = null;
 
 /**
  * edit task
- *
- * @param {string} buttonid: button id
- * @returns {undefined}
+ * @param buttonid
+ * @param context
+ * @param taskrepoparams
+ * @param msrepoparams
+ * @param inline
+ * @returns {Promise<void>}
  */
 export async function edit(buttonid, context, taskrepoparams, msrepoparams, inline) {
 
@@ -108,17 +111,29 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         // console.log(gradinghints.value);
         const parser = new DOMParser();
         const doc = parser.parseFromString(gradinghints.value, "application/xml");
+        let count = 0;
         doc.querySelectorAll('test-ref').forEach(test => {
+            count++;
             let ui_test = TestWrapper.constructFromId(test.getAttribute('ref'));
             if (aggregationstrategy.value === 2) {
                 ui_test.weight = test.getAttribute('weight');
             }
             ui_test.title = test.querySelector('title').innerHTML;
             ui_test.description = test.querySelector('description').innerHTML;
-            if (test.querySelector('test-type').innerHTML != ui_test.testtype) {
+            if (test.querySelector('test-type').innerHTML !== ui_test.testtype) {
                 console.error('Testtype for test ' + ui_test.id + ' does not match value from grading hints')
             }
         });
+
+        // Finally hide original test input fields:
+        // (better use hide if ???)
+        for (let i = 0; i < count; i++) {
+            document.getElementById('fgroup_id_testoptions_' + i).style.display = 'None';
+            document.getElementById('fitem_id_testtitle_' + i).style.display = 'None';
+            document.getElementById('fitem_id_testdescription_' + i).style.display = 'None';
+            // const selector = 'div[data-groupname="testoptions[' + i + ']"]';
+            // document.querySelector(selector).style.display = 'None';
+        }
     }
 
     function displayTaskdata(taskresponse) {
@@ -144,8 +159,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 });
         }
     }
-
-    async function newsave() { await uploadTaskToServer();}
 
     // Save task before submit/update.
     let updatebutton = document.getElementById('id_updatebutton');
@@ -182,17 +195,43 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     } else {
         console.error('Could not find submit button');
     }
-
+/*
     if (inline) {
         downloadTaskFromServer()
             .then(taskresponse => displayTaskdata(taskresponse))
             .fail(Notification.exception);
         return;
-    }
+    }*/
 
+    document.querySelector('.proforma-taskeditor').style.display = 'none';
     document.getElementById(buttonid).addEventListener('click', function (e) {
         console.log('edit task');
+        document.querySelector('.proforma-taskeditor').style.display = '';
+        downloadTaskFromServer()
+            .then(taskresponse => {
+                displayTaskdata(taskresponse);
+                document.getElementById(buttonid).style.display = 'none';
+                if (document.getElementById('id_graderoptions_header')) {
+                    document.getElementById('id_graderoptions_header').style.display = 'None';
+                }
+                if (document.getElementById('fitem_id_mslinks')) {
+                    document.getElementById('fitem_id_mslinks').style.display = 'None';
+                }
 
+
+/*
+                if (document.getElementById('fitem_id_task')) {
+                    document.getElementById('fitem_id_task').style.display = 'None';
+                }
+                if (document.getElementById('fitem_id_uuid')) {
+                    document.getElementById('fitem_id_uuid').style.display = 'None';
+                }
+                if (document.getElementById('fitem_id_proformaversion')) {
+                    document.getElementById('fitem_id_proformaversion').style.display = 'None';
+                }*/
+            })
+            .fail(Notification.exception);
+/*
         let taskPromise = downloadTaskFromServer();
 
         let stringsPromise = getStrings([
@@ -260,9 +299,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 // modal.getRoot()[0].querySelector('.modal-header button .close').style.display = 'none';
                 let root = modal.getRoot()[0];
                 let header = root.querySelector('.modal-header');
-                /* console.log(root);
-                console.log(header);
-                console.log(header.querySelector('button'));*/
                 header.querySelector('button').style.display = 'none';
 
                 modal.show();
@@ -274,28 +310,10 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 console.log('response from fetch is');
                 console.log(taskresponse);
                 displayTaskdata(taskresponse);
-                /*
-                const extension = getExtension(taskresponse.url);
-                const isZipped = (extension === 'zip');
-                if (isZipped) {
-                    return taskresponse.blob()
-                        .then(blob => {
-                            console.log('blob is');
-                            console.log(blob);
-                            unzipme(blob, function(text) {
-                                readXMLWithLock(text);
-                            });
-                        });
-                } else {
-                    readXMLWithLock(response.text());
-                }
-
-                 */
-
                 return modal;
         }).fail(Notification.exception);
+    */
     });
-
 }
 
 

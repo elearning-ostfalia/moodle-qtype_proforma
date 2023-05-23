@@ -714,60 +714,9 @@ abstract class base_form_creator {
         $this->add_modelsolution();
     }
 
-    /**
-     * Add test settings.
-     *
-     * @param $question
-     * @param $questioneditform
-     */
-    public function add_test_settings($question, $questioneditform) {
+    protected function add_detail_edit_button() {
         $mform = $this->_form;
-
-        // Header.
-        $mform->addElement('header', 'test_header', get_string('tests', 'qtype_proforma'));
-        $mform->setExpanded('test_header');
-
-        // Aggreagation strategy.
-        $aggregationstrategy = array(
-            qtype_proforma::ALL_OR_NOTHING => get_string('all_or_nothing', 'qtype_proforma'),
-            qtype_proforma::WEIGHTED_SUM => get_string('weighted_sum', 'qtype_proforma')
-        );
-        $mform->addElement('select', 'aggregationstrategy',
-            get_string('aggregationstrategy', 'qtype_proforma'), $aggregationstrategy);
-        $mform->addHelpButton('aggregationstrategy', 'aggregationstrategy', 'qtype_proforma');
-        $mform->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
-
-
-        // Tests.
-        // - test overview in case of imported task and
-        // - test edit fields for tasks created with Moodle.
-        // if (!defined('EDITORINLINE')) {
-            $this->add_tests($question, $questioneditform);
-        // }
-
-        // Penalty.
-        $penalties = array(
-            1.0000000,
-            0.5000000,
-            0.3333333,
-            0.2500000,
-            0.2000000,
-            0.1000000,
-            0.0000000
-        );
-        if (!empty($question->penalty) && !in_array($question->penalty, $penalties)) {
-            $penalties[] = $question->penalty;
-            sort($penalties);
-        }
-        $penaltyoptions = array();
-        foreach ($penalties as $penalty) {
-            $penaltyoptions["{$penalty}"] = (100 * $penalty) . '%';
-        }
-        $mform->addElement('select', 'penalty',
-        get_string('penaltyforeachincorrecttry', 'question'), $penaltyoptions);
-        $mform->addHelpButton('penalty', 'penaltyforeachincorrecttry', 'question');
-        $mform->setDefault('penalty', get_config('qtype_proforma', 'defaultpenalty'));
-
+        // Add js.
         // Create context for mustache templates.
         $context =  (object) [
             "proglang" => [
@@ -836,15 +785,19 @@ abstract class base_form_creator {
         $params2 = (object) $msrepoparams;
         $params2->repo_id = $repo2->id;
 
-        if (constant('EDITORINLINE')) {
+
+//        if (constant('EDITORINLINE')) {
             global $OUTPUT;
             $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
             $mform->addElement('html', $taskeditor);
 
+            // Add button.
+            $mform->addElement('button', 'editdetails', get_string('edittestdetails', 'qtype_proforma'));
+
             global $PAGE;
             $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit',
-                array('id_taskeditbutton', $context, $params1, $params2, true));
-
+                array('id_editdetails', $context, $params1, $params2, true));
+/*
         } else {
             // Add task edit button.
             $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
@@ -853,7 +806,60 @@ abstract class base_form_creator {
             $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit',
                 array('id_taskeditbutton', $context, $params1, $params2, false));
         }
+*/
+    }
 
+    /**
+     * Add test settings.
+     *
+     * @param $question
+     * @param $questioneditform
+     */
+    public function add_test_settings($question, $questioneditform) {
+        $mform = $this->_form;
+
+        // Header.
+        $mform->addElement('header', 'test_header', get_string('tests', 'qtype_proforma'));
+        $mform->setExpanded('test_header');
+
+        // Aggreagation strategy.
+        $aggregationstrategy = array(
+            qtype_proforma::ALL_OR_NOTHING => get_string('all_or_nothing', 'qtype_proforma'),
+            qtype_proforma::WEIGHTED_SUM => get_string('weighted_sum', 'qtype_proforma')
+        );
+        $mform->addElement('select', 'aggregationstrategy',
+            get_string('aggregationstrategy', 'qtype_proforma'), $aggregationstrategy);
+        $mform->addHelpButton('aggregationstrategy', 'aggregationstrategy', 'qtype_proforma');
+        $mform->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
+
+
+        // Penalty.
+        $penalties = array(
+            1.0000000,
+            0.5000000,
+            0.3333333,
+            0.2500000,
+            0.2000000,
+            0.1000000,
+            0.0000000
+        );
+        if (!empty($question->penalty) && !in_array($question->penalty, $penalties)) {
+            $penalties[] = $question->penalty;
+            sort($penalties);
+        }
+        $penaltyoptions = array();
+        foreach ($penalties as $penalty) {
+            $penaltyoptions["{$penalty}"] = (100 * $penalty) . '%';
+        }
+        $mform->addElement('select', 'penalty',
+        get_string('penaltyforeachincorrecttry', 'question'), $penaltyoptions);
+        $mform->addHelpButton('penalty', 'penaltyforeachincorrecttry', 'question');
+        $mform->setDefault('penalty', get_config('qtype_proforma', 'defaultpenalty'));
+
+        // Tests.
+        // - test overview in case of imported task and
+        // - test edit fields for tasks created with Moodle.
+        $this->add_tests($question, $questioneditform);
     }
 
     public function add_feedback_options($question, $questioneditform) {
