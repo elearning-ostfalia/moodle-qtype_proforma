@@ -799,14 +799,6 @@ abstract class base_form_creator {
             $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit',
                 array('id_editdetails', $context, $params1, $params2, true));
 
-/*        $output = print_collapsible_region_start('', 'check-feedback-id',
-            'MODELSOLUTION CHECK FEEDBACK ',
-            '', true, true);
-
-        $output .= print_collapsible_region_end(true);
-        $mform->addElement('html', $output);
-*/
-
 
 /*
         } else {

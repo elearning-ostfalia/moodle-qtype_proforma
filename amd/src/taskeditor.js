@@ -32,6 +32,8 @@ import ModalEvents from 'core/modal_events';
 // import Str from 'core/str';
 import {get_strings as getStrings} from 'core/str';
 import Notification, {exception as displayException} from 'core/notification';
+import Y from 'core/yui';
+
 import Templates from 'core/templates';
 import {TestWrapper } from "./taskeditortest";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "./repository";
@@ -200,13 +202,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     } else {
         console.error('Could not find submit button');
     }
-/*
-    if (inline) {
-        downloadTaskFromServer()
-            .then(taskresponse => displayTaskdata(taskresponse))
-            .fail(Notification.exception);
-        return;
-    }*/
 
     document.querySelector('.proforma-taskeditor').style.display = 'none';
     document.getElementById(buttonid).addEventListener('click', function (e) {
@@ -220,6 +215,23 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                         const t1 = performance.now();
                         console.log("expanding details took " + (t1 - t0) + " milliseconds.");
                 });*/
+
+
+                // Collapse main headers
+                let header = document.querySelector('a[href="#id_generalheadercontainer"]');
+                if (header) {
+                    if (header.getAttribute('aria-expanded') === "true") {
+                        header.click();
+                    }
+                }
+                header = document.querySelector('a[href="#id_responseoptionscontainer"]');
+                if (header) {
+                    if (header.getAttribute('aria-expanded') === "true") {
+                        header.click();
+                    }
+                }
+
+
                 document.getElementById(buttonid).style.display = 'none';
                 if (document.getElementById('id_graderoptions_header')) {
                     document.getElementById('id_graderoptions_header').style.display = 'None';
@@ -676,9 +688,15 @@ export function checkModelsolution(buttonid, containerid) {
                                 return response.text()
                             })
                             .then(text => {
-                                console.log(text);
+                                // console.log(text);
                                 let container = document.getElementById(containerid);
+                                container.style.display = '';
                                 container.innerHTML = text;
+                                document.querySelectorAll('#check-feedback-id .collapsibleregion')
+                                    .forEach(element => {
+                                        console.log('create collapsible region for ' + element.id);
+                                        M.util.init_collapsible_region(Y, element.id, '', 'EIN VERSUCH IST ES WERT');
+                                    });
                             })
                             .catch(error => {
                                 console.log(error)
