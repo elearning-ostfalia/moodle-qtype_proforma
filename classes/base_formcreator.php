@@ -775,7 +775,8 @@ abstract class base_form_creator {
             'accepted_types' => '*',
             'client_id' => $msclientid,
             'subdirs' => 1,
-            'newitemid' => file_get_unused_draft_itemid()
+            'newitemid' => file_get_unused_draft_itemid(),
+            'checkitemid' => file_get_unused_draft_itemid()
         );
         $repo2 = repository::get_instances($msrepoparams);
         if (empty($repo2)) {

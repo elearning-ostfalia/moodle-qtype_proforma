@@ -403,6 +403,9 @@ export const taskeditorconfig = (function(testConfigNode) {
     }
 
     function isBinaryFile(file, mimetype) {
+        if (file.name.toLowerCase() === 'makefile') {
+            return false;
+        }
         if (mimetype && mimetype.match(/(text\/)/i))  // mimetype is 'text/...'
             return false;
 
@@ -419,6 +422,9 @@ export const taskeditorconfig = (function(testConfigNode) {
             case 'py' :
             case 'txt' :
             case 'xml' :
+            case 'php' :
+            case 'js' :
+            case 'html' :
             case 'csv' :
                 return false;
             default: break;

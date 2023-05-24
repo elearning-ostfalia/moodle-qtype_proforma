@@ -86,7 +86,6 @@
             id="proforma-model-solution-section"
             role="tabpanel"
             data-region="model-solution-container">
-
         </div>
     </div>
 
@@ -97,12 +96,14 @@
 <!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary">Save task</button> -->
 </div>
 
+<div id="check-feedback-{{uniqid}}">Feedback</div>
+
 
 {{#js}}
     require(['qtype_proforma/taskeditor', 'qtype_proforma/taskupload'], function(editor, taskupload) {
         console.log('attach');
         editor.download("download_task-{{uniqid}}");
-        editor.checkModelsolution("check-modelsolution-{{uniqid}}");
+        editor.checkModelsolution("check-modelsolution-{{uniqid}}", "check-feedback-{{uniqid}}");
         editor.downloadModelsolution("download-modelsol-{{uniqid}}");
         taskupload.upload("upload_task-{{uniqid}}");
     });
