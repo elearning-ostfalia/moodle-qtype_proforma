@@ -51,7 +51,7 @@ export function readAndCreateFileData(file, fileId, callback) {
         return;
     let filename = file.name;
 
-    // check if a file with that filename already is stored
+    // check if a file with filename already is stored
     if (FileWrapper.doesFilenameExist(filename)) {
         alert("A file named '" + filename + "' already exists.");
         return;
@@ -60,7 +60,7 @@ export function readAndCreateFileData(file, fileId, callback) {
     const size = file.size; //get file size
     const mimetype = taskeditorconfig.getMimeType(file.type, filename); //get mime type
     // determine if we have a binary or non-binary file
-    let isBinaryFile = false; // TODO: taskeditorconfig.isBinaryFile(file, mimetype);
+    let isBinaryFile = taskeditorconfig.isBinaryFile(file, mimetype);
     let reader = new FileReader();
     reader.onload = function (e) {
         function finishFile(ui_file) {

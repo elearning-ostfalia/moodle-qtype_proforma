@@ -96,8 +96,6 @@ export function unzipme(blob, readyCallback) {
     function onFilesRead(zipReader) {
         relinkFiles();
         //zipReader.close();
-        const t1 = performance.now();
-        console.log("Call to unzipme took " + (t1 - t0) + " milliseconds.")
     }
 
     function unzipBlob(blob, callbackForTaskXml, callbackForFile) {
@@ -146,8 +144,6 @@ export function unzipme(blob, readyCallback) {
               console.error(e);
           }
     }
-
-    const t0 = performance.now();
 
     unzipBlob(blob,
         // callback for task.xml

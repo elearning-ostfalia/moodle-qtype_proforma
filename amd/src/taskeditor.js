@@ -51,6 +51,7 @@ var draftitemid = null;
 var draftfilename = null;
 var taskrepositoryparams = null;
 var modelsolrepositoryparams = null;
+var t0;
 
 /**
  * edit task
@@ -135,6 +136,9 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             // const selector = 'div[data-groupname="testoptions[' + i + ']"]';
             // document.querySelector(selector).style.display = 'None';
         }
+        const t1 = performance.now();
+        console.log("expanding details took " + (t1 - t0) + " milliseconds.");
+
     }
 
     function displayTaskdata(taskresponse) {
@@ -206,11 +210,16 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
     document.querySelector('.proforma-taskeditor').style.display = 'none';
     document.getElementById(buttonid).addEventListener('click', function (e) {
+        t0 = performance.now();
         console.log('edit task');
         document.querySelector('.proforma-taskeditor').style.display = '';
         downloadTaskFromServer()
             .then(taskresponse => {
                 displayTaskdata(taskresponse);
+/*                    .then(() => {
+                        const t1 = performance.now();
+                        console.log("expanding details took " + (t1 - t0) + " milliseconds.");
+                });*/
                 document.getElementById(buttonid).style.display = 'none';
                 if (document.getElementById('id_graderoptions_header')) {
                     document.getElementById('id_graderoptions_header').style.display = 'None';
@@ -218,7 +227,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 if (document.getElementById('fitem_id_mslinks')) {
                     document.getElementById('fitem_id_mslinks').style.display = 'None';
                 }
-
 
 /*
                 if (document.getElementById('fitem_id_task')) {
@@ -344,7 +352,6 @@ export const setJunitVersions = () => {
         .fail(Notification.exception);
 }
 
-
 export const setCheckstyleVersions = () => {
     getCheckstyleVersions()
         .then(response => {
@@ -434,7 +441,6 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
 
     // Add button callbacks.
     addButtonCallbacks();
-
 }
 
 export const download = (buttonid) => {
@@ -449,6 +455,28 @@ export const download = (buttonid) => {
     }
 }
 
+export const downloadModelsolution = (buttonid) => {
+    let button = document.getElementById(buttonid);
+
+/*    let blob = new Blob([ TEXT_CONTENT ], {
+        type : "application/zip"
+    });
+*/
+    button.onclick = async function (e) {
+        e.preventDefault();
+        createModelSolutionZip()
+            .then(zippedBlob => {
+                console.log(zippedBlob);
+                const url = window.URL.createObjectURL(zippedBlob);
+                let b = document.createElement("a");
+                b.style = "display: none";
+                b.download = 'modelsoluation.zip';
+                b.href = url;
+                document.body.appendChild(b);
+                b.click();
+            });
+    }
+}
 
 function createGradingHints() {
     let doc = document.implementation.createDocument(null, null, null);
@@ -580,34 +608,40 @@ function uploadModelSolutionToServer() {
 
 }
 
-export function checkModelsolution(buttonid) {
-    async function createModelSolutionZip() {
-        const zipFileWriter = new zip.BlobWriter("application/zip");
-        const zipWriter = new zip.ZipWriter(zipFileWriter);
+async function createModelSolutionZip() {
+    const zipFileWriter = new zip.BlobWriter("application/zip");
+    const zipWriter = new zip.ZipWriter(zipFileWriter);
 
-        // create zipfile with model solutions
-        ModelSolutionWrapper.doOnAll(function(ms) {
-            let modelSolution = new TaskModelSolution();
-            modelSolution.id = ms.id;
-            let counter = 0;
-            console.log('MS id is ' + ms.id);
-            ModelSolutionFileReference.getInstance().doOnAll(async function(id) {
-                const filename = fileStorages[id].filename;
-                let content = null;
-                if (fileStorages[id].isBinary) {
-                    content = fileStorages[id].content;
-                } else {
-                    let file = FileWrapper.constructFromId(id);
-                    content = new Blob([file.text], { type : 'plain/text' });
-                    // console.log('Content is ' + content);
-                    // formData.append('repo_upload_file', new Blob([content], { type : 'plain/text' }));
-                }
-                await zipWriter.add(filename, new zip.BlobReader(content));
-            }, ms.root);
-        })
-        await zipWriter.close();
-        return await zipFileWriter.getData();
-    }
+    // create zipfile with model solutions
+    ModelSolutionWrapper.doOnAll(function(ms) {
+        let modelSolution = new TaskModelSolution();
+        modelSolution.id = ms.id;
+        // console.log('MS id is ' + ms.id);
+        ModelSolutionFileReference.getInstance().doOnAll(async function(id) {
+            const filename = fileStorages[id].filename;
+            // console.log('filename is ' + filename);
+            let content = null;
+            if (fileStorages[id].isBinary) {
+                // console.log('binary');
+                content = new Blob([fileStorages[id].content]);
+            } else {
+                // console.log('non binary');
+                let file = FileWrapper.constructFromId(id);
+                content = new Blob([file.text], { type : 'plain/text' });
+                // formData.append('repo_upload_file', new Blob([content], { type : 'plain/text' }));
+            }
+            // console.log('Content is ' + content);
+            await zipWriter.add(filename, new zip.BlobReader(content));
+        }, ms.root);
+    })
+    // console.log('wait for close');
+    await zipWriter.close();
+    // console.log('return content');
+    return zipFileWriter.getData();
+}
+
+export function checkModelsolution(buttonid) {
+
 
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {

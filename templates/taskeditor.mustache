@@ -93,6 +93,7 @@
 <button id="download_task-{{uniqid}}" class="btn btn-secondary">Download</button>
 <button id="upload_task-{{uniqid}}" class="btn btn-secondary">{{#str}} upload, qtype_proforma {{/str}}</button>
 <button id="check-modelsolution-{{uniqid}}" class="btn btn-secondary">{{#str}} checkmodelsol, qtype_proforma {{/str}}</button>
+<button id="download-modelsol-{{uniqid}}" class="btn btn-secondary">Download model solution</button>
 <!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary">Save task</button> -->
 </div>
 
@@ -102,6 +103,7 @@
         console.log('attach');
         editor.download("download_task-{{uniqid}}");
         editor.checkModelsolution("check-modelsolution-{{uniqid}}");
+        editor.downloadModelsolution("download-modelsol-{{uniqid}}");
         taskupload.upload("upload_task-{{uniqid}}");
     });
 {{/js}}
