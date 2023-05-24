@@ -198,7 +198,10 @@ if (!$quiet) {
 
 // return array($ok, $message, $feedback);
 
-echo $feedback;
+$output = html_writer::nonempty_tag('div', $feedback,
+    array('class' => 'specificfeedback'));
+
+echo $output;
 
 // $result = $repo->upload($saveas_filename, $maxbytes);
 // ajax_check_captured_output();
