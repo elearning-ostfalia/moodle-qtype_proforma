@@ -1120,7 +1120,11 @@ abstract class base_form_creator {
     public function save_question_options(&$options) {
         $formdata = $this->_form;
         $context = $formdata->context;
-        $formdata->gradinghints = urldecode($formdata->gradinghints);
+        if ($formdata->details) {
+            $formdata->gradinghints = urldecode($formdata->gradinghints);
+        } else {
+            unset($formdata->gradinghints);
+        }
 
         // Remove beginning and trailing spaces from response filename.
         if (isset($formdata->responsefilename)) {

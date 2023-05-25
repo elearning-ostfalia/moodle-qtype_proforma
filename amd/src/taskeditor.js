@@ -105,7 +105,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     function mergeWithGradingHints() {
         const gradinghints = document.querySelector('input[name="gradinghints"]');
         if (!gradinghints) {
-            console.log('No gradinghints field found => ignore');
+            console.error('No gradinghints field found => ignore');
             return;
         }
 
@@ -129,7 +129,10 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             }
         });
 
+
         // Finally hide original test input fields:
+        count = document.querySelectorAll('.proforma-taskeditor .xml_test').length;
+        console.log('*** ' + count);
         // (better use hide if ???)
         for (let i = 0; i < count; i++) {
             document.getElementById('fgroup_id_testoptions_' + i).style.display = 'None';
@@ -138,9 +141,10 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             // const selector = 'div[data-groupname="testoptions[' + i + ']"]';
             // document.querySelector(selector).style.display = 'None';
         }
+
+
         const t1 = performance.now();
         console.log("expanding details took " + (t1 - t0) + " milliseconds.");
-
     }
 
     function displayTaskdata(taskresponse) {
@@ -228,10 +232,10 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         } else {
             console.error('Could not find submit button');
         }
+
     }
 
     document.getElementById(buttonid).addEventListener('click', function (e) {
-
         t0 = performance.now();
         console.log('edit task');
         document.querySelector('.proforma-taskeditor').style.display = '';
