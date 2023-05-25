@@ -718,30 +718,49 @@ abstract class base_form_creator {
         $mform = $this->_form;
         // Add js.
         // Create context for mustache templates.
-        $context =  (object) [
+        $context =  [
             "proglang" => [
                 [
                     "language" => "Java",
                     "value" => "java",
-                    "version" => ["1.8", "11"]
-                ],
-                [
-                    "language" => "Python",
-                    "value" => "python",
-                    "version" => ["3", "3.11"]
-                ],
-                [
-                    "language" => "C++",
-                    "value" => "cpp",
-                    "version" => []
-                ],
-                [
-                    "language" => "C",
-                    "value" => "clang",
-                    "version" => []
                 ]
             ],
         ];
+
+        // Set Java versions.
+        $versionlist = get_config('qtype_proforma', 'javaversion');
+        $versions = [];
+        foreach (explode(',', $versionlist) as $version) {
+            $versions[] = trim($version);
+        }
+        $context["proglang"][0]["version"] = $versions;
+
+        if (get_config('qtype_proforma', 'cpp')) {
+            $context["proglang"][] = [
+                "language" => "C++",
+                "value" => "cpp",
+                "version" => []
+            ];
+        }
+        if (get_config('qtype_proforma', 'clang')) {
+            $context["proglang"][] = [
+                "language" => "C",
+                "value" => "clang",
+                "version" => []
+            ];
+        }
+        if (get_config('qtype_proforma', 'python')) {
+            $context["proglang"][] = [
+                "language" => "Python",
+                "value" => "python",
+                "version" => ["3"]
+            ];
+        }
+        if (get_config('qtype_proforma', 'setlx')) {
+            // Currently no nore support for SetlX.
+        }
+
+        $context =  (object)$context;
 
         global $USER;
         $usercontext = context_user::instance($USER->id);
