@@ -518,7 +518,7 @@ function createGradingHints() {
     console.log(gh);
     const gradinghints = document.querySelector('input[name="gradinghints"]');
     if (!gradinghints) {
-        console.log('No gradinghints field found => ignore');
+        console.error('No gradinghints field found => ignore');
         return;
     }
     let serializer = new XMLSerializer();

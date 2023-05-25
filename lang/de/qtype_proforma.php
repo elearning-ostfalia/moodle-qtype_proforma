@@ -45,8 +45,13 @@ $string['responsefieldlines'] = 'Anzahl Zeilen';
 $string['responseformat'] = 'Eingabeform';
 $string['responseoptions'] = 'Einreichung';
 $string['graderoptions_header'] = 'Grader';
+
+// Buttons
 $string['upload'] = 'Aufgabendatei zum Grader hochladen';
 $string['edittestdetails'] = 'Testdetails bearbeiten';
+$string['checkmodelsol'] = 'Prüfe Musterlösung';
+$string['downloadtask'] = 'Aufgabendatei herunterladen';
+$string['downloadmodelsolution'] = 'Musterlösung herunterladen';
 
 
 $string['responsetemplateheader'] = 'Codevorlagen';

@@ -48,9 +48,13 @@ $string['responsefieldlines'] = 'Input box size';
 $string['responseformat'] = 'Response format';
 $string['responseoptions'] = 'Response Options';
 $string['graderoptions_header'] = 'Grader Settings';
+
+// Buttons
 $string['upload'] = 'Upload taskfile to grader';
 $string['edittestdetails'] = 'Edit test details';
 $string['checkmodelsol'] = 'Check modelsolution';
+$string['downloadtask'] = 'Download task';
+$string['downloadmodelsolution'] = 'Download model solution';
 
 
 
