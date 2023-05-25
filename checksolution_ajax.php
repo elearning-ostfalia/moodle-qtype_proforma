@@ -36,6 +36,7 @@ require_once(__DIR__ . '/renderer.php');
 $err = new stdClass();
 
 // Parameters
+$gradinghints = required_param('gradinghints', PARAM_TEXT); // Question id
 $questionid = required_param('questionid', PARAM_INT); // Question id
 $contextid = optional_param('ctx_id', SYSCONTEXTID, PARAM_INT); // Context ID
 $source    = optional_param('source', '', PARAM_RAW);           // File to download
@@ -167,6 +168,10 @@ $message = "";
 $feedback = "";
 $class = 'fail';
 $quiet = false;
+
+// Override grading hints with temporary grading hints from client.
+// (needed for correct feedback)
+$question->gradinghints = urldecode($gradinghints);
 
 if ($httpcode != 200) {
     $result = get_string('failed', 'qtype_proforma');

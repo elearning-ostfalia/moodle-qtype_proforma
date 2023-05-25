@@ -105,6 +105,10 @@ abstract class base_form_creator {
      * values
      */
     public function definition_after_data() {
+        $mform = $this->_form;
+        // Encode graing hints.
+        $gradinghints = $mform->getElement('gradinghints');
+        $gradinghints->setValue(urlencode($gradinghints->getValue()));
     }
 
     /**
@@ -297,6 +301,9 @@ abstract class base_form_creator {
 
         $mform->addElement('hidden', 'gradinghints');
         $mform->setType('gradinghints', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'details', 0);
+        $mform->setType('details', PARAM_BOOL);
     }
 
     /**

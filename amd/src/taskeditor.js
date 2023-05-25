@@ -167,44 +167,71 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         }
     }
 
-    // Save task before submit/update.
-    let updatebutton = document.getElementById('id_updatebutton');
-    if (updatebutton !== null) {
-        let realUpdateClick = updatebutton.onclick;
-        updatebutton.onclick = (event) => {
-            event.preventDefault();
-            console.log('save before update');
-            uploadTaskToServer().
-                then( () => {
+    document.querySelector('.proforma-taskeditor').style.display = 'none';
+
+    function updateEnvironment() {
+        // Collapse main headers
+        let header = document.querySelector('a[href="#id_generalheadercontainer"]');
+        if (header) {
+            if (header.getAttribute('aria-expanded') === "true") {
+                header.click();
+            }
+        }
+        // Collapse response options
+        header = document.querySelector('a[href="#id_responseoptionscontainer"]');
+        if (header) {
+            if (header.getAttribute('aria-expanded') === "true") {
+                header.click();
+            }
+        }
+
+        // Hide edit details button
+        document.getElementById(buttonid).style.display = 'none';
+        // Hide grader options
+        if (document.getElementById('id_graderoptions_header')) {
+            document.getElementById('id_graderoptions_header').style.display = 'None';
+        }
+        // Hide model solution links
+        if (document.getElementById('fitem_id_mslinks')) {
+            document.getElementById('fitem_id_mslinks').style.display = 'None';
+        }
+
+        // Save task on submit/update.
+        let updatebutton = document.getElementById('id_updatebutton');
+        if (updatebutton !== null) {
+            let realUpdateClick = updatebutton.onclick;
+            updatebutton.onclick = (event) => {
+                event.preventDefault();
+                console.log('save before update');
+                uploadTaskToServer().then(() => {
                     console.log('uploadTaskToServer returned');
                     updatebutton.onclick = realUpdateClick;
                     updatebutton.click();
                 });
-        };
-    } else {
-        console.error('Could not find update button');
-    }
+            };
+        } else {
+            console.error('Could not find update button');
+        }
 
-
-    let submitbutton = document.getElementById('id_submitbutton');
-    if (submitbutton !== null) {
-        let realSubmitClick = submitbutton.onclick;
-        submitbutton.onclick = (event) => {
-            event.preventDefault();
-            console.log('save before submit');
-            uploadTaskToServer().
-                then( () => {
+        let submitbutton = document.getElementById('id_submitbutton');
+        if (submitbutton !== null) {
+            let realSubmitClick = submitbutton.onclick;
+            submitbutton.onclick = (event) => {
+                event.preventDefault();
+                console.log('save before submit');
+                uploadTaskToServer().then(() => {
                     console.log('uploadTaskToServer returned');
                     submitbutton.onclick = realSubmitClick;
                     submitbutton.click();
                 });
-        };
-    } else {
-        console.error('Could not find submit button');
+            };
+        } else {
+            console.error('Could not find submit button');
+        }
     }
 
-    document.querySelector('.proforma-taskeditor').style.display = 'none';
     document.getElementById(buttonid).addEventListener('click', function (e) {
+
         t0 = performance.now();
         console.log('edit task');
         document.querySelector('.proforma-taskeditor').style.display = '';
@@ -215,41 +242,17 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                         const t1 = performance.now();
                         console.log("expanding details took " + (t1 - t0) + " milliseconds.");
                 });*/
-
-
-                // Collapse main headers
-                let header = document.querySelector('a[href="#id_generalheadercontainer"]');
-                if (header) {
-                    if (header.getAttribute('aria-expanded') === "true") {
-                        header.click();
-                    }
-                }
-                header = document.querySelector('a[href="#id_responseoptionscontainer"]');
-                if (header) {
-                    if (header.getAttribute('aria-expanded') === "true") {
-                        header.click();
-                    }
-                }
-
-
-                document.getElementById(buttonid).style.display = 'none';
-                if (document.getElementById('id_graderoptions_header')) {
-                    document.getElementById('id_graderoptions_header').style.display = 'None';
-                }
-                if (document.getElementById('fitem_id_mslinks')) {
-                    document.getElementById('fitem_id_mslinks').style.display = 'None';
-                }
-
-/*
-                if (document.getElementById('fitem_id_task')) {
-                    document.getElementById('fitem_id_task').style.display = 'None';
-                }
-                if (document.getElementById('fitem_id_uuid')) {
-                    document.getElementById('fitem_id_uuid').style.display = 'None';
-                }
-                if (document.getElementById('fitem_id_proformaversion')) {
-                    document.getElementById('fitem_id_proformaversion').style.display = 'None';
-                }*/
+                updateEnvironment();
+                /*
+                                if (document.getElementById('fitem_id_task')) {
+                                    document.getElementById('fitem_id_task').style.display = 'None';
+                                }
+                                if (document.getElementById('fitem_id_uuid')) {
+                                    document.getElementById('fitem_id_uuid').style.display = 'None';
+                                }
+                                if (document.getElementById('fitem_id_proformaversion')) {
+                                    document.getElementById('fitem_id_proformaversion').style.display = 'None';
+                                }*/
             })
             .fail(Notification.exception);
 /*
@@ -490,7 +493,7 @@ export const downloadModelsolution = (buttonid) => {
     }
 }
 
-function createGradingHints() {
+function createGradingHints(temporary=false) {
     let doc = document.implementation.createDocument(null, null, null);
     let gh = doc.createElement("grading-hints");
     let root = doc.createElement("root");
@@ -529,8 +532,11 @@ function createGradingHints() {
         // result = "<?xml version='1.0' encoding='UTF-8'?>" + result;
     }
     console.log(result);
-    gradinghints.value = encodeURIComponent(result);
+    if (!temporary) {
+        gradinghints.value = encodeURIComponent(result);
+    }
     console.log('grading hints are finished');
+    return encodeURIComponent(result);
 }
 
 function uploadModelSolutionToServer() {
@@ -652,15 +658,23 @@ async function createModelSolutionZip() {
     return zipFileWriter.getData();
 }
 
+/**
+ * send task with model solution and grading hints to Moodle server in order let
+ * the task run on grader. The result is shown in extra div element.
+ *
+ * @param buttonid
+ * @param containerid
+ */
 export function checkModelsolution(buttonid, containerid) {
-
-
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {
         e.preventDefault();
         // create task zipfile
         const taskxml = convertToXML();
         if (taskxml) {
+            // if there is no taskxml then the input is invalid.
+            const gradinghints = createGradingHints(true);
+
             return zipme(taskxml, 'task.zip', false)
                 .then(blobtask => {
                     console.log('created task zip');
@@ -677,7 +691,7 @@ export function checkModelsolution(buttonid, containerid) {
                             formData.append('modelsolution', modelsolutionzip, 'modelsolution.zip');
                             formData.append('itemid', modelsolrepositoryparams['checkitemid']);
                             formData.append('questionid', questionId);
-
+                            formData.append('gradinghints', gradinghints);
 
                             fetch(url, {
                                 method : "POST",
@@ -701,26 +715,6 @@ export function checkModelsolution(buttonid, containerid) {
                             .catch(error => {
                                 console.log(error)
                             });
-
-/*                            ).then(
-                                html => console.log(html)
-                            );*/
-
-/*
-                            let request = new XMLHttpRequest();
-                            request.open('POST', url, true);
-                            console.log('send');
-                            try {
-                                request.send(formData);
-                                if (request.status !== 200) {
-                                    alert(`Error ${request.status}: ${request.statusText}`);
-                                } else {
-                                    console.log(request.response);
-                                    // alert(request.response);
-                                }
-                            } catch(err) { // instead of onerror
-                                alert("Request failed");
-                            }*/
                         });
                 });
         }
@@ -731,6 +725,9 @@ export function checkModelsolution(buttonid, containerid) {
 
 function uploadTaskToServer() {
     createGradingHints();
+    // Set details value to 1 in order to inform the server that the task editor has created input data
+    const details = document.querySelector('input[name="details"]');
+    details.value = 1;
     uploadModelSolutionToServer();
     const zipname = $("#id_name").val();
     const context = convertToXML();
@@ -783,12 +780,12 @@ function uploadTaskToServer() {
     }
 }
 
+
 export const savetask = (buttonid) => {
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {
         e.preventDefault();
         uploadTaskToServer();
-
     }
 }
 

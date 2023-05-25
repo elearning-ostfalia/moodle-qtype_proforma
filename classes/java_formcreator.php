@@ -335,6 +335,7 @@ class java_form_creator extends base_form_creator {
      * Do form definitions things that need to be done when data is set
      */
     public function definition_after_data() {
+        parent::definition_after_data();
         // debugging('definition_after_data');
         $i = 0;
         while ($this->_form->elementExists('testcodearray[' . $i . ']')) {
