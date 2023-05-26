@@ -822,7 +822,7 @@ abstract class base_form_creator {
             $mform->addElement('button', 'editdetails', get_string('edittestdetails', 'qtype_proforma'));
 
             global $PAGE;
-            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit',
+            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
                 array('id_editdetails', $context, $params1, $params2, true));
 
 
@@ -832,7 +832,7 @@ abstract class base_form_creator {
             $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
             // Add js.
             global $PAGE;
-            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor', 'edit',
+            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
                 array('id_taskeditbutton', $context, $params1, $params2, false));
         }
 */

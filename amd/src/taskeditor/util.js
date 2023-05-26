@@ -27,7 +27,7 @@
 
 
 
-import {TestWrapper} from "./taskeditortest";
+import {TestWrapper} from "./test";
 
 export const DEBUG_MODE       = false;
 export const TEST_MODE        = false;

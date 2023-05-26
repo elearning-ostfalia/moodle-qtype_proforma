@@ -53,14 +53,14 @@
 
 import {DynamicList} from "./dynamic-list";
 import $ from 'jquery';
-import {readAndCreateFileData} from "./taskeditorhelper";
+import {readAndCreateFileData} from "./helper";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
-import {FileWrapper} from "./taskeditorfile";
-import {taskeditorconfig} from "./taskeditorconfig";
-import {DEBUG_MODE,} from "./taskeditorutil";
+import {FileWrapper} from "./file";
+import {taskeditorconfig} from "./config";
+import {DEBUG_MODE,} from "./util";
 import * as Str from 'core/str';
-import {TestWrapper} from "./taskeditortest";
+import {TestWrapper} from "./test";
 
 
 

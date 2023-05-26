@@ -26,29 +26,29 @@
  */
 
 
-import ModalFactory from 'core/modal_factory';
-import ModalEvents from 'core/modal_events';
+// import ModalFactory from 'core/modal_factory';
+// import ModalEvents from 'core/modal_events';
 // import {get_string as getString} from 'core/str';
 // import Str from 'core/str';
-import {get_strings as getStrings} from 'core/str';
+// import {get_strings as getStrings} from 'core/str';
 import Notification, {exception as displayException} from 'core/notification';
 import Y from 'core/yui';
 
 import Templates from 'core/templates';
-import {TestWrapper } from "./taskeditortest";
-import {downloadTask, getCheckstyleVersions, getJunitVersions} from "./repository";
-import {getExtension, setErrorMessage} from "./taskeditorutil";
-import {taskeditorconfig} from "./taskeditorconfig";
+import {TestWrapper } from "./test";
+import {downloadTask, getCheckstyleVersions, getJunitVersions} from "../repository";
+import {getExtension, setErrorMessage} from "./util";
+import {taskeditorconfig} from "./config";
 import {unzipme, zipme} from "./zipper";
-import {readXMLWithLock} from "./taskeditorhelper";
-import {convertToXML} from "./taskeditortask";
+import {readXMLWithLock} from "./helper";
+import {convertToXML} from "./task";
 import Config from 'core/config';
-import {ModelSolutionWrapper} from "./taskeditormodelsol";
-import {T_VISIBLE, TaskFileRef, TaskModelSolution} from "./taskeditortaskdata";
+import {ModelSolutionWrapper} from "./modelsol";
+import {T_VISIBLE, TaskFileRef, TaskModelSolution} from "./taskdata";
 import {ModelSolutionFileReference} from "./filereflist";
-import {fileStorages, FileWrapper} from "./taskeditorfile";
-import * as zip from "./zip/zip";
-import * as taskupload from "./taskupload";
+import {fileStorages, FileWrapper} from "./file";
+import * as zip from "../zip/zip";
+import * as taskupload from "../taskupload";
 
 var draftitemid = null;
 var draftfilename = null;

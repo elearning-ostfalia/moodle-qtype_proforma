@@ -104,7 +104,7 @@
 
 
 {{#js}}
-    require(['qtype_proforma/taskeditor', 'qtype_proforma/taskupload'], function(editor, taskupload) {
+    require(['qtype_proforma/taskeditor/taskeditor', 'qtype_proforma/taskupload'], function(editor, taskupload) {
         editor.download("download_task-{{uniqid}}");
         editor.checkModelsolution("check-modelsolution-{{uniqid}}", "check-feedback-id");
         editor.downloadModelsolution("download-modelsol-{{uniqid}}");

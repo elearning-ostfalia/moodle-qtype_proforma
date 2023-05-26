@@ -52,12 +52,11 @@
 // Known bugs: search the code for the string "ToDo" below and check faq.html and installationFAQ.html
 
 import $ from 'jquery';
-import {FileWrapper, FileStorage, fileStorages} from "./taskeditorfile";
-import {getExtension, setErrorMessage} from "./taskeditorutil";
-import {javaParser} from "./taskeditorjava";
-import {taskeditorconfig} from "./taskeditorconfig";
-import {readAndDisplayXml} from "./taskeditortask";
-import {zipme} from "./zipper";
+import {FileWrapper, FileStorage, fileStorages} from "./file";
+import {getExtension, setErrorMessage} from "./util";
+import {javaParser} from "./java";
+import {taskeditorconfig} from "./config";
+import {readAndDisplayXml} from "./task";
 
 
 export var readXmlActive = false;

@@ -50,9 +50,9 @@
  */
 
 
-import {setErrorMessage, generateUUID} from "./taskeditorutil";
-import {taskeditorconfig} from "./taskeditorconfig";
-import {FileStorage, fileStorages } from "./taskeditorfile";
+import {setErrorMessage, generateUUID} from "./util";
+import {taskeditorconfig} from "./config";
+import {FileStorage, fileStorages } from "./file";
 
 export const T_LMS_USAGE = {
     DISPLAY: 'display',

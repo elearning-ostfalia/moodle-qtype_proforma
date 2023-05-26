@@ -49,9 +49,9 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm (Dr.U.Priss)
  */
 
-import {CustomTest, getExtension} from "./taskeditorutil";
-import {javaParser} from "./taskeditorjava";
-import {readXmlActive} from "./taskeditorhelper";
+import {CustomTest, getExtension} from "./util";
+import {javaParser} from "./java";
+import {readXmlActive} from "./helper";
 
 // const configXsdSchemaFile = version101;   // choose version for output
 /*

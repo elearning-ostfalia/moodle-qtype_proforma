@@ -50,13 +50,13 @@
  */
 
 import $ from 'jquery';
-import {TaskClass, TaskFile, TaskFileRestriction, TaskModelSolution, TaskFileRef, TaskTest, T_VISIBLE, T_LMS_USAGE} from "./taskeditortaskdata";
-import {testIDs} from "./taskeditortest";
-import {setErrorMessage, clearErrorMessage, generateUUID} from "./taskeditorutil";
-import {FileWrapper} from "./taskeditorfile";
-import {TestWrapper } from "./taskeditortest";
-import {ModelSolutionWrapper } from "./taskeditormodelsol";
-import {taskeditorconfig } from "./taskeditorconfig";
+import {TaskClass, TaskFile, TaskModelSolution, TaskFileRef, TaskTest, T_VISIBLE} from "./taskdata";
+import {testIDs} from "./test";
+import {setErrorMessage, clearErrorMessage, generateUUID} from "./util";
+import {FileWrapper} from "./file";
+import {TestWrapper } from "./test";
+import {ModelSolutionWrapper } from "./modelsol";
+import {taskeditorconfig } from "./config";
 import {relinkFiles} from "./zipper";
 import {TestFileReference, FileReferenceList,ModelSolutionFileReference } from "./filereflist";
 import * as Str from 'core/str';

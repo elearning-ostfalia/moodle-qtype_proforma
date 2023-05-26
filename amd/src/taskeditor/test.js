@@ -27,11 +27,10 @@
  */
 
 import {TestFileReference, FileReferenceList, ModelSolutionFileReference} from "./filereflist";
-import {setcounter, DEBUG_MODE} from "./taskeditorutil";
-import {TaskClass} from "./taskeditortaskdata";
+import {setcounter, DEBUG_MODE} from "./util";
+import {TaskClass} from "./taskdata";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
-
 
 export var testIDs = {};
 

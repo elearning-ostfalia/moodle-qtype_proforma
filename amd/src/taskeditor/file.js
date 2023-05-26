@@ -50,16 +50,16 @@
  */
 
 import $ from 'jquery';
-import {setcounter, DEBUG_MODE, getExtension} from "./taskeditorutil";
-import {taskeditorconfig} from "./taskeditorconfig";
-import {javaParser} from "./taskeditorjava";
+import {setcounter, DEBUG_MODE, getExtension} from "./util";
+import {taskeditorconfig} from "./config";
+import {javaParser} from "./java";
 import {FileReferenceList} from "./filereflist";
 import Templates from 'core/templates';
-import * as CodeMirror from './codemirror';
+import * as CodeMirror from '../codemirror';
 import Notification, {exception as displayException} from 'core/notification';
-import './clike';
-import './python';
-import './xml';
+import '../clike';
+import '../python';
+import '../xml';
 
 export var fileStorages = [];
 export var fileIDs = {};

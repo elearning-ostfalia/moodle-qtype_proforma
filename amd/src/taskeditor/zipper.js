@@ -25,8 +25,8 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm, Dr. U.Priss
  */
 
-import * as zip from "./zip/zip";
-import {FileStorage, FileWrapper, fileStorages } from "./taskeditorfile";
+import * as zip from "../zip/zip";
+import {FileStorage, FileWrapper, fileStorages } from "./file";
 import {FileReferenceList } from "./filereflist";
 
 zip.workerScriptsPath = "./js/";
