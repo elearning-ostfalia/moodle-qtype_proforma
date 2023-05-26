@@ -1,18 +1,52 @@
-/*
- * This proformaEditor was created by the eCULT-Team of Ostfalia University
- * http://ostfalia.de/cms/de/ecult/
- * The software is distributed under a CC BY-SA 3.0 Creative Commons license
- * https://creativecommons.org/licenses/by-sa/3.0/
+// This file is part of ProFormA Question Type for Moodle
+//
+// ProFormA Question Type for Moodle is free software:
+// you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// ProFormA Question Type for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with ProFormA Question Type for Moodle.
+// If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Helper functions for zipping and unzipping task
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * @package    qtype
+ * @subpackage proforma
+ * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author     // This file is part of ProFormA Question Type for Moodle
+ //
+ // ProFormA Question Type for Moodle is free software:
+ // you can redistribute it and/or modify
+ // it under the terms of the GNU General Public License as published by
+ // the Free Software Foundation, either version 3 of the License, or
+ // (at your option) any later version.
+ //
+ // ProFormA Question Type for Moodle is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ // GNU General Public License for more details.
+ //
+ // You should have received a copy of the GNU General Public License
+ // along with ProFormA Question Type for Moodle.
+ // If not, see <http://www.gnu.org/licenses/>.
+
+ /**
+ * Helper functions
  *
- * Author:
- * Karin Borm, Dr. Uta Priss
+ * @package    qtype
+ * @subpackage proforma
+ * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author     eCULT-Team of Ostfalia University, K.Borm, Dr.U.Priss
  */
 
 // Known bugs: search the code for the string "ToDo" below and check faq.html and installationFAQ.html
@@ -131,68 +165,6 @@ function uploadFilesWhenDropped(files) {
         });
     });
 }
-
-/*
-function addTestButtons() {
-    $.each(taskeditorconfig.testInfos, function (index, item) {
-        $("#testbuttons").append("<button id='" + item.buttonJQueryId + "'>New " + item.title + "</button> ");
-        $("#" + item.buttonJQueryId).click(function () {
-
-            //var testNo = setcounter(testIDs);    // sets the corresponding fileref, filename and title "SetlX-Syntax-Test"
-            let ui_test = TestWrapper.create(null, item.title, item); // item.htmlExtraFields, item.testType, item.withFileRef);
-            item.onCreate(ui_test.id);
-
-            $("#tabs").tabs("option", "active", tab_page.TESTS);
-        });
-    });
-}
-
- */
-/*
-function switchProgLang() {
-    let progLang = $("#xml_programming-language").val();
-    console.log("changing programming language to " + progLang);
-
-    // hide all test buttons
-    $.each(taskeditorconfig.testInfos, function (index, test) {
-        $("#" + test.buttonJQueryId).hide();
-    });
-
-    // show only test buttons needed for programming language
-    let found = false;
-    $.each(taskeditorconfig.proglangInfos, function (index, pl) {
-        if (pl.name === progLang) {
-            found = true;
-            $.each(pl.tests, function (index, test) {
-                $("#" + test.buttonJQueryId).show();
-            });
-        }
-    });
-
-    if (!found) {
-        window.confirm("Unsupported Programming Language: " + progLang);
-    }
-
-    switch (progLang.split("/")[0].toLowerCase()) {
-        case 'java':
-            codeskeleton.setOption("mode", "text/x-java");
-            break;
-        case 'python':
-            codeskeleton.setOption("mode", "text/x-python");
-            break;
-        case 'c':
-            codeskeleton.setOption("mode", "text/x-csrc");
-            break;
-        case 'cpp':
-            codeskeleton.setOption("mode", "text/x-c++src");
-            // This does not work properly:
-            // The unittest element is missing in task.xml output
-            // taskeditorconfig.onProglangChanged('cpp');
-            break;
-    }
-}
-
- */
 
 
 ///////////////////////////////////////////////////////// function: readXML
