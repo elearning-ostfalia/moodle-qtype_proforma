@@ -109,7 +109,7 @@
         editor.download("download_task-{{uniqid}}");
         editor.checkModelsolution("check-modelsolution-{{uniqid}}", "check-feedback-id");
         editor.downloadModelsolution("download-modelsol-{{uniqid}}");
-        taskupload.upload("upload_task-{{uniqid}}");
+        editor.uploadTaskToGrader("upload_task-{{uniqid}}");
     });
 {{/js}}
 

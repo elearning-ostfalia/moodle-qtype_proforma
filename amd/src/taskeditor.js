@@ -22,30 +22,6 @@
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author     // This file is part of ProFormA Question Type for Moodle
- //
- // ProFormA Question Type for Moodle is free software:
- // you can redistribute it and/or modify
- // it under the terms of the GNU General Public License as published by
- // the Free Software Foundation, either version 3 of the License, or
- // (at your option) any later version.
- //
- // ProFormA Question Type for Moodle is distributed in the hope that it will be useful,
- // but WITHOUT ANY WARRANTY; without even the implied warranty of
- // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- // GNU General Public License for more details.
- //
- // You should have received a copy of the GNU General Public License
- // along with ProFormA Question Type for Moodle.
- // If not, see <http://www.gnu.org/licenses/>.
-
- /**
- * Interface between Moodle and task editor
- *
- * @package    qtype
- * @subpackage proforma
- * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm
  */
 
@@ -70,8 +46,9 @@ import Config from 'core/config';
 import {ModelSolutionWrapper} from "./taskeditormodelsol";
 import {T_VISIBLE, TaskFileRef, TaskModelSolution} from "./taskeditortaskdata";
 import {ModelSolutionFileReference} from "./filereflist";
-import {fileIDs, fileStorages, FileWrapper} from "./taskeditorfile";
+import {fileStorages, FileWrapper} from "./taskeditorfile";
 import * as zip from "./zip/zip";
+import * as taskupload from "./taskupload";
 
 var draftitemid = null;
 var draftfilename = null;
@@ -103,7 +80,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         // closeString = await getString('close', 'editor');
     }
 
-    function downloadTaskFromServer() {
+   function downloadTaskFromServer() {
         // Find file from {files} where itemid = value of #id_task
 
         // let questionId = document.querySelector("input[name='id']").value;
@@ -367,7 +344,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     */
     });
 }
-
 
 /**
  * get JUnit version from Moodle configuration and add to JUnit list
@@ -749,8 +725,6 @@ export function checkModelsolution(buttonid, containerid) {
     }
 }
 
-
-
 function uploadTaskToServer() {
     createGradingHints();
     // Set details value to 1 in order to inform the server that the task editor has created input data
@@ -808,6 +782,26 @@ function uploadTaskToServer() {
     }
 }
 
+export function uploadTaskToGrader(buttonid) {
+    let button = document.getElementById(buttonid);
+    if (!button) {
+        console.error('invalid button id');
+        return;
+    }
+
+    button.onclick = function (e) {
+        e.preventDefault();
+        const zipname = $("#id_name").val();
+        const context = convertToXML();
+        if (context) {
+            return zipme(context, zipname, false)
+                .then(blob => {
+                    console.log('now let us upload task to grader');
+                    taskupload.upload(null, blob);
+                });
+        }
+    }
+}
 
 export const savetask = (buttonid) => {
     let button = document.getElementById(buttonid);

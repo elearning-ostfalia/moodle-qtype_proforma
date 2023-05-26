@@ -26,7 +26,6 @@
  */
 
 
-// import {uploadTask} from './repository';
 import config from 'core/config';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
@@ -36,15 +35,20 @@ import {get_string as getString} from 'core/str';
  * upload task to grader
  *
  * @param {string} buttonid: button id
- * @param {string} task: name of task
+ * @param {blob} task: name of task
  * @returns {undefined}
  */
-export const upload = (buttonid, task) => {
+export const upload = (buttonid, taskblob) => {
 
-    // const msgBoxId = 'proforma-notification-bar';
-    var source = null;
-    var modalroot = null;
-    var closeString = 'close';
+    let source = null;
+    let modalroot = null;
+    let closeString = 'close';
+    let task = taskblob; // ?? Eine Datei kriegen wir so nicht rüber...
+    if (task) {
+        alert('Das geht noch nicht');
+        // Entweder die Datei vorab hochladen und dann die draftid übergeben oder
+        // mit einer anderen Funktion arbeiten
+    }
 
     /*
     function showMessageBar(buttonid, message) {
@@ -135,6 +139,25 @@ export const upload = (buttonid, task) => {
         };
     }
 
+    function showUploadDialog() {
+        ModalFactory.create({
+            type: ModalFactory.types.CANCEL,
+            title: 'Upload Log',
+            body: '<span><code id ="proforma-modal-message"></code></span>',
+            large: true
+        }).then(function (modal) {
+            // close eventsource on cancel
+            modalroot = modal.getRoot();
+            modalroot.on(ModalEvents.cancel, function () {
+                source.close();
+                source = null;
+                modalroot.remove();
+            });
+            modal.show();
+            uploadWithSse();
+        });
+    }
+
     /*
     async function performUpload() {
         let questionId = document.querySelector("input[name='id']").value;
@@ -148,23 +171,11 @@ export const upload = (buttonid, task) => {
 
     // Initialise.
     init();
-    document.getElementById(buttonid).addEventListener('click', function (e) {
-        // Create Moodle modal dialog.
-        ModalFactory.create({
-            type: ModalFactory.types.CANCEL,
-            title: 'Upload Log',
-            body: '<span><code id ="proforma-modal-message"></code></span>',
-            large: true
-        }).then(function(modal) {
-            // close eventsource on cancel
-            modalroot = modal.getRoot();
-            modalroot.on(ModalEvents.cancel, function() {
-                source.close();
-                source = null;
-                modalroot.remove();
-            });
-            modal.show();
-            uploadWithSse();
+    const button = document.getElementById(buttonid);
+    if (button) {
+        button.addEventListener('click', function (e) {
+            // Create Moodle modal dialog.
+            showUploadDialog();
         });
-    });
+    }
 };
