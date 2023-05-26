@@ -62,14 +62,21 @@ export function getExtension(filename) {
 /* Each newly exported task needs its own UUID.
  * This function generates and returns an UUID.
  */
+
+let newUuid;
 export function generateUUID(){
-    var date = new Date().getTime();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c_value) {
-        var rand = (date + Math.random()*16)%16 | 0;
+    if (newUuid != undefined) {
+        console.log('newUuid is ' + newUuid);
+        return newUuid;
+    }
+    let date = new Date().getTime();
+    newUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c_value) {
+        let rand = (date + Math.random()*16)%16 | 0;
         date = Math.floor(date/16);
-        return (c_value == 'x' ? rand : (rand&0x3|0x8)).toString(16);
+        return (c_value === 'x' ? rand : (rand&0x3|0x8)).toString(16);
     });
-    return uuid;
+    console.log('newUuid is ' + newUuid);
+    return newUuid;
 }
 
 

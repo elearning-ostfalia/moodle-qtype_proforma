@@ -180,22 +180,10 @@ if ($httpcode != 200) {
 } else {
     list($state, $fraction, $error, $feedback, $feedbackformat) =
         $grader->extract_grade($graderoutput, $httpcode, $question);
-
-    if ($fraction < 1) {
-        $result = get_string('failed', 'qtype_proforma');
-        if ($feedbackformat != qtype_proforma_grader::FEEDBACK_FORMAT_PROFORMA2) {
-            $result .= html_writer::tag('xmp', $feedback, array('class' => 'proforma_testlog'));
-        } else {
-            global $PAGE;
-            $renderer = new qtype_proforma_renderer($PAGE, null);
-            $fbrenderer = new feedback_renderer($renderer, $question);
-            $feedback = $fbrenderer->render_proforma2_message($feedback);
-        }
-    } else {
-        $class = 'pass';
-        $result = get_string('passed', 'qtype_proforma');
-        $ok = true;
-    }
+    global $PAGE;
+    $renderer = new qtype_proforma_renderer($PAGE, null);
+    $fbrenderer = new feedback_renderer($renderer, $question);
+    $feedback = $fbrenderer->render_proforma2_message($feedback);
 }
 if (!$quiet) {
     $message .= html_writer::tag('p', $result, array('class' => $class));

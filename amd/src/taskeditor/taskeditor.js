@@ -678,8 +678,15 @@ async function createModelSolutionZip() {
  */
 export function checkModelsolution(buttonid, containerid) {
     let button = document.getElementById(buttonid);
+    let container = document.getElementById(containerid);
+    let blobtask;
+    let defaultcursor = container.style.cursor;
+
     button.onclick = function (e) {
         e.preventDefault();
+        // clean old check feedback
+        container.innerHTML = '...';
+        container.style.cursor = "wait";
         // create task zipfile
         const taskxml = convertToXML();
         if (taskxml) {
@@ -687,46 +694,46 @@ export function checkModelsolution(buttonid, containerid) {
             const gradinghints = createGradingHints(true);
 
             return zipme(taskxml, 'task.zip', false)
-                .then(blobtask => {
+                .then(blob => {
                     console.log('created task zip');
+                    blobtask = blob;
                     // blob is the zipped version of the whole task
-                    createModelSolutionZip()
-                        .then(modelsolutionzip => {
-                            console.log('created model solution zip');
+                    return createModelSolutionZip();
+                })
+                .then(modelsolutionzip => {
+                    console.log('created model solution zip');
+                    const url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php';
+                    const questionId = document.querySelector("input[name='id']").value;
+                    const formData = new FormData();
+                    formData.append('sesskey', Config.sesskey);
+                    formData.append('task', blobtask, 'task.zip');
+                    formData.append('modelsolution', modelsolutionzip, 'modelsolution.zip');
+                    formData.append('itemid', modelsolrepositoryparams['checkitemid']);
+                    formData.append('questionid', questionId);
+                    formData.append('gradinghints', gradinghints);
 
-                            const url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php';
-                            const questionId = document.querySelector("input[name='id']").value;
-                            const formData = new FormData();
-                            formData.append('sesskey', Config.sesskey);
-                            formData.append('task', blobtask, 'task.zip');
-                            formData.append('modelsolution', modelsolutionzip, 'modelsolution.zip');
-                            formData.append('itemid', modelsolrepositoryparams['checkitemid']);
-                            formData.append('questionid', questionId);
-                            formData.append('gradinghints', gradinghints);
-
-                            fetch(url, {
-                                method : "POST",
-                                body: formData,
-                            })
-                            .then(response => {
-                                console.log(response);
-                                return response.text()
-                            })
-                            .then(text => {
-                                // console.log(text);
-                                let container = document.getElementById(containerid);
-                                container.style.display = '';
-                                container.innerHTML = text;
-                                document.querySelectorAll('#check-feedback-id .collapsibleregion')
-                                    .forEach(element => {
-                                        console.log('create collapsible region for ' + element.id);
-                                        M.util.init_collapsible_region(Y, element.id, '', 'EIN VERSUCH IST ES WERT');
-                                    });
-                            })
-                            .catch(error => {
-                                console.log(error)
+                    fetch(url, {
+                        method : "POST",
+                        body: formData,
+                    })
+                    .then(response => {
+                        console.log(response);
+                        return response.text()
+                    })
+                    .then(text => {
+                        // console.log(text);
+                        container.style.display = '';
+                        container.style.cursor = defaultcursor;
+                        container.innerHTML = text;
+                        document.querySelectorAll('#check-feedback-id .collapsibleregion')
+                            .forEach(element => {
+                                console.log('create collapsible region for ' + element.id);
+                                M.util.init_collapsible_region(Y, element.id, '', 'EIN VERSUCH IST ES WERT');
                             });
-                        });
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    });
                 });
         }
     }
