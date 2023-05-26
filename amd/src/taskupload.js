@@ -35,20 +35,19 @@ import {get_string as getString} from 'core/str';
  * upload task to grader
  *
  * @param {string} buttonid: button id
- * @param {blob} task: name of task
+ * @param {string} itemid: itemid of task on Moodle server
+ * @param {string} contextid: contextid of task on Moodle server
+ * @param {string} filename: filename of task on Moodle server
  * @returns {undefined}
  */
-export const upload = (buttonid, taskblob) => {
+export const upload = (buttonid, itemid, contextid, filename) => {
 
     let source = null;
     let modalroot = null;
     let closeString = 'close';
-    let task = taskblob; // ?? Eine Datei kriegen wir so nicht rüber...
-    if (task) {
-        alert('Das geht noch nicht');
-        // Entweder die Datei vorab hochladen und dann die draftid übergeben oder
-        // mit einer anderen Funktion arbeiten
-    }
+    const itemidtask = itemid;
+    const contextidtask = contextid;
+    const filenametask = filename;
 
     /*
     function showMessageBar(buttonid, message) {
@@ -113,6 +112,9 @@ export const upload = (buttonid, taskblob) => {
         const questionId = document.querySelector("input[name='id']").value;
         let url = config.wwwroot + '/question/type/proforma/upload_sse.php';
         url += '?sesskey=' + config.sesskey + '&id=' + questionId;
+        if (itemidtask) {
+            url += '&itemid=' + itemidtask + '&contextid=' + contextidtask + '&filename=' + filenametask;
+        }
 
         // Create Eventsource with callbacks
         source = new EventSource(url);
@@ -171,11 +173,19 @@ export const upload = (buttonid, taskblob) => {
 
     // Initialise.
     init();
+
+    if (!buttonid) {
+        showUploadDialog();
+        return;
+    }
+
     const button = document.getElementById(buttonid);
     if (button) {
         button.addEventListener('click', function (e) {
             // Create Moodle modal dialog.
             showUploadDialog();
         });
+    } else {
+        console.error('invalid button for upload');
     }
 };

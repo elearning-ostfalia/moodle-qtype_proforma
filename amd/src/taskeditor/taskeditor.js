@@ -802,9 +802,34 @@ export function uploadTaskToGrader(buttonid) {
         const context = convertToXML();
         if (context) {
             return zipme(context, zipname, false)
-                .then(blob => {
+                .then(blobtask => {
                     console.log('now let us upload task to grader');
-                    taskupload.upload(null, blob);
+                    const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
+                    const questionId = document.querySelector("input[name='id']").value;
+                    const formData = new FormData();
+                    formData.append('sesskey', Config.sesskey);
+                    formData.append('task', blobtask, 'task.zip');
+                    // Which itemid???
+                    formData.append('itemid', modelsolrepositoryparams['checkitemid']);
+                    formData.append('questionid', questionId);
+
+                    fetch(url, {
+                        method : "POST",
+                        body: formData,
+                    })
+                        .then(response => {
+                            // console.log(response);
+                            return response.json()
+                        })
+                        .then(json => {
+                            console.log(json);
+                            // console.log('TODO => task is uploaded on server, now upload to grader');
+                            taskupload.upload(null, json.itemid, json.contextid, json.filename);
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        });
+
                 });
         }
     }
