@@ -84,7 +84,7 @@ function addRequired(elem) {
         });
 }
 
-function isInputComplete() {
+async function isInputComplete() {
     let inputField = $("#id_name");
     if (!inputField.val()) {
         // setErrorMessage("Task description is empty.");
@@ -195,7 +195,7 @@ function isInputComplete() {
     });
     console.log('sumweight = ' + sumweight);
     if (sumweight <= 0) {
-        alert('Sum of all weights must be a positive number!');
+        alert(await Str.get_string('sumweightzero', 'qtype_proforma'));
         returnFromFunction = true;
     }
 
@@ -378,7 +378,7 @@ export async function readAndDisplayXml(taskXml) {
                 ui_file.class = item.fileclass;
                 ui_file.type = item.filetype;
                 ui_file.comment = item.comment;
-                // if (ui_file.type === 'embedded')
+                if (ui_file.type === 'embedded')
                     ui_file.text = item.content;
                 if (item.id) {
                     relinkFiles();
@@ -390,9 +390,8 @@ export async function readAndDisplayXml(taskXml) {
     function createTest(item, index) {
         testIDs[item.id] = 1;
 
-        let ui_test = undefined;
+        let ui_test;
         console.log('iterate through all configured test templates, look for ' + item.testtype);
-        let found = false;
         $.each(taskeditorconfig.testInfos, function(index, configItem) {
             // console.log(configItem);
             if (!ui_test && item.testtype === configItem.testType) {
@@ -419,9 +418,9 @@ export async function readAndDisplayXml(taskXml) {
                 // console.log(context);
                 ui_test = TestWrapper.createFromTemplate(item.id,
                     configItem.getMustacheTemplate(), context, true, item, task);
-                found = true;
             }
         });
+
 
 /*
         if (!ui_test) {
@@ -439,7 +438,7 @@ export async function readAndDisplayXml(taskXml) {
         }
 */
 
-        if (!found) {
+        if (!ui_test) {
             setErrorMessage("Test " + item.testtype + " not imported");
             testIDs[item.id] = 0;
         } else {

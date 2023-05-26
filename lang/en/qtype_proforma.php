@@ -149,7 +149,7 @@ $string['entrypointrequired'] = 'JUnit entrypoint required.';
 $string['executablerequired'] = 'Run command required.';
 $string['filenameerror'] = 'Cannot determine classname (filename)';
 $string['entrypointerror'] = 'Cannot determine classname (entrypoint)';
-$string['sumweightzero'] = 'The sum of all weights must not be zero.';
+$string['sumweightzero'] = 'The sum of all weights must be a positive number.';
 
 $string['notaskfile'] = 'Taskfile is missing.';
 
@@ -397,4 +397,6 @@ $string['taskeditornewpythonunit'] = 'New Python unittest';
 $string['taskeditornewpythondoc'] = 'New Python doctest';
 $string['taskeditornewgoogletest'] = 'New Google test';
 $string['taskeditornewcunit'] = 'New CUnit test';
+
+
 // $string['openfile'] = '<open...>';

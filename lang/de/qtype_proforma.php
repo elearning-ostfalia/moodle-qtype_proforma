@@ -153,7 +153,7 @@ $string['entrypointrequired'] = 'JUnit Entrypoint muss angegeben werden.';
 $string['executablerequired'] = 'Befehl zum Ausführen des Tests muss angegeben werden.';
 $string['filenameerror'] = 'Kann Klassennamen nicht ermitteln (Dateiname).';
 $string['entrypointerror'] = 'Kann Klassennamen nicht ermitteln (Entrypoint).';
-$string['sumweightzero'] = 'Die Summe aller Gewichte darf nicht 0 sein.';
+$string['sumweightzero'] = 'Die Summe aller Gewichte muss größer als null sein.';
 
 
 $string['highlight'] = 'Syntax Highlighting';
@@ -375,3 +375,4 @@ $string['taskeditornewpythonunit'] = 'Neuer Python unittest';
 $string['taskeditornewpythondoc'] = 'Neuer Python Doctest';
 $string['taskeditornewgoogletest'] = 'Neuer Google Test';
 $string['taskeditornewcunit'] = 'Neuer CUnit Test';
+
