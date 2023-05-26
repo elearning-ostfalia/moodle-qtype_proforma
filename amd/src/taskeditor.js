@@ -115,7 +115,14 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
         // console.log(gradinghints.value);
         const parser = new DOMParser();
+        console.log('Parse grading hints, TODO read values from input fields');
         const doc = parser.parseFromString(gradinghints.value, "application/xml");
+        const errorNode = doc.querySelector("parsererror");
+        if (errorNode) {
+            // parsing failed
+            console.error('Error occured while parsing grading hints XML');
+            // console.log(errorNode);
+        }
         let count = 0;
         doc.querySelectorAll('test-ref').forEach(test => {
             count++;
@@ -155,8 +162,8 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             console.log('task file is zipped! => extract');
             return taskresponse.blob()
                 .then(blob => {
-                    console.log('blob is');
-                    console.log(blob);
+                    // console.log('blob is');
+                    // console.log(blob);
                     unzipme(blob, function(text) {
                         readXMLWithLock(text)
                             .then(() => mergeWithGradingHints());

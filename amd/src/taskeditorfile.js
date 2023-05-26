@@ -52,12 +52,14 @@
 import $ from 'jquery';
 import {setcounter, DEBUG_MODE, getExtension} from "./taskeditorutil";
 import {taskeditorconfig} from "./taskeditorconfig";
+import {javaParser} from "./taskeditorjava";
 import {FileReferenceList} from "./filereflist";
 import Templates from 'core/templates';
 import * as CodeMirror from './codemirror';
 import Notification, {exception as displayException} from 'core/notification';
 import './clike';
 import './python';
+import './xml';
 
 export var fileStorages = [];
 export var fileIDs = {};
@@ -174,10 +176,14 @@ export class FileWrapper {
         if (taskeditorconfig.useCodemirror) {
             codemirror[this.id].setValue(newText);
             const fileObject = fileStorages[this.id];
-            console.log('CodeMirror-Mode: ' + fileObject.mimetype + ' ' + this.getCodemirrorMode());
+//            console.log('Codemirror modes and mimetypes');
+//            console.log(CodeMirror.modes);
+//            console.log(CodeMirror.mimeModes);
+
+//            console.log('Set CodeMirror-Mode: mimetype ' + fileObject.mimetype + ' => ' + this.getCodemirrorMode());
             codemirror[this.id].setOption("mode", this.getCodemirrorMode());
-            // let editor = codemirror[this.id];
-            // editor.refresh();
+//            let editor = codemirror[this.id];
+//             editor.refresh();
         } else {
             this._root.find(".xml_file_text").val(newText);
         }
@@ -191,6 +197,11 @@ export class FileWrapper {
         this.filenameHeader = name;
         // this._root.find(".xml_filename_header").first().text(name);
         fileStorages[this.id].filename = name;
+        if (taskeditorconfig.useCodemirror) {
+            // Change mode depending on filename
+            console.log('change mode depending on new filename');
+            codemirror[this.id].setOption("mode", this.getCodemirrorMode());
+        }
         // FileWrapper.onFilenameChanged(); // this); // TODO check for endless recursion!!
         // update filenames in all file references
         FileReferenceList.updateAllFilenameLists(this.id, name);
@@ -272,14 +283,19 @@ export class FileWrapper {
     getCodemirrorMode() {
         switch(getExtension(this.filename)) {
             case "java":   return "text/x-java";
-            case "python": return "text/x-python";
+            case "py": return "text/x-python";
             case "setlx":  return "text/text";
             case "c":      return "text/x-csrc";
+            case "h":      return "text/x-csrc";
             case "cpp":    return "text/x-c++src";
+            case "hpp":    return "text/x-c++src";
             case "xml":    return "application/xml";
             case "html":    return "text/html";
             case "sql":    return "text/x-sql";
-            case "js":    return "textjavascript";
+            case "php":    return "text/x-php";
+            case "js":     return "text/javascript";
+            case "kt":     return "text/java";
+            case "css":     return "text/css";
         }
         return "";
     }
@@ -312,6 +328,11 @@ export class FileWrapper {
             }
             ui_file.filenameHeader = ui_file.filename;
             changedId = ui_file.id;
+            if (taskeditorconfig.useCodemirror) {
+                // Change mode depending on filename
+                console.log('change mode depending on new filename');
+                codemirror[ui_file.id].setOption("mode", ui_file.getCodemirrorMode());
+            }
         }
 
         // update filenames in all file references
@@ -485,15 +506,16 @@ export class FileWrapper {
      * Currently codemirror is only used for xml_file_text.
      * The global codemirror hash above uses the fileID to identify the codemirror element.
      */
-    static addCodemirrorElement(cmID) {                     // cmID is determined by setcounter(), starts at 1
+    static addCodemirrorElement(cmID, langmode = "text/x-java") {                     // cmID is determined by setcounter(), starts at 1
         // let textareaElem = FileWrapper.constructFromId(cmID).root.find(".xml_file_text")[0];
         // console.log(textareaElem);
         codemirror[cmID] = CodeMirror.fromTextArea(
 //            textareaElem, {
             FileWrapper.constructFromId(cmID).root.find(".xml_file_text")[0],{
                 // todo: set mode depending on programming language resp. file extension
-                mode : "text/x-java", indentUnit: 4, lineNumbers: true, matchBrackets: true, tabMode : "shift",
-                styleActiveLine: true, /*viewportMargin: Infinity, */autoCloseBrackets: true, theme: "eclipse",
+                mode : langmode, indentUnit: 4, lineNumbers: true, matchBrackets: true, tabMode : "shift",
+                styleActiveLine: true, /*viewportMargin: Infinity, */autoCloseBrackets: true,
+//                theme: "eclipse", // Note: when theme is not found the language modes do not work!
                 dragDrop: false
             });
 
@@ -592,7 +614,7 @@ export class FileWrapper {
                 });
 
 
-                FileWrapper.addCodemirrorElement(fileid);
+                FileWrapper.addCodemirrorElement(fileid, ui_file.getCodemirrorMode());
 
                 FileWrapper.hideEditor(undefined, ui_file);
                 return ui_file;
