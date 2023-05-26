@@ -627,21 +627,16 @@ function uploadModelSolutionToServer() {
             let filepath = fileStorages[id].filename.substring(0, length);
             formData.append('title', filename);
             if (fileStorages[id].isBinary) {
-                formData.append('repo_upload_file', fileStorages[id].content);
-                formData.append('filepath', '/');
+                let blob = new Blob([fileStorages[id].content], { type : fileStorages[id].mimetype });
+                // console.log(blob);
+                formData.append('repo_upload_file', blob);
             } else {
                 let content = file.text;
-                console.log('Content is ' + content);
+                // console.log('Content is ' + content);
                 formData.append('repo_upload_file', new Blob([content], { type : 'plain/text' }));
-
-                formData.append('filepath', '/');
-                // formData.append('maxbytes', -1);
-                // since we are uploading the file to the 'draft area',
-                // there is no point in limiting the size of the file area.
-                // The draft area is used for all users.
-                // formData.append('areamaxbytes', this.options['areamaxbytes']);
-                formData.append('savepath', filepath);
             }
+            formData.append('filepath', '/');
+            formData.append('savepath', filepath);
             console.log(formData);
             uploadFile(formData);
         }, ms.root);
