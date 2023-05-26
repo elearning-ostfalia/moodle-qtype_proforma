@@ -114,32 +114,48 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         // console.log('aggregationstrategy ' + aggregationstrategy.value);
 
         // console.log(gradinghints.value);
-        const parser = new DOMParser();
-        console.log('Parse grading hints, TODO read values from input fields');
-        const doc = parser.parseFromString(gradinghints.value, "application/xml");
-        const errorNode = doc.querySelector("parsererror");
-        if (errorNode) {
-            // parsing failed
-            console.error('Error occured while parsing grading hints XML');
-            // console.log(errorNode);
-        }
-        let count = 0;
-        doc.querySelectorAll('test-ref').forEach(test => {
-            count++;
-            let ui_test = TestWrapper.constructFromId(test.getAttribute('ref'));
-            if (aggregationstrategy.value === 2) {
-                ui_test.weight = test.getAttribute('weight');
+        const count = document.querySelectorAll('.proforma-taskeditor .xml_test').length;
+        for (let i = 0; i < count; i++) {
+            const testid = document.getElementById('id_testid_' + i);
+            const testweight = document.getElementById('id_testweight_' + i);
+            const testtitle = document.getElementById('id_testtitle_' + i);
+            const testdescription = document.getElementById('id_testdescription_' + i);
+            const testtype = document.getElementById('id_testtype_' + i);
+            if (!testid) {
+                console.error('cannot find element with id_testid_' + i);
+                continue;
             }
-            ui_test.title = test.querySelector('title').innerHTML;
-            ui_test.description = test.querySelector('description').innerHTML;
-            if (test.querySelector('test-type').innerHTML !== ui_test.testtype) {
+            if (!testweight) {
+                console.error('cannot find element with id_testweight_' + i);
+                continue;
+            }
+            if (!testtitle) {
+                console.error('cannot find element with id_testtitle_' + i);
+                continue;
+            }
+            if (!testdescription) {
+                console.error('cannot find element with id_testdescription_' + i);
+                continue;
+            }
+            if (!testtype) {
+                console.error('cannot find element with id_testtype_' + i);
+                continue;
+            }
+            const ref = testid.value;
+            let ui_test = TestWrapper.constructFromId(ref);
+            // if (aggregationstrategy.value === '2') { // gewichtete Summe
+                ui_test.weight = testweight.value;
+            // } else {
+ //               console.log('do not use testweight value because of aggregation strategy ' + aggregationstrategy.value);
+//            }
+            ui_test.title = testtitle.value;
+            ui_test.description = testdescription.value;
+            if (testtype.value !== ui_test.testtype) {
                 console.error('Testtype for test ' + ui_test.id + ' does not match value from grading hints')
             }
-        });
-
+        }
 
         // Finally hide original test input fields:
-        count = document.querySelectorAll('.proforma-taskeditor .xml_test').length;
         console.log('*** ' + count);
         // (better use hide if ???)
         for (let i = 0; i < count; i++) {
@@ -149,7 +165,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             // const selector = 'div[data-groupname="testoptions[' + i + ']"]';
             // document.querySelector(selector).style.display = 'None';
         }
-
 
         const t1 = performance.now();
         console.log("expanding details took " + (t1 - t0) + " milliseconds.");
