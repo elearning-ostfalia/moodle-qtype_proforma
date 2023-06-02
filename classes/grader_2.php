@@ -292,19 +292,8 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             throw new coding_exception("task variable has wrong class");
         }
         $postfields['task-file'] = $task;
-/*
-        if (isset($question)) {
-            $task = $question->get_task_file();
-            if (!$task instanceof stored_file) {
-                throw new coding_exception("task variable has wrong class");
-            }
-            $postfields['task-file'] = $task;
-        } else {
-                throw new coding_exception('task is missing');
-        }
-*/
+
         debugging($uri);
-        // return array($this->set_dummy_result3(), 200); // Fake.
 
         // Send task and submission to grader with Curl with a configured timeout.
         $curl = new curl();

@@ -18,10 +18,11 @@
 /**
  * The Web service script that is called from the taskeditor javascript
  *
- * @since Moodle 2.0
- * @package    repository
- * @copyright  2009 Dongsheng Cai {@link http://dongsheng.org}
+ * @package    qtype
+ * @subpackage proforma
+ * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
 define('AJAX_SCRIPT', true);
@@ -146,20 +147,17 @@ if (!$runtest) {
         }
         \core\antivirus\manager::scan_file($uploadedfile['tmp_name'], $filename, true);
     }
-}
 
+    $fs = get_file_storage();
+    $record = array(
+        'contextid' => $context->id,
+        'component' => 'user',
+        'filearea' => 'draft',
+        'itemid' => $itemid, // $contentid,
+        'filepath' => '/',
+        'userid'    => $USER->id
+    );
 
-$fs = get_file_storage();
-$record = array(
-    'contextid' => $context->id,
-    'component' => 'user',
-    'filearea' => 'draft',
-    'itemid' => $itemid, // $contentid,
-    'filepath' => '/',
-    'userid'    => $USER->id
-);
-
-if (!$runtest) {
     // Delete old files from last attempt
     $fs->delete_area_files($context->id, 'user', 'draft', $itemid);
 
@@ -180,6 +178,7 @@ if (!$runtest) {
     echo json_encode( $data );
 
 } else {
+    $fs = get_file_storage();
 
     $task_file = $fs->get_file($contextidparam, 'user', 'draft', $itemid, '/', $taskfilename);
     if (!$task_file) {

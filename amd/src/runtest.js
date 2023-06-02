@@ -51,6 +51,11 @@ export const show = (json, questionId) => {
     const modelsolutionfilename = json.modelsolutionfilename;
     const questionid = questionId;
 
+    let url = config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
+    url += '&sesskey=' + config.sesskey + '&questionid=' + questionid;
+    url += '&itemid=' + itemid + '&contextid=' + contextid +
+        '&taskfilename=' + taskfilename +  '&modelsolutionfilename=' + modelsolutionfilename;
+
 
     /**
      * get localized string for cancel/close button
@@ -76,13 +81,7 @@ export const show = (json, questionId) => {
      * upload current question to grader
      * @returns {Promise<void>}
      */
-    async function uploadWithSse() {
-        // Get question id from form fields.
-        let url = config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
-        url += '&sesskey=' + config.sesskey + '&questionid=' + questionid;
-        url += '&itemid=' + itemid + '&contextid=' + contextid +
-                '&taskfilename=' + taskfilename +  '&modelsolutionfilename=' + modelsolutionfilename;
-
+    async function requestEventSource() {
         // Create Eventsource with callbacks
         source = new EventSource(url);
         source.onmessage = function(event) {
@@ -94,7 +93,8 @@ export const show = (json, questionId) => {
                 if (message.startsWith("b'") || message.startsWith("b\"")) {
                     message = '<b>' + message.substring(2, message.length - 3) + '</b>';
                 }
-                if (message.endsWith('####') && !message.startsWith('####')) { // got line ending with special keys
+                if (message.endsWith('RESPONSE END####')/* && !message.startsWith('####')*/) { // got line ending with special keys
+                    console.log('end of response found => close connection');
                     closeSse();
                 } else {
                     // Append new message
@@ -117,26 +117,16 @@ export const show = (json, questionId) => {
         }).then(function (modal) {
             // close eventsource on cancel
             modalroot = modal.getRoot();
+            modal.getModal().css('min-width', '50%');
             modalroot.on(ModalEvents.cancel, function () {
                 source.close();
                 source = null;
                 modalroot.remove();
             });
             modal.show();
-            uploadWithSse();
+            requestEventSource();
         });
     }
-
-    /*
-    async function performUpload() {
-        let questionId = document.querySelector("input[name='id']").value;
-        console.log('upload task ' + questionId);
-        const promise = await uploadTask(questionId);
-        console.log('upload task finished, handle result 1');
-        window.console.log(promise);
-        console.log('upload task finished, handle result 2');
-        // alert(response.message);
-    }*/
 
     // Initialise.
     init();
