@@ -262,12 +262,58 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     }
 
 
+    private $chunks = [];
+    private $data = '';
+    private $response = '';
+    private $responsestarted = false;
+    function write_data() {
+        $this->data = $this->data . implode($this->chunks);
+        $this->chunks = [];
+
+        $lines = explode('\n\n', $this->data);
+        $this->data = '';
+
+        foreach ($lines as $line) {
+            $end = substr( $line, -2);
+            if ($end === "\n\n") {
+                // Ends with \n\n.
+                if (substr( $line, 0, strlen("data: RESPONSE START####")) === "data: RESPONSE START####") {
+                    $this->responsestarted = true;
+                }
+                if (!$this->responsestarted) {
+                    echo $line;
+                } else {
+                    $this->response .= $line;
+                    if (substr( $line, 0, strlen("data: RESPONSE END####")) === "data: RESPONSE END####") {
+                        // Response is complete => TODO
+                        echo "data: Response is received but not yet handled\n\n";
+                    }
+                }
+            } else {
+                $this->data = $line; // should be the last one!
+            }
+        }
+
+        ob_flush();
+        flush();
+    }
+
     /**
      * CURLOPT_WRITEFUNCTION which flushes the output buffer.
      *
      * @param resource $curl_handle
      * @param string   $chunk
      */
+    function curl_write_flush($curl_handle, $chunk) {
+        $len = strlen($chunk);
+        $this->chunks[] = $chunk;
+        $this->write_data();
+        return $len; // Tell curl how much data was handled.
+    }
+
+
+/*
+
     function curl_write_flush($curl_handle, $chunk)
     {
         $len = strlen($chunk);
@@ -278,7 +324,12 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         return $len; // Tell curl how much data was handled.
     }
 
+*/
+
     protected function post_to_grader_and_stream_result(&$postfields, $task, $uri) {
+        $this->chunks = [];
+        $this->data = null;
+        $this->responsestarted = false;
         // Get timeout.
         $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'upload_timeout');
         // $options['CURLOPT_SUPPRESS_CONNECT_HEADERS'] = True;
