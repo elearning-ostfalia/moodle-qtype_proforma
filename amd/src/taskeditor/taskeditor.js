@@ -49,6 +49,7 @@ import {ModelSolutionFileReference} from "./filereflist";
 import {fileStorages, FileWrapper} from "./file";
 import * as zip from "../zip/zip";
 import * as taskupload from "../taskupload";
+import * as runtest from "../runtest";
 
 var draftitemid = null;
 var draftfilename = null;
@@ -728,18 +729,21 @@ export function checkModelsolution(buttonid, containerid) {
                     })
                     .then(response => {
                         console.log(response);
-                        return response.text()
+                        // return response.text()
+                        return response.json()
                     })
-                    .then(text => {
-                        // console.log(text);
-                        container.style.display = '';
+                    .then(json => {
+                        console.log(json);
+                        runtest.show(json, questionId);
+
+/*                        container.style.display = '';
                         container.style.cursor = defaultcursor;
                         container.innerHTML = text;
                         document.querySelectorAll('#check-feedback-id .collapsibleregion')
                             .forEach(element => {
                                 console.log('create collapsible region for ' + element.id);
                                 M.util.init_collapsible_region(Y, element.id, '', 'EIN VERSUCH IST ES WERT');
-                            });
+                            });*/
                     })
                     .catch(error => {
                         console.log(error)

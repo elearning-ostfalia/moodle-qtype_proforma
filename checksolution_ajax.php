@@ -33,17 +33,31 @@ require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/externallib.php');
 require_once(__DIR__ . '/renderer.php');
 
+
+
 $err = new stdClass();
 
 // Parameters
-$gradinghints = required_param('gradinghints', PARAM_TEXT); // Question id
+// $gradinghints = required_param('gradinghints', PARAM_TEXT); // Question id
 $questionid = required_param('questionid', PARAM_INT); // Question id
-$contextid = optional_param('ctx_id', SYSCONTEXTID, PARAM_INT); // Context ID
-$source    = optional_param('source', '', PARAM_RAW);           // File to download
-$sourcekey = optional_param('sourcekey', '', PARAM_RAW);        // Used to verify the source.
-$itemid    = optional_param('itemid', 0, PARAM_INT);            // Itemid
 $maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes
 $areamaxbytes  = optional_param('areamaxbytes', FILE_AREA_MAX_BYTES_UNLIMITED, PARAM_INT); // Area max bytes.
+
+$runtest  = optional_param('runtest', 0, PARAM_BOOL); // Files are already available, run test.
+$taskfilename  = optional_param('taskfilename', '', PARAM_FILE);
+$modelsolutionfilename  = optional_param('taskfilename', '', PARAM_FILE);
+$contextidparam = optional_param('contextid', SYSCONTEXTID, PARAM_INT); // Context ID
+$itemid    = optional_param('itemid', 0, PARAM_INT);            // Itemid
+
+
+
+
+// Create events.
+if ($runtest) {
+    header('Content-Type: text/event-stream');
+    header('Cache-Control: no-cache');
+    header('X-Accel-Buffering: no');
+}
 
 // list($context, $course, $cm) = get_context_info_array($contextid);
 // require_login($course, false, $cm, false, true);
@@ -52,7 +66,7 @@ $areamaxbytes  = optional_param('areamaxbytes', FILE_AREA_MAX_BYTES_UNLIMITED, P
 // echo $OUTPUT->header(); // send headers
 
 // If uploaded file is larger than post_max_size (php.ini) setting, $_POST content will be empty.
-if (empty($_POST)) {
+if (!$runtest && empty($_POST)) {
     $err->error = get_string('errorpostmaxsize', 'repository');
     die(json_encode($err));
 }
@@ -110,27 +124,30 @@ if (!empty($course)) {
 $maxbytes = get_user_max_upload_file_size($context, $CFG->maxbytes, $coursemaxbytes, $maxbytes);
 */
 
-
-if (!isset($_FILES['task'])) {
-    throw new moodle_exception('no task file');
-}
-
-if (!isset($_FILES['modelsolution'])) {
-    throw new moodle_exception('no model solution file');
-}
-global $CFG;
-$maxsize = get_max_upload_file_size($CFG->maxbytes);
-// Check size of each uploaded file and scan for viruses.
-foreach ($_FILES as $uploadedfile) {
-    $filename = clean_param($uploadedfile['name'], PARAM_FILE);
-    if ($uploadedfile['size'] > $maxsize) {
-        throw new moodle_exception('file is too large');
-    }
-    \core\antivirus\manager::scan_file($uploadedfile['tmp_name'], $filename, true);
-}
-
 global $USER;
 $context = context_user::instance($USER->id);
+
+
+if (!$runtest) {
+    if (!isset($_FILES['task'])) {
+        throw new moodle_exception('no task file');
+    }
+
+    if (!isset($_FILES['modelsolution'])) {
+        throw new moodle_exception('no model solution file');
+    }
+    global $CFG;
+    $maxsize = get_max_upload_file_size($CFG->maxbytes);
+// Check size of each uploaded file and scan for viruses.
+    foreach ($_FILES as $uploadedfile) {
+        $filename = clean_param($uploadedfile['name'], PARAM_FILE);
+        if ($uploadedfile['size'] > $maxsize) {
+            throw new moodle_exception('file is too large');
+        }
+        \core\antivirus\manager::scan_file($uploadedfile['tmp_name'], $filename, true);
+    }
+}
+
 
 $fs = get_file_storage();
 $record = array(
@@ -142,25 +159,55 @@ $record = array(
     'userid'    => $USER->id
 );
 
+if (!$runtest) {
+    // Delete old files from last attempt
+    $fs->delete_area_files($context->id, 'user', 'draft', $itemid);
 
-// Delete old files from last attempt
-$fs->delete_area_files($context->id, 'user', 'draft', $itemid);
-
-$record['filename'] = clean_param($_FILES['task']['name'], PARAM_FILE);
-$task_file = $fs->create_file_from_pathname($record, $_FILES['task']['tmp_name']);
+    $record['filename'] = clean_param($_FILES['task']['name'], PARAM_FILE);
+    $task_file = $fs->create_file_from_pathname($record, $_FILES['task']['tmp_name']);
 
 
-$record['filename'] = clean_param($_FILES['modelsolution']['name'], PARAM_FILE);
-$ms_file = $fs->create_file_from_pathname($record, $_FILES['modelsolution']['tmp_name']);
+    $record['filename'] = clean_param($_FILES['modelsolution']['name'], PARAM_FILE);
+    $ms_file = $fs->create_file_from_pathname($record, $_FILES['modelsolution']['tmp_name']);
+
+    $data = [
+        'taskfilename' => $_FILES['task']['name'],
+        'modelsolutionfilename' => $_FILES['modelsolution']['name'],
+        'runtest' => 1,
+        'itemid' => $itemid,
+        'contextid' => $context->id,
+    ];
+    echo json_encode( $data );
+
+} else {
+
+    $task_file = $fs->get_file($contextidparam, 'user', 'draft', $itemid, '/', $taskfilename);
+    if (!$task_file) {
+        throw new moodle_exception('no task file');
+    }
+    $ms_file = $fs->get_file($contextidparam, 'user', 'draft', $itemid, '/', $modelsolutionfilename);
+    if (!$ms_file) {
+        throw new moodle_exception('no model solution file');
+    }
 
 
 // Wait as long as it takes for this script to finish
-core_php_time_limit::raise();
+    core_php_time_limit::raise();
 
 // We need the programming language in order to find the correct grader
-$grader = new \qtype_proforma_grader_2();
-$files = [];
-$files[] = $ms_file;
+    $grader = new \qtype_proforma_grader_2();
+    $files = [];
+    $files[] = $ms_file;
+
+    list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader_and_stream_result($files, $task_file);
+    if ($graderoutput === True) {
+        $graderoutput = 'successfully started';
+    }
+}
+
+/*
+// Version without server sent events and with direct output of feedback
+
 list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader($files, $task_file);
 
 $ok = false;
@@ -189,15 +236,9 @@ if (!$quiet) {
     $message .= html_writer::tag('p', $result, array('class' => $class));
 }
 
-// return array($ok, $message, $feedback);
 
 $output = html_writer::nonempty_tag('div', $feedback,
     array('class' => 'specificfeedback'));
 
 echo $output;
-
-// $result = $repo->upload($saveas_filename, $maxbytes);
-// ajax_check_captured_output();
-// echo json_encode($result);
-
-// echo 'alles paletti';
+*/
