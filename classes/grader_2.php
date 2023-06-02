@@ -278,7 +278,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         return $len; // Tell curl how much data was handled.
     }
 
-    protected function post_to_grader_and_stream_result(&$postfields, $task) {
+    protected function post_to_grader_and_stream_result(&$postfields, $task, $uri) {
         // Get timeout.
         $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'upload_timeout');
         // $options['CURLOPT_SUPPRESS_CONNECT_HEADERS'] = True;
@@ -303,11 +303,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                 throw new coding_exception('task is missing');
         }
 */
-        // Get URI.
-        $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
-        $path = trim(get_config('qtype_proforma', 'uploaduri_path'));
-        $uri = $protocolhost . $path;
-
         debugging($uri);
         // return array($this->set_dummy_result3(), 200); // Fake.
 
@@ -382,6 +377,41 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     }
 
 
+    /**
+     * send files and task to grader and expect result to be streamed
+     * @param $files
+     * @param $task
+     * @return array
+     * @throws coding_exception
+     */
+    public function send_files_with_task_to_grader_and_stream_result($files, $task) {
+        // Check file classes.
+        foreach ($files as $file) {
+            if (!$file instanceof stored_file) {
+                throw new coding_exception("wrong class for file");
+            }
+        }
+
+        // Create submission.
+        $submission = $this->create_submission_xml(null, $files, null, null, null, $task);
+        $postfields = array('submission.xml' => $submission);
+        foreach ($files as $file) {
+            // debugging(print_r($file));
+            $postfields[$file->get_filename()] = $file;
+        }
+
+        // Get URI.
+        $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
+        $path = trim(get_config('qtype_proforma', 'runtest_path'));
+        $uri = $protocolhost . $path;
+
+
+        // debugging($submission);
+        // Send POST request to grader.
+        return $this->post_to_grader_and_stream_result($postfields, $task, $uri);
+    }
+
+
     /** sends the sudent's submitted source code to the grader
      *
      * @param $code
@@ -424,7 +454,12 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             'nofilenameneeded' => ''
         );
 
-        return $this->post_to_grader_and_stream_result($postfields, $task);
+        // Get URI.
+        $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
+        $path = trim(get_config('qtype_proforma', 'uploaduri_path'));
+        $uri = $protocolhost . $path;
+
+        return $this->post_to_grader_and_stream_result($postfields, $task, $uri);
     }
 /*
     public function upload_task_to_grader(qtype_proforma_question $question) {

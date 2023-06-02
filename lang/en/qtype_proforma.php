@@ -153,7 +153,6 @@ $string['sumweightzero'] = 'The sum of all weights must be a positive number.';
 
 $string['notaskfile'] = 'Taskfile is missing.';
 
-
 // Settings
 $string['miscellaneousheader'] = 'Miscellaneous';
 $string['defaultpenalty'] = 'Default penalty';
@@ -166,6 +165,8 @@ $string['graderuri_path'] = 'URI: Path';
 $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 $string['uploaduri_path'] = 'URI: Path for uploading task';
 $string['uploaduri_path_desc'] = 'Path Part of Grader URI for uploads';
+$string['runtesturi_path'] = 'URI: Path for running tests';
+$string['runtesturi_path_desc'] = 'Path Part of Grader URI for running the tests with progress information';
 $string['c_graderuri_host'] = 'Grader for c';
 $string['c_graderuri_host_desc'] = '';
 $string['cpp_graderuri_host'] = 'Grader for C++';
