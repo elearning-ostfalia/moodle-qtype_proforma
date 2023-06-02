@@ -150,6 +150,7 @@ export const upload = (buttonid, itemid, contextid, filename) => {
         }).then(function (modal) {
             // close eventsource on cancel
             modalroot = modal.getRoot();
+            modal.getModal().css('min-width', '50%');
             modalroot.on(ModalEvents.cancel, function () {
                 source.close();
                 source = null;
