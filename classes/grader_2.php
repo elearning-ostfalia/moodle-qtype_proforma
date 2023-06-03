@@ -270,28 +270,36 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $this->data = $this->data . implode($this->chunks);
         $this->chunks = [];
 
-        $lines = explode('\n\n', $this->data);
+        $lines = array_filter(explode("\n\n", $this->data));
         $this->data = '';
 
         foreach ($lines as $line) {
-            $end = substr( $line, -2);
-            if ($end === "\n\n") {
+            // $end = substr( $line, -2);
+            // if ($end === "\n\n") {
                 // Ends with \n\n.
                 if (substr( $line, 0, strlen("data: RESPONSE START####")) === "data: RESPONSE START####") {
+                    // Response starts.
                     $this->responsestarted = true;
+                    echo $line . "\n\n";
+                    continue;
                 }
                 if (!$this->responsestarted) {
-                    echo $line;
-                } else {
-                    $this->response .= $line;
-                    if (substr( $line, 0, strlen("data: RESPONSE END####")) === "data: RESPONSE END####") {
-                        // Response is complete => TODO
-                        echo "data: Response is received but not yet handled\n\n";
-                    }
+                    // No response.
+                    echo $line . "\n\n";
+                    continue;
                 }
-            } else {
+                if (substr( $line, 0, strlen("data: RESPONSE END####")) === "data: RESPONSE END####") {
+                    // Response is complete => execute callback
+                    if (isset($this->callback)) {
+                        call_user_func($this->callback, $this->response, $this, $this->question, $this->gradinghints);
+                    }
+                    echo $line . "\n\n";
+                } else {
+                    $this->response .= substr( $line, strlen("data: "));
+                }
+/*            } else {
                 $this->data = $line; // should be the last one!
-            }
+            }*/
         }
 
         ob_flush();
@@ -424,7 +432,12 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @return array
      * @throws coding_exception
      */
-    public function send_files_with_task_to_grader_and_stream_result($files, $task) {
+    public function send_files_with_task_to_grader_and_stream_result($files, $task,
+                                                                     $callback, $question, $gradinghints) {
+        $this->callback = $callback;
+        $this->question = $question;
+        $this->gradinghints = $gradinghints;
+
         // Check file classes.
         foreach ($files as $file) {
             if (!$file instanceof stored_file) {

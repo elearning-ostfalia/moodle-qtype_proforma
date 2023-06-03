@@ -40,7 +40,7 @@ import {get_string as getString} from 'core/str';
  * @param {string} filename: filename of task on Moodle server
  * @returns {undefined}
  */
-export const show = (json, questionId) => {
+export const show = (json, questionId, callbackstart, callbackdata, callbackend) => {
 
     let source = null;
     let modalroot = null;
@@ -84,21 +84,30 @@ export const show = (json, questionId) => {
     async function requestEventSource() {
         // Create Eventsource with callbacks
         source = new EventSource(url);
+        let feedbackstarted = false;
         source.onmessage = function(event) {
             // console.log(event.data);
             let dialog = document.querySelector("#proforma-modal-message");
             if (dialog != null) {
                 let message = event.data.trim();
                 // handle binary prefix (direct output from Popen)
-                if (message.startsWith("b'") || message.startsWith("b\"")) {
-                    message = '<b>' + message.substring(2, message.length - 3) + '</b>';
-                }
-                if (message.endsWith('RESPONSE END####')/* && !message.startsWith('####')*/) { // got line ending with special keys
+                if (message.startsWith('RESPONSE START####')) {
+                    feedbackstarted = true;
+                    callbackstart()
+                } else if (message.endsWith('RESPONSE END####')/* && !message.startsWith('####')*/) { // got line ending with special keys
                     console.log('end of response found => close connection');
+                    callbackend();
                     closeSse();
                 } else {
-                    // Append new message
-                    dialog.innerHTML += message + "<br>";
+                    if (feedbackstarted) {
+                        callbackdata(message);
+                    } else {
+                        // Append new message
+                        if (message.startsWith("b'") || message.startsWith("b\"")) {
+                            message = '<b>' + message.substring(2, message.length - 3) + '</b>';
+                        }
+                        dialog.innerHTML += message + "<br>";
+                    }
                 }
             }
         };
@@ -111,7 +120,7 @@ export const show = (json, questionId) => {
     function showUploadDialog() {
         ModalFactory.create({
             type: ModalFactory.types.CANCEL,
-            title: 'Upload Log',
+            title: 'Check Log',
             body: '<span><code id ="proforma-modal-message"></code></span>',
             large: true
         }).then(function (modal) {

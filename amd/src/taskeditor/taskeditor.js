@@ -693,6 +693,22 @@ export function checkModelsolution(buttonid, containerid) {
     let blobtask;
     let defaultcursor = container.style.cursor;
 
+    function onFeedbackStart() {
+        container.style.display = '';
+        container.style.cursor = defaultcursor;
+    }
+    function onFeedbackData(text) {
+        container.innerHTML += text;
+
+    }
+    function onFeedbackEnd() {
+        document.querySelectorAll('#check-feedback-id .collapsibleregion')
+            .forEach(element => {
+                console.log('create collapsible region for ' + element.id);
+                M.util.init_collapsible_region(Y, element.id, '', 'EIN VERSUCH IST ES WERT');
+            });
+    }
+
     button.onclick = function (e) {
         e.preventDefault();
         // clean old check feedback
@@ -734,7 +750,7 @@ export function checkModelsolution(buttonid, containerid) {
                     })
                     .then(json => {
                         console.log(json);
-                        runtest.show(json, questionId);
+                        runtest.show(json, questionId, onFeedbackStart, onFeedbackData, onFeedbackEnd);
 
 /*                        container.style.display = '';
                         container.style.cursor = defaultcursor;

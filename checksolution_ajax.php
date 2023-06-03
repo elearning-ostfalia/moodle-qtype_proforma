@@ -39,10 +39,10 @@ require_once(__DIR__ . '/renderer.php');
 $err = new stdClass();
 
 // Parameters
-// $gradinghints = required_param('gradinghints', PARAM_TEXT); // Question id
 $questionid = required_param('questionid', PARAM_INT); // Question id
 $maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes
 $areamaxbytes  = optional_param('areamaxbytes', FILE_AREA_MAX_BYTES_UNLIMITED, PARAM_INT); // Area max bytes.
+$gradinghints = optional_param('gradinghints', '', PARAM_TEXT); // Question id
 
 $runtest  = optional_param('runtest', 0, PARAM_BOOL); // Files are already available, run test.
 $taskfilename  = optional_param('taskfilename', '', PARAM_FILE);
@@ -129,6 +129,40 @@ global $USER;
 $context = context_user::instance($USER->id);
 
 
+function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
+    $ok = false;
+    $message = "";
+    $feedback = "";
+    $class = 'fail';
+    $quiet = false;
+
+// Override grading hints with temporary grading hints from client.
+// (needed for correct feedback)
+    $question->gradinghints = $gradinghints;
+
+/*    if ($httpcode != 200) {
+        $result = get_string('failed', 'qtype_proforma');
+        $feedback .= html_writer::tag('p', 'HTTP-Code ' . $httpcode);
+        $feedback .= html_writer::tag('small', html_writer::tag('xmp', $graderoutput));
+    } else { */
+        list($state, $fraction, $error, $feedback, $feedbackformat) =
+            $grader->extract_grade($graderoutput, 200, $question);
+        global $PAGE;
+        $renderer = new qtype_proforma_renderer($PAGE, null);
+        $fbrenderer = new feedback_renderer($renderer, $question);
+        $feedback = $fbrenderer->render_proforma2_message($feedback);
+    // }
+    if (!$quiet) {
+        $message .= html_writer::tag('p', $graderoutput, array('class' => $class));
+    }
+
+
+    $output = html_writer::nonempty_tag('div', $feedback,
+        array('class' => 'specificfeedback'));
+
+    echo "data: " . $output . "\n\n";
+}
+
 if (!$runtest) {
     if (!isset($_FILES['task'])) {
         throw new moodle_exception('no task file');
@@ -164,9 +198,12 @@ if (!$runtest) {
     $record['filename'] = clean_param($_FILES['task']['name'], PARAM_FILE);
     $task_file = $fs->create_file_from_pathname($record, $_FILES['task']['tmp_name']);
 
-
     $record['filename'] = clean_param($_FILES['modelsolution']['name'], PARAM_FILE);
     $ms_file = $fs->create_file_from_pathname($record, $_FILES['modelsolution']['tmp_name']);
+
+    $record['filename'] = 'gradinghints.txt';
+    $gh_file = $fs->create_file_from_string($record, urldecode($gradinghints));
+
 
     $data = [
         'taskfilename' => $_FILES['task']['name'],
@@ -188,17 +225,22 @@ if (!$runtest) {
     if (!$ms_file) {
         throw new moodle_exception('no model solution file');
     }
+    $gh_file = $fs->get_file($contextidparam, 'user', 'draft', $itemid, '/', 'gradinghints.txt');
+    if (!$gh_file) {
+        throw new moodle_exception('no grading hints file');
+    }
+    $gh = $gh_file->get_content();
 
-
-// Wait as long as it takes for this script to finish
+    // Wait as long as it takes for this script to finish
     core_php_time_limit::raise();
 
-// We need the programming language in order to find the correct grader
+    // TODO: We need the programming language in order to find the correct grader
     $grader = new \qtype_proforma_grader_2();
     $files = [];
     $files[] = $ms_file;
 
-    list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader_and_stream_result($files, $task_file);
+    list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader_and_stream_result($files,
+        $task_file, 'on_grader_response', $question, $gh);
     if ($graderoutput === True) {
         $graderoutput = 'successfully started';
     }
