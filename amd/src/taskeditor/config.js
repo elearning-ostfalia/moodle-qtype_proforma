@@ -132,12 +132,6 @@ export const taskeditorconfig = (function(testConfigNode) {
     // -------------------------
     // TESTS
     // -------------------------
-
-
-    const CUnit_Default_Title = "CUnit Test";
-    const GoogleTest_Default_Title = "Google Test";
-    const PythonUnittest_Default_Title = "Python Unittest";
-
     // default grading weights
     const weightCompilation = 0;
     const weightStaticTest = 0.2;
@@ -201,8 +195,8 @@ export const taskeditorconfig = (function(testConfigNode) {
 
     class GeneralUnitTest extends CustomTest  {
         withRunCommand = true;
-        constructor(title, proglang, framework, withRunCommand = true) {
-            super(title, "unittest", "", proglang);
+        constructor(title, template, proglang, framework, withRunCommand = true) {
+            super(title, "unittest", template, proglang);
             this.fileRefLabel = 'Testfile(s) and CMakeLists.txt/ Makefile';
             this.framework = framework;
             this.withRunCommand = withRunCommand;
@@ -231,7 +225,7 @@ export const taskeditorconfig = (function(testConfigNode) {
                 throw new Error('element unit:unittest not found in unittest or unittest namespace invalid');
 
             if (unitNode.namespaceURI !== unittestns_new) {
-                throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in CUnitTest');
+                throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in unit test');
             }
             if (this.withRunCommand) {
                 context['entrypoint'] = xmlReader.readSingleText("unit:entry-point", unitNode);
@@ -281,21 +275,20 @@ export const taskeditorconfig = (function(testConfigNode) {
 
     class GoogleTest extends GeneralUnitTest {
         constructor() {
-            super(GoogleTest_Default_Title, ['c', 'cpp'], 'GoogleTest');
+            super("Google Test", "qtype_proforma/taskeditor_googletest", ['c', 'cpp'], 'GoogleTest');
         }
     }
 
     class CUnitTest extends GeneralUnitTest {
         constructor() {
-            super(CUnit_Default_Title, ['c'], 'CUnit');
+            super("CUnit Test", "qtype_proforma/taskeditor_cunittest", ['c'], 'CUnit');
         }
     }
 
     class PythonUnittest extends GeneralUnitTest {
         constructor() {
-            super(PythonUnittest_Default_Title, ['python'], 'PythonUnittest', false);
+            super("Python Unittest", "qtype_proforma/taskeditor_pythonunittest", ['python'], 'PythonUnittest', false);
             this.fileRefLabel = 'Python unittest file(s)';
-
         }
     }
 
