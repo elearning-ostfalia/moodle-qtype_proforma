@@ -145,12 +145,12 @@ function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
         $feedback .= html_writer::tag('p', 'HTTP-Code ' . $httpcode);
         $feedback .= html_writer::tag('small', html_writer::tag('xmp', $graderoutput));
     } else { */
-        list($state, $fraction, $error, $feedback, $feedbackformat) =
+        list($state, $fraction, $error, $feedback1, $feedbackformat) =
             $grader->extract_grade($graderoutput, 200, $question);
         global $PAGE;
         $renderer = new qtype_proforma_renderer($PAGE, null);
         $fbrenderer = new feedback_renderer($renderer, $question);
-        $feedback = $fbrenderer->render_proforma2_message($feedback);
+        $feedback = $fbrenderer->render_proforma2_message($feedback1);
     // }
     if (!$quiet) {
         $message .= html_writer::tag('p', $graderoutput, array('class' => $class));
@@ -160,7 +160,13 @@ function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
     $output = html_writer::nonempty_tag('div', $feedback,
         array('class' => 'specificfeedback'));
 
-    echo "data: " . $output . "\n\n";
+
+    $lines = explode("\n", $output);
+    foreach ($lines as $line) {
+        echo "data: " . $line . "\n\n";
+    }
+
+    // echo "data: " . $output . "\n\n";
 }
 
 if (!$runtest) {

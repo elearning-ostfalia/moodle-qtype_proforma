@@ -300,12 +300,8 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                     }
                     echo $line . "\n\n";
                 } else {
-                    // Reappend \n??
-                    $this->response .= substr( $line, strlen("data: ")) . "";
+                    $this->response .= substr( $line, strlen("data: ")) . "\n";
                 }
-/*            } else {
-                $this->data = $line; // should be the last one!
-            }*/
         }
 
         ob_flush();

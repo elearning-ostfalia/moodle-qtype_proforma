@@ -693,15 +693,17 @@ export function checkModelsolution(buttonid, containerid) {
     let blobtask;
     let defaultcursor = container.style.cursor;
 
+    let htmlFeedback = '';
+
     function onFeedbackStart() {
         container.style.display = '';
         container.style.cursor = defaultcursor;
     }
     function onFeedbackData(text) {
-        container.innerHTML += text;
-
+        htmlFeedback += text + '<br>';
     }
     function onFeedbackEnd() {
+        container.innerHTML = htmlFeedback;
         document.querySelectorAll('#check-feedback-id .collapsibleregion')
             .forEach(element => {
                 console.log('create collapsible region for ' + element.id);
