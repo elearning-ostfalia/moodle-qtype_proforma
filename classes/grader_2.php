@@ -270,8 +270,13 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $this->data = $this->data . implode($this->chunks);
         $this->chunks = [];
 
-        $lines = array_filter(explode("\n\n", $this->data));
-        $this->data = '';
+        $lines = explode("\n\n", $this->data);
+        if (substr( $this->data, -2) === "\n\n") {
+            // Remove last element as is may be empty when last 2 characters are \n\n
+            $this->data = array_pop($lines);
+        } else {
+            $this->data = '';
+        }
 
         foreach ($lines as $line) {
             // $end = substr( $line, -2);
@@ -295,7 +300,8 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                     }
                     echo $line . "\n\n";
                 } else {
-                    $this->response .= substr( $line, strlen("data: "));
+                    // Reappend \n??
+                    $this->response .= substr( $line, strlen("data: ")) . "";
                 }
 /*            } else {
                 $this->data = $line; // should be the last one!
