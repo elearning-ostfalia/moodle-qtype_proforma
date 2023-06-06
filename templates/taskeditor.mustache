@@ -93,14 +93,20 @@
     <div id="check-feedback-id" class="outcome" style='display: none'>Feedback</div>
 </div>
 
-<button id="check-modelsolution-{{uniqid}}" class="btn btn-secondary">{{#str}} checkmodelsol, qtype_proforma {{/str}}</button>
-<button id="upload_task-{{uniqid}}" class="btn btn-secondary">{{#str}} upload, qtype_proforma {{/str}}</button>
-<button id="download_task-{{uniqid}}" class="btn btn-secondary">{{#str}} downloadtask, qtype_proforma {{/str}}</button>
-<button id="download-modelsol-{{uniqid}}" class="btn btn-secondary">{{#str}} downloadmodelsolution, qtype_proforma {{/str}}</button>
+<button id="check-modelsolution-{{uniqid}}" class="btn btn-secondary">
+    {{# pix }} i/grade_correct, core, {{/ pix }}/{{# pix }} i/grade_incorrect, core, {{/ pix }}{{#str}} checkmodelsol, qtype_proforma {{/str}}
+</button>
+<button id="upload_task-{{uniqid}}" class="btn btn-secondary">
+    {{# pix }} i/up, core, {{/ pix }}{{#str}} upload, qtype_proforma {{/str}}
+</button>
+<button id="download_task-{{uniqid}}" class="btn btn-secondary">
+    {{# pix }} i/down, core, {{/ pix }}{{#str}} downloadtask, qtype_proforma {{/str}}
+</button>
+<button id="download-modelsol-{{uniqid}}" class="btn btn-secondary">
+    {{# pix }} i/down, core, {{/ pix }}{{#str}} downloadmodelsolution, qtype_proforma {{/str}}
+</button>
 <!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary">Save task</button> -->
 </div>
-
-
 
 
 {{#js}}
