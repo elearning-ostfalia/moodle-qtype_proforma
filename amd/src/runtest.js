@@ -26,7 +26,6 @@
  */
 
 
-import config from 'core/config';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import {get_string as getString} from 'core/str';
@@ -40,22 +39,11 @@ import {get_string as getString} from 'core/str';
  * @param {string} filename: filename of task on Moodle server
  * @returns {undefined}
  */
-export const show = (json, questionId, callbackstart, callbackdata, callbackend) => {
+export const show = (url, callbackstart, callbackdata, callbackend) => {
 
     let source = null;
     let modalroot = null;
     let closeString = 'close';
-    const itemid = json.itemid;
-    const contextid = json.contextid;
-    const taskfilename = json.taskfilename;
-    const modelsolutionfilename = json.modelsolutionfilename;
-    const questionid = questionId;
-
-    let url = config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
-    url += '&sesskey=' + config.sesskey + '&questionid=' + questionid;
-    url += '&itemid=' + itemid + '&contextid=' + contextid +
-        '&taskfilename=' + taskfilename +  '&modelsolutionfilename=' + modelsolutionfilename;
-
 
     /**
      * get localized string for cancel/close button

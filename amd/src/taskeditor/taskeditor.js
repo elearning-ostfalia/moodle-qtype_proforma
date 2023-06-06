@@ -44,12 +44,13 @@ import {readXMLWithLock} from "./helper";
 import {convertToXML} from "./task";
 import Config from 'core/config';
 import {ModelSolutionWrapper} from "./modelsol";
-import {T_VISIBLE, TaskFileRef, TaskModelSolution} from "./taskdata";
+import {TaskFileRef, TaskModelSolution} from "./taskdata";
 import {ModelSolutionFileReference} from "./filereflist";
 import {fileStorages, FileWrapper} from "./file";
 import * as zip from "../zip/zip";
 import * as taskupload from "../taskupload";
 import * as runtest from "../runtest";
+
 
 var draftitemid = null;
 var draftfilename = null;
@@ -759,7 +760,15 @@ export function checkModelsolution(buttonid, containerid) {
                     .then(json => {
                         // forward json to runtest file.
                         console.log(json);
-                        runtest.show(json, questionId, onFeedbackStart, onFeedbackData, onFeedbackEnd);
+                        let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
+                        url += '&sesskey=' + Config.sesskey +
+                            '&questionid=' + questionId +
+                            '&itemid=' + json.itemid +
+                            '&contextid=' + json.contextid +
+                            '&taskfilename=' + json.taskfilename +
+                            '&modelsolutionfilename=' + json.modelsolutionfilename;
+
+                        runtest.show(url, onFeedbackStart, onFeedbackData, onFeedbackEnd);
                     })
                     .catch(error => {
                         console.log(error)
