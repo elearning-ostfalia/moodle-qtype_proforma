@@ -494,8 +494,8 @@ export async function readAndDisplayXml(taskXml) {
         if (versionElement.options.length > 0) {
             // versionElement.disabled = false;
             // If version element is visible then check version
-            versionElement.val(task.proglangVersion);
-            if (versionElement.val() !== task.proglangVersion) {
+            versionElement.value = task.proglangVersion;
+            if (versionElement.value !== task.proglangVersion) {
                 if (task.proglangVersion === undefined || task.proglangVersion) {
                     switch (task.proglang.toLowerCase()) {
                         case 'python':
@@ -505,7 +505,7 @@ export async function readAndDisplayXml(taskXml) {
                     }
                 }
             }
-            if (versionElement.val() !== task.proglangVersion) {
+            if (versionElement.value !== task.proglangVersion) {
                 alert('check programming language version "' + task.proglangVersion + '"');
             }
         } else {
