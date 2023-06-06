@@ -302,8 +302,8 @@ abstract class base_form_creator {
         $mform->addElement('hidden', 'gradinghints');
         $mform->setType('gradinghints', PARAM_TEXT);
 
-        $mform->addElement('hidden', 'details', 0);
-        $mform->setType('details', PARAM_BOOL);
+        $mform->addElement('hidden', 'taskeditor', 0);
+        $mform->setType('taskeditor', PARAM_BOOL);
     }
 
     /**
@@ -1120,7 +1120,7 @@ abstract class base_form_creator {
     public function save_question_options(&$options) {
         $formdata = $this->_form;
         $context = $formdata->context;
-        if ($formdata->details) {
+        if ($formdata->taskeditor) {
             $formdata->gradinghints = urldecode($formdata->gradinghints);
         } else {
             unset($formdata->gradinghints);

@@ -68,7 +68,6 @@ var t0;
  * @returns {Promise<void>}
  */
 export async function edit(buttonid, context, taskrepoparams, msrepoparams, inline) {
-
     console.log(context);
     taskrepositoryparams = taskrepoparams;
     modelsolrepositoryparams = msrepoparams;
@@ -82,7 +81,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         // closeString = await getString('close', 'editor');
     }
 
-   function downloadTaskFromServer() {
+    function downloadTaskFromServer() {
         // Find file from {files} where itemid = value of #id_task
 
         // let questionId = document.querySelector("input[name='id']").value;
@@ -196,7 +195,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         }
     }
 
-    document.querySelector('.proforma-taskeditor').style.display = 'none';
 
     function updateEnvironment() {
         // Collapse main headers
@@ -224,6 +222,14 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         if (document.getElementById('fitem_id_mslinks')) {
             document.getElementById('fitem_id_mslinks').style.display = 'None';
         }
+
+        // Set taskeditor value to 1 in order to notify the server that the
+        // task editor is visible
+        console.log('set taskeditor field to 1');
+        const taskeditorField = document.querySelector('input[name="taskeditor"]');
+        console.log(taskeditorField);
+        taskeditorField.value = "1";
+        console.log(taskeditorField);
 
         // Save task on submit/update.
         let updatebutton = document.getElementById('id_updatebutton');
@@ -260,17 +266,17 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
     }
 
-    document.getElementById(buttonid).addEventListener('click', function (e) {
+    function showTaskeditor() {
         t0 = performance.now();
         console.log('edit task');
         document.querySelector('.proforma-taskeditor').style.display = '';
         downloadTaskFromServer()
             .then(taskresponse => {
                 displayTaskdata(taskresponse);
-/*                    .then(() => {
-                        const t1 = performance.now();
-                        console.log("expanding details took " + (t1 - t0) + " milliseconds.");
-                });*/
+                /*                    .then(() => {
+                                        const t1 = performance.now();
+                                        console.log("expanding details took " + (t1 - t0) + " milliseconds.");
+                                });*/
                 updateEnvironment();
                 /*
                                 if (document.getElementById('fitem_id_task')) {
@@ -284,89 +290,113 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                                 }*/
             })
             .fail(Notification.exception);
-/*
-        let taskPromise = downloadTaskFromServer();
+    }
 
-        let stringsPromise = getStrings([
-            {
-                // All string beginning with taskeditor.
-                key: 'taskeditor',
-                component: 'qtype_proforma'
-            }
-        ]);
-        let modalPromise = ModalFactory.create(
-            {
-                type: ModalFactory.types.SAVE_CANCEL,
-                large: true
-            }
-        );
+    const questionId = document.querySelector("input[name='id']").value;
+    // hide editor if hidden 'taskeditor' input field is set to 0 (default)
+    const taskeditorRequested = document.querySelector("input[name='taskeditor']");
+    console.log('Check if taskeditor shall be visible or not');
+    console.log(taskeditorRequested);
 
-        context['tests'] = '';
-        context['files'] = '';
-        let bodyPromise = Templates.renderForPromise('qtype_proforma/taskeditor', context);
+    if (taskeditorRequested && taskeditorRequested.value === '1') {
+        console.log('show editor');
+        // Hide details button.
+        document.getElementById(buttonid).style.display = 'none';
+        // Show and fill editor
+        showTaskeditor();
+    } else {
+        console.log('hide editor');
+        // Hide editor
+        document.querySelector('.proforma-taskeditor').style.display = 'none';
+        // Show editor on button click
+        document.getElementById(buttonid).addEventListener('click', function (e) {
+            showTaskeditor();
+        });
+    }
 
-        $.when(stringsPromise, modalPromise, bodyPromise, taskPromise)
-            .then(function(strings, modal, {html, js}, taskresponse) {
-                // console.log(html);
-                // console.log(js);
+    /*
+            let taskPromise = downloadTaskFromServer();
 
-                modal.setTitle(strings[0]);
-
-                modal.setBody(html);
-                // Change size (TODO: actually do with css)
-                modal.getModal().css('min-width', '70%');
-                modal.getModal().css('min-height', '90%');
-
-                modal.getRoot().on(ModalEvents.save, function(e) {
-                    e.preventDefault();
-                    alert('TODO save');
-                    modal.destroy();
-                });
-
-                modal.getRoot().on(ModalEvents.cancel, function(e) {
-                    e.preventDefault();
-                    ModalFactory.create({
-                        type: ModalFactory.types.SAVE_CANCEL,
-                        title: 'Close task editor',
-                        body: 'Do you really want to close the task editor?',
-                    })
-                        .then(function(confirm) {
-                            confirm.setSaveButtonText('Close');
-                            confirm.getRoot().on(ModalEvents.save, function() {
-                                modal.destroy();
-                            });
-                            confirm.show();
-                        });
-                });
-
-                modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
-                modal.getRoot().on(ModalEvents.outsideClick, (e) => {
-                    console.log('click outside modal');
-                    e.preventDefault();
-                });
-                modal.getRoot().on(ModalEvents.destroyed, (e) => {
-                    console.log('destroyed');
-                    e.preventDefault();
-                });
-                // Hide close button
-                // modal.getRoot()[0].querySelector('.modal-header button .close').style.display = 'none';
-                let root = modal.getRoot()[0];
-                let header = root.querySelector('.modal-header');
-                header.querySelector('button').style.display = 'none';
-
-                modal.show();
-                if (js) {
-                    Templates.runTemplateJS(js);
+            let stringsPromise = getStrings([
+                {
+                    // All string beginning with taskeditor.
+                    key: 'taskeditor',
+                    component: 'qtype_proforma'
                 }
+            ]);
+            let modalPromise = ModalFactory.create(
+                {
+                    type: ModalFactory.types.SAVE_CANCEL,
+                    large: true
+                }
+            );
 
-                // Fill modal with data
-                console.log('response from fetch is');
-                console.log(taskresponse);
-                displayTaskdata(taskresponse);
-                return modal;
-        }).fail(Notification.exception);
-    */
-    });
+            context['tests'] = '';
+            context['files'] = '';
+            let bodyPromise = Templates.renderForPromise('qtype_proforma/taskeditor', context);
+
+            $.when(stringsPromise, modalPromise, bodyPromise, taskPromise)
+                .then(function(strings, modal, {html, js}, taskresponse) {
+                    // console.log(html);
+                    // console.log(js);
+
+                    modal.setTitle(strings[0]);
+
+                    modal.setBody(html);
+                    // Change size (TODO: actually do with css)
+                    modal.getModal().css('min-width', '70%');
+                    modal.getModal().css('min-height', '90%');
+
+                    modal.getRoot().on(ModalEvents.save, function(e) {
+                        e.preventDefault();
+                        alert('TODO save');
+                        modal.destroy();
+                    });
+
+                    modal.getRoot().on(ModalEvents.cancel, function(e) {
+                        e.preventDefault();
+                        ModalFactory.create({
+                            type: ModalFactory.types.SAVE_CANCEL,
+                            title: 'Close task editor',
+                            body: 'Do you really want to close the task editor?',
+                        })
+                            .then(function(confirm) {
+                                confirm.setSaveButtonText('Close');
+                                confirm.getRoot().on(ModalEvents.save, function() {
+                                    modal.destroy();
+                                });
+                                confirm.show();
+                            });
+                    });
+
+                    modal.getRoot().on(ModalEvents.hidden, modal.destroy.bind(modal));
+                    modal.getRoot().on(ModalEvents.outsideClick, (e) => {
+                        console.log('click outside modal');
+                        e.preventDefault();
+                    });
+                    modal.getRoot().on(ModalEvents.destroyed, (e) => {
+                        console.log('destroyed');
+                        e.preventDefault();
+                    });
+                    // Hide close button
+                    // modal.getRoot()[0].querySelector('.modal-header button .close').style.display = 'none';
+                    let root = modal.getRoot()[0];
+                    let header = root.querySelector('.modal-header');
+                    header.querySelector('button').style.display = 'none';
+
+                    modal.show();
+                    if (js) {
+                        Templates.runTemplateJS(js);
+                    }
+
+                    // Fill modal with data
+                    console.log('response from fetch is');
+                    console.log(taskresponse);
+                    displayTaskdata(taskresponse);
+                    return modal;
+            }).fail(Notification.exception);
+        */
+
 }
 
 /**
@@ -780,9 +810,6 @@ export function checkModelsolution(buttonid, containerid) {
 
 function uploadTaskToServer() {
     createGradingHints();
-    // Set details value to 1 in order to inform the server that the task editor has created input data
-    const details = document.querySelector('input[name="details"]');
-    details.value = 1;
     uploadModelSolutionToServer();
     const zipname = $("#id_name").val();
     const context = convertToXML();
