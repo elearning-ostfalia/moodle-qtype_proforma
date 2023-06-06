@@ -154,7 +154,7 @@ $string['executablerequired'] = 'Befehl zum Ausführen des Tests muss angegeben 
 $string['filenameerror'] = 'Kann Klassennamen nicht ermitteln (Dateiname).';
 $string['entrypointerror'] = 'Kann Klassennamen nicht ermitteln (Entrypoint).';
 $string['sumweightzero'] = 'Die Summe aller Gewichte muss größer als null sein.';
-
+$string['invalidproglang'] = 'Version der Programmiersprache ungültig:';
 
 $string['highlight'] = 'Syntax Highlighting';
 $string['highlight_hint'] = 'Programmiersprache';
@@ -378,3 +378,6 @@ $string['taskeditornewpythondoc'] = 'Neuer Python Doctest';
 $string['taskeditornewgoogletest'] = 'Neuer Google Test';
 $string['taskeditornewcunit'] = 'Neuer CUnit Test';
 
+$string['openfile'] = '<öffne Datei...>';
+$string['newfile'] = '<neue Datei>';
+$string['fileexists'] = 'Datei "{$a}" existiert bereits.';

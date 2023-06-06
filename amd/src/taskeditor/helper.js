@@ -57,6 +57,7 @@ import {getExtension, setErrorMessage} from "./util";
 import {javaParser} from "./java";
 import {taskeditorconfig} from "./config";
 import {readAndDisplayXml} from "./task";
+import * as Str from 'core/str';
 
 
 export var readXmlActive = false;
@@ -86,7 +87,8 @@ export function readAndCreateFileData(file, fileId, callback) {
 
     // check if a file with filename already is stored
     if (FileWrapper.doesFilenameExist(filename)) {
-        alert("A file named '" + filename + "' already exists.");
+        Str.get_string('fileexists', 'qtype_proforma', filename)
+            .then(content => alert(content));
         return;
     }
 
@@ -134,7 +136,8 @@ export function readAndCreateFileData(file, fileId, callback) {
 
         // recheck if a file with that filename already is stored
         if (FileWrapper.doesFilenameExist(filename)) {
-            alert("A file named '" + filename + "' already exists.");
+            Str.get_string('fileexists', 'qtype_proforma', filename)
+                .then(content => alert(content));
             return;
         }
 

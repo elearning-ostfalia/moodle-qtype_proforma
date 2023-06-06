@@ -84,7 +84,7 @@ function addRequired(elem) {
         });
 }
 
-async function isInputComplete() {
+function isInputComplete() {
     console.log('check input');
     let inputField = $("#id_name");
     if (!inputField.val()) {
@@ -196,7 +196,8 @@ async function isInputComplete() {
     });
     console.log('sumweight = ' + sumweight);
     if (sumweight <= 0) {
-        alert(await Str.get_string('sumweightzero', 'qtype_proforma'));
+        Str.get_string('sumweightzero', 'qtype_proforma')
+            .then(content => alert(content));
         returnFromFunction = true;
     }
 
@@ -488,13 +489,13 @@ export async function readAndDisplayXml(taskXml) {
     let proglangElement = $("#xml_programming-language");
     proglangElement.val(task.proglang.toLowerCase());
     proglangElement.trigger('change');
+    proglangElement.prop( "disabled", true );
     let versionElement = document.getElementById("xml_programming-language-" + task.proglang.toLowerCase());
     if (!versionElement) {
         console.error('cannot find element #xml_programming-language-' + task.proglang.toLowerCase());
     } else {
         if (versionElement.options.length > 0) {
-            // versionElement.disabled = false;
-            // If version element is visible then check version
+            // If version element contains options then check version
             versionElement.value = task.proglangVersion;
             if (versionElement.value !== task.proglangVersion) {
                 if (task.proglangVersion === undefined || task.proglangVersion) {
@@ -507,10 +508,9 @@ export async function readAndDisplayXml(taskXml) {
                 }
             }
             if (versionElement.value !== task.proglangVersion) {
-                alert('check programming language version "' + task.proglangVersion + '"');
+                Str.get_string('invalidproglang', 'qtype_proforma')
+                    .then(content => alert(content + ' ' + task.proglangVersion));
             }
-        } else {
-            // versionElement.disabled = true;
         }
     }
 

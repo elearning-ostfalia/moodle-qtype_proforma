@@ -624,7 +624,6 @@ function uploadModelSolutionToServer() {
                 alert(`Error ${request.status}: ${request.statusText}`);
             } else {
                 console.log(request.response);
-                // alert(request.response);
             }
         } catch(err) { // instead of onerror
             alert("Request failed");
@@ -633,7 +632,6 @@ function uploadModelSolutionToServer() {
         const jsonResponse = JSON.parse(request.responseText);
         console.log('response from Moodle');
         console.log(jsonResponse);
-        // alert('response from Moodle');
         if (jsonResponse.error !== undefined) {
             console.error(request.responseText);
             alert(jsonResponse.error);
@@ -857,7 +855,6 @@ function uploadTaskToServer() {
                 const jsonResponse = JSON.parse(request.responseText);
                 console.log('response from Moodle');
                 console.log(jsonResponse);
-                // alert('response from Moodle');
                 if (jsonResponse.error !== undefined) {
                     console.error(request.responseText);
                     alert(jsonResponse.error);

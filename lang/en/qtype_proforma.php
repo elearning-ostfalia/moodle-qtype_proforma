@@ -150,6 +150,7 @@ $string['executablerequired'] = 'Run command required.';
 $string['filenameerror'] = 'Cannot determine classname (filename)';
 $string['entrypointerror'] = 'Cannot determine classname (entrypoint)';
 $string['sumweightzero'] = 'The sum of all weights must be a positive number.';
+$string['invalidproglang'] = 'Check programming language version:';
 
 $string['notaskfile'] = 'Taskfile is missing.';
 
@@ -399,5 +400,9 @@ $string['taskeditornewpythondoc'] = 'New Python doctest';
 $string['taskeditornewgoogletest'] = 'New Google test';
 $string['taskeditornewcunit'] = 'New CUnit test';
 
+$string['loadfile'] = 'New CUnit test';
 
-// $string['openfile'] = '<open...>';
+$string['openfile'] = '<open...>';
+$string['newfile'] = '<new file>';
+$string['fileexists'] = 'A file named "{$a}" already exists.';
+

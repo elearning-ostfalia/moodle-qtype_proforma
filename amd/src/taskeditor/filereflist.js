@@ -64,12 +64,12 @@ import {TestWrapper} from "./test";
 
 
 
-const loadFileOption = "<open...>";
-const newFileOption = "<new file>";
+let loadFileOption = "<open...>";
+let newFileOption = "<new file>";
 const emptyFileOption = " "; // must not be empty!!
 
-var showEditorText = 'View'; // Str.get_string('taskeditorview', 'qtype_proforma'); // 'View';
-var hideEditorText = 'Hide'; // Str.get_string('taskeditorhide', 'qtype_proforma'); // 'Hide';
+let showEditorText = 'View'; // Str.get_string('taskeditorview', 'qtype_proforma'); // 'View';
+let hideEditorText = 'Hide'; // Str.get_string('taskeditorhide', 'qtype_proforma'); // 'Hide';
 
 let filenameClassList = [];
 let filerefClassList = [];
@@ -80,12 +80,16 @@ export class FileReferenceList extends DynamicList {
     static getLocalisedStrings() {
         let strings = [
             { key: 'taskeditorview', component: 'qtype_proforma' },
-            { key: 'taskeditorhide', component: 'qtype_proforma' }
+            { key: 'taskeditorhide', component: 'qtype_proforma' },
+            { key: 'openfile', component: 'qtype_proforma' },
+            { key: 'newfile', component: 'qtype_proforma' }
         ];
         return Str.get_strings(strings)
             .then(results => {
                 showEditorText = results[0];
                 hideEditorText = results[1];
+                loadFileOption = results[2];
+                newFileOption = results[3];
             });
     }
 
@@ -99,29 +103,6 @@ export class FileReferenceList extends DynamicList {
         filerefClassList.push('.' + classFileref);
     }
 
-
-    // override
-    /*
-    getTableString() {
-        return super.getTableString()  +
-            "<span class='drop_zone_text drop_zone'>Drop Your File(s) Here!</span>";
-    }*/
-
-    // createExtraContent() { return ''; }
-
-/*    createRowContent() {
-        const tdFilename = "<td><select class='mediuminput fileref_filename " + this.classFilename + "' " +
-            "title='" + this.help + "'></select></td>"+
-            "<td><label for='fileref_fileref'>Fileref: </label>"+ // fileref
-            "<input class='tinyinput fileref_fileref' readonly/></td>";
-
-
-        const tdExpandButton = "<td><button class='taskeditor-collapse' title='show content'" +
-            ">"+showEditorText+"</button><br></td>";
-
-        return tdFilename + tdExpandButton + this.createExtraContent();
-    }
-*/
 
     doOnAll(callback, root) {
         if (root)
@@ -266,18 +247,7 @@ export class FileReferenceList extends DynamicList {
         let table_body = tr.parent();
         return super.addItem(element)
             .then(newRow => {
-                // console.log('returned new row is');
-                // console.log(newRow);
                 FileReferenceList.rowEnableEditorButton(newRow, false);
-                /*
-                        // add new line for selecting a file for a test
-                        let td = element.parent();
-                        let tr = td.parent();
-                        let table_body = tr.parent();
-                        table_body.append(this.createRow(false));
-                        td.remove(); // remove current +-button
-                        table_body.find("." + this.classRemoveFileref).show(); // show all remove file buttons
-                */
                 // add filelist to new file option
                 FileReferenceList.updateFilenameList(table_body.find("." + this.classFilename).last());
 
@@ -384,29 +354,10 @@ export class FileReferenceList extends DynamicList {
         $.each(otherFileRefList.root.find(".fileref_fileref"), function(index, item) {
             if (item.value === fileid) {
                 alert("file class for file '" + ui_file.filename + "' will be no longer a " + listname + " file");
-
-                //const filenameobject = $(item).closest('tr').find('.fileref_filename');
-
                 // file id matches
                 // remove old fileref object
-
-                //filenameobject.val(emptyFileOption).change();
-                // FileReferenceList.updateAllFilenameLists();
                 // remove actual numeric fileref value
                 FileReferenceList.removeContent(item, true);
-/*
-                //item.value = '';
-                let tr = $(item).closest('tr');
-                //tr.find('.fileref_fileref').first().val('');
-
-                // check if complete row can be deleted
-                const table_body = tr.parent();
-                if (table_body.find('tr').length > 1) {
-                    // more than one row => delete row
-                    // (object does not matter)
-                    otherFileRefList.removeItem($(item));
-                }
-*/
             }
         });
     }
@@ -514,7 +465,9 @@ export class FileReferenceList extends DynamicList {
                     if (ui_file) { // can be undefined when no filename is selected
                         const fileid = ui_file.id;
                         if (isDuplicateId(fileid)) {
-                            alert('file ' + ui_file.filename + ' is already in this list!');
+                            Str.get_string('fileexists', 'qtype_proforma', ui_file.filename)
+                                .then(content => alert(content));
+                            // alert('file ' + ui_file.filename + ' is already in this list!');
                             // clean input field
                             //$(tempSelElem).val(emptyFileOption).change();
                             FileReferenceList.removeContent(tempSelElem, false);
