@@ -754,7 +754,7 @@ export function checkModelsolution(buttonid, containerid) {
         container.style.cursor = "wait";
         // create task zipfile
         const taskxml = convertToXML();
-        if (taskxml) {
+        if (taskxml != null) {
             // if there is no taskxml then the input is invalid.
             const gradinghints = createGradingHints(true);
             // Zip task

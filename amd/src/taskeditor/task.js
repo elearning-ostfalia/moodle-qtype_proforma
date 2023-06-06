@@ -85,6 +85,7 @@ function addRequired(elem) {
 }
 
 async function isInputComplete() {
+    console.log('check input');
     let inputField = $("#id_name");
     if (!inputField.val()) {
         // setErrorMessage("Task description is empty.");
@@ -199,10 +200,10 @@ async function isInputComplete() {
         returnFromFunction = true;
     }
 
-    if (returnFromFunction)
-        return false;
+    console.log('result');
+    console.log(!returnFromFunction);
 
-    return true;
+    return (!returnFromFunction);
 }
 
 
@@ -222,11 +223,11 @@ export function convertToXML(topLevelDoc, rootNode) {
     const t0 = performance.now();
     clearErrorMessage();
     let taskXml = undefined;
-    // descriptionEditor.save();
 
     // check input
     // console.log('TODO: validate input');
     if (!isInputComplete()) {
+        console.log('invalid input');
         return null;
     }
 
