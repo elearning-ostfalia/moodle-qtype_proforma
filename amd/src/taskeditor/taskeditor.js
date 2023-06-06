@@ -698,6 +698,7 @@ export function checkModelsolution(buttonid, containerid) {
     function onFeedbackStart() {
         container.style.display = '';
         container.style.cursor = defaultcursor;
+        htmlFeedback = '';
     }
     function onFeedbackData(text) {
         htmlFeedback += text + '<br>';
@@ -721,15 +722,19 @@ export function checkModelsolution(buttonid, containerid) {
         if (taskxml) {
             // if there is no taskxml then the input is invalid.
             const gradinghints = createGradingHints(true);
-
+            // Zip task
             return zipme(taskxml, 'task.zip', false)
                 .then(blob => {
-                    console.log('created task zip');
-                    blobtask = blob;
+                    // Task is zipped => zip model solution
+                    // (could be made in parallel but makes code a bit more complex
+                    // so I do not do this)
+                    console.log('task zip created ');
                     // blob is the zipped version of the whole task
+                    blobtask = blob;
                     return createModelSolutionZip();
                 })
                 .then(modelsolutionzip => {
+                    // Model solution is zipped => send to Moodle server
                     console.log('created model solution zip');
                     const url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php';
                     const questionId = document.querySelector("input[name='id']").value;
@@ -746,22 +751,15 @@ export function checkModelsolution(buttonid, containerid) {
                         body: formData,
                     })
                     .then(response => {
+                        // Moodle server has received task with model solution
+                        // => convert to json
                         console.log(response);
-                        // return response.text()
                         return response.json()
                     })
                     .then(json => {
+                        // forward json to runtest file.
                         console.log(json);
                         runtest.show(json, questionId, onFeedbackStart, onFeedbackData, onFeedbackEnd);
-
-/*                        container.style.display = '';
-                        container.style.cursor = defaultcursor;
-                        container.innerHTML = text;
-                        document.querySelectorAll('#check-feedback-id .collapsibleregion')
-                            .forEach(element => {
-                                console.log('create collapsible region for ' + element.id);
-                                M.util.init_collapsible_region(Y, element.id, '', 'EIN VERSUCH IST ES WERT');
-                            });*/
                     })
                     .catch(error => {
                         console.log(error)

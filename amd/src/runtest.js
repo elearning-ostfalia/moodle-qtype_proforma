@@ -141,5 +141,4 @@ export const show = (json, questionId, callbackstart, callbackdata, callbackend)
     init();
 
     showUploadDialog();
-
 };

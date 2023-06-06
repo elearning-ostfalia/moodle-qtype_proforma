@@ -46,7 +46,7 @@ $gradinghints = optional_param('gradinghints', '', PARAM_TEXT); // Question id
 
 $runtest  = optional_param('runtest', 0, PARAM_BOOL); // Files are already available, run test.
 $taskfilename  = optional_param('taskfilename', '', PARAM_FILE);
-$modelsolutionfilename  = optional_param('taskfilename', '', PARAM_FILE);
+$modelsolutionfilename  = optional_param('modelsolutionfilename', '', PARAM_FILE);
 $contextidparam = optional_param('contextid', SYSCONTEXTID, PARAM_INT); // Context ID
 $itemid    = optional_param('itemid', 0, PARAM_INT);            // Itemid
 
@@ -243,7 +243,7 @@ if (!$runtest) {
     // TODO: We need the programming language in order to find the correct grader
     $grader = new \qtype_proforma_grader_2();
     $files = [];
-    $files[] = $ms_file;
+    $files[$modelsolutionfilename] = $ms_file;
 
     list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader_and_stream_result($files,
         $task_file, 'on_grader_response', $question, $gh);
