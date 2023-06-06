@@ -497,7 +497,11 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
     langselectelem.onchange = function() {
         const lang = langselectelem.value;
         // Show versions for this language
-        document.querySelector('#xml_programming-language-' + lang).style.display = '';
+        // document.querySelector('#xml_programming-language-' + lang).style.display = '';
+        let versionElement = document.getElementById("xml_programming-language-" + lang);
+        versionElement.disabled = (versionElement.options.length === 0);
+        versionElement.style.display = '';
+
         // Show buttons for this language
         document.querySelectorAll('#' + buttondiv + ' .' + lang).forEach(
             e => e.style.display = ''

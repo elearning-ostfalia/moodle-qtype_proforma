@@ -487,13 +487,29 @@ export async function readAndDisplayXml(taskXml) {
     let proglangElement = $("#xml_programming-language");
     proglangElement.val(task.proglang.toLowerCase());
     proglangElement.trigger('change');
-    let versionElement = $("#xml_programming-language-" + task.proglang.toLowerCase());
+    let versionElement = document.getElementById("xml_programming-language-" + task.proglang.toLowerCase());
     if (!versionElement) {
         console.error('cannot find element #xml_programming-language-' + task.proglang.toLowerCase());
     } else {
-        versionElement.val(task.proglangVersion);
-        if (versionElement.val() !== task.proglangVersion) {
-            alert('check programming language version "' + task.proglangVersion + '"');
+        if (versionElement.options.length > 0) {
+            // versionElement.disabled = false;
+            // If version element is visible then check version
+            versionElement.val(task.proglangVersion);
+            if (versionElement.val() !== task.proglangVersion) {
+                if (task.proglangVersion === undefined || task.proglangVersion) {
+                    switch (task.proglang.toLowerCase()) {
+                        case 'python':
+                            // Set programming version to 3
+                            task.proglangVersion = '3';
+                            break;
+                    }
+                }
+            }
+            if (versionElement.val() !== task.proglangVersion) {
+                alert('check programming language version "' + task.proglangVersion + '"');
+            }
+        } else {
+            // versionElement.disabled = true;
         }
     }
 
