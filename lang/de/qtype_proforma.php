@@ -47,11 +47,12 @@ $string['responseoptions'] = 'Einreichung';
 $string['graderoptions_header'] = 'Grader';
 
 // Buttons
-$string['upload'] = 'Aufgabendatei zum Grader';
+$string['upload'] = 'Upload Aufgabendatei zum Grader';
 $string['edittestdetails'] = 'Testdetails bearbeiten';
-$string['checkmodelsol'] = 'Musterlösung';
-$string['downloadtask'] = 'Aufgabendatei';
-$string['downloadmodelsolution'] = 'Musterlösung';
+$string['checkmodelsol'] = 'Prüfe Musterlösung';
+$string['checkmodelsol_help'] = 'Starte Tests mit Musterlösung';
+$string['downloadtask'] = 'Download Aufgabendatei';
+$string['downloadmodelsolution'] = 'Download Musterlösung';
 
 
 $string['responsetemplateheader'] = 'Codevorlagen';

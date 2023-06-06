@@ -269,7 +269,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     function showTaskeditor() {
         t0 = performance.now();
         console.log('edit task');
-        document.querySelector('.proforma-taskeditor').style.display = '';
         downloadTaskFromServer()
             .then(taskresponse => {
                 displayTaskdata(taskresponse);
@@ -278,16 +277,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                                         console.log("expanding details took " + (t1 - t0) + " milliseconds.");
                                 });*/
                 updateEnvironment();
-                /*
-                                if (document.getElementById('fitem_id_task')) {
-                                    document.getElementById('fitem_id_task').style.display = 'None';
-                                }
-                                if (document.getElementById('fitem_id_uuid')) {
-                                    document.getElementById('fitem_id_uuid').style.display = 'None';
-                                }
-                                if (document.getElementById('fitem_id_proformaversion')) {
-                                    document.getElementById('fitem_id_proformaversion').style.display = 'None';
-                                }*/
+                document.querySelector('.proforma-taskeditor').style.display = '';
             })
             .fail(Notification.exception);
     }

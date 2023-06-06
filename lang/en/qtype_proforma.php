@@ -50,11 +50,12 @@ $string['responseoptions'] = 'Response Options';
 $string['graderoptions_header'] = 'Grader Settings';
 
 // Buttons
-$string['upload'] = 'Taskfile to grader';
+$string['upload'] = 'Upload taskfile to grader';
 $string['edittestdetails'] = 'Edit test details';
-$string['checkmodelsol'] = 'Model solution';
-$string['downloadtask'] = 'Task';
-$string['downloadmodelsolution'] = 'Model solution';
+$string['checkmodelsol'] = 'Check model solution';
+$string['checkmodelsol_help'] = 'Run tests with model solution';
+$string['downloadtask'] = 'Download Task';
+$string['downloadmodelsolution'] = 'Download Model solution';
 
 
 
