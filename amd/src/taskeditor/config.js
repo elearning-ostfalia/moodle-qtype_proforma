@@ -153,6 +153,12 @@ export const taskeditorconfig = (function(testConfigNode) {
         }
     }
 
+    class PythonUnittest extends CustomTest {
+        constructor() {
+            super("Python Unittest", "unittest", "qtype_proforma/taskeditor_test", ['python']);
+        }
+    }
+
     class JUnitTest extends CustomTest  {
         static DefaultTitle = "JUnit Test";
 
@@ -275,22 +281,17 @@ export const taskeditorconfig = (function(testConfigNode) {
 
     class GoogleTest extends GeneralUnitTest {
         constructor() {
-            super("Google Test", "qtype_proforma/taskeditor_googletest", ['c', 'cpp'], 'GoogleTest');
+            super("Google Test", "qtype_proforma/taskeditor_unittest", ['c', 'cpp'], 'GoogleTest');
         }
     }
 
     class CUnitTest extends GeneralUnitTest {
         constructor() {
-            super("CUnit Test", "qtype_proforma/taskeditor_cunittest", ['c'], 'CUnit');
+            super("CUnit Test", "qtype_proforma/taskeditor_unittest", ['c'], 'CUnit');
         }
     }
 
-    class PythonUnittest extends GeneralUnitTest {
-        constructor() {
-            super("Python Unittest", "qtype_proforma/taskeditor_pythonunittest", ['python'], 'PythonUnittest', false);
-            this.fileRefLabel = 'Python unittest file(s)';
-        }
-    }
+
 
     class CheckstyleTest extends CustomTest {
         constructor() {
