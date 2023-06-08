@@ -325,7 +325,7 @@ class proforma_form_creator extends base_form_creator {
         $mform->addElement('button', 'uploadbutton', get_string('upload', 'qtype_proforma'));
         // Add js.
         global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton'));
+        $PAGE->requires->js_call_amd('qtype_proforma/logmonitor', 'uploadToGrader', array('id_uploadbutton'));
     }
 
     /**

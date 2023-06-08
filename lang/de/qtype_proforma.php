@@ -382,3 +382,5 @@ $string['taskeditornewcunit'] = 'Neuer CUnit Test';
 $string['openfile'] = '<öffne Datei...>';
 $string['newfile'] = '<neue Datei>';
 $string['fileexists'] = 'Datei "{$a}" existiert bereits.';
+$string['checkmodelsollog'] = 'Prüfe Musterlösung (Log)';
+$string['uploadlog'] = 'Upload (Log)';

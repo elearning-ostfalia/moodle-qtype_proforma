@@ -48,8 +48,7 @@ import {TaskFileRef, TaskModelSolution} from "./taskdata";
 import {ModelSolutionFileReference} from "./filereflist";
 import {fileStorages, FileWrapper} from "./file";
 import * as zip from "../zip/zip";
-import * as taskupload from "../taskupload";
-import * as runtest from "../runtest";
+import * as logmonitor from "../logmonitor";
 
 
 var draftitemid = null;
@@ -780,7 +779,7 @@ export function checkModelsolution(buttonid, containerid) {
                         return response.json()
                     })
                     .then(json => {
-                        // forward json to runtest file.
+                        // forward json to logmonitor.
                         console.log(json);
                         let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
                         url += '&sesskey=' + Config.sesskey +
@@ -790,7 +789,7 @@ export function checkModelsolution(buttonid, containerid) {
                             '&taskfilename=' + json.taskfilename +
                             '&modelsolutionfilename=' + json.modelsolutionfilename;
 
-                        runtest.show(url, onFeedbackStart, onFeedbackData, onFeedbackEnd);
+                        logmonitor.show('checkmodelsollog', url, onFeedbackStart, onFeedbackData, onFeedbackEnd);
                     })
                     .catch(error => {
                         console.log(error)
@@ -887,8 +886,15 @@ export function uploadTaskToGrader(buttonid) {
                         })
                         .then(json => {
                             console.log(json);
-                            // console.log('TODO => task is uploaded on server, now upload to grader');
-                            taskupload.upload(null, json.itemid, json.contextid, json.filename);
+                            const questionId = document.querySelector("input[name='id']").value;
+                            let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
+                            url += '?sesskey=' + Config.sesskey + '&id=' + questionId;
+                            if (json.itemid) {
+                                url += '&itemid=' + json.itemid + '&contextid=' + json.contextid + '&filename=' + json.filename;
+                            }
+
+                            logmonitor.show('uploadlog', url);
+                            // taskupload.upload(null, json.itemid, json.contextid, json.filename);
                         })
                         .catch(error => {
                             console.log(error)

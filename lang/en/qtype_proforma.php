@@ -406,4 +406,7 @@ $string['loadfile'] = 'New CUnit test';
 $string['openfile'] = '<open...>';
 $string['newfile'] = '<new file>';
 $string['fileexists'] = 'A file named "{$a}" already exists.';
+$string['checkmodelsollog'] = 'Check model solution log';
+$string['uploadlog'] = 'Upload log';
+
 

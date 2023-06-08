@@ -16,7 +16,7 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * functions for uploading a task.
+ * function for displaying server sent events.
  *
  * @package    qtype
  * @subpackage proforma
@@ -26,62 +26,26 @@
  */
 
 
-import config from 'core/config';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import {get_string as getString} from 'core/str';
+import Config from 'core/config';
 
 /**
- * upload task to grader
  *
- * @param {string} buttonid: button id
- * @param {string} itemid: itemid of task on Moodle server
- * @param {string} contextid: contextid of task on Moodle server
- * @param {string} filename: filename of task on Moodle server
- * @returns {undefined}
+ * @param title string identifier for localised title
+ * @param url SSE url
+ * @param callbackstart callback for begin feedback (Proforma XML response after grading)
+ * @param callbackdata callback for end feedback (Proforma XML response after grading)
+ * @param callbackend callback for handling Proforma XML response after grading
+ * @returns {Promise<void>}
  */
-export const upload = (buttonid, itemid, contextid, filename) => {
+export async function show(title, url, callbackstart, callbackdata, callbackend) {
 
     let source = null;
     let modalroot = null;
     let closeString = 'close';
-    const itemidtask = itemid;
-    const contextidtask = contextid;
-    const filenametask = filename;
-
-    /*
-    function showMessageBar(buttonid, message) {
-        const duration = 1500;
-        const txtColor = "#101010";
-        let height = "100px";
-
-        let box = document.getElementById(msgBoxId);
-        if (box === null) {
-            let node = document.createElement('div');
-            node.style.width = "100%";
-            // node.style.height = height;
-            node.style.position = "fixed";
-            node.style.zIndex = "10000";
-            node.style.background = "#E0E2E4";
-            node.style.border = "1px solid " + txtColor;
-            node.style.transition = "all 2s ease-in-out";
-            node.style.height  = "0px"; // => height
-            document.body.prepend(node);
-            console.log('appended');
-
-            let span = document.createElement('span');
-            span.id = msgBoxId;
-            span.innerHTML = message;
-            node.appendChild(span);
-
-            node.style.height = height;
-
-        } else {
-            // Delete output
-            box.innerHTML = message;
-        }
-    }
-     */
+    let titleString = title;
 
     /**
      * get localized string for cancel/close button
@@ -89,6 +53,7 @@ export const upload = (buttonid, itemid, contextid, filename) => {
      */
     async function init() {
         closeString = await getString('close', 'editor');
+        titleString = await getString(title, 'qtype_proforma');
     }
 
     function closeSse() {
@@ -107,44 +72,52 @@ export const upload = (buttonid, itemid, contextid, filename) => {
      * upload current question to grader
      * @returns {Promise<void>}
      */
-    async function uploadWithSse() {
-        // Get question id from form fields.
-        const questionId = document.querySelector("input[name='id']").value;
-        let url = config.wwwroot + '/question/type/proforma/upload_sse.php';
-        url += '?sesskey=' + config.sesskey + '&id=' + questionId;
-        if (itemidtask) {
-            url += '&itemid=' + itemidtask + '&contextid=' + contextidtask + '&filename=' + filenametask;
-        }
-
+    async function requestEventSource() {
         // Create Eventsource with callbacks
         source = new EventSource(url);
+        let feedbackstarted = false;
         source.onmessage = function(event) {
             // console.log(event.data);
             let dialog = document.querySelector("#proforma-modal-message");
             if (dialog != null) {
                 let message = event.data.trim();
                 // handle binary prefix (direct output from Popen)
-                if (message.startsWith("b'") || message.startsWith("b\"")) {
-                    message = '<b>' + message.substring(2, message.length - 3) + '</b>';
+                if (message.startsWith('RESPONSE START####')) {
+                    feedbackstarted = true;
+                    callbackstart();
+                    return;
+                }
+                if (message.endsWith('RESPONSE END####')/* && !message.startsWith('####')*/) { // got line ending with special keys
+                    console.log('end of response found => close connection');
+                    callbackend();
+                    closeSse();
+                    return;
                 }
                 if (message.endsWith('####') && !message.startsWith('####')) { // got line ending with special keys
                     closeSse();
-                } else {
-                    // Append new message
-                    dialog.innerHTML += message + "<br>";
+                    return;
                 }
+                if (feedbackstarted) {
+                    callbackdata(message);
+                    return;
+                }
+                // Default handling: append new message
+                if (message.startsWith("b'") || message.startsWith("b\"")) {
+                    message = '<b>' + message.substring(2, message.length - 3) + '</b>';
+                }
+                dialog.innerHTML += message + "<br>";
             }
         };
         source.onerror = function(event) {
-            // Upload is complete (with or without error)
+            // Complete (with or without error)
             closeSse();
         };
     }
 
-    function showUploadDialog() {
+    function showDialog() {
         ModalFactory.create({
             type: ModalFactory.types.CANCEL,
-            title: 'Upload Log',
+            title: titleString,
             body: '<span><code id ="proforma-modal-message"></code></span>',
             large: true
         }).then(function (modal) {
@@ -157,36 +130,33 @@ export const upload = (buttonid, itemid, contextid, filename) => {
                 modalroot.remove();
             });
             modal.show();
-            uploadWithSse();
+            requestEventSource();
         });
     }
 
-    /*
-    async function performUpload() {
-        let questionId = document.querySelector("input[name='id']").value;
-        console.log('upload task ' + questionId);
-        const promise = await uploadTask(questionId);
-        console.log('upload task finished, handle result 1');
-        window.console.log(promise);
-        console.log('upload task finished, handle result 2');
-        // alert(response.message);
-    }*/
-
     // Initialise.
-    init();
+    await init();
 
-    if (!buttonid) {
-        showUploadDialog();
-        return;
-    }
+    showDialog();
+}
 
+
+export const uploadToGrader = (buttonid) => {
     const button = document.getElementById(buttonid);
     if (button) {
         button.addEventListener('click', function (e) {
             // Create Moodle modal dialog.
-            showUploadDialog();
+            const questionId = document.querySelector("input[name='id']").value;
+            let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
+            url += '?sesskey=' + Config.sesskey + '&id=' + questionId;
+/*            if (json.itemid) {
+                url += '&itemid=' + json.itemid + '&contextid=' + json.contextid + '&filename=' + json.filename;
+            }
+*/
+
+            show('uploadlog', url);
         });
     } else {
-        console.error('invalid button for upload');
+        console.error('could not find button ' + buttonid);
     }
-};
+}
