@@ -83,7 +83,12 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     function downloadTaskFromServer() {
         // Find file from {files} where itemid = value of #id_task
 
-        // let questionId = document.querySelector("input[name='id']").value;
+        let questionId = document.querySelector("input[name='id']").value;
+        if (questionId === "") {
+            // New question => finished.
+            const fakeUrl = { "url": "" };
+            return Promise.resolve(fakeUrl);
+        }
         draftitemid = document.querySelector("#id_task").value;
         console.log('download task ' + draftitemid);
         return downloadTask(draftitemid)
@@ -172,25 +177,33 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
     function displayTaskdata(taskresponse) {
         const extension = getExtension(taskresponse.url);
-        const isZipped = (extension === 'zip');
-        if (isZipped) {
-            console.log('task file is zipped! => extract');
-            return taskresponse.blob()
-                .then(blob => {
-                    // console.log('blob is');
-                    // console.log(blob);
-                    unzipme(blob, function(text) {
+        switch (extension)
+        {
+            case 'zip':
+                console.log('task file is zipped! => extract');
+                return taskresponse.blob()
+                    .then(blob => {
+                        // console.log('blob is');
+                        // console.log(blob);
+                        unzipme(blob, function(text) {
+                            readXMLWithLock(text)
+                                .then(() => mergeWithGradingHints());
+                        });
+                    });
+            case 'xml':
+                console.log('task file is not zipped');
+                return taskresponse.text()
+                    .then(text => {
                         readXMLWithLock(text)
                             .then(() => mergeWithGradingHints());
                     });
-                });
-        } else {
-            console.log('task file is not zipped');
-            taskresponse.text()
-                .then(text => {
-                    readXMLWithLock(text)
-                        .then(() => mergeWithGradingHints());
-                });
+            default:
+                return Promise.resolve('Hier muss ein default-XML geliefert werden.')
+                    .then(text => {
+                        console.log('TODO: Sumpf-Task-XML basteln');
+                        readXMLWithLock(text)
+                            .then(() => mergeWithGradingHints());
+                    });
         }
     }
 

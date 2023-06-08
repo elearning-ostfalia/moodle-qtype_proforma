@@ -82,6 +82,16 @@ class taskeditor extends \external_api {
         global $DB;
         $records = $DB->get_records('files', ['itemid' => $itemid]);
         if ($records == False || count($records) == 0) {
+            // Scenario with new task (task does not yet exist)
+/*            $fileurl = \moodle_url::make_draftfile_url($itemid, '/', 'nofile');
+            $fileurl = $fileurl->out();
+            // $fileurl = 'http://www.moodle.org/index.html';
+
+            return [
+                'itemid' => $itemid,
+                'fileurl' => $fileurl,
+                'message' => 'ok'
+            ];*/
             throw new \invalid_parameter_exception('invalid task itemid (no draft file)');
         }
 

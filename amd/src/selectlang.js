@@ -41,7 +41,13 @@ define(['core/modal_factory', 'core/modal_events'], function(ModalFactory, Modal
             body += '> ' +  item[1] +'</input></p>';
         });
 
+        // Add extra item for selecting the task editor:
+        // 1 means persistent proforma file
+        // body += '<p><input id="item_proforma" type="radio" name="lang" value="1"';
+        // body += '> Taskeditor (experimental)</input></p>';
+
         body += '<br>';
+
         body += '</fieldset>';
         body += '</form>';
         return body;
@@ -61,10 +67,8 @@ define(['core/modal_factory', 'core/modal_events'], function(ModalFactory, Modal
                     modal.getRoot().on(ModalEvents.save, function() {
                         // Check which radio button is checked.
                         let radioButtons = modal.getRoot().find('input');
-                        for (var i = 0; i < radioButtons.length; i++)
-                        {
-                            if(radioButtons[i].checked == true)
-                            {
+                        for (var i = 0; i < radioButtons.length; i++) {
+                            if(radioButtons[i].checked === true) {
                                 let language = radioButtons[i].value;
                                 // Preset task storage.
                                 // document.getElementById("id_taskstorage").setAttribute('value', language);
