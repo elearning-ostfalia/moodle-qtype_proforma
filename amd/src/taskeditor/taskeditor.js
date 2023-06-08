@@ -198,12 +198,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                             .then(() => mergeWithGradingHints());
                     });
             default:
-                return Promise.resolve('Hier muss ein default-XML geliefert werden.')
-                    .then(text => {
-                        console.log('TODO: Sumpf-Task-XML basteln');
-                        readXMLWithLock(text)
-                            .then(() => mergeWithGradingHints());
-                    });
+                return Promise.resolve('N/A');
         }
     }
 
@@ -284,10 +279,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         downloadTaskFromServer()
             .then(taskresponse => {
                 displayTaskdata(taskresponse);
-                /*                    .then(() => {
-                                        const t1 = performance.now();
-                                        console.log("expanding details took " + (t1 - t0) + " milliseconds.");
-                                });*/
                 updateEnvironment();
                 document.querySelector('.proforma-taskeditor').style.display = '';
             })
