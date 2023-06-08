@@ -32,6 +32,7 @@ import {get_string as getString} from 'core/str';
 import Config from 'core/config';
 
 /**
+ * shows a modal dialog with the server sent events
  *
  * @param title string identifier for localised title
  * @param url SSE url
@@ -69,7 +70,7 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
     }
 
     /**
-     * upload current question to grader
+     * opens connection and handles events
      * @returns {Promise<void>}
      */
     async function requestEventSource() {
@@ -114,6 +115,9 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
         };
     }
 
+    /**
+     * shows dialog window
+     */
     function showDialog() {
         ModalFactory.create({
             type: ModalFactory.types.CANCEL,
@@ -141,6 +145,13 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
 }
 
 
+/**
+ * uploads the currently stored task for the currently 'open' question
+ * to the grader
+ * (it is not previously recreated so it might not be up-to-date)
+ *
+ * @param buttonid identifier of button to click on
+ */
 export const uploadToGrader = (buttonid) => {
     const button = document.getElementById(buttonid);
     if (button) {
@@ -149,11 +160,6 @@ export const uploadToGrader = (buttonid) => {
             const questionId = document.querySelector("input[name='id']").value;
             let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
             url += '?sesskey=' + Config.sesskey + '&id=' + questionId;
-/*            if (json.itemid) {
-                url += '&itemid=' + json.itemid + '&contextid=' + json.contextid + '&filename=' + json.filename;
-            }
-*/
-
             show('uploadlog', url);
         });
     } else {

@@ -498,7 +498,10 @@ export async function readAndDisplayXml(taskXml) {
             // If version element contains options then check version
             versionElement.value = task.proglangVersion;
             if (versionElement.value !== task.proglangVersion) {
-                if (task.proglangVersion === undefined || task.proglangVersion) {
+                if (task.proglangVersion === undefined ||
+                    task.proglangVersion === null ||
+                    task.proglangVersion.trim() === ''
+                ) {
                     switch (task.proglang.toLowerCase()) {
                         case 'python':
                             // Set programming version to 3
