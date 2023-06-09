@@ -353,6 +353,7 @@ $string['errnotask'] = 'ProFormA-Task.xml nicht gefunden.';
 $string['erroldtask'] = 'Original-ProFormA-Datei kann nicht geprüft werden.';
 $string['errtasknotunique'] = 'ProFormA-task.xml ist nicht eindeutig.';
 $string['errinvalidtaskxml'] = 'Task.xml in ProFormA-Datei ist ungültig.';
+$string['errmissingquestioninput'] = 'Der Fragename muss angegeben werden.';
 
 // Taskeditor
 $string['taskeditor'] = 'Aufgabe bearbeiten';

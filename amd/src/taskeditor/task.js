@@ -91,6 +91,10 @@ function isInputComplete() {
         // setErrorMessage("Task description is empty.");
         // switch to appropriate tab and set focus
         inputField.focus();
+        Str.get_string('errmissingquestioninput', 'qtype_proforma')
+            .then(localtext => {
+                alert(localtext);
+            });
         return false;
     }
 

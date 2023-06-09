@@ -780,28 +780,28 @@ export function checkModelsolution(buttonid, containerid) {
                         method : "POST",
                         body: formData,
                     })
-                    .then(response => {
-                        // Moodle server has received task with model solution
-                        // => convert to json
-                        console.log(response);
-                        return response.json()
-                    })
-                    .then(json => {
-                        // forward json to logmonitor.
-                        console.log(json);
-                        let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
-                        url += '&sesskey=' + Config.sesskey +
-                            '&questionid=' + questionId +
-                            '&itemid=' + json.itemid +
-                            '&contextid=' + json.contextid +
-                            '&taskfilename=' + json.taskfilename +
-                            '&modelsolutionfilename=' + json.modelsolutionfilename;
+                .then(response => {
+                    // Moodle server has received task with model solution
+                    // => convert to json
+                    console.log(response);
+                    return response.json()
+                })
+                .then(json => {
+                    // forward json to logmonitor.
+                    console.log(json);
+                    let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
+                    url += '&sesskey=' + Config.sesskey +
+                        '&questionid=' + questionId +
+                        '&itemid=' + json.itemid +
+                        '&contextid=' + json.contextid +
+                        '&taskfilename=' + json.taskfilename +
+                        '&modelsolutionfilename=' + json.modelsolutionfilename;
 
-                        logmonitor.show('checkmodelsollog', url, onFeedbackStart, onFeedbackData, onFeedbackEnd);
-                    })
-                    .catch(error => {
-                        console.log(error)
-                    });
+                    logmonitor.show('checkmodelsollog', url, onFeedbackStart, onFeedbackData, onFeedbackEnd);
+                })
+                .catch(error => {
+                    console.log(error)
+                });
                 });
         }
     }
@@ -888,25 +888,25 @@ export function uploadTaskToGrader(buttonid) {
                         method : "POST",
                         body: formData,
                     })
-                        .then(response => {
-                            // console.log(response);
-                            return response.json()
-                        })
-                        .then(json => {
-                            console.log(json);
-                            const questionId = document.querySelector("input[name='id']").value;
-                            let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
-                            url += '?sesskey=' + Config.sesskey + '&id=' + questionId;
-                            if (json.itemid) {
-                                url += '&itemid=' + json.itemid + '&contextid=' + json.contextid + '&filename=' + json.filename;
-                            }
+                .then(response => {
+                    // console.log(response);
+                    return response.json()
+                })
+                .then(json => {
+                    console.log(json);
+                    const questionId = document.querySelector("input[name='id']").value;
+                    let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
+                    url += '?sesskey=' + Config.sesskey + '&id=' + questionId;
+                    if (json.itemid) {
+                        url += '&itemid=' + json.itemid + '&contextid=' + json.contextid + '&filename=' + json.filename;
+                    }
 
-                            logmonitor.show('uploadlog', url);
-                            // taskupload.upload(null, json.itemid, json.contextid, json.filename);
-                        })
-                        .catch(error => {
-                            console.log(error)
-                        });
+                    logmonitor.show('uploadlog', url);
+                    // taskupload.upload(null, json.itemid, json.contextid, json.filename);
+                })
+                .catch(error => {
+                    console.log(error)
+                });
 
                 });
         }

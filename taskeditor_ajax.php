@@ -16,12 +16,13 @@
 
 
 /**
- * The Web service script that is called from the taskeditor javascript
+ * This PHP file is used for uploading a task to the grader from Javascript taskeditor
  *
- * @since Moodle 2.0
- * @package    repository
- * @copyright  2009 Dongsheng Cai {@link http://dongsheng.org}
+ * @package    qtype
+ * @subpackage proforma
+ * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
 define('AJAX_SCRIPT', true);

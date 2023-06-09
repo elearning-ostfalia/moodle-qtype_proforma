@@ -16,7 +16,7 @@
 
 
 /**
- * The Web service script that is called from the taskeditor javascript
+ * PHP file for dealing with running tests for the model solution
  *
  * @package    qtype
  * @subpackage proforma
@@ -136,26 +136,20 @@ function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
     $class = 'fail';
     $quiet = false;
 
-// Override grading hints with temporary grading hints from client.
-// (needed for correct feedback)
+    // Override grading hints with temporary grading hints from client.
+    // (needed for correct feedback)
     $question->gradinghints = $gradinghints;
 
-/*    if ($httpcode != 200) {
-        $result = get_string('failed', 'qtype_proforma');
-        $feedback .= html_writer::tag('p', 'HTTP-Code ' . $httpcode);
-        $feedback .= html_writer::tag('small', html_writer::tag('xmp', $graderoutput));
-    } else { */
-        list($state, $fraction, $error, $feedback1, $feedbackformat) =
-            $grader->extract_grade($graderoutput, 200, $question);
-        global $PAGE;
-        $renderer = new qtype_proforma_renderer($PAGE, null);
-        $fbrenderer = new feedback_renderer($renderer, $question);
-        $feedback = $fbrenderer->render_proforma2_message($feedback1);
-    // }
+    list($state, $fraction, $error, $feedback1, $feedbackformat) =
+        $grader->extract_grade($graderoutput, 200, $question);
+    global $PAGE;
+    $renderer = new qtype_proforma_renderer($PAGE, null);
+    $fbrenderer = new feedback_renderer($renderer, $question);
+    $feedback = $fbrenderer->render_proforma2_message($feedback1);
+
     if (!$quiet) {
         $message .= html_writer::tag('p', $graderoutput, array('class' => $class));
     }
-
 
     $output = html_writer::nonempty_tag('div', $feedback,
         array('class' => 'specificfeedback'));
