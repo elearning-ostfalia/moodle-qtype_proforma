@@ -39,16 +39,18 @@ require_once(__DIR__ . '/renderer.php');
 $err = new stdClass();
 
 // Parameters
-$questionid = required_param('questionid', PARAM_INT); // Question id
+// $questionid = required_param('questionid', PARAM_INT); // Question id
 $maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes
 $areamaxbytes  = optional_param('areamaxbytes', FILE_AREA_MAX_BYTES_UNLIMITED, PARAM_INT); // Area max bytes.
-$gradinghints = optional_param('gradinghints', '', PARAM_TEXT); // Question id
+$gradinghints = optional_param('gradinghints', '', PARAM_TEXT); // Grading hints
+$aggregationstrategy = optional_param('aggregationstrategy', '', PARAM_INT); // Aggregation strategy
+
 
 $runtest  = optional_param('runtest', 0, PARAM_BOOL); // Files are already available, run test.
 $taskfilename  = optional_param('taskfilename', '', PARAM_FILE);
 $modelsolutionfilename  = optional_param('modelsolutionfilename', '', PARAM_FILE);
-$contextidparam = optional_param('contextid', SYSCONTEXTID, PARAM_INT); // Context ID
-$itemid    = optional_param('itemid', 0, PARAM_INT);            // Itemid
+$contextid = required_param('contextid', PARAM_INT); // Context ID
+$itemid    = required_param('itemid', PARAM_INT);            // Itemid
 
 
 
@@ -61,10 +63,6 @@ if ($runtest) {
 }
 
 // list($context, $course, $cm) = get_context_info_array($contextid);
-// require_login($course, false, $cm, false, true);
-// $PAGE->set_context($context);
-
-// echo $OUTPUT->header(); // send headers
 
 // If uploaded file is larger than post_max_size (php.ini) setting, $_POST content will be empty.
 if (!$runtest && empty($_POST)) {
@@ -81,7 +79,7 @@ if (!isloggedin()) {
     throw new Exception('user is not logged in');
 }
 
-
+/*
 $question = question_bank::load_question($questionid);
 // Consistency checks.
 if ($question == null) {
@@ -90,17 +88,17 @@ if ($question == null) {
 if (get_class($question) != 'qtype_proforma_question') {
     throw new invalid_parameter_exception('invalid question type');
 }
-
+*/
 // Security checks
 global $DB;
-$contextid = $DB->get_field('question_categories', 'contextid', array('id'=>$question->category));
+// $contextid = $DB->get_field('question_categories', 'contextid', array('id'=>$question->category));
 $context = \context::instance_by_id($contextid, IGNORE_MISSING);
-if (isset($context)) {
-    external_api::validate_context($context);
-    require_capability('moodle/question:editmine', $context);
+if (!isset($context)) {
+    throw new moodle_exception('invalid context');
 }
 
-
+external_api::validate_context($context);
+require_capability('moodle/question:editmine', $context);
 
 
 // Get repository instance information
@@ -126,8 +124,11 @@ $maxbytes = get_user_max_upload_file_size($context, $CFG->maxbytes, $coursemaxby
 */
 
 global $USER;
-$context = context_user::instance($USER->id);
+$usercontext = context_user::instance($USER->id);
 
+if ($context->id != $usercontext->id) {
+    throw new moodle_exception('context is no user context');
+}
 
 function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
     $ok = false;
@@ -135,10 +136,6 @@ function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
     $feedback = "";
     $class = 'fail';
     $quiet = false;
-
-    // Override grading hints with temporary grading hints from client.
-    // (needed for correct feedback)
-    $question->gradinghints = $gradinghints;
 
     list($state, $fraction, $error, $feedback1, $feedbackformat) =
         $grader->extract_grade($graderoutput, 200, $question);
@@ -217,15 +214,15 @@ if (!$runtest) {
 } else {
     $fs = get_file_storage();
 
-    $task_file = $fs->get_file($contextidparam, 'user', 'draft', $itemid, '/', $taskfilename);
+    $task_file = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', $taskfilename);
     if (!$task_file) {
         throw new moodle_exception('no task file');
     }
-    $ms_file = $fs->get_file($contextidparam, 'user', 'draft', $itemid, '/', $modelsolutionfilename);
+    $ms_file = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', $modelsolutionfilename);
     if (!$ms_file) {
         throw new moodle_exception('no model solution file');
     }
-    $gh_file = $fs->get_file($contextidparam, 'user', 'draft', $itemid, '/', 'gradinghints.txt');
+    $gh_file = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', 'gradinghints.txt');
     if (!$gh_file) {
         throw new moodle_exception('no grading hints file');
     }
@@ -238,6 +235,13 @@ if (!$runtest) {
     $grader = new \qtype_proforma_grader_2();
     $files = [];
     $files[$modelsolutionfilename] = $ms_file;
+
+    $question = new qtype_proforma_question();
+    // Override grading hints with temporary grading hints from client.
+    // (needed for correct feedback)
+    $question->gradinghints = $gh;
+    $question->aggregationstrategy = $aggregationstrategy;
+    $question->contextid = $contextid;
 
     list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader_and_stream_result($files,
         $task_file, 'on_grader_response', $question, $gh);

@@ -752,6 +752,9 @@ export function checkModelsolution(buttonid, containerid) {
         if (taskxml != null) {
             // if there is no taskxml then the input is invalid.
             const gradinghints = createGradingHints(true);
+            // console.log(document.querySelector("select[name='aggregationstrategy']"));
+            const aggstrategy = document.querySelector("select[name='aggregationstrategy']").value;
+            console.log("aggregationstrategy value is " + aggstrategy);
             // Zip task
             return zipme(taskxml, 'task.zip', false)
                 .then(blob => {
@@ -773,8 +776,10 @@ export function checkModelsolution(buttonid, containerid) {
                     formData.append('task', blobtask, 'task.zip');
                     formData.append('modelsolution', modelsolutionzip, 'modelsolution.zip');
                     formData.append('itemid', modelsolrepositoryparams['checkitemid']);
-                    formData.append('questionid', questionId);
+                    formData.append('contextid', modelsolrepositoryparams['contextid']);
+                    // formData.append('questionid', questionId);
                     formData.append('gradinghints', gradinghints);
+                    formData.append('aggregationstrategy', aggstrategy);
 
                     fetch(url, {
                         method : "POST",
@@ -791,10 +796,11 @@ export function checkModelsolution(buttonid, containerid) {
                     console.log(json);
                     let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
                     url += '&sesskey=' + Config.sesskey +
-                        '&questionid=' + questionId +
+//                        '&questionid=' + questionId +
                         '&itemid=' + json.itemid +
                         '&contextid=' + json.contextid +
                         '&taskfilename=' + json.taskfilename +
+                        '&aggregationstrategy=' + aggstrategy +
                         '&modelsolutionfilename=' + json.modelsolutionfilename;
 
                     logmonitor.show('checkmodelsollog', url, onFeedbackStart, onFeedbackData, onFeedbackEnd);
