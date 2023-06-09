@@ -16,7 +16,8 @@
 
 
 /**
- * This PHP file is used for uploading a task to the grader from Javascript taskeditor
+ * This PHP file is used for uploading a task from Javascript taskeditor into the draft area
+ * for later upload to grader.
  *
  * @package    qtype
  * @subpackage proforma
@@ -37,20 +38,13 @@ require_once(__DIR__ . '/renderer.php');
 $err = new stdClass();
 
 // Parameters
-$questionid = required_param('questionid', PARAM_INT); // Question id
-$gradinghints = optional_param('gradinghints', '', PARAM_TEXT); // Question id
-$contextid = optional_param('ctx_id', SYSCONTEXTID, PARAM_INT); // Context ID
-$source    = optional_param('source', '', PARAM_RAW);           // File to download
-$sourcekey = optional_param('sourcekey', '', PARAM_RAW);        // Used to verify the source.
-$itemid    = optional_param('itemid', 0, PARAM_INT);            // Itemid
-$maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes
-$areamaxbytes  = optional_param('areamaxbytes', FILE_AREA_MAX_BYTES_UNLIMITED, PARAM_INT); // Area max bytes.
+// $questionid = required_param('questionid', PARAM_INT); // Question id
+$contextid = required_param('contextid', PARAM_INT); // Context ID
+$itemid    = optional_param('itemid', 0, PARAM_INT);            // Itemid of task (draft)
+// $maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes
+// $areamaxbytes  = optional_param('areamaxbytes', FILE_AREA_MAX_BYTES_UNLIMITED, PARAM_INT); // Area max bytes.
 
 // list($context, $course, $cm) = get_context_info_array($contextid);
-// require_login($course, false, $cm, false, true);
-// $PAGE->set_context($context);
-
-// echo $OUTPUT->header(); // send headers
 
 // If uploaded file is larger than post_max_size (php.ini) setting, $_POST content will be empty.
 if (empty($_POST)) {
@@ -67,19 +61,6 @@ if (!isloggedin()) {
     throw new Exception('user is not logged in');
 }
 
-
-$question = question_bank::load_question($questionid);
-// Consistency checks.
-if ($question == null) {
-    throw new invalid_parameter_exception('no question');
-}
-if (get_class($question) != 'qtype_proforma_question') {
-    throw new invalid_parameter_exception('invalid question type');
-}
-
-// Security checks
-global $DB;
-$contextid = $DB->get_field('question_categories', 'contextid', array('id'=>$question->category));
 $context = \context::instance_by_id($contextid, IGNORE_MISSING);
 if (isset($context)) {
     external_api::validate_context($context);
@@ -87,21 +68,8 @@ if (isset($context)) {
 }
 
 
-
-
 // Get repository instance information
 /*
-$repooptions = array(
-    'ajax' => true,
-    'mimetypes' => $accepted_types
-);
-
-// ajax_capture_output();
-$repo = repository::get_repository_by_id($repo_id, $contextid, $repooptions);
-
-// Check permissions
-$repo->check_capability();
-
 $coursemaxbytes = 0;
 if (!empty($course)) {
     $coursemaxbytes = $course->maxbytes;
@@ -116,11 +84,6 @@ if (!isset($_FILES['task'])) {
     throw new moodle_exception('no task file');
 }
 
-/*
-if (!isset($_FILES['modelsolution'])) {
-    throw new moodle_exception('no model solution file');
-}
-*/
 global $CFG;
 $maxsize = get_max_upload_file_size($CFG->maxbytes);
 // Check size of each uploaded file and scan for viruses.
@@ -134,6 +97,10 @@ foreach ($_FILES as $uploadedfile) {
 
 global $USER;
 $context = context_user::instance($USER->id);
+if ($context->id != $contextid) {
+    throw new moodle_exception('invalid context');
+}
+
 
 $fs = get_file_storage();
 $record = array(
@@ -151,11 +118,6 @@ $fs->delete_area_files($context->id, 'user', 'draft', $itemid);
 
 $record['filename'] = clean_param($_FILES['task']['name'], PARAM_FILE);
 $task_file = $fs->create_file_from_pathname($record, $_FILES['task']['tmp_name']);
-
-/*
-$record['filename'] = clean_param($_FILES['modelsolution']['name'], PARAM_FILE);
-$ms_file = $fs->create_file_from_pathname($record, $_FILES['modelsolution']['tmp_name']);
-*/
 
 $result = array(
     'itemid' => $itemid,

@@ -59,18 +59,18 @@ var t0;
 
 /**
  * edit task
- * @param buttonid
- * @param context
- * @param taskrepoparams
- * @param msrepoparams
+ * @param buttonid id of button to trigger opening taskeditor
+ * @param context programming language contexts
+ * @param taskrepoparams parameters for interacting with draft tasks
+ * @param msrepoparams parameters for interacting with draft model solutions
  * @param inline
  * @returns {Promise<void>}
  */
 export async function edit(buttonid, context, taskrepoparams, msrepoparams, inline) {
-    console.log(context);
+    // console.log(context);
     taskrepositoryparams = taskrepoparams;
     modelsolrepositoryparams = msrepoparams;
-    console.log(taskrepositoryparams);
+    // console.log(taskrepositoryparams);
 
     /**
      * get localized string for cancel/close button
@@ -876,13 +876,17 @@ export function uploadTaskToGrader(buttonid) {
                 .then(blobtask => {
                     console.log('now let us upload task to grader');
                     const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
-                    const questionId = document.querySelector("input[name='id']").value;
+                    // const questionId = document.querySelector("input[name='id']").value;
                     const formData = new FormData();
                     formData.append('sesskey', Config.sesskey);
                     formData.append('task', blobtask, 'task.zip');
                     // Which itemid???
+                    // Modelsolution parameters contain new (unused) draftarea itemids.
+                    // checkitemid is used for temporary files used for checks.
                     formData.append('itemid', modelsolrepositoryparams['checkitemid']);
-                    formData.append('questionid', questionId);
+                    // Context id is sent to Moodle in order to perform security checks:
+                    formData.append('contextid', modelsolrepositoryparams['contextid']);
+                    // formData.append('questionid', questionId);
 
                     fetch(url, {
                         method : "POST",
