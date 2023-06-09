@@ -300,10 +300,6 @@ class proforma_form_creator extends base_form_creator {
      * @param $question
      */
     public function add_grader_settings($question, $context) {
-        if (!isset($question->id)) {
-            // For new questions we do not provide grader settings.
-            return;
-        }
         // ProFormA fields.
         $mform = $this->_form;
         $mform->addElement('header', 'graderoptions_header',
@@ -317,6 +313,11 @@ class proforma_form_creator extends base_form_creator {
             get_string('taskfilename', 'qtype_proforma'), null,
             array('subdirs' => false, 'maxfiles' => 1, 'accepted_types' => array('.zip', '.xml')));
         $mform->addHelpButton(qtype_proforma::FILEAREA_TASK, 'task_hint', 'qtype_proforma');
+
+        if (!isset($question->id)) {
+            // For new questions we do not provide grader settings.
+            return;
+        }
 
         // UUID.
         $this->add_static_field($question, 'uuid', get_string('uuid', 'qtype_proforma'), 40);

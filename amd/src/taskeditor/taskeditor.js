@@ -81,8 +81,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     }
 
     function downloadTaskFromServer() {
-        // Find file from {files} where itemid = value of #id_task
-        draftitemid = document.querySelector("#id_task").value;
         console.log('download task ' + draftitemid);
         return downloadTask(draftitemid)
             .then(response => {
@@ -268,7 +266,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
     function showTaskeditor() {
         t0 = performance.now();
-
+        draftitemid = document.querySelector("#id_task").value;
         let questionId = document.querySelector("input[name='id']").value;
         if (questionId === "") {
             // New question => finished.
@@ -821,7 +819,7 @@ function uploadTaskToServer() {
     if (context) {
         return zipme(context, zipname, false)
             .then(blob => {
-                console.log('now let us update task in  Moodle server');
+                console.log('now let us update task in  Moodle server: ' + draftitemid);
                 const url = Config.wwwroot + '/repository/repository_ajax.php';
                 const action = 'upload';
 
@@ -830,8 +828,15 @@ function uploadTaskToServer() {
                 formData.append('repo_upload_file', blob);
                 formData.append('filepath', '/');
                 formData.append('client_id', taskrepositoryparams['client_id']);
+                if (draftfilename === null) {
+                    draftfilename = 'task.zip';
+                }
                 formData.append('title', draftfilename);
-                formData.append('overwrite', true);
+                let questionId = document.querySelector("input[name='id']").value;
+                // New question => .
+                if (questionId !== "") {
+                    formData.append('overwrite', true);
+                }
                 // formData.append('maxbytes', -1);
                 // since we are uploading the file to the 'draft area',
                 // there is no point in limiting the size of the file area.
