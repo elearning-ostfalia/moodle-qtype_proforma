@@ -300,6 +300,10 @@ class proforma_form_creator extends base_form_creator {
      * @param $question
      */
     public function add_grader_settings($question, $context) {
+        if (!isset($question->id)) {
+            // For new questions we do not provide grader settings.
+            return;
+        }
         // ProFormA fields.
         $mform = $this->_form;
         $mform->addElement('header', 'graderoptions_header',
@@ -396,8 +400,14 @@ class proforma_form_creator extends base_form_creator {
 
         // Create links for model solution.
         $msfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
-        $question->mslinks = $msfilearea->get_files_as_links($question->contextid,
+        if (isset($question->id)) {
+            $question->mslinks = $msfilearea->get_files_as_links($question->contextid,
                 $question->id);
+        } else {
+            // Create new ProFormA question => no question available.
+            $question->mslinks = '';
+        }
+
         // Extract internal grading hints.
         $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
     }
