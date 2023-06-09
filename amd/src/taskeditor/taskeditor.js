@@ -82,13 +82,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
     function downloadTaskFromServer() {
         // Find file from {files} where itemid = value of #id_task
-
-        let questionId = document.querySelector("input[name='id']").value;
-        if (questionId === "") {
-            // New question => finished.
-            const fakeUrl = { "url": "" };
-            return Promise.resolve(fakeUrl);
-        }
         draftitemid = document.querySelector("#id_task").value;
         console.log('download task ' + draftitemid);
         return downloadTask(draftitemid)
@@ -275,6 +268,17 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
     function showTaskeditor() {
         t0 = performance.now();
+
+        let questionId = document.querySelector("input[name='id']").value;
+        if (questionId === "") {
+            // New question => finished.
+            console.log('new task');
+            ModelSolutionWrapper.createFromTemplate();
+            updateEnvironment();
+            document.querySelector('.proforma-taskeditor').style.display = '';
+            return;
+        }
+
         console.log('edit task');
         downloadTaskFromServer()
             .then(taskresponse => {
@@ -302,7 +306,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         // Hide editor
         document.querySelector('.proforma-taskeditor').style.display = 'none';
         // Show editor on button click
-        document.getElementById(buttonid).addEventListener('click', function (e) {
+        document.getElementById(buttonid).addEventListener('click', function () {
             showTaskeditor();
         });
     }

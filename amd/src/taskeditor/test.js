@@ -31,6 +31,7 @@ import {setcounter, DEBUG_MODE} from "./util";
 import {TaskClass} from "./taskdata";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
+import * as Str from 'core/str';
 
 export var testIDs = {};
 
@@ -95,11 +96,14 @@ export class TestWrapper {
     }
 
     static delete(button) {
-        if (window.confirm("Shall the test and all its files be removed from task?")) {
-            let instance = TestWrapper.constructFromRoot(button.closest('.xml_test'));
-            // remove instance
-            instance.delete();
-        }
+        Str.get_string('confirmdeletetest', 'qtype_proforma')
+            .then(localtext => {
+                if (window.confirm(localtext)){
+                    let instance = TestWrapper.constructFromRoot(button.closest('.xml_test'));
+                    // remove instance
+                    instance.delete();
+                }
+            });
     }
 
     /**

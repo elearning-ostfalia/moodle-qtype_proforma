@@ -384,3 +384,15 @@ $string['newfile'] = '<neue Datei>';
 $string['fileexists'] = 'Datei "{$a}" existiert bereits.';
 $string['checkmodelsollog'] = 'Prüfe Musterlösung (Log)';
 $string['uploadlog'] = 'Upload (Log)';
+
+$string['changejavafilename'] = 'Java-Dateinamen sollten den Klassennamen und 
+- sofern vorhanden - den Paketnamen enthalten.
+
+Daher ist der erwartete Dateiname "{$a}".
+Soll der Dateiname zu "{$a}" geändert werden?';
+
+$string['confirmdeletefile1'] = 'Datei "{$a->id}" "{$a->filename}" wird immer noch referenziert!
+
+Soll die Datei trotzdem gelöscht werden?';
+$string['confirmdeletefile2'] = 'Soll Datei "{$a->filename}" wirklich gelöscht werden?';
+$string['confirmdeletetest'] = "Soll der Test und seine Dateien wirklich aus der Aufgabe entfernt werden?";

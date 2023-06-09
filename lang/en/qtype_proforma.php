@@ -409,4 +409,15 @@ $string['fileexists'] = 'A file named "{$a}" already exists.';
 $string['checkmodelsollog'] = 'Check model solution log';
 $string['uploadlog'] = 'Upload log';
 
+$string['changejavafilename'] = 'Java filenames shall consist of the 
+package name, if any, and the class name.
 
+So the expected filename is "{$a}".
+Do you want to change the filename to "{$a}"?';
+
+
+$string['confirmdeletefile1'] = 'File "{$a->id}" "{$a->filename}" is still referenced!
+
+Do you really want to delete it?';
+$string['confirmdeletefile2'] = 'Do you really want to delete file "{$a->filename}"?';
+$string['confirmdeletetest'] = "Shall the test and all its files be removed from task?";

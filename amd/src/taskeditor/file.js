@@ -60,6 +60,7 @@ import Notification, {exception as displayException} from 'core/notification';
 import '../clike';
 import '../python';
 import '../xml';
+import * as Str from 'core/str';
 
 export var fileStorages = [];
 export var fileIDs = {};
@@ -318,12 +319,12 @@ export class FileWrapper {
                 const actualFilename = ui_file.filename;
                 const expectedFilename = javaParser.getFilenameWithPackage(text, actualFilename);
                 if (expectedFilename !== actualFilename && expectedFilename !== ".java") {
-                    if (confirm("Java filenames shall consist of the " +
-                            "package name, if any, and the class name.\n" +
-                            "So the expected filename is '" + expectedFilename + "'\n" +
-                            "Do you want to change the filename to '" + expectedFilename + "'?")) {
-                        ui_file.filename = expectedFilename;
-                    }
+                    Str.get_string('changejavafilename', 'qtype_proforma', expectedFilename)
+                        .then(localtext => {
+                            if (confirm(localtext)) {
+                                ui_file.filename = expectedFilename;
+                            }
+                        });
                 }
             }
             ui_file.filenameHeader = ui_file.filename;
@@ -374,15 +375,25 @@ export class FileWrapper {
         let ui_file = FileWrapper.constructFromRoot(button.closest('.xml_file')/*root*/);
 
         let ok = false;
+        const filedata = {
+            'id': ui_file.id,
+            'filename': ui_file.filename
+        };
         if (FileReferenceList.getCountFileIdReferenced(ui_file.id)) {
             // if true: cancel or remove all filenames/filerefs from model solution and test
-            ok = window.confirm("File " + ui_file.id + " '" + ui_file.filename + "' is still referenced!\n" +
-                "Do you really want to delete it?");
+            Str.get_string('confirmdeletefile1', 'qtype_proforma', filedata)
+                .then(localtext => {
+                    if (window.confirm(localtext)){
+                        ui_file.delete();
+                    }
+                });
         } else {
-            ok = window.confirm("Do you really want to delete file\n'" + ui_file.filename + "'?");
-        }
-        if (ok) {
-            ui_file.delete();
+            Str.get_string('confirmdeletefile2', 'qtype_proforma', filedata)
+                .then(localtext => {
+                    if (window.confirm(localtext)){
+                        ui_file.delete();
+                    }
+                });
         }
     };
 
