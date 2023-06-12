@@ -235,7 +235,9 @@ export const taskeditorconfig = (function(testConfigNode) {
             }
             if (this.withRunCommand) {
                 context['entrypoint'] = xmlReader.readSingleText("unit:entry-point", unitNode);
-                throw new Error('XML: Test "' + this.title + '": run command is missing');
+                if (context['entrypoint'].trim() === '') {
+                    throw new Error('XML: Test "' + this.title + '": run command is missing');
+                }
             }
 
             this.framework = xmlReader.readSingleText("@framework", unitNode);
