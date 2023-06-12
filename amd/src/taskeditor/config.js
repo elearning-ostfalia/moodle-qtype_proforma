@@ -228,13 +228,14 @@ export const taskeditorconfig = (function(testConfigNode) {
         onReadXml(test, xmlReader, testConfigNode, context) {
             let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
             if (!unitNode)
-                throw new Error('element unit:unittest not found in unittest or unittest namespace invalid');
+                throw new Error('XML: Test "' + this.title + '": subelement unit:unittest not found in unittest or unittest namespace invalid');
 
             if (unitNode.namespaceURI !== unittestns_new) {
-                throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in unit test');
+                throw new Error('XML: Test "' + this.title + '": unsupported namespace ' + xmlReader.defaultns + ' in unit test');
             }
             if (this.withRunCommand) {
                 context['entrypoint'] = xmlReader.readSingleText("unit:entry-point", unitNode);
+                throw new Error('XML: Test "' + this.title + '": run command is missing');
             }
 
             this.framework = xmlReader.readSingleText("@framework", unitNode);
@@ -256,11 +257,7 @@ export const taskeditorconfig = (function(testConfigNode) {
                     this.proglang = ['c'];
                     break;
             }
-            // $(testroot).find(".xml_u_version").val(xmlReader.readSingleText("@version", unitNode));
             context['framework_version'] = xmlReader.readSingleText("@version", unitNode);
-            // Update framework value
-            // $(testroot).find(".xml_u_framew").html("<option selected='selected' value='" + this.framework +
-            //     "'>" + this.framework + "</option>");
             context['framework'] = this.framework;
         }
 

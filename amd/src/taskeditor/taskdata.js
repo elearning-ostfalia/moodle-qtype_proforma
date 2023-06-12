@@ -272,8 +272,9 @@ export class TaskClass {
             let configNodeNode = xmlReader.readSingleNode("dns:test-configuration");
             configItem.onReadXml(this.tests[testid], xmlReader, configNodeNode, context);
         } catch (err){
-            alert (err);
-            setErrorMessage("Error while parsing test configuration in xml file", err);
+            const text = "Error while parsing test configuration in xml file:\n\n" + err;
+            alert (text);
+            // setErrorMessage("Error while parsing test configuration in xml file", err);
         }
     }
 
