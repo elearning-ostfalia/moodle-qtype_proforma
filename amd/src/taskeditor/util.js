@@ -65,8 +65,8 @@ export function getExtension(filename) {
 
 let newUuid;
 export function generateUUID(){
-    if (newUuid != undefined) {
-        console.log('newUuid is ' + newUuid);
+    if (newUuid !== undefined) {
+        console.log('newUuid is ' + newUuid + ' (do not change)');
         return newUuid;
     }
     let date = new Date().getTime();

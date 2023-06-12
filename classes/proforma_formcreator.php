@@ -313,10 +313,9 @@ class proforma_form_creator extends base_form_creator {
             get_string('taskfilename', 'qtype_proforma'), null,
             array('subdirs' => false, 'maxfiles' => 1, 'accepted_types' => array('.zip', '.xml')));
         $mform->addHelpButton(qtype_proforma::FILEAREA_TASK, 'task_hint', 'qtype_proforma');
-
         if (!isset($question->id)) {
-            // For new questions we do not provide grader settings.
-            return;
+            // For new questions we disable the task filemanager.
+            $mform->hideIf(qtype_proforma::FILEAREA_TASK, 'proformaversion');
         }
 
         // UUID.
@@ -325,6 +324,11 @@ class proforma_form_creator extends base_form_creator {
 
         // Show Proforma version.
         $this->add_static_field($question, 'proformaversion', 'ProFormA Version', 6);
+
+        if (!isset($question->id)) {
+            // For new questions we do not provide an upload button.
+            return;
+        }
 
         // Add upload button.
         $mform->addElement('button', 'uploadbutton', get_string('upload', 'qtype_proforma'));

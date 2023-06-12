@@ -90,6 +90,14 @@ function isInputComplete() {
     if (!inputField.val()) {
         // setErrorMessage("Task description is empty.");
         // switch to appropriate tab and set focus
+        let header = document.querySelector('a[href="#id_generalheadercontainer"]');
+        if (header) {
+            // Expand general header in order to make name visible
+            if (header.getAttribute('aria-expanded') === "false") {
+                header.click();
+            }
+        }
+
         inputField.focus();
         Str.get_string('errmissingquestioninput', 'qtype_proforma')
             .then(localtext => {
@@ -108,6 +116,17 @@ function isInputComplete() {
         return false;
     }
 */
+
+
+    if (document.querySelectorAll('.xml_test').length < 1) {
+        Str.get_string('errmissingtest', 'qtype_proforma')
+            .then(localtext => {
+                alert(localtext);
+            });
+
+        return false;
+    }
+
     document.querySelectorAll(".proforma-taskeditor .is-invalid").forEach(item => {  // check whether filenames are provided
         item.classList.remove('is-invalid');
         item.classList.remove('form-control');
@@ -235,7 +254,6 @@ export function convertToXML(topLevelDoc, rootNode) {
         console.log('invalid input');
         return null;
     }
-
 
 
     // PRE PROCESSING

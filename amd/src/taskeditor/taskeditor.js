@@ -37,7 +37,7 @@ import Y from 'core/yui';
 import Templates from 'core/templates';
 import {TestWrapper } from "./test";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "../repository";
-import {getExtension, setErrorMessage} from "./util";
+import {generateUUID, getExtension, setErrorMessage} from "./util";
 import {taskeditorconfig} from "./config";
 import {unzipme, zipme} from "./zipper";
 import {readXMLWithLock} from "./helper";
@@ -195,26 +195,31 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
 
     function updateEnvironment() {
-        // Collapse main headers
-        let header = document.querySelector('a[href="#id_generalheadercontainer"]');
-        if (header) {
-            if (header.getAttribute('aria-expanded') === "true") {
-                header.click();
+        const questionId = document.querySelector("input[name='id']").value;
+        if (questionId !== "") {
+            // Collapse main headers
+            let header = document.querySelector('a[href="#id_generalheadercontainer"]');
+            if (header) {
+                if (header.getAttribute('aria-expanded') === "true") {
+                    header.click();
+                }
+            }
+            // Collapse response options
+            header = document.querySelector('a[href="#id_responseoptionscontainer"]');
+            if (header) {
+                if (header.getAttribute('aria-expanded') === "true") {
+                    header.click();
+                }
             }
         }
-        // Collapse response options
-        header = document.querySelector('a[href="#id_responseoptionscontainer"]');
-        if (header) {
-            if (header.getAttribute('aria-expanded') === "true") {
-                header.click();
-            }
-        }
+
+
 
         // Hide edit details button
         document.getElementById(buttonid).style.display = 'none';
         // Hide grader options
         if (document.getElementById('id_graderoptions_header')) {
-            document.getElementById('id_graderoptions_header').style.display = 'None';
+            // document.getElementById('id_graderoptions_header').style.display = 'None';
         }
         // Hide model solution links
         if (document.getElementById('fitem_id_mslinks')) {
@@ -293,7 +298,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     console.log('Check if taskeditor shall be visible or not');
     console.log(taskeditorRequested);
 
-    if (taskeditorRequested && taskeditorRequested.value === '1') {
+    if (questionId === "" || (taskeditorRequested && taskeditorRequested.value === '1') ) {
         console.log('show editor');
         // Hide details button.
         document.getElementById(buttonid).style.display = 'none';
@@ -812,11 +817,32 @@ export function checkModelsolution(buttonid, containerid) {
 }
 
 function uploadTaskToServer() {
-    createGradingHints();
-    uploadModelSolutionToServer();
     const zipname = $("#id_name").val();
     const context = convertToXML();
     if (context) {
+        createGradingHints();
+        uploadModelSolutionToServer();
+
+        // Update values for UUID and proforma version in form input.
+        let uuid = document.querySelector("input[name='uuid']");
+        if (!uuid) {
+            console.error('cannot find uuid element');
+        } else {
+            // The UUID is disabled and must be enabled in order to
+            // submit the changed value.
+            uuid.disabled = false;
+            uuid.value = generateUUID();
+        }
+        let proformaversion = document.querySelector("input[name='proformaversion']");
+        if (!proformaversion) {
+            console.error('cannot find proformaversion element');
+        } else {
+            // The proformaversion is disabled and must be enabled in order to
+            // submit the changed value.
+            proformaversion.disabled = false;
+            proformaversion.value = '2.0';
+        }
+
         return zipme(context, zipname, false)
             .then(blob => {
                 console.log('now let us update task in  Moodle server: ' + draftitemid);

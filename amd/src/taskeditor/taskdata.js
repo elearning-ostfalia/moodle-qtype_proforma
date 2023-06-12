@@ -609,7 +609,7 @@ export class TaskClass {
     }
 
 
-    // todo: read data direectly from user input instead of using TaskClass object
+    // todo: read data directly from user input instead of using TaskClass object
     writeXml(topLevelDoc, rootNode) {
         let xmlDoc = null;
         let files = null;
@@ -773,7 +773,8 @@ export class TaskClass {
             }
 
             task.setAttribute("lang", this.lang);
-            task.setAttribute("uuid", generateUUID());// this.uuid);
+            task.setAttribute("uuid", this.uuid);
+            // task.setAttribute("uuid", generateUUID());// this.uuid);
             //taskeditorconfig.writeNamespaces(task);
 
             xmlWriter = new XmlWriter(xmlDoc, xmlns);
