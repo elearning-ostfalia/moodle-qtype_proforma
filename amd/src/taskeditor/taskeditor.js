@@ -727,14 +727,20 @@ export function checkModelsolution(buttonid, containerid) {
     let defaultcursor = container.style.cursor;
 
     let htmlFeedback = '';
+    let feedbackstarted = false;
 
     function onFeedbackStart() {
         container.style.display = '';
         container.style.cursor = defaultcursor;
         htmlFeedback = '';
+        feedbackstarted = true;
     }
     function onFeedbackData(text) {
-        htmlFeedback += text + '<br>';
+        if (feedbackstarted) {
+            htmlFeedback += text + '\n';
+        } else {
+            htmlFeedback += text + '<br>';
+        }
     }
     function onFeedbackEnd() {
         container.innerHTML = htmlFeedback;
@@ -750,6 +756,8 @@ export function checkModelsolution(buttonid, containerid) {
         // clean old check feedback
         container.innerHTML = '...';
         container.style.cursor = "wait";
+        feedbackstarted = false;
+
         // create task zipfile
         const taskxml = convertToXML();
         if (taskxml != null) {

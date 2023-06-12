@@ -81,7 +81,11 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
             // console.log(event.data);
             let dialog = document.querySelector("#proforma-modal-message");
             if (dialog != null) {
-                let message = event.data.trim();
+                let message = event.data;
+                if (!feedbackstarted) {
+                    message = message.trim();
+                }
+
                 // handle binary prefix (direct output from Popen)
                 if (message.startsWith('RESPONSE START####')) {
                     feedbackstarted = true;
