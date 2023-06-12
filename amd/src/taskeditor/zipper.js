@@ -221,17 +221,19 @@ export function unzipme(blob, readyCallback) {
 }
 
 
-export function taskTitleToFilename(title) {
+export function taskTitleToFilename() {
+
     function camelize(str) {
         // code from https://stackoverflow.com/questions/2970525/converting-any-string-into-camel-case
         return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
             return index === 0 ? letter.toLowerCase() : letter.toUpperCase();
         }).replace(/\s+/g, '');
     }
-
+    let title = $("#id_name").val();
     title = camelize(title);
     // only allow characters, numbers, '-' and '_'
     title = title.replace(/[^a-z0-9_\-]/gi, "_");
+    title = title + '.zip';
     return title;
 
     //return title.replace(/[^a-z0-9]/gi, "");
@@ -240,7 +242,7 @@ export function taskTitleToFilename(title) {
 /**
  * create zip file
  */
-export function zipme(TEXT_CONTENT, zipname, startdownload) {
+export function zipme(TEXT_CONTENT, startdownload) {
     // get task.xml content from user interface
     // var TEXT_CONTENT = taskXml; // $("#output").val();
     if (!TEXT_CONTENT || TEXT_CONTENT.length === 0) {
@@ -251,8 +253,7 @@ export function zipme(TEXT_CONTENT, zipname, startdownload) {
     // console.log(TEXT_CONTENT);
     const FILENAME = "task.xml";
     var blob;
-    zipname = taskTitleToFilename(zipname); // zipname.replace(/[^a-z0-9]/gi, "");
-    zipname = zipname + '.zip';
+    const zipname = taskTitleToFilename(); // zipname.replace(/[^a-z0-9]/gi, "");
 
     // iterate through all files:
     // - if file type is 'file' the file must be added to zip file

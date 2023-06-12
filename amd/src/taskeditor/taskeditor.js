@@ -39,7 +39,7 @@ import {TestWrapper } from "./test";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "../repository";
 import {generateUUID, getExtension, setErrorMessage} from "./util";
 import {taskeditorconfig} from "./config";
-import {unzipme, zipme} from "./zipper";
+import {unzipme, zipme, taskTitleToFilename} from "./zipper";
 import {readXMLWithLock} from "./helper";
 import {convertToXML} from "./task";
 import Config from 'core/config';
@@ -196,7 +196,9 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
     function updateEnvironment() {
         const questionId = document.querySelector("input[name='id']").value;
-        if (questionId !== "") {
+        // Do not collapse other headers as there might be missing input fields after
+        // import that can not be seen on save (submit)
+/*        if (questionId !== "") {
             // Collapse main headers
             let header = document.querySelector('a[href="#id_generalheadercontainer"]');
             if (header) {
@@ -212,8 +214,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 }
             }
         }
-
-
+*/
 
         // Hide edit details button
         document.getElementById(buttonid).style.display = 'none';
@@ -224,6 +225,10 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         // Hide model solution links
         if (document.getElementById('fitem_id_mslinks')) {
             document.getElementById('fitem_id_mslinks').style.display = 'None';
+        }
+        // Hide task filemanager
+        if (document.getElementById('fitem_id_task')) {
+            document.getElementById('fitem_id_task').style.display = 'None';
         }
 
         // Set taskeditor value to 1 in order to notify the server that the
@@ -261,6 +266,8 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                     console.log('uploadTaskToServer returned');
                     submitbutton.onclick = realSubmitClick;
                     submitbutton.click();
+/*                    let uuid = document.querySelector("input[name='uuid']");
+                    uuid.disabled = false;*/
                 });
             };
         } else {
@@ -524,10 +531,9 @@ export const download = (buttonid) => {
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {
         e.preventDefault();
-        const zipname = $("#id_name").val();
         const context = convertToXML();
         if (context) {
-            zipme(context, zipname, true);
+            zipme(context, true);
         }
     }
 }
@@ -766,7 +772,7 @@ export function checkModelsolution(buttonid, containerid) {
             const aggstrategy = document.querySelector("select[name='aggregationstrategy']").value;
             const proglang = document.getElementById("xml_programming-language").value;
             // Zip task
-            return zipme(taskxml, 'task.zip', false)
+            return zipme(taskxml, false)
                 .then(blob => {
                     // Task is zipped => zip model solution
                     // (could be made in parallel but makes code a bit more complex
@@ -825,8 +831,12 @@ export function checkModelsolution(buttonid, containerid) {
     }
 }
 
+/**
+ * Uploads currect task to Moodle server into the draft area prepared for the task
+ * @returns {*}
+ */
 function uploadTaskToServer() {
-    const zipname = $("#id_name").val();
+
     const context = convertToXML();
     if (context) {
         createGradingHints();
@@ -852,9 +862,38 @@ function uploadTaskToServer() {
             proformaversion.value = '2.0';
         }
 
-        return zipme(context, zipname, false)
-            .then(blob => {
+        return zipme(context, false)
+            .then(blobtask => {
                 console.log('now let us update task in  Moodle server: ' + draftitemid);
+                const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
+                const formData = new FormData();
+                formData.append('sesskey', Config.sesskey);
+                formData.append('task', blobtask, taskTitleToFilename());
+                // Use original itemid from task filemanager
+                const itemid = document.querySelector("#id_task").value;
+                formData.append('itemid', itemid); // draftitemid);
+                formData.append('contextid', taskrepositoryparams['contextid']);
+
+                fetch(url, {
+                    method : "POST",
+                    body: formData,
+                })
+                    .then(response => {
+                        console.log(response);
+                        return response.json()
+                    })
+                    .then(json => {
+                        console.log(json);
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    });
+
+            });
+
+        /*
+
+
                 const url = Config.wwwroot + '/repository/repository_ajax.php';
                 const action = 'upload';
 
@@ -866,7 +905,7 @@ function uploadTaskToServer() {
                 if (draftfilename === null) {
                     draftfilename = 'task.zip';
                 }
-                formData.append('title', draftfilename);
+                formData.append('title', taskTitleToFilename()); // draftfilename);
                 let questionId = document.querySelector("input[name='id']").value;
                 // New question => .
                 if (questionId !== "") {
@@ -903,6 +942,8 @@ function uploadTaskToServer() {
                     alert(jsonResponse.error);
                 }
             });
+
+         */
     }
 }
 
@@ -915,10 +956,9 @@ export function uploadTaskToGrader(buttonid) {
 
     button.onclick = function (e) {
         e.preventDefault();
-        const zipname = $("#id_name").val();
         const context = convertToXML();
         if (context) {
-            return zipme(context, zipname, false)
+            return zipme(context, false)
                 .then(blobtask => {
                     console.log('now let us upload task to grader');
                     const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';

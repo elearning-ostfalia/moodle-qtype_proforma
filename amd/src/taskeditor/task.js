@@ -249,12 +249,10 @@ export function convertToXML(topLevelDoc, rootNode) {
     let taskXml = undefined;
 
     // check input
-    // console.log('TODO: validate input');
     if (!isInputComplete()) {
-        console.log('invalid input');
+        console.error('invalid input => cannot create task.xml');
         return null;
     }
-
 
     // PRE PROCESSING
     // copy data to task class
