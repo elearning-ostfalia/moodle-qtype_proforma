@@ -152,21 +152,6 @@ export class CustomTest {
 }
 
 
-/**
- * information about programming language
- *
- * @param name
- * @param tests
- * @constructor
- */
-/*
-class ProglangInfo{
-    constructor(name, tests) {
-        this.name  = name;
-        this.tests = tests;
-    }
-}
-*/
 
 // -------------------------------------------------------------
 /*

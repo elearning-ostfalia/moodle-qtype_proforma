@@ -755,9 +755,8 @@ export function checkModelsolution(buttonid, containerid) {
         if (taskxml != null) {
             // if there is no taskxml then the input is invalid.
             const gradinghints = createGradingHints(true);
-            // console.log(document.querySelector("select[name='aggregationstrategy']"));
             const aggstrategy = document.querySelector("select[name='aggregationstrategy']").value;
-            console.log("aggregationstrategy value is " + aggstrategy);
+            const proglang = document.getElementById("xml_programming-language").value;
             // Zip task
             return zipme(taskxml, 'task.zip', false)
                 .then(blob => {
@@ -782,6 +781,7 @@ export function checkModelsolution(buttonid, containerid) {
                     formData.append('contextid', modelsolrepositoryparams['contextid']);
                     // formData.append('questionid', questionId);
                     formData.append('gradinghints', gradinghints);
+                    formData.append('proglang', proglang);
                     formData.append('aggregationstrategy', aggstrategy);
 
                     fetch(url, {
@@ -803,6 +803,7 @@ export function checkModelsolution(buttonid, containerid) {
                         '&itemid=' + json.itemid +
                         '&contextid=' + json.contextid +
                         '&taskfilename=' + json.taskfilename +
+                        '&proglang=' + json.proglang +
                         '&aggregationstrategy=' + aggstrategy +
                         '&modelsolutionfilename=' + json.modelsolutionfilename;
 

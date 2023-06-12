@@ -132,7 +132,7 @@ class qtype_proforma_question extends question_graded_automatically {
      * @return string|null
      * @throws dml_exception
      */
-    public function get_uri() {
+    public function get_uri($path = null) {
         // Check for alternative grader.
         // TODO: The programming language is only the highlight language!!
         // Use the actual language.
@@ -150,7 +150,9 @@ class qtype_proforma_question extends question_graded_automatically {
             }
         }
 
-        $path = trim(get_config('qtype_proforma', 'graderuri_path'));
+        if (!isset($path)) {
+            $path = trim(get_config('qtype_proforma', 'graderuri_path'));
+        }
         if (isset($alternativehost) and strlen($alternativehost) > 0) {
             // Use alternative host.
             return $alternativehost . $path;

@@ -40,6 +40,7 @@ $err = new stdClass();
 
 // Parameters
 // $questionid = required_param('questionid', PARAM_INT); // Question id
+$proglang = required_param('proglang', PARAM_TEXT); // Aggregation strategy
 $maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes
 $areamaxbytes  = optional_param('areamaxbytes', FILE_AREA_MAX_BYTES_UNLIMITED, PARAM_INT); // Area max bytes.
 $gradinghints = optional_param('gradinghints', '', PARAM_TEXT); // Grading hints
@@ -77,6 +78,17 @@ if (!confirm_sesskey()) {
 
 if (!isloggedin()) {
     throw new Exception('user is not logged in');
+}
+
+switch ($proglang) {
+    case 'java':
+    case 'clang':
+    case 'cpp':
+    case 'python':
+    case 'setlx': // ????
+        break;
+    default:
+        throw new Exception('invalid programming language');
 }
 
 /*
@@ -207,6 +219,7 @@ if (!$runtest) {
         'modelsolutionfilename' => $_FILES['modelsolution']['name'],
         'runtest' => 1,
         'itemid' => $itemid,
+        'proglang' => $proglang,
         'contextid' => $context->id,
     ];
     echo json_encode( $data );
@@ -231,17 +244,21 @@ if (!$runtest) {
     // Wait as long as it takes for this script to finish
     core_php_time_limit::raise();
 
-    // TODO: We need the programming language in order to find the correct grader
-    $grader = new \qtype_proforma_grader_2();
-    $files = [];
-    $files[$modelsolutionfilename] = $ms_file;
-
     $question = new qtype_proforma_question();
     // Override grading hints with temporary grading hints from client.
     // (needed for correct feedback)
     $question->gradinghints = $gh;
     $question->aggregationstrategy = $aggregationstrategy;
     $question->contextid = $contextid;
+    // Set programming language from client.
+    // Needed for determining grader host.
+    $question->programminglanguage = $proglang;
+
+    // The question returns the appropriate grader uri.
+    $path = trim(get_config('qtype_proforma', 'runtest_path'));
+    $grader = new \qtype_proforma_grader_2($question->get_uri($path));
+    $files = [];
+    $files[$modelsolutionfilename] = $ms_file;
 
     list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader_and_stream_result($files,
         $task_file, 'on_grader_response', $question, $gh);

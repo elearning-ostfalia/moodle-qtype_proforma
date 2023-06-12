@@ -456,14 +456,17 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         }
 
         // Get URI.
-        $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
-        $path = trim(get_config('qtype_proforma', 'runtest_path'));
-        $uri = $protocolhost . $path;
+        // $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
+        // $path = trim(get_config('qtype_proforma', 'runtest_path'));
+        // $uri = $protocolhost . $path;
+        if (!isset($this->_uri)) {
+            throw new moodle_exception('SSE uri is not set in grader');
+        }
 
 
         // debugging($submission);
         // Send POST request to grader.
-        return $this->post_to_grader_and_stream_result($postfields, $task, $uri);
+        return $this->post_to_grader_and_stream_result($postfields, $task, $this->_uri);
     }
 
 
