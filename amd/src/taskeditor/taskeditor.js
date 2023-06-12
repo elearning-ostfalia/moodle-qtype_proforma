@@ -230,6 +230,17 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         if (document.getElementById('fitem_id_task')) {
             document.getElementById('fitem_id_task').style.display = 'None';
         }
+        // Hide upload button in grader section
+        if (document.getElementById('fitem_id_uploadbutton')) {
+            document.getElementById('fitem_id_uploadbutton').style.display = 'None';
+        }
+        // Collapse grader options
+        let header = document.querySelector('a[href="#id_graderoptions_headercontainer"]');
+        if (header) {
+            if (header.getAttribute('aria-expanded') === "true") {
+                header.click();
+            }
+        }
 
         // Set taskeditor value to 1 in order to notify the server that the
         // task editor is visible

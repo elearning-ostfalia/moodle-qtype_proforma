@@ -304,7 +304,7 @@ class proforma_form_creator extends base_form_creator {
         $mform = $this->_form;
         $mform->addElement('header', 'graderoptions_header',
             get_string('graderoptions_header', 'qtype_proforma'));
-        $mform->setExpanded('graderoptions_header');
+        // $mform->setExpanded('graderoptions_header');
 
         // Task Filename.
         // Remove hidden element in base class.

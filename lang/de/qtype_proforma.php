@@ -43,7 +43,7 @@ $string['commentheader'] = 'Kommentar';
 $string['nlines'] = '{$a} Zeilen';
 $string['responsefieldlines'] = 'Anzahl Zeilen';
 $string['responseformat'] = 'Eingabeform';
-$string['responseoptions'] = 'Einreichung';
+$string['responseoptions'] = 'Antwortformat';
 $string['graderoptions_header'] = 'Grader';
 
 // Buttons

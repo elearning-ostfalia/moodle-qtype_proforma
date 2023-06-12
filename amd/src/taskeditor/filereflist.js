@@ -416,7 +416,18 @@ export class FileReferenceList extends DynamicList {
 
         switch (selectedFilename) {
             case newFileOption:
-                FileWrapper.createFromTemplate();
+                FileWrapper.createFromTemplate()
+                    .then(ui_file => {
+                        // Preset filename with a unique filename
+                        const newFilename = 'new file ' + ui_file.id;
+                        ui_file.filename = newFilename;
+                        if ($(tempSelElem)) {
+                            // select file as referenced file.
+                            $(tempSelElem).val(newFilename).change();
+                            FileReferenceList.rowEnableEditorButton(row, true);
+                        }
+                    });
+                // Open tab with files in order to create file input
                 const hash = '#proforma-files-section';
                 const tab = document.querySelector('.nav-link[href="' + hash + '"]');
                 if (tab) {
