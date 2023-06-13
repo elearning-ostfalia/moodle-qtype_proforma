@@ -81,6 +81,9 @@ if (!isloggedin()) {
 }
 
 switch ($proglang) {
+    case 'c':
+        $proglang = 'clang';
+        break;
     case 'java':
     case 'clang':
     case 'cpp':

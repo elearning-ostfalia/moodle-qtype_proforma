@@ -336,10 +336,7 @@ export function convertToXML(topLevelDoc, rootNode) {
         console.log(test);
         $.each(taskeditorconfig.testInfos, function(index, configItem) {
             // search for appropriate writexml function
-            if (test.configItem !== undefined) {
-                // configuration already found
-                return;
-            }
+
             if (configItem.testType !== test.testtype) {
                 // testtype does not match
                 return;
@@ -357,11 +354,20 @@ export function convertToXML(topLevelDoc, rootNode) {
             }
 
             console.log('everything matches');
+            if (test.configItem !== undefined) {
+                // configuration already found
+                alert('Warning: test configuration for test "' + test.title + '" is not unique. \n' +
+                    'Assume ' + test.configItem.title);
+                return;
+            }
+
             test.configItem = configItem;
             test.uiElement = uiTest;
         });
         console.log('*** config lookup complete');
-
+        if (test.configItem === undefined) {
+            alert('cannot determine test configuration for test "' + test.title + '"');
+        }
 
         //readFileRefs(xmlReader, modelSolution, thisNode);
         //console.log('convertToXML: create ' + test.title);
@@ -428,10 +434,11 @@ export async function readAndDisplayXml(taskXml) {
         testIDs[item.id] = 1;
 
         let ui_test;
+        let the_configitem;
         console.log('iterate through all configured test templates, look for ' + item.testtype);
         $.each(taskeditorconfig.testInfos, function(index, configItem) {
             // console.log(configItem);
-            if (!ui_test && item.testtype === configItem.testType) {
+            if (item.testtype === configItem.testType) {
                 // Check if proglang is set in configured test. If true then compare
                 // Check Programming language
                 if (configItem.proglang !== undefined) {
@@ -440,6 +447,15 @@ export async function readAndDisplayXml(taskXml) {
                         // console.log('language does not match');
                         return;
                     }
+                }
+                if (ui_test) {
+                    let params = {
+                        'title': item.title,
+                        'config': the_configitem.title
+                    };
+                    Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
+                        .then(content => alert(content));
+                    return;
                 }
                 console.log('found ' + configItem.title);
                 let context = configItem.getTemplateContext();
@@ -453,6 +469,8 @@ export async function readAndDisplayXml(taskXml) {
                 task.readTestConfig(taskXml, item.id, configItem, context);
                 // console.log('context for test template ');
                 // console.log(context);
+
+                the_configitem = configItem;
                 ui_test = TestWrapper.createFromTemplate(item.id,
                     configItem.getMustacheTemplate(), context, true, item, task);
             }
@@ -476,7 +494,7 @@ export async function readAndDisplayXml(taskXml) {
 */
 
         if (!ui_test) {
-            setErrorMessage("Test " + item.testtype + " not imported");
+            setErrorMessage("Test " + item.title + " not imported, testtype and framework unsupported");
             testIDs[item.id] = 0;
         } else {
             return ui_test;

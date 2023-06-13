@@ -355,6 +355,10 @@ $string['errtasknotunique'] = 'ProFormA-task.xml ist nicht eindeutig.';
 $string['errinvalidtaskxml'] = 'Task.xml in ProFormA-Datei ist ungültig.';
 $string['errmissingquestioninput'] = 'Der Fragename muss angegeben werden.';
 $string['errmissingtest'] = 'Es muss mindestens ein Test mit den zugehörigen Dateien angegeben werden.';
+$string['errtestconfigambiguous'] = 'Testkonfiguration konnte nicht eindeutig ermittelt werden für 
+"{$a->title}".
+Es wird "{$a->config}" angenommen.';
+
 
 // Taskeditor
 $string['taskeditor'] = 'Aufgabe bearbeiten';

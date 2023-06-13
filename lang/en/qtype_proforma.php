@@ -378,6 +378,8 @@ $string['errtasknotunique'] = 'ProFormA task file is not unique.';
 $string['errinvalidtaskxml'] = 'Task.xml within ProFormA file is invalid.';
 $string['errmissingquestioninput'] = 'Question name is missing.';
 $string['errmissingtest'] = 'At least one test element and its corresponding file elements must be provided.';
+$string['errtestconfigambiguous'] = 'Test configuration not unique for "{$a->title}".
+Assume "{$a->config}".';
 
 // Taskeditor
 $string['taskeditor'] = 'Edit task';
