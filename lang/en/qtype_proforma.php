@@ -424,4 +424,5 @@ $string['confirmdeletefile1'] = 'File "{$a->id}" "{$a->filename}" is still refer
 
 Do you really want to delete it?';
 $string['confirmdeletefile2'] = 'Do you really want to delete file "{$a->filename}"?';
-$string['confirmdeletetest'] = "Shall the test and all its files be removed from task?";
+$string['confirmdeletetest'] = "Shall the test be removed from task?
+Files that are no longer referenced will also be removed.";

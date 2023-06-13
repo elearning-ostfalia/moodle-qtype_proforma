@@ -139,15 +139,15 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             }
             const ref = testid.value;
             let ui_test = TestWrapper.constructFromId(ref);
-            // if (aggregationstrategy.value === '2') { // gewichtete Summe
+            if (!ui_test) {
+                alert('cannot create test ' + ref);
+            } else {
                 ui_test.weight = testweight.value;
-            // } else {
- //               console.log('do not use testweight value because of aggregation strategy ' + aggregationstrategy.value);
-//            }
-            ui_test.title = testtitle.value;
-            ui_test.description = testdescription.value;
-            if (testtype.value !== ui_test.testtype) {
-                console.error('Testtype for test ' + ui_test.id + ' does not match value from grading hints')
+                ui_test.title = testtitle.value;
+                ui_test.description = testdescription.value;
+                if (testtype.value !== ui_test.testtype) {
+                    console.error('Testtype for test ' + ui_test.id + ' does not match value from grading hints')
+                }
             }
         }
 
@@ -193,9 +193,36 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         }
     }
 
-
+    /**
+     * Some disabled input fields are enabled in order to submit
+     * the values to moodle so that they will be stored in the database.
+     */
+    function revertChangesForSubmission() {
+        let uuid = document.querySelector("input[name='uuid']");
+        if (!uuid) {
+            console.error('cannot find uuid element');
+        } else {
+            uuid.disabled = true;
+        }
+        let proformaversion = document.querySelector("input[name='proformaversion']");
+        if (!proformaversion) {
+            console.error('cannot find proformaversion element');
+        } else {
+            proformaversion.disabled = true;
+        }
+    }
     function updateEnvironment() {
         const questionId = document.querySelector("input[name='id']").value;
+        // Since the editor was opened, a new uuid is generated immediately,
+        // because changes are not tracked.
+        // This means that when the task is saved, a new uuid is set.
+        let uuid = document.querySelector("input[name='uuid']");
+        if (!uuid) {
+            console.error('cannot find uuid element');
+        } else {
+            uuid.value = generateUUID();
+        }
+
         // Do not collapse other headers as there might be missing input fields after
         // import that can not be seen on save (submit)
 /*        if (questionId !== "") {
@@ -281,6 +308,18 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                     uuid.disabled = false;*/
                 });
             };
+            // Some of the form validation tests are executed on the Moodle server.
+            // If the validation fails some of the changes must be
+            // reverted.
+            // Moodle has a form validation event that is triggered in that case
+            // (hopefully)
+            let form = submitbutton.closest('form');
+            if (form) {
+                form.addEventListener('core_form/fieldValidationFailed', () => {
+                    console.log('core_form/fieldValidationFailed');
+                    revertChangesForSubmission();
+                }, false);
+            }
         } else {
             console.error('Could not find submit button');
         }

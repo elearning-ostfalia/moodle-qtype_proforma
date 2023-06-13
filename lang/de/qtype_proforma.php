@@ -401,4 +401,5 @@ $string['confirmdeletefile1'] = 'Datei "{$a->id}" "{$a->filename}" wird immer no
 
 Soll die Datei trotzdem gelöscht werden?';
 $string['confirmdeletefile2'] = 'Soll Datei "{$a->filename}" wirklich gelöscht werden?';
-$string['confirmdeletetest'] = "Soll der Test und seine Dateien wirklich aus der Aufgabe entfernt werden?";
+$string['confirmdeletetest'] = "Soll der Test wirklich aus der Aufgabe entfernt werden?
+Nicht mehr referenzierte Dateien werden ebenfalls entfernt.";

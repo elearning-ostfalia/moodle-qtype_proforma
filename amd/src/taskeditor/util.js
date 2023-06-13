@@ -58,12 +58,15 @@ export function getExtension(filename) {
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-/* Each newly exported task needs its own UUID.
- * This function generates and returns an UUID.
- */
 
 let newUuid;
+
+/**
+ * generetae new UUID. Note that this function always returns the same UUID
+ * whenever it is called later on.
+ *
+ * @returns {string|*}
+ */
 export function generateUUID(){
     if (newUuid !== undefined) {
         console.log('newUuid is ' + newUuid + ' (do not change)');
