@@ -761,7 +761,7 @@ abstract class base_form_creator {
         if (get_config('qtype_proforma', 'clang')) {
             $context["proglang"][] = [
                 "language" => "C",
-                "value" => "clang",
+                "value" => "c",
                 "version" => []
             ];
         }

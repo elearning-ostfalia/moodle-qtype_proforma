@@ -118,7 +118,7 @@ export class CustomTest {
 
         this.gradingWeight = 1; // default weight
 
-        this.fileRefLabel = 'File'; // default label
+        // this.fileRefLabel = 'File'; // default label
         this.manadatoryFile = true;
         this.alternativeTesttypes = [];
 
@@ -131,14 +131,14 @@ export class CustomTest {
     // override
     onCreate(testId) {}
     onReadXml(test, xmlReader, testConfigNode, context) {}
-    onWriteXml(test, uiElement, testConfigNode, xmlDoc, xmlWriter) {}
+    onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {}
     getFramework() {return undefined;}
     getMustacheTemplate() { return this.mustacheTemplate; }
 
     getTemplateContext() {
         return {
             'testtitle' : this.title,
-            'filenamelabel' : this.fileRefLabel,
+            // 'filenamelabel' : this.fileRefLabel,
             'testtype': this.testType,
             'testheader': this.defaultTitle,
             'filemandatory': this.manadatoryFile,

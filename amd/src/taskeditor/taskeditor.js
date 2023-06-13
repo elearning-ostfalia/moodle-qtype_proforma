@@ -596,8 +596,6 @@ function createGradingHints(temporary=false) {
     });
 
     console.log('create new grading hints');
-    console.log(doc);
-    console.log(gh);
     const gradinghints = document.querySelector('input[name="gradinghints"]');
     if (!gradinghints) {
         console.error('No gradinghints field found => ignore');

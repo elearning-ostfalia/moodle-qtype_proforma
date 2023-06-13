@@ -165,7 +165,7 @@ export const taskeditorconfig = (function(testConfigNode) {
         constructor() {
             super(JUnitTest.DefaultTitle, "unittest",
                 "qtype_proforma/taskeditor_junit", ['java']);
-            this.fileRefLabel = 'Junit and other file(s)';
+            // this.fileRefLabel = 'Junit and other file(s)';
         }
         onReadXml(test, xmlReader, testConfigNode, context) {
             let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
@@ -186,8 +186,8 @@ export const taskeditorconfig = (function(testConfigNode) {
             context['junit_version'] = xmlReader.readSingleText("@version", unitNode);
             context['junit_framework'] = xmlReader.readSingleText("@framework", unitNode);
         }
-        onWriteXml(test, uiElement, testConfigNode, xmlDoc, xmlWriter, task) {
-            let root = uiElement.root;
+        onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {
+            let root = test.uiElement.root;
             task.setAttributeNS('http://www.w3.org/2000/xmlns/', "xmlns:unit", unittestns_new);
 
             let unittestNode = xmlDoc.createElementNS(unittestns_new, "unit:unittest");
@@ -203,7 +203,7 @@ export const taskeditorconfig = (function(testConfigNode) {
         withRunCommand = true;
         constructor(title, template, proglang, framework, withRunCommand = true) {
             super(title, "unittest", template, proglang);
-            this.fileRefLabel = 'Testfile(s) and CMakeLists.txt/ Makefile';
+            // this.fileRefLabel = 'Testfile(s) and CMakeLists.txt/ Makefile';
             this.framework = framework;
             this.withRunCommand = withRunCommand;
         }
@@ -240,8 +240,8 @@ export const taskeditorconfig = (function(testConfigNode) {
                 }
             }
 
-            this.framework = xmlReader.readSingleText("@framework", unitNode);
-            switch(this.framework) {
+            let framework = xmlReader.readSingleText("@framework", unitNode);
+            switch(framework) {
                 case 'GoogleTest':
                     this.framework = 'GoogleTest';
                     this.proglang = ['c', 'cpp'];
@@ -250,21 +250,20 @@ export const taskeditorconfig = (function(testConfigNode) {
                     this.framework = 'PythonUnittest';
                     this.proglang = ['python'];
                     break;
-                default:
-                case undefined:
-                case '':
-                // Fall through
                 case 'CUnit':
                     this.framework = 'CUnit';
                     this.proglang = ['c'];
                     break;
+                default:
+                    // Undefined.
+                    framework = this.framework;
             }
             context['framework_version'] = xmlReader.readSingleText("@version", unitNode);
-            context['framework'] = this.framework;
+            context['framework'] = framework;
         }
 
-        onWriteXml(test, uiElement, testConfigNode, xmlDoc, xmlWriter, task) {
-            let root = uiElement.root;
+        onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {
+            let root = test.uiElement.root;
             task.setAttributeNS('http://www.w3.org/2000/xmlns/', "xmlns:unit", unittestns_new);
 
             let unittestNode = xmlDoc.createElementNS(unittestns_new, "unit:unittest");
@@ -273,8 +272,10 @@ export const taskeditorconfig = (function(testConfigNode) {
             if (this.withRunCommand) {
                 xmlWriter.createTextElement(unittestNode, 'unit:entry-point', $(root).find(".xml_u_mainclass").val(), unittestns_new);
             }
-            unittestNode.setAttribute("framework", $(root).find(".xml_u_framew").val());
+            unittestNode.setAttribute("framework", this.framework); // $(root).find(".xml_u_framew").val());
             unittestNode.setAttribute("version", $(root).find(".xml_u_version").val());
+            // console.log(testConfigNode);
+            // console.log(unittestNode);
         }
     }
 
@@ -297,7 +298,7 @@ export const taskeditorconfig = (function(testConfigNode) {
             super("CheckStyle Test", "java-checkstyle",
                 "qtype_proforma/taskeditor_checkstyle");
             this.gradingWeight = weightStaticTest;
-            this.fileRefLabel = 'Configuration File';
+            // this.fileRefLabel = 'Configuration File';
         }
 
         onReadXml(test, xmlReader, testConfigNode, context) {
@@ -320,8 +321,8 @@ export const taskeditorconfig = (function(testConfigNode) {
             }
         }
 
-        onWriteXml(test, uiElement, testConfigNode, xmlDoc, xmlWriter, task) {
-            let root = uiElement.root;
+        onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {
+            let root = test.uiElement.root;
             task.setAttributeNS('http://www.w3.org/2000/xmlns/', "xmlns:cs", checkstylens);
 
             let csNode = xmlDoc.createElementNS(checkstylens, "cs:java-checkstyle");

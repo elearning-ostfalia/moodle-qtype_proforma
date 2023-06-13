@@ -332,20 +332,35 @@ export function convertToXML(topLevelDoc, rootNode) {
             }
         }, uiTest.root);
 
+        console.log('*** look for test config');
+        console.log(test);
         $.each(taskeditorconfig.testInfos, function(index, configItem) {
             // search for appropriate writexml function
-            if (configItem.testType === test.testtype) {
-                if (configItem.proglang !== undefined) {
-                    if (!configItem.proglang.includes(task.proglang)) {
-                        // Language does not match
-                        return;
-                    }
-                }
-
-                test.configItem = configItem;
-                test.uiElement = uiTest;
+            if (test.configItem !== undefined) {
+                // configuration already found
+                return;
             }
+            if (configItem.testType !== test.testtype) {
+                // testtype does not match
+                return;
+            }
+            console.log('testtype match');
+            console.log(configItem);
+            if (configItem.proglang !== undefined) {
+                console.log('check proglang');
+                console.log(task.proglang);
+                if (!configItem.proglang.includes(task.proglang)) {
+                    console.log('proglang does not match');
+                    // Language does not match
+                    return;
+                }
+            }
+
+            console.log('everything matches');
+            test.configItem = configItem;
+            test.uiElement = uiTest;
         });
+        console.log('*** config lookup complete');
 
 
         //readFileRefs(xmlReader, modelSolution, thisNode);

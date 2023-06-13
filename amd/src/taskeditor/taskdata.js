@@ -612,6 +612,8 @@ export class TaskClass {
 
     // todo: read data directly from user input instead of using TaskClass object
     writeXml(topLevelDoc, rootNode) {
+        console.log('*** TaskClass.writeXml');
+
         let xmlDoc = null;
         let files = null;
         let fileRestrictions = null;
@@ -703,6 +705,8 @@ export class TaskClass {
         }
 
         function writeTest(item, index) {
+            console.log('*** TaskClass.writeTest');
+            console.log(item);
             function writeFileref(file, index) {
                 if (file.refid) {
                     let fileref = xmlDoc.createElementNS(xmlns, "fileref");
@@ -731,8 +735,10 @@ export class TaskClass {
 
             tests.appendChild(testElem);
             if (item.configItem) {
+                console.log('*** item.configItem.onWriteXml');
+
                 // alert('config write xml');
-                item.configItem.onWriteXml(item, item.uiElement, config, xmlDoc, xmlWriter, task);
+                item.configItem.onWriteXml(item, config, xmlDoc, xmlWriter, task);
             }
         }
 
