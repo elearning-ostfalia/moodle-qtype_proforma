@@ -356,10 +356,10 @@ abstract class base_form_creator {
         $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
         $mform->setType('responsefilename', PARAM_TEXT);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
-        /* $mform->addRule('responsefilename', get_string('required'), 'required');
+        // $mform->addRule('responsefilename', get_string('required'), 'required');
         // Hide label if not used. Done with JavaScript.
-        global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/formhelper', 'removerequired', array('id_responsefilename',
+        /*global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/formhelper', 'requiredif', array('id_responsefilename',
             'id_responseformat', 'editor'));*/
 
         // Do not set required since the filed can be hidden!

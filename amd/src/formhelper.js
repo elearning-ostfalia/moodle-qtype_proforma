@@ -74,3 +74,24 @@ export const showif = (id, dependend, needle, optionfield, option) => {
 };
 
 
+/**
+ * removes required check
+ * @param id
+ * @param dependend
+ * @param option
+ */
+export const requiredif = (id, dependend, option) => {
+    let element = document.getElementById(id);
+    if (element) {
+        let selectelem = document.getElementById(dependend);
+        if (selectelem) {
+
+        } else {
+            console.error('cannot find element identified by ' + dependend);
+        }
+    } else {
+        console.error('cannot find element identified by ' + id);
+    }
+};
+
+
