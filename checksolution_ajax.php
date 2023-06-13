@@ -176,6 +176,8 @@ function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
 }
 
 if (!$runtest) {
+    // STEP 1 (uplad files)
+
     if (!isset($_FILES['task'])) {
         throw new moodle_exception('no task file');
     }
@@ -228,6 +230,8 @@ if (!$runtest) {
     echo json_encode( $data );
 
 } else {
+    // STEP 2 (execute tests)
+
     $fs = get_file_storage();
 
     $task_file = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', $taskfilename);

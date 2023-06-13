@@ -51,7 +51,7 @@ $string['graderoptions_header'] = 'Grader Settings';
 
 // Buttons
 $string['upload'] = 'Upload taskfile to grader';
-$string['edittestdetails'] = 'Edit test details';
+$string['edittestdetails'] = 'Edit test details (experimental)';
 $string['checkmodelsol'] = 'Check model solution';
 $string['checkmodelsol_help'] = 'Run tests with model solution';
 $string['downloadtask'] = 'Download Task';
@@ -389,9 +389,9 @@ $string['taskeditorview'] = 'View';
 $string['taskeditoredit'] = 'Edit';
 $string['taskeditorhide'] = 'Hide';
 $string['taskeditorfile'] = 'File';
-$string['taskeditorattached'] = 'attached';
-$string['taskeditorembedded'] = 'embedded';
-$string['taskeditorstore'] = 'Store';
+$string['taskeditorattached'] = 'Binary file';
+$string['taskeditorembedded'] = 'Text file';
+$string['taskeditorstore'] = '';
 $string['taskeditorbinary'] = 'Binary file';
 $string['taskeditorfilesize'] = 'File size';
 $string['taskeditordropzone'] = 'Drop zone';
@@ -407,8 +407,8 @@ $string['taskeditornewcunit'] = 'New CUnit test';
 
 $string['loadfile'] = 'New CUnit test';
 
-$string['openfile'] = '<open...>';
-$string['newfile'] = '<new file>';
+$string['openfile'] = '<Open file...>';
+$string['newfile'] = '<New file>';
 $string['fileexists'] = 'A file named "{$a}" already exists.';
 $string['checkmodelsollog'] = 'Check model solution log';
 $string['uploadlog'] = 'Upload log';

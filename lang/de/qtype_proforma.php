@@ -48,7 +48,7 @@ $string['graderoptions_header'] = 'Grader';
 
 // Buttons
 $string['upload'] = 'Upload Aufgabendatei zum Grader';
-$string['edittestdetails'] = 'Testdetails bearbeiten';
+$string['edittestdetails'] = 'Testdetails bearbeiten (experimentell)';
 $string['checkmodelsol'] = 'Prüfe Musterlösung';
 $string['checkmodelsol_help'] = 'Starte Tests mit Musterlösung';
 $string['downloadtask'] = 'Download Aufgabendatei';
@@ -368,9 +368,9 @@ $string['taskeditorview'] = 'Ansehen';
 $string['taskeditoredit'] = 'Bearbeiten';
 $string['taskeditorhide'] = 'Ausblenden';
 $string['taskeditorfile'] = 'Datei';
-$string['taskeditorattached'] = 'angehängt';
-$string['taskeditorembedded'] = 'eingebettet';
-$string['taskeditorstore'] = 'Speichere';
+$string['taskeditorattached'] = 'Binärdatei';
+$string['taskeditorembedded'] = 'Textdatei';
+$string['taskeditorstore'] = '';
 $string['taskeditorbinary'] = 'Binärdatei';
 $string['taskeditorfilesize'] = 'Dateigröße';
 $string['taskeditordropzone'] = 'Drop zone';
@@ -385,8 +385,8 @@ $string['taskeditornewpythondoc'] = 'Neuer Python Doctest';
 $string['taskeditornewgoogletest'] = 'Neuer Google Test';
 $string['taskeditornewcunit'] = 'Neuer CUnit Test';
 
-$string['openfile'] = '<öffne Datei...>';
-$string['newfile'] = '<neue Datei>';
+$string['openfile'] = '<Öffne Datei...>';
+$string['newfile'] = '<Neue Datei>';
 $string['fileexists'] = 'Datei "{$a}" existiert bereits.';
 $string['checkmodelsollog'] = 'Prüfe Musterlösung (Log)';
 $string['uploadlog'] = 'Upload (Log)';
