@@ -31,7 +31,9 @@ try {
             throw new invalid_parameter_exception('invalid context');
         }
         external_api::validate_context($context);
-        require_capability('moodle/question:editmine', $context);
+        if ($context->contextlevel == CONTEXT_COURSE) {
+            require_capability('moodle/question:editmine', $context);
+        }
 
         $filename = required_param('filename', PARAM_FILE);
         $fs = get_file_storage();
@@ -65,7 +67,9 @@ try {
         $context = \context::instance_by_id($contextid, IGNORE_MISSING);
         if (isset($context)) {
             external_api::validate_context($context);
-            require_capability('moodle/question:editmine', $context);
+            if ($context->contextlevel == CONTEXT_COURSE) {
+                require_capability('moodle/question:editmine', $context);
+            }
         }
         $task = $question->get_task_file();
         if (!$task instanceof stored_file) {

@@ -62,10 +62,18 @@ if (!isloggedin()) {
 }
 
 $context = \context::instance_by_id($contextid, IGNORE_MISSING);
-if (isset($context)) {
-    external_api::validate_context($context);
-    require_capability('moodle/question:editmine', $context);
+if (!isset($context)) {
+    throw new moodle_exception('invalid context');
 }
+
+external_api::validate_context($context);
+if ($context->contextlevel != CONTEXT_USER) {
+    throw new moodle_exception('invalid context level');
+}
+
+// Since we're in the context of the user, it does not make sense checking course-level rights.
+// require_capability('moodle/question:editmine', $context);
+
 
 
 // Get repository instance information
