@@ -415,7 +415,8 @@ class feedback_renderer {
                         html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
             }
         } catch (Exception $e) {
-            return $result . 'UNSUPPORTED FEEDBACK FORMAT: ' .
+            // No Xml message => output message
+            return $result .
                     html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
         }
 
