@@ -331,7 +331,7 @@ export class FileWrapper {
             changedId = ui_file.id;
             if (taskeditorconfig.useCodemirror) {
                 // Change mode depending on filename
-                console.log('change mode depending on new filename');
+                // console.log('change mode depending on new filename');
                 codemirror[ui_file.id].setOption("mode", ui_file.getCodemirrorMode());
             }
         }
@@ -573,7 +573,7 @@ export class FileWrapper {
                     ui_file.root.find(".xml_file_class").hide();
                     ui_file.root.find("label[for='xml_file_class']").hide();
                 }
-                console.log('add file callbacks');
+                // console.log('add file callbacks');
                 // add callbacks:
                 ui_file.root.find('button').first().on("click",
                     function (event) {

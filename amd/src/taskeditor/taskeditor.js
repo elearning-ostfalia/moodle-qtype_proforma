@@ -171,7 +171,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         switch (extension)
         {
             case 'zip':
-                console.log('task file is zipped! => extract');
+                // console.log('task file is zipped! => extract');
                 return taskresponse.blob()
                     .then(blob => {
                         // console.log('blob is');
@@ -182,7 +182,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                         });
                     });
             case 'xml':
-                console.log('task file is not zipped');
+                // console.log('task file is not zipped');
                 return taskresponse.text()
                     .then(text => {
                         readXMLWithLock(text)
@@ -271,11 +271,11 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
         // Set taskeditor value to 1 in order to notify the server that the
         // task editor is visible
-        console.log('set taskeditor field to 1');
+//        console.log('set taskeditor field to 1');
         const taskeditorField = document.querySelector('input[name="taskeditor"]');
-        console.log(taskeditorField);
+//        console.log(taskeditorField);
         taskeditorField.value = "1";
-        console.log(taskeditorField);
+//        console.log(taskeditorField);
 
         // Save task on submit/update.
         let updatebutton = document.getElementById('id_updatebutton');
@@ -352,8 +352,8 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     const questionId = document.querySelector("input[name='id']").value;
     // hide editor if hidden 'taskeditor' input field is set to 0 (default)
     const taskeditorRequested = document.querySelector("input[name='taskeditor']");
-    console.log('Check if taskeditor shall be visible or not');
-    console.log(taskeditorRequested);
+    // console.log('Check if taskeditor shall be visible or not');
+    // console.log(taskeditorRequested);
 
     if (questionId === "" || (taskeditorRequested && taskeditorRequested.value === '1') ) {
         console.log('show editor');

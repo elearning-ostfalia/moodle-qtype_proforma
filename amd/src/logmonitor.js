@@ -57,6 +57,25 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
         titleString = await getString(title, 'qtype_proforma');
     }
 
+    function fade(element) {
+        let op = 1;  // initial opacity
+        let timer = setInterval(function () {
+            if (op <= 0.1){
+                clearInterval(timer);
+                element.style.display = 'none';
+                modalroot.remove();
+                if (source) {
+                    source.close();
+                    source = null;
+                }
+            } else {
+                element.style.opacity = op;
+                element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+                op -= op * 0.1;
+            }
+        }, 50);
+    }
+
     function closeSse() {
         source.close();
         let dialog = document.querySelector(".modal");
@@ -65,6 +84,12 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
             if (button) {
                 // Change cancel button to close button
                 button.innerHTML = closeString;
+            }
+            if (callbackstart) {
+                // If there is a callback for feedback finished then we fade the dialog.
+                // Das Schließen des Dialogs scheint nicht zu funktionieren.
+                // Der Hintergrund bleibt grau.
+                // fade(dialog);
             }
         }
     }

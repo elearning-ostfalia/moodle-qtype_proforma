@@ -212,9 +212,7 @@ function isInputComplete() {
 
     let sumweight = 0.0;
     document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {  // check whether referenced filenames exists
-        console.log(item);
-        console.log(item.value);
-        console.log(item.innerHTML);
+        // console.log(item.value);
         sumweight += parseFloat(item.value);
     });
     console.log('sumweight = ' + sumweight);
@@ -224,8 +222,8 @@ function isInputComplete() {
         returnFromFunction = true;
     }
 
-    console.log('result');
-    console.log(!returnFromFunction);
+    // console.log('result');
+    // console.log(!returnFromFunction);
 
     return (!returnFromFunction);
 }
@@ -262,9 +260,9 @@ export function convertToXML(topLevelDoc, rootNode) {
     task.description = $("#id_questiontexteditable").val();
     task.proglang = $('#xml_programming-language').val();
     task.proglang = task.proglang.trim();
-    console.log('READ FROM UI: ' + task.proglang);
+    // console.log('READ FROM UI: ' + task.proglang);
     task.proglangVersion = $("#xml_programming-language-" + task.proglang).val();
-    console.log('READ FROM UI VERSION: ' + task.proglangVersion);
+    // console.log('READ FROM UI VERSION: ' + task.proglangVersion);
     task.parentuuid = null;
     //task.uuid = $("#xml_uuid").val();
     //if (!task.uuid)

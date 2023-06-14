@@ -544,7 +544,7 @@ export class FileReferenceList extends DynamicList {
                 // yes =>
                 if (newFilename !== undefined) {
                     // update selected filename if not deleted
-                    console.log('change selection value');
+                    // console.log('change selection value');
                     $(item).val(newFilename);
                 } else {
                     // file is deleted => remove content

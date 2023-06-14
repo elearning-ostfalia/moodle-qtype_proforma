@@ -69,7 +69,7 @@ let newUuid;
  */
 export function generateUUID(){
     if (newUuid !== undefined) {
-        console.log('newUuid is ' + newUuid + ' (do not change)');
+        // console.log('newUuid is ' + newUuid + ' (do not change)');
         return newUuid;
     }
     let date = new Date().getTime();
