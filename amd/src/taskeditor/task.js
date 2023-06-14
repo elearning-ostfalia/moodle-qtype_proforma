@@ -60,6 +60,9 @@ import {taskeditorconfig } from "./config";
 import {relinkFiles} from "./zipper";
 import {TestFileReference, FileReferenceList,ModelSolutionFileReference } from "./filereflist";
 import * as Str from 'core/str';
+import {readXMLWithLock} from "./helper";
+import Notification, {exception as displayException} from 'core/notification';
+
 
 function switchToTab(hash) {
     const tab = document.querySelector('.nav-link[href="' + hash + '"]');
@@ -492,8 +495,9 @@ export async function readAndDisplayXml(taskXml) {
 */
 
         if (!ui_test) {
-            setErrorMessage("Test " + item.title + " not imported, testtype and framework unsupported");
+            setErrorMessage("Test '" + item.title + "' not imported, testtype and framework unsupported");
             testIDs[item.id] = 0;
+            return null;
         } else {
             return ui_test;
         }
@@ -592,13 +596,14 @@ export async function readAndDisplayXml(taskXml) {
 
             // fill filename lists in empty file refences
             console.log('=> wait');
-            return Promise.all(refpromises)
-                .then(() => {
-                    console.log('** all tests and model sols are created => add referenced files');
-                    FileReferenceList.updateAllFilenameLists();
-                    console.log('=> finished');
-                });
+            return Promise.all(refpromises);
+        })
+        .then(() => {
+            console.log('** all tests and model sols are created => add referenced files');
+            FileReferenceList.updateAllFilenameLists();
+            console.log('=> finished');
         });
+//        .fail(Notification.exception);
 
 
     // task.fileRestrictions.forEach(createFileRestriction);

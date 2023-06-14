@@ -154,13 +154,22 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         // Finally hide original test input fields:
         console.log('*** ' + count);
         // (better use hide if ???)
-        for (let i = 0; i < count; i++) {
+/*        for (let i = 0; i < count; i++) {
             document.getElementById('fgroup_id_testoptions_' + i).style.display = 'None';
             document.getElementById('fitem_id_testtitle_' + i).style.display = 'None';
             document.getElementById('fitem_id_testdescription_' + i).style.display = 'None';
-            // const selector = 'div[data-groupname="testoptions[' + i + ']"]';
-            // document.querySelector(selector).style.display = 'None';
         }
+*/
+        document.querySelectorAll('[id^="fgroup_id_testoptions_"]').forEach(item => {
+            item.style.display = 'None';
+        });
+        document.querySelectorAll('[id^="fitem_id_testtitle_"]').forEach(item => {
+            item.style.display = 'None';
+        });
+        document.querySelectorAll('[id^="fitem_id_testdescription_"]').forEach(item => {
+            item.style.display = 'None';
+        });
+
 
         const t1 = performance.now();
         console.log("expanding details took " + (t1 - t0) + " milliseconds.");
@@ -212,6 +221,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         }
     }
     function updateEnvironment() {
+        console.log('*** updateEnvironment');
         const questionId = document.querySelector("input[name='id']").value;
         // Since the editor was opened, a new uuid is generated immediately,
         // because changes are not tracked.
@@ -271,11 +281,9 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
         // Set taskeditor value to 1 in order to notify the server that the
         // task editor is visible
-//        console.log('set taskeditor field to 1');
+        // (Does not open editor on reload :-()
         const taskeditorField = document.querySelector('input[name="taskeditor"]');
-//        console.log(taskeditorField);
         taskeditorField.value = "1";
-//        console.log(taskeditorField);
 
         // Save task on submit/update.
         let updatebutton = document.getElementById('id_updatebutton');
@@ -323,6 +331,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         } else {
             console.error('Could not find submit button');
         }
+        console.log('updateEnvironment end');
 
     }
 
@@ -341,11 +350,12 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
         console.log('edit task');
         downloadTaskFromServer()
-            .then(taskresponse => {
-                displayTaskdata(taskresponse);
+            .then(taskresponse => displayTaskdata(taskresponse));
+            // update environment in parallel
+//            .then(() => {
                 updateEnvironment();
                 document.querySelector('.proforma-taskeditor').style.display = '';
-            })
+//            })
             .fail(Notification.exception);
     }
 
