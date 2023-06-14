@@ -350,13 +350,13 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
         console.log('edit task');
         downloadTaskFromServer()
-            .then(taskresponse => displayTaskdata(taskresponse));
+            .then(taskresponse => displayTaskdata(taskresponse))
+            .fail(Notification.exception);
             // update environment in parallel
 //            .then(() => {
                 updateEnvironment();
                 document.querySelector('.proforma-taskeditor').style.display = '';
 //            })
-            .fail(Notification.exception);
     }
 
     const questionId = document.querySelector("input[name='id']").value;
