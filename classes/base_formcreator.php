@@ -114,7 +114,6 @@ abstract class base_form_creator {
             $taskeditor = $mform->getElement('taskeditor');
             $taskeditor->setValue($_POST['taskeditor']);
         }
-
     }
 
     /**
@@ -479,11 +478,6 @@ abstract class base_form_creator {
      * @return int
      */
     protected function add_test_fields($question, $questioneditform, $testtype) {
-
-        if (!isset($question->id)) {
-            // New question => return.
-            return 0;
-        }
         $mform = $this->_form;
         // Retrieve number of tests (resp. unit tests).
         $repeats = $this->get_count_tests($question);

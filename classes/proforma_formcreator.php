@@ -74,7 +74,9 @@ class proforma_form_creator extends base_form_creator {
         }
 */
 
-        // $errors = $this->validate_taskfile($editor, $fromform, $errors);
+        if (!isset($fromform->taskeditor) or !$fromform->taskeditor) {
+            $errors = $this->validate_taskfile($editor, $fromform, $errors);
+        }
 
         return $errors;
     }
@@ -370,6 +372,20 @@ class proforma_form_creator extends base_form_creator {
     public function add_test_settings($question, $questioneditform) {
         parent::add_test_settings($question, $questioneditform);
         $this->add_detail_edit_button();
+    }
+
+    /**
+     * @param $question
+     * @param $questioneditform
+     * @param $testtype
+     * @return int|null
+     */
+    protected function add_test_fields($question, $questioneditform, $testtype) {
+        if (!isset($question->id)) {
+            // New question => no tests yet.
+            return 0;
+        }
+        return parent::add_test_fields($question, $questioneditform, $testtype);
     }
 
     /**

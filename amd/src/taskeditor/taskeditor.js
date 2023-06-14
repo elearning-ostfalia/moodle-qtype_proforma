@@ -146,7 +146,8 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 ui_test.title = testtitle.value;
                 ui_test.description = testdescription.value;
                 if (testtype.value !== ui_test.testtype) {
-                    console.error('Testtype for test ' + ui_test.id + ' does not match value from grading hints')
+                    alert('Task file does not match grading hints in Moodle:\n' +
+                        'Testtype for test ' + ui_test.id + ' does not match testtype from grading hints');
                 }
             }
         }

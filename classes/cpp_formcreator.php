@@ -73,6 +73,5 @@ class cpp_form_creator extends c_form_creator {
 
         // Set aggregation strategy to 'all-or-nothing'.
         $this->_form->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
-        $this->add_detail_edit_button();
     }
 }

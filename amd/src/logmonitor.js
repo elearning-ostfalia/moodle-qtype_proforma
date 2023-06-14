@@ -62,13 +62,10 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
         let timer = setInterval(function () {
             if (op <= 0.1){
                 clearInterval(timer);
-                button.click();
-/*                element.style.display = 'none';
-                modalroot.remove();
-                if (source) {
-                    source.close();
-                    source = null;
-                }*/
+                let timer1 = setInterval(function () {
+                    button.click();
+                    clearInterval(timer1);
+                }, 500);
             } else {
                 element.style.opacity = op;
                 element.style.filter = 'alpha(opacity=' + op * 100 + ")";
