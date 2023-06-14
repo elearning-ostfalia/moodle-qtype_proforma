@@ -38,7 +38,7 @@ import Templates from 'core/templates';
 import {TestWrapper } from "./test";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "../repository";
 import {generateUUID, getExtension, setErrorMessage} from "./util";
-import {taskeditorconfig} from "./config";
+import * as taskeditorconfig from "./config";
 import {unzipme, zipme, taskTitleToFilename} from "./zipper";
 import {readXMLWithLock} from "./helper";
 import {convertToXML} from "./task";
@@ -365,21 +365,24 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     // console.log('Check if taskeditor shall be visible or not');
     // console.log(taskeditorRequested);
 
-    if (questionId === "" || (taskeditorRequested && taskeditorRequested.value === '1') ) {
-        console.log('show editor');
-        // Hide details button.
-        document.getElementById(buttonid).style.display = 'none';
-        // Show and fill editor
-        showTaskeditor();
-    } else {
-        console.log('hide editor');
-        // Hide editor
-        document.querySelector('.proforma-taskeditor').style.display = 'none';
-        // Show editor on button click
-        document.getElementById(buttonid).addEventListener('click', function () {
-            showTaskeditor();
+    taskeditorconfig.initStrings()
+        .then(() => {
+            if (questionId === "" || (taskeditorRequested && taskeditorRequested.value === '1') ) {
+                console.log('show editor');
+                // Hide details button.
+                document.getElementById(buttonid).style.display = 'none';
+                // Show and fill editor
+                showTaskeditor();
+            } else {
+                console.log('hide editor');
+                // Hide editor
+                document.querySelector('.proforma-taskeditor').style.display = 'none';
+                // Show editor on button click
+                document.getElementById(buttonid).addEventListener('click', function () {
+                    showTaskeditor();
+                });
+            }
         });
-    }
 
     /*
             let taskPromise = downloadTaskFromServer();
@@ -583,8 +586,9 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
         );
     };
 
-    // Add button callbacks.
-    addButtonCallbacks();
+    // Add button callbacks (depend on initialisation of config).
+    taskeditorconfig.initStrings()
+        .then(() => addButtonCallbacks());
 }
 
 export const download = (buttonid) => {

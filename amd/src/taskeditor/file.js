@@ -51,7 +51,7 @@
 
 import $ from 'jquery';
 import {setcounter, DEBUG_MODE, getExtension} from "./util";
-import {taskeditorconfig} from "./config";
+import * as taskeditorconfig from "./config";
 import {javaParser} from "./java";
 import {FileReferenceList} from "./filereflist";
 import Templates from 'core/templates';

@@ -51,7 +51,7 @@
 
 
 import {setErrorMessage, generateUUID} from "./util";
-import {taskeditorconfig} from "./config";
+import * as taskeditorconfig from "./config";
 import {FileStorage, fileStorages } from "./file";
 
 export const T_LMS_USAGE = {

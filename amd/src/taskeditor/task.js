@@ -56,7 +56,7 @@ import {setErrorMessage, clearErrorMessage, generateUUID} from "./util";
 import {FileWrapper} from "./file";
 import {TestWrapper } from "./test";
 import {ModelSolutionWrapper } from "./modelsol";
-import {taskeditorconfig } from "./config";
+import * as taskeditorconfig from "./config";
 import {relinkFiles} from "./zipper";
 import {TestFileReference, FileReferenceList,ModelSolutionFileReference } from "./filereflist";
 import * as Str from 'core/str';

@@ -55,7 +55,7 @@ import $ from 'jquery';
 import {FileWrapper, FileStorage, fileStorages} from "./file";
 import {getExtension, setErrorMessage} from "./util";
 import {javaParser} from "./java";
-import {taskeditorconfig} from "./config";
+import * as taskeditorconfig from "./config";
 import {readAndDisplayXml} from "./task";
 import * as Str from 'core/str';
 

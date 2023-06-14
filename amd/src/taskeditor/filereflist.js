@@ -57,7 +57,7 @@ import {readAndCreateFileData} from "./helper";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import {FileWrapper} from "./file";
-import {taskeditorconfig} from "./config";
+import * as taskeditorconfig from "./config";
 import {DEBUG_MODE,} from "./util";
 import * as Str from 'core/str';
 import {TestWrapper} from "./test";

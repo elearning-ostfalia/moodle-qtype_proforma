@@ -52,6 +52,7 @@
 import {CustomTest, getExtension} from "./util";
 import {javaParser} from "./java";
 import {readXmlActive} from "./helper";
+import * as Str from 'core/str';
 
 // const configXsdSchemaFile = version101;   // choose version for output
 /*
@@ -64,12 +65,165 @@ import {readXmlActive} from "./helper";
 */
 
 
-export const taskeditorconfig = (function(testConfigNode) {
-    const praktomatns     = "urn:proforma:praktomat:v0.2"; // for checkstyle in task 1.0.1
-    //const jartestns       = "urn:proforma:tests:jartest:v1"; // for reading 1.0.1
-    const unittestns_old  = "urn:proforma:tests:unittest:v1";
-    const unittestns_new  = "urn:proforma:tests:unittest:v1.1";
-    const checkstylens    = "urn:proforma:tests:java-checkstyle:v1.1";
+export const useCodemirror = true;         // setting this to false turns Codemirror off
+
+const praktomatns     = "urn:proforma:praktomat:v0.2"; // for checkstyle in task 1.0.1
+//const jartestns       = "urn:proforma:tests:jartest:v1"; // for reading 1.0.1
+const unittestns_old  = "urn:proforma:tests:unittest:v1";
+const unittestns_new  = "urn:proforma:tests:unittest:v1.1";
+const checkstylens    = "urn:proforma:tests:java-checkstyle:v1.1";
+
+// Localized strings
+let gtest_help;
+let cunittest_help;
+let makerun_help;
+
+// -------------------------
+// TESTS
+// -------------------------
+// default grading weights
+const weightCompilation = 0;
+const weightStaticTest = 0.2;
+
+export function initStrings() {
+    let strings = [
+        { key: 'gtest_help_short', component: 'qtype_proforma' },
+        { key: 'cunit_help_short', component: 'qtype_proforma' },
+        { key: 'makerun_help', component: 'qtype_proforma' },
+    ];
+    return Str.get_strings(strings)
+        .then(results => {
+            console.log('config strings are initialised');
+            gtest_help = results[0];
+            cunittest_help = results[1];
+            makerun_help = results[2];
+            testCUnit       = new CUnitTest();
+            testGoogleTest  = new GoogleTest();
+            infoGoogleTest = testGoogleTest;
+            infoCUnit = testCUnit;
+
+            testInfos = [
+                testJavaComp,
+                testJavaJUnit,
+                testGoogleTest,
+                testCUnit,
+                testPython,
+                testPythonDoctest,
+                /*        testSetlX, testSetlXSyntax,
+                        testCComp,*/
+                testCheckStyle
+            ];
+        });
+}
+
+// convert to mimetype that can be directely handeled by codemirror
+export function getMimeType(mimetype, filename) {
+    const extension = filename.split('.').pop().toLowerCase();
+    switch (extension) {
+        case 'h':    return 'text/x-chdr';
+        case 'c':    return 'text/x-csrc';
+        case 'cpp':  return 'text/x-c++src';
+        case 'java': return 'text/x-java';
+        case 'py':   return 'text/x-python';
+        case 'stlx': return 'text/x-setlx'; // no actual mode availble
+        case 'xml':  return 'application/xml';
+        case 'html':  return 'text/html';
+        default: return mimetype;
+    }
+}
+
+export function isBinaryFile(file, mimetype) {
+    if (file.name.toLowerCase() === 'makefile') {
+        return false;
+    }
+    if (mimetype && mimetype.match(/(text\/)/i))  // mimetype is 'text/...'
+        return false;
+
+    const extension = file.name.split('.').pop();
+    switch (extension.toLowerCase()) {
+        case 'c' :
+        case 'h' :
+        case 'cpp' :
+        case 'hpp' :
+        case 'hxx' :
+        case 'cxx' :
+        case 'java' :
+        case 'log' :
+        case 'py' :
+        case 'txt' :
+        case 'xml' :
+        case 'php' :
+        case 'js' :
+        case 'html' :
+        case 'csv' :
+            return false;
+        default: break;
+    }
+    return true;
+}
+
+export function handleFilenameChangeInTest(newFilename, tempSelElem) {
+    function setJavaClassname(newFilename) {
+        // set classname if file belongs to JUNIT and if exactly one file is assigned
+        let testBox = $(tempSelElem).closest(".xml_test");
+        const ui_classname = $(testBox).find(".xml_ju_mainclass");
+        if (ui_classname.length === 1 // JUNIT box
+            && ui_classname.first().val().trim() === '') { // and entry point not set
+            ui_classname.first().val(javaParser.getFullClassnameFromFilename(newFilename));
+
+            // $.each(ui_classname, function(index, element) {
+            //     //let currentFilename = $(element).val();
+            //     if (!readXmlActive)
+            //         $(element).val(javaParser.getFullClassnameFromFilename(newFilename)).change();
+            // });
+        }
+    }
+
+    function setJUnitDefaultTitle(newFilename) {
+        // set decsription according to classname
+        let testBox = $(tempSelElem).closest(".xml_test");
+        const ui_title = $(testBox).find(".xml_test_title");
+        if (ui_title.length === 1) {
+            $.each(ui_title, function(index, element) {
+                let currentTitle = $(element).val();
+                if (!readXmlActive && currentTitle === JUnitTest.DefaultTitle)
+                    $(element).val("Junit Test " + javaParser.getPureClassnameFromFilename(newFilename)).change();
+            });
+        }
+    }
+
+    setJavaClassname(newFilename);
+    setJUnitDefaultTitle(newFilename);
+}
+
+export function resolveNamespace(prefix, defaultns) {
+    // todo: find better solution to figure out if namespace is supported
+    switch (defaultns) {
+        case 'urn:proforma:task:v1.0.1':
+            switch (prefix) {
+                case 'unit':      return unittestns_old;
+                //case 'jartest':   return jartestns;
+                case 'praktomat': return praktomatns; // for checkstyle
+            }
+            return '';
+        case 'urn:proforma:v2.0':
+            switch (prefix) {
+                case 'unit':
+                    //unitNs = xmldoc.lookupNamespaceURI('unit');
+                    //if (unitNs.toString() !== unittestns_new)
+                    //    alert('unit namespace is not supported in ProFormA version 2.0: ' + xmldoc.lookupNamespaceURI('unit'));
+                    return unittestns_new;
+                case 'cs': return checkstylens;
+            }
+            return '';
+        default:
+            return 'unsupported namespace'
+    }
+}
+
+// export const taskeditorconfig = (function(testConfigNode) {
+
+
 
 //    function writeNamespaces(task) {
         //task.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:jartest', jartestns);
@@ -80,30 +234,7 @@ export const taskeditorconfig = (function(testConfigNode) {
 */
 //    }
 
-    function resolveNamespace(prefix, defaultns) {
-        // todo: find better solution to figure out if namespace is supported
-        switch (defaultns) {
-            case 'urn:proforma:task:v1.0.1':
-                switch (prefix) {
-                    case 'unit':      return unittestns_old;
-                    //case 'jartest':   return jartestns;
-                    case 'praktomat': return praktomatns; // for checkstyle
-                }
-                return '';
-            case 'urn:proforma:v2.0':
-                switch (prefix) {
-                    case 'unit':
-                        //unitNs = xmldoc.lookupNamespaceURI('unit');
-                        //if (unitNs.toString() !== unittestns_new)
-                        //    alert('unit namespace is not supported in ProFormA version 2.0: ' + xmldoc.lookupNamespaceURI('unit'));
-                        return unittestns_new;
-                    case 'cs': return checkstylens;
-                }
-                return '';
-            default:
-                return 'unsupported namespace'
-        }
-    }
+
 
     function writeXmlExtra(metaDataNode, xmlDoc, xmlWriter) {
         //xmlWriter.createTextElement(metaDataNode, 'praktomat:allowed-upload-filename-mimetypes', '(text/.*)', praktomatns);
@@ -129,12 +260,7 @@ export const taskeditorconfig = (function(testConfigNode) {
         }
     }
 */
-    // -------------------------
-    // TESTS
-    // -------------------------
-    // default grading weights
-    const weightCompilation = 0;
-    const weightStaticTest = 0.2;
+
 
 
     // Tests objects
@@ -282,12 +408,17 @@ export const taskeditorconfig = (function(testConfigNode) {
     class GoogleTest extends GeneralUnitTest {
         constructor() {
             super("Google Test", "qtype_proforma/taskeditor_unittest", ['c', 'cpp'], 'GoogleTest');
+            // console.log('gtest_help ' + gtest_help);
+            this.helptext = gtest_help;
+            this.entrypointhelp = makerun_help;
         }
     }
 
     class CUnitTest extends GeneralUnitTest {
         constructor() {
             super("CUnit Test", "qtype_proforma/taskeditor_unittest", ['c'], 'CUnit');
+            this.helptext = cunittest_help;
+            this.entrypointhelp = makerun_help;
         }
     }
 
@@ -366,36 +497,16 @@ export const taskeditorconfig = (function(testConfigNode) {
 
 
     */
-    // const testCComp       = new CCompilerTest();
-    const testJavaComp    = new JavaCompilerTest();
-    const testJavaJUnit   = new JUnitTest();
-    const testCheckStyle  = new CheckstyleTest();
 
-    const testCUnit       = new CUnitTest();
-    const testGoogleTest  = new GoogleTest();
 
-    const testPython      = new PythonUnittest();
-    const testPythonDoctest = new PythonDocTest();
+
+
 /*   const testSetlX       = new setlXTest(setlXTest);
     const testSetlXSyntax = new setlXSyntaxTest();
 
-    // -------------------------------
-    // Test buttons
-    // -------------------------------
-    // Reihenfolge: in der Reihenfolge, in der die Test in testInfos angelegt werden, werden auch die Testbuttons erzeugt!
     // beachten, das bei gleichen XML-Testtypen derjenige zuerst eingetragen wird, der ein Einlesen einer Datei erzeugt werden soll.
 */
-    const testInfos = [
-        testJavaComp,
-        testJavaJUnit,
-        testGoogleTest,
-        testCUnit,
-        testPython,
-        testPythonDoctest,
-/*        testSetlX, testSetlXSyntax,
-        testCComp,*/
-        testCheckStyle
-    ];
+
 /*
     // list of XML schema files that shall be used for validation
     const xsds = [
@@ -414,113 +525,52 @@ export const taskeditorconfig = (function(testConfigNode) {
     }
 */
 
-    // convert to mimetype that can be directely handeled by codemirror
-    function getMimeType(mimetype, filename) {
-        const extension = filename.split('.').pop().toLowerCase();
-        switch (extension) {
-            case 'h':    return 'text/x-chdr';
-            case 'c':    return 'text/x-csrc';
-            case 'cpp':  return 'text/x-c++src';
-            case 'java': return 'text/x-java';
-            case 'py':   return 'text/x-python';
-            case 'stlx': return 'text/x-setlx'; // no actual mode availble
-            case 'xml':  return 'application/xml';
-            case 'html':  return 'text/html';
-            default: return mimetype;
-        }
-    }
 
-    function isBinaryFile(file, mimetype) {
-        if (file.name.toLowerCase() === 'makefile') {
-            return false;
-        }
-        if (mimetype && mimetype.match(/(text\/)/i))  // mimetype is 'text/...'
-            return false;
 
-        const extension = file.name.split('.').pop();
-        switch (extension.toLowerCase()) {
-            case 'c' :
-            case 'h' :
-            case 'cpp' :
-            case 'hpp' :
-            case 'hxx' :            
-            case 'cxx' :
-            case 'java' :
-            case 'log' :
-            case 'py' :
-            case 'txt' :
-            case 'xml' :
-            case 'php' :
-            case 'js' :
-            case 'html' :
-            case 'csv' :
-                return false;
-            default: break;
-        }
-        return true;
-    }
 
-    function handleFilenameChangeInTest(newFilename, tempSelElem) {
-        function setJavaClassname(newFilename) {
-            // set classname if file belongs to JUNIT and if exactly one file is assigned
-            let testBox = $(tempSelElem).closest(".xml_test");
-            const ui_classname = $(testBox).find(".xml_ju_mainclass");
-            if (ui_classname.length === 1 // JUNIT box
-                && ui_classname.first().val().trim() === '') { // and entry point not set
-                ui_classname.first().val(javaParser.getFullClassnameFromFilename(newFilename));
-
-                // $.each(ui_classname, function(index, element) {
-                //     //let currentFilename = $(element).val();
-                //     if (!readXmlActive)
-                //         $(element).val(javaParser.getFullClassnameFromFilename(newFilename)).change();
-                // });
-            }
-        }
-
-        function setJUnitDefaultTitle(newFilename) {
-            // set decsription according to classname
-            let testBox = $(tempSelElem).closest(".xml_test");
-            const ui_title = $(testBox).find(".xml_test_title");
-            if (ui_title.length === 1) {
-                $.each(ui_title, function(index, element) {
-                    let currentTitle = $(element).val();
-                    if (!readXmlActive && currentTitle === JUnitTest.DefaultTitle)
-                        $(element).val("Junit Test " + javaParser.getPureClassnameFromFilename(newFilename)).change();
-                });
-            }
-        }
-
-        setJavaClassname(newFilename);
-        setJUnitDefaultTitle(newFilename);
-    }
 
     // -------------------------
     // expose to public (interface)
     // -------------------------
-    return {
+//    return {
         // methods
 //        createFurtherUiElements: createFurtherUiElements,
-        getMimeType: getMimeType,
-        isBinaryFile: isBinaryFile,
-        handleFilenameChangeInTest: handleFilenameChangeInTest,
-        testInfos: testInfos,
+/*        testInfos: testInfos,
         infoJavaComp: testJavaComp,
         infoJavaJUnit: testJavaJUnit,
         infoGoogleTest: testGoogleTest,
         infoCUnit: testCUnit,
         infoPython: testPython,
         infoPythonDoctest: testPythonDoctest,
-        infoCheckStyle: testCheckStyle,
-        resolveNamespace: resolveNamespace,
+        infoCheckStyle: testCheckStyle,*/
 /*        writeXmlExtra: writeXmlExtra,
         //writeNamespaces: writeNamespaces,
         // data
         xsds: xsds,
         // switches, constants...*/
-        useCodemirror: true,         // setting this to false turns Codemirror off
-/*        // xsdSchemaFile: configXsdSchemaFile,
-        maxSizeForEditor: 100000, // maximum file size to enable editing
-*/
-    }
-})();
+        // xsdSchemaFile: configXsdSchemaFile,
+//        maxSizeForEditor: 100000, // maximum file size to enable editing
 
+//    }
+//})();
+
+// const testCComp       = new CCompilerTest();
+const testJavaComp    = new JavaCompilerTest();
+const testJavaJUnit   = new JUnitTest();
+const testCheckStyle  = new CheckstyleTest();
+let testCUnit;
+let testGoogleTest;
+const testPython      = new PythonUnittest();
+const testPythonDoctest = new PythonDocTest();
+
+
+export let testInfos;
+
+export let infoGoogleTest;
+export let infoCUnit;
+
+export let infoJavaComp = testJavaComp;
+export let infoJavaJUnit = testJavaJUnit;
+export let infoPython = testPython;
+export let infoPythonDoctest = testPythonDoctest;
+export let infoCheckStyle = testCheckStyle;

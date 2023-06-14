@@ -141,11 +141,21 @@ $string['cunit_help'] = 'Die Testdateien müssen
     CUnit muss im <i>basic mode</i> ausgeführt werden.<br>
     Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.<br>
     Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
+$string['cunit_help_short'] = 'Die Testdateien müssen 
+    ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
+    <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
+    CUnit muss im <i>basic mode</i> ausgeführt werden.<br>
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.';
 $string['gtest_help'] = 'Die Testdateien müssen  
     ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
     <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
     Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.<br>
     Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
+$string['gtest_help_short'] = 'Die Testdateien müssen  
+    ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
+    <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.';
+$string['makerun_help'] = 'Beispiel: Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
 
 $string['codeempty'] = 'Testcode fehlt.';
 $string['titleempty'] = 'Titel fehlt.';

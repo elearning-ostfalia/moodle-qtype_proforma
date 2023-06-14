@@ -110,6 +110,8 @@ export class CustomTest {
         this.defaultTitle = title;
         this.title = title; // title in html output
         this.testType = testType; // test type in XML
+        this.helptext = undefined; // help text for this test
+        this.entrypointhelp = undefined;
         if (template) {
             this.mustacheTemplate = template; // html extra input elements
         } else {
@@ -139,14 +141,28 @@ export class CustomTest {
     getMustacheTemplate() { return this.mustacheTemplate; }
 
     getTemplateContext() {
-        return {
+        let result = {
             'testtitle' : this.title,
             // 'filenamelabel' : this.fileRefLabel,
             'testtype': this.testType,
             'testheader': this.defaultTitle,
             'filemandatory': this.manadatoryFile,
-            'weight': this.gradingWeight
+            'weight': this.gradingWeight,
+/*            'info': {
+                "text": this.helptext
+            }*/
         };
+        if (this.helptext) {
+            result['info'] = {
+                "text": this.helptext
+            };
+        }
+        if (this.entrypointhelp) {
+            result['entrypointinfo'] = {
+                "text": this.entrypointhelp
+            };
+        }
+        return result;
     }
     createTestForm() {
         TestWrapper.createFromTemplate(null,
