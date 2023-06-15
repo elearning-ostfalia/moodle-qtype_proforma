@@ -77,6 +77,8 @@ const checkstylens    = "urn:proforma:tests:java-checkstyle:v1.1";
 let gtest_help;
 let cunittest_help;
 let makerun_help;
+let junit_help;
+let junitentry_help;
 
 // -------------------------
 // TESTS
@@ -90,6 +92,8 @@ export function initStrings() {
         { key: 'gtest_help_short', component: 'qtype_proforma' },
         { key: 'cunit_help_short', component: 'qtype_proforma' },
         { key: 'makerun_help', component: 'qtype_proforma' },
+        { key: 'junit_help_short', component: 'qtype_proforma' },
+        { key: 'junitentry_help', component: 'qtype_proforma' },
     ];
     return Str.get_strings(strings)
         .then(results => {
@@ -97,10 +101,14 @@ export function initStrings() {
             gtest_help = results[0];
             cunittest_help = results[1];
             makerun_help = results[2];
+            junit_help = results[3];
+            junitentry_help = results[4];
             testCUnit       = new CUnitTest();
             testGoogleTest  = new GoogleTest();
+            testJavaJUnit  = new JUnitTest();
             infoGoogleTest = testGoogleTest;
             infoCUnit = testCUnit;
+            infoJavaJUnit = testJavaJUnit;
 
             testInfos = [
                 testJavaComp,
@@ -291,7 +299,8 @@ export function resolveNamespace(prefix, defaultns) {
         constructor() {
             super(JUnitTest.DefaultTitle, "unittest",
                 "qtype_proforma/taskeditor_junit", ['java']);
-            // this.fileRefLabel = 'Junit and other file(s)';
+            this.helptext = junit_help;
+            this.entrypointhelp = junitentry_help;
         }
         onReadXml(test, xmlReader, testConfigNode, context) {
             let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
@@ -529,34 +538,10 @@ export function resolveNamespace(prefix, defaultns) {
 
 
 
-    // -------------------------
-    // expose to public (interface)
-    // -------------------------
-//    return {
-        // methods
-//        createFurtherUiElements: createFurtherUiElements,
-/*        testInfos: testInfos,
-        infoJavaComp: testJavaComp,
-        infoJavaJUnit: testJavaJUnit,
-        infoGoogleTest: testGoogleTest,
-        infoCUnit: testCUnit,
-        infoPython: testPython,
-        infoPythonDoctest: testPythonDoctest,
-        infoCheckStyle: testCheckStyle,*/
-/*        writeXmlExtra: writeXmlExtra,
-        //writeNamespaces: writeNamespaces,
-        // data
-        xsds: xsds,
-        // switches, constants...*/
-        // xsdSchemaFile: configXsdSchemaFile,
-//        maxSizeForEditor: 100000, // maximum file size to enable editing
-
-//    }
-//})();
 
 // const testCComp       = new CCompilerTest();
 const testJavaComp    = new JavaCompilerTest();
-const testJavaJUnit   = new JUnitTest();
+let testJavaJUnit;
 const testCheckStyle  = new CheckstyleTest();
 let testCUnit;
 let testGoogleTest;
@@ -568,9 +553,9 @@ export let testInfos;
 
 export let infoGoogleTest;
 export let infoCUnit;
+export let infoJavaJUnit;
 
 export let infoJavaComp = testJavaComp;
-export let infoJavaJUnit = testJavaJUnit;
 export let infoPython = testPython;
 export let infoPythonDoctest = testPythonDoctest;
 export let infoCheckStyle = testCheckStyle;

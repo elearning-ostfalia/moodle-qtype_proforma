@@ -152,6 +152,10 @@ All files can be uploaded individually or packed as exactly one zip archive.<br>
 $string['makerun_help'] = 'E.g. if the executable created by the Makefile is <code>test</code>, then the 
 command to run the test is <code>./test</code>.';
 
+$string['junit_help_short'] = 'All files can be uploaded individually or packed as exactly one zip archive.';
+$string['junitentry_help'] = 'The entrypoint is the class that contains the JUnit test functions. The package name must be included.<br>
+E.g. <code>de.ostfalia.cs.gdp.Test.MyTest</code>';
+
 $string['codeempty'] = 'Testcode required';
 $string['titleempty'] = 'Title required';
 $string['versionrequired'] = 'Version required.';

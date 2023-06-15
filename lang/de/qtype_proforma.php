@@ -139,23 +139,28 @@ $string['cunit_help'] = 'Die Testdateien müssen
     ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
     <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
     CUnit muss im <i>basic mode</i> ausgeführt werden.<br>
-    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.<br>
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau ein zip-Archiv gepackt sein.<br>
     Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
 $string['cunit_help_short'] = 'Die Testdateien müssen 
     ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
     <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
     CUnit muss im <i>basic mode</i> ausgeführt werden.<br>
-    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.';
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau ein zip-Archiv gepackt sein.';
 $string['gtest_help'] = 'Die Testdateien müssen  
     ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
     <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
-    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.<br>
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau ein zip-Archiv gepackt sein.<br>
     Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
 $string['gtest_help_short'] = 'Die Testdateien müssen  
     ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
     <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
-    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.';
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau ein zip-Archiv gepackt sein.';
 $string['makerun_help'] = 'Beispiel: Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
+
+$string['junit_help_short'] = 'Dateien können einzeln hochgeladen werden oder aber zu genau einem zip-Archiv gepackt sein.';
+$string['junitentry_help'] = 'Der Entrypoint ist die Klasse, die die JUnit-Testfunktionen enthält. Dabei muss der Package-Name enthalten sein.<br>
+z.B. <code>de.ostfalia.cs.gdp.Test.MyTest</code>';
+
 
 $string['codeempty'] = 'Testcode fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
