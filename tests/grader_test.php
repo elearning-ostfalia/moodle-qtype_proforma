@@ -343,7 +343,9 @@ EOD;
         list($state, $fraction, $error, $feedback, $feedbackformat) =
                 $grader->extract_grade($response, 200, $q);
         $this->assertEquals($exstate, $state);
-        $this->assertEquals($exfraction, $fraction);
+
+        // Check for float with tolerance.
+        $this->assertTrue(abs($exfraction - $fraction) < 0.001);
         $this->assertEquals($exerror, $error);
         $this->assertEquals($exfeedback, $exfeedback);
     }
