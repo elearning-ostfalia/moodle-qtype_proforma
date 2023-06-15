@@ -1,0 +1,121 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template qtype_proforma/taskeditor
+
+    The purpose of this template is to render the ProFormA task editor
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * none
+
+    Example context (json):
+    {
+        tests
+        files
+    }
+}}
+
+<div class="proforma-taskeditor">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active"file
+                data-toggle="tab"
+                href="#proforma-tests-section"
+                role="tab">
+                {{#str}} taskeditortests, qtype_proforma {{/str}}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+                data-toggle="tab"
+                href="#proforma-model-solution-section"
+                role="tab">
+                {{#str}} modelsolution, qtype_proforma {{/str}}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+                data-toggle="tab"
+                href="#proforma-files-section"
+                role="tab">
+                {{#str}} taskeditorfiles, qtype_proforma {{/str}}
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content" data-region="tab-content">
+        <div class="tab-pane active pt-3"
+            id="proforma-tests-section"
+            role="tabpanel"
+            data-region="tests-container">
+
+            {{> qtype_proforma/taskeditor_tests }}
+
+            {{{ tests }}}
+
+        </div>
+        <div class="tab-pane pt-3"
+            id="proforma-files-section"
+            role="tabpanel"
+            data-region="files-container">
+
+            {{{ files }}}
+
+        </div>
+        <div class="tab-pane pt-3"
+            id="proforma-model-solution-section"
+            role="tabpanel"
+            data-region="model-solution-container">
+        </div>
+    </div>
+
+<div class="que">
+    <div id="check-feedback-id" class="outcome" style='display: none'>Feedback</div>
+</div>
+
+<button id="check-modelsolution-{{uniqid}}" class="btn btn-secondary" title="{{#str}} checkmodelsol_help, qtype_proforma {{/str}}">
+    {{# pix }} i/grade_correct, core, {{/ pix }}/{{# pix }} i/grade_incorrect, core, {{/ pix }}{{#str}} checkmodelsol, qtype_proforma {{/str}}
+</button>
+<button id="upload_task-{{uniqid}}" class="btn btn-secondary">
+    {{# pix }} i/up, core, {{/ pix }}{{#str}} upload, qtype_proforma {{/str}}
+</button>
+<button id="download_task-{{uniqid}}" class="btn btn-secondary">
+    {{# pix }} i/down, core, {{/ pix }}{{#str}} downloadtask, qtype_proforma {{/str}}
+</button>
+<button id="download-modelsol-{{uniqid}}" class="btn btn-secondary">
+    {{# pix }} i/down, core, {{/ pix }}{{#str}} downloadmodelsolution, qtype_proforma {{/str}}
+</button>
+<!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary">Save task</button> -->
+</div>
+
+
+{{#js}}
+    require(['qtype_proforma/taskeditor/taskeditor'], function(editor) {
+        editor.download("download_task-{{uniqid}}");
+        editor.checkModelsolution("check-modelsolution-{{uniqid}}", "check-feedback-id");
+        editor.downloadModelsolution("download-modelsol-{{uniqid}}");
+        editor.uploadTaskToGrader("upload_task-{{uniqid}}");
+    });
+{{/js}}
+
+

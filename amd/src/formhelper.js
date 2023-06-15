@@ -60,13 +60,38 @@ export const showif = (id, dependend, needle, optionfield, option) => {
     // Initialise.
     showOrHide(id, dependend, needle, optionfield, option);
     // Check if key was pressed in URI text field.
-    document.getElementById(dependend).addEventListener('keyup', function () {
-        showOrHide(id, dependend, needle, optionfield, option);
-    });
+    if (document.getElementById(dependend)) {
+        document.getElementById(dependend).addEventListener('keyup', function () {
+            showOrHide(id, dependend, needle, optionfield, option);
+        });
+    }
     // Check if response option is changed.
-    document.getElementById(optionfield).addEventListener('change', function () {
-        showOrHide(id, dependend, needle, optionfield, option);
-    });
+    if (document.getElementById(optionfield)) {
+        document.getElementById(optionfield).addEventListener('change', function () {
+            showOrHide(id, dependend, needle, optionfield, option);
+        });
+    }
+};
+
+
+/**
+ * removes required check
+ * @param id
+ * @param dependend
+ * @param option
+ */
+export const requiredif = (id, dependend, option) => {
+    let element = document.getElementById(id);
+    if (element) {
+        let selectelem = document.getElementById(dependend);
+        if (selectelem) {
+
+        } else {
+            console.error('cannot find element identified by ' + dependend);
+        }
+    } else {
+        console.error('cannot find element identified by ' + id);
+    }
 };
 
 

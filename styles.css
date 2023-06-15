@@ -1,3 +1,158 @@
+/* Styles for Task editor */
+
+:root {
+    --labelwith: 135px;
+    --inputwidth: calc(98% - var(--labelwith));
+}
+
+.proforma-taskeditor{
+    /*font-family: "Trebuchet MS", "Helvetica", "Arial", "Verdana", "sans-serif";
+    font-size: 90%;*/
+    /*font-size: 62.5%;*/
+    /* background-color: #F7F7F7;*/
+    /* background-color: orangered;*/
+}
+
+/* Codemirror file editor */
+.proforma-taskeditor .xml_file_text + .CodeMirror{
+    vertical-align: top;
+    display: inline-block;
+    width: var(--inputwidth);
+    /*background-color: green;*/
+    resize: vertical; /* user can resize vertically, but width is fixed */
+}
+
+.proforma-taskeditor .xml_fileref_table { /* stretch viewer */
+    width: 100%;
+    /* background-color: yellow;*/
+}
+.proforma-taskeditor .fileref_viewer {
+    width: 99% /* var(--inputwidth)*/;
+    /* float: right;*/
+    background-color: #F7F7F7;
+}
+
+.proforma-taskeditor .form-control {
+    display: inline;
+}
+
+/* first column should have label width */
+.proforma-taskeditor .xml_fileref_table td:first-child, .dynamic_table td:first-child {
+    /*background-color: blue;*/
+    width: var(--labelwith);
+}
+.proforma-taskeditor .xml_fileref_table td {
+    /*background-color: green;*/
+    width: 1px;
+} /* min width, actually: this causes the width to fit the content */
+
+.proforma-taskeditor .xml_fileref_table td:last-child { width: var(--inputwidth); }
+
+
+body .proforma-taskeditor .test-header {
+    display: block;
+    cursor: move;
+    width: 100%;
+    /*background: red;*/
+}
+body .proforma-taskeditor .test-header label {
+    cursor: move;
+}
+
+body .proforma-taskeditor .box-typ {
+    display: inline-block;
+    /* width: var(--labelwith); */
+    text-align: left;
+    font-weight: 700;
+    /* padding-left:0.3em;*/
+    /* line-height: 1.5;*/
+}
+
+.proforma-taskeditor .xml_test,
+.proforma-taskeditor .xml_file,
+.proforma-taskeditor .xml_model-solution {
+   background: #e9ecef;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    margin-bottom: 1em;
+}
+
+/* left side labels */
+.proforma-taskeditor p label:first-child,
+.proforma-taskeditor br + label,
+.proforma-taskeditor .xml_file_non_binary label {
+    /*background-color: red;*/
+/*    display: inline-block;
+    width: var(--labelwith);
+    text-align: left;*/
+}
+
+
+.proforma-taskeditor .xml_fileref_table td,
+.proforma-taskeditor .dynamic_table td {
+    padding-left:0.1em;
+}
+
+/* first column should have label width and be more indented  */
+.proforma-taskeditor p label:first-child,
+.proforma-taskeditor br + label,
+.proforma-taskeditor .xml_file_non_binary label,
+.proforma-taskeditor .test-header label,
+
+.proforma-taskeditor .xml_fileref_table td:first-child,
+.proforma-taskeditor .dynamic_table td:first-child {
+    /* background-color: lightskyblue; */
+    width: var(--labelwith);
+    /*padding-left: 0.3em;*/
+    text-align: left;
+}
+
+
+
+/* use bold font for unit test label */
+/* body#page-question-type-proforma p[id^=fgroup_id_testfile_][id*=label] { */
+body#page-question-type-proforma.xml_filename_header {
+    font-weight: bold;
+}
+
+body#page-question-type-proforma p[id^=file_][id*=label] {
+    font-weight: bold;
+}
+
+
+/* dummy position needed in order to position close button */
+.proforma-taskeditor .xml_file_non_binary {
+    position: relative;
+    top: 0px;
+}
+
+
+.proforma-taskeditor .maxinput{
+    vertical-align: middle;
+    width: var(--inputwidth);
+}
+.proforma-taskeditor .largeinput{
+    vertical-align: middle;
+    width: 80%;
+}
+.proforma-taskeditor .mediuminput{	width: 40%;     }
+.proforma-taskeditor .shortinput{	width: 10%;     }
+.proforma-taskeditor .tinyinput{		width: 5%;     }
+
+.proforma-taskeditor .rightButton{	float:right   }
+
+/* .proforma-taskeditor p { padding-left:0.3em;  } */
+
+.proforma-taskeditor .drop_zone_text {
+    float:right; 	font-size: 65%;
+}
+
+.proforma-taskeditor .xml_restrict_filename { width: 400px; }
+
+.proforma-taskeditor .fileref_filename{	width: 400px;     }
+.proforma-taskeditor .fileref_fileref{	width: 50px;     }
+
 /* Styles for explorer */
 
 /* In order to have those Styles in the question history review

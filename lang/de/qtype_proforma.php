@@ -43,9 +43,18 @@ $string['commentheader'] = 'Kommentar';
 $string['nlines'] = '{$a} Zeilen';
 $string['responsefieldlines'] = 'Anzahl Zeilen';
 $string['responseformat'] = 'Eingabeform';
-$string['responseoptions'] = 'Einreichung';
+$string['responseoptions'] = 'Antwortformat';
 $string['graderoptions_header'] = 'Grader';
-$string['upload'] = 'Aufgabendatei zum Grader hochladen';
+
+// Buttons
+$string['upload'] = 'Upload Aufgabendatei zum Grader';
+$string['edittestdetails'] = 'Testdetails bearbeiten (experimentell)';
+$string['checkmodelsol'] = 'Prüfe Musterlösung';
+$string['checkmodelsol_help'] = 'Starte Tests mit Musterlösung';
+$string['downloadtask'] = 'Download Aufgabendatei';
+$string['downloadmodelsolution'] = 'Download Musterlösung';
+
+
 $string['responsetemplateheader'] = 'Codevorlagen';
 $string['responsetemplate'] = 'Codevorlage';
 $string['responsetemplate_help'] = 'Text wird bei Beginn eines neuen Versuchs im Editor für den Studierenden angezeigt (bzw. als Download angeboten). Wenn mehr als eine Vorlage existiert, ist nur die erste hier änderbar.';
@@ -132,11 +141,21 @@ $string['cunit_help'] = 'Die Testdateien müssen
     CUnit muss im <i>basic mode</i> ausgeführt werden.<br>
     Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.<br>
     Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
+$string['cunit_help_short'] = 'Die Testdateien müssen 
+    ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
+    <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
+    CUnit muss im <i>basic mode</i> ausgeführt werden.<br>
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.';
 $string['gtest_help'] = 'Die Testdateien müssen  
     ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
     <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
     Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.<br>
     Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
+$string['gtest_help_short'] = 'Die Testdateien müssen  
+    ein Makefile (auch <code>CMakeLists.txt</code> für <i>cmake</i> möglich) und Dateien mit Testcode enthalten.<br>
+    <code>main()</code> muss bei fehlerfreiem Testdurchlauf 0 liefern, im Fehlerfall <> 0.<br>
+    Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.';
+$string['makerun_help'] = 'Beispiel: Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
 
 $string['codeempty'] = 'Testcode fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
@@ -145,8 +164,8 @@ $string['entrypointrequired'] = 'JUnit Entrypoint muss angegeben werden.';
 $string['executablerequired'] = 'Befehl zum Ausführen des Tests muss angegeben werden.';
 $string['filenameerror'] = 'Kann Klassennamen nicht ermitteln (Dateiname).';
 $string['entrypointerror'] = 'Kann Klassennamen nicht ermitteln (Entrypoint).';
-$string['sumweightzero'] = 'Die Summe aller Gewichte darf nicht 0 sein.';
-
+$string['sumweightzero'] = 'Die Summe aller Gewichte muss größer als null sein.';
+$string['invalidproglang'] = 'Version der Programmiersprache ungültig:';
 
 $string['highlight'] = 'Syntax Highlighting';
 $string['highlight_hint'] = 'Programmiersprache';
@@ -172,6 +191,9 @@ $string['graderuri_host'] = 'URI: Protokoll und Server';
 $string['graderuri_host_desc'] = 'Protokoll (Schema) und Server der Grader URI';
 $string['graderuri_path'] = 'URI: Pfad';
 $string['graderuri_path_desc'] = 'Pfad der Grader URI';
+$string['runtesturi_path'] = 'URI: Pfad zum Laufenlassen der Tests (mit Fortschrittsinformationen)';
+$string['runtesturi_path_desc'] = 'Pfad zum Laufenlassen der Tests mit Fortschrittsinformationen';
+
 $string['c_graderuri_host'] = 'Grader für c';
 $string['c_graderuri_host_desc'] = '';
 $string['cpp_graderuri_host'] = 'Grader für C++';
@@ -180,7 +202,6 @@ $string['python_graderuri_host'] = 'Grader für Python';
 $string['python_graderuri_host_desc'] = '';
 $string['alternativegrader'] = 'Für (fast) alle Programmiersprachen kann ein alternativer Grader genutzt werden  
 Es ist nur das Protokoll und Server der Grader URI anzugeben, der Pfad wird übernommen.';
-
 
 $string['submissionproformaversion'] = 'ProFormA Version';
 $string['submissionproformaversion_help'] = 'ProFormA-Version, die für die Kommunikation zwischen Moodle und Grader verwendet werden soll. 
@@ -342,3 +363,53 @@ $string['errnotask'] = 'ProFormA-Task.xml nicht gefunden.';
 $string['erroldtask'] = 'Original-ProFormA-Datei kann nicht geprüft werden.';
 $string['errtasknotunique'] = 'ProFormA-task.xml ist nicht eindeutig.';
 $string['errinvalidtaskxml'] = 'Task.xml in ProFormA-Datei ist ungültig.';
+$string['errmissingquestioninput'] = 'Der Fragename muss angegeben werden.';
+$string['errmissingtest'] = 'Es muss mindestens ein Test mit den zugehörigen Dateien angegeben werden.';
+$string['errtestconfigambiguous'] = 'Testkonfiguration konnte nicht eindeutig ermittelt werden für 
+"{$a->title}".
+Es wird "{$a->config}" angenommen.';
+
+
+// Taskeditor
+$string['taskeditor'] = 'Aufgabe bearbeiten';
+$string['taskeditortests'] = 'Tests';
+$string['taskeditorfiles'] = 'Dateien';
+$string['taskeditorview'] = 'Ansehen';
+$string['taskeditoredit'] = 'Bearbeiten';
+$string['taskeditorhide'] = 'Ausblenden';
+$string['taskeditorfile'] = 'Datei';
+$string['taskeditorattached'] = 'Binärdatei';
+$string['taskeditorembedded'] = 'Textdatei';
+$string['taskeditorstore'] = '';
+$string['taskeditorbinary'] = 'Binärdatei';
+$string['taskeditorfilesize'] = 'Dateigröße';
+$string['taskeditordropzone'] = 'Drop zone';
+$string['taskeditorentrypointhelp'] = 'Name der Klasse, die die Main-Methode enthält - inkl. vollem Package-Pfad (z.B. de.ostfalia.zell.editor)';
+
+
+$string['taskeditornewjavacomp'] = 'Neuer Java Compilertest';
+$string['taskeditornewjunit'] = 'Neuer JUnit Test';
+$string['taskeditornewcheckstyle'] = 'Neuer Checkstyle Test';
+$string['taskeditornewpythonunit'] = 'Neuer Python unittest';
+$string['taskeditornewpythondoc'] = 'Neuer Python Doctest';
+$string['taskeditornewgoogletest'] = 'Neuer Google Test';
+$string['taskeditornewcunit'] = 'Neuer CUnit Test';
+
+$string['openfile'] = '<Öffne Datei...>';
+$string['newfile'] = '<Neue Datei>';
+$string['fileexists'] = 'Datei "{$a}" existiert bereits.';
+$string['checkmodelsollog'] = 'Prüfe Musterlösung (Log)';
+$string['uploadlog'] = 'Upload (Log)';
+
+$string['changejavafilename'] = 'Java-Dateinamen sollten den Klassennamen und 
+- sofern vorhanden - den Paketnamen enthalten.
+
+Daher ist der erwartete Dateiname "{$a}".
+Soll der Dateiname zu "{$a}" geändert werden?';
+
+$string['confirmdeletefile1'] = 'Datei "{$a->id}" "{$a->filename}" wird immer noch referenziert!
+
+Soll die Datei trotzdem gelöscht werden?';
+$string['confirmdeletefile2'] = 'Soll Datei "{$a->filename}" wirklich gelöscht werden?';
+$string['confirmdeletetest'] = "Soll der Test wirklich aus der Aufgabe entfernt werden?
+Nicht mehr referenzierte Dateien werden ebenfalls entfernt.";

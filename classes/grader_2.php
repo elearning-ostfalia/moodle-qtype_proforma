@@ -262,12 +262,68 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     }
 
 
+    private $chunks = [];
+    private $data = '';
+    private $response = '';
+    private $responsestarted = false;
+    function write_data() {
+        $this->data = $this->data . implode($this->chunks);
+        $this->chunks = [];
+
+        $lines = explode("\n\n", $this->data);
+        if (substr( $this->data, -2) === "\n\n") {
+            // Remove last element as is may be empty when last 2 characters are \n\n
+            $this->data = array_pop($lines);
+        } else {
+            $this->data = '';
+        }
+
+        foreach ($lines as $line) {
+            // $end = substr( $line, -2);
+            // if ($end === "\n\n") {
+                // Ends with \n\n.
+                if (substr( $line, 0, strlen("data: RESPONSE START####")) === "data: RESPONSE START####") {
+                    // Response starts.
+                    $this->responsestarted = true;
+                    echo $line . "\n\n";
+                    continue;
+                }
+                if (!$this->responsestarted) {
+                    // No response.
+                    echo $line . "\n\n";
+                    continue;
+                }
+                if (substr( $line, 0, strlen("data: RESPONSE END####")) === "data: RESPONSE END####") {
+                    // Response is complete => execute callback
+                    if (isset($this->callback)) {
+                        call_user_func($this->callback, $this->response, $this, $this->question, $this->gradinghints);
+                    }
+                    echo $line . "\n\n";
+                } else {
+                    $this->response .= substr( $line, strlen("data: ")) . "\n";
+                }
+        }
+
+        ob_flush();
+        flush();
+    }
+
     /**
      * CURLOPT_WRITEFUNCTION which flushes the output buffer.
      *
      * @param resource $curl_handle
      * @param string   $chunk
      */
+    function curl_write_flush($curl_handle, $chunk) {
+        $len = strlen($chunk);
+        $this->chunks[] = $chunk;
+        $this->write_data();
+        return $len; // Tell curl how much data was handled.
+    }
+
+
+/*
+
     function curl_write_flush($curl_handle, $chunk)
     {
         $len = strlen($chunk);
@@ -278,36 +334,27 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         return $len; // Tell curl how much data was handled.
     }
 
-    protected function post_to_grader_and_stream_result(&$postfields, $question) {
+*/
+
+    protected function post_to_grader_and_stream_result(&$postfields, $task, $uri) {
+        $this->chunks = [];
+        $this->data = null;
+        $this->responsestarted = false;
         // Get timeout.
         $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'upload_timeout');
         // $options['CURLOPT_SUPPRESS_CONNECT_HEADERS'] = True;
         $options['CURLOPT_WRITEFUNCTION'] = array(&$this, 'curl_write_flush');
 
         // Add task file.
-        if (isset($question)) {
-            $task = $question->get_task_file();
-            if (!$task instanceof stored_file) {
-                throw new coding_exception("task variable has wrong class");
-            }
-            $postfields['task-file'] = $task;
-        } else {
-//            if (!isset($taskfile)) {
-                throw new coding_exception('task is missing');
-//            }
-/*            if (!$taskfile instanceof stored_file) {
-                throw new coding_exception("task variable has wrong class");
-            }
-            $postfields['task-file'] = $taskfile;*/
+        if (!$task) {
+            throw new coding_exception('task is missing');
         }
-
-        // Get URI.
-        $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
-        $path = trim(get_config('qtype_proforma', 'uploaduri_path'));
-        $uri = $protocolhost . $path;
+        if (!$task instanceof stored_file) {
+            throw new coding_exception("task variable has wrong class");
+        }
+        $postfields['task-file'] = $task;
 
         debugging($uri);
-        // return array($this->set_dummy_result3(), 200); // Fake.
 
         // Send task and submission to grader with Curl with a configured timeout.
         $curl = new curl();
@@ -380,6 +427,49 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     }
 
 
+    /**
+     * send files and task to grader and expect result to be streamed
+     * @param $files
+     * @param $task
+     * @return array
+     * @throws coding_exception
+     */
+    public function send_files_with_task_to_grader_and_stream_result($files, $task,
+                                                                     $callback, $question, $gradinghints) {
+        $this->callback = $callback;
+        $this->question = $question;
+        $this->gradinghints = $gradinghints;
+
+        // Check file classes.
+        foreach ($files as $file) {
+            if (!$file instanceof stored_file) {
+                throw new coding_exception("wrong class for file");
+            }
+        }
+
+        // Create submission.
+        $submission = $this->create_submission_xml(null, $files, null, null, null, $task);
+        $postfields = array('submission.xml' => $submission);
+        foreach ($files as $file) {
+            // debugging(print_r($file));
+            $postfields[$file->get_filename()] = $file;
+        }
+
+        // Get URI.
+        // $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
+        // $path = trim(get_config('qtype_proforma', 'runtest_path'));
+        // $uri = $protocolhost . $path;
+        if (!isset($this->_uri)) {
+            throw new moodle_exception('SSE uri is not set in grader');
+        }
+
+
+        // debugging($submission);
+        // Send POST request to grader.
+        return $this->post_to_grader_and_stream_result($postfields, $task, $this->_uri);
+    }
+
+
     /** sends the sudent's submitted source code to the grader
      *
      * @param $code
@@ -411,6 +501,25 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @return array
      * @throws coding_exception
      */
+    public function upload_task_to_grader($task) {
+        // $filename = $question->responsefilename;
+
+        $submissionxml = $this->create_submission_xml('no source code available',
+            null, 'nofilenameneeded', null, null, $task);
+
+        $postfields = array(
+            'submission.xml' => $submissionxml,
+            'nofilenameneeded' => ''
+        );
+
+        // Get URI.
+        $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
+        $path = trim(get_config('qtype_proforma', 'uploaduri_path'));
+        $uri = $protocolhost . $path;
+
+        return $this->post_to_grader_and_stream_result($postfields, $task, $uri);
+    }
+/*
     public function upload_task_to_grader(qtype_proforma_question $question) {
         $filename = $question->responsefilename;
 
@@ -424,7 +533,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         return $this->post_to_grader_and_stream_result($postfields, $question);
     }
-
+*/
 
     /**
      * checks if the connection to the grader is valid.

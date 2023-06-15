@@ -48,6 +48,11 @@ $settings->add(new admin_setting_configtext('qtype_proforma/uploaduri_path',
     get_string('uploaduri_path_desc', 'qtype_proforma'),
     '/api/v2/upload', PARAM_PATH, 80));
 
+$settings->add(new admin_setting_configtext('qtype_proforma/runtest_path',
+    get_string('runtesturi_path', 'qtype_proforma'),
+    get_string('runtesturi_path_desc', 'qtype_proforma'),
+    '/api/v2/runtest', PARAM_PATH, 80));
+
 $settings->add(new admin_setting_configtext('qtype_proforma/grading_timeout',
         get_string('grading_timeout', 'qtype_proforma'),
         get_string('grading_timeout_desc', 'qtype_proforma'), 40,

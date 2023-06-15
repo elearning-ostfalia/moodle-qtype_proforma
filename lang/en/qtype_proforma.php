@@ -48,7 +48,16 @@ $string['responsefieldlines'] = 'Input box size';
 $string['responseformat'] = 'Response format';
 $string['responseoptions'] = 'Response Options';
 $string['graderoptions_header'] = 'Grader Settings';
+
+// Buttons
 $string['upload'] = 'Upload taskfile to grader';
+$string['edittestdetails'] = 'Edit test details (experimental)';
+$string['checkmodelsol'] = 'Check model solution';
+$string['checkmodelsol_help'] = 'Run tests with model solution';
+$string['downloadtask'] = 'Download Task';
+$string['downloadmodelsolution'] = 'Download Model solution';
+
+
 
 $string['responsetemplateheader'] = 'Response Templates';
 $string['responsetemplate'] = 'Response template';
@@ -126,13 +135,22 @@ CUnit must be run in <i>basic mode</i>.<br>
 All files can be uploaded individually or packed as exactly one zip archive.<br>
 If the executable created by the Makefile is <code>test</code>, then the 
 command to run the test is <code>./test</code>.';
+$string['cunit_help_short'] = 'The test files must contain a Makefile (<code>CMakeLists.txt</code> for <i>cmake</i> possible) and testcode files.<br>
+<code>main()</code> must return 0 in case of an error-free test run, otherwise <> 0.<br>
+CUnit must be run in <i>basic mode</i>.<br>
+All files can be uploaded individually or packed as exactly one zip archive.';
 $string['gtest_help'] = 'The test files must contain a Makefile (<code>CMakeLists.txt</code> for <i>cmake</i> possible) 
 and one or more files with testcode.<br>
 <code>main()</code> must return 0 in case of an error-free test run, otherwise <> 0.<br>
 All files can be uploaded individually or packed as exactly one zip archive.<br>
 If the executable created by the Makefile is <code>test</code>, then the 
 command to run the test is <code>./test</code>.';
-
+$string['gtest_help_short'] = 'The test files must contain a Makefile (<code>CMakeLists.txt</code> for <i>cmake</i> possible) 
+and one or more files with testcode.<br>
+<code>main()</code> must return 0 in case of an error-free test run, otherwise <> 0.<br>
+All files can be uploaded individually or packed as exactly one zip archive.<br>';
+$string['makerun_help'] = 'E.g. if the executable created by the Makefile is <code>test</code>, then the 
+command to run the test is <code>./test</code>.';
 
 $string['codeempty'] = 'Testcode required';
 $string['titleempty'] = 'Title required';
@@ -141,10 +159,10 @@ $string['entrypointrequired'] = 'JUnit entrypoint required.';
 $string['executablerequired'] = 'Run command required.';
 $string['filenameerror'] = 'Cannot determine classname (filename)';
 $string['entrypointerror'] = 'Cannot determine classname (entrypoint)';
-$string['sumweightzero'] = 'The sum of all weights must not be zero.';
+$string['sumweightzero'] = 'The sum of all weights must be a positive number.';
+$string['invalidproglang'] = 'Check programming language version:';
 
 $string['notaskfile'] = 'Taskfile is missing.';
-
 
 // Settings
 $string['miscellaneousheader'] = 'Miscellaneous';
@@ -158,6 +176,8 @@ $string['graderuri_path'] = 'URI: Path';
 $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 $string['uploaduri_path'] = 'URI: Path for uploading task';
 $string['uploaduri_path_desc'] = 'Path Part of Grader URI for uploads';
+$string['runtesturi_path'] = 'URI: Path for running tests';
+$string['runtesturi_path_desc'] = 'Path Part of Grader URI for running the tests with progress information';
 $string['c_graderuri_host'] = 'Grader for c';
 $string['c_graderuri_host_desc'] = '';
 $string['cpp_graderuri_host'] = 'Grader for C++';
@@ -365,3 +385,53 @@ $string['errnotask'] = 'ProFormA task file is missing.';
 $string['erroldtask'] = 'Original ProFormA task file cannot be checked.';
 $string['errtasknotunique'] = 'ProFormA task file is not unique.';
 $string['errinvalidtaskxml'] = 'Task.xml within ProFormA file is invalid.';
+$string['errmissingquestioninput'] = 'Question name is missing.';
+$string['errmissingtest'] = 'At least one test element and its corresponding file elements must be provided.';
+$string['errtestconfigambiguous'] = 'Test configuration not unique for "{$a->title}".
+Assume "{$a->config}".';
+
+// Taskeditor
+$string['taskeditor'] = 'Edit task';
+$string['taskeditortests'] = 'Tests';
+$string['taskeditorfiles'] = 'Files';
+$string['taskeditorview'] = 'View';
+$string['taskeditoredit'] = 'Edit';
+$string['taskeditorhide'] = 'Hide';
+$string['taskeditorfile'] = 'File';
+$string['taskeditorattached'] = 'Binary file';
+$string['taskeditorembedded'] = 'Text file';
+$string['taskeditorstore'] = '';
+$string['taskeditorbinary'] = 'Binary file';
+$string['taskeditorfilesize'] = 'File size';
+$string['taskeditordropzone'] = 'Drop zone';
+$string['taskeditorentrypointhelp'] = 'usually name of class containing main method, including full package path (e.g. de.ostfalia.zell.editor)';
+
+$string['taskeditornewjavacomp'] = 'New Compiler test';
+$string['taskeditornewjunit'] = 'New JUnit test';
+$string['taskeditornewcheckstyle'] = 'New Checkstyle test';
+$string['taskeditornewpythonunit'] = 'New Python unittest';
+$string['taskeditornewpythondoc'] = 'New Python doctest';
+$string['taskeditornewgoogletest'] = 'New Google test';
+$string['taskeditornewcunit'] = 'New CUnit test';
+
+$string['loadfile'] = 'New CUnit test';
+
+$string['openfile'] = '<Open file...>';
+$string['newfile'] = '<New file>';
+$string['fileexists'] = 'A file named "{$a}" already exists.';
+$string['checkmodelsollog'] = 'Check model solution log';
+$string['uploadlog'] = 'Upload log';
+
+$string['changejavafilename'] = 'Java filenames shall consist of the 
+package name, if any, and the class name.
+
+So the expected filename is "{$a}".
+Do you want to change the filename to "{$a}"?';
+
+
+$string['confirmdeletefile1'] = 'File "{$a->id}" "{$a->filename}" is still referenced!
+
+Do you really want to delete it?';
+$string['confirmdeletefile2'] = 'Do you really want to delete file "{$a->filename}"?';
+$string['confirmdeletetest'] = "Shall the test be removed from task?
+Files that are no longer referenced will also be removed.";

@@ -27,13 +27,36 @@
 
 import Ajax from 'core/ajax';
 
-export const uploadTask = (
-    questionid // ,
-//     userid
+export const downloadTask = (itemid
 ) => Ajax.call([{
-    methodname: 'qtype_proforma_upload_task',
+    methodname: 'qtype_proforma_get_task_url',
     args: {
-        questionid // ,
-//        userid
+        itemid
     },
 }])[0];
+
+
+export const getJunitVersions = (
+) => Ajax.call([{
+    methodname: 'qtype_proforma_get_junit_versions',
+    args: {
+    },
+}])[0];
+
+
+export const getCheckstyleVersions = (
+) => Ajax.call([{
+    methodname: 'qtype_proforma_get_checkstyle_versions',
+    args: {
+    },
+}])[0];
+
+// TODO
+export const getJavaVersions = (
+) => Ajax.call([{
+    methodname: 'qtype_proforma_get_java_versions',
+    args: {
+    },
+}])[0];
+
+

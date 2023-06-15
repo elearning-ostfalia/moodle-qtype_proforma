@@ -30,15 +30,45 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
-
     // ProformA question type webservice functions.
-    'qtype_proforma_upload_task' => array(
-        'classname'    => 'qtype_proforma\external\upload_task',
-//        'methodname'   => 'upload_task',
+
+    'qtype_proforma_get_task_url' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
+        'methodname'   => 'get_task_url',
         'classpath'    => '',
-        'description'  => 'uploads a task to Praktomat',
-        'type'         => 'read', // Read from Moodle, but write to Praktomat???
-        // 'capabilities' => 'moodle/question:usemine',
+        'description'  => 'read task from Moodle',
+        'type'         => 'read',
+        'capabilities' => 'moodle/question:editmine',
+        'ajax'         => true,
+    ),
+
+    'qtype_proforma_get_junit_versions' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
+        'methodname'   => 'get_junit_versions',
+        'classpath'    => '',
+        'description'  => 'read JUnit versions from Moodle',
+        'type'         => 'read',
+        // 'capabilities' => 'moodle/question:editmine',
+        'ajax'         => true,
+    ),
+
+    'qtype_proforma_get_checkstyle_versions' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
+        'methodname'   => 'get_checkstyle_versions',
+        'classpath'    => '',
+        'description'  => 'read Checkstyle versions from Moodle',
+        'type'         => 'read',
+        // 'capabilities' => 'moodle/question:editmine',
+        'ajax'         => true,
+    ),
+
+    'qtype_proforma_get_java_versions' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
+        'methodname'   => 'get_java_versions',
+        'classpath'    => '',
+        'description'  => 'read Java versions from Moodle',
+        'type'         => 'read',
+        // 'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
     ),
 );
