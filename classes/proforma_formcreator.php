@@ -74,7 +74,7 @@ class proforma_form_creator extends base_form_creator {
         }
 */
 
-        if (!isset($fromform->taskeditor) or !$fromform->taskeditor) {
+        if ((!isset($fromform['taskeditor'])) or (!$fromform['taskeditor'])) {
             $errors = $this->validate_taskfile($editor, $fromform, $errors);
         }
 
