@@ -136,7 +136,7 @@ abstract class base_form_creator {
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
-        if (!isset($fromform->taskeditor) or !$fromform->taskeditor) {
+        if ((!isset($fromform['taskeditor'])) or (!$fromform['taskeditor'])) {
             $title = $fromform["testtitle"][0];
             $titleavailable = strlen(trim($title)) > 0;
             if (!$titleavailable) {
@@ -160,7 +160,7 @@ abstract class base_form_creator {
             }
         }
 
-        if (!isset($fromform->taskeditor) or !$fromform->taskeditor) {
+        if ((!isset($fromform['taskeditor'])) or (!$fromform['taskeditor'])) {
             // Check tests.
             $repeats = $this->get_count_tests(null);
             for ($i = 0; $i < $repeats; $i++) {

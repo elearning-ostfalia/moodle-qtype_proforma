@@ -233,6 +233,12 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         } else {
             uuid.value = generateUUID();
         }
+        let proformaversion = document.querySelector("input[name='proformaversion']");
+        if (!proformaversion) {
+            console.error('cannot find proformaversion element');
+        } else {
+            proformaversion.value = '2.0';
+        }
 
         // Do not collapse other headers as there might be missing input fields after
         // import that can not be seen on save (submit)
@@ -317,6 +323,10 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                     uuid.disabled = false;*/
                 });
             };
+            /* Problem: in new questions the values are not submitted
+             * to server so that UUID and proformaversion is missing
+             */
+            /*
             // Some of the form validation tests are executed on the Moodle server.
             // If the validation fails some of the changes must be
             // reverted.
@@ -324,11 +334,13 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             // (hopefully)
             let form = submitbutton.closest('form');
             if (form) {
-                form.addEventListener('core_form/fieldValidationFailed', () => {
+                form.addEventListener('core_form/fieldValidationFailed', (x) => {
                     console.log('core_form/fieldValidationFailed');
-                    revertChangesForSubmission();
+                    console.log(x);
+                    // revertChangesForSubmission();
                 }, false);
             }
+ */
         } else {
             console.error('Could not find submit button');
         }
@@ -922,7 +934,6 @@ function uploadTaskToServer() {
             // The proformaversion is disabled and must be enabled in order to
             // submit the changed value.
             proformaversion.disabled = false;
-            proformaversion.value = '2.0';
         }
 
         return zipme(context, false)
