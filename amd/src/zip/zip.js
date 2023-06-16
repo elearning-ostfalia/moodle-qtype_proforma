@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-		typeof define === 'function' && define.amd ? define(['exports'], factory) :
-			(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.zip = {}));
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.zip = {}));
 })(this, (function (exports) { 'use strict';
 
 	const { Array, Object, String, Number, BigInt, Math, Date, Map, Set, Response, URL, Error, Uint8Array, Uint16Array, Uint32Array, DataView, Blob, Promise, TextEncoder, TextDecoder, document, crypto, btoa, TransformStream, ReadableStream, WritableStream, CompressionStream, DecompressionStream, navigator, Worker } = typeof globalThis !== 'undefined' ? globalThis : this || self;
@@ -15,8 +15,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -88,8 +88,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -138,8 +138,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -254,8 +254,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -336,8 +336,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -396,8 +396,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -445,8 +445,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -748,7 +748,7 @@
 			const c = new Uint32Array(b);
 			let j = 0;
 			for (let i = sha1.blockSize + ol - ((sha1.blockSize + ol) & (sha1.blockSize - 1)); i <= nl;
-				 i += sha1.blockSize) {
+				i += sha1.blockSize) {
 				sha1._block(c.subarray(16 * j, 16 * (j + 1)));
 				j += 1;
 			}
@@ -817,9 +817,9 @@
 			const sha1 = this;
 			const h = sha1._h;
 			// When words is passed to _block, it has 16 elements. SHA1 _block
-			// function extends words with new elements (at the end there are 80 elements).
-			// The problem is that if we use Uint32Array instead of Array,
-			// the length of Uint32Array cannot be changed. Thus, we replace words with a
+			// function extends words with new elements (at the end there are 80 elements). 
+			// The problem is that if we use Uint32Array instead of Array, 
+			// the length of Uint32Array cannot be changed. Thus, we replace words with a 
 			// normal Array here.
 			const w = Array(80); // do not use Uint32Array here as the instantiation is slower
 			for (let j = 0; j < 16; j++) {
@@ -1075,7 +1075,7 @@
 	 * @namespace
 	 */
 	const random = {
-		/**
+		/** 
 		 * Generate random words with pure js, cryptographically not as strong & safe as native implementation.
 		 * @param {TypedArray} typedArray The array to fill.
 		 * @return {TypedArray} The random values.
@@ -1112,10 +1112,10 @@
 	 */
 
 	/** Brian Gladman's CTR Mode.
-	 * @constructor
-	 * @param {Object} _prf The aes instance to generate key.
-	 * @param {bitArray} _iv The iv for ctr mode, it must be 128 bits.
-	 */
+	* @constructor
+	* @param {Object} _prf The aes instance to generate key.
+	* @param {bitArray} _iv The iv for ctr mode, it must be 128 bits.
+	*/
 
 	const mode = {};
 
@@ -1147,7 +1147,7 @@
 				let b2 = (word >> 8) & 0xff;
 				let b3 = word & 0xff;
 
-				if (b1 === 0xff) { // overflow b1
+				if (b1 === 0xff) { // overflow b1   
 					b1 = 0;
 					if (b2 === 0xff) {
 						b2 = 0;
@@ -1306,8 +1306,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -1348,8 +1348,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -1642,8 +1642,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -1789,8 +1789,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -1925,8 +1925,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -2000,8 +2000,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -2299,8 +2299,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -2389,8 +2389,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -3082,8 +3082,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -3127,8 +3127,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -3163,8 +3163,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -3228,8 +3228,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -3839,8 +3839,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
@@ -4865,8 +4865,8 @@
 	 1. Redistributions of source code must retain the above copyright notice,
 	 this list of conditions and the following disclaimer.
 
-	 2. Redistributions in binary form must reproduce the above copyright
-	 notice, this list of conditions and the following disclaimer in
+	 2. Redistributions in binary form must reproduce the above copyright 
+	 notice, this list of conditions and the following disclaimer in 
 	 the documentation and/or other materials provided with the distribution.
 
 	 3. The names of the authors may not be used to endorse or promote products
