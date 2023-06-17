@@ -1,3 +1,7 @@
+## XXX
+
+bugfix: context menu in explorer now appears on first click 
+
 ## 2.11.0
 
 new: separate upload task function 
