@@ -26,15 +26,8 @@ Feature: VALIDATION
   @javascript @_file_upload
   Scenario: Create Java question with missing or incorrect values
 ##########################################################################
-    When I press "Create a new question ..."
-    And I set the field "item_qtype_proforma" to "1"
-    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
-    And I set the field "item_java" to "1"
-    And I click on "Ok" "button" in the "Select programming language" "dialogue"
-    Then I should see "Adding a ProFormA question"
-
-    When I set the following fields to these values:
-    # When I add a "ProFormA" question filling the form with:
+    When I create a new "java" question
+    And I set the following fields to these values:
       | Question name            | java-question                  |
       | Question text            | write a java program that..... |
       | Response format          | editor                         |

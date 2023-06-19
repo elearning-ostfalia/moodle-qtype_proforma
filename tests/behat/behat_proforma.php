@@ -481,6 +481,21 @@ class behat_proforma extends behat_base {
         }
     }
 
+
+    /**
+     * Create new question
+     *
+     * @When /^I create a new "(?P<proglang_string>(?:[^"]|\\")*)" question$/
+     */
+    public function create_new_question($proglang) {
+        $this->execute("behat_forms::press_button", 'Create a new question ...');
+        $this->execute("behat_forms::i_set_the_field_to", ['item_qtype_proforma', '1']);
+        $this->execute("behat_general::i_click_on_in_the", ["Add", "button", "Choose a question type to add", "dialogue"]);
+        $this->execute("behat_forms::i_set_the_field_to", ['item_' . $proglang, '1']);
+        $this->execute("behat_general::i_click_on_in_the", ["Ok", "button", "Select programming language", "dialogue"]);
+    }
+
+
     /**
      * Opens preview window on a particular question in the question bank UI.
      * (Background: In Moodle 3 a new Window is opened for preview.

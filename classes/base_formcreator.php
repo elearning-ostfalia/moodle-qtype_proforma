@@ -352,7 +352,7 @@ abstract class base_form_creator {
      */
     protected function add_responsefilename() {
         $mform = $this->_form;
-        $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
+        $mform->addElement('text', 'responsefilename', get_string('responsefilename', 'qtype_proforma'), array('size' => '60'));
         $mform->setType('responsefilename', PARAM_TEXT);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
         // $mform->addRule('responsefilename', get_string('required'), 'required');

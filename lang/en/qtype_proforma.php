@@ -81,8 +81,8 @@ $string['repositoryhost_desc'] = 'Host of repository starting with protocol (htt
 $string['repositorypath'] = 'Path in repository';
 $string['repositorypath_desc'] = 'Path of ProFormA task in Repository';
 
-$string['filename'] = 'Response filename';
-$string['filename_hint'] = $string['filename'];
+$string['responsefilename'] = 'Response filename';
+$string['filename_hint'] = $string['responsefilename'];
 $string['filename_hint_help'] = 'filename used for submitted source code (if necessary consider package name)';
 
 $string['taskfilename'] = 'ProFormA task file';

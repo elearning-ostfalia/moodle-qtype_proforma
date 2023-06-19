@@ -28,7 +28,8 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
   @javascript @_file_upload
   Scenario: more complex Java question
 ##########################################################################
-    When I add a "ProFormA" question filling the form with:
+    When I create a new "java" question
+    And I set the following fields to these values:
       | Question name            | java-question  |
       | Question text            | write a java program that..... |
       | Response format          | editor                         |
@@ -144,7 +145,8 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
   @javascript @_file_upload
   Scenario: Create, save and open a Java question with uploaded Junit test
 ##########################################################################
-    When I add a "ProFormA" question filling the form with:
+    When I create a new "java" question
+    And I set the following fields to these values:
       | Question name            | java-question  |
       | Question text            | write a java program that..... |
       | Response format          | editor                         |

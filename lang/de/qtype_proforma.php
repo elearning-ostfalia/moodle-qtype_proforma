@@ -108,7 +108,7 @@ $string['repositorypath'] = 'Verzeichnis im Repository';
 $string['repositorypath_desc'] = 'Verzeichnis einer ProFormA-Aufgabe im Repository';
 
 
-$string['filename'] = 'Dateiname';
+$string['responsefilename'] = 'Dateiname';
 $string['filename_hint'] = 'Dateiname';
 $string['filename_hint_help'] = 'Da bei Nutzung des Editors als Eingabeform kein Dateiname zum Kompilieren vorhanden ist, muss dieser fest vorgegeben werden.
 Bitte beachten, dass u.U. auch das Package im Namen enthalten sein muss.';
