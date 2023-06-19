@@ -367,7 +367,7 @@ $string['delete'] = 'Delete';
 $string['rename'] = 'Rename';
 $string['loadfile'] = 'Load file';
 $string['newfolder'] = 'New folder';
-$string['newemptyfile'] = 'New empty file';
+$string['newemptyfile'] = 'New file';
 $string['enterfoldername'] = 'New foldername';
 $string['enterfilename'] = 'New filename';
 $string['filename'] = 'Filename';
@@ -415,7 +415,7 @@ $string['taskeditornewpythondoc'] = 'New Python doctest';
 $string['taskeditornewgoogletest'] = 'New Google test';
 $string['taskeditornewcunit'] = 'New CUnit test';
 
-$string['loadfile'] = 'New CUnit test';
+$string['loadfile'] = 'Open file';
 
 $string['openfile'] = '<Open file...>';
 $string['newfile'] = '<New file>';

@@ -133,7 +133,9 @@ function modalPrompt(title, label, defaultValue, callback) {
             modal.getRoot().remove();
             callback(result);
         });
-        modal.show();
+        modal.show()
+            // Set focus into input field.
+            .then(() => document.querySelector("input[name='promptname']").focus());
     });
 }
 

@@ -49,6 +49,22 @@ class behat_proforma extends behat_base {
         $node->rightClick();
     }
 
+
+    /**
+     * Generic doubleclick click action. Click on the element of the specified type.
+     *
+     * @When /^I doubleclick on "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)"$/
+     * @param string $element Element we look for
+     * @param string $selectortype The type of what we look for
+     */
+    public function i_doubleclick_on($element, $selectortype) {
+
+        // Gets the node based on the requested selector type and locator.
+        $node = $this->get_selected_node($selectortype, $element);
+        $this->ensure_node_is_visible($node);
+        $node->doubleClick();
+    }
+
     public function click_on_contextmenue_item($menuelement) {
         $session = $this->getSession();
         $driver = $session->getDriver();
@@ -131,119 +147,14 @@ class behat_proforma extends behat_base {
      * @When /^I click on "([^"]*)" in "([^"]*)" contextmenu$/
      */
     public function i_click_on_menu($menuelement, $nodename) {
-        echo 'wait ' . PHP_EOL;
         $this->execute("behat_general::i_wait_seconds", [0.5]);
         $xpath = "//*[text() = '". $nodename . "']";
-        echo 'click on ' . $xpath . PHP_EOL;
-        $this->i_rightclick_on($xpath, 'xpath_element');
-        // $this->execute("behat_general::i_wait_seconds", [1]);
-
-        // two clicks because the localized strings must be retrieved from server
-        $this->execute("behat_general::i_wait_seconds", [0.5]);
         $this->i_rightclick_on($xpath, 'xpath_element');
         $this->execute("behat_general::i_wait_seconds", [0.5]);
 
-        echo 'click on ' . $xpath . PHP_EOL;
         $xpath = "//*[text() = '". $menuelement . "']";
-
-                $session = $this->getSession();
-                $driver = $session->getDriver();
-                $webDriver = $session->getDriver()->getWebDriver();
-/*                $cap = $webDriver->getCapabilities();
-                var_dump($cap);
-
-                $dc = new Facebook\WebDriver\Remote\DesiredCapabilities();
-                $dc->setCapability(CapabilityType::UNEXPECTED_ALERT_BEHAVIOUR,
-                        UnexpectedAlertBehaviour::IGNORE);
-//WebDriverCapabilityType::HANDLES_ALERTS
-*/
-        // unhandledPromptBehavior => ignore, default is "dismiss and notify state" (chrome)
-        try {
-            $state = $this->evaluate_script('return document.readyState');
-            echo 'state ' . $state . PHP_EOL;
-
-            // echo 'click on ' . $xpath . PHP_EOL;
-            // $this->execute("behat_general::i_click_on", [$xpath, 'xpath_element']);
-
-            // Get required context and execute the api.
-            // $context = behat_context_helper::get('behat_general');
-            // call_user_func_array(array($context, 'i_click_on'), [$xpath, 'xpath_element']);
-            $this->click_on_contextmenue_item($menuelement);
-//            behat_base::execute_in_matching_contexts('general', 'i_click_on',  [$xpath, 'xpath_element']);
-            return;
-
-            // $this->execute("behat_general::i_wait_seconds", [1]);
-            sleep(3000);
-
-            $state = $this->evaluate_script('return document.readyState');
-            echo 'state ' . $state . PHP_EOL;
-
-            echo 'switch to alert ' . PHP_EOL;
-            $alert = $webDriver->switchTo()->alert();
-            var_dump($alert);
-            // $text = $alert->getText();
-            // echo 'Text: ' . $text . PHP_EOL;
-            $alert->sendKeys('filename.java');
-            $alert->accept();
-
-
-/*            $webDriver->wait(20, 1000)->until(
-                WebDriverExpectedCondition::alertIsPresent()
-            );
-*/
-
-            // Wait for pending js.
-            // $this->wait_for_pending_js();
-            echo 'hurra';
-        } catch (/* Exception*/ UnexpectedAlertOpenException $f) {
-            echo 'UnexpectedAlertOpenException' . PHP_EOL;
-            /*            try {
-                            Alert alert = driver.switchTo().alert();
-                            String alertText = alert.getText();
-                            System.out.println("Alert data: " + alertText);
-                            alert.accept();
-                        } catch (NoAlertPresentException e) {
-                            e.printStackTrace();
-                        }*/
-            return;
-            $session = $this->getSession();
-            $driver = $session->getDriver();
-            $webDriver = $session->getDriver()->getWebDriver();
-
-            echo 'search alert ' . PHP_EOL;
-            echo 'wait ' . PHP_EOL;
-            // $alert = $driver->switchTo()->alert();
-            $this->execute("behat_general::i_wait_seconds", [2]);
-            // $webDriver->wait()->until(WebDriverExpectedCondition::alertIsPresent());
-            $alert = $webDriver->switchTo()->alert();
-            $text = $alert->getText();
-            echo 'Text: ' . $text . PHP_EOL;
-            var_dump($alert);
-            echo 'send keys ' . PHP_EOL;
-            // $alert = $webDriver->getCurrentPromptOrAlert();
-#            self::assertEquals('Can you handle this?', $alert->getText());
-            $alert->sendKeys('MyString.java');
-            $alert->accept();
-            //              });
-//            }
-
-            //          $session->switchToWindow('New filename:');
-
-            /*
-            try {
-                Alert alert = driver.switchTo().alert();
-        String alertText = alert.getText();
-        System.out.println("Alert data: " + alertText);
-        alert.accept();
-            } catch (NoAlertPresentException e) {
-                e.printStackTrace();
-            }*/
-        }
-
-        echo 'no exception' . PHP_EOL;
-
-        // $session->expectDialog(Session::PROMPT_DIALOG)->withText('dialog text here')->typeText('some text here')->thenPressOK();
-        // $session->expectDialog(Session::PROMPT_DIALOG)->withText('dialog text here')->typeText('some text here')->thenPressOK();
+        $this->execute("behat_general::i_click_on", [$xpath, 'xpath_element']);
+        $this->execute("behat_general::i_wait_seconds", [1]);
     }
 
 
