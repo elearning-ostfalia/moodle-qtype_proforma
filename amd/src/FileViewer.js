@@ -50,6 +50,8 @@ import "./active-line";
 import * as Str from 'core/str';
 // import * as notification from 'core/notification';
 import {get_string as getString} from 'core/str';
+import ModalFactory from 'core/modal_factory';
+import ModalEvents from 'core/modal_events';
 
 // Use this for editortest.html
 // -----------------------------
@@ -110,6 +112,31 @@ function getString(text) { return text; }
 // - Menu erstmal raus - außer zum Wechseln des Themes
 // - Andere Browser testen
 
+function modalPrompt(title, label, defaultValue, callback) {
+    ModalFactory.create({
+        type: ModalFactory.types.SAVE_CANCEL,
+        title: title,
+        buttons: {
+            save: 'Ok',
+        },
+        body:
+            label +
+            '<form>\n' +
+//            '<label for="promptname"' + label + ':</label>\n' +
+            '<input type="text" name="promptname" value="' + defaultValue + '" size="63"></input>\n' +
+            '</form>',
+    }).then(modal => {
+        modal.getRoot().on(ModalEvents.save, () => {
+            console.log(modal);
+            let result = document.querySelector("input[name='promptname']").value;
+            console.log(result);
+            modal.getRoot().remove();
+            callback(result);
+        });
+        modal.show();
+    });
+}
+
 /**
  * TreeNode
  */
@@ -124,27 +151,29 @@ class TreeNode {
             event.preventDefault();
             event.stopPropagation(); // otherwise parent node handles event, too
 
-            this.setContextMenu();
-            if (this.getFramework().menu === undefined) {
-                return;
-            }
-            const showMenu = ({ top, left }) => {
-                this.getFramework().menu.style.left = `${left}px`;
-                this.getFramework().menu.style.top = `${top}px`;
-                // this.getFramework().menu.style.setProperty('--mouse-x', event.clientX + 'px');
-                // this.getFramework().menu.style.setProperty('--mouse-y', event.clientY + 'px');
-                this.getFramework().toggleContextmenu('show');
-            };
+            this.setContextMenu()
+                .then(() => {
+                    if (this.getFramework().menu === undefined) {
+                        return;
+                    }
+                    const showMenu = ({ top, left }) => {
+                        this.getFramework().menu.style.left = `${left}px`;
+                        this.getFramework().menu.style.top = `${top}px`;
+                        // this.getFramework().menu.style.setProperty('--mouse-x', event.clientX + 'px');
+                        // this.getFramework().menu.style.setProperty('--mouse-y', event.clientY + 'px');
+                        this.getFramework().toggleContextmenu('show');
+                    };
 
-            // console.log(`contextmenu: ${event}`);
+                    // console.log(`contextmenu: ${event}`);
 
-            const origin = {
-                left: event.pageX,
-                top: event.pageY
-            };
-            // console.log(`${event.pageX}px ${event.pageY}px`);
-            // console.log(event);
-            showMenu(origin);
+                    const origin = {
+                        left: event.pageX,
+                        top: event.pageY
+                    };
+                    // console.log(`${event.pageX}px ${event.pageY}px`);
+                    // console.log(event);
+                    showMenu(origin);
+                });
         };
         this.handleDragStart = event => {
             if (event.dataTransfer.getData('treeitem').length == 0) {
@@ -159,6 +188,7 @@ class TreeNode {
     // Override
     setContextMenu() {
         TreeNode.menu = undefined;
+        return Promise.resolve(null);
     }
     displayInTreeview(domnode) {
         const li = document.createElement('li');
@@ -184,9 +214,20 @@ class TreeNode {
         let text = await getString(prompt, 'qtype_proforma', name);
         if (confirm(text)) {
             callback();
-        }
+        }    
+    /*
+        const text = await getString(prompt, 'qtype_proforma', name);
+        ModalFactory.create({
+            type: ModalFactory.types.SAVE_CANCEL,
+            title: 'Confirm',
+            body: text,
+        }).then(modal => {
+            callback();
+            modal.remove();
+        }); */
     }
 }
+
 
 /**
  * FileNode
@@ -317,7 +358,7 @@ export class FileNode extends TreeNode {
         // this is something from codemirror in promise done function???
         // so this is renamed
         let thecontext = this;
-        Str.get_strings([
+        return Str.get_strings([
             {key: 'delete', component: 'qtype_proforma'},
             {key: 'rename', component: 'qtype_proforma'}
         ]).done(function(strings) {
@@ -354,9 +395,25 @@ export class FolderNode extends TreeNode {
             this.getFramework().handleClick(event);
             let thecontext = this;
             Str.get_strings([
-                {key: 'enterfilename', component: 'qtype_proforma'},
+                {key: 'newemptyfile', component: 'qtype_proforma'},
+                {key: 'filename', component: 'qtype_proforma'},
             ]).done(function(strings) {
-                let filename = prompt(strings[0] + ':', "");
+                modalPrompt(strings[0], strings[1], '', (filename) => {
+                    if (filename !== null && filename.length > 0) {
+                        if (!thecontext.isNameChildUnique(filename)) {
+                            thecontext.alreadyExists(filename);
+                            // alert(filename + ' already exists');
+                            return;
+                        }
+                        let node = new FileNode(filename);
+                        thecontext.appendFile(node);
+                        node.displayInTreeview(thecontext.element.querySelector('[role="group"]'));
+                        thecontext.expand(true);
+                        thecontext.getFramework().syncer.newfile(node.getPath());
+                    }
+                });
+
+/*                let filename = prompt(strings[0] + ':', "");
                 if (filename !== null && filename.length > 0) {
                     if (!thecontext.isNameChildUnique(filename)) {
                         thecontext.alreadyExists(filename);
@@ -368,7 +425,7 @@ export class FolderNode extends TreeNode {
                     node.displayInTreeview(thecontext.element.querySelector('[role="group"]'));
                     thecontext.expand(true);
                     thecontext.getFramework().syncer.newfile(node.getPath());
-                }
+                }*/
             }) //. fail(notification.exception)
                 .fail(function (response) {
                     console.error(response);
@@ -670,7 +727,7 @@ export class FolderNode extends TreeNode {
     setContextMenu() {
         console.log('FolderNode setContextMenu');
         let thecontext = this; // This is changed to something codemirror in promise
-        Str.get_strings([
+        return Str.get_strings([
             {key: 'newemptyfile', component: 'qtype_proforma'},
             {key: 'loadfile', component: 'qtype_proforma'},
             {key: 'newfolder', component: 'qtype_proforma'},
@@ -713,7 +770,7 @@ export class RootNode extends FolderNode {
     setContextMenu() {
         console.log('RootNode setContextMenu');
         let thecontext = this; // This is changed to something codemirror in promise
-        Str.get_strings([
+        return Str.get_strings([
             {key: 'newemptyfile', component: 'qtype_proforma'},
             {key: 'loadfile', component: 'qtype_proforma'},
             {key: 'newfolder', component: 'qtype_proforma'}
@@ -854,7 +911,7 @@ class EditorStack {
             alert('maximum number of editors reached');
             return;
         }
-        if (filenode.mode !== undefined) {
+        // if (filenode.mode !== undefined) {
             // Create tab
             // let tab = document.createElement('span');
             let tab = document.createElement('button');
@@ -867,7 +924,11 @@ class EditorStack {
                         text = '???';
                     }
                     item.editor.setValue(text);
-                    item.editor.setOption("mode", filenode.mode);
+                    if (filenode.mode !== undefined) {
+                        item.editor.setOption("mode", filenode.mode);
+                    } else {
+                        console.error('unknown file mode');
+                    }
                     // item.editor.setOption("readOnly", this.readOnly);
                     item.editor.refresh(); // for old version of Codemirror
                 })
@@ -897,9 +958,9 @@ class EditorStack {
 
             this.nodes.push(item);
             this._switchTo(item);
-        } else {
+/*        } else {
             console.error('unknown file mode');
-        }
+        }*/
     }
 
     switchEditorTo(filenode) {
