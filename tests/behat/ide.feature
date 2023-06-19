@@ -14,9 +14,17 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     And the following "courses" exist:
       | fullname | shortname | category |
       | Course 1 | C1        | 0        |
+    And the following "question categories" exist:
+      | contextlevel | reference | name           |
+      | Course       | C1        | Test questions |
+    And the following "questions" exist:
+      | questioncategory | qtype        | name         | template         |
+      | Test questions   | proforma     | proforma-001 | explorer           |
     And the following "activities" exist:
       | activity   | name      | course | idnumber |
       | quiz       | Quiz 1    | C1     | quiz1    |
+    And quiz "Quiz 1" contains the following questions:
+      | proforma-001 | 1 |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
@@ -34,12 +42,64 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
+  Scenario: Explorer/Student Reopen attempt with two files
+##########################################################################
+    # student activity
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Attempt quiz"
+    And I should see "Solution"
+    # Create new file MyString.java
+    And I click on "New file..." in "Solution" contextmenu
+    And I should see "New file"
+    And I should see "Filename"
+    And I set the field with xpath "//input[@name='promptname']" to "MyString.java"
+    And I press "Ok"
+    And I should see "MyString.java"
+    And I should not see "New file"
+    And I should not see "Filename"
+    # Create new file Dummy.java
+    And I click on "New file..." in "Solution" contextmenu
+    And I should see "New file"
+    And I should see "Filename"
+    And I set the field with xpath "//input[@name='promptname']" to "Dummy.java"
+    And I press "Ok"
+    And I should see "Dummy.java"
+    And I should not see "New file"
+    And I should not see "Filename"
+    # Doubleclick on both filenames
+    And I doubleclick on "//*[text() = 'MyString.java']" "xpath_element"
+    And I doubleclick on "//*[text() = 'Dummy.java']" "xpath_element"
+    # Enter text in Dummy.java
+    And I set the explorer editor text to "hallo Dummy"
+    # Enter text in MyString.java
+    And I doubleclick on "//*[text() = 'MyString.java']" "xpath_element"
+    And I set the explorer editor text to "hallo MyString"
+    # Submit
+    And I press "Finish attempt"
+
+    And I press "Return to attempt"
+    And I doubleclick on "//*[text() = 'MyString.java']" "xpath_element"
+    And I should see "hallo MyString"
+    And I doubleclick on "//*[text() = 'Dummy.java']" "xpath_element"
+    And I should see "hallo Dummy"
+
+##########################################################################
+  @javascript @_file_upload @_switch_window
   Scenario: Run test as a student TODO
 ##########################################################################
     # teacher creates question in quiz
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "ProFormA" question to the "Quiz 1" quiz with:
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
+    # And I log in as "teacher1"
+    # And I am on "Course 1" course homepage with editing mode on
+    When I press "Create a new question ..."
+    And I set the field "item_qtype_proforma" to "1"
+    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
+    And I set the field "item_java" to "1"
+    And I click on "Ok" "button" in the "Select programming language" "dialogue"
+    Then I should see "Adding a ProFormA question"
+
+    When I set the following fields to these values:
+    # And I add a "ProFormA" question to the "Quiz 1" quiz with:
       | Question name            | Java question                  |
       | Question text            | Write a class MyString that checks if a given string is a palindrome.  |
       | Response format          | explorer                         |
@@ -76,14 +136,23 @@ public class PalindromTest {
 """
 
     And I press "id_submitbutton"
+    And I am on the "Quiz" "mod_quiz > edit" page
+    # Add Question Essay 01 from question bank.
+    And I open the "Page 1" add to quiz menu
+    And I pause
+    And I follow "from question bank"
+    And I click on "Add to quiz" "link" in the "Java question" "table_row"
+    And I should see "Java question" on quiz page "1"
+    And I pause
     And I log out
 
     # student activity
     When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I pause
     # And I press "Attempt quiz now"
     And I press "Attempt quiz"
     And I should see "Solution"
-    And I pause
+#    And I pause
     # The following code does not work!!!
     And I click on "New empty file..." in "Solution" contextmenu
     And I should see "New filename:"

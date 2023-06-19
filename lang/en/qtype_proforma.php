@@ -152,10 +152,6 @@ All files can be uploaded individually or packed as exactly one zip archive.<br>
 $string['makerun_help'] = 'E.g. if the executable created by the Makefile is <code>test</code>, then the 
 command to run the test is <code>./test</code>.';
 
-$string['junit_help_short'] = 'All files can be uploaded individually or packed as exactly one zip archive.';
-$string['junitentry_help'] = 'The entrypoint is the class that contains the JUnit test functions. The package name must be included.<br>
-E.g. <code>de.ostfalia.cs.gdp.Test.MyTest</code>';
-
 $string['codeempty'] = 'Testcode required';
 $string['titleempty'] = 'Title required';
 $string['versionrequired'] = 'Version required.';
@@ -371,9 +367,10 @@ $string['delete'] = 'Delete';
 $string['rename'] = 'Rename';
 $string['loadfile'] = 'Load file';
 $string['newfolder'] = 'New folder';
-$string['newemptyfile'] = 'New empty file';
+$string['newemptyfile'] = 'New file';
 $string['enterfoldername'] = 'New foldername';
 $string['enterfilename'] = 'New filename';
+$string['filename'] = 'Filename';
 $string['alreadyexists'] = '{$a} already exists';
 $string['deletefile'] = 'Are you sure that you want to delete file {$a}?';
 $string['deletefolder'] = 'Are you sure that you want to delete folder {$a}?';
@@ -418,7 +415,7 @@ $string['taskeditornewpythondoc'] = 'New Python doctest';
 $string['taskeditornewgoogletest'] = 'New Google test';
 $string['taskeditornewcunit'] = 'New CUnit test';
 
-$string['loadfile'] = 'New CUnit test';
+$string['loadfile'] = 'Open file';
 
 $string['openfile'] = '<Open file...>';
 $string['newfile'] = '<New file>';
