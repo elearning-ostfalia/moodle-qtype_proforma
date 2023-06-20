@@ -114,11 +114,15 @@ class XmlReader {
     }
 
     readSingleNode(xpath, node) {
-        const nodes = this.xmlDoc.evaluate(xpath, node?node:this.rootNode, this.nsResolver,
+        let contextNode = node?node:this.rootNode;
+        if (!contextNode) {
+            console.error('No node for ' + xpath);
+            return null;
+        }
+        const nodes = this.xmlDoc.evaluate(xpath, contextNode, this.nsResolver,
             XPathResult.UNORDERED_NODE_ITERATOR_TYPE /*FIRST_ORDERED_NODE_TYPE*/, null);
         return nodes.iterateNext(); // .singleNodeValue;
     }
-
 
     readSingleText(xpath, node, defaultValue) {
         const nodes = this.xmlDoc.evaluate(xpath, node?node:this.rootNode, this.nsResolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
@@ -268,10 +272,18 @@ export class TaskClass {
     readTestConfig(xmlfile, testid, configItem, context) {
         try {
             let xmlReader = new XmlReader(xmlfile);
-            xmlReader.setRootNode(xmlReader.readSingleNode("/dns:task/dns:tests/dns:test[@id="+testid+"]"));
+            const textnode = xmlReader.readSingleNode('/dns:task/dns:tests/dns:test[@id="'+testid+'"]');
+            if (!textnode) {
+                throw new Error('XML: Missing node for test "' + testid + '" under task/tests');
+            }
+            xmlReader.setRootNode(textnode);
             let configNodeNode = xmlReader.readSingleNode("dns:test-configuration");
+            if (!configNodeNode) {
+                throw new Error('XML: Missing node for test-configuration under test "' + testid + '"');
+            }
             configItem.onReadXml(this.tests[testid], xmlReader, configNodeNode, context);
         } catch (err){
+            console.error(err);
             const text = "Error while parsing test configuration in xml file:\n\n" + err;
             alert (text);
             // setErrorMessage("Error while parsing test configuration in xml file", err);
