@@ -114,17 +114,25 @@ function getString(text) { return text; }
 // - Menu erstmal raus - außer zum Wechseln des Themes
 // - Andere Browser testen
 
-function modalPrompt(title, label, defaultValue, callback) {
-    ModalFactory.create({
-        type: ModalFactory.types.SAVE_CANCEL,
-        title: title,
-        buttons: {
-            save: 'Ok',
-        },
-        body:
-            label +
-            '<input type="text" name="promptname" value="' + defaultValue + '" size="63"></input>',
-    }).then(modal => {
+function modalPrompt(titleId, labelId, defaultValue, callback) {
+    // TODO: wait in parallel
+    Str.get_strings([
+        {key: titleId, component: 'qtype_proforma'},
+        {key: labelId, component: 'qtype_proforma'},
+        ])
+    .then(strings => {
+        return ModalFactory.create({
+            type: ModalFactory.types.SAVE_CANCEL,
+            title: strings[0],
+            buttons: {
+                save: 'Ok',
+            },
+            body:
+                strings[1] +
+                '<input type="text" name="promptname" value="' + defaultValue + '" size="63"></input>',
+        });
+    })
+    .then(modal => {
         modal.getRoot().on(ModalEvents.save, () => {
             let result = document.querySelector("input[name='promptname']").value;
             // console.log(result);
@@ -405,26 +413,7 @@ export class FolderNode extends TreeNode {
         this.boundHandleNewFile = event => {
             this.getFramework().handleClick(event);
             let thecontext = this;
-            Str.get_strings([
-                {key: 'newemptyfile', component: 'qtype_proforma'},
-                {key: 'filename', component: 'qtype_proforma'},
-            ]).done(function(strings) {
-                modalPrompt(strings[0], strings[1], '', (filename) => {
-                    if (filename !== null && filename.length > 0) {
-                        if (!thecontext.isNameChildUnique(filename)) {
-                            thecontext.alreadyExists(filename);
-                            // alert(filename + ' already exists');
-                            return;
-                        }
-                        let node = new FileNode(filename);
-                        thecontext.appendFile(node);
-                        node.displayInTreeview(thecontext.element.querySelector('[role="group"]'));
-                        thecontext.expand(true);
-                        thecontext.getFramework().syncer.newfile(node.getPath());
-                    }
-                });
-
-/*                let filename = prompt(strings[0] + ':', "");
+            modalPrompt('newemptyfile', 'filename', '', (filename) => {
                 if (filename !== null && filename.length > 0) {
                     if (!thecontext.isNameChildUnique(filename)) {
                         thecontext.alreadyExists(filename);
@@ -436,11 +425,8 @@ export class FolderNode extends TreeNode {
                     node.displayInTreeview(thecontext.element.querySelector('[role="group"]'));
                     thecontext.expand(true);
                     thecontext.getFramework().syncer.newfile(node.getPath());
-                }*/
-            }) //. fail(notification.exception)
-                .fail(function (response) {
-                    console.error(response);
-                });
+                }
+            });
         };
         this.boundHandleLoadFile = event => {
             this.getFramework().handleClick(event);
