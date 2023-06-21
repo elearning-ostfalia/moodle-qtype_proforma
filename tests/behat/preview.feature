@@ -85,10 +85,12 @@ Feature: PREVIEW
     And I should see "Solution"
 #    And I pause
 
-    # The following code does not work!!!
-    And I click on "New empty file..." in "Solution" contextmenu
-    And I should see "New filename:"
-    #### TODO: Enter filename and
+    And I click on "New file..." in "Solution" contextmenu
+    And I set the field with xpath "//input[@name='promptname']" to "MyString.java"
+    And I press "Ok"
+    And I should see "MyString.java"
+
+    And I should see "TODO copy from ide student..."
 
     # text in response template
 #    And I should not see "#code snippet for python"

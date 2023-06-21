@@ -47,8 +47,7 @@ Feature: ADD JAVA QUESTION
     
     And I should not see "Model solution files "
     # JUnit
-    And I pause
-    When I set the field "testcode[0]" to "class XClass {}"
+    When I set the codemirror "testcode_0" to "class XClass {}"
     And I press "id_submitbutton"
     Then I should see "java-question"
 
@@ -198,15 +197,14 @@ Feature: ADD JAVA QUESTION
 ##########################################################################
   Scenario: Create, save and open a ProFormA java question with compilation and two Junit tests
 ##########################################################################
-  When I create a new "java" question
-  And I set the following fields to these values:
-      | Question name            | java-question with 2 tests     |
-      | Question text            | write a java program that..... |
-      | Response format          | editor                         |
-      | Response filename        | MyClass.java                   |
-
-      | Title                    | JUnit #1                       |
-
+    When I create a new "java" question
+    And I set the following fields to these values:
+        | Question name            | java-question with 2 tests     |
+        | Question text            | write a java program that..... |
+        | Response format          | editor                         |
+        | Response filename        | MyClass.java                   |
+        | Title                    | JUnit #1                       |
+    And I press "id_submitbutton"
     Then I should see "Testcode required"
     And I set the codemirror "responsetemplate" to "// type your code here"
     And I set the codemirror "modelsolution" to "// code for model solution"

@@ -34,6 +34,8 @@ Feature: ADD JAVA QUESTION WITH VERSION CONTROL SYSTEM USE
       | Question text            | write a java program that..... |
       | Response format          | Version control system         |
       | URI of repository        | https://code.ostfalia.de/svn/{group}/task1/  |
+    And I press "id_submitbutton"
+
     Then I should see "Title required"
     When I set the field "testtitle[0]" to "JUnit test title"
     And I set the codemirror "testcode_0" to "class XClass {}"
