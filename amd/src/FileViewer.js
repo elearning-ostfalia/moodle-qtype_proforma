@@ -123,21 +123,27 @@ function modalPrompt(title, label, defaultValue, callback) {
         },
         body:
             label +
-            '<form>\n' +
-//            '<label for="promptname"' + label + ':</label>\n' +
-            '<input type="text" name="promptname" value="' + defaultValue + '" size="63"></input>\n' +
-            '</form>',
+            '<input type="text" name="promptname" value="' + defaultValue + '" size="63"></input>',
     }).then(modal => {
         modal.getRoot().on(ModalEvents.save, () => {
-            console.log(modal);
             let result = document.querySelector("input[name='promptname']").value;
-            console.log(result);
+            // console.log(result);
             modal.getRoot().remove();
             callback(result);
         });
         modal.show()
             // Set focus into input field.
             .then(() => document.querySelector("input[name='promptname']").focus());
+
+        // Add trigger for return to trigger default action.
+        let defaultButton = modal.getRoot().find('.btn-primary');
+        document.querySelector("input[name='promptname']")
+            .addEventListener("keyup", function(event) {
+                event.preventDefault();
+                if (event.keyCode === 13) {
+                    defaultButton.click();
+                }
+            });
     });
 }
 
