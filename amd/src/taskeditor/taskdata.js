@@ -492,13 +492,16 @@ export class TaskClass {
                             break;
                         case "embedded-bin-file":
                             // taskfile.filetype = 'embedded';
+                            function b64DecodeUnicode(encoded) {
+                                return Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
+                            }
                             taskfile.filetype = 'file';
                             taskfile.filename = xmlReader.readSingleText("@filename", content);
-                            taskfile.content = atob(content.textContent);
+                            const filecontent =  b64DecodeUnicode(content.textContent);
+                            taskfile.content = filecontent;
                             taskfile.binary = true;
-                            const filecontent =  atob(content.textContent);
                             console.log(taskfile.id + ' is embedded-bin-file');
-                            console.log(filecontent);
+                            // console.log(filecontent);
                             console.log(filecontent.length);
                             const mimetype = taskeditorconfig.getMimeType('', taskfile.filename); //get mime type
                             let fileObject = new FileStorage(true, mimetype, filecontent, taskfile.filename);
