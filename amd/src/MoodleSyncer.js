@@ -91,7 +91,8 @@ export class MoodleQuestionAttemptSyncer extends Syncer {
             folder.appendFile(node);
             if (firstFile === undefined) {
                 firstFile = node;
-                framework.addEditor(node);
+                // framework.addEditor(node);
+                framework.editorstack.switchEditorTo(node);
             }
         });
         // Dummy
@@ -290,7 +291,8 @@ export class MoodleSyncer extends Syncer {
                             if (firstFile === undefined) {
                                 firstFile = filenode;
                                 // Open first file in editor.
-                                framework.addEditor(filenode);
+                                framework.editorstack.switchEditorTo(filenode);
+                                // framework.addEditor(filenode);
                             }
                         }
                     });

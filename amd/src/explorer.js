@@ -68,15 +68,20 @@ function _start(nodename, options) {
             framework.save(); // synchronous action!
         };
     }
-
-    /*
-    window.onbeforeunload = function() {
+    window.onunload = function(event) {
+    // window.onbeforeunload = function() {
+        // Hook for saving intermediate changes on leaving the page...
+        event.preventDefault();
+        console.log('Save framework');
+        // framework.save(); // synchronous action!
+        this.editorstack.saveCurrentEditor(false);
+        console.log('Framework saved');
+        // alert('Framework saved');
         // This function disables everything if confirmed and page is turned.
         // So this does not make sense this way.
-        // framework.save(); // synchronous action!
-        return confirm('Are you sure you want to leave?');
-    };*/
-
+        // return confirm('Are you sure you want to leave?');
+        event.returnValue = null;
+    };
 /*
     Promise.all([
         import('./FileViewer.js')

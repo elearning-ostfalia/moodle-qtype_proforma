@@ -29,6 +29,8 @@
 /** NOTE:
  * Currently creating subfolders is disabled, because the moodle question filesaver does not support it */
 
+const autosaveIntervall = 30000; // in milliseconds
+
 /* eslint-disable no-unused-vars */
 
 // Use these imports for Moodle
@@ -341,6 +343,7 @@ export class FileNode extends TreeNode {
     }
     updateContent(newcontent, async) {
         this.filecontent = newcontent;
+        console.log('Update ' + this.getPath() + ' with ' + newcontent.substr(0, 20) + '...');
         return this.getFramework().syncer.update(this.getPath(), newcontent, async);
     }
     displayInTreeview(domnode) {
@@ -842,9 +845,18 @@ class EditorStack {
         this.donNodeTabs = donNodeTabs;
         this.focus = undefined; // the tab that has got the focus
         this.framework = framework;
+
+    }
+
+    cleanup() {
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
     }
 
     _switchTo(item, index = undefined) {
+        this.saveCurrentEditor(true);
+
         if (index === undefined) {
             // figure out value of i
             for (index = 0; index < this.nodes.length; index++) {
@@ -909,7 +921,7 @@ class EditorStack {
         }
     }
     addEditor(filenode) {
-        if (EditorStack.maxEditors == this.nodes.length) {
+        if (EditorStack.maxEditors === this.nodes.length) {
             alert('maximum number of editors reached');
             return;
         }
@@ -928,9 +940,10 @@ class EditorStack {
                     item.editor.setValue(text);
                     if (filenode.mode !== undefined) {
                         item.editor.setOption("mode", filenode.mode);
-                    } else {
-                        console.error('unknown file mode');
-                    }
+                    } // else {
+                        // E.g. makefile has no extension and therefore no known mode.
+                        // console.error('unknown file mode');
+                    // }
                     // item.editor.setOption("readOnly", this.readOnly);
                     item.editor.refresh(); // for old version of Codemirror
                 })
@@ -975,8 +988,40 @@ class EditorStack {
             }
         }
         this.addEditor(filenode);
+        // Start auto-save timer
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
+        let that = this;
+        if (autosaveIntervall > 0) {
+            this.timer = setInterval(function() {
+                console.log('proforma editor autosave');
+                that.saveCurrentEditor(true);
+            }, autosaveIntervall);
+        }
     }
 
+    saveCurrentEditor(async) {
+        let currentNode = this._getCurrentNode();
+        if (currentNode) {
+            // save content of current editor
+            if (currentNode.editor.getValue().trim().length > 0) {
+                currentNode.fileNode.updateContent(currentNode.editor.getValue(), async);
+            } else {
+                // currentNode.fileNode.updateContent(' ', true);
+            }
+        }
+    }
+
+    _getCurrentNode() {
+        if (this.nodes.length > 0) {
+            // Call refresh for current Codemirror
+            // in order to update text window. Otherwise
+            // text is cut off
+            return this.nodes[this.nodes.length-1];
+        }
+        return null;
+    }
     handleResize() {
         if (this.nodes.length > 0) {
             // Call refresh for current Codemirror
@@ -1246,7 +1291,8 @@ export class Framework {
         this.editorstack.switchEditorTo(filenode);
     }
     addEditor(filenode) {
-        this.editorstack.addEditor(filenode);
+        this.editorstack.switchEditorTo(filenode);
+        // this.editorstack.addEditor(filenode);
     }
     deleteEditor(filenode) {
         this.editorstack.deleteEditor(filenode);
