@@ -177,7 +177,8 @@ $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 $string['uploaduri_path'] = 'URI: Path for uploading task';
 $string['uploaduri_path_desc'] = 'Path Part of Grader URI for uploads';
 $string['runtesturi_path'] = 'URI: Path for running tests';
-$string['runtesturi_path_desc'] = 'Path Part of Grader URI for running the tests with progress information';
+$string['runtesturi_path_desc'] = 'Path Part of Grader URI for running the tests with progress information, 
+requires at least Praktomat 4.17';
 $string['c_graderuri_host'] = 'Grader for c';
 $string['c_graderuri_host_desc'] = '';
 $string['cpp_graderuri_host'] = 'Grader for C++';
@@ -253,10 +254,13 @@ $string['usecodemirror_desc'] = 'For student response and for input of model sol
 $string['uuid'] = 'UUID';
 $string['uuid_hint'] = $string['uuid'];
 $string['uuid_hint_help'] = 'universal unique identifier of ProFormA task file';
-$string['configmaxbytes'] = 'Max. upload size';
-$string['maxbytes'] = 'Max. upload size';
+$string['configmaxbytes'] = 'Maximum sum of all uploaded files';
+$string['maxbytes'] = 'Maximum response upload size';
 $string['maximumsubmissionsize'] = $string['maxbytes'];
 $string['maximumsubmissionsize_help'] = 'Files uploaded by students may be up to this size.';
+$string['taskmaxbytes'] = 'Maximum task size';
+$string['maximumtasksize_help'] = 'Maximum size of a ProForma task';
+
 $string['acceptedfiletypes'] = 'Accepted file types';
 $string['acceptedfiletypes_help'] = 'Accepted file types can be restricted by entering a semicolon-separated list of mimetypes, for example \'text/plain; application/java-archive; application/zip; application/xml\'. You may also limit to extensions by including the dot, for example \'.java; .jar\' If the field is left empty, then all file types are allowed..';
 $string['nonexistentfiletypes'] = 'The following file types were not recognised: {$a}';

@@ -192,7 +192,7 @@ $string['graderuri_host_desc'] = 'Protokoll (Schema) und Server der Grader URI';
 $string['graderuri_path'] = 'URI: Pfad';
 $string['graderuri_path_desc'] = 'Pfad der Grader URI';
 $string['runtesturi_path'] = 'URI: Pfad zum Laufenlassen der Tests (mit Fortschrittsinformationen)';
-$string['runtesturi_path_desc'] = 'Pfad zum Laufenlassen der Tests mit Fortschrittsinformationen';
+$string['runtesturi_path_desc'] = 'Pfad zum Laufenlassen der Tests mit Fortschrittsinformationen, ab Praktomat 4.17';
 
 $string['c_graderuri_host'] = 'Grader für c';
 $string['c_graderuri_host_desc'] = '';
@@ -233,6 +233,8 @@ $string['configmaxbytes'] = 'maximale Summe der Dateigrößen der studentischen 
 $string['maxbytes'] = 'Max. Größe aller Dateien';
 $string['maximumsubmissionsize'] = $string['maxbytes'];
 $string['maximumsubmissionsize_help'] = 'Die Summe der Dateigrößen aller hochgeladene Dateien darf diesen Wert nicht überschreiten.';
+$string['taskmaxbytes'] = 'Maximale Größe Aufgabendatei';
+$string['maximumtasksize_help'] = 'Maximale Größe einer ProFormA-Aufgabendatei';
 
 $string['acceptedfiletypes'] = 'Akzeptierte Dateitypen';
 $string['acceptedfiletypes_help'] = 'Akzeptierte Dateien können durch Eingabe einer mit Semikolon getrennten Liste von Mimetypes eingeschränkt werden, z.B. \'text/plain; application/java-archive; application/zip; application/xml\'. Auch können Dateiendungen vorgegeben werden (inkl "."): z.B. \'.java; .jar\'. Wenn das Feld leer bleibt, dann werden alle Dateien erlaubt.';

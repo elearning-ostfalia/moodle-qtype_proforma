@@ -310,10 +310,17 @@ class proforma_form_creator extends base_form_creator {
 
         // Task Filename.
         // Remove hidden element in base class.
+        $tasksize = get_config('qtype_proforma', 'taskmaxbytes');
+
         $mform->removeElement(qtype_proforma::FILEAREA_TASK);
         $mform->addElement('filemanager', qtype_proforma::FILEAREA_TASK,
-            get_string('taskfilename', 'qtype_proforma'), null,
-            array('subdirs' => false, 'maxfiles' => 1, 'accepted_types' => array('.zip', '.xml')));
+            get_string('taskfilename', 'qtype_proforma'), null, [
+                'subdirs' => false,
+                'maxfiles' => 1,
+                'accepted_types' => array('.zip', '.xml'),
+                'maxbytes' => $tasksize
+            ]
+        );
         $mform->addHelpButton(qtype_proforma::FILEAREA_TASK, 'task_hint', 'qtype_proforma');
 
         // UUID.

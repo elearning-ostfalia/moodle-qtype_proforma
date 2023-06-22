@@ -74,6 +74,20 @@ $settings->add(new admin_setting_configselect('qtype_proforma/submissionproforma
         '2.1_new',
         $proformaversions));
 
+$name = new lang_string('taskmaxbytes', 'qtype_proforma');
+$description = new lang_string('maximumtasksize_help', 'qtype_proforma');
+if (isset($CFG->maxbytes)) {
+    $taskmaxbytes = get_config('qtype_proforma', 'taskmaxbytes');
+    $element = new admin_setting_configselect('qtype_proforma/taskmaxbytes',
+        $name,
+        $description,
+        $CFG->maxbytes, // min(10485760, $CFG->maxbytes),
+        get_max_upload_sizes($CFG->maxbytes, 0, 0, $taskmaxbytes));
+    $settings->add($element);
+} else {
+    $settings->add(new admin_setting_configtext('qtype_proforma/taskmaxbytes',
+        $name, $description, 10485760)); // 10MB as default
+}
 
 // Use CodeMirror.
 $settings->add(new admin_setting_heading('CodeMirror',

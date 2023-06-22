@@ -190,8 +190,11 @@ if (!$runtest) {
         throw new moodle_exception('no model solution file');
     }
     global $CFG;
+
+    // Check size of each uploaded file and scan for viruses.
     $maxsize = get_max_upload_file_size($CFG->maxbytes);
-// Check size of each uploaded file and scan for viruses.
+    $maxbytes = get_user_max_upload_file_size($context, $maxsize,
+        get_config('qtype_proforma', 'taskmaxbytes'));
     foreach ($_FILES as $uploadedfile) {
         $filename = clean_param($uploadedfile['name'], PARAM_FILE);
         if ($uploadedfile['size'] > $maxsize) {

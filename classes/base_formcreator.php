@@ -731,8 +731,15 @@ abstract class base_form_creator {
     }
 
     protected function add_detail_edit_button() {
+        global $USER, $CFG;
+        $usercontext = context_user::instance($USER->id);
+        // User can manage own files.
+        if (!has_capability('moodle/user:manageownfiles', $usercontext)) {
+            debugging('user cannot manage own files');
+            return;
+        }
+
         $mform = $this->_form;
-        // Add js.
         // Create context for mustache templates.
         $context =  [
             "proglang" => [
@@ -776,10 +783,10 @@ abstract class base_form_creator {
             // Currently no nore support for SetlX.
         }
 
-        $context =  (object)$context;
+        // Read max task size.
+        $context["taskmaxbytes"] = get_config('qtype_proforma', 'taskmaxbytes');
 
-        global $USER;
-        $usercontext = context_user::instance($USER->id);
+        $context =  (object)$context;
 
         $taskclientid = uniqid();
         $taskrepoparams = array(
@@ -822,17 +829,16 @@ abstract class base_form_creator {
         $params2->repo_id = $repo2->id;
 
 
-//        if (constant('EDITORINLINE')) {
-            global $OUTPUT;
-            $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
-            $mform->addElement('html', $taskeditor);
+        global $OUTPUT;
+        $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
+        $mform->addElement('html', $taskeditor);
 
-            // Add button.
-            $mform->addElement('button', 'editdetails', get_string('edittestdetails', 'qtype_proforma'));
+        // Add button.
+        $mform->addElement('button', 'editdetails', get_string('edittestdetails', 'qtype_proforma'));
 
-            global $PAGE;
-            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
-                array('id_editdetails', $context, $params1, $params2, true));
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
+            array('id_editdetails', $context, $params1, $params2, true));
 
 
 /*

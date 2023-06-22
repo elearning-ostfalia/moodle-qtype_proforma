@@ -242,7 +242,7 @@ export function taskTitleToFilename() {
 /**
  * create zip file
  */
-export function zipme(TEXT_CONTENT, startdownload) {
+export function zipme(TEXT_CONTENT, startdownload, maxsize) {
     // get task.xml content from user interface
     // var TEXT_CONTENT = taskXml; // $("#output").val();
     if (!TEXT_CONTENT || TEXT_CONTENT.length === 0) {
@@ -310,7 +310,12 @@ export function zipme(TEXT_CONTENT, startdownload) {
                 a.href = url;
                 a.click();
             } else {
-                return zippedBlob;
+                if (maxsize && zippedBlob.size > maxsize) {
+                    return Promise.reject('Task size is ' + zippedBlob.size + ' and exceeds maximum size (' + maxsize + ' bytes).\n' +
+                        'Uploading to the Moodle server is blocked!');
+                } else {
+                    return zippedBlob;
+                }
             }
     });
 }

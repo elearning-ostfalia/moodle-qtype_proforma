@@ -243,7 +243,7 @@ function isInputComplete() {
 /**
  * writes data from UI elements to xml string
  */
-export function convertToXML(topLevelDoc, rootNode) {
+export function convertToXML() {
 
     const t0 = performance.now();
     clearErrorMessage();
@@ -398,9 +398,10 @@ export function convertToXML(topLevelDoc, rootNode) {
     }*/
 
 
-    taskXml = task.writeXml(topLevelDoc, rootNode);
+    taskXml = task.writeXml();
     const t1 = performance.now();
     console.log("Call to convertToXML took " + (t1 - t0) + " milliseconds.")
+    console.log('Size of task is ' + taskXml.length);
     return taskXml;
 }
 

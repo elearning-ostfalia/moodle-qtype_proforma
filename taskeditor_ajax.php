@@ -41,10 +41,6 @@ $err = new stdClass();
 // $questionid = required_param('questionid', PARAM_INT); // Question id
 $contextid = required_param('contextid', PARAM_INT); // Context ID
 $itemid    = optional_param('itemid', 0, PARAM_INT);            // Itemid of task (draft)
-// $maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes
-// $areamaxbytes  = optional_param('areamaxbytes', FILE_AREA_MAX_BYTES_UNLIMITED, PARAM_INT); // Area max bytes.
-
-// list($context, $course, $cm) = get_context_info_array($contextid);
 
 // If uploaded file is larger than post_max_size (php.ini) setting, $_POST content will be empty.
 if (empty($_POST)) {
@@ -71,43 +67,33 @@ if ($context->contextlevel != CONTEXT_USER) {
     throw new moodle_exception('invalid context level');
 }
 
-// Since we're in the context of the user, it does not make sense checking course-level rights.
-// require_capability('moodle/question:editmine', $context);
-
-
-
-// Get repository instance information
-/*
-$coursemaxbytes = 0;
-if (!empty($course)) {
-    $coursemaxbytes = $course->maxbytes;
-}
-
-// Make sure maxbytes passed is within site filesize limits.
-$maxbytes = get_user_max_upload_file_size($context, $CFG->maxbytes, $coursemaxbytes, $maxbytes);
-*/
 
 
 if (!isset($_FILES['task'])) {
     throw new moodle_exception('no task file');
 }
 
-global $CFG;
-$maxsize = get_max_upload_file_size($CFG->maxbytes);
+global $CFG, $USER;
+$context = context_user::instance($USER->id);
+if ($context->id != $contextid) {
+    throw new moodle_exception('invalid context');
+}
+
 // Check size of each uploaded file and scan for viruses.
+$maxsize = get_max_upload_file_size($CFG->maxbytes);
+// $maxbytes = get_user_max_upload_file_size($context, $maxsize,
+//     get_config('qtype_proforma', 'taskmaxbytes'));
+
+$maxbytes = min(get_config('qtype_proforma', 'taskmaxbytes'), $maxsize);
+
 foreach ($_FILES as $uploadedfile) {
     $filename = clean_param($uploadedfile['name'], PARAM_FILE);
-    if ($uploadedfile['size'] > $maxsize) {
+    if ($maxbytes > 0 && $uploadedfile['size'] > $maxbytes) {
         throw new moodle_exception('file is too large');
     }
     \core\antivirus\manager::scan_file($uploadedfile['tmp_name'], $filename, true);
 }
 
-global $USER;
-$context = context_user::instance($USER->id);
-if ($context->id != $contextid) {
-    throw new moodle_exception('invalid context');
-}
 
 
 $fs = get_file_storage();

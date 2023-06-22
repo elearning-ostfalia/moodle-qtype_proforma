@@ -500,9 +500,7 @@ export class TaskClass {
                             const filecontent =  b64DecodeUnicode(content.textContent);
                             taskfile.content = filecontent;
                             taskfile.binary = true;
-                            console.log(taskfile.id + ' is embedded-bin-file');
-                            // console.log(filecontent);
-                            console.log(filecontent.length);
+                            // console.log(filecontent.length);
                             const mimetype = taskeditorconfig.getMimeType('', taskfile.filename); //get mime type
                             let fileObject = new FileStorage(true, mimetype, filecontent, taskfile.filename);
                             fileObject.setSize(filecontent.length);
@@ -784,15 +782,15 @@ export class TaskClass {
 
         try {
 
-            if (topLevelDoc) {
+/*            if (topLevelDoc) {
                 xmlDoc = topLevelDoc;
                 task = xmlDoc.createElementNS(xmlns, "task");
                 rootNode.appendChild(task);
             }
-            else {
+            else {*/
                 xmlDoc = document.implementation.createDocument(xmlns, "task", null);
                 task = xmlDoc.documentElement;
-            }
+            //}
 
             task.setAttribute("lang", this.lang);
             task.setAttribute("uuid", this.uuid);

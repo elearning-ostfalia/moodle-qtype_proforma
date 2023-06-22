@@ -65,13 +65,13 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
                 let timer1 = setInterval(function () {
                     button.click();
                     clearInterval(timer1);
-                }, 500);
+                }, 50);
             } else {
                 element.style.opacity = op;
                 element.style.filter = 'alpha(opacity=' + op * 100 + ")";
                 op -= op * 0.1;
             }
-        }, 50);
+        }, 40);
     }
 
     function closeSse() {
