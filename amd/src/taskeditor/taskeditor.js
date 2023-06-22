@@ -291,6 +291,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             updatebutton.onclick = (event) => {
                 event.preventDefault();
                 console.log('save before update');
+                updatebutton.disabled = true;
                 saveToServer()
                     .then(() => {
                         console.log('saveToServer returned');
@@ -300,6 +301,9 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                    .catch(error => {
                         console.log(error);
                         alert(error);
+                    })
+                    .finally(() => {
+                        updatebutton.disabled = false;
                     });
             };
         } else {
@@ -312,6 +316,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             submitbutton.onclick = (event) => {
                 event.preventDefault();
                 console.log('save before submit');
+                submitbutton.disabled = true;
                 saveToServer()
                     .then(() => {
                         console.log('saveToServer returned');
@@ -323,6 +328,9 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                     .catch(error => {
                         console.log(error);
                         alert(error);
+                    })
+                    .finally(() => {
+                        submitbutton.disabled = false;
                     });
             };
             /* Problem: in new questions the values are not submitted
@@ -610,10 +618,10 @@ export const download = (buttonid) => {
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {
         e.preventDefault();
-        const context = convertToXML();
-        if (context) {
-            zipme(context, true, taskmaxbytes);
-        }
+        convertToXML()
+            .then((context) => {
+                zipme(context, true, taskmaxbytes);
+            });
     }
 }
 
@@ -836,88 +844,79 @@ export function checkModelsolution(buttonid, containerid) {
 
     button.onclick = function (e) {
         e.preventDefault();
+        // clean old check feedback
+        container.innerHTML = '';
+        container.style.cursor = "wait";
+        feedbackstarted = false;
+        const aggstrategy = document.querySelector("select[name='aggregationstrategy']").value;
         button.disabled = true;
-        // Fallback: Enable button in case of bug :-)
-        // let timer = setTimeout(function() { button.disabled = false; }, 30000);
-        try {
-            // clean old check feedback
-            container.innerHTML = '';
-            container.style.cursor = "wait";
-            feedbackstarted = false;
 
-            // create task zipfile
-            const taskxml = convertToXML();
-            if (taskxml != null) {
-                // if there is no taskxml then the input is invalid.
-                const gradinghints = createGradingHints(true);
-                const aggstrategy = document.querySelector("select[name='aggregationstrategy']").value;
-                const proglang = document.getElementById("xml_programming-language").value;
+        // create task zipfile
+        convertToXML()
+            .then((taskxml) => {
                 // Zip task
-                return zipme(taskxml, false, taskmaxbytes)
-                    .then(blob => {
-                        // Task is zipped => zip model solution
-                        // (could be made in parallel but makes code a bit more complex
-                        // so I do not do this)
-                        console.log('task zip created ');
-                        // blob is the zipped version of the whole task
-                        blobtask = blob;
-                        return createModelSolutionZip();
-                    })
-                    .then(modelsolutionzip => {
-                        // Model solution is zipped => send to Moodle server
-                        console.log('created model solution zip');
-                        const url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php';
-                        const questionId = document.querySelector("input[name='id']").value;
-                        const formData = new FormData();
-                        formData.append('sesskey', Config.sesskey);
-                        formData.append('task', blobtask, 'task.zip');
-                        formData.append('modelsolution', modelsolutionzip, 'modelsolution.zip');
-                        formData.append('itemid', modelsolrepositoryparams['checkitemid']);
-                        formData.append('contextid', modelsolrepositoryparams['contextid']);
-                        // formData.append('questionid', questionId);
-                        formData.append('gradinghints', gradinghints);
-                        formData.append('proglang', proglang);
-                        formData.append('aggregationstrategy', aggstrategy);
-                        return fetch(url, {
-                            method : "POST",
-                            body: formData,
-                        });
-                    })
-                    .then(response => {
-                        // Moodle server has received task with model solution
-                        // => convert to json
-                        console.log(response);
-                        return response.json()
-                    })
-                    .then(json => {
-                        // forward json to logmonitor.
-                        console.log(json);
-                        let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
-                        url += '&sesskey=' + Config.sesskey +
-                            //                        '&questionid=' + questionId +
-                            '&itemid=' + json.itemid +
-                            '&contextid=' + json.contextid +
-                            '&taskfilename=' + json.taskfilename +
-                            '&proglang=' + json.proglang +
-                            '&aggregationstrategy=' + aggstrategy +
-                            '&modelsolutionfilename=' + json.modelsolutionfilename;
+                return zipme(taskxml, false, taskmaxbytes);
+            })
+            .then(blob => {
+                // Task is zipped => zip model solution
+                // (could be made in parallel but makes code a bit more complex
+                // so I do not do this)
+                console.log('task zip created ');
+                // blob is the zipped version of the whole task
+                blobtask = blob;
+                return createModelSolutionZip();
+            })
+            .then(modelsolutionzip => {
+                const gradinghints = createGradingHints(true);
+                const proglang = document.getElementById("xml_programming-language").value;
+                // Model solution is zipped => send to Moodle server
+                console.log('created model solution zip');
+                const url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php';
+                const questionId = document.querySelector("input[name='id']").value;
+                const formData = new FormData();
+                formData.append('sesskey', Config.sesskey);
+                formData.append('task', blobtask, 'task.zip');
+                formData.append('modelsolution', modelsolutionzip, 'modelsolution.zip');
+                formData.append('itemid', modelsolrepositoryparams['checkitemid']);
+                formData.append('contextid', modelsolrepositoryparams['contextid']);
+                // formData.append('questionid', questionId);
+                formData.append('gradinghints', gradinghints);
+                formData.append('proglang', proglang);
+                formData.append('aggregationstrategy', aggstrategy);
+                return fetch(url, {
+                    method : "POST",
+                    body: formData,
+                });
+            })
+            .then(response => {
+                // Moodle server has received task with model solution
+                // => convert to json
+                console.log(response);
+                return response.json()
+            })
+            .then(json => {
+                // forward json to logmonitor.
+                console.log(json);
+                let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
+                url += '&sesskey=' + Config.sesskey +
+                    //                        '&questionid=' + questionId +
+                    '&itemid=' + json.itemid +
+                    '&contextid=' + json.contextid +
+                    '&taskfilename=' + json.taskfilename +
+                    '&proglang=' + json.proglang +
+                    '&aggregationstrategy=' + aggstrategy +
+                    '&modelsolutionfilename=' + json.modelsolutionfilename;
 
-                        button.disabled = false;
-                        logmonitor.show('checkmodelsollog', url, onFeedbackStart, onFeedbackData, onFeedbackEnd);
-                    })
-                    .catch(error => {
-                        button.disabled = false;
-                        console.log(error);
-                        alert(error);
-
-                    });
-            } else {
+                logmonitor.show('checkmodelsollog', url, onFeedbackStart, onFeedbackData, onFeedbackEnd);
+            })
+            .catch(error => {
+                console.log(error);
+                alert(error);
+            })
+            .finally(() => {
+                console.log('finally promise');
                 button.disabled = false;
-            }
-        } catch(e) {
-            console.error(e);
-            button.disabled = false;
-        }
+            });
     }
 }
 
@@ -926,117 +925,117 @@ export function checkModelsolution(buttonid, containerid) {
  * @returns {*}
  */
 function saveToServer() {
+    return convertToXML()
+        .then((context) => {
+            createGradingHints();
+            uploadModelSolutionToServer();
 
-    const context = convertToXML();
-    if (context) {
-        createGradingHints();
-        uploadModelSolutionToServer();
+            // Update values for UUID and proforma version in form input.
+            let uuid = document.querySelector("input[name='uuid']");
+            if (!uuid) {
+                console.error('cannot find uuid element');
+            } else {
+                // The UUID is disabled and must be enabled in order to
+                // submit the changed value.
+                uuid.disabled = false;
+                uuid.value = generateUUID();
+            }
+            let proformaversion = document.querySelector("input[name='proformaversion']");
+            if (!proformaversion) {
+                console.error('cannot find proformaversion element');
+            } else {
+                // The proformaversion is disabled and must be enabled in order to
+                // submit the changed value.
+                proformaversion.disabled = false;
+            }
 
-        // Update values for UUID and proforma version in form input.
-        let uuid = document.querySelector("input[name='uuid']");
-        if (!uuid) {
-            console.error('cannot find uuid element');
-        } else {
-            // The UUID is disabled and must be enabled in order to
-            // submit the changed value.
-            uuid.disabled = false;
-            uuid.value = generateUUID();
-        }
-        let proformaversion = document.querySelector("input[name='proformaversion']");
-        if (!proformaversion) {
-            console.error('cannot find proformaversion element');
-        } else {
-            // The proformaversion is disabled and must be enabled in order to
-            // submit the changed value.
-            proformaversion.disabled = false;
-        }
+            return zipme(context, false, taskmaxbytes)
+                .then(blobtask => {
+                    console.log('now let us update task in  Moodle server: ' + draftitemid);
+                    const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
+                    const formData = new FormData();
+                    formData.append('sesskey', Config.sesskey);
+                    formData.append('task', blobtask, taskTitleToFilename());
+                    // Use original itemid from task filemanager
+                    const itemid = document.querySelector("#id_task").value;
+                    formData.append('itemid', itemid); // draftitemid);
+                    formData.append('contextid', taskrepositoryparams['contextid']);
 
-        return zipme(context, false, taskmaxbytes)
-            .then(blobtask => {
-                console.log('now let us update task in  Moodle server: ' + draftitemid);
-                const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
-                const formData = new FormData();
-                formData.append('sesskey', Config.sesskey);
-                formData.append('task', blobtask, taskTitleToFilename());
-                // Use original itemid from task filemanager
-                const itemid = document.querySelector("#id_task").value;
-                formData.append('itemid', itemid); // draftitemid);
-                formData.append('contextid', taskrepositoryparams['contextid']);
-
-                return fetch(url, {
-                    method: "POST",
-                    body: formData,
+                    return fetch(url, {
+                        method: "POST",
+                        body: formData,
+                    })
                 })
-            })
-            .then(response => {
-                console.log(response);
-                return response.json()
-            })
-            .then(json => {
-                console.log(json);
-            });
-            // Do not catch here because error will not be detected in calling function!!
-            /*   .catch(error => {
-                                console.log(error);
-                                alert(error);
-                            });*/
+                .then(response => {
+                    console.log(response);
+                    return response.json()
+                })
+                .then(json => {
+                    console.log(json);
+                });
+                // Do not catch here because error will not be detected in calling function!!
+                /*   .catch(error => {
+                                    console.log(error);
+                                    alert(error);
+                                });*/
 
 
-        /*
+            /*
 
 
-                const url = Config.wwwroot + '/repository/repository_ajax.php';
-                const action = 'upload';
+                    const url = Config.wwwroot + '/repository/repository_ajax.php';
+                    const action = 'upload';
 
-                const formData = new FormData();
-                formData.append('sesskey', Config.sesskey);
-                formData.append('repo_upload_file', blob);
-                formData.append('filepath', '/');
-                formData.append('client_id', taskrepositoryparams['client_id']);
-                if (draftfilename === null) {
-                    draftfilename = 'task.zip';
-                }
-                formData.append('title', taskTitleToFilename()); // draftfilename);
-                let questionId = document.querySelector("input[name='id']").value;
-                // New question => .
-                if (questionId !== "") {
-                    formData.append('overwrite', true);
-                }
-                // formData.append('maxbytes', -1);
-                // since we are uploading the file to the 'draft area',
-                // there is no point in limiting the size of the file area.
-                // The draft area is used for all users.
-                // formData.append('areamaxbytes', this.options['areamaxbytes']);
-                formData.append('savepath', '/');
-                formData.append('repo_id', taskrepositoryparams['repo_id']);
-                formData.append('itemid', draftitemid);
-                let request = new XMLHttpRequest();
-                request.open('POST', url + '?action=' + action, false);
-                console.log('send');
-                try {
-                    request.send(formData);
-                    if (request.status !== 200) {
-                        alert(`Error ${request.status}: ${request.statusText}`);
-                    } else {
-                        console.log(request.response);
-                        // alert(request.response);
+                    const formData = new FormData();
+                    formData.append('sesskey', Config.sesskey);
+                    formData.append('repo_upload_file', blob);
+                    formData.append('filepath', '/');
+                    formData.append('client_id', taskrepositoryparams['client_id']);
+                    if (draftfilename === null) {
+                        draftfilename = 'task.zip';
                     }
-                } catch(err) { // instead of onerror
-                    alert("Request failed");
-                }
-                console.log('parse repsonse');
-                const jsonResponse = JSON.parse(request.responseText);
-                console.log('response from Moodle');
-                console.log(jsonResponse);
-                if (jsonResponse.error !== undefined) {
-                    console.error(request.responseText);
-                    alert(jsonResponse.error);
-                }
-            });
+                    formData.append('title', taskTitleToFilename()); // draftfilename);
+                    let questionId = document.querySelector("input[name='id']").value;
+                    // New question => .
+                    if (questionId !== "") {
+                        formData.append('overwrite', true);
+                    }
+                    // formData.append('maxbytes', -1);
+                    // since we are uploading the file to the 'draft area',
+                    // there is no point in limiting the size of the file area.
+                    // The draft area is used for all users.
+                    // formData.append('areamaxbytes', this.options['areamaxbytes']);
+                    formData.append('savepath', '/');
+                    formData.append('repo_id', taskrepositoryparams['repo_id']);
+                    formData.append('itemid', draftitemid);
+                    let request = new XMLHttpRequest();
+                    request.open('POST', url + '?action=' + action, false);
+                    console.log('send');
+                    try {
+                        request.send(formData);
+                        if (request.status !== 200) {
+                            alert(`Error ${request.status}: ${request.statusText}`);
+                        } else {
+                            console.log(request.response);
+                            // alert(request.response);
+                        }
+                    } catch(err) { // instead of onerror
+                        alert("Request failed");
+                    }
+                    console.log('parse repsonse');
+                    const jsonResponse = JSON.parse(request.responseText);
+                    console.log('response from Moodle');
+                    console.log(jsonResponse);
+                    if (jsonResponse.error !== undefined) {
+                        console.error(request.responseText);
+                        alert(jsonResponse.error);
+                    }
+                });
 
-         */
-    }
+             */
+    });
 }
+
 export function uploadTaskToGrader(buttonid) {
     let button = document.getElementById(buttonid);
     if (!button) {
@@ -1047,59 +1046,52 @@ export function uploadTaskToGrader(buttonid) {
     button.onclick = function (e) {
         e.preventDefault();
         button.disabled = true;
-        try {
-            const context = convertToXML();
-            if (context) {
-                return zipme(context, false, taskmaxbytes)
-                    .then(blobtask => {
-                        console.log('now let us upload task to grader');
-                        const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
-                        // const questionId = document.querySelector("input[name='id']").value;
-                        const formData = new FormData();
-                        formData.append('sesskey', Config.sesskey);
-                        formData.append('task', blobtask, 'task.zip');
-                        // Which itemid???
-                        // Modelsolution parameters contain new (unused) draftarea itemids.
-                        // checkitemid is used for temporary files used for checks.
-                        formData.append('itemid', modelsolrepositoryparams['checkitemid']);
-                        // Context id is sent to Moodle in order to perform security checks:
-                        formData.append('contextid', modelsolrepositoryparams['contextid']);
-                        // formData.append('questionid', questionId);
+        convertToXML()
+            .then((context) => {
+                return zipme(context, false, taskmaxbytes);
+            })
+            .then(blobtask => {
+                console.log('now let us upload task to grader');
+                const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
+                // const questionId = document.querySelector("input[name='id']").value;
+                const formData = new FormData();
+                formData.append('sesskey', Config.sesskey);
+                formData.append('task', blobtask, 'task.zip');
+                // Which itemid???
+                // Modelsolution parameters contain new (unused) draftarea itemids.
+                // checkitemid is used for temporary files used for checks.
+                formData.append('itemid', modelsolrepositoryparams['checkitemid']);
+                // Context id is sent to Moodle in order to perform security checks:
+                formData.append('contextid', modelsolrepositoryparams['contextid']);
+                // formData.append('questionid', questionId);
 
-                        return fetch(url, {
-                            method: "POST",
-                            body: formData,
-                        });
-                    })
-                    .then(response => {
-                        // console.log(response);
-                        return response.json()
-                    })
-                    .then(json => {
-                        console.log(json);
-                        const questionId = document.querySelector("input[name='id']").value;
-                        let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
-                        url += '?sesskey=' + Config.sesskey + '&id=' + questionId;
-                        if (json.itemid) {
-                            url += '&itemid=' + json.itemid + '&contextid=' + json.contextid + '&filename=' + json.filename;
-                        }
-                        logmonitor.show('uploadlog', url);
-                        // taskupload.upload(null, json.itemid, json.contextid, json.filename);
-                    })
-                    .catch(error => {
-                        console.log(error);
-                        alert(error);
-                    })
-                    .finally(() => {
-                        button.disabled = false;
-                    });
-            } else {
+                return fetch(url, {
+                    method: "POST",
+                    body: formData,
+                });
+            })
+            .then(response => {
+                // console.log(response);
+                return response.json()
+            })
+            .then(json => {
+                console.log(json);
+                const questionId = document.querySelector("input[name='id']").value;
+                let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
+                url += '?sesskey=' + Config.sesskey + '&id=' + questionId;
+                if (json.itemid) {
+                    url += '&itemid=' + json.itemid + '&contextid=' + json.contextid + '&filename=' + json.filename;
+                }
+                logmonitor.show('uploadlog', url);
+                // taskupload.upload(null, json.itemid, json.contextid, json.filename);
+            })
+            .catch(error => {
+                console.log(error);
+                alert(error);
+            })
+            .finally(() => {
                 button.disabled = false;
-            }
-        } catch(e) {
-            console.error(e);
-            button.disabled = false;
-        }
+            });
     }
 }
 

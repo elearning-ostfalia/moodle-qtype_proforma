@@ -244,165 +244,169 @@ function isInputComplete() {
  * writes data from UI elements to xml string
  */
 export function convertToXML() {
+    // Fake promise in order to be used in chain
+    const promise = Promise.resolve(0);
+    return promise.then(() => {
+        const t0 = performance.now();
+        clearErrorMessage();
+        let taskXml = undefined;
 
-    const t0 = performance.now();
-    clearErrorMessage();
-    let taskXml = undefined;
-
-    // check input
-    if (!isInputComplete()) {
-        console.error('invalid input => cannot create task.xml');
-        return null;
-    }
-
-    // PRE PROCESSING
-    // copy data to task class
-    let task = new TaskClass();
-    task.title = $("#id_name").val();
-    task.comment = '';
-    task.description = $("#id_questiontexteditable").val();
-    task.proglang = $('#xml_programming-language').val();
-    task.proglang = task.proglang.trim();
-    // console.log('READ FROM UI: ' + task.proglang);
-    task.proglangVersion = $("#xml_programming-language-" + task.proglang).val();
-    // console.log('READ FROM UI VERSION: ' + task.proglangVersion);
-    task.parentuuid = null;
-    //task.uuid = $("#xml_uuid").val();
-    //if (!task.uuid)
-    task.uuid = generateUUID();
-    task.lang = 'en'; // $("#xml_lang").val();
-    task.sizeSubmission = 0; // $("#xml_submission_size").val();
-    task.filenameRegExpSubmission = ''; // $(".xml_restrict_filename").first().val();
-
-
-    /*
-    task.title = $("#xml_title").val();
-    task.comment = $("#xml_task_internal_description").find('.xml_internal_description').val();
-    task.description = descriptionEditor.getValue();
-    task.lang = $("#xml_lang").val();
-    task.sizeSubmission = $("#xml_submission_size").val();
-    task.filenameRegExpSubmission = $(".xml_restrict_filename").first().val();
-     */
-
-    // write files
-    FileWrapper.doOnAllFiles(function(ui_file) {
-        let taskfile = new TaskFile();
-        taskfile.filename = ui_file.filename;
-        taskfile.fileclass = ui_file.class;
-        taskfile.id = ui_file.id;
-        taskfile.filetype = ui_file.type;
-        taskfile.comment = ui_file.comment;
-        taskfile.content = ui_file.text;
-        task.files[taskfile.id] = taskfile;
-    });
-
-    // write model solutions
-    ModelSolutionWrapper.doOnAll(function(ms) {
-        let modelSolution = new TaskModelSolution();
-        modelSolution.id = ms.id;
-        modelSolution.comment = ms.comment;
-        modelSolution.description = ms.description;
-        let counter = 0;
-        ModelSolutionFileReference.getInstance().doOnAll(function(id) {
-            modelSolution.filerefs[counter++] = new TaskFileRef(id);
-            task.files[id].visible = T_VISIBLE.DELAYED;
-        }, ms.root);
-
-        //readFileRefs(xmlReader, modelSolution, thisNode);
-        task.modelsolutions[modelSolution.id] = modelSolution;
-    })
-
-    // write tests
-    TestWrapper.doOnAll(function(uiTest, index) {
-        let test = new TaskTest();
-        test.id = uiTest.id;
-        test.title = uiTest.title;
-        test.testtype = uiTest.testtype;
-        test.comment = uiTest.comment;
-        test.description = uiTest.description;
-        test.weight = uiTest.weight;
-
-        let counter = 0;
-        // TODO: geht über alle Test-Filerefs, sollte er nur über die
-        // des entsprechenden Tests gehen?
-        TestFileReference.getInstance().doOnAll(function(id) {
-            if (id) {
-                test.filerefs[counter++] = new TaskFileRef(id);
-                console.log("Test ID" + id);
-                task.files[id].usedByGrader = true;
-            }
-        }, uiTest.root);
-
-        console.log('*** look for test config');
-        console.log(test);
-        $.each(taskeditorconfig.testInfos, function(index, configItem) {
-            // search for appropriate writexml function
-
-            if (configItem.testType !== test.testtype) {
-                // testtype does not match
-                return;
-            }
-            console.log('testtype match');
-            console.log(configItem);
-            if (configItem.proglang !== undefined) {
-                console.log('check proglang');
-                console.log(task.proglang);
-                if (!configItem.proglang.includes(task.proglang)) {
-                    console.log('proglang does not match');
-                    // Language does not match
-                    return;
-                }
-            }
-
-            console.log('everything matches');
-            if (test.configItem !== undefined) {
-                // configuration already found
-                alert('Warning: test configuration for test "' + test.title + '" is not unique. \n' +
-                    'Assume ' + test.configItem.title);
-                return;
-            }
-
-            test.configItem = configItem;
-            test.uiElement = uiTest;
-        });
-        console.log('*** config lookup complete');
-        if (test.configItem === undefined) {
-            alert('cannot determine test configuration for test "' + test.title + '"');
+        // check input
+        if (!isInputComplete()) {
+            reject(new Error('invalid input => cannot create task.xml'));
+            // console.error('invalid input => cannot create task.xml');
+            // return null;
         }
 
-        //readFileRefs(xmlReader, modelSolution, thisNode);
-        //console.log('convertToXML: create ' + test.title);
-        // note that the test element is stored at the index position not at the test id position
-        // (in order to keep the sort order from user interface)
-        task.tests[index] = test;
-    })
+        // PRE PROCESSING
+        // copy data to task class
+        let task = new TaskClass();
+        task.title = $("#id_name").val();
+        task.comment = '';
+        task.description = $("#id_questiontexteditable").val();
+        task.proglang = $('#xml_programming-language').val();
+        task.proglang = task.proglang.trim();
+        // console.log('READ FROM UI: ' + task.proglang);
+        task.proglangVersion = $("#xml_programming-language-" + task.proglang).val();
+        // console.log('READ FROM UI VERSION: ' + task.proglangVersion);
+        task.parentuuid = null;
+        //task.uuid = $("#xml_uuid").val();
+        //if (!task.uuid)
+        task.uuid = generateUUID();
+        task.lang = 'en'; // $("#xml_lang").val();
+        task.sizeSubmission = 0; // $("#xml_submission_size").val();
+        task.filenameRegExpSubmission = ''; // $(".xml_restrict_filename").first().val();
 
-/*
-    SubmissionFileList.doOnAll(function(filename, regexp, optional) {
-        let restrict = new TaskFileRestriction(filename, !optional, regexp?T_FILERESTRICTION_FORMAT.POSIX:null);
-        task.fileRestrictions.push(restrict);
+
+        /*
+        task.title = $("#xml_title").val();
+        task.comment = $("#xml_task_internal_description").find('.xml_internal_description').val();
+        task.description = descriptionEditor.getValue();
+        task.lang = $("#xml_lang").val();
+        task.sizeSubmission = $("#xml_submission_size").val();
+        task.filenameRegExpSubmission = $(".xml_restrict_filename").first().val();
+         */
+
+        // write files
+        FileWrapper.doOnAllFiles(function(ui_file) {
+            let taskfile = new TaskFile();
+            taskfile.filename = ui_file.filename;
+            taskfile.fileclass = ui_file.class;
+            taskfile.id = ui_file.id;
+            taskfile.filetype = ui_file.type;
+            taskfile.comment = ui_file.comment;
+            taskfile.content = ui_file.text;
+            task.files[taskfile.id] = taskfile;
+        });
+
+        // write model solutions
+        ModelSolutionWrapper.doOnAll(function(ms) {
+            let modelSolution = new TaskModelSolution();
+            modelSolution.id = ms.id;
+            modelSolution.comment = ms.comment;
+            modelSolution.description = ms.description;
+            let counter = 0;
+            ModelSolutionFileReference.getInstance().doOnAll(function(id) {
+                modelSolution.filerefs[counter++] = new TaskFileRef(id);
+                task.files[id].visible = T_VISIBLE.DELAYED;
+            }, ms.root);
+
+            //readFileRefs(xmlReader, modelSolution, thisNode);
+            task.modelsolutions[modelSolution.id] = modelSolution;
+        })
+
+        // write tests
+        TestWrapper.doOnAll(function(uiTest, index) {
+            let test = new TaskTest();
+            test.id = uiTest.id;
+            test.title = uiTest.title;
+            test.testtype = uiTest.testtype;
+            test.comment = uiTest.comment;
+            test.description = uiTest.description;
+            test.weight = uiTest.weight;
+
+            let counter = 0;
+            // TODO: geht über alle Test-Filerefs, sollte er nur über die
+            // des entsprechenden Tests gehen?
+            TestFileReference.getInstance().doOnAll(function(id) {
+                if (id) {
+                    test.filerefs[counter++] = new TaskFileRef(id);
+                    console.log("Test ID" + id);
+                    task.files[id].usedByGrader = true;
+                }
+            }, uiTest.root);
+
+            console.log('*** look for test config');
+            console.log(test);
+            $.each(taskeditorconfig.testInfos, function(index, configItem) {
+                // search for appropriate writexml function
+
+                if (configItem.testType !== test.testtype) {
+                    // testtype does not match
+                    return;
+                }
+                console.log('testtype match');
+                console.log(configItem);
+                if (configItem.proglang !== undefined) {
+                    console.log('check proglang');
+                    console.log(task.proglang);
+                    if (!configItem.proglang.includes(task.proglang)) {
+                        console.log('proglang does not match');
+                        // Language does not match
+                        return;
+                    }
+                }
+
+                console.log('everything matches');
+                if (test.configItem !== undefined) {
+                    // configuration already found
+                    alert('Warning: test configuration for test "' + test.title + '" is not unique. \n' +
+                        'Assume ' + test.configItem.title);
+                    return;
+                }
+
+                test.configItem = configItem;
+                test.uiElement = uiTest;
+            });
+            console.log('*** config lookup complete');
+            if (test.configItem === undefined) {
+                alert('cannot determine test configuration for test "' + test.title + '"');
+            }
+
+            //readFileRefs(xmlReader, modelSolution, thisNode);
+            //console.log('convertToXML: create ' + test.title);
+            // note that the test element is stored at the index position not at the test id position
+            // (in order to keep the sort order from user interface)
+            task.tests[index] = test;
+        })
+
+        /*
+            SubmissionFileList.doOnAll(function(filename, regexp, optional) {
+                let restrict = new TaskFileRestriction(filename, !optional, regexp?T_FILERESTRICTION_FORMAT.POSIX:null);
+                task.fileRestrictions.push(restrict);
+            });
+        */
+        /*
+        if (USE_VISIBLES) {
+            VisibleFileReference.getInstance().doOnAllIds(function(id, displayMode) {
+                task.files[id].visible = T_VISIBLE.YES;
+                task.files[id].usageInLms = displayMode;
+            });
+        } else {
+            DownloadableFileReference.getInstance().doOnNonEmpty(function(id) {
+                task.files[id].visible = T_VISIBLE.YES;
+                task.files[id].usageInLms = T_LMS_USAGE.DOWNLOAD;
+            });
+            task.codeskeleton = codeskeleton.getValue();
+        }*/
+
+
+        taskXml = task.writeXml();
+        const t1 = performance.now();
+        console.log("Call to convertToXML took " + (t1 - t0) + " milliseconds.")
+        console.log('Size of task is ' + taskXml.length);
+        return taskXml;
     });
-*/
-    /*
-    if (USE_VISIBLES) {
-        VisibleFileReference.getInstance().doOnAllIds(function(id, displayMode) {
-            task.files[id].visible = T_VISIBLE.YES;
-            task.files[id].usageInLms = displayMode;
-        });
-    } else {
-        DownloadableFileReference.getInstance().doOnNonEmpty(function(id) {
-            task.files[id].visible = T_VISIBLE.YES;
-            task.files[id].usageInLms = T_LMS_USAGE.DOWNLOAD;
-        });
-        task.codeskeleton = codeskeleton.getValue();
-    }*/
-
-
-    taskXml = task.writeXml();
-    const t1 = performance.now();
-    console.log("Call to convertToXML took " + (t1 - t0) + " milliseconds.")
-    console.log('Size of task is ' + taskXml.length);
-    return taskXml;
 }
 
 
