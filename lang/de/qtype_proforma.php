@@ -157,6 +157,8 @@ $string['gtest_help_short'] = 'Die Testdateien müssen
     Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.';
 $string['makerun_help'] = 'Beispiel: Wenn das Executable, was vom Makefile erzeugt wird, <code>test</code> heißt, dann ist der Befehl zum Ausführen des Tests <code>./test</code>.';
 
+$string['pythondoc_help'] = 'Der Testcode muss in genau einer Datei enthalten sein.';
+
 $string['codeempty'] = 'Testcode fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
 $string['versionrequired'] = 'Version ist nicht ausgewählt.';

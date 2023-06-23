@@ -79,6 +79,7 @@ let cunittest_help;
 let makerun_help;
 let junit_help;
 let junitentry_help;
+let pythondoc_help;
 
 // -------------------------
 // TESTS
@@ -94,6 +95,7 @@ export function initStrings() {
         { key: 'makerun_help', component: 'qtype_proforma' },
         { key: 'junit_help_short', component: 'qtype_proforma' },
         { key: 'junitentry_help', component: 'qtype_proforma' },
+        { key: 'pythondoc_help', component: 'qtype_proforma' },
     ];
     return Str.get_strings(strings)
         .then(results => {
@@ -103,20 +105,20 @@ export function initStrings() {
             makerun_help = results[2];
             junit_help = results[3];
             junitentry_help = results[4];
-            testCUnit       = new CUnitTest();
-            testGoogleTest  = new GoogleTest();
-            testJavaJUnit  = new JUnitTest();
-            infoGoogleTest = testGoogleTest;
-            infoCUnit = testCUnit;
-            infoJavaJUnit = testJavaJUnit;
+            pythondoc_help = results[5];
+
+            infoGoogleTest = new GoogleTest();
+            infoCUnit = new CUnitTest();
+            infoJavaJUnit = new JUnitTest();
+            infoPythonDoctest = new PythonDocTest();
 
             testInfos = [
                 testJavaComp,
-                testJavaJUnit,
-                testGoogleTest,
-                testCUnit,
+                infoJavaJUnit,
+                infoGoogleTest,
+                infoJavaJUnit,
                 testPython,
-                testPythonDoctest,
+                infoPythonDoctest,
                 /*        testSetlX, testSetlXSyntax,
                         testCComp,*/
                 testCheckStyle
@@ -229,10 +231,6 @@ export function resolveNamespace(prefix, defaultns) {
     }
 }
 
-// export const taskeditorconfig = (function(testConfigNode) {
-
-
-
 //    function writeNamespaces(task) {
         //task.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:jartest', jartestns);
         //task.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:praktomat', praktomatns);
@@ -247,16 +245,7 @@ export function resolveNamespace(prefix, defaultns) {
     function writeXmlExtra(metaDataNode, xmlDoc, xmlWriter) {
         //xmlWriter.createTextElement(metaDataNode, 'praktomat:allowed-upload-filename-mimetypes', '(text/.*)', praktomatns);
     }
-/*
-    function onProglangChanged(newProglang) {
-        if (newProglang === 'cpp') {
-            // Add GoogleTest
-            $(".xml_u_framew option[value='GoogleTest']").remove();
-            $(".xml_u_framew").append(`<option value="GoogleTest">GoogleTest</option>`);
-        }
-    }
 
- */
 /*
     readXml(xmlfile) {
         let xmlReader = new XmlReader(xmlfile);
@@ -475,8 +464,10 @@ export function resolveNamespace(prefix, defaultns) {
 
     class PythonDocTest extends CustomTest {
         constructor() {
-            super("Python DocTest", "python-doctest");
+            super("Python DocTest", "python-doctest",
+                undefined, ['python']);
             // this.alternativeTesttypes = ['python'];
+            this.helptext = pythondoc_help;
         }
     }
     /*
@@ -504,10 +495,7 @@ export function resolveNamespace(prefix, defaultns) {
         }
     }
 
-
     */
-
-
 
 
 /*   const testSetlX       = new setlXTest(setlXTest);
@@ -534,19 +522,10 @@ export function resolveNamespace(prefix, defaultns) {
     }
 */
 
-
-
-
-
-
 // const testCComp       = new CCompilerTest();
 const testJavaComp    = new JavaCompilerTest();
-let testJavaJUnit;
 const testCheckStyle  = new CheckstyleTest();
-let testCUnit;
-let testGoogleTest;
 const testPython      = new PythonUnittest();
-const testPythonDoctest = new PythonDocTest();
 
 
 export let testInfos;
@@ -556,6 +535,6 @@ export let infoCUnit;
 export let infoJavaJUnit;
 
 export let infoJavaComp = testJavaComp;
-export let infoPython = testPython;
-export let infoPythonDoctest = testPythonDoctest;
+export let infoPythonUnittest = testPython;
+export let infoPythonDoctest;
 export let infoCheckStyle = testCheckStyle;

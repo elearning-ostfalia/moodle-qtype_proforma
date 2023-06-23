@@ -566,7 +566,7 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
 
         document.querySelector('#addPythonUnittest').onclick = function (e) {
             e.preventDefault();
-            taskeditorconfig.infoPython.createTestForm();
+            taskeditorconfig.infoPythonUnittest.createTestForm();
         }
 
         document.querySelector('#addPythonDocTest').onclick = function (e) {
@@ -1012,6 +1012,7 @@ export function uploadTaskToGrader(buttonid) {
                 // Which itemid???
                 // Modelsolution parameters contain new (unused) draftarea itemids.
                 // checkitemid is used for temporary files used for checks.
+                formData.append('coursecontextid', Config.courseContextId);
                 formData.append('itemid', modelsolrepositoryparams['checkitemid']);
                 // Context id is sent to Moodle in order to perform security checks:
                 formData.append('contextid', modelsolrepositoryparams['contextid']);
@@ -1023,11 +1024,17 @@ export function uploadTaskToGrader(buttonid) {
                 });
             })
             .then(response => {
-                // console.log(response);
+                if (!response.ok) {
+                    console.error(response);
+                    return Promise.reject(response.statusText);
+                }
                 return response.json()
             })
             .then(json => {
-                console.log(json);
+                if (json.error) {
+                    console.log(json);
+                    return Promise.reject(json.error);
+                }
                 const questionId = document.querySelector("input[name='id']").value;
                 let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
                 url += '?sesskey=' + Config.sesskey + '&id=' + questionId;

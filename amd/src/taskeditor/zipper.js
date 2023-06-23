@@ -122,7 +122,7 @@ export function unzipme(blob, readyCallback) {
                           // console.log(entry);
                           console.log('filename: ' + entry.filename);
                           if (entry.filename === 'task.xml') {
-                              console.log('unzip task.xml');
+                              // console.log('unzip task.xml');
                               const taskXmlWriter = new zip.TextWriter();
                               entry.getData(taskXmlWriter)
                                   .then(xmlContent => {
@@ -131,7 +131,7 @@ export function unzipme(blob, readyCallback) {
                                     });
                           } else {
                               // handle attached files'
-                              console.log('unzip attached file ' + entry.filename);
+                              // console.log('unzip attached file ' + entry.filename);
                               // store file
                               const blobWriter = new zip.BlobWriter();
                               entry.getData(blobWriter)
@@ -175,7 +175,7 @@ export function unzipme(blob, readyCallback) {
         },
         // callback for attached files
         function (unzippedBlob, entry) {
-            console.log('attached file ' + entry.filename);
+            // console.log('attached file ' + entry.filename);
             // console.log(unzippedBlob);
             // read file header and derive mime type
             var arr = (new Uint8Array(unzippedBlob)).subarray(0, 4);
@@ -281,7 +281,6 @@ export function zipme(TEXT_CONTENT, startdownload, maxsize) {
         console.log('fileStorages.length is ' + fileStorages.length);
         let f = 0;
         while (f < fileStorages.length) {
-            console.log('f is ' + f);
             const ui_file = FileWrapper.constructFromId(f);
             if (ui_file && ui_file.storeAsFile) {
                 let fblob = new Blob([ui_file.content], {type: ui_file.mimetype});

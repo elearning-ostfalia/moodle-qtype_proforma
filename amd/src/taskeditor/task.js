@@ -345,19 +345,20 @@ export function convertToXML() {
                     // testtype does not match
                     return;
                 }
-                console.log('testtype match');
-                console.log(configItem);
+                // console.log('testtype match');
+                // console.log(configItem);
                 if (configItem.proglang !== undefined) {
-                    console.log('check proglang');
-                    console.log(task.proglang);
+                    // console.log('check proglang');
+                    // console.log(task.proglang);
                     if (!configItem.proglang.includes(task.proglang)) {
-                        console.log('proglang does not match');
+                        // console.log('proglang does not match');
                         // Language does not match
                         return;
                     }
                 }
 
-                console.log('everything matches');
+                // console.log('everything matches');
+                console.log(configItem);
                 if (test.configItem !== undefined) {
                     // configuration already found
                     alert('Warning: test configuration for test "' + test.title + '" is not unique. \n' +

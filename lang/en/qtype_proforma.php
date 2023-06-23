@@ -152,6 +152,9 @@ All files can be uploaded individually or packed as exactly one zip archive.<br>
 $string['makerun_help'] = 'E.g. if the executable created by the Makefile is <code>test</code>, then the 
 command to run the test is <code>./test</code>.';
 
+$string['pythondoc_help'] = 'Only one test file is supported.';
+
+
 $string['codeempty'] = 'Testcode required';
 $string['titleempty'] = 'Title required';
 $string['versionrequired'] = 'Version required.';

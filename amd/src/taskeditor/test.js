@@ -147,7 +147,7 @@ export class TestWrapper {
                 FileReferenceList.init(null, null, TestFileReference, testroot);
                 testroot.find('.dynamic_table').show();
                 FileReferenceList.addCallbacks($(testroot)[0]);
-                console.log('callback delete test button');
+                // Add callback for delete button
                 testroot.find('button').first().on("click",
                     function(event) {
                         event.preventDefault();
@@ -190,16 +190,17 @@ export class TestWrapper {
                 if (item) {
                     console.log('update filelist for test');
                     let counter = 0;
-                    console.log(item.filerefs);
+                    // console.log(item.filerefs);
 
                     item.filerefs.forEach(function(itemFileref, indexFileref) {
-                        console.log('id ' + itemFileref.refid);
+                        // console.log('id ' + itemFileref.refid);
                         let filename = task.findFilenameForId(itemFileref.refid);
-                        console.log('filename ' + filename);
+                        // console.log('filename ' + filename);
                         let promiseFactories = [TestFileReference.getInstance().setFilenameOnCreation(test.root, counter++, filename)];
                         Promise.all(promiseFactories)
                             .then(() => {
-                                console.log("promise completed");
+                                // console.log("promise completed");
+                                // ???
                             })
                     });
                 }
