@@ -35,6 +35,17 @@ try {
             require_capability('moodle/question:editmine', $context);
         }
 
+        // Since we're in the context of the user, it does not make sense checking course-level rights.
+        // But in order to block other users we check the coursecontextid.
+        // The $coursecontextid value is not used at anywhere. Just for security checks.
+        $coursecontextid = required_param('contextid', PARAM_INT);
+        $coursecontext = \context::instance_by_id($coursecontextid);
+        if (!isset($coursecontext)) {
+            throw new moodle_exception('invalid course context');
+        }
+        external_api::validate_context($coursecontext);
+        require_capability('moodle/question:editmine', $coursecontext);
+
         $filename = required_param('filename', PARAM_FILE);
         $fs = get_file_storage();
         $task = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', $filename);

@@ -41,6 +41,8 @@ $err = new stdClass();
 // $questionid = required_param('questionid', PARAM_INT); // Question id
 $contextid = required_param('contextid', PARAM_INT); // Context ID
 $itemid    = optional_param('itemid', 0, PARAM_INT);            // Itemid of task (draft)
+$coursecontextid = required_param('coursecontextid', PARAM_INT); // Question id
+
 
 // If uploaded file is larger than post_max_size (php.ini) setting, $_POST content will be empty.
 if (empty($_POST)) {
@@ -67,6 +69,15 @@ if ($context->contextlevel != CONTEXT_USER) {
     throw new moodle_exception('invalid context level');
 }
 
+// Since we're in the context of the user, it does not make sense checking course-level rights.
+// But in order to block other users we check the coursecontextid.
+// The $coursecontextid value is not used at anywhere. Just for security checks.
+$coursecontext = \context::instance_by_id($coursecontextid);
+if (!isset($coursecontext)) {
+    throw new moodle_exception('invalid course context');
+}
+external_api::validate_context($coursecontext);
+require_capability('moodle/question:editmine', $coursecontext);
 
 
 if (!isset($_FILES['task'])) {

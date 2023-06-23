@@ -879,6 +879,9 @@ export function checkModelsolution(buttonid, containerid) {
                 formData.append('modelsolution', modelsolutionzip, 'modelsolution.zip');
                 formData.append('itemid', modelsolrepositoryparams['checkitemid']);
                 formData.append('contextid', modelsolrepositoryparams['contextid']);
+                // courseContextId is only required for security checks so that
+                // not anybody can execute the function on the server.
+                formData.append('coursecontextid', Config.courseContextId);
                 // formData.append('questionid', questionId);
                 formData.append('gradinghints', gradinghints);
                 formData.append('proglang', proglang);
@@ -889,14 +892,20 @@ export function checkModelsolution(buttonid, containerid) {
                 });
             })
             .then(response => {
+                if (!response.ok) {
+                    console.error(response);
+                    return Promise.reject(response.statusText);
+                }
                 // Moodle server has received task with model solution
                 // => convert to json
-                console.log(response);
                 return response.json()
             })
             .then(json => {
                 // forward json to logmonitor.
-                console.log(json);
+                if (json.error) {
+                    console.log(json);
+                    return Promise.reject(json.error);
+                }
                 let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
                 url += '&sesskey=' + Config.sesskey +
                     //                        '&questionid=' + questionId +
@@ -904,6 +913,7 @@ export function checkModelsolution(buttonid, containerid) {
                     '&contextid=' + json.contextid +
                     '&taskfilename=' + json.taskfilename +
                     '&proglang=' + json.proglang +
+                    '&coursecontextid=' + Config.courseContextId +
                     '&aggregationstrategy=' + aggstrategy +
                     '&modelsolutionfilename=' + json.modelsolutionfilename;
 
@@ -914,7 +924,7 @@ export function checkModelsolution(buttonid, containerid) {
                 alert(error);
             })
             .finally(() => {
-                console.log('finally promise');
+                // console.log('finally promise');
                 button.disabled = false;
             });
     }
@@ -949,91 +959,33 @@ function saveToServer() {
                 proformaversion.disabled = false;
             }
 
-            return zipme(context, false, taskmaxbytes)
-                .then(blobtask => {
-                    console.log('now let us update task in  Moodle server: ' + draftitemid);
-                    const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
-                    const formData = new FormData();
-                    formData.append('sesskey', Config.sesskey);
-                    formData.append('task', blobtask, taskTitleToFilename());
-                    // Use original itemid from task filemanager
-                    const itemid = document.querySelector("#id_task").value;
-                    formData.append('itemid', itemid); // draftitemid);
-                    formData.append('contextid', taskrepositoryparams['contextid']);
+            return zipme(context, false, taskmaxbytes);
+        })
+        .then(blobtask => {
+            console.log('now let us update task in  Moodle server: ' + draftitemid);
+            const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
+            const formData = new FormData();
+            formData.append('sesskey', Config.sesskey);
+            formData.append('task', blobtask, taskTitleToFilename());
+            // Use original itemid from task filemanager
+            const itemid = document.querySelector("#id_task").value;
+            formData.append('itemid', itemid); // draftitemid);
+            formData.append('contextid', taskrepositoryparams['contextid']);
+            formData.append('coursecontextid', Config.courseContextId);
 
-                    return fetch(url, {
-                        method: "POST",
-                        body: formData,
-                    })
-                })
-                .then(response => {
-                    console.log(response);
-                    return response.json()
-                })
-                .then(json => {
-                    console.log(json);
-                });
-                // Do not catch here because error will not be detected in calling function!!
-                /*   .catch(error => {
-                                    console.log(error);
-                                    alert(error);
-                                });*/
-
-
-            /*
-
-
-                    const url = Config.wwwroot + '/repository/repository_ajax.php';
-                    const action = 'upload';
-
-                    const formData = new FormData();
-                    formData.append('sesskey', Config.sesskey);
-                    formData.append('repo_upload_file', blob);
-                    formData.append('filepath', '/');
-                    formData.append('client_id', taskrepositoryparams['client_id']);
-                    if (draftfilename === null) {
-                        draftfilename = 'task.zip';
-                    }
-                    formData.append('title', taskTitleToFilename()); // draftfilename);
-                    let questionId = document.querySelector("input[name='id']").value;
-                    // New question => .
-                    if (questionId !== "") {
-                        formData.append('overwrite', true);
-                    }
-                    // formData.append('maxbytes', -1);
-                    // since we are uploading the file to the 'draft area',
-                    // there is no point in limiting the size of the file area.
-                    // The draft area is used for all users.
-                    // formData.append('areamaxbytes', this.options['areamaxbytes']);
-                    formData.append('savepath', '/');
-                    formData.append('repo_id', taskrepositoryparams['repo_id']);
-                    formData.append('itemid', draftitemid);
-                    let request = new XMLHttpRequest();
-                    request.open('POST', url + '?action=' + action, false);
-                    console.log('send');
-                    try {
-                        request.send(formData);
-                        if (request.status !== 200) {
-                            alert(`Error ${request.status}: ${request.statusText}`);
-                        } else {
-                            console.log(request.response);
-                            // alert(request.response);
-                        }
-                    } catch(err) { // instead of onerror
-                        alert("Request failed");
-                    }
-                    console.log('parse repsonse');
-                    const jsonResponse = JSON.parse(request.responseText);
-                    console.log('response from Moodle');
-                    console.log(jsonResponse);
-                    if (jsonResponse.error !== undefined) {
-                        console.error(request.responseText);
-                        alert(jsonResponse.error);
-                    }
-                });
-
-             */
-    });
+            return fetch(url, {
+                method: "POST",
+                body: formData,
+            })
+        })
+        .then(response => {
+            console.log(response);
+            return response.json()
+        })
+        .then(json => {
+            console.log(json);
+        });
+        // Do not catch here because error will not be detected in calling function!!
 }
 
 export function uploadTaskToGrader(buttonid) {
@@ -1080,7 +1032,10 @@ export function uploadTaskToGrader(buttonid) {
                 let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
                 url += '?sesskey=' + Config.sesskey + '&id=' + questionId;
                 if (json.itemid) {
-                    url += '&itemid=' + json.itemid + '&contextid=' + json.contextid + '&filename=' + json.filename;
+                    url += '&itemid=' + json.itemid +
+                        '&contextid=' + json.contextid +
+                        '&filename=' + json.filename +
+                        '&coursecontextid=' + Config.courseContextId;
                 }
                 logmonitor.show('uploadlog', url);
                 // taskupload.upload(null, json.itemid, json.contextid, json.filename);

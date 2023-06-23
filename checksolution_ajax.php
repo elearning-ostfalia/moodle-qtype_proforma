@@ -40,6 +40,7 @@ $err = new stdClass();
 
 // Parameters
 // $questionid = required_param('questionid', PARAM_INT); // Question id
+$coursecontextid = required_param('coursecontextid', PARAM_INT); // Question id
 $proglang = required_param('proglang', PARAM_TEXT); // Aggregation strategy
 $maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes
 $areamaxbytes  = optional_param('areamaxbytes', FILE_AREA_MAX_BYTES_UNLIMITED, PARAM_INT); // Area max bytes.
@@ -62,8 +63,6 @@ if ($runtest) {
     header('Cache-Control: no-cache');
     header('X-Accel-Buffering: no');
 }
-
-// list($context, $course, $cm) = get_context_info_array($contextid);
 
 // If uploaded file is larger than post_max_size (php.ini) setting, $_POST content will be empty.
 if (!$runtest && empty($_POST)) {
@@ -94,61 +93,36 @@ switch ($proglang) {
         throw new Exception('invalid programming language');
 }
 
-/*
-$question = question_bank::load_question($questionid);
-// Consistency checks.
-if ($question == null) {
-    throw new invalid_parameter_exception('no question');
-}
-if (get_class($question) != 'qtype_proforma_question') {
-    throw new invalid_parameter_exception('invalid question type');
-}
-*/
 // Security checks
-global $DB;
-// $contextid = $DB->get_field('question_categories', 'contextid', array('id'=>$question->category));
+global $DB, $USER;
+// Context is user context.
 $context = \context::instance_by_id($contextid, IGNORE_MISSING);
 if (!isset($context)) {
     throw new moodle_exception('invalid context');
 }
-
 external_api::validate_context($context);
 if ($context->contextlevel != CONTEXT_USER) {
     throw new moodle_exception('invalid context level');
 }
-// Since we're in the context of the user, it does not make sense checking course-level rights.
-// require_capability('moodle/question:editmine', $context);
 
-
-// Get repository instance information
-/*
-$repooptions = array(
-    'ajax' => true,
-    'mimetypes' => $accepted_types
-);
-
-// ajax_capture_output();
-$repo = repository::get_repository_by_id($repo_id, $contextid, $repooptions);
-
-// Check permissions
-$repo->check_capability();
-
-$coursemaxbytes = 0;
-if (!empty($course)) {
-    $coursemaxbytes = $course->maxbytes;
-}
-
-// Make sure maxbytes passed is within site filesize limits.
-$maxbytes = get_user_max_upload_file_size($context, $CFG->maxbytes, $coursemaxbytes, $maxbytes);
-*/
-
-global $USER;
 $usercontext = context_user::instance($USER->id);
-
 if ($context->id != $usercontext->id) {
     throw new moodle_exception('context is no user context');
 }
 
+// Since we're in the context of the user, it does not make sense checking
+// course-level rights.
+// But in order to block other users we check the coursecontextid.
+// The $coursecontextid value is not used at anywhere. Just for security checks.
+$coursecontext = \context::instance_by_id($coursecontextid);
+if (!isset($coursecontext)) {
+    throw new moodle_exception('invalid course context');
+}
+external_api::validate_context($coursecontext);
+require_capability('moodle/question:editmine', $coursecontext);
+
+
+// Callback function for server sent events by grader.
 function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
     $ok = false;
     $message = "";
@@ -170,18 +144,14 @@ function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
     $output = html_writer::nonempty_tag('div', $feedback,
         array('class' => 'specificfeedback'));
 
-
     $lines = explode("\n", $output);
     foreach ($lines as $line) {
         echo "data: " . $line . "\n\n";
     }
-
-    // echo "data: " . $output . "\n\n";
 }
 
 if (!$runtest) {
-    // STEP 1 (uplad files)
-
+    // STEP 1 (upload files):
     if (!isset($_FILES['task'])) {
         throw new moodle_exception('no task file');
     }
