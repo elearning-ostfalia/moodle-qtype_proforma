@@ -47,8 +47,9 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     And I should see "MyString.java"
     And I should not see "New file"
     And I should not see "Filename"
+    # Editor with new file is opened by default => enter text
     # Enter text in MyString.java
-    And I doubleclick on "//*[text() = 'MyString.java']" "xpath_element"
+    # And I doubleclick on "//*[text() = 'MyString.java']" "xpath_element"
     And I set the explorer editor text to "hallo MyString"
     # Submit
     And I press "Check"
@@ -58,7 +59,6 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     And I press "Finish attempt"
     And I press "Return to attempt"
     And I should see "hallo MyString"
-
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
@@ -77,7 +77,7 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     And I should see "MyString.java"
     And I should not see "New file"
     And I should not see "Filename"
-    # Create new file Dummy.java
+    # Create new file Dummy.java with text 'hallo Dummy'
     And I click on "New file..." in "Solution" contextmenu
     And I should see "New file"
     And I should see "Filename"
@@ -86,24 +86,23 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     And I should see "Dummy.java"
     And I should not see "New file"
     And I should not see "Filename"
-    # Doubleclick on both filenames
-    And I doubleclick on "//*[text() = 'MyString.java']" "xpath_element"
-    And I doubleclick on "//*[text() = 'Dummy.java']" "xpath_element"
-    # Enter text in Dummy.java
     And I set the explorer editor text to "hallo Dummy"
     # Enter text in MyString.java
     And I doubleclick on "//*[text() = 'MyString.java']" "xpath_element"
     And I wait "1" seconds
     And I set the explorer editor text to "hallo MyString"
     And I wait "1" seconds
+    And I pause
     # Finish attempt (without grading)
     And I press "Finish attempt"
 
     And I press "Return to attempt"
-    And I doubleclick on "//*[text() = 'MyString.java']" "xpath_element"
-    And I should see "hallo MyString"
     And I doubleclick on "//*[text() = 'Dummy.java']" "xpath_element"
     And I should see "hallo Dummy"
+    And I doubleclick on "//*[text() = 'MyString.java']" "xpath_element"
+    # The entered text is not visible because it is not stored on
+    # finishing the attempt (onbeforeunload is not called)
+    And I should see "hallo MyString"
 
 ##########################################################################
   @javascript @_file_upload @_switch_window

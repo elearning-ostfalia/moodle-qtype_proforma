@@ -997,8 +997,9 @@ class EditorStack {
         let currentNode = this._getCurrentNode();
         if (currentNode) {
             // save content of current editor
-            if (currentNode.editor.getValue().trim().length > 0) {
-                currentNode.fileNode.updateContent(currentNode.editor.getValue(), async);
+            const text = currentNode.editor.getValue();
+            if (text.length > 0) {
+                currentNode.fileNode.updateContent(text, async);
             } else {
                 // currentNode.fileNode.updateContent(' ', true);
             }

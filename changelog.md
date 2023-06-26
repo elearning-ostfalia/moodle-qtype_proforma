@@ -1,6 +1,8 @@
 ## XXX
 
-bugfix: context menu in explorer now appears on first click 
+bugfix: context menu in explorer now appears on first click
+bugfix: explorer tab was not renamed if file is renamed
+new: open file if new file is created in explorer
 
 ## 2.11.0
 

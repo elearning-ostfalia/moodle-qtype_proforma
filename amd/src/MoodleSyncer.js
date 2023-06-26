@@ -374,10 +374,26 @@ export class MoodleSyncer extends Syncer {
             return promise;
         } else {
             // synchronous
+            // In Chrome this is declared as dismissal.
             console.log('SYNCHRONOUSE UPDATE!');
             let request = new XMLHttpRequest();
             request.open('POST', url + '?action=' + action, false);
-            request.send(formData);
+            try {
+                request.send(formData);
+            } catch(e1) {
+                // Chrome does not support sync. posts.
+                // So we try asynchronous post
+                console.error(e1);
+                console.log('sync post failed => try async');
+                try {
+                    request.open('POST', url + '?action=' + action, true);
+                    request.send(formData);
+                } catch(e2) {
+                    console.error(e2);
+                    return;
+                }
+            }
+            console.log('sync/async post succeeded');
             const jsonResponse = JSON.parse(request.responseText);
             console.log(jsonResponse);
             if (jsonResponse.error !== undefined) {
