@@ -92,7 +92,7 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     And I wait "1" seconds
     And I set the explorer editor text to "hallo MyString"
     And I wait "1" seconds
-    And I pause
+    # And I pause
     # Finish attempt (without grading)
     And I press "Finish attempt"
 

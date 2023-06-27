@@ -1,9 +1,6 @@
 @qtype @qtype_proforma
-Feature: ADD JAVA EXPLORER/IDE QUESTION
-  Test creating a ProFormA java question
-  As a teacher
-  In order to test my students
-  I need to be able to create a Java questions that support file upload with many files (explorer)
+Feature: WORK IN EXPLORER
+  Test basic functions in explorer
 
   Background:
     Given the following "users" exist:
@@ -39,18 +36,24 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     And I set the field with xpath "//input[@name='promptname']" to "MyString.java"
     And I press "Ok"
     And I should see "MyString.java"
+    And I should not see "New file"
+    And I should not see "Filename"
     And I set the explorer editor text to "hallo MyString"
+    And I should see "hallo MyString"
     # Create new file Dummy.java with text 'hallo Dummy'
     And I click on "New file..." in "Solution" contextmenu
     And I set the field with xpath "//input[@name='promptname']" to "Dummy.java"
     And I press "Ok"
     And I should see "Dummy.java"
+    And I should not see "New file"
+    And I should not see "Filename"
     And I set the explorer editor text to "hallo Dummy"
+    And I should see "hallo Dummy"
 
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
-  Scenario: Explorer/Student rename
+  Scenario: Explorer/Student rename file
 # Create 2 files and rename one of them.
 # Change content of that file.
 ##########################################################################
@@ -77,9 +80,7 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
 ##########################################################################
     # Delete MyString.java
     And I should see "MyString.java"
-    And I pause
     When I click on "Delete..." in "MyString.java" contextmenu
-    # TODO use modal istead of alert!
     And I should see "Are you sure that you want to delete file /MyString.java?"
     And I press "Ok"
     And I should not see "MyString.java"

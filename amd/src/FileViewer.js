@@ -114,45 +114,102 @@ function getString(text) { return text; }
 // - Menu erstmal raus - außer zum Wechseln des Themes
 // - Andere Browser testen
 
+// replacement for prompt needed for behat tests.
+// Behat tests fail on prompt and alert.
 function modalPrompt(titleId, labelId, defaultValue, callback) {
-    // TODO: wait in parallel
-    Str.get_strings([
+    let stringsPromise = Str.get_strings([
         {key: titleId, component: 'qtype_proforma'},
         {key: labelId, component: 'qtype_proforma'},
-        ])
-    .then(strings => {
-        return ModalFactory.create({
-            type: ModalFactory.types.SAVE_CANCEL,
-            title: strings[0],
-            buttons: {
-                save: 'Ok',
-            },
-            body:
-                strings[1] +
-                '<input type="text" name="promptname" value="' + defaultValue + '" size="63"></input>',
-        });
-    })
-    .then(modal => {
-        modal.getRoot().on(ModalEvents.save, () => {
-            let result = document.querySelector("input[name='promptname']").value;
-            // console.log(result);
-            modal.getRoot().remove();
-            callback(result);
-        });
-        modal.show()
-            // Set focus into input field.
-            .then(() => document.querySelector("input[name='promptname']").focus());
+        ]);
+    let modalPromise = ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL});
 
-        // Add trigger for return to trigger default action.
-        let defaultButton = modal.getRoot().find('.btn-primary');
-        document.querySelector("input[name='promptname']")
-            .addEventListener("keyup", function(event) {
-                event.preventDefault();
-                if (event.keyCode === 13) {
-                    defaultButton.click();
-                }
+    Promise.all([stringsPromise, modalPromise])
+        .then(([strings, modal]) => {
+            modal.setTitle(strings[0]);
+            modal.setSaveButtonText('Ok');
+            modal.setBody(strings[1] +
+                '<input type="text" name="promptname" value="' + defaultValue + '" size="63"></input>');
+            modal.getRoot().on(ModalEvents.save, () => {
+                let result = document.querySelector("input[name='promptname']").value;
+                // console.log(result);
+                modal.getRoot().remove();
+                callback(result);
             });
-    });
+            modal.show()
+                // Set focus into input field.
+                .then(() => document.querySelector("input[name='promptname']").focus());
+            // Add trigger for return to trigger default action.
+            let defaultButton = modal.getRoot().find('.btn-primary');
+            document.querySelector("input[name='promptname']")
+                .addEventListener("keyup", function(event) {
+                    event.preventDefault();
+                    if (event.keyCode === 13) {
+                        defaultButton.click();
+                    }
+                });
+        })
+        .catch( error => {
+            console.error('error:', error);
+            alert(error);
+        });
+}
+
+
+function modalAlert(textId, param) {
+    let stringsPromise;
+    if (param) {
+        stringsPromise = Str.get_strings([
+            {key: 'info'},
+            {key: textId, component: 'qtype_proforma', param},
+        ]);
+    } else {
+        stringsPromise = Str.get_strings([
+            {key: 'info'},
+            {key: textId, component: 'qtype_proforma'},
+        ]);
+    }
+    let modalPromise = ModalFactory.create({type: ModalFactory.types.DEFAULT});
+    Promise.all([stringsPromise, modalPromise])
+        .then(([strings, modal]) => {
+            modal.setTitle(strings[0]);
+            modal.setBody(strings[1]);
+            modal.show()
+        })
+        .catch( error => {
+            console.error('error:', error);
+            alert(error);
+        });
+}
+
+function modalConfirm(titleId, textId, callback, param) {
+    let stringsPromise;
+    if (param) {
+        stringsPromise = Str.get_strings([
+            {key: titleId, component: 'qtype_proforma'},
+            {key: textId, component: 'qtype_proforma', param},
+        ]);
+    } else {
+        stringsPromise = Str.get_strings([
+            {key: titleId, component: 'qtype_proforma'},
+            {key: textId, component: 'qtype_proforma'},
+        ]);
+    }
+    let modalPromise = ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL});
+    Promise.all([stringsPromise, modalPromise])
+        .then(([strings, modal]) => {
+            modal.setTitle(strings[0]);
+            modal.setSaveButtonText('Ok');
+            modal.setBody(strings[1]);
+            modal.getRoot().on(ModalEvents.save, () => {
+                modal.getRoot().remove();
+                callback();
+            });
+            modal.show();
+        })
+        .catch( error => {
+            console.error('error:', error);
+            alert(error);
+        });
 }
 
 /**
@@ -224,28 +281,9 @@ class TreeNode {
     }
 
     async alreadyExists(name) {
-        let text = await getString('alreadyexists', 'qtype_proforma', name);
-        alert(text);
-    }
-
-    async confirmAndDo(prompt, callback, name) {
-        let text = await getString(prompt, 'qtype_proforma', name);
-        if (confirm(text)) {
-            callback();
-        }    
-    /*
-        const text = await getString(prompt, 'qtype_proforma', name);
-        ModalFactory.create({
-            type: ModalFactory.types.SAVE_CANCEL,
-            title: 'Confirm',
-            body: text,
-        }).then(modal => {
-            callback();
-            modal.remove();
-        }); */
+        modalAlert('alreadyexists', name);
     }
 }
-
 
 /**
  * FileNode
@@ -292,7 +330,7 @@ export class FileNode extends TreeNode {
         this.handleDelete = event => {
             this.getFramework().handleClick(event);
             let context = this;
-            this.confirmAndDo('deletefile', function() {
+            modalConfirm('delete', 'deletefile', function() {
                 context.getFramework().deleteEditor(context);
                 context.getFramework().syncer.deleteFileOrFolder(context.getPath());
                 context.element.remove();
@@ -400,7 +438,7 @@ export class FolderNode extends TreeNode {
         this.handleDelete = event => {
             this.getFramework().handleClick(event);
             let context = this;
-            this.confirmAndDo('deletefolder', function() {
+            modalConfirm('delete', 'deletefolder', function() {
                 context.getFramework().syncer.deleteFileOrFolder(context.getPath() + '/.');
                 context.element.remove();
                 context.parent.folders = context.parent.folders.filter(item => item !== context);
