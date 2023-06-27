@@ -197,6 +197,10 @@ Version "2.1 new"requires at least Praktomat 4.150. "2.1 new" is required for te
 $string['new'] = 'new';
 $string['old'] = 'old';
 
+$string['explorerautosave'] = 'Autosave interval in explorer input [sec]';
+$string['explorerautosave_desc'] = 'In the Response format "explorer", the editor input is regularly saved back to the server.
+This value specifies the time interval in seconds. If no value is specified, then the input is not saved.';
+
 $string['feedbackoptions_heading'] = 'Feedback Options';
 
 $string['collapse'] = 'Initially collapse/expand';
@@ -258,7 +262,7 @@ $string['uuid'] = 'UUID';
 $string['uuid_hint'] = $string['uuid'];
 $string['uuid_hint_help'] = 'universal unique identifier of ProFormA task file';
 $string['configmaxbytes'] = 'Maximum sum of all uploaded files';
-$string['maxbytes'] = 'Maximum response upload size';
+$string['maxbytes'] = 'Max. response upload size';
 $string['maximumsubmissionsize'] = $string['maxbytes'];
 $string['maximumsubmissionsize_help'] = 'Files uploaded by students may be up to this size.';
 $string['taskmaxbytes'] = 'Maximum task size';

@@ -62,6 +62,7 @@ $string['templateeditor'] = '';
 
 $string['feedbackoptions_heading'] = 'Feedback';
 
+
 $string['collapse'] = 'Initial Ein-/Ausklappen';
 $string['admincollapse'] = 'Feedback initial ein-/ausklappen';
 $string['collapse_help'] = 'Das Feedback einiger Tests wird als sog. "Collapsible Region" dargestellt. '
@@ -210,6 +211,12 @@ $string['submissionproformaversion_help'] = 'ProFormA-Version, die für die Komm
 Version "2.1 neu" erfordert mindestens Praktomat 4.15.0. "2.1 neu" ist erforderlich, um Abgaben in git zu prüfen.';
 $string['new'] = 'neu';
 $string['old'] = 'alt';
+
+$string['explorerautosave'] = 'Autosave-Intervall bei Explorer-Eingabe';
+$string['explorerautosave_desc'] = 'In der Eingabeform "Explorer" werden die Eingaben im Editor regelmäßig zum 
+Server zurückgesichert. Dieser Wert gibt das Zeitintervall in Sekunden an. 
+Wenn kein Wert angegeben wird, dann werden keine Eingaben gesichert.';
+
 
 $string['javasettings_header'] = 'Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';
 $string['checkstyleversion'] = 'Checkstyle Version';

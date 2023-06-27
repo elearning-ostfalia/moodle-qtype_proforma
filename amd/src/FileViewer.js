@@ -29,7 +29,7 @@
 /** NOTE:
  * Currently creating subfolders is disabled, because the moodle question filesaver does not support it */
 
-const autosaveIntervall = 30000; // in milliseconds
+let autosaveIntervall = -1; // in milliseconds
 
 /* eslint-disable no-unused-vars */
 
@@ -1184,9 +1184,14 @@ export class Framework {
             domnode.querySelector('.tabs'), this);
     }
 
-    init(node, syncer, readOnly, rootnode = 'Files') {
+    init(node, syncer, readOnly, options) {
         this.readOnly = readOnly;
-        this.rootnode = rootnode;
+        this.rootnode = options['rootnode'];
+        if (options['explorerautosave'] !== undefined && options['explorerautosave'] > 0) {
+            autosaveIntervall = 1000 * options['explorerautosave'];
+        } else {
+            autosaveIntervall = -1;
+        }
         const initSplit = resizer =>  {
             // from https://htmldom.dev/create-resizable-split-views/
             const before = resizer.previousElementSibling;

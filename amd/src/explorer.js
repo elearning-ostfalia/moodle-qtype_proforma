@@ -28,8 +28,7 @@
 
 import { Framework } from "./FileViewer";
 import { MoodleQuestionAttemptSyncer, MoodleSyncer } from "./MoodleSyncer";
-import * as FormChangeChecker from 'core_form/changechecker';
-import {startWatching, watchForm} from "core_form/changechecker";
+// import * as FormChangeChecker from 'core_form/changechecker';
 
 function _start(nodename, options) {
     console.log('start for ' + nodename);
@@ -41,11 +40,11 @@ function _start(nodename, options) {
     if (options['readonly']) {
         console.log('create readonly framework');
         let syncer = new MoodleQuestionAttemptSyncer(options);
-        framework.init(explorer, syncer, true, options['rootnode']);
+        framework.init(explorer, syncer, true, options);
     } else {
         console.log('create readwrite framework');
         let syncer = new MoodleSyncer(options);
-        framework.init(explorer, syncer, false, options['rootnode']);
+        framework.init(explorer, syncer, false, options);
     }
 
     // Change submit function: Save before submit!

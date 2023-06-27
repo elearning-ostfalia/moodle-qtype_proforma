@@ -210,3 +210,13 @@ $settings->add(new admin_setting_configtext('qtype_proforma/junitversion',
 $settings->add(new admin_setting_configtext('qtype_proforma/checkstyleversion',
         get_string('checkstyleversion', 'qtype_proforma'),
         get_string('checkstyleversion_desc', 'qtype_proforma'), '8.29, 8.23'));
+
+
+// Miscellaneous
+$settings->add(new admin_setting_heading('miscellaneous',
+    get_string('miscellaneousheader', 'qtype_proforma'), ''));
+
+$settings->add(new admin_setting_configtext('qtype_proforma/explorerautosave',
+    get_string('explorerautosave', 'qtype_proforma'),
+    get_string('explorerautosave_desc', 'qtype_proforma'),
+    '30', PARAM_INT, 5));
