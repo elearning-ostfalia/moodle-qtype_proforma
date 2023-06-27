@@ -169,7 +169,7 @@ Feature: BACKUP AND RESTORE
 #      | Response template        | multiline              |
       | UUID                     | UUID 2                     |
       | ProFormA Version         | 2.0                        |
-    And the field "Max. upload size" matches value "10240"
+    And the field "Max. response upload size" matches value "10240"
     And the field "testweight[0]" matches value "2"
     And the field "testweight[1]" matches value "3"
     And the field with name "testtitle[0]" matches value "TEST 1"

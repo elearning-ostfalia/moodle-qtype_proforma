@@ -41,7 +41,7 @@ Feature: DUPLICATE JAVA
     And  I set the following fields to these values:
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
-      | Max. upload size         | 2097152                            |
+      | Max. response upload size         | 2097152                            |
 
     And I press "id_submitbutton"
     Then I should see "proforma-java"
@@ -62,7 +62,7 @@ Feature: DUPLICATE JAVA
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
-      | Max. upload size         | 2097152                            |
+      | Max. response upload size         | 2097152                            |
     And I should see "1" elements in "Model solution files" filemanager
     # compile
     And the "compile" checkbox is "checked"
@@ -120,7 +120,7 @@ Feature: DUPLICATE JAVA
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
-    And the field "Max. upload size" matches value "2097152"
+    And the field "Max. response upload size" matches value "2097152"
     And I should see "1" elements in "Model solution files" filemanager
 
     # compile

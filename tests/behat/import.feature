@@ -140,7 +140,7 @@ Feature: IMPORT (Moodle-XML format)
       | UUID                     | UUID 1                     |
       | ProFormA Version         | 2.0                        |
 #      | Response template        | multiline              |
-    And the field "Max. upload size" matches value "10240"
+    And the field "Max. response upload size" matches value "10240"
     And the field with name "testweight[0]" matches value "0"
     And the field with name "testweight[1]" matches value "1"
     And the field with name "testtitle[0]" matches value "Compiler Test"

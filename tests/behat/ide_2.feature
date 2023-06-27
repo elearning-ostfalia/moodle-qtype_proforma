@@ -53,6 +53,18 @@ Feature: WORK IN EXPLORER
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
+  Scenario: Explorer/Student duplicate filename
+##########################################################################
+    # I cannot add file twice
+    And I should see "MyString.java"
+    And I click on "New file..." in "Solution" contextmenu
+    And I set the field with xpath "//input[@name='promptname']" to "MyString.java"
+    And I press "Ok"
+    And I should see "MyString.java already exists"
+
+
+##########################################################################
+  @javascript @_file_upload @_switch_window
   Scenario: Explorer/Student rename file
 # Create 2 files and rename one of them.
 # Change content of that file.

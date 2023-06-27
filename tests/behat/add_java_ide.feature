@@ -76,7 +76,7 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
       | Question text            | write a java program that..... |
       | Response format          | explorer                     |
       | Title                    | JUnit test title               |
-      | Max. upload size         | 2097152                            |
+      | Max. response upload size         | 2097152                            |
     # check that Response filename is not visible
     And I should not see "Response filename"
     And I set the codemirror "testcode_0" to "class TestClass {}"
@@ -105,7 +105,7 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
       | Title                    | JUnit test title               |
       | Description              |                                |
       | Penalty for each incorrect try  | 10%                     |
-      | Max. upload size         | 2097152                            |
+      | Max. response upload size         | 2097152                            |
 #      | compileweight              |      0                       |
       | testweight[0]              |      1                       |
     And I should not see "Response filename"

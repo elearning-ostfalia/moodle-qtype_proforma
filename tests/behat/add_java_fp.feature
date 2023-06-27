@@ -34,7 +34,7 @@ Feature: ADD JAVA FILEPICKER QUESTION
       | Title                    | JUnit test title               |
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
-      | Max. upload size         | 2097152                            |
+      | Max. response upload size         | 2097152                            |
     # check that Response filename is not visible
     And I should not see "Response filename"
     And I set the codemirror "testcode_0" to "class TestClass {}"
@@ -65,7 +65,7 @@ Feature: ADD JAVA FILEPICKER QUESTION
       | Penalty for each incorrect try  | 10%                     |
       | Accepted file types      | .java                          |
       | Max. number of uploaded files | 2                         |
-      | Max. upload size         | 2097152                            |
+      | Max. response upload size         | 2097152                            |
 #      | compileweight              |      0                       |
       | testweight[0]              |      1                       |
     And I should not see "Response filename"

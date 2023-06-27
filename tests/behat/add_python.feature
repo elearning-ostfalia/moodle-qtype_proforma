@@ -40,7 +40,7 @@ Feature: ADD Python QUESTION
       | Response format          | filepicker                     |
       | Accepted file types      | .cpp                          |
       | Max. number of uploaded files | 1                         |
-      | Max. upload size         | 2097152                            |
+      | Max. response upload size         | 2097152                            |
 
     # The default functions do not work for CodeMirror with Javascript.
     # So we must use other functions.
@@ -91,7 +91,7 @@ Feature: ADD Python QUESTION
       | Comment                  | a comment                      |
       | Accepted file types      | .cpp                           |
       | Max. number of uploaded files | 1                         |
-      | Max. upload size         | 2097152                            |
+      | Max. response upload size         | 2097152                            |
       | Response format          | filepicker                         |
 
     # Filpicker option => no response template, model solution is empty (file)
