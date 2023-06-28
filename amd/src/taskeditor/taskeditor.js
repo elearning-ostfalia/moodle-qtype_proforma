@@ -40,7 +40,7 @@ import {generateUUID, getExtension, setErrorMessage} from "./util";
 import * as taskeditorconfig from "./config";
 import {unzipme, zipme, taskTitleToFilename} from "./zipper";
 import {readXMLWithLock} from "./helper";
-import {convertToXML} from "./task";
+import {convertToXML, InputError} from "./task";
 import Config from 'core/config';
 import {ModelSolutionWrapper} from "./modelsol";
 import {TaskFileRef, TaskModelSolution} from "./taskdata";
@@ -87,7 +87,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 console.log(response.fileurl);
                 draftfilename = decodeURIComponent(response.fileurl.split('/').reverse()[0]);
                 if (!response.fileurl) {
-                    reject(new Error('invalid fileurl ' + response.fileurl));
+                    return Promise.reject(new Error('invalid fileurl ' + response.fileurl));
                 }
                 return response.fileurl;
             })
@@ -284,6 +284,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         const taskeditorField = document.querySelector('input[name="taskeditor"]');
         taskeditorField.value = "1";
 
+
         // Save task on submit/update.
         let updatebutton = document.getElementById('id_updatebutton');
         if (updatebutton !== null) {
@@ -294,13 +295,15 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 updatebutton.disabled = true;
                 saveToServer()
                     .then(() => {
-                        console.log('saveToServer returned');
+                        console.log('Task is uploaded to server');
                         updatebutton.onclick = realUpdateClick;
                         updatebutton.click();
                     })
                    .catch(error => {
-                        console.log(error);
-                        alert(error);
+                       if (!(error instanceof InputError)) {
+                           console.log(error);
+                           alert(error);
+                       }
                     })
                     .finally(() => {
                         updatebutton.disabled = false;
@@ -319,15 +322,17 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 submitbutton.disabled = true;
                 saveToServer()
                     .then(() => {
-                        console.log('saveToServer returned');
+                        console.log('Task is uploaded to server');
                         submitbutton.onclick = realSubmitClick;
                         submitbutton.click();
                         /*                    let uuid = document.querySelector("input[name='uuid']");
                                             uuid.disabled = false;*/
                     })
                     .catch(error => {
-                        console.log(error);
-                        alert(error);
+                        if (!(error instanceof InputError)) {
+                            console.log(error);
+                            alert(error);
+                        }
                     })
                     .finally(() => {
                         submitbutton.disabled = false;
@@ -621,6 +626,11 @@ export const download = (buttonid) => {
         convertToXML()
             .then((context) => {
                 zipme(context, true, taskmaxbytes);
+            })
+            .catch(error => {
+                if (!(error instanceof InputError)) {
+                    console.error(error);
+                }
             });
     }
 }
@@ -920,8 +930,10 @@ export function checkModelsolution(buttonid, containerid) {
                 logmonitor.show('checkmodelsollog', url, onFeedbackStart, onFeedbackData, onFeedbackEnd);
             })
             .catch(error => {
-                console.log(error);
-                alert(error);
+                if (!(error instanceof InputError)) {
+                    console.log(error);
+                    alert(error);
+                }
             })
             .finally(() => {
                 // console.log('finally promise');
@@ -1048,8 +1060,10 @@ export function uploadTaskToGrader(buttonid) {
                 // taskupload.upload(null, json.itemid, json.contextid, json.filename);
             })
             .catch(error => {
-                console.log(error);
-                alert(error);
+                if (!(error instanceof InputError)) {
+                    console.log(error);
+                    alert(error);
+                }
             })
             .finally(() => {
                 button.disabled = false;

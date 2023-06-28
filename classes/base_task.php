@@ -124,6 +124,9 @@ abstract class qtype_proforma_base_task {
      * @param $formdata
      */
     protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
+        if (!isset($formdata->testid)) {
+            return;
+        }
         $count = count($formdata->testid);
         for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];

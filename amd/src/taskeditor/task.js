@@ -64,6 +64,13 @@ import {readXMLWithLock} from "./helper";
 import Notification, {exception as displayException} from 'core/notification';
 
 
+export class InputError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'InputError';
+    }
+}
+
 function switchToTab(hash) {
     const tab = document.querySelector('.nav-link[href="' + hash + '"]');
     if (tab) {
@@ -72,6 +79,8 @@ function switchToTab(hash) {
 }
 
 function addRequired(elem) {
+    console.log('missing input for required element found');
+    console.log(elem);
     elem.focus();
     elem.classList.add('is-invalid');
     elem.classList.add('form-control');
@@ -89,10 +98,19 @@ function addRequired(elem) {
 
 function isInputComplete() {
     console.log('check input');
-    let inputField = $("#id_name");
-    if (!inputField.val()) {
-        // setErrorMessage("Task description is empty.");
-        // switch to appropriate tab and set focus
+
+    // Remove all previously set required hints
+    document.querySelectorAll(".proforma-taskeditor .is-invalid").forEach(item => {  // check whether filenames are provided
+        item.classList.remove('is-invalid');
+        item.classList.remove('form-control');
+    });
+    document.querySelectorAll(".proforma-taskeditor .invalid-feedback").forEach(item => {  // check whether filenames are provided
+        item.remove();
+    });
+
+    let incomplete = false;
+    const inputField = document.querySelector("#id_name");
+    if (inputField.value.trim() === '') {
         let header = document.querySelector('a[href="#id_generalheadercontainer"]');
         if (header) {
             // Expand general header in order to make name visible
@@ -101,12 +119,11 @@ function isInputComplete() {
             }
         }
 
-        inputField.focus();
-        Str.get_string('errmissingquestioninput', 'qtype_proforma')
-            .then(localtext => {
-                alert(localtext);
-            });
-        return false;
+        // Mark as required because the moodle validation is not reached
+        // when this function fails, but if it does not fail
+        // the question name is missing for successive execution.
+        addRequired(inputField);
+        incomplete = true;
     }
 
 /*
@@ -130,46 +147,63 @@ function isInputComplete() {
         return false;
     }
 
-    document.querySelectorAll(".proforma-taskeditor .is-invalid").forEach(item => {  // check whether filenames are provided
-        item.classList.remove('is-invalid');
-        item.classList.remove('form-control');
-    });
-    document.querySelectorAll(".proforma-taskeditor .invalid-feedback").forEach(item => {  // check whether filenames are provided
-        item.remove();
-    });
+
+    // Special handling for the response filename in the question input fields.
+    // If the user chose 'editor' as response type a 'response filename'
+    // is required. But this input field has no rule 'required'
+    // as it is not required for other types. So this cannot be required when invisible.
+    // In this case the whole input is lost (TODO: autosave without checking).
+    if (document.querySelector('#id_responseformat')) {
+        const format = document.querySelector('#id_responseformat').value;
+        console.log(format);
+        if (format === 'editor') {
+            const filename = document.querySelector('#id_responsefilename');
+            if (filename) {
+                console.log(filename.value);
+                if (filename.value.trim() === '') {
+                    addRequired(filename);
+                    incomplete = true;
+                }
+            } else {
+                console.error('cannot find response filename');
+            }
+        }
+    } else {
+        console.error('cannot find response format select');
+    }
 
 
-    let returnFromFunction = false;
     document.querySelectorAll(".xml_file_filename").forEach(item => {  // check whether filenames are provided
         if (!item.value) {
             switchToTab('#proforma-files-section');
             addRequired(item);
-            returnFromFunction = true;
+            incomplete = true;
         }
     });
     document.querySelectorAll(".xml_test_title").forEach(item => {  // check whether filenames are provided
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
-            returnFromFunction = true;
+            incomplete = true;
         }
     });
 
     document.querySelectorAll(".xml_pr_CS_warnings").forEach(item => {
-        console.log(item.value);
+        // console.log(item.value);
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
-            returnFromFunction = true;
+            incomplete = true;
         }
     });
 
     let query = "#proforma-model-solution-section .xml_fileref_filename";
     document.querySelectorAll(query).forEach(item => {  // check whether referenced filenames exists
         if (!item.value) {
+            console.log('filename in model solution is missing');
             switchToTab('#proforma-model-solution-section');
             addRequired(item);
-            returnFromFunction = true;
+            incomplete = true;
         }
     });
 
@@ -177,7 +211,7 @@ function isInputComplete() {
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
-            returnFromFunction = true;
+            incomplete = true;
         }
     });
 
@@ -188,7 +222,7 @@ function isInputComplete() {
             if (label.querySelectorAll('.red').length !== 0) {
                 switchToTab('#proforma-tests-section');
                 addRequired(item);
-                returnFromFunction = true;
+                incomplete = true;
             }
         }
     });
@@ -198,7 +232,7 @@ function isInputComplete() {
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
-            returnFromFunction = true;
+            incomplete = true;
         }
     });
     $.each($(".xml_u_mainclass"), function(index, item) {   // check whether main-class exists
@@ -206,11 +240,11 @@ function isInputComplete() {
             switchToTab('#proforma-tests-section');
             addRequired(item);
             // setErrorMessage("Run command is missing.");
-            returnFromFunction = true;
+            incomplete = true;
         }
     });
 
-    if (returnFromFunction)
+    if (incomplete)
         return false;
 
     let sumweight = 0.0;
@@ -221,14 +255,17 @@ function isInputComplete() {
     console.log('sumweight = ' + sumweight);
     if (sumweight <= 0) {
         Str.get_string('sumweightzero', 'qtype_proforma')
-            .then(content => alert(content));
-        returnFromFunction = true;
+            .then(content => {
+                switchToTab('#proforma-tests-section');
+                alert(content);
+            });
+        incomplete = true;
     }
 
     // console.log('result');
-    // console.log(!returnFromFunction);
+    // console.log(!incomplete);
 
-    return (!returnFromFunction);
+    return (!incomplete);
 }
 
 
@@ -253,10 +290,14 @@ export function convertToXML() {
 
         // check input
         if (!isInputComplete()) {
-            reject(new Error('invalid input => cannot create task.xml'));
-            // console.error('invalid input => cannot create task.xml');
+            // With Promise reject the special type of error is not detected in the catch clause.
+            // So a normal throw without reject is used here.
+            // return Promise.reject(new InputError('invalid input => cannot create task.xml'));
+            console.log('input is incomplete => cannot create task.xml');
+            throw new InputError('invalid input => cannot create task.xml');
             // return null;
         }
+        console.log('input is ok => create task.xml');
 
         // PRE PROCESSING
         // copy data to task class
