@@ -400,10 +400,17 @@ export function convertToXML() {
 
                 // console.log('everything matches');
                 console.log(configItem);
-                if (test.configItem !== undefined) {
+                if (test.configItem !== undefined && test.configItem !== configItem) {
                     // configuration already found
-                    alert('Warning: test configuration for test "' + test.title + '" is not unique. \n' +
-                        'Assume ' + test.configItem.title);
+                    let params = {
+                        'title': test.title,
+                        'config': test.configItem.title
+                    };
+                    Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
+                        .then(content => alert(content));
+/*                    console.log('Warning: test configuration for test "' + test.title + '" is not unique. \n' +
+                        'Assume ' + test.configItem.title + ',\n' +
+                        'but ' + configItem.title + ' is also matching.');*/
                     return;
                 }
 
