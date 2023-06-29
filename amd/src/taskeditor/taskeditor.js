@@ -295,6 +295,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 updatebutton.disabled = true;
                 saveToServer()
                     .then(() => {
+                        updatebutton.disabled = false;
                         console.log('Task is uploaded to server');
                         updatebutton.onclick = realUpdateClick;
                         updatebutton.click();
@@ -323,6 +324,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 saveToServer()
                     .then(() => {
                         console.log('Task is uploaded to server');
+                        submitbutton.disabled = false;
                         submitbutton.onclick = realSubmitClick;
                         submitbutton.click();
                         /*                    let uuid = document.querySelector("input[name='uuid']");
