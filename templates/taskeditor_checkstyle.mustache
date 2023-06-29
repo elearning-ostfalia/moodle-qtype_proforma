@@ -39,6 +39,9 @@
 
     <label for="xml_pr_CS_version">{{#str}} version, qtype_proforma {{/str}}<span class="red">*</span> </label>
     <select class="xml_pr_CS_version">
+            {{#cs_version}}
+                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+            {{/cs_version}}
     </select>
 
     <label for="xml_pr_CS_warnings"> Maximum warnings allowed<span class="red">*</span> </label>

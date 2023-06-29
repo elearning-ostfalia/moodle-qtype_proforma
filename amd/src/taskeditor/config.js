@@ -405,7 +405,11 @@ export function resolveNamespace(prefix, defaultns) {
 
     class GoogleTest extends GeneralUnitTest {
         constructor() {
-            super("Google Test", "qtype_proforma/taskeditor_unittest", ['c', 'cpp'], 'GoogleTest');
+            super("Google Test", "qtype_proforma/taskeditor_unittest",
+                ['c', 'cpp'],
+                // shall we disable C???
+                // ['cpp'],
+                'GoogleTest');
             // console.log('gtest_help ' + gtest_help);
             this.helptext = gtest_help;
             this.entrypointhelp = makerun_help;
@@ -419,8 +423,6 @@ export function resolveNamespace(prefix, defaultns) {
             this.entrypointhelp = makerun_help;
         }
     }
-
-
 
     class CheckstyleTest extends CustomTest {
         constructor() {
@@ -441,7 +443,13 @@ export function resolveNamespace(prefix, defaultns) {
             } else {
                 switch (csNode.namespaceURI) {
                     case checkstylens:
-                        context['cs_version'] = xmlReader.readSingleText("@version", csNode);
+                        const version = xmlReader.readSingleText("@version", csNode);
+                        context['cs_version'] = version;
+                        context['cs_version'] = {
+                            "selected": true,
+                            "value": version,
+                            "name": version
+                        };
                         context['warnings'] = xmlReader.readSingleText("cs:max-checkstyle-warnings", csNode);
                         break;
                     default:
