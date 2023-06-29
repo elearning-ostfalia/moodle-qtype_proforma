@@ -116,7 +116,7 @@ export function initStrings() {
                 testJavaComp,
                 infoJavaJUnit,
                 infoGoogleTest,
-                infoJavaJUnit,
+                infoCUnit,
                 testPython,
                 infoPythonDoctest,
                 /*        testSetlX, testSetlXSyntax,

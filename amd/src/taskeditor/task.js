@@ -508,9 +508,12 @@ export async function readAndDisplayXml(taskXml) {
                         'title': item.title,
                         'config': the_configitem.title
                     };
+/*                    console.log('Warning: test configuration for test "' + item.title + '" is not unique. \n' +
+                        'Assume ' + the_configitem.title + ',\n' +
+                        'but ' + configItem.title + ' is also matching.');*/
                     Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
                         .then(content => alert(content));
-                    return;
+                    return null;
                 }
                 console.log('found ' + configItem.title);
                 let context = configItem.getTemplateContext();
