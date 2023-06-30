@@ -232,6 +232,7 @@ export class TaskTest {
         this.filerefs = [];
         this.writeCallback = null;
         this.uiElement = null;
+        this.framework = null;
     }
 }
 
@@ -580,9 +581,19 @@ export class TaskClass {
                 test.description = xmlReader.readSingleText("dns:description", thisNode);
                 test.comment = xmlReader.readSingleText("dns:internal-description", thisNode);
                 test.testtype = xmlReader.readSingleText("dns:test-type", thisNode);
-
                 let configIterator = xmlReader.readNodes("dns:test-configuration", thisNode);
                 let configNode = configIterator.iterateNext();
+                if (test.testtype.toLowerCase() === 'unittest') {
+                    // Check for optional framework
+                    let unitNode = xmlReader.readSingleNode("unit:unittest", configNode);
+                    if (unitNode) {
+                        let framework = xmlReader.readSingleText("@framework", unitNode);
+                        if (framework) {
+                            test.framework = framework;
+                        }
+                    }
+                }
+
                 readFileRefs(xmlReader, test, configNode);
 
                 this.tests[counter] = test;

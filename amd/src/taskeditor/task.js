@@ -503,6 +503,15 @@ export async function readAndDisplayXml(taskXml) {
                         return;
                     }
                 }
+                // Distinguish between CUnit and Google test with C++
+                if (configItem.frameworks !== undefined && item.framework !== undefined) {
+                    if (!configItem.frameworks.includes(item.framework.toLowerCase())) {
+                        console.log(item.framework + ' is not in ')
+                        console.log(configItem.frameworks);
+                        // Framework does not match
+                        return;
+                    }
+                }
                 if (ui_test) {
                     let params = {
                         'title': item.title,
@@ -575,8 +584,6 @@ export async function readAndDisplayXml(taskXml) {
         return;
     }
 
-    // resetInputFields();
-
     const templateroot = $("#templatedropzone");
     const multmediaroot = $("#multimediadropzone");
     const downloadroot = $("#downloaddropzone");
@@ -586,14 +593,11 @@ export async function readAndDisplayXml(taskXml) {
     // TODO: validate??
     task.readXml(taskXml);
 
-
-/*    descriptionEditor.setValue(task.description);
-    $("#xml_title").val(task.title);
+/*
     $("#xml_task_internal_description").find('.xml_internal_description').val(task.comment);
     $("#xml_uuid").val(task.uuid);
     $("#xml_submission_size").val(task.sizeSubmission);
     $("#xml_restrict_filename").val(task.filenameRegExpSubmission);
-
  */
 
     console.log(task.proglang);
@@ -628,12 +632,6 @@ export async function readAndDisplayXml(taskXml) {
             }
         }
     }
-
-
-    /*
-
-    codeskeleton.setValue(task.codeskeleton);
-*/
 
     let filepromises = [];
     let refpromises = [];

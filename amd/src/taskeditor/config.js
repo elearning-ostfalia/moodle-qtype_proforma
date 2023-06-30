@@ -336,24 +336,6 @@ export function resolveNamespace(prefix, defaultns) {
             this.framework = framework;
             this.withRunCommand = withRunCommand;
         }
-/*
-        getExtraHtmlField() {
-            let output = '';
-            if (this.withRunCommand) {
-                output += "<p><label for='xml_u_mainclass'>Run Command<span class='red'>*</span>: </label>"+
-                "<input class='mediuminput xml_u_mainclass' " +
-                "title='command for running the test, depends on Makefile (e.g. ./run_test)'/>";
-            }
-
-            return output +
-                " <label for='xml_u_framew'>Framework<span class='red'>*</span>: </label>"+
-                "<select class='xml_u_framew'>" +
-                "   <option selected='selected' value='" + this.framework +
-                    "'>" + this.framework + "</option>" +
-                "</select>"+
-                "</p>";
-        }
-*/
         onReadXml(test, xmlReader, testConfigNode, context) {
             let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
             if (!unitNode)
@@ -370,16 +352,23 @@ export function resolveNamespace(prefix, defaultns) {
             }
 
             let framework = xmlReader.readSingleText("@framework", unitNode);
-            switch(framework) {
-                case 'GoogleTest':
+            switch(framework.toLowerCase()) {
+                case 'googletest':
+                case 'google-test':
                     this.framework = 'GoogleTest';
                     this.proglang = ['c', 'cpp'];
                     break;
-                case 'PythonUnittest':
+                case 'pythonunittest':
+                case 'python-unit-test':
+                case 'python-unittest':
+                case 'python unittest':
+                case 'python':
                     this.framework = 'PythonUnittest';
                     this.proglang = ['python'];
                     break;
-                case 'CUnit':
+                case 'cunit':
+                case 'cunittest':
+                case 'cunit-test':
                     this.framework = 'CUnit';
                     this.proglang = ['c'];
                     break;
@@ -418,6 +407,7 @@ export function resolveNamespace(prefix, defaultns) {
             // console.log('gtest_help ' + gtest_help);
             this.helptext = gtest_help;
             this.entrypointhelp = makerun_help;
+            this.frameworks = ['googletest', 'google-test', 'google' , 'google test'];
         }
     }
 
@@ -426,6 +416,7 @@ export function resolveNamespace(prefix, defaultns) {
             super("CUnit Test", "qtype_proforma/taskeditor_unittest", ['c'], 'CUnit');
             this.helptext = cunittest_help;
             this.entrypointhelp = makerun_help;
+            this.frameworks = ['cunit', 'cunittest', 'cunit-test', 'cunit test'];
         }
     }
 
@@ -449,7 +440,6 @@ export function resolveNamespace(prefix, defaultns) {
                 switch (csNode.namespaceURI) {
                     case checkstylens:
                         const version = xmlReader.readSingleText("@version", csNode);
-                        // context['cs_version'] = version;
                         context['cs_version'] = {
                             "selected": true,
                             "value": version,
