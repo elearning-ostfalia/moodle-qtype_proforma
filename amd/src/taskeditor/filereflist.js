@@ -33,8 +33,7 @@ import {readAndCreateFileData} from "./helper";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import {FileWrapper} from "./file";
-import * as taskeditorconfig from "./config";
-import {DEBUG_MODE,handleFilenameChangeInTest} from "./util";
+import {DEBUG_MODE,handleFilenameChangeInTest} from "./helper";
 import * as Str from 'core/str';
 import {TestWrapper} from "./test";
 

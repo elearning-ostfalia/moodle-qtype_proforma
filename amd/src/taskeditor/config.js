@@ -25,7 +25,7 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm (Dr.U.Priss)
  */
 
-import {CustomTest} from "./util";
+import {CustomTest} from "./customtest";
 import * as Str from 'core/str';
 
 // const configXsdSchemaFile = version101;   // choose version for output
@@ -237,7 +237,12 @@ export function resolveNamespace(prefix, defaultns) {
                     $(root).find(".xml_entry_point").val(), unittestns_new);
             }
             unittestNode.setAttribute("framework", this.framework);
-            unittestNode.setAttribute("version", $(root).find(".framework_version").val());
+            const versionelem = ($(root).find(".xml_framework_version"));
+            if (versionelem) {
+                unittestNode.setAttribute("version", versionelem.val());
+            } else {
+                unittestNode.setAttribute("version", '');
+            }
         }
     }
 

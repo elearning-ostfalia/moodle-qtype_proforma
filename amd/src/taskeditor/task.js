@@ -28,7 +28,7 @@
 import $ from 'jquery';
 import {TaskClass, TaskFile, TaskModelSolution, TaskFileRef, TaskTest, T_VISIBLE} from "./taskdata";
 import {testIDs} from "./test";
-import {setErrorMessage, clearErrorMessage, generateUUID} from "./util";
+import {setErrorMessage, clearErrorMessage, generateUUID} from "./helper";
 import {FileWrapper} from "./file";
 import {TestWrapper } from "./test";
 import {ModelSolutionWrapper } from "./modelsol";

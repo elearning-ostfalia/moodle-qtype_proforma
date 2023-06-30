@@ -27,7 +27,7 @@
  */
 
 import {TestFileReference, FileReferenceList, ModelSolutionFileReference} from "./filereflist";
-import {setcounter, DEBUG_MODE} from "./util";
+import {setcounter, DEBUG_MODE} from "./helper";
 import {TaskClass} from "./taskdata";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';

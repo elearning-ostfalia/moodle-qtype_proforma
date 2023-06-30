@@ -26,7 +26,7 @@
  */
 
 import $ from 'jquery';
-import {setcounter, DEBUG_MODE, getExtension} from "./util";
+import {setcounter, DEBUG_MODE, getExtension} from "./helper";
 import * as taskeditorconfig from "./config";
 import {javaParser} from "./java";
 import {FileReferenceList} from "./filereflist";

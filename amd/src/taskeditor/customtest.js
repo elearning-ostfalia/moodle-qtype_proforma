@@ -16,7 +16,7 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Utility function for ProFormA task editor
+ * Base class for configuration classes
  *
  * @package    qtype
  * @subpackage proforma
@@ -25,120 +25,9 @@
  * @author     eCULT-Team of Ostfalia University, Dr.U.Priss, K.Borm
  */
 
-
-
-import {javaParser} from "./java";
-
-export const DEBUG_MODE       = false;
-export const TEST_MODE        = false;
-export const SUBMISSION_TEST  = false;
-export const USE_VISIBLES     = false;
-
-
-export const version094    = 'xsd/taskxml0.9.4.xsd';                // name of schema files
-export const version101    = 'xsd/taskxml1.0.1.xsd';
-
-
-export function setErrorMessage(errormess, exception) { // setting the error console
-    console.log('setErrorMessage');
-    console.log(errormess);
-    console.log(exception);
-    window.alert(errormess);
-}
-
-export function clearErrorMessage() {
-
-}
-
-// without . (MyString.Java = java)
-// to lowercase
-export function getExtension(filename) {
-    return filename.split('.').pop().toLowerCase();
-}
-
-
-
-
-let newUuid;
-
-/**
- * generetae new UUID. Note that this function always returns the same UUID
- * whenever it is called later on.
- *
- * @returns {string|*}
- */
-export function generateUUID(){
-    if (newUuid !== undefined) {
-        // console.log('newUuid is ' + newUuid + ' (do not change)');
-        return newUuid;
-    }
-    let date = new Date().getTime();
-    newUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c_value) {
-        let rand = (date + Math.random()*16)%16 | 0;
-        date = Math.floor(date/16);
-        return (c_value === 'x' ? rand : (rand&0x3|0x8)).toString(16);
-    });
-    console.log('newUuid is ' + newUuid);
-    return newUuid;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-/* setcounter and deletecounter are only used for fileIDs, modelSolIDs, testIDs
- * setcounter finds the first available ID and returns it
- * setcounter should be called when a new item is created
- * deletecounter deletes an ID from the hash, to be used when deleting an item
- */
-export function setcounter(temphash) {
-    let tempcnter = 1;
-    while (temphash.hasOwnProperty(tempcnter)) {         // if the counter is already used, take next one
-        tempcnter++;
-    }
-    temphash[tempcnter] = 1;
-    return tempcnter;
-}
-
-
-export function handleFilenameChangeInTest(newFilename, tempSelElem) {
-    function setJavaClassname(newFilename) {
-        // set classname if file belongs to JUNIT and if exactly one file is assigned
-        let testBox = $(tempSelElem).closest(".xml_test");
-        const ui_classname = $(testBox).find(".xml_entry_point");
-        if (ui_classname.length === 1 // JUNIT box
-            && ui_classname.first().val().trim() === '') { // and entry point not set
-            ui_classname.first().val(javaParser.getFullClassnameFromFilename(newFilename));
-
-            // $.each(ui_classname, function(index, element) {
-            //     //let currentFilename = $(element).val();
-            //     if (!readXmlActive)
-            //         $(element).val(javaParser.getFullClassnameFromFilename(newFilename)).change();
-            // });
-        }
-    }
-/*
-    function setJUnitDefaultTitle(newFilename) {
-        // set description according to classname
-        let testBox = $(tempSelElem).closest(".xml_test");
-        const ui_title = $(testBox).find(".xml_test_title");
-        if (ui_title.length === 1) {
-            $.each(ui_title, function(index, element) {
-                let currentTitle = $(element).val();
-                if (!readXmlActive && currentTitle === JUnitTest.DefaultTitle)
-                    $(element).val("Junit Test " + javaParser.getPureClassnameFromFilename(newFilename)).change();
-            });
-        }
-    }
-*/
-    setJavaClassname(newFilename);
-    // setJUnitDefaultTitle(newFilename);
-}
-
-
 //////////////////////////////////////////////////////////////////////////////
 // configuration support
 //////////////////////////////////////////////////////////////////////////////
-
-// classes
 
 export class CustomTest {
 

@@ -36,7 +36,7 @@ import Y from 'core/yui';
 
 import {TestWrapper } from "./test";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "../repository";
-import {CustomTest, generateUUID, getExtension, setErrorMessage} from "./util";
+import {generateUUID, getExtension} from "./helper";
 import * as taskeditorconfig from "./config";
 import {unzipme, zipme, taskTitleToFilename} from "./zipper";
 import {readXMLWithLock} from "./helper";

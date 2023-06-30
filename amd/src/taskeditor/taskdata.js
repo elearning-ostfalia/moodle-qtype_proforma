@@ -26,7 +26,7 @@
  */
 
 
-import {setErrorMessage, generateUUID} from "./util";
+import {setErrorMessage, generateUUID} from "./helper";
 import * as taskeditorconfig from "./config";
 import {FileStorage, fileStorages } from "./file";
 

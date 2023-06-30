@@ -26,7 +26,7 @@
  */
 
 import {ModelSolutionFileReference, FileReferenceList} from './filereflist'
-import {DEBUG_MODE, setcounter} from "./util";
+import {DEBUG_MODE, setcounter} from "./helper";
 import Templates from 'core/templates';
 import {exception as displayException} from 'core/notification';
 import * as Str from 'core/str';
