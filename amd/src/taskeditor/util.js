@@ -131,6 +131,9 @@ export class CustomTest {
         const compactName = title.replace(/ /g, "");
         this.xmlTemplateName = compactName;
         this.buttonJQueryId = "add" + compactName;
+        this.frameworkRequired = false;
+        this.framework = null;
+
     }
 
     // override
@@ -155,6 +158,16 @@ export class CustomTest {
         if (this.helptext) {
             result['info'] = {
                 "text": this.helptext
+            };
+        }
+        if (this.framework) {
+            result['framework'] = this.framework;
+        }
+        if (this.frameworkRequired) {
+            result['framework_version'] = {
+                "selected": true,
+                "value": '',
+                "name": ''
             };
         }
         if (this.entrypointhelp) {

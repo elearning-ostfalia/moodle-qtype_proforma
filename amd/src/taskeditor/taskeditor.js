@@ -507,9 +507,10 @@ function fillSelectOptions(id, selectArray, textForError) {
     // At first check if there is a selected version which is not in the list.
     if (selectElem.options.length === 1) {
         const selectedVersion = selectElem.options[0].value;
-        // const responseVersions = Array.from(response['checkstyleversions']).map((item) => item);
         if (!selectArray.includes(selectedVersion)) {
-            alert('invalid ' + textForError + ' version ' + selectedVersion);
+            if (selectedVersion.trim() !== '') {
+                alert('invalid ' + textForError + ' version ' + selectedVersion);
+            }
             // Remove invalid option
             selectElem.remove(0);
         }

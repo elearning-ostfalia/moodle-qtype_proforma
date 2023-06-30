@@ -44,18 +44,6 @@
         title='{{#str}} taskeditorentrypointhelp, qtype_proforma {{/str}}'
         value='{{ entrypoint }}'></input>
 
-    <label for='xml_ju_framew'>Framework<span class='red'>*</span> </label>
-    <select class='xml_ju_framew'><option selected='selected' value='JUnit'>JUnit</option></select>
-
-    <label for='xml_ju_version'>{{#str}} version, qtype_proforma {{/str}}<span class='red'>*</span> </label>
-    <select class='xml_ju_version' id="{{uniqid}}-version">
-        {{#junit_version}}
-            <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
-        {{/junit_version}}
-    </select>
-
-<br>
-
 {{> qtype_proforma/taskeditor_test_end }}
 
 {{#js}}

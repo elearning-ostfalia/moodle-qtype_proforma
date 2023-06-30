@@ -36,23 +36,13 @@
 
 {{> qtype_proforma/taskeditor_test_start }}
 
-
-    <label for="xml_pr_CS_version">{{#str}} version, qtype_proforma {{/str}}<span class="red">*</span> </label>
-    <select class="xml_pr_CS_version" id="{{uniqid}}-cs_select">
-            {{#cs_version}}
-                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
-            {{/cs_version}}
-    </select>
-
-    <label for="xml_pr_CS_warnings"> Maximum warnings allowed<span class="red">*</span> </label>
+    <label for="xml_pr_CS_warnings">{{#str}} checkstylewarnings, qtype_proforma {{/str}}<span class="red">*</span> </label>
     <input class="tinyinput xml_pr_CS_warnings" value="{{ warnings }}">
-
-<br>
 
 {{> qtype_proforma/taskeditor_test_end }}
 
 {{#js}}
     require(['qtype_proforma/taskeditor/taskeditor'], function(editor) {
-        editor.setCheckstyleVersions("{{uniqid}}-cs_select");
+        editor.setCheckstyleVersions("{{uniqid}}-version");
     });
 {{/js}}

@@ -290,6 +290,8 @@ export function resolveNamespace(prefix, defaultns) {
                 "qtype_proforma/taskeditor_junit", ['java']);
             this.helptext = junit_help;
             this.entrypointhelp = junitentry_help;
+            this.framework = 'JUnit';
+            this.frameworkRequired = true;
         }
         onReadXml(test, xmlReader, testConfigNode, context) {
             let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
@@ -308,12 +310,12 @@ export function resolveNamespace(prefix, defaultns) {
             }
 
             const version = xmlReader.readSingleText("@version", unitNode);
-            context['junit_version'] = {
+            context['framework_version'] = {
                 "selected": true,
                 "value": version,
                 "name": version
             };
-            context['junit_framework'] = xmlReader.readSingleText("@framework", unitNode);
+            context['framework'] = this.framework; // xmlReader.readSingleText("@framework", unitNode);
         }
         onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {
             let root = test.uiElement.root;
@@ -323,14 +325,16 @@ export function resolveNamespace(prefix, defaultns) {
             testConfigNode.appendChild(unittestNode);
 
             xmlWriter.createTextElement(unittestNode, 'unit:entry-point', $(root).find(".xml_ju_mainclass").val(), unittestns_new);
-            unittestNode.setAttribute("framework", $(root).find(".xml_ju_framew").val());
-            unittestNode.setAttribute("version", $(root).find(".xml_ju_version").val());
+            unittestNode.setAttribute("framework", this.framework);
+            unittestNode.setAttribute("version", $(root).find(".framework_version").val());
         }
     }
 
     class GeneralUnitTest extends CustomTest  {
         withRunCommand = true;
-        constructor(title, template, proglang, framework, withRunCommand = true) {
+        constructor(title, proglang, framework,
+                    template = "qtype_proforma/taskeditor_unittest",
+                    withRunCommand = true) {
             super(title, "unittest", template, proglang);
             // this.fileRefLabel = 'Testfile(s) and CMakeLists.txt/ Makefile';
             this.framework = framework;
@@ -352,31 +356,16 @@ export function resolveNamespace(prefix, defaultns) {
             }
 
             let framework = xmlReader.readSingleText("@framework", unitNode);
-            switch(framework.toLowerCase()) {
-                case 'googletest':
-                case 'google-test':
-                    this.framework = 'GoogleTest';
-                    this.proglang = ['c', 'cpp'];
-                    break;
-                case 'pythonunittest':
-                case 'python-unit-test':
-                case 'python-unittest':
-                case 'python unittest':
-                case 'python':
-                    this.framework = 'PythonUnittest';
-                    this.proglang = ['python'];
-                    break;
-                case 'cunit':
-                case 'cunittest':
-                case 'cunit-test':
-                    this.framework = 'CUnit';
-                    this.proglang = ['c'];
-                    break;
-                default:
-                    // Undefined.
-                    framework = this.framework;
+            if (this.framework) {
+                // Override if subclass has defined it
+                framework = this.framework;
             }
-            context['framework_version'] = xmlReader.readSingleText("@version", unitNode);
+            const version = xmlReader.readSingleText("@version", unitNode);
+            if (version && version !== 'undefined' && version.trim() !== '') {
+                console.log(this.title + ' has version ');
+                console.log(version);
+                context['framework_version'] = version;
+            }
             context['framework'] = framework;
         }
 
@@ -390,21 +379,14 @@ export function resolveNamespace(prefix, defaultns) {
             if (this.withRunCommand) {
                 xmlWriter.createTextElement(unittestNode, 'unit:entry-point', $(root).find(".xml_u_mainclass").val(), unittestns_new);
             }
-            unittestNode.setAttribute("framework", this.framework); // $(root).find(".xml_u_framew").val());
+            unittestNode.setAttribute("framework", this.framework);
             unittestNode.setAttribute("version", $(root).find(".xml_u_version").val());
-            // console.log(testConfigNode);
-            // console.log(unittestNode);
         }
     }
 
     class GoogleTest extends GeneralUnitTest {
         constructor() {
-            super("Google Test", "qtype_proforma/taskeditor_unittest",
-                ['c', 'cpp'],
-                // shall we disable C???
-                // ['cpp'],
-                'GoogleTest');
-            // console.log('gtest_help ' + gtest_help);
+            super("Google Test", ['c', 'cpp'], 'GoogleTest');
             this.helptext = gtest_help;
             this.entrypointhelp = makerun_help;
             this.frameworks = ['googletest', 'google-test', 'google' , 'google test'];
@@ -413,7 +395,7 @@ export function resolveNamespace(prefix, defaultns) {
 
     class CUnitTest extends GeneralUnitTest {
         constructor() {
-            super("CUnit Test", "qtype_proforma/taskeditor_unittest", ['c'], 'CUnit');
+            super("CUnit Test", ['c'], 'CUnit');
             this.helptext = cunittest_help;
             this.entrypointhelp = makerun_help;
             this.frameworks = ['cunit', 'cunittest', 'cunit-test', 'cunit test'];
@@ -425,7 +407,7 @@ export function resolveNamespace(prefix, defaultns) {
             super("CheckStyle Test", "java-checkstyle",
                 "qtype_proforma/taskeditor_checkstyle");
             this.gradingWeight = weightStaticTest;
-            // this.fileRefLabel = 'Configuration File';
+            this.frameworkRequired = true;
         }
 
         onReadXml(test, xmlReader, testConfigNode, context) {
@@ -435,12 +417,12 @@ export function resolveNamespace(prefix, defaultns) {
                 // todo: check version
                 let praktomatNode = xmlReader.readSingleNode("dns:test-meta-data", testConfigNode);
                 context['warnings'] = xmlReader.readSingleText("praktomat:max-checkstyle-warnings", praktomatNode);
-                context['cs_version'] = xmlReader.readSingleText("praktomat:version", testConfigNode);
+                context['framework_version'] = xmlReader.readSingleText("praktomat:version", testConfigNode);
             } else {
                 switch (csNode.namespaceURI) {
                     case checkstylens:
                         const version = xmlReader.readSingleText("@version", csNode);
-                        context['cs_version'] = {
+                        context['framework_version'] = {
                             "selected": true,
                             "value": version,
                             "name": version
@@ -461,7 +443,7 @@ export function resolveNamespace(prefix, defaultns) {
             testConfigNode.appendChild(csNode);
 
             xmlWriter.createTextElement(csNode, 'cs:max-checkstyle-warnings', $(root).find(".xml_pr_CS_warnings").val(), checkstylens);
-            csNode.setAttribute("version", $(root).find(".xml_pr_CS_version").val());
+            csNode.setAttribute("version", $(root).find(".xml_framework_version").val());
         }
     }
 

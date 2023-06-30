@@ -398,6 +398,7 @@ $string['taskeditorfilesize'] = 'Dateigröße';
 $string['taskeditordropzone'] = 'Drop zone';
 $string['taskeditorentrypointhelp'] = 'Name der Klasse, die die Main-Methode enthält - inkl. vollem Package-Pfad (z.B. de.ostfalia.zell.editor)';
 
+$string['checkstylewarnings'] = 'Max. Anzahl Warnungen';
 
 $string['taskeditornewjavacomp'] = 'Neuer Java Compilertest';
 $string['taskeditornewjunit'] = 'Neuer JUnit Test';
