@@ -55,7 +55,11 @@ export class TestWrapper {
 
     getValue(member, xmlClass) {
         if (!member) {
-            member = this.root.find(xmlClass).first();
+            const elem = this.root.find(xmlClass);
+            if (!elem) {
+                return undefined;
+            }
+            member = elem.first();
         }
         return member.val();
     }
@@ -68,6 +72,7 @@ export class TestWrapper {
     get description() { return this.getValue(this._description,".xml_description" ); }
     get testtype() { return this.getValue(this._type,".xml_test_type" ); }
     get weight() { return this.getValue(this._type,".xml_test_weight" ); }
+    get framework() { return this.getValue(this._type,".xml_framework" ); }
 
     // setter
     set comment(newComment) { this._root.find(".xml_internal_description").val(newComment); }

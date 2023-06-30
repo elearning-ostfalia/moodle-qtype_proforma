@@ -746,7 +746,7 @@ export class TestFileReference extends FileReferenceList {
         super.onFileUpload(filename, uploadBox);
         // set classname if exactly one file is assigned
         // todo: this should be part of the configuration
-        // const ui_classname = $(uploadBox).find(".xml_ju_mainclass");
+        // const ui_classname = $(uploadBox).find(".xml_entry_point");
         // if (ui_classname.length === 1) {
         //     $.each(ui_classname, function(index, element) {
         //         const currentFilename = $(element).val();

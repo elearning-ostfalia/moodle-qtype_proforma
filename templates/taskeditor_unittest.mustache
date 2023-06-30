@@ -38,11 +38,11 @@
 
 {{> qtype_proforma/taskeditor_test_start }}
 
-    <label for='xml_u_mainclass'>{{#str}} executable, qtype_proforma {{/str}}<span class='red'>*</span> </label>
+    <label for='xml_entry_point'>{{#str}} executable, qtype_proforma {{/str}}<span class='red'>*</span> </label>
     {{#entrypointinfo}}
         {{>core/help_icon}}
     {{/entrypointinfo}}
-    <input class='mediuminput xml_u_mainclass' value='{{ entrypoint }}'></input>
+    <input class='mediuminput xml_entry_point' value='{{ entrypoint }}'></input>
 
     <br>
 

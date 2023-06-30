@@ -56,9 +56,6 @@ import * as Str from 'core/str';
 
 // const configXsdSchemaFile = version101;   // choose version for output
 /*
-    version094:
-        namespace = 'xmlns:'+pfix_unit+'="urn:proforma:unittest" xmlns:'+pfix_prak+'="urn:proforma:praktomat:v0.1" ' +
-            'xmlns="urn:proforma:task:v0.9.4" xmlns:'+pfix_jart+'="urn:proforma:tests:jartest:v1" ';
     version101:
         namespace = 'xmlns:'+pfix_unit+'="urn:proforma:tests:unittest:v1" xmlns:'+pfix_prak+'="urn:proforma:praktomat:v0.2" '
             + 'xmlns="urn:proforma:task:v1.0.1" xmlns:'+pfix_jart+'="urn:proforma:tests:jartest:v1" ';
@@ -176,7 +173,7 @@ export function handleFilenameChangeInTest(newFilename, tempSelElem) {
     function setJavaClassname(newFilename) {
         // set classname if file belongs to JUNIT and if exactly one file is assigned
         let testBox = $(tempSelElem).closest(".xml_test");
-        const ui_classname = $(testBox).find(".xml_ju_mainclass");
+        const ui_classname = $(testBox).find(".xml_entry_point");
         if (ui_classname.length === 1 // JUNIT box
             && ui_classname.first().val().trim() === '') { // and entry point not set
             ui_classname.first().val(javaParser.getFullClassnameFromFilename(newFilename));
@@ -260,14 +257,7 @@ export function resolveNamespace(prefix, defaultns) {
 
 
 
-    // Tests objects
-/*    class CCompilerTest extends CustomTest {
-        constructor() {
-            super("C Compiler Test", "c-compilation");
-            this.gradingWeight = weightCompilation;
-            this.manadatoryFile = false;
-        }
-    }*/
+    // Test classes
     class JavaCompilerTest extends CustomTest {
         constructor() {
             super("Compiler Test", "java-compilation");
@@ -282,64 +272,16 @@ export function resolveNamespace(prefix, defaultns) {
         }
     }
 
-    class JUnitTest extends CustomTest  {
-        static DefaultTitle = "JUnit Test";
-
-        constructor() {
-            super(JUnitTest.DefaultTitle, "unittest",
-                "qtype_proforma/taskeditor_junit", ['java']);
-            this.helptext = junit_help;
-            this.entrypointhelp = junitentry_help;
-            this.framework = 'JUnit';
-            this.frameworkRequired = true;
-        }
-        onReadXml(test, xmlReader, testConfigNode, context) {
-            let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
-            if (!unitNode)
-                throw new Error('element unit:unittest not found in unittest or unittest namespace invalid');
-
-            switch (unitNode.namespaceURI) {
-                case unittestns_old:
-                    context['entrypoint'] = xmlReader.readSingleText("unit:main-class", unitNode);
-                    break;
-                case unittestns_new:
-                    context['entrypoint'] = xmlReader.readSingleText("unit:entry-point", unitNode);
-                    break;
-                default:
-                    throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in JUnitTest');
-            }
-
-            const version = xmlReader.readSingleText("@version", unitNode);
-            context['framework_version'] = {
-                "selected": true,
-                "value": version,
-                "name": version
-            };
-            context['framework'] = this.framework; // xmlReader.readSingleText("@framework", unitNode);
-        }
-        onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {
-            let root = test.uiElement.root;
-            task.setAttributeNS('http://www.w3.org/2000/xmlns/', "xmlns:unit", unittestns_new);
-
-            let unittestNode = xmlDoc.createElementNS(unittestns_new, "unit:unittest");
-            testConfigNode.appendChild(unittestNode);
-
-            xmlWriter.createTextElement(unittestNode, 'unit:entry-point', $(root).find(".xml_ju_mainclass").val(), unittestns_new);
-            unittestNode.setAttribute("framework", this.framework);
-            unittestNode.setAttribute("version", $(root).find(".framework_version").val());
-        }
-    }
-
     class GeneralUnitTest extends CustomTest  {
         withRunCommand = true;
         constructor(title, proglang, framework,
                     template = "qtype_proforma/taskeditor_unittest",
                     withRunCommand = true) {
             super(title, "unittest", template, proglang);
-            // this.fileRefLabel = 'Testfile(s) and CMakeLists.txt/ Makefile';
             this.framework = framework;
             this.withRunCommand = withRunCommand;
         }
+
         onReadXml(test, xmlReader, testConfigNode, context) {
             let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
             if (!unitNode)
@@ -362,9 +304,11 @@ export function resolveNamespace(prefix, defaultns) {
             }
             const version = xmlReader.readSingleText("@version", unitNode);
             if (version && version !== 'undefined' && version.trim() !== '') {
-                console.log(this.title + ' has version ');
-                console.log(version);
-                context['framework_version'] = version;
+                context['framework_version'] = {
+                    "selected": true,
+                    "value": version,
+                    "name": version
+                };
             }
             context['framework'] = framework;
         }
@@ -377,10 +321,39 @@ export function resolveNamespace(prefix, defaultns) {
             testConfigNode.appendChild(unittestNode);
 
             if (this.withRunCommand) {
-                xmlWriter.createTextElement(unittestNode, 'unit:entry-point', $(root).find(".xml_u_mainclass").val(), unittestns_new);
+                xmlWriter.createTextElement(unittestNode, 'unit:entry-point',
+                    $(root).find(".xml_entry_point").val(), unittestns_new);
             }
             unittestNode.setAttribute("framework", this.framework);
-            unittestNode.setAttribute("version", $(root).find(".xml_u_version").val());
+            unittestNode.setAttribute("version", $(root).find(".framework_version").val());
+        }
+    }
+
+    class JUnitTest extends GeneralUnitTest  {
+        static DefaultTitle = "JUnit Test";
+
+        constructor() {
+            super(JUnitTest.DefaultTitle, ['java'], "JUnit", "qtype_proforma/taskeditor_junit");
+            this.helptext = junit_help;
+            this.entrypointhelp = junitentry_help;
+            this.frameworkRequired = true;
+        }
+        onReadXml(test, xmlReader, testConfigNode, context) {
+            super.onReadXml(test, xmlReader, testConfigNode, context);
+            let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
+            if (!unitNode)
+                throw new Error('element unit:unittest not found in unittest or unittest namespace invalid');
+
+            switch (unitNode.namespaceURI) {
+                case unittestns_old:
+                    context['entrypoint'] = xmlReader.readSingleText("unit:main-class", unitNode);
+                    break;
+                case unittestns_new:
+                    // default
+                    break;
+                default:
+                    throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in JUnitTest');
+            }
         }
     }
 
@@ -479,14 +452,12 @@ export function resolveNamespace(prefix, defaultns) {
             getTestField(testId, ".xml_test_title").val("SetlX-Syntax-Test");
         }
     }
-
     */
 
 
-/*   const testSetlX       = new setlXTest(setlXTest);
+/*   const testSetlX = new setlXTest(setlXTest);
     const testSetlXSyntax = new setlXSyntaxTest();
 
-    // beachten, das bei gleichen XML-Testtypen derjenige zuerst eingetragen wird, der ein Einlesen einer Datei erzeugt werden soll.
 */
 
 /*
@@ -497,17 +468,8 @@ export function resolveNamespace(prefix, defaultns) {
 //        "xsd/proforma-checkstyle.xsd"
     ];
 
-
-    // -------------------------
-    // overload functions for further activities
-    // -------------------------
-    function createFurtherUiElements() {
-        // LON-Capa weill be no longer supported
-        //insertLCformelements();
-    }
 */
 
-// const testCComp       = new CCompilerTest();
 const testJavaComp    = new JavaCompilerTest();
 const testCheckStyle  = new CheckstyleTest();
 const testPython      = new PythonUnittest();

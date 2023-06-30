@@ -136,6 +136,28 @@ export class CustomTest {
 
     }
 
+    matches(item, proglang) {
+        if (this.testType !== item.testtype) {
+            return false;
+        }
+        // Check if proglang is set in configured test. If true then compare
+        if (this.proglang !== undefined) {
+            if (!this.proglang.includes(proglang)) {
+                // Language does not match
+                return false;
+            }
+        }
+        // Distinguish between CUnit and Google test with C++ by framework
+        if (this.frameworks !== undefined && item.framework !== undefined) {
+            if (!this.frameworks.includes(item.framework.toLowerCase())) {
+                // console.log(item.framework + ' is not in ')
+                // console.log(configItem.frameworks);
+                // Framework does not match
+                return false;
+            }
+        }
+        return true;
+    }
     // override
     onCreate(testId) {}
     onReadXml(test, xmlReader, testConfigNode, context) {}

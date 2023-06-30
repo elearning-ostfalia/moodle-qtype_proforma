@@ -188,19 +188,11 @@ function isInputComplete() {
         }
     });
 
-    document.querySelectorAll(".xml_pr_CS_warnings").forEach(item => {
-        // console.log(item.value);
-        if (!item.value) {
-            switchToTab('#proforma-tests-section');
-            addRequired(item);
-            incomplete = true;
-        }
-    });
+
 
     let query = "#proforma-model-solution-section .xml_fileref_filename";
     document.querySelectorAll(query).forEach(item => {  // check whether referenced filenames exists
         if (!item.value) {
-            console.log('filename in model solution is missing');
             switchToTab('#proforma-model-solution-section');
             addRequired(item);
             incomplete = true;
@@ -228,18 +220,18 @@ function isInputComplete() {
     });
 
     // todo: this should be part of the configuration
-    $.each($(".xml_ju_mainclass"), function(index, item) {   // check whether main-class exists
+    $.each($(".xml_entry_point"), function(index, item) {   // check whether main-class exists
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
             incomplete = true;
         }
     });
-    $.each($(".xml_u_mainclass"), function(index, item) {   // check whether main-class exists
+    document.querySelectorAll(".xml_pr_CS_warnings").forEach(item => {
+        // console.log(item.value);
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
-            // setErrorMessage("Run command is missing.");
             incomplete = true;
         }
     });
@@ -365,6 +357,7 @@ export function convertToXML() {
             test.comment = uiTest.comment;
             test.description = uiTest.description;
             test.weight = uiTest.weight;
+            test.framework = uiTest.framework;
 
             let counter = 0;
             // TODO: geht über alle Test-Filerefs, sollte er nur über die
@@ -372,7 +365,7 @@ export function convertToXML() {
             TestFileReference.getInstance().doOnAll(function(id) {
                 if (id) {
                     test.filerefs[counter++] = new TaskFileRef(id);
-                    console.log("Test ID" + id);
+                    // console.log("Test ID" + id);
                     task.files[id].usedByGrader = true;
                 }
             }, uiTest.root);
@@ -380,22 +373,9 @@ export function convertToXML() {
             console.log('*** look for test config');
             console.log(test);
             $.each(taskeditorconfig.testInfos, function(index, configItem) {
-                // search for appropriate writexml function
-
-                if (configItem.testType !== test.testtype) {
-                    // testtype does not match
+                // search for appropriate configuration instance
+                if (!configItem.matches(test, task.proglang)) {
                     return;
-                }
-                // console.log('testtype match');
-                // console.log(configItem);
-                if (configItem.proglang !== undefined) {
-                    // console.log('check proglang');
-                    // console.log(task.proglang);
-                    if (!configItem.proglang.includes(task.proglang)) {
-                        // console.log('proglang does not match');
-                        // Language does not match
-                        return;
-                    }
                 }
 
                 // console.log('everything matches');
@@ -492,73 +472,38 @@ export async function readAndDisplayXml(taskXml) {
         let the_configitem;
         console.log('iterate through all configured test templates, look for ' + item.testtype);
         $.each(taskeditorconfig.testInfos, function(index, configItem) {
-            // console.log(configItem);
-            if (item.testtype === configItem.testType) {
-                // Check if proglang is set in configured test. If true then compare
-                // Check Programming language
-                if (configItem.proglang !== undefined) {
-                    if (!configItem.proglang.includes(task.proglang)) {
-                        // Language does not match
-                        // console.log('language does not match');
-                        return;
-                    }
-                }
-                // Distinguish between CUnit and Google test with C++
-                if (configItem.frameworks !== undefined && item.framework !== undefined) {
-                    if (!configItem.frameworks.includes(item.framework.toLowerCase())) {
-                        console.log(item.framework + ' is not in ')
-                        console.log(configItem.frameworks);
-                        // Framework does not match
-                        return;
-                    }
-                }
-                if (ui_test) {
-                    let params = {
-                        'title': item.title,
-                        'config': the_configitem.title
-                    };
-/*                    console.log('Warning: test configuration for test "' + item.title + '" is not unique. \n' +
-                        'Assume ' + the_configitem.title + ',\n' +
-                        'but ' + configItem.title + ' is also matching.');*/
-                    Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
-                        .then(content => alert(content));
-                    return null;
-                }
-                console.log('found ' + configItem.title);
-                let context = configItem.getTemplateContext();
-                context['testtitle'] = item.title;
-                if (item.weight) {
-                    context['weight'] = item.weight;
-                }
-                context['description'] = item.description;
-                context['comment'] = item.comment;
-
-                task.readTestConfig(taskXml, item.id, configItem, context);
-                // console.log('context for test template ');
-                // console.log(context);
-
-                the_configitem = configItem;
-                ui_test = TestWrapper.createFromTemplate(item.id,
-                    configItem.getMustacheTemplate(), context, true, item, task);
+            if (!configItem.matches(item, task.proglang)) {
+                return;
             }
+            if (ui_test) {
+                let params = {
+                    'title': item.title,
+                    'config': the_configitem.title
+                };
+/*                    console.log('Warning: test configuration for test "' + item.title + '" is not unique. \n' +
+                    'Assume ' + the_configitem.title + ',\n' +
+                    'but ' + configItem.title + ' is also matching.');*/
+                Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
+                    .then(content => alert(content));
+                return null;
+            }
+            console.log('found ' + configItem.title);
+            let context = configItem.getTemplateContext();
+            context['testtitle'] = item.title;
+            if (item.weight) {
+                context['weight'] = item.weight;
+            }
+            context['description'] = item.description;
+            context['comment'] = item.comment;
+
+            task.readTestConfig(taskXml, item.id, configItem, context);
+            // console.log('context for test template ');
+            // console.log(context);
+
+            the_configitem = configItem;
+            ui_test = TestWrapper.createFromTemplate(item.id,
+                configItem.getMustacheTemplate(), context, true, item, task);
         });
-
-
-/*
-        if (!ui_test) {
-            // try alternative test types
-            $.each(taskeditorconfig.testInfos, function(index, configItem) {
-                $.each(configItem.alternativeTesttypes, function(index, alternative) {
-                    if (!ui_test && item.testtype === alternative) {
-                        ui_test = TestWrapper.create(item.id, item.title, configItem, item.weight);
-                        task.readTestConfig(taskXml, item.id, configItem, ui_test.root);
-                        ui_test.comment = item.comment;
-                        ui_test.description = item.description;
-                    }
-                });
-            });
-        }
-*/
 
         if (!ui_test) {
             setErrorMessage("Test '" + item.title + "' not imported, testtype and framework unsupported");
