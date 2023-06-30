@@ -150,7 +150,8 @@ export class ModelSolutionWrapper {
                 let context = {
                     'msid': modelsolid,
                     'testtitle' : 'TODO Model Solution titel',
-                    'filenamelabel' : results[0]
+                    'filenamelabel' : results[0],
+                    'description': description
                 };
                 return Templates.renderForPromise('qtype_proforma/taskeditor_modelsol', context);
             })
