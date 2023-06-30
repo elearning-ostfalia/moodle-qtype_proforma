@@ -1,5 +1,7 @@
-## XXX
+## 3.0.0
 
+new: task editor for imported ProFormA tasks
+new: task editor for creating and testing new ProFormA tasks
 bugfix: context menu in explorer now appears on first click
 bugfix: explorer tab was not renamed if file is renamed
 new: open file if new file is created in explorer
