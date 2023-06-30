@@ -38,7 +38,7 @@
 
 
     <label for="xml_pr_CS_version">{{#str}} version, qtype_proforma {{/str}}<span class="red">*</span> </label>
-    <select class="xml_pr_CS_version">
+    <select class="xml_pr_CS_version" id="{{uniqid}}-cs_select">
             {{#cs_version}}
                 <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
             {{/cs_version}}
@@ -53,6 +53,6 @@
 
 {{#js}}
     require(['qtype_proforma/taskeditor/taskeditor'], function(editor) {
-        editor.setCheckstyleVersions();
+        editor.setCheckstyleVersions("{{uniqid}}-cs_select");
     });
 {{/js}}

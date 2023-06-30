@@ -525,20 +525,35 @@ export const setJunitVersions = () => {
         .fail(Notification.exception);
 }
 
-export const setCheckstyleVersions = () => {
+// if (selectElem.querySelectorAll('option').length === 0) {
+export const setCheckstyleVersions = (id) => {
     getCheckstyleVersions()
         .then(response => {
-            document.querySelectorAll('.xml_pr_CS_version').forEach(
-                selectElem => {
-                    if (selectElem.querySelectorAll('option').length === 0) {
-                        response['checkstyleversions'].forEach(version => {
-                            let option = document.createElement("option");
-                            option.text = version;
-                            selectElem.add(option);
-                        });
+            let selectElem = document.getElementById(id);
+            if (!selectElem) {
+                console.error('could not find element ' + id);
+            } else {
+                // At first check if there is a selected version which is not in the list.
+                if (selectElem.options.length === 1) {
+                    const selectedVersion = selectElem.options[0].value;
+                    // const responseVersions = Array.from(response['checkstyleversions']).map((item) => item);
+                    if (!response['checkstyleversions'].includes(selectedVersion)) {
+                        alert('invalid checkstyle version ' + selectedVersion);
+                        // Remove invalid option
+                        selectElem.remove(0);
                     }
                 }
-            );
+                // Then add versions from Moodle server.
+                response['checkstyleversions'].forEach(version => {
+                    // Check if version is already in list:
+                    const optionLabels = Array.from(selectElem.options).map((opt) => opt.value);
+                    if (!optionLabels.includes(version)) {
+                        let option = document.createElement("option");
+                        option.text = version;
+                        selectElem.add(option);
+                    }
+                });
+            }
         })
         .fail(Notification.exception);
 }
