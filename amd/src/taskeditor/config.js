@@ -307,7 +307,12 @@ export function resolveNamespace(prefix, defaultns) {
                     throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in JUnitTest');
             }
 
-            context['junit_version'] = xmlReader.readSingleText("@version", unitNode);
+            const version = xmlReader.readSingleText("@version", unitNode);
+            context['junit_version'] = {
+                "selected": true,
+                "value": version,
+                "name": version
+            };
             context['junit_framework'] = xmlReader.readSingleText("@framework", unitNode);
         }
         onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {
@@ -444,7 +449,7 @@ export function resolveNamespace(prefix, defaultns) {
                 switch (csNode.namespaceURI) {
                     case checkstylens:
                         const version = xmlReader.readSingleText("@version", csNode);
-                        context['cs_version'] = version;
+                        // context['cs_version'] = version;
                         context['cs_version'] = {
                             "selected": true,
                             "value": version,

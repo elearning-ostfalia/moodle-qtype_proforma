@@ -499,61 +499,55 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
 }
 
+function fillSelectOptions(id, selectArray, textForError) {
+    let selectElem = document.getElementById(id);
+    if (!selectElem) {
+        throw new Error('could not find element ' + id);
+    }
+    // At first check if there is a selected version which is not in the list.
+    if (selectElem.options.length === 1) {
+        const selectedVersion = selectElem.options[0].value;
+        // const responseVersions = Array.from(response['checkstyleversions']).map((item) => item);
+        if (!selectArray.includes(selectedVersion)) {
+            alert('invalid ' + textForError + ' version ' + selectedVersion);
+            // Remove invalid option
+            selectElem.remove(0);
+        }
+    }
+    // Then add versions from Moodle server.
+    selectArray.forEach(version => {
+        // Check if version is already in list:
+        const optionLabels = Array.from(selectElem.options).map((opt) => opt.value);
+        if (!optionLabels.includes(version)) {
+            let option = document.createElement("option");
+            option.text = version;
+            selectElem.add(option);
+        }
+    });
+
+}
+
 /**
  * get JUnit version from Moodle configuration and add to JUnit list
+ * @param id identifier of select element
  */
-export const setJunitVersions = () => {
+export const setJunitVersions = (id) => {
     // TODO: kann man die JUnit version nicht besser über eine Core-Funktion holen??
-    // console.log('setJunitVersions');
     getJunitVersions()
         .then(response => {
-            // console.log(response['junitversions']);
-            document.querySelectorAll('.xml_ju_version').forEach(
-                selectElem => {
-                    // console.log(selectElem);
-                    if (selectElem.querySelectorAll('option').length === 0) {
-                        // No options yet.
-                        response['junitversions'].forEach(version => {
-                            let option = document.createElement("option");
-                            option.text = version;
-                            selectElem.add(option);
-                        });
-                    }
-                }
-            );
+            fillSelectOptions(id, response['junitversions'], 'JUnit');
         })
         .fail(Notification.exception);
 }
 
-// if (selectElem.querySelectorAll('option').length === 0) {
+/**
+ * get Checkstyle version from Moodle server and add to select options
+ * @param id identifier of select element
+ */
 export const setCheckstyleVersions = (id) => {
     getCheckstyleVersions()
         .then(response => {
-            let selectElem = document.getElementById(id);
-            if (!selectElem) {
-                console.error('could not find element ' + id);
-            } else {
-                // At first check if there is a selected version which is not in the list.
-                if (selectElem.options.length === 1) {
-                    const selectedVersion = selectElem.options[0].value;
-                    // const responseVersions = Array.from(response['checkstyleversions']).map((item) => item);
-                    if (!response['checkstyleversions'].includes(selectedVersion)) {
-                        alert('invalid checkstyle version ' + selectedVersion);
-                        // Remove invalid option
-                        selectElem.remove(0);
-                    }
-                }
-                // Then add versions from Moodle server.
-                response['checkstyleversions'].forEach(version => {
-                    // Check if version is already in list:
-                    const optionLabels = Array.from(selectElem.options).map((opt) => opt.value);
-                    if (!optionLabels.includes(version)) {
-                        let option = document.createElement("option");
-                        option.text = version;
-                        selectElem.add(option);
-                    }
-                });
-            }
+            fillSelectOptions(id, response['checkstyleversions'], 'CheckStyle');
         })
         .fail(Notification.exception);
 }
