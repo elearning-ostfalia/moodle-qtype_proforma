@@ -662,7 +662,7 @@ export const downloadModelsolution = (buttonid) => {
                 const url = window.URL.createObjectURL(zippedBlob);
                 let b = document.createElement("a");
                 b.style = "display: none";
-                b.download = 'modelsoluation.zip';
+                b.download = 'modelsolution.zip';
                 b.href = url;
                 document.body.appendChild(b);
                 b.click();
