@@ -25,9 +25,7 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm (Dr.U.Priss)
  */
 
-import {CustomTest, getExtension} from "./util";
-import {javaParser} from "./java";
-import {readXmlActive} from "./helper";
+import {CustomTest} from "./util";
 import * as Str from 'core/str';
 
 // const configXsdSchemaFile = version101;   // choose version for output
@@ -115,69 +113,7 @@ export function getMimeType(mimetype, filename) {
     }
 }
 
-export function isBinaryFile(file, mimetype) {
-    if (file.name.toLowerCase() === 'makefile') {
-        return false;
-    }
-    if (mimetype && mimetype.match(/(text\/)/i))  // mimetype is 'text/...'
-        return false;
 
-    const extension = file.name.split('.').pop();
-    switch (extension.toLowerCase()) {
-        case 'c' :
-        case 'h' :
-        case 'cpp' :
-        case 'hpp' :
-        case 'hxx' :
-        case 'cxx' :
-        case 'java' :
-        case 'log' :
-        case 'py' :
-        case 'txt' :
-        case 'xml' :
-        case 'php' :
-        case 'js' :
-        case 'html' :
-        case 'csv' :
-            return false;
-        default: break;
-    }
-    return true;
-}
-
-export function handleFilenameChangeInTest(newFilename, tempSelElem) {
-    function setJavaClassname(newFilename) {
-        // set classname if file belongs to JUNIT and if exactly one file is assigned
-        let testBox = $(tempSelElem).closest(".xml_test");
-        const ui_classname = $(testBox).find(".xml_entry_point");
-        if (ui_classname.length === 1 // JUNIT box
-            && ui_classname.first().val().trim() === '') { // and entry point not set
-            ui_classname.first().val(javaParser.getFullClassnameFromFilename(newFilename));
-
-            // $.each(ui_classname, function(index, element) {
-            //     //let currentFilename = $(element).val();
-            //     if (!readXmlActive)
-            //         $(element).val(javaParser.getFullClassnameFromFilename(newFilename)).change();
-            // });
-        }
-    }
-
-    function setJUnitDefaultTitle(newFilename) {
-        // set decsription according to classname
-        let testBox = $(tempSelElem).closest(".xml_test");
-        const ui_title = $(testBox).find(".xml_test_title");
-        if (ui_title.length === 1) {
-            $.each(ui_title, function(index, element) {
-                let currentTitle = $(element).val();
-                if (!readXmlActive && currentTitle === JUnitTest.DefaultTitle)
-                    $(element).val("Junit Test " + javaParser.getPureClassnameFromFilename(newFilename)).change();
-            });
-        }
-    }
-
-    setJavaClassname(newFilename);
-    setJUnitDefaultTitle(newFilename);
-}
 
 export function resolveNamespace(prefix, defaultns) {
     // todo: find better solution to figure out if namespace is supported

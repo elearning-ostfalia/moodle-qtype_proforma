@@ -31,12 +31,42 @@ import $ from 'jquery';
 import {FileWrapper, FileStorage, fileStorages} from "./file";
 import {getExtension, setErrorMessage} from "./util";
 import {javaParser} from "./java";
-import * as taskeditorconfig from "./config";
 import {readAndDisplayXml} from "./task";
 import * as Str from 'core/str';
 
 
 export var readXmlActive = false;
+
+export function isBinaryFile(file, mimetype) {
+    if (file.name.toLowerCase() === 'makefile') {
+        return false;
+    }
+    if (mimetype && mimetype.match(/(text\/)/i))  // mimetype is 'text/...'
+        return false;
+
+    const extension = file.name.split('.').pop();
+    switch (extension.toLowerCase()) {
+        case 'c' :
+        case 'h' :
+        case 'cpp' :
+        case 'hpp' :
+        case 'hxx' :
+        case 'cxx' :
+        case 'java' :
+        case 'log' :
+        case 'py' :
+        case 'txt' :
+        case 'xml' :
+        case 'php' :
+        case 'js' :
+        case 'html' :
+        case 'csv' :
+            return false;
+        default: break;
+    }
+    return true;
+}
+
 
 export function readAndCreateFileData(file, fileId, callback) {
     if (!file)
@@ -51,9 +81,9 @@ export function readAndCreateFileData(file, fileId, callback) {
     }
 
     const size = file.size; //get file size
-    const mimetype = taskeditorconfig.getMimeType(file.type, filename); //get mime type
+    const mimetype = getMimeType(file.type, filename); //get mime type
     // determine if we have a binary or non-binary file
-    let isBinaryFile = taskeditorconfig.isBinaryFile(file, mimetype);
+    let isBinaryFile = isBinaryFile(file, mimetype);
     let reader = new FileReader();
     reader.onload = function (e) {
         function finishFile(ui_file) {

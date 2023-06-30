@@ -34,7 +34,7 @@ import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import {FileWrapper} from "./file";
 import * as taskeditorconfig from "./config";
-import {DEBUG_MODE,} from "./util";
+import {DEBUG_MODE,handleFilenameChangeInTest} from "./util";
 import * as Str from 'core/str';
 import {TestWrapper} from "./test";
 
@@ -469,7 +469,7 @@ export class FileReferenceList extends DynamicList {
                             if (fileid) {
                                 // setJavaClassname(selectedFilename);
                                 // setJUnitDefaultTitle(selectedFilename);
-                                taskeditorconfig.handleFilenameChangeInTest(selectedFilename, tempSelElem);
+                                handleFilenameChangeInTest(selectedFilename, tempSelElem);
                             }
                         } else {
                             this.onFilerefChanged(ui_file, fileid);

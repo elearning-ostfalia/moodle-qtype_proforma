@@ -27,7 +27,7 @@
 
 
 
-import {TestWrapper} from "./test";
+import {javaParser} from "./java";
 
 export const DEBUG_MODE       = false;
 export const TEST_MODE        = false;
@@ -98,6 +98,42 @@ export function setcounter(temphash) {
     return tempcnter;
 }
 
+
+export function handleFilenameChangeInTest(newFilename, tempSelElem) {
+    function setJavaClassname(newFilename) {
+        // set classname if file belongs to JUNIT and if exactly one file is assigned
+        let testBox = $(tempSelElem).closest(".xml_test");
+        const ui_classname = $(testBox).find(".xml_entry_point");
+        if (ui_classname.length === 1 // JUNIT box
+            && ui_classname.first().val().trim() === '') { // and entry point not set
+            ui_classname.first().val(javaParser.getFullClassnameFromFilename(newFilename));
+
+            // $.each(ui_classname, function(index, element) {
+            //     //let currentFilename = $(element).val();
+            //     if (!readXmlActive)
+            //         $(element).val(javaParser.getFullClassnameFromFilename(newFilename)).change();
+            // });
+        }
+    }
+/*
+    function setJUnitDefaultTitle(newFilename) {
+        // set description according to classname
+        let testBox = $(tempSelElem).closest(".xml_test");
+        const ui_title = $(testBox).find(".xml_test_title");
+        if (ui_title.length === 1) {
+            $.each(ui_title, function(index, element) {
+                let currentTitle = $(element).val();
+                if (!readXmlActive && currentTitle === JUnitTest.DefaultTitle)
+                    $(element).val("Junit Test " + javaParser.getPureClassnameFromFilename(newFilename)).change();
+            });
+        }
+    }
+*/
+    setJavaClassname(newFilename);
+    // setJUnitDefaultTitle(newFilename);
+}
+
+
 //////////////////////////////////////////////////////////////////////////////
 // configuration support
 //////////////////////////////////////////////////////////////////////////////
@@ -132,8 +168,8 @@ export class CustomTest {
         this.xmlTemplateName = compactName;
         this.buttonJQueryId = "add" + compactName;
         this.frameworkRequired = false;
-        this.framework = null;
-
+        this.framework = undefined;
+        this.frameworks = undefined;
     }
 
     matches(item, proglang) {
@@ -198,10 +234,6 @@ export class CustomTest {
             };
         }
         return result;
-    }
-    createTestForm() {
-        TestWrapper.createFromTemplate(null,
-            this.mustacheTemplate, this.getTemplateContext(), this.withFileRef);
     }
 }
 

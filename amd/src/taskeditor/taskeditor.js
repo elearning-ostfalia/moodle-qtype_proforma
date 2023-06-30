@@ -36,7 +36,7 @@ import Y from 'core/yui';
 
 import {TestWrapper } from "./test";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "../repository";
-import {generateUUID, getExtension, setErrorMessage} from "./util";
+import {CustomTest, generateUUID, getExtension, setErrorMessage} from "./util";
 import * as taskeditorconfig from "./config";
 import {unzipme, zipme, taskTitleToFilename} from "./zipper";
 import {readXMLWithLock} from "./helper";
@@ -553,42 +553,47 @@ export const setCheckstyleVersions = (id) => {
         .fail(Notification.exception);
 }
 
+function createTestForm(testconfig) {
+    TestWrapper.createFromTemplate(null,
+        testconfig.mustacheTemplate, testconfig.getTemplateContext(), testconfig.withFileRef);
+}
+
 export const initproglang = (proglangdiv, buttondiv, langselect) => {
 
     function addButtonCallbacks() {
         document.querySelector('#addJUnitTest').onclick = function (e) {
             e.preventDefault();
-            taskeditorconfig.infoJavaJUnit.createTestForm();
+            createTestForm(taskeditorconfig.infoJavaJUnit);
         }
 
         document.querySelector('#addCheckStyleTest').onclick = function (e) {
             e.preventDefault();
-            taskeditorconfig.infoCheckStyle.createTestForm();
+            createTestForm(taskeditorconfig.infoCheckStyle);
         }
 
         document.querySelector('#addCompilerTest').onclick = function (e) {
             e.preventDefault();
-            taskeditorconfig.infoJavaComp.createTestForm();
+            createTestForm(taskeditorconfig.infoJavaComp);
         }
 
         document.querySelector('#addGoogleTest').onclick = function (e) {
             e.preventDefault();
-            taskeditorconfig.infoGoogleTest.createTestForm();
+            createTestForm(taskeditorconfig.infoGoogleTest);
         }
 
         document.querySelector('#addCUnitTest').onclick = function (e) {
             e.preventDefault();
-            taskeditorconfig.infoCUnit.createTestForm();
+            createTestForm(taskeditorconfig.infoCUnit);
         }
 
         document.querySelector('#addPythonUnittest').onclick = function (e) {
             e.preventDefault();
-            taskeditorconfig.infoPythonUnittest.createTestForm();
+            createTestForm(taskeditorconfig.infoPythonUnittest);
         }
 
         document.querySelector('#addPythonDocTest').onclick = function (e) {
             e.preventDefault();
-            taskeditorconfig.infoPythonDoctest.createTestForm();
+            createTestForm(taskeditorconfig.infoPythonDoctest);
         }
     }
 
