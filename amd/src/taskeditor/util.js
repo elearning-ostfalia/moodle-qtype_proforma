@@ -16,7 +16,7 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Javascript editor for ProFormA tasks
+ * Utility function for ProFormA task editor
  *
  * @package    qtype
  * @subpackage proforma
@@ -205,28 +205,3 @@ export class CustomTest {
     }
 }
 
-
-
-// -------------------------------------------------------------
-/*
-
-// helper function for custom test configuration
-let createFileWithContent = function(filename, content) {
-    let ui_file = FileWrapper.create();
-    ui_file.filename = filename;
-    ui_file.text = content;
-    // onFilenameChanged(ui_file);
-    return ui_file.id;
-}
-
-let addFileReferenceToTest = function(testId, filename) {
-    let xml_test_root = $(".xml_test_id[value='"+testId+"']").parent().parent();
-    let element = xml_test_root.find(".xml_fileref_filename").last();
-    element.val(filename).change();
-};
-
-let getTestField = function(testId, fieldClass) {
-    let xml_test_root = $(".xml_test_id[value='"+testId+"']").parent().parent();
-    return xml_test_root.parent().find(fieldClass).first();
-}
-*/

@@ -16,7 +16,7 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Helper functions for zipping and unzipping task
+ * main function for taskeditor
  *
  * @package    qtype
  * @subpackage proforma

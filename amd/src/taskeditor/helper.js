@@ -15,30 +15,6 @@
 // along with ProFormA Question Type for Moodle.
 // If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Helper functions for zipping and unzipping task
- *
- * @package    qtype
- * @subpackage proforma
- * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author     // This file is part of ProFormA Question Type for Moodle
- //
- // ProFormA Question Type for Moodle is free software:
- // you can redistribute it and/or modify
- // it under the terms of the GNU General Public License as published by
- // the Free Software Foundation, either version 3 of the License, or
- // (at your option) any later version.
- //
- // ProFormA Question Type for Moodle is distributed in the hope that it will be useful,
- // but WITHOUT ANY WARRANTY; without even the implied warranty of
- // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- // GNU General Public License for more details.
- //
- // You should have received a copy of the GNU General Public License
- // along with ProFormA Question Type for Moodle.
- // If not, see <http://www.gnu.org/licenses/>.
-
  /**
  * Helper functions
  *
@@ -61,24 +37,6 @@ import * as Str from 'core/str';
 
 
 export var readXmlActive = false;
-
-export const testTypes = 'EMPTY LIST'; // getTesttypeOptions();
-
-// create option list string with all test types
-function getTesttypeOptions() {
-    let list = "";
-    let first = true;
-    $.each(taskeditorconfig.testInfos, function (index, item) {
-        list = list + "<option";
-        if (first) {
-            list = list + " selected='selected'";
-            first = false;
-        }
-        list = list + ">" + item.testType;
-        list = list + "</option>";
-    });
-    return list;
-}
 
 export function readAndCreateFileData(file, fileId, callback) {
     if (!file)
@@ -175,10 +133,6 @@ export function readXMLWithLock (taskXmlText) {
     readXmlActive = true; // lock automatic input field update
     try {
         return readAndDisplayXml(taskXmlText);
-        // show/hide buttons according to new programming language
-        // TODO:
-        // switchProgLang();
-
     } catch (err) {
         setErrorMessage("uncaught exception", err);
     }
@@ -187,99 +141,10 @@ export function readXMLWithLock (taskXmlText) {
     }
 }
 
-/*
-    codeskeleton = CodeMirror.fromTextArea(
-        $("#code_template")[0], {
-            mode: "text/x-java",
-            indentUnit: 4,
-            lineNumbers: true,
-            matchBrackets: true,
-            tabMode: "shift",
-            styleActiveLine: true, autoCloseBrackets: true,
-            theme: "eclipse",
-            dragDrop: false
-        });
 
-    $(codeskeleton.getWrapperElement()).resizable({
-        handles: 's', // only resize in north-south-direction
-        resize: function () {
-            editor.refresh();
-        }
-    });
-    codeskeleton.on("drop", function (editor, e) {
-        //uploadFileWhenDropped(e.originalEvent.dataTransfer.files, e.currentTarget);
-        console.log('codemirror drop: ' + e);
-    });
-
-    // show/hide buttons according to programming language
-    switchProgLang();
-
-    // register callback
-    $("#xml_programming-language").on("change", switchProgLang)
-
-
-    $("#button_generate_restrictions").click(function () {
-        $("#files_restriction")[0].textContent = "";
-        $("#files_restriction").append(SubmissionFileList.getInstance().getTableString());
-        let index = 0;
-        let size = 0;
-        // read model solution files
-        ModelSolutionWrapper.doOnAll(function (ms) {
-            FileReferenceList.doOnAllIds(ms.root, function (id) {
-                const ui_file = FileWrapper.constructFromId(id);
-                if (index > 0) {
-                    // create new row
-                    SubmissionFileList.getInstance().appendRow();
-                }
-                SubmissionFileList.getInstance().setLastRowContent(ui_file.filename, false, false);
-                size += ui_file.size;
-                index++;
-            });
-        });
-
-        size *= 5; // add a lot of tolerance!
-        size = Math.ceil(size/100)*100;
-
-        $("#xml_submission_size").val(size);
-    })
-
-    $("#button_load").click(function () {
-        $("#upload_xml_file").click();
-    })
-*/
-    /*
-    $("#button_new").click(function(){
-    $("#upload_xml_file").click();
-    })
-     */
-
-var enableTestMode = false;
-/*
-    if (!DEBUG_MODE) {
-        $("#buttonClear").hide();
-        $("#output").attr("readonly", true);
-
-        $("#buttonExport").hide();
-        $("#buttonImport").hide();
-    }
-
-    // function is used only in test environment!!
-    enableTestMode = function () {
-        // enable support for tests!
-        console.log("enable test mode");
-        //$("#buttonExport").show();
-        //$("#buttonImport").show();
-
-        $("#addFile").show();
-        $("#loadFile").show();
-    }
-
-    if (TEST_MODE)
-        enableTestMode();
-*/
-    // disable (drag&)drop in whole application except
-    // for the intended drop zones
-    // (otherwise dropping a file in the browser leaves the editor site)
+// disable (drag&)drop in whole application except
+// for the intended drop zones
+// (otherwise dropping a file in the browser leaves the editor site)
 
 /*
     const dropzoneClass = "drop_zone";
@@ -333,43 +198,6 @@ var enableTestMode = false;
 
     $("#files_restriction").append(SubmissionFileList.getInstance().getTableString());
 
-    $("#xml_task_internal_description").append(getInternalDescriptionString(''));
-
-    // saving files is realised with an anchor having the download attribute set.
-    // Unfortunately not every browser supports downloads and not every browser
-    // supports data URI as a download link.
-    // The following functions check whether this feature is supported
-    checkDataURISupport(function (checkResult) {
-        if (checkResult) {
-            console.log('Files in data URIs are supported.');
-        } else {
-            alert('Files in data URIs are probabely NOT supported in this browser. ' +
-                'Thus saving the task file will not be possible. ' +
-                'Please use another browser (Firefox, Chrome).');
-        }
-    });
-
-    function checkDataURISupport(callback) {
-        try {
-            var request = new XMLHttpRequest();
-            request.onload = function reqListener() {
-                if (callback)
-                    callback(true);
-            };
-            request.onerror = function reqListener() {
-                if (callback)
-                    callback(false);
-                else
-                    console.log('Files in data URIs are supported.');
-            };
-            request.open('GET', 'data:application/pdf;base64,cw==');
-            request.send();
-        } catch (ex) {
-            callback(false);
-        }
-    }
-
-    checkDataURISupport();
 */
 
 ///////////////////////////////////////////////////////// end of document ready function
