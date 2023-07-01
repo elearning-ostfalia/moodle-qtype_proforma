@@ -29,8 +29,8 @@ namespace qtype_proforma\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-// require_once("$CFG->libdir/externallib.php");
-require_once($CFG->dirroot . "/question/engine/bank.php");
+require_once("$CFG->libdir/externallib.php");
+require_once("$CFG->dirroot/question/engine/bank.php");
 
 use external_function_parameters;
 use external_multiple_structure;
