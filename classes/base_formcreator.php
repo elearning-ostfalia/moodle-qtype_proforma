@@ -837,8 +837,8 @@ abstract class base_form_creator {
         $mform->addElement('button', 'editdetails', get_string('edittestdetails', 'qtype_proforma'));
 
         global $PAGE;
-        // $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
-        //     array('id_editdetails', $context, $params1, $params2, true));
+        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
+             array('id_editdetails', $context, $params1, $params2, true));
 
 
 /*
