@@ -77,7 +77,9 @@ if (!isset($coursecontext)) {
     throw new moodle_exception('invalid course context');
 }
 external_api::validate_context($coursecontext);
-require_capability('moodle/question:editmine', $coursecontext);
+if ($context->contextlevel == CONTEXT_COURSE) {
+    require_capability('moodle/question:editmine', $coursecontext);
+}
 
 
 if (!isset($_FILES['task'])) {

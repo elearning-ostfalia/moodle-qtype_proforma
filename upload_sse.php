@@ -38,7 +38,7 @@ try {
         // Since we're in the context of the user, it does not make sense checking course-level rights.
         // But in order to block other users we check the coursecontextid.
         // The $coursecontextid value is not used at anywhere. Just for security checks.
-        $coursecontextid = required_param('contextid', PARAM_INT);
+        $coursecontextid = required_param('coursecontextid', PARAM_INT);
         $coursecontext = \context::instance_by_id($coursecontextid);
         if (!isset($coursecontext)) {
             throw new moodle_exception('invalid course context');
