@@ -26,7 +26,7 @@
  */
 
 
-import {setErrorMessage, generateUUID} from "./helper";
+import {setErrorMessage, getMimeType, generateUUID} from "./helper";
 import * as taskeditorconfig from "./config";
 import {FileStorage, fileStorages } from "./file";
 
@@ -478,7 +478,7 @@ export class TaskClass {
                             taskfile.content = filecontent;
                             taskfile.binary = true;
                             // console.log(filecontent.length);
-                            const mimetype = taskeditorconfig.getMimeType('', taskfile.filename); //get mime type
+                            const mimetype = getMimeType('', taskfile.filename); //get mime type
                             let fileObject = new FileStorage(true, mimetype, filecontent, taskfile.filename);
                             fileObject.setSize(filecontent.length);
                             fileStorages[taskfile.id] = fileObject;

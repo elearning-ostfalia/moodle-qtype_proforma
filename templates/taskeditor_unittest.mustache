@@ -33,16 +33,16 @@
     }
 }}
 
-<!--        title='{{#str}} taskeditorentrypointhelp, qtype_proforma {{/str}}' -->
-
 
 {{> qtype_proforma/taskeditor_test_start }}
+
+<br>
 
     <label for='xml_entry_point'>{{#str}} executable, qtype_proforma {{/str}}<span class='red'>*</span> </label>
     {{#entrypointinfo}}
         {{>core/help_icon}}
     {{/entrypointinfo}}
-    <input class='mediuminput xml_entry_point' value='{{ entrypoint }}'></input>
+    <input class='mediuminput xml_entry_point' value='{{ entrypoint }} size="80"'></input>
 
     <br>
 

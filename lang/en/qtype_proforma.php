@@ -154,6 +154,9 @@ command to run the test is <code>./test</code>.';
 
 $string['pythondoc_help'] = 'Only one test file is supported.';
 
+$string['junit_help_short'] = 'All files can be uploaded individually or packed as exactly one zip archive.';
+$string['junitentry_help'] = 'Main class including package name prefix,<br>e.g. <code>de.ostfalia.cs.prog.test1</code>';
+
 
 $string['codeempty'] = 'Testcode required';
 $string['titleempty'] = 'Title required';

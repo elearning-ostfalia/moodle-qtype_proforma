@@ -97,24 +97,6 @@ export function initStrings() {
         });
 }
 
-// convert to mimetype that can be directely handeled by codemirror
-export function getMimeType(mimetype, filename) {
-    const extension = filename.split('.').pop().toLowerCase();
-    switch (extension) {
-        case 'h':    return 'text/x-chdr';
-        case 'c':    return 'text/x-csrc';
-        case 'cpp':  return 'text/x-c++src';
-        case 'java': return 'text/x-java';
-        case 'py':   return 'text/x-python';
-        case 'stlx': return 'text/x-setlx'; // no actual mode availble
-        case 'xml':  return 'application/xml';
-        case 'html':  return 'text/html';
-        default: return mimetype;
-    }
-}
-
-
-
 export function resolveNamespace(prefix, defaultns) {
     // todo: find better solution to figure out if namespace is supported
     switch (defaultns) {

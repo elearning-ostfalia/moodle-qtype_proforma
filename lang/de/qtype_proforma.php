@@ -160,6 +160,10 @@ $string['makerun_help'] = 'Beispiel: Wenn das Executable, was vom Makefile erzeu
 
 $string['pythondoc_help'] = 'Der Testcode muss in genau einer Datei enthalten sein.';
 
+$string['junit_help_short'] = 'Die Dateien können einzeln hochgeladen werden oder aber alle als genau eine zip-Archiv gepackt sein.';
+$string['junitentry_help'] = 'Hauptklasse der Testfunktionen inkl. Package-Name-Präfix,<br>
+z.B. <code>de.ostfalia.informatik.prog.test1</code>';
+
 $string['codeempty'] = 'Testcode fehlt.';
 $string['titleempty'] = 'Titel fehlt.';
 $string['versionrequired'] = 'Version ist nicht ausgewählt.';

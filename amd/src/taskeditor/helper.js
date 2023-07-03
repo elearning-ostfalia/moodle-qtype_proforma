@@ -62,8 +62,25 @@ export function getExtension(filename) {
     return filename.split('.').pop().toLowerCase();
 }
 
-let newUuid;
+// convert to mimetype that can be directely handeled by codemirror
+export function getMimeType(mimetype, filename) {
+    const extension = filename.split('.').pop().toLowerCase();
+    switch (extension) {
+        case 'h':    return 'text/x-chdr';
+        case 'c':    return 'text/x-csrc';
+        case 'cpp':  return 'text/x-c++src';
+        case 'java': return 'text/x-java';
+        case 'py':   return 'text/x-python';
+        case 'stlx': return 'text/x-setlx'; // no actual mode availble
+        case 'xml':  return 'application/xml';
+        case 'html':  return 'text/html';
+        default: return mimetype;
+    }
+}
 
+
+
+let newUuid;
 /**
  * generetae new UUID. Note that this function always returns the same UUID
  * whenever it is called later on.
@@ -184,7 +201,7 @@ export function readAndCreateFileData(file, fileId, callback) {
     const size = file.size; //get file size
     const mimetype = getMimeType(file.type, filename); //get mime type
     // determine if we have a binary or non-binary file
-    let isBinaryFile = isBinaryFile(file, mimetype);
+    let isBinary = isBinaryFile(file, mimetype);
     let reader = new FileReader();
     reader.onload = function (e) {
         function finishFile(ui_file) {
@@ -193,20 +210,20 @@ export function readAndCreateFileData(file, fileId, callback) {
 
             /*        if (size > taskeditorconfig.maxSizeForEditor) {
                         //console.log('file '+ filename + ' is too large => no editor support');
-                        //isBinaryFile = true;
+                        //isBinary = true;
                     }*/
 
-            if (isBinaryFile) {
+            if (isBinary) {
                 // binary file
                 // at first update fileStorages because
                 // it is needed for changing file type
-                let fileObject = new FileStorage(isBinaryFile, mimetype, e.target.result, filename);
+                let fileObject = new FileStorage(isBinary, mimetype, e.target.result, filename);
                 fileObject.setSize(size);
                 fileStorages[ui_file.id] = fileObject;
                 ui_file.type = 'file';
             } else {
                 // assume non binary file
-                let fileObject = new FileStorage(isBinaryFile, mimetype, 'text is in editor', filename);
+                let fileObject = new FileStorage(isBinary, mimetype, 'text is in editor', filename);
                 fileStorages[ui_file.id] = fileObject;
                 ui_file.text = e.target.result;
                 ui_file.type = 'embedded';
@@ -243,7 +260,7 @@ export function readAndCreateFileData(file, fileId, callback) {
     };
 
     //console.log("read file");
-    if (isBinaryFile)
+    if (isBinary)
         reader.readAsArrayBuffer(file);
     else
         reader.readAsText(file);

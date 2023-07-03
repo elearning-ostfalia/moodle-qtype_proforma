@@ -36,13 +36,14 @@
 
 {{> qtype_proforma/taskeditor_test_start }}
 
-    <label for='xml_entry_point'>{{#str}} entrypoint, qtype_proforma {{/str}}<span class='red'>*</span> </label>
+<br>
+
+    <label for='xml_entry_point'>{{#str}} entrypoint, qtype_proforma {{/str}}{{# pix }} i/export, core, {{/ pix }}<span class='red'>*</span> </label>
     {{#entrypointinfo}}
         {{>core/help_icon}}
     {{/entrypointinfo}}
-    <input class='mediuminput xml_entry_point'
-        title='{{#str}} taskeditorentrypointhelp, qtype_proforma {{/str}}'
-        value='{{ entrypoint }}'></input>
+
+    <input class='mediuminput xml_entry_point' value='{{ entrypoint }}' size="80"></input>
 
 {{> qtype_proforma/taskeditor_test_end }}
 

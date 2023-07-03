@@ -82,15 +82,18 @@
 <br>
 
     <label for='xml_description'>{{#str}} testdescription, qtype_proforma {{/str}} </label>
-    <textarea rows='2' cols='80' class='xml_description' title = 'Visible description'>{{ description }}</textarea>
+    <textarea rows='2' cols='80' class='xml_description'>{{ description }}</textarea>
 
 <br>
         <label>{{#str}} weight, qtype_proforma {{/str}}<span class='red'>*</span></label>
         <input class='tinyinput xml_test_weight' value='{{ weight }}'></input>
+
 <br>
 
     <label for='xml_internal_description'  class='leftlabel' style='display: none'>Internal Description</label>
     <textarea rows='2' class='xml_internal_description' "title = 'Internal description (not visible for students)'
         style='display: none'>{{ comment }}</textarea>
 
-</p>
+
+
+
