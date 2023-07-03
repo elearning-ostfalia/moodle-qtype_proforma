@@ -1,4 +1,4 @@
-Requires at least Praktomat Version 4.10!!
+Requires at least Praktomat Version 4.17
 
 The ProForma Moodle Question Type is a Moodle Plugin that is used for 
 automatically grading programming questions in Moodle quizzes. Questions are 
@@ -15,16 +15,18 @@ Standard test frameworks are used for specifying tests. Currently the following 
 - Java: JUnit 4, JUnit 5, Checkstyle
 - C++: GoogleTest (with CMake/Makefile)
 - c: GoogleTest, CUnit (with CMake/Makefile)
-- Python: Python Unittest
-- Setlx: Test, Syntax Check
+- Python: Python Unittest, Python Doctest
+- (Setlx: Test, Syntax Check)
 
-Any other  programming language resp. test framework can be used as long as Praktomat (or any other ProFormA compatible test runner used as back-end) supports it. Since all code is open source, it can be easily extended to other languages and frameworks.
+Any other  programming language resp. test framework can be used as long as Praktomat 
+supports it. Since all code is open source, it can be easily extended to other languages and frameworks.
 
 The plugin comes with a built-in question editor. 
-Most questions can be created diretly in Moodle with the built-in editor. 
+Most questions can be created in Moodle with the built-in editor. 
 More complex questions can be created outside of the system with a stand-alone editor 
 (https://proforma.github.io/formatEditor/proformaEditor.html) or by other means 
-(e.g. script). These questions can be imported by use of another Moodle plugin. 
+(e.g. script). These questions can be imported by use of another Moodle plugin.
+The stand-alone editor is also included in this plugin for "ProFormA" questions. 
 
 Copyright note: The renderer code partly bases upon the renderer from essay question type (Moodle core).
 Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copied from Coderunner 
@@ -37,7 +39,8 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
     * editor with programming language support such as syntax highlighting or automatic indentation
     * explorer/IDE-like environment for creating and editing multiple files, also with programming language support
     * file upload (for more than one file)
-    * external repository (git or SVN in case of using Praktomat) 
+    * external repository (git or SVN) 
+  
 - code snippet as starting point for student in editor
 - immediate feedback for students (optional) 
 - supported programming languages are only limited by the available grader back-ends 
