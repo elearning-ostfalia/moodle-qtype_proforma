@@ -85,6 +85,10 @@ function _start(nodename, options) {
         console.log(responseForm.dataset.formDirty);
         console.log(responseForm.dataset.formSubmitted);
 */
+        // If there is an onbeforeunload it will ask
+        // even for normal Praktomat checks!
+
+        /*
         console.log('set onbeforeunload');
         window.onbeforeunload = function(event) {
             // window.onbeforeunload = function() {
@@ -99,9 +103,9 @@ function _start(nodename, options) {
             // So this does not make sense this way.
             // return confirm('Are you sure you want to leave?');
             event.returnValue = null;
-        };
+        };*/
     } else {
-        console.log('NO onbeforeunload function');
+        // console.log('NO onbeforeunload function');
     }
 
 
