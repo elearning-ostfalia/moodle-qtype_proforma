@@ -73,7 +73,7 @@ export class CustomTest {
             }
         }
         // Distinguish between CUnit and Google test with C++ by framework
-        if (this.frameworks !== undefined && item.framework !== undefined) {
+        if (this.frameworks && item.framework) {
             if (!this.frameworks.includes(item.framework.toLowerCase())) {
                 // console.log(item.framework + ' is not in ')
                 // console.log(configItem.frameworks);

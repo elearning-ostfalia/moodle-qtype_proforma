@@ -38,7 +38,10 @@
 
 <br>
 
-    <label for="xml_pr_CS_warnings">{{#str}} checkstylewarnings, qtype_proforma {{/str}}<span class="red">*</span> </label>
+    <label for="xml_pr_CS_warnings">{{#str}} checkstylewarnings, qtype_proforma {{/str}}
+    <!--<span class="red">*</span>-->
+            <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+    </label>
     <input class="tinyinput xml_pr_CS_warnings" value="{{ warnings }}">
 
 {{> qtype_proforma/taskeditor_test_end }}

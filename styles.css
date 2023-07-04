@@ -1,7 +1,7 @@
 /* Styles for Task editor */
 
 :root {
-    --labelwith: 135px;
+    --labelwith: 150px;
     --inputwidth: calc(98% - var(--labelwith));
 }
 
@@ -20,6 +20,13 @@
     width: var(--inputwidth);
     /*background-color: green;*/
     resize: vertical; /* user can resize vertically, but width is fixed */
+}
+
+/* required icon: align right, flex is better... */
+.proforma-taskeditor .fa-exclamation-circle {
+    float: right;
+    /*vertical-align: middle;*/
+    /* display: inline;*/
 }
 
 .proforma-taskeditor .xml_fileref_table { /* stretch viewer */
@@ -106,6 +113,7 @@ body .proforma-taskeditor .box-typ {
     width: var(--labelwith);
     /*padding-left: 0.3em;*/
     text-align: left;
+    vertical-align: top;
 }
 
 

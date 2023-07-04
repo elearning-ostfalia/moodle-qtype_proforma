@@ -37,8 +37,12 @@
 <tr>
     <td>
         <label for="xml_fileref_filename">{{#str}} taskeditorfiles, qtype_proforma {{/str}}
+{{#info}}
+    {{>core/help_icon}}
+{{/info}}
         {{ #filemandatory }}
-            <span class="red">*</span>
+            <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+            <!-- <span class="red">*</span> -->
         {{ /filemandatory }}
         </label>
     </td>

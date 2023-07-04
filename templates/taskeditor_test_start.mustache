@@ -77,7 +77,7 @@
     </span>
 
 <p>
-        <label for='xml_test_title'>{{#str}} testtitle, qtype_proforma {{/str}}<span class='red'>*</span> </label>
+        <label for='xml_test_title'>{{#str}} testtitle, qtype_proforma {{/str}} <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}"></i> </label>
         <input class='xml_test_title' size="80" value='{{ testtitle }}'/>
 <br>
 
@@ -85,7 +85,10 @@
     <textarea rows='2' cols='80' class='xml_description'>{{ description }}</textarea>
 
 <br>
-        <label>{{#str}} weight, qtype_proforma {{/str}}<span class='red'>*</span></label>
+        <label>{{#str}} weight, qtype_proforma {{/str}}
+        <!-- <span class='red'>*</span> -->
+            <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+        </label>
         <input class='tinyinput xml_test_weight' value='{{ weight }}'></input>
 
 <br>
