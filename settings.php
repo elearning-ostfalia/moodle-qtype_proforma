@@ -48,6 +48,11 @@ $settings->add(new admin_setting_configtext('qtype_proforma/uploaduri_path',
     get_string('uploaduri_path_desc', 'qtype_proforma'),
     '/api/v2/upload', PARAM_PATH, 80));
 
+$settings->add(new admin_setting_configtext('qtype_proforma/runtest_path',
+    get_string('runtesturi_path', 'qtype_proforma'),
+    get_string('runtesturi_path_desc', 'qtype_proforma'),
+    '/api/v2/runtest', PARAM_PATH, 80));
+
 $settings->add(new admin_setting_configtext('qtype_proforma/grading_timeout',
         get_string('grading_timeout', 'qtype_proforma'),
         get_string('grading_timeout_desc', 'qtype_proforma'), 40,
@@ -69,6 +74,20 @@ $settings->add(new admin_setting_configselect('qtype_proforma/submissionproforma
         '2.1_new',
         $proformaversions));
 
+$name = new lang_string('taskmaxbytes', 'qtype_proforma');
+$description = new lang_string('maximumtasksize_help', 'qtype_proforma');
+if (isset($CFG->maxbytes)) {
+    $taskmaxbytes = get_config('qtype_proforma', 'taskmaxbytes');
+    $element = new admin_setting_configselect('qtype_proforma/taskmaxbytes',
+        $name,
+        $description,
+        $CFG->maxbytes, // min(10485760, $CFG->maxbytes),
+        get_max_upload_sizes($CFG->maxbytes, 0, 0, $taskmaxbytes));
+    $settings->add($element);
+} else {
+    $settings->add(new admin_setting_configtext('qtype_proforma/taskmaxbytes',
+        $name, $description, 10485760)); // 10MB as default
+}
 
 // Use CodeMirror.
 $settings->add(new admin_setting_heading('CodeMirror',
@@ -191,3 +210,13 @@ $settings->add(new admin_setting_configtext('qtype_proforma/junitversion',
 $settings->add(new admin_setting_configtext('qtype_proforma/checkstyleversion',
         get_string('checkstyleversion', 'qtype_proforma'),
         get_string('checkstyleversion_desc', 'qtype_proforma'), '8.29, 8.23'));
+
+
+// Miscellaneous
+$settings->add(new admin_setting_heading('miscellaneous',
+    get_string('miscellaneousheader', 'qtype_proforma'), ''));
+
+$settings->add(new admin_setting_configtext('qtype_proforma/explorerautosave',
+    get_string('explorerautosave', 'qtype_proforma'),
+    get_string('explorerautosave_desc', 'qtype_proforma'),
+    '30', PARAM_INT, 5));

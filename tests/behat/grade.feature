@@ -33,7 +33,8 @@ Feature: GRADE
   @javascript @_switch_window @_file_upload
   Scenario: Create a Java question, preview and submit a response.
     When I navigate to "Question bank" in current page administration
-    And I add a "ProFormA" question filling the form with:
+    And I create a new "java" question
+    And I set the following fields to these values:
       | Question name            | Java question                  |
       | Question text            | Write a class MyString that checks if a given string is a palindrome.  |
       | Response format          | editor                         |

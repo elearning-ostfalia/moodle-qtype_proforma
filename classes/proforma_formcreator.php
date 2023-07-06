@@ -73,7 +73,10 @@ class proforma_form_creator extends base_form_creator {
             }
         }
 */
-        $errors = $this->validate_taskfile($editor, $fromform, $errors);
+
+        if ((!isset($fromform['taskeditor'])) or (!$fromform['taskeditor'])) {
+            $errors = $this->validate_taskfile($editor, $fromform, $errors);
+        }
 
         return $errors;
     }
@@ -303,14 +306,21 @@ class proforma_form_creator extends base_form_creator {
         $mform = $this->_form;
         $mform->addElement('header', 'graderoptions_header',
             get_string('graderoptions_header', 'qtype_proforma'));
-        $mform->setExpanded('graderoptions_header');
+        // $mform->setExpanded('graderoptions_header');
 
         // Task Filename.
         // Remove hidden element in base class.
+        $tasksize = get_config('qtype_proforma', 'taskmaxbytes');
+
         $mform->removeElement(qtype_proforma::FILEAREA_TASK);
         $mform->addElement('filemanager', qtype_proforma::FILEAREA_TASK,
-            get_string('taskfilename', 'qtype_proforma'), null,
-            array('subdirs' => false, 'maxfiles' => 1, 'accepted_types' => array('.zip', '.xml')));
+            get_string('taskfilename', 'qtype_proforma'), null, [
+                'subdirs' => false,
+                'maxfiles' => 1,
+                'accepted_types' => array('.zip', '.xml'),
+                'maxbytes' => $tasksize
+            ]
+        );
         $mform->addHelpButton(qtype_proforma::FILEAREA_TASK, 'task_hint', 'qtype_proforma');
 
         // UUID.
@@ -320,11 +330,16 @@ class proforma_form_creator extends base_form_creator {
         // Show Proforma version.
         $this->add_static_field($question, 'proformaversion', 'ProFormA Version', 6);
 
+        if (!isset($question->id)) {
+            // For new questions we do not provide an upload button.
+            return;
+        }
+
         // Add upload button.
         $mform->addElement('button', 'uploadbutton', get_string('upload', 'qtype_proforma'));
         // Add js.
         global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton'));
+        $PAGE->requires->js_call_amd('qtype_proforma/logmonitor', 'uploadToGrader', array('id_uploadbutton'));
     }
 
     /**
@@ -340,7 +355,6 @@ class proforma_form_creator extends base_form_creator {
         // Hide weight for case of all-or-nothing.
         $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
     }
-
 
     /**
      * Modify repeatarray in add_tests.
@@ -360,6 +374,25 @@ class proforma_form_creator extends base_form_creator {
      */
     protected function add_tests($question, $questioneditform) {
         return $this->add_test_fields($question, $questioneditform, 'unittest');
+    }
+
+    public function add_test_settings($question, $questioneditform) {
+        parent::add_test_settings($question, $questioneditform);
+        $this->add_detail_edit_button();
+    }
+
+    /**
+     * @param $question
+     * @param $questioneditform
+     * @param $testtype
+     * @return int|null
+     */
+    protected function add_test_fields($question, $questioneditform, $testtype) {
+        if (!isset($question->id)) {
+            // New question => no tests yet.
+            return 0;
+        }
+        return parent::add_test_fields($question, $questioneditform, $testtype);
     }
 
     /**
@@ -391,8 +424,14 @@ class proforma_form_creator extends base_form_creator {
 
         // Create links for model solution.
         $msfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
-        $question->mslinks = $msfilearea->get_files_as_links($question->contextid,
+        if (isset($question->id)) {
+            $question->mslinks = $msfilearea->get_files_as_links($question->contextid,
                 $question->id);
+        } else {
+            // Create new ProFormA question => no question available.
+            $question->mslinks = '';
+        }
+
         // Extract internal grading hints.
         $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
     }
@@ -424,6 +463,7 @@ class proforma_form_creator extends base_form_creator {
      * Do form definitions things that need to be done when data is set
      */
     public function definition_after_data() {
+        parent::definition_after_data();
         // Resize disabled fields to fit value.
         $i = 0;
         while ($this->_form->elementExists('testoptions[' . $i . ']')) {

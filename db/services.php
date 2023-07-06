@@ -1,8 +1,7 @@
 <?php
 // This file is part of ProFormA Question Type for Moodle
 //
-// ProFormA Question Type for Moodle is free software:
-// you can redistribute it and/or modify
+// ProFormA Question Type for Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -13,9 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle.
-// If not, see <http://www.gnu.org/licenses/>.
-
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * ProformA question type webservice functions.
@@ -30,15 +27,44 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
-
     // ProformA question type webservice functions.
-    'qtype_proforma_upload_task' => array(
-        'classname'    => 'qtype_proforma\external\upload_task',
-//        'methodname'   => 'upload_task',
+    'qtype_proforma_get_task_url' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
+        'methodname'   => 'get_task_url',
         'classpath'    => '',
-        'description'  => 'uploads a task to Praktomat',
-        'type'         => 'read', // Read from Moodle, but write to Praktomat???
-        // 'capabilities' => 'moodle/question:usemine',
+        'description'  => 'read task from Moodle',
+        'type'         => 'read',
+        'capabilities' => 'moodle/question:editmine',
+        'ajax'         => true,
+    ),
+
+    'qtype_proforma_get_junit_versions' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
+        'methodname'   => 'get_junit_versions',
+        'classpath'    => '',
+        'description'  => 'read JUnit versions from Moodle',
+        'type'         => 'read',
+        // 'capabilities' => 'moodle/question:editmine',
+        'ajax'         => true,
+    ),
+
+    'qtype_proforma_get_checkstyle_versions' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
+        'methodname'   => 'get_checkstyle_versions',
+        'classpath'    => '',
+        'description'  => 'read Checkstyle versions from Moodle',
+        'type'         => 'read',
+        // 'capabilities' => 'moodle/question:editmine',
+        'ajax'         => true,
+    ),
+
+    'qtype_proforma_get_java_versions' => array(
+        'classname'    => 'qtype_proforma\external\taskeditor',
+        'methodname'   => 'get_java_versions',
+        'classpath'    => '',
+        'description'  => 'read Java versions from Moodle',
+        'type'         => 'read',
+        // 'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
     ),
 );

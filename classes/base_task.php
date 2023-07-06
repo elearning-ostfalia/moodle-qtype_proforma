@@ -124,6 +124,9 @@ abstract class qtype_proforma_base_task {
      * @param $formdata
      */
     protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
+        if (!isset($formdata->testid)) {
+            return;
+        }
         $count = count($formdata->testid);
         for ($index = 0; $index < $count; $index++) {
             $id = $formdata->testid[$index];
@@ -310,6 +313,7 @@ abstract class qtype_proforma_base_task {
         if (!$xmldoc->loadXML($question->gradinghints)) {
             // Fatal error: grading hints cannot be loaded!
             debugging('gradinghints are not valid XML');
+            debugging($question->gradinghints);
             return;
         }
 
@@ -511,12 +515,11 @@ abstract class qtype_proforma_base_task {
      * return the testfile from draft area
      *
      * @param type $formdata
-     * @param type $testindex
+     * @param int $testindex
      * @return type
      * @global type $USER
      */
-    protected static function _get_draft_testfiles($formdata, $testindex)
-    {
+    protected static function _get_draft_testfiles($formdata, $testindex) {
         global $USER;
         $usercontext = context_user::instance($USER->id);
 
@@ -624,7 +627,7 @@ abstract class qtype_proforma_base_task {
                     $xw->startElement('embedded-txt-file');
                     $code = $formdata->testcode[$index];
                     $filename = $this->get_testfilename($index, $id, $code);
-                    //     $filename = self::get_java_file($code);
+                    // $filename = self::get_java_file($code);
                     $xw->create_attribute('filename', $filename);
                     $xw->text($formdata->testcode[$index]);
                     $xw->endElement(); // End tag embedded-txt-file.

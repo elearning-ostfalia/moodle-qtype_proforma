@@ -28,11 +28,14 @@ Feature: ADD JAVA QUESTION WITH VERSION CONTROL SYSTEM USE
   @javascript @_file_upload
   Scenario: Create ProFormA java question with compilation, no Junit test, no checkstyle
 ##########################################################################
-    When I add a "ProFormA" question filling the form with:
+    When I create a new "java" question
+    And I set the following fields to these values:
       | Question name            | java-question                  |
       | Question text            | write a java program that..... |
       | Response format          | Version control system         |
       | URI of repository        | https://code.ostfalia.de/svn/{group}/task1/  |
+    And I press "id_submitbutton"
+
     Then I should see "Title required"
     When I set the field "testtitle[0]" to "JUnit test title"
     And I set the codemirror "testcode_0" to "class XClass {}"

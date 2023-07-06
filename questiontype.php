@@ -85,7 +85,7 @@ class qtype_proforma extends question_type {
      */
     /** task file that is not yet completed */
     const SELECT_TASKFILE = 0;
-    const VOLATILE_TASKFILE = 3; // Depricated: Use JAVA_TASKFILE instead.
+    const VOLATILE_TASKFILE = 3; // Deprecated: Use JAVA_TASKFILE instead.
     /** Java task file */
     const JAVA_TASKFILE = self::VOLATILE_TASKFILE;
     /** SetlX task file */

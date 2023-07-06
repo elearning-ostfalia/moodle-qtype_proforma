@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
+define('EDITORINLINE', true);
+
 /**
  * Bases class for rendering the question editor form for teachers
  */
@@ -103,6 +105,15 @@ abstract class base_form_creator {
      * values
      */
     public function definition_after_data() {
+        $mform = $this->_form;
+        // Encode graing hints.
+        $gradinghints = $mform->getElement('gradinghints');
+        $gradinghints->setValue(urlencode($gradinghints->getValue()));
+
+        if (isset($_POST) && isset($_POST['taskeditor'])) {
+            $taskeditor = $mform->getElement('taskeditor');
+            $taskeditor->setValue($_POST['taskeditor']);
+        }
     }
 
     /**
@@ -125,12 +136,14 @@ abstract class base_form_creator {
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
-        $title = $fromform["testtitle"][0];
-        $titleavailable = strlen(trim($title)) > 0;
-        if (!$titleavailable) {
-            // At least one test must be defined. This is checked by
-            // checking if the first title is set.
-            $errors['testtitle[0]'] = get_string('titleempty', 'qtype_proforma');
+        if ((!isset($fromform['taskeditor'])) or (!$fromform['taskeditor'])) {
+            $title = $fromform["testtitle"][0];
+            $titleavailable = strlen(trim($title)) > 0;
+            if (!$titleavailable) {
+                // At least one test must be defined. This is checked by
+                // checking if the first title is set.
+                $errors['testtitle[0]'] = get_string('titleempty', 'qtype_proforma');
+            }
         }
 
         // For deleting the last test by leaving all (relevant) fields empty.
@@ -147,20 +160,22 @@ abstract class base_form_creator {
             }
         }
 
-        // Check tests.
-        $repeats = $this->get_count_tests(null);
-        for ($i = 0; $i < $repeats; $i++) {
-            list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
-        }
+        if ((!isset($fromform['taskeditor'])) or (!$fromform['taskeditor'])) {
+            // Check tests.
+            $repeats = $this->get_count_tests(null);
+            for ($i = 0; $i < $repeats; $i++) {
+                list($errors, $valid) = $this->validate_unittest($editor, $fromform, $files, $i, $errors);
+            }
 
-        // Ensure that sum of weights is > 0.
-        if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
-            $repeats = count($fromform["testweight"]);
-            $sumweight = $this->calc_sumweight($fromform);
-            if (/*$repeats > 0 && */$sumweight == 0) {
-                // Error message must be attached to testoptions group
-                // otherwise it is not visible.
-                $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
+            // Ensure that sum of weights is > 0.
+            if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
+                $repeats = count($fromform["testweight"]);
+                $sumweight = $this->calc_sumweight($fromform);
+                if (/*$repeats > 0 && */ $sumweight == 0) {
+                    // Error message must be attached to testoptions group
+                    // otherwise it is not visible.
+                    $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
+                }
             }
         }
 
@@ -263,8 +278,7 @@ abstract class base_form_creator {
         $mform->addElement('button', 'uploadbutton', get_string('upload', 'qtype_proforma'));
         // Add js.
         global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/taskupload', 'upload', array('id_uploadbutton'));
-
+        $PAGE->requires->js_call_amd('qtype_proforma/logmonitor', 'uploadToGrader', array('id_uploadbutton'));
     }
 
     /**
@@ -288,6 +302,12 @@ abstract class base_form_creator {
 
         $mform->addElement('hidden', 'taskstorage', $this->_tasktype);
         $mform->setType('taskstorage', PARAM_RAW);
+
+        $mform->addElement('hidden', 'gradinghints');
+        $mform->setType('gradinghints', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'taskeditor', 0);
+        $mform->setType('taskeditor', PARAM_BOOL);
     }
 
     /**
@@ -332,9 +352,15 @@ abstract class base_form_creator {
      */
     protected function add_responsefilename() {
         $mform = $this->_form;
-        $mform->addElement('text', 'responsefilename', get_string('filename', 'qtype_proforma'), array('size' => '60'));
+        $mform->addElement('text', 'responsefilename', get_string('responsefilename', 'qtype_proforma'), array('size' => '60'));
         $mform->setType('responsefilename', PARAM_TEXT);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
+        // $mform->addRule('responsefilename', get_string('required'), 'required');
+        // Hide label if not used. Done with JavaScript.
+        /*global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/formhelper', 'requiredif', array('id_responsefilename',
+            'id_responseformat', 'editor'));*/
+
         // Do not set required since the filed can be hidden!
         // Note: hidding responsefilename does not work with static text.
         $mform->hideIf('responsefilename', 'responseformat', 'neq', 'editor');
@@ -452,7 +478,6 @@ abstract class base_form_creator {
      * @return int
      */
     protected function add_test_fields($question, $questioneditform, $testtype) {
-
         $mform = $this->_form;
         // Retrieve number of tests (resp. unit tests).
         $repeats = $this->get_count_tests($question);
@@ -705,6 +730,127 @@ abstract class base_form_creator {
         $this->add_modelsolution();
     }
 
+    protected function add_detail_edit_button() {
+        global $USER, $CFG;
+        $usercontext = context_user::instance($USER->id);
+        // User can manage own files.
+        if (!has_capability('moodle/user:manageownfiles', $usercontext)) {
+            debugging('user cannot manage own files');
+            return;
+        }
+
+        $mform = $this->_form;
+        // Create context for mustache templates.
+        $context = [
+            "proglang" => [
+                [
+                    "language" => "Java",
+                    "value" => "java",
+                ]
+            ],
+        ];
+
+        // Set Java versions.
+        $versionlist = get_config('qtype_proforma', 'javaversion');
+        $versions = [];
+        foreach (explode(',', $versionlist) as $version) {
+            $versions[] = trim($version);
+        }
+        $context["proglang"][0]["version"] = $versions;
+
+        if (get_config('qtype_proforma', 'cpp')) {
+            $context["proglang"][] = [
+                "language" => "C++",
+                "value" => "cpp",
+                "version" => []
+            ];
+        }
+        if (get_config('qtype_proforma', 'clang')) {
+            $context["proglang"][] = [
+                "language" => "C",
+                "value" => "c",
+                "version" => []
+            ];
+        }
+        if (get_config('qtype_proforma', 'python')) {
+            $context["proglang"][] = [
+                "language" => "Python",
+                "value" => "python",
+                "version" => ["3"]
+            ];
+        }
+        // if (get_config('qtype_proforma', 'setlx')) {
+            // Currently no nore support for SetlX.
+        // }
+
+        // Read max task size.
+        $context["taskmaxbytes"] = get_config('qtype_proforma', 'taskmaxbytes');
+
+        $context = (object)$context;
+
+        $taskclientid = uniqid();
+        $taskrepoparams = array(
+            'type' => 'upload',
+            'currentcontext' => $usercontext,
+            'contextid' => $usercontext->id,
+            'return_types' => FILE_INTERNAL,
+            'userid' => $USER->id,
+            'accepted_types' => '.xml,.zip',
+            'client_id' => $taskclientid,
+            'subdirs' => 0,
+        );
+        $repo1 = repository::get_instances($taskrepoparams);
+        if (empty($repo1)) {
+            throw new moodle_exception('errornouploadrepo', 'moodle');
+        }
+        $repo1 = reset($repo1); // Get the first (and only) upload repo.
+        $params1 = (object) $taskrepoparams;
+        $params1->repo_id = $repo1->id;
+
+        $msclientid = uniqid();
+        $msrepoparams = array(
+            'type' => 'upload',
+            'currentcontext' => $usercontext,
+            'contextid' => $usercontext->id,
+            'return_types' => FILE_INTERNAL,
+            'userid' => $USER->id,
+            'accepted_types' => '*',
+            'client_id' => $msclientid,
+            'subdirs' => 1,
+            'newitemid' => file_get_unused_draft_itemid(),
+            'checkitemid' => file_get_unused_draft_itemid()
+        );
+        $repo2 = repository::get_instances($msrepoparams);
+        if (empty($repo2)) {
+            throw new moodle_exception('errornouploadrepo', 'moodle');
+        }
+        $repo2 = reset($repo2); // Get the first (and only) upload repo.
+        $params2 = (object) $msrepoparams;
+        $params2->repo_id = $repo2->id;
+
+        global $OUTPUT;
+        $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
+        $mform->addElement('html', $taskeditor);
+
+        // Add button.
+        $mform->addElement('button', 'editdetails', get_string('edittestdetails', 'qtype_proforma'));
+
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
+             array('id_editdetails', $context, $params1, $params2, true));
+
+        /*
+        } else {
+            // Add task edit button.
+            $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
+            // Add js.
+            global $PAGE;
+            $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
+                array('id_taskeditbutton', $context, $params1, $params2, false));
+        }
+        */
+    }
+
     /**
      * Add test settings.
      *
@@ -728,11 +874,6 @@ abstract class base_form_creator {
         $mform->addHelpButton('aggregationstrategy', 'aggregationstrategy', 'qtype_proforma');
         $mform->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
 
-        // Tests.
-        // - test overview in case of imported task and
-        // - test edit fields for tasks created with Moodle.
-        $this->add_tests($question, $questioneditform);
-
         // Penalty.
         $penalties = array(
             1.0000000,
@@ -755,6 +896,11 @@ abstract class base_form_creator {
         get_string('penaltyforeachincorrecttry', 'question'), $penaltyoptions);
         $mform->addHelpButton('penalty', 'penaltyforeachincorrecttry', 'question');
         $mform->setDefault('penalty', get_config('qtype_proforma', 'defaultpenalty'));
+
+        // Tests.
+        // - test overview in case of imported task and
+        // - test edit fields for tasks created with Moodle.
+        $this->add_tests($question, $questioneditform);
     }
 
     public function add_feedback_options($question, $questioneditform) {
@@ -986,6 +1132,13 @@ abstract class base_form_creator {
     public function save_question_options(&$options) {
         $formdata = $this->_form;
         $context = $formdata->context;
+        if (isset($formdata->taskeditor)) {
+            if ($formdata->taskeditor) {
+                $formdata->gradinghints = urldecode($formdata->gradinghints);
+            } else {
+                unset($formdata->gradinghints);
+            }
+        }
 
         // Remove beginning and trailing spaces from response filename.
         if (isset($formdata->responsefilename)) {

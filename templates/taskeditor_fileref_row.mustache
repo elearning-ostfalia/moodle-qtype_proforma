@@ -1,0 +1,72 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template qtype_proforma/taskeditor_testfile_row
+
+    The purpose of this template is to render a file in ProFormA task editor
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * filenamelabel
+
+    Example context (json):
+    {
+       // "filenamelabel" : "Junit and other file(s)"
+    }
+}}
+
+<tr>
+    <td>
+        <label for="xml_fileref_filename">{{#str}} taskeditorfiles, qtype_proforma {{/str}}
+{{#info}}
+    {{>core/help_icon}}
+{{/info}}
+        {{ #filemandatory }}
+            <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+            <!-- <span class="red">*</span> -->
+        {{ /filemandatory }}
+        </label>
+    </td>
+    <td>
+        <select class="mediuminput fileref_filename xml_fileref_filename">
+            <option> </option>
+            <option>&lt;open...&gt;</option>
+            <option>&lt;new file&gt;</option>
+        </select>
+    </td>
+    <td>
+        <label for="fileref_fileref" style="display: none;">Fileref: </label>
+        <input class="tinyinput fileref_fileref" readonly="" style="display: none;"></input>
+    </td>
+    <td>
+        <button class="taskeditor-collapse" disabled="">{{#str}} taskeditorview, qtype_proforma {{/str}}</button>
+    </td>
+    <td>
+        <button class="remove_item"  style="display: none;">x</button>
+    </td>
+    <td>
+         <button class="add_fileref">+</button>
+         <br>
+    </td>
+    <td>
+    </td>
+</tr>

@@ -1,0 +1,102 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template qtype_proforma/taskeditor_file
+
+    The purpose of this template is to render a file in ProFormA task editor
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * none
+
+    Example context (json):
+    {
+        testid: "1",
+        testtitle: "Name of test",
+        description: "This tests deals with...",
+        testtype: "java-checkstyle",
+        testheader: "Java Checkstyle"
+    }
+
+
+    Ursprüngliche Klassen für das Top-Level-Div:
+    class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'
+
+    Ursprüngliche Klassen für den Header:
+    class='ui-widget-header'
+
+}}
+
+
+<div id='test_{{ testid }}' class='xml_test'>
+
+    <span class='test-header' draggable='true'>
+        <span class='box-typ'><label> Test {{ testid }} </label>
+            <span>{{ testheader }}</span>
+            <span>
+<!--            {{#str}} testtype, qtype_proforma {{/str}}-->
+<!--            <label for='xml_test_type'>{{#str}} testtype, qtype_proforma {{/str}} </label>-->
+            <input class='xml_test_type' disabled="disabled" value='{{ testtype }}' style='display: none'></input>
+            {{#framework}}
+                <input class="xml_framework" value="{{ framework }}" disabled="disabled" style='display: none'>
+            {{/framework}}
+             &nbsp;
+            {{#framework_version}}
+                <!-- no label because of format -->
+                <!-- <label for="xml_framework_version">{{#str}} version, qtype_proforma {{/str}}<span class="red">*</span> </label> -->
+                {{#str}} version, qtype_proforma {{/str}}
+                <select class="xml_framework_version" id="{{uniqid}}-version">
+                            <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                </select>
+            {{/framework_version}}
+            </span>
+        </span>
+
+        <input class='xml_test_id' type="text" style='display: none' value="{{ testid }}" size="2" disabled="disabled"></input>
+
+        <span class='rightButton'><button>x</button></span>
+    </span>
+
+<p>
+        <label for='xml_test_title'>{{#str}} testtitle, qtype_proforma {{/str}} <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}"></i> </label>
+        <input class='xml_test_title' size="80" value='{{ testtitle }}'/>
+<br>
+
+    <label for='xml_description'>{{#str}} testdescription, qtype_proforma {{/str}} </label>
+    <textarea rows='2' cols='80' class='xml_description'>{{ description }}</textarea>
+
+<br>
+        <label>{{#str}} weight, qtype_proforma {{/str}}
+        <!-- <span class='red'>*</span> -->
+            <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+        </label>
+        <input class='tinyinput xml_test_weight' value='{{ weight }}'></input>
+
+<br>
+
+    <label for='xml_internal_description'  class='leftlabel' style='display: none'>Internal Description</label>
+    <textarea rows='2' class='xml_internal_description' "title = 'Internal description (not visible for students)'
+        style='display: none'>{{ comment }}</textarea>
+
+
+
+

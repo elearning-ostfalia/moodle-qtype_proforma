@@ -86,5 +86,4 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
             $question->testentrypoint[$originalindex] = $unittest->{'entry-point'};
         }
     }
-
 }

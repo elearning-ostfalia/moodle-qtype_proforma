@@ -544,6 +544,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         global $USER;
         $usercontext = context_user::instance($USER->id);
         $params->contextid = $usercontext->id;
+        $params->explorerautosave = get_config('qtype_proforma', 'explorerautosave');
         // debugging('usercontext = ' . $params->contextid);
 
         // $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', true);

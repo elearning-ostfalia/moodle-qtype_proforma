@@ -1,0 +1,90 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template qtype_proforma/taskeditor_file
+
+    The purpose of this template is to render a file in ProFormA task editor
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * none
+
+    Example context (json):
+    {
+        fileid,
+        filesize
+    }
+
+
+    Ursprüngliche Klassen für das Top-Level-Div:
+    class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'
+
+    Ursprüngliche Klassen für den Header:
+    class='ui-widget-header'
+
+}}
+
+<div id='file_{{ fileid }}' class='xml_file drop_zone fcontainer clearfix'>
+
+<span class='file-header'><span class='box-typ'>{{#str}} taskeditorfile, qtype_proforma {{/str}} {{ fileid }}</span>
+    <span class ='xml_filename_header'></span>
+    <span class='rightButton'><button>x</button></span>
+</span>
+
+<p>
+    <label for='xml_file_filename'>{{#str}} filename, qtype_proforma {{/str}}<span class='red'>*</span> </label>
+    <input class='mediuminput xml_file_filename'>
+    </input>
+
+    <label for='xml_file_id'>ID: </label>
+    <input class='tinyinput xml_file_id' value='{{ fileid }}'/>
+
+    <label for='xml_file_type'>{{#str}} taskeditorstore, qtype_proforma {{/str}} </label>
+    <select class='xml_file_type'>
+        <option value = 'embedded' selected='selected'>{{#str}} taskeditorembedded, qtype_proforma {{/str}}</option>
+        <option value = 'file'>{{#str}} taskeditorattached, qtype_proforma {{/str}}</option>
+    </select>
+
+    <span class='drop_zone_text'>{{#str}} taskeditordropzone, qtype_proforma {{/str}}</span>
+</p>
+
+<p style='display: none'>
+    <label for='xml_internal_description'>Internal Description</label>
+    <textarea rows='1' class='xml_internal_description'></textarea>
+</p>
+
+<p>
+    <span class='xml_file_binary'>({{#str}} taskeditorbinary, qtype_proforma {{/str}}) <span
+        class='xml_file_size'>{{#str}} taskeditorfilesize, qtype_proforma {{/str}}: {{ filesize }}</span></span>
+
+    <span class='xml_file_non_binary'>
+        <button class='xml_file_edit'>{{#str}} taskeditoredit, qtype_proforma {{/str}}</button>
+        <label for='xml_file_editor_close'>
+            <button class='xml_file_editor_close'>{{#str}} taskeditorhide, qtype_proforma {{/str}}</button>
+        </label>
+        <span>
+            <textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>
+        </span>
+    </span>
+</p>
+</div>
+
