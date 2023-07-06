@@ -70,7 +70,7 @@ export function initStrings() {
     ];
     return Str.get_strings(strings)
         .then(results => {
-            console.log('config strings are initialised');
+            // console.log('config strings are initialised');
             gtest_help = results[0];
             cunittest_help = results[1];
             makerun_help = results[2];

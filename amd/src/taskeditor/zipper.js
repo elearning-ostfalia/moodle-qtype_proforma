@@ -48,11 +48,11 @@ let taskfile_read = false;
 export function relinkFiles() {
     if (!taskfile_read)
         return; // wait and retry later
-    if (debug_unzip) console.log("relinkFiles ");
+    // if (debug_unzip) console.log("relinkFiles ");
 
     // store not-embedded files in correct location in fileStorages array
     FileWrapper.doOnAllFiles(function(ui_file) {
-        if (debug_unzip) console.log("relink " + ui_file.filename + " type: " + ui_file.type);
+        // if (debug_unzip) console.log("relink " + ui_file.filename + " type: " + ui_file.type);
 
         if (ui_file.type === 'file') {
             const fileid = ui_file.id; // fileroot.find(".xml_file_id").val();
@@ -62,11 +62,8 @@ export function relinkFiles() {
                 // file is not yet relinked => link to fileStorage
                 fileStorages[fileid] = unzippedFiles[filename];
                 unzippedFiles[filename] = undefined;
-                if (debug_unzip) console.log("relinkFiles " + filename + " -> " + fileid + " " + ui_file.type + " size: " + ui_file.size);
-                //ui_file.isBinary = true;
-                //ui_file.storeAsFile = true;
+                // if (debug_unzip) console.log("relinkFiles " + filename + " -> " + fileid + " " + ui_file.type + " size: " + ui_file.size);
                 ui_file.type = ui_file.type; // needed...
-                //ui_file.disableTypeChange();
             } else {
                 if (unzippedFiles[filename] && fileStorages[fileid].byZipper) { // fileStorages[fileid].filename.length) {
                     // consistency check
@@ -113,7 +110,7 @@ export function unzipme(blob, readyCallback) {
           try {
               const zipFileReader = new zip.BlobReader(blob);
               let zipReader = new zip.ZipReader(zipFileReader);
-              console.log('unzipBlob');
+              console.log('unzip');
               zipReader.getEntries()
                   .then(entries => {
                       filesToBeRead = entries.length;
@@ -126,7 +123,7 @@ export function unzipme(blob, readyCallback) {
                               const taskXmlWriter = new zip.TextWriter();
                               entry.getData(taskXmlWriter)
                                   .then(xmlContent => {
-                                        if (debug_unzip) console.log('call callback For task.xml');
+                                        // if (debug_unzip) console.log('call callback For task.xml');
                                         callbackForTaskXml(xmlContent);
                                     });
                           } else {
@@ -138,8 +135,8 @@ export function unzipme(blob, readyCallback) {
                                   .then(data => data.arrayBuffer())
                                   .then(data => {
                                       // console.log(data);
-                                      if (debug_unzip)
-                                          console.log('call callbackForFile ' + entry.filename);
+                                      // if (debug_unzip)
+                                      //     console.log('call callbackForFile ' + entry.filename);
                                       callbackForFile(data, entry);
                                   });
                           }
@@ -161,12 +158,12 @@ export function unzipme(blob, readyCallback) {
         function (taskXmlContent) {
             unzipped_text = taskXmlContent;
             if (readyCallback) {
-                if (debug_unzip)
-                    console.log('call readyCallback');
+                // if (debug_unzip)
+                //     console.log('call readyCallback');
                 readyCallback(taskXmlContent);
             }
-            if (debug_unzip)
-                console.log('set taskfile_read = true');
+            // if (debug_unzip)
+            //     console.log('set taskfile_read = true');
             taskfile_read = true;
             filesRead++;
             if (filesRead === filesToBeRead) {
@@ -203,7 +200,7 @@ export function unzipme(blob, readyCallback) {
                     break;
             }
 
-            if (debug_unzip) console.log(header + " => " + type);
+            // if (debug_unzip) console.log(header + " => " + type);
 
             // store file
             unzippedFiles[entry.filename] =
@@ -211,7 +208,7 @@ export function unzipme(blob, readyCallback) {
             unzippedFiles[entry.filename].setZipperFlag();
             unzippedFiles[entry.filename].setSize(entry.uncompressedSize);
             filesRead++
-            if (debug_unzip) console.log('filesRead value: ' + filesRead + ' filesToBeRead=' + filesToBeRead);
+            // if (debug_unzip) console.log('filesRead value: ' + filesRead + ' filesToBeRead=' + filesToBeRead);
             if (filesRead === filesToBeRead) {
                 onFilesRead();
             }
@@ -309,7 +306,7 @@ export function zipme(TEXT_CONTENT, startdownload, maxsize) {
                 a.href = url;
                 a.click();
             } else {
-                if (maxsize && zippedBlob.size > maxsize) {
+                if (maxsize > 0 && zippedBlob.size > maxsize) {
                     return Promise.reject('Task size is ' + zippedBlob.size + ' and exceeds maximum size (' + maxsize + ' bytes).\n' +
                         'Uploading to the Moodle server is blocked!');
                 } else {

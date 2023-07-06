@@ -621,14 +621,14 @@ export class FileReferenceList extends DynamicList {
                 console.log('ondrop ');
                 console.log(e);
                 let data = e.originalEvent.dataTransfer.getData("text");
-                console.log(data);
+                // console.log(data);
                 if (data.startsWith('move_test ')) {
                     // Move test
                     let result = data.substring('move_test '.length);
-                    console.log('move ' + result);
+                    // console.log('move ' + result);
                     let test = TestWrapper.constructFromId(result);
                     let thiselement = e.target.closest('.xml_test');
-                    console.log(thiselement.id);
+                    // console.log(thiselement.id);
                     let otherelement = document.getElementById('test_' + result);
                     let nextSibling = thiselement.nextElementSibling;
                     if (nextSibling === otherelement) {

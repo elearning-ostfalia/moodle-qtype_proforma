@@ -17,6 +17,8 @@ Feature: IMPORT (Moodle-XML format)
       | teacher1 | C1     | editingteacher |
     # And I log in as "teacher1"
     # And I am on "Course 1" course homepage
+    And the following config values are set as admin:
+      | taskmaxbytes        | 10485760          | qtype_proforma |
 
   @javascript @_file_upload
   Scenario: import Java question.
@@ -70,6 +72,30 @@ Feature: IMPORT (Moodle-XML format)
     And I press "Cancel"
 
   @javascript @_file_upload
+  Scenario: import ProFormA CUnit question.
+    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
+    And I set the field "id_format_proforma" to "1"
+    And I upload "question/type/proforma/tests/fixtures/cunit_palindrome.zip" file to "Import" filemanager
+    And I press "id_submitbutton"
+    And I press "Continue"
+    And I should see "c_pass"
+    When I choose "Edit question" action for "c_pass" in the question bank
+    Then the following fields match these values:
+      | Question name            | c_pass              |
+      | Question text            | c unit |
+      | Question status          | Ready |
+      | Default mark             | 1                              |
+      | Response format          | editor                         |
+      | Response filename        | palindrome.c                   |
+      | Response template        | |
+      | Comment                  |      |
+      | Penalty for each incorrect try  | 10% |
+    # CUnit
+    And the field "testweight[0]" matches value "1"
+    And the field "testtitle[0]" matches value "CUnit Test"
+    And the field "testdescription[0]" matches value ""
+
+  @javascript @_file_upload
   Scenario: import ProFormA question.
     When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
     And I set the field "id_format_xml" to "1"
@@ -84,7 +110,6 @@ Feature: IMPORT (Moodle-XML format)
     And I should see "test question with German Umlauts (äöüß)"
     And I should see "second ProFormA question"
     And I should see "java question"
-
     When I choose "Edit question" action for "java question" in the question bank
     Then the following fields match these values:
       | Question name            | java question              |

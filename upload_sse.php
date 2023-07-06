@@ -1,4 +1,29 @@
 <?php
+// This file is part of ProFormA Question Type for Moodle
+//
+// ProFormA Question Type for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// ProFormA Question Type for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * This PHP file is used for uploading a task to the grader
+ * forwarding server sent events to the browser.
+ *
+ * @package    qtype
+ * @subpackage proforma
+ * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author     K.Borm <k.borm[at]ostfalia.de>
+ */
 
 require_once(__DIR__.'/../../../config.php');
 global $CFG;
@@ -9,8 +34,6 @@ require_once($CFG->libdir . '/externallib.php');
 header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
 header('X-Accel-Buffering: no');
-
-
 
 try {
     require_sesskey();
@@ -74,7 +97,7 @@ try {
 
         // Security checks
         global $DB;
-        $contextid = $DB->get_field('question_categories', 'contextid', array('id'=>$question->category));
+        $contextid = $DB->get_field('question_categories', 'contextid', array('id' => $question->category));
         $context = \context::instance_by_id($contextid, IGNORE_MISSING);
         if (isset($context)) {
             external_api::validate_context($context);
@@ -90,9 +113,8 @@ try {
         $grader = new \qtype_proforma_grader_2($question->get_uri($path));
     }
 
-
     list($graderoutput, $httpcode) = $grader->upload_task_to_grader($task);
-    if ($graderoutput === True) {
+    if ($graderoutput === true) {
         $graderoutput = 'successfully started';
     }
 

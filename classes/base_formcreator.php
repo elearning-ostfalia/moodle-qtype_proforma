@@ -741,7 +741,7 @@ abstract class base_form_creator {
 
         $mform = $this->_form;
         // Create context for mustache templates.
-        $context =  [
+        $context = [
             "proglang" => [
                 [
                     "language" => "Java",
@@ -779,14 +779,14 @@ abstract class base_form_creator {
                 "version" => ["3"]
             ];
         }
-        if (get_config('qtype_proforma', 'setlx')) {
+        // if (get_config('qtype_proforma', 'setlx')) {
             // Currently no nore support for SetlX.
-        }
+        // }
 
         // Read max task size.
         $context["taskmaxbytes"] = get_config('qtype_proforma', 'taskmaxbytes');
 
-        $context =  (object)$context;
+        $context = (object)$context;
 
         $taskclientid = uniqid();
         $taskrepoparams = array(
@@ -828,7 +828,6 @@ abstract class base_form_creator {
         $params2 = (object) $msrepoparams;
         $params2->repo_id = $repo2->id;
 
-
         global $OUTPUT;
         $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
         $mform->addElement('html', $taskeditor);
@@ -840,8 +839,7 @@ abstract class base_form_creator {
         $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
              array('id_editdetails', $context, $params1, $params2, true));
 
-
-/*
+        /*
         } else {
             // Add task edit button.
             $mform->addElement('button', 'taskeditbutton', get_string('taskeditor', 'qtype_proforma'));
@@ -850,7 +848,7 @@ abstract class base_form_creator {
             $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
                 array('id_taskeditbutton', $context, $params1, $params2, false));
         }
-*/
+        */
     }
 
     /**
@@ -875,7 +873,6 @@ abstract class base_form_creator {
             get_string('aggregationstrategy', 'qtype_proforma'), $aggregationstrategy);
         $mform->addHelpButton('aggregationstrategy', 'aggregationstrategy', 'qtype_proforma');
         $mform->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
-
 
         // Penalty.
         $penalties = array(

@@ -754,12 +754,12 @@ function uploadModelSolutionToServer() {
         let modelSolution = new TaskModelSolution();
         modelSolution.id = ms.id;
         let counter = 0;
-        console.log('MS id is ' + ms.id);
+        // console.log('MS id is ' + ms.id);
         ModelSolutionFileReference.getInstance().doOnAll(function(id) {
             modelSolution.filerefs[counter++] = new TaskFileRef(id);
-            console.log('MS Fileref is ' + id);
+            // console.log('MS Fileref is ' + id);
             let file = FileWrapper.constructFromId(id);
-            console.log('filename is ' + fileStorages[id].filename);
+            // console.log('filename is ' + fileStorages[id].filename);
             const formData = new FormData();
             console.log(fileStorages);
             formData.append('sesskey', Config.sesskey);

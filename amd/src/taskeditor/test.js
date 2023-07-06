@@ -144,7 +144,7 @@ export class TestWrapper {
                 else {
                     subnode.ondragstart = function (event) {
                         // event.preventDefault();
-                        console.log('On drag start ' + testid);
+                        // console.log('On drag start ' + testid);
                         event.dataTransfer.setData("text", 'move_test '  + testid);
                     }
                 }
@@ -169,7 +169,7 @@ export class TestWrapper {
                     testroot.find("label[for='xml_test_id']").hide();
                 }*/
                 if (!withFileRef) {
-                    console.log('hide fileref fields');
+                    // console.log('hide fileref fields');
                     testroot.find("table").hide();
                     testroot.find(".drop_zone").hide();
                 }
@@ -193,7 +193,7 @@ export class TestWrapper {
                     */
                 }
                 if (item) {
-                    console.log('update filelist for test');
+                    // console.log('update filelist for test');
                     let counter = 0;
                     // console.log(item.filerefs);
 

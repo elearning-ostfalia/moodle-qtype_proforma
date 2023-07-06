@@ -71,7 +71,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $version = get_config('qtype_proforma', 'submissionproformaversion');
         // Namespace for Proforma Version.
         switch ($version) {
-/*            case "2.0":
+            /* case "2.0":
                 $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
                 break;*/
             case "2.1_new":
@@ -261,7 +261,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         }
     }
 
-
     private $chunks = [];
     private $data = '';
     private $response = '';
@@ -279,29 +278,27 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         }
 
         foreach ($lines as $line) {
-            // $end = substr( $line, -2);
-            // if ($end === "\n\n") {
-                // Ends with \n\n.
-                if (substr( $line, 0, strlen("data: RESPONSE START####")) === "data: RESPONSE START####") {
-                    // Response starts.
-                    $this->responsestarted = true;
-                    echo $line . "\n\n";
-                    continue;
+            // Ends with \n\n.
+            if (substr( $line, 0, strlen("data: RESPONSE START####")) === "data: RESPONSE START####") {
+                // Response starts.
+                $this->responsestarted = true;
+                echo $line . "\n\n";
+                continue;
+            }
+            if (!$this->responsestarted) {
+                // No response.
+                echo $line . "\n\n";
+                continue;
+            }
+            if (substr( $line, 0, strlen("data: RESPONSE END####")) === "data: RESPONSE END####") {
+                // Response is complete => execute callback
+                if (isset($this->callback)) {
+                    call_user_func($this->callback, $this->response, $this, $this->question, $this->gradinghints);
                 }
-                if (!$this->responsestarted) {
-                    // No response.
-                    echo $line . "\n\n";
-                    continue;
-                }
-                if (substr( $line, 0, strlen("data: RESPONSE END####")) === "data: RESPONSE END####") {
-                    // Response is complete => execute callback
-                    if (isset($this->callback)) {
-                        call_user_func($this->callback, $this->response, $this, $this->question, $this->gradinghints);
-                    }
-                    echo $line . "\n\n";
-                } else {
-                    $this->response .= substr( $line, strlen("data: ")) . "\n";
-                }
+                echo $line . "\n\n";
+            } else {
+                $this->response .= substr( $line, strlen("data: ")) . "\n";
+            }
         }
 
         ob_flush();
@@ -320,21 +317,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $this->write_data();
         return $len; // Tell curl how much data was handled.
     }
-
-
-/*
-
-    function curl_write_flush($curl_handle, $chunk)
-    {
-        $len = strlen($chunk);
-        echo $chunk;
-        ob_flush();
-        flush();
-
-        return $len; // Tell curl how much data was handled.
-    }
-
-*/
 
     protected function post_to_grader_and_stream_result(&$postfields, $task, $uri) {
         $this->chunks = [];
@@ -463,7 +445,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             throw new moodle_exception('SSE uri is not set in grader');
         }
 
-
         // debugging($submission);
         // Send POST request to grader.
         return $this->post_to_grader_and_stream_result($postfields, $task, $this->_uri);
@@ -519,7 +500,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         return $this->post_to_grader_and_stream_result($postfields, $task, $uri);
     }
-/*
+    /*
     public function upload_task_to_grader(qtype_proforma_question $question) {
         $filename = $question->responsefilename;
 
@@ -533,7 +514,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         return $this->post_to_grader_and_stream_result($postfields, $question);
     }
-*/
+    */
 
     /**
      * checks if the connection to the grader is valid.

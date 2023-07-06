@@ -29,7 +29,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/feedback_renderer.
 require_once($CFG->dirroot . '/question/type/proforma/renderer.php');
 
 
-class proforma_bulk_tester  {
+class proforma_bulk_tester {
 
     /**
      * Get all the contexts that contain at least one ProFormA question, with a
@@ -62,7 +62,7 @@ class proforma_bulk_tester  {
     public function get_teachers($courseid) {
         global $DB;
         $rolid = 3;
-        # only enroled users of courses that are still active
+        // only enroled users of courses that are still active
         $sql = 'select u.id, u.lastname, u.firstname
             from {course} ic
                 JOIN {context} con ON con.instanceid = ic.id
@@ -188,7 +188,7 @@ class proforma_bulk_tester  {
      *              sring message summarising the number of passes and fails.
      */
     public function run_test_question($question, $proformafile, $modelsolution, $quiet = false) {
-        $grader = new qtype_proforma_grader_2(isset($question)?$question->get_uri():null);
+        $grader = new qtype_proforma_grader_2(isset($question) ? $question->get_uri() : null);
 
         $ok = false;
         $message = "";

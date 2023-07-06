@@ -46,7 +46,7 @@ export const version101    = 'xsd/taskxml1.0.1.xsd';
 
 
 export function setErrorMessage(errormess, exception) { // setting the error console
-    console.log('setErrorMessage');
+    // console.log('setErrorMessage');
     console.log(errormess);
     console.log(exception);
     window.alert(errormess);

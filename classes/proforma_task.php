@@ -123,7 +123,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
      *
      * @param $taskfile taskfile to extract data from
      */
-    static public function extract_validation_data_from_taskfile($taskfile) {
+    public static function extract_validation_data_from_taskfile($taskfile) {
         try {
             $task = new SimpleXMLElement($taskfile, LIBXML_PARSEHUGE | LIBXML_NOERROR);
             $question = new stdClass();
@@ -162,7 +162,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
      *
      * @param $gradinghints gradinghints to extract data from
      */
-    static public function extract_validation_data_from_gradinghints($gradinghints) {
+    public static function extract_validation_data_from_gradinghints($gradinghints) {
         $gh = new SimpleXMLElement($gradinghints, LIBXML_NOERROR);
         $question = new stdClass();
 

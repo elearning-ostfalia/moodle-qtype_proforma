@@ -246,7 +246,7 @@ if (!$runtest) {
 
     list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader_and_stream_result($files,
         $task_file, 'on_grader_response', $question, $gh);
-    if ($graderoutput === True) {
+    if ($graderoutput === true) {
         $graderoutput = 'successfully started';
     }
 }

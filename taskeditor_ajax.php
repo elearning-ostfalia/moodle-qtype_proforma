@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * This PHP file is used for uploading a task from Javascript taskeditor into the draft area
  * for later upload to grader.
@@ -94,9 +93,6 @@ if ($context->id != $contextid) {
 
 // Check size of each uploaded file and scan for viruses.
 $maxsize = get_max_upload_file_size($CFG->maxbytes);
-// $maxbytes = get_user_max_upload_file_size($context, $maxsize,
-//     get_config('qtype_proforma', 'taskmaxbytes'));
-
 $maxbytes = min(get_config('qtype_proforma', 'taskmaxbytes'), $maxsize);
 
 foreach ($_FILES as $uploadedfile) {
@@ -124,7 +120,7 @@ $record = array(
 $fs->delete_area_files($context->id, 'user', 'draft', $itemid);
 
 $record['filename'] = clean_param($_FILES['task']['name'], PARAM_FILE);
-$task_file = $fs->create_file_from_pathname($record, $_FILES['task']['tmp_name']);
+$taskfile = $fs->create_file_from_pathname($record, $_FILES['task']['tmp_name']);
 
 $result = array(
     'itemid' => $itemid,
