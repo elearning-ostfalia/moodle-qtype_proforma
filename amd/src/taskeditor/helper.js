@@ -122,6 +122,10 @@ export function setcounter(temphash) {
 export function handleFilenameChangeInTest(newFilename, tempSelElem) {
     function setJavaClassname(newFilename) {
         // set classname if file belongs to JUNIT and if exactly one file is assigned
+        if (getExtension(newFilename) !== 'java') {
+            // skip if not java filename
+            return;
+        }
         let testBox = $(tempSelElem).closest(".xml_test");
         const ui_classname = $(testBox).find(".xml_entry_point");
         if (ui_classname.length === 1 // JUNIT box
