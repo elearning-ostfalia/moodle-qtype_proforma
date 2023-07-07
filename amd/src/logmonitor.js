@@ -87,11 +87,10 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
                 // If there is a callback for feedback finished then we fade the dialog.
                 // Das Schließen des Dialogs scheint nicht zu funktionieren.
                 // Der Hintergrund bleibt grau.
-                fade(dialog, button);
+                // fade(dialog, button);
             }
         }
     }
-
     /**
      * opens connection and handles events
      * @returns {Promise<void>}
