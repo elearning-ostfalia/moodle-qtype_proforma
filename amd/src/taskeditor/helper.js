@@ -121,22 +121,37 @@ export function setcounter(temphash) {
 
 export function handleFilenameChangeInTest(newFilename, tempSelElem) {
     function setJavaClassname(newFilename) {
-        // set classname if file belongs to JUNIT and if exactly one file is assigned
-        if (getExtension(newFilename) !== 'java') {
-            // skip if not java filename
-            return;
-        }
-        let testBox = $(tempSelElem).closest(".xml_test");
-        const ui_classname = $(testBox).find(".xml_entry_point");
-        if (ui_classname.length === 1 // JUNIT box
-            && ui_classname.first().val().trim() === '') { // and entry point not set
-            ui_classname.first().val(javaParser.getFullClassnameFromFilename(newFilename));
+        let testBox = tempSelElem.closest(".xml_test");
+        if (testBox) {
+            const ui_classname = $(testBox).find(".xml_entry_point");
+            if (ui_classname.length === 1 && // test has entrypoint
+                ui_classname.first().val().trim() === '' && // and it is not yet set
+                getExtension(newFilename) === 'java') { // and filename is java => JUnit
+                    // set classname if file belongs to JUNIT and if exactly one file is assigned
+                    ui_classname.first().val(javaParser.getFullClassnameFromFilename(newFilename));
 
-            // $.each(ui_classname, function(index, element) {
-            //     //let currentFilename = $(element).val();
-            //     if (!readXmlActive)
-            //         $(element).val(javaParser.getFullClassnameFromFilename(newFilename)).change();
-            // });
+                // $.each(ui_classname, function(index, element) {
+                //     //let currentFilename = $(element).val();
+                //     if (!readXmlActive)
+                //         $(element).val(javaParser.getFullClassnameFromFilename(newFilename)).change();
+                // });
+            }
+        }
+    }
+
+    function setResponseFilename(newFilename) {
+        let msBox = tempSelElem.closest(".xml_model-solution");
+        if (msBox && msBox.length > 0) {
+            console.log(msBox);
+            // Filename belongs to model solution
+            // => get response filename in Moodle form
+            let editorfilename = document.getElementById('id_responsefilename');
+            if (editorfilename) {
+                if (editorfilename.value.trim() === '') {
+                    // Response filename is empty => set
+                    editorfilename.value = newFilename;
+                }
+            }
         }
     }
     /*
@@ -154,6 +169,7 @@ export function handleFilenameChangeInTest(newFilename, tempSelElem) {
         }
     */
     setJavaClassname(newFilename);
+    setResponseFilename(newFilename);
     // setJUnitDefaultTitle(newFilename);
 }
 

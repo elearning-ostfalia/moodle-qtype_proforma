@@ -278,10 +278,22 @@ export class FileWrapper {
     }
 
     static onFilenameChanged(ui_file) {
-        // console.log('onFilenameChanged');
-        // after change of filename update all filelists
-
         let changedId;
+        // after change of filename update all filelists
+        // console.log('onFilenameChanged => ' + ui_file.filename);
+
+        function updateFilename() {
+            // console.log('update internal settings ' + ui_file.filename);
+            ui_file.filename = ui_file.filename; // needed in order to update internal data
+            ui_file.filenameHeader = ui_file.filename;
+            changedId = ui_file.id;
+            if (taskeditorconfig.useCodemirror) {
+                // Change mode depending on filename
+                // console.log('change mode depending on new filename');
+                codemirror[ui_file.id].setOption("mode", ui_file.getCodemirrorMode());
+            }
+        }
+
         if (ui_file) {
             // (the user has changed the filename in the filename input field)
             //ui_file.filenameHeader = ui_file.filename;
@@ -295,23 +307,20 @@ export class FileWrapper {
                 const actualFilename = ui_file.filename;
                 const expectedFilename = javaParser.getFilenameWithPackage(text, actualFilename);
                 if (expectedFilename !== actualFilename && expectedFilename !== ".java") {
-                    Str.get_string('changejavafilename', 'qtype_proforma', expectedFilename)
+                    // Ask user if filename shall really be changed
+                    return Str.get_string('changejavafilename', 'qtype_proforma', expectedFilename)
                         .then(localtext => {
                             if (confirm(localtext)) {
                                 ui_file.filename = expectedFilename;
                             }
+                            updateFilename();
+                            // update filenames in all file references
+                            FileReferenceList.updateAllFilenameLists(changedId, ui_file.filename);
                         });
                 }
             }
-            ui_file.filenameHeader = ui_file.filename;
-            changedId = ui_file.id;
-            if (taskeditorconfig.useCodemirror) {
-                // Change mode depending on filename
-                // console.log('change mode depending on new filename');
-                codemirror[ui_file.id].setOption("mode", ui_file.getCodemirrorMode());
-            }
+            updateFilename();
         }
-
         // update filenames in all file references
         FileReferenceList.updateAllFilenameLists(changedId, ui_file.filename);
     };

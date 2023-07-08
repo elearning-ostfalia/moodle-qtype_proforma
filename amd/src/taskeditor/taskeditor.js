@@ -604,6 +604,12 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
     // Add change callback.
     langselectelem.onchange = function() {
         const lang = langselectelem.value;
+        // Change syntax highlighting.
+        let highlight = document.getElementById("id_programminglanguage");
+        if (highlight) {
+            highlight.value = lang;
+        }
+
         // Show versions for this language
         // document.querySelector('#xml_programming-language-' + lang).style.display = '';
         let versionElement = document.getElementById("xml_programming-language-" + lang);
