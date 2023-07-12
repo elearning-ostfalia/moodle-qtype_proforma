@@ -76,13 +76,14 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
 
     function closeSse() {
         source.close();
-        let dialog = document.querySelector(".modal");
-        if (dialog) {
-            let button = dialog.querySelector(".btn-secondary");
+        if (modalroot) {
+            let button = modalroot.find(".btn-secondary");
             if (button) {
                 // Change cancel button to close button
-                button.innerHTML = closeString;
+                button.html(closeString);
+                button.show();
             }
+
             if (callbackstart) {
                 // If there is a callback for feedback finished then we fade the dialog.
                 // Das Schließen des Dialogs scheint nicht zu funktionieren.
@@ -153,13 +154,16 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
         }).then(function (modal) {
             // close eventsource on cancel
             modalroot = modal.getRoot();
-            modal.getModal().css('min-width', '50%');
-            modalroot.on(ModalEvents.cancel, function () {
+            modalroot.css('min-width', '50%');
+            modalroot.on(ModalEvents.hidden, function () {
                 source.close();
                 source = null;
                 modalroot.remove();
+                modalroot = null;
             });
             modal.show();
+            // Hide button
+            modalroot.find(".btn-secondary").hide();
             requestEventSource();
         });
     }

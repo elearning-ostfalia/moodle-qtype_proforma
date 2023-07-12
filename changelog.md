@@ -1,6 +1,7 @@
 ## 3.0.1
 
 * show loading image while opening taskeditor 
+* hide default button in logmontor while running
 
 ## 3.0.0
 
