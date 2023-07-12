@@ -28,6 +28,7 @@
 
 import Notification, {exception as displayException} from 'core/notification';
 import Y from 'core/yui';
+import Templates from 'core/templates';
 import {TestWrapper } from "./test";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "../repository";
 import {generateUUID, getExtension} from "./helper";
@@ -146,18 +147,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             }
         }
 
-        // Finally hide original test input fields:
-        // (better use hide if ???)
-        document.querySelectorAll('[id^="fgroup_id_testoptions_"]').forEach(item => {
-            item.style.display = 'None';
-        });
-        document.querySelectorAll('[id^="fitem_id_testtitle_"]').forEach(item => {
-            item.style.display = 'None';
-        });
-        document.querySelectorAll('[id^="fitem_id_testdescription_"]').forEach(item => {
-            item.style.display = 'None';
-        });
-
         const t1 = performance.now();
         console.log("expanding details took " + (t1 - t0) + " milliseconds.");
     }
@@ -209,6 +198,19 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     }
     function updateEnvironment() {
         console.log('*** updateEnvironment');
+        // Hide original test input fields:
+        // (better use hide if ???)
+        document.querySelectorAll('[id^="fgroup_id_testoptions_"]').forEach(item => {
+            item.style.display = 'None';
+        });
+        document.querySelectorAll('[id^="fitem_id_testtitle_"]').forEach(item => {
+            item.style.display = 'None';
+        });
+        document.querySelectorAll('[id^="fitem_id_testdescription_"]').forEach(item => {
+            item.style.display = 'None';
+        });
+
+
         const questionId = document.querySelector("input[name='id']").value;
         // Since the editor was opened, a new uuid is generated immediately,
         // because changes are not tracked.
@@ -355,8 +357,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         } else {
             console.error('Could not find submit button');
         }
-        console.log('updateEnvironment end');
-
     }
 
     function showTaskeditor() {
@@ -372,15 +372,37 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             return;
         }
 
-        console.log('edit task');
-        downloadTaskFromServer()
-            .then(taskresponse => displayTaskdata(taskresponse))
-            .fail(Notification.exception);
-            // update environment in parallel
-//            .then(() => {
+        let loadingElem = document.createElement('p');
+        Templates.render('core/loading', {})
+            .then((html) => {
+                let head = document.getElementById('fitem_id_editdetails');
+                // Center image
+                loadingElem.align = 'center';
+                loadingElem.innerHTML = html;
+                head.parentNode.insertBefore(loadingElem, head);
+                // Hide task editor
+                document.querySelector('.proforma-taskeditor').style.display = 'None';
+                // loadingIcon.fadeIn(150);
+                return Promise.resolve(0);
+                // return new Promise(resolve => setTimeout(resolve, 105000));
+            })
+            .then(() => {
+                return downloadTaskFromServer();
+            })
+            .then(taskresponse => {
+                return displayTaskdata(taskresponse);
+            })
+            .then(() => {
+                // update environment
                 updateEnvironment();
+                loadingElem.remove();
+                // Show task editor
                 document.querySelector('.proforma-taskeditor').style.display = '';
-//            })
+            })
+            .catch((error) => {
+                loadingElem.remove();
+                Notification.exception
+            });
     }
 
     const questionId = document.querySelector("input[name='id']").value;
@@ -402,7 +424,8 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 // Hide editor
                 document.querySelector('.proforma-taskeditor').style.display = 'none';
                 // Show editor on button click
-                document.getElementById(buttonid).addEventListener('click', function () {
+                document.getElementById(buttonid).addEventListener('click', e => {
+                    document.getElementById(buttonid).disabled = true;
                     showTaskeditor();
                 });
             }

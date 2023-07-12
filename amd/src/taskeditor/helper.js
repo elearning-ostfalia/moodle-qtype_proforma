@@ -142,7 +142,7 @@ export function handleFilenameChangeInTest(newFilename, tempSelElem) {
     function setResponseFilename(newFilename) {
         let msBox = tempSelElem.closest(".xml_model-solution");
         if (msBox && msBox.length > 0) {
-            console.log(msBox);
+            // console.log(msBox);
             // Filename belongs to model solution
             // => get response filename in Moodle form
             let editorfilename = document.getElementById('id_responsefilename');

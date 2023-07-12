@@ -520,8 +520,8 @@ export async function readAndDisplayXml(taskXml) {
     $("#xml_restrict_filename").val(task.filenameRegExpSubmission);
  */
 
-    console.log(task.proglang);
-    console.log(task.proglangVersion);
+    // console.log(task.proglang);
+    // console.log(task.proglangVersion);
     let proglangElement = $("#xml_programming-language");
     proglangElement.val(task.proglang.toLowerCase());
     proglangElement.trigger('change');
