@@ -369,8 +369,6 @@ export class FileNode extends TreeNode {
             this.getFramework().toggleContextmenu("hide");
             let thecontext = this;
             const oldValue = this.name;
-            console.log(oldValue);
-
             function completeRename(editor) {
                 // event.preventDefault();
                 if (oldValue !== editor.value) {
@@ -381,12 +379,14 @@ export class FileNode extends TreeNode {
                 thecontext.element.addEventListener('click', thecontext.boundHandleClick);
             }
 
-            if (this.getFramework().getFocus() === this.element) {
+            if (!this.getFramework().readOnly &&
+                this.getFramework().getFocus() === this.element) {
                 // Start renaming
                 let editor = document.createElement('input');
                 editor.type = 'text';
                 editor.value = this.name;
                 editor.addEventListener("keyup", function(event) {
+                    console.log(event);
                     if (event.keyCode === 13) {
                         // input of enter key
                         event.preventDefault();
@@ -403,10 +403,9 @@ export class FileNode extends TreeNode {
                 editor.addEventListener("blur", function(event) {
                     completeRename(editor);
                 });
-
+                thecontext.element.removeEventListener('click', this.boundHandleClick);
                 thecontext.element.replaceChildren(editor);
                 editor.focus();
-                thecontext.element.removeEventListener('click', this.boundHandleClick);
             } else {
                 this.getFramework().setFocusTo(this.element);
             }
