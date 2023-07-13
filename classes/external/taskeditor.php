@@ -48,61 +48,21 @@ class taskeditor extends \external_api {
             throw new \invalid_parameter_exception('invalid item id');
         }
         $itemid = $params['itemid'];
-        /*
-        $questionid = $params['questionid'];
-        $question = \question_bank::load_question($questionid);
-        if ($question == null) {
-            throw new \invalid_parameter_exception('no question');
-        }
-        if (get_class($question) != 'qtype_proforma_question') {
-            throw new \invalid_parameter_exception('invalid question type');
-        }
-
-        // security checks
-        $contextid = $DB->get_field('question_categories', 'contextid', array('id'=>$question->category));
-        $context = \context::instance_by_id($contextid, IGNORE_MISSING);
-        if (isset($context)) {
-            self::validate_context($context);
-            require_capability('moodle/question:editmine', $context);
-        }
 
 
-        $task = $question->get_task_file();
-        if (!$task instanceof \stored_file) {
-            throw new \coding_exception("task variable has wrong class");
-        }
-        $filename = trim($task->get_filename());
-        $filearea = trim($task->get_filearea());
-        $fileurl = \moodle_url::make_pluginfile_url($contextid, 'qtype_proforma',
-            $filearea, $question->id, '/', $filename);
-        // return '<a href="' . $url->out() . '">' . $filename . '</a> ';
-        */
-        global $DB;
-        $records = $DB->get_records('files', ['itemid' => $itemid]);
+        global $DB, $USER;
+        $usercontext = \context_user::instance($USER->id);
+        $records = $DB->get_records('files', [
+            'itemid' => $itemid, 'filearea' => 'draft', 'component' => 'user',
+                'contextid' => $usercontext->id]
+        );
         if ($records == false || count($records) == 0) {
-            // Scenario with new task (task does not yet exist)
-            /*
-            $fileurl = \moodle_url::make_draftfile_url($itemid, '/', 'nofile');
-            $fileurl = $fileurl->out();
-            // $fileurl = 'http://www.moodle.org/index.html';
-
-            return [
-                'itemid' => $itemid,
-                'fileurl' => $fileurl,
-                'message' => 'ok'
-            ];*/
             throw new \invalid_parameter_exception('invalid task itemid (no draft file)');
         }
 
         $filename = '';
         $filepath = '';
         foreach ($records as $record) {
-            if ($record->filearea != 'draft') {
-                throw new \invalid_parameter_exception('invalid task itemid (no draft file)');
-            }
-            if ($record->component != 'user') {
-                throw new \invalid_parameter_exception('invalid task itemid (no user file)');
-            }
             if ($record->filename == '.') {
                 // skip folder record
                 continue;
@@ -111,9 +71,15 @@ class taskeditor extends \external_api {
             $filename = $record->filename;
         }
 
+        if (empty($filename)) {
+            throw new \invalid_parameter_exception('no valid file found');
+        }
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        if ($ext != 'zip' and $ext != 'xml') {
+            throw new \invalid_parameter_exception('invalid file found: ' + $filename);
+        }
         $fileurl = \moodle_url::make_draftfile_url($itemid, $filepath, $filename);
         $fileurl = $fileurl->out();
-        // $fileurl = 'http://www.moodle.org/index.html';
 
         return [
             'itemid' => $itemid,

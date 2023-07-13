@@ -77,8 +77,11 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
     function downloadTaskFromServer() {
         console.log('download task ' + draftitemid);
+        const t0 = performance.now();
         return downloadTask(draftitemid)
             .then(response => {
+                const t1 = performance.now();
+                console.log("getting task url took " + (t1 - t0) + " milliseconds.");
                 console.log(response.fileurl);
                 draftfilename = decodeURIComponent(response.fileurl.split('/').reverse()[0]);
                 if (!response.fileurl) {

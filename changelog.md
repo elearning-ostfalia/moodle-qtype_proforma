@@ -1,5 +1,6 @@
 ## 3.0.1
 
+* taskeditor: improve performance for startup
 * show loading image while opening taskeditor 
 * hide default button in logmontor while running
 
