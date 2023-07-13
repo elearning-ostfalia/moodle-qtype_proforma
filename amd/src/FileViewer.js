@@ -370,38 +370,43 @@ export class FileNode extends TreeNode {
             let thecontext = this;
             const oldValue = this.name;
             console.log(oldValue);
+
+            function completeRename(editor) {
+                // event.preventDefault();
+                if (oldValue !== editor.value) {
+                    performRename(editor.value, thecontext, oldValue);
+                } else {
+                    thecontext.element.innerHTML = oldValue;
+                }
+                thecontext.element.addEventListener('click', thecontext.boundHandleClick);
+            }
+
             if (this.getFramework().getFocus() === this.element) {
                 // Start renaming
                 let editor = document.createElement('input');
                 editor.type = 'text';
                 editor.value = this.name;
-/*                editor.addEventListener("keyup", function(event) {
+                editor.addEventListener("keyup", function(event) {
                     if (event.keyCode === 13) {
                         // input of enter key
                         event.preventDefault();
-                        if (performRename(editor.value, thecontext)) {
-                            thecontext.element.addEventListener('click', thecontext.boundHandleClick);
+                        completeRename(editor);
+                    } else {
+                        if (event.key === "Escape") {
+                            // input of enter key
+                            editor.value = oldValue;
+                            event.preventDefault();
+                            completeRename(editor);
                         }
                     }
-                });*/
+                });
                 editor.addEventListener("blur", function(event) {
-                    console.log('blur');
-                    // event.preventDefault();
-                    if (oldValue !== editor.value) {
-                        console.log('rename');
-                        performRename(editor.value, thecontext, oldValue);
-                    } else {
-                        console.log('set old name');
-                        console.log(oldValue);
-                        thecontext.element.innerHtml = oldValue;
-                        // editor.remove();
-                    }
-                    thecontext.element.addEventListener('click', thecontext.boundHandleClick);
+                    completeRename(editor);
                 });
 
-                this.element.replaceChildren(editor);
+                thecontext.element.replaceChildren(editor);
                 editor.focus();
-                this.element.removeEventListener('click', this.boundHandleClick);
+                thecontext.element.removeEventListener('click', this.boundHandleClick);
             } else {
                 this.getFramework().setFocusTo(this.element);
             }
