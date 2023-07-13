@@ -337,30 +337,74 @@ export class FileNode extends TreeNode {
                 context.parent.files = context.parent.files.filter(item => item !== context);
             }, this.getPath());
         };
+
+        function performRename(name, thecontext) {
+            if (name !== null && name.length > 0) {
+                if (!thecontext.parent.isNameChildUnique(name)) {
+                    thecontext.alreadyExists(name);
+                    return false;
+                }
+                const oldpath = thecontext.getPath();
+                thecontext.name = name;
+                thecontext.element.innerHTML = name;
+                const newpath = thecontext.getPath();
+                thecontext.mode = FileNode.getEditorModeFromFilename(thecontext.name);
+                thecontext.getFramework().syncer.renameFile(oldpath, newpath);
+                // thecontext.element.tabIndex = 0;
+                // Update name in tab if open
+                thecontext.getFramework().editorstack.update(thecontext);
+                return true;
+            }
+            return false;
+        }
+
         this.boundHandleRename = event => {
             this.getFramework().handleClick(event);
             let thecontext = this;
             modalPrompt('rename', 'enterfilename', thecontext.name, (name) => {
-                if (name !== null && name.length > 0) {
-                    if (!thecontext.parent.isNameChildUnique(name)) {
-                        thecontext.alreadyExists(name);
-                        return;
-                    }
-                    const oldpath = thecontext.getPath();
-                    thecontext.name = name;
-                    thecontext.element.innerHTML = name;
-                    const newpath = thecontext.getPath();
-                    thecontext.mode = FileNode.getEditorModeFromFilename(thecontext.name);
-                    thecontext.getFramework().syncer.renameFile(oldpath, newpath);
-                    // thecontext.element.tabIndex = 0;
-                    // Update name in tab if open
-                    thecontext.getFramework().editorstack.update(thecontext);
-                }
+                performRename(name, thecontext);
             });
         };
         this.boundHandleClick = event => {
             this.getFramework().toggleContextmenu("hide");
-            this.getFramework().setFocusTo(this.element);
+            let thecontext = this;
+            const oldValue = this.name;
+            console.log(oldValue);
+            if (this.getFramework().getFocus() === this.element) {
+                // Start renaming
+                let editor = document.createElement('input');
+                editor.type = 'text';
+                editor.value = this.name;
+/*                editor.addEventListener("keyup", function(event) {
+                    if (event.keyCode === 13) {
+                        // input of enter key
+                        event.preventDefault();
+                        if (performRename(editor.value, thecontext)) {
+                            thecontext.element.addEventListener('click', thecontext.boundHandleClick);
+                        }
+                    }
+                });*/
+                editor.addEventListener("blur", function(event) {
+                    console.log('blur');
+                    // event.preventDefault();
+                    if (oldValue !== editor.value) {
+                        console.log('rename');
+                        performRename(editor.value, thecontext, oldValue);
+                    } else {
+                        console.log('set old name');
+                        console.log(oldValue);
+                        thecontext.element.innerHtml = oldValue;
+                        // editor.remove();
+                    }
+                    thecontext.element.addEventListener('click', thecontext.boundHandleClick);
+                });
+
+                this.element.replaceChildren(editor);
+                editor.focus();
+                this.element.removeEventListener('click', this.boundHandleClick);
+            } else {
+                this.getFramework().setFocusTo(this.element);
+            }
             event.stopPropagation();
             // event.preventDefault();
         };
@@ -1418,6 +1462,9 @@ export class Framework {
     handleClick() {
         this.toggleContextmenu("hide");
         this.setFocusTo(undefined);
+    }
+    getFocus() {
+        return this.focus;
     }
     setFocusTo(element) {
         if (this.focus !== undefined) {
