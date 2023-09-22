@@ -108,6 +108,16 @@ are avaliable.
 ![import](doc/import_en.png "import")
 -->
 
+
+#### Streaming
+
+Some PHP files send event driven texts to the browser (server sent events). In order for this to work properly, adjustments may have to be made to your web server.
+
+E.g. when using Apache and proxy_fcgi add the following lines (or similar) to your php???-fpm.conf file:
+
+    ProxyPassMatch "^/path/to/moodle/question/type/proforma/upload_sse\.php$" "fcgi://localhost" enablereuse=on flushpackets=on
+    ProxyPassMatch "^/path/to/moodle/question/type/proforma/checksolution_ajax\.php$" "fcgi://localhost" enablereuse=on flushpackets=on
+
 ## Settings
 
 
