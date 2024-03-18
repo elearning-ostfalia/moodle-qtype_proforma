@@ -37,7 +37,11 @@ class SimpleXmlWriter extends XMLWriter {
      */
     public function create_attribute($name, $value) {
         $this->startAttribute($name);
-        $this->text($value);
+        if ($value) {
+            $this->text($value);
+        } else {
+            $this->text('');
+        }
         $this->endAttribute();
     }
 

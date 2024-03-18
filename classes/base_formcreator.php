@@ -106,9 +106,11 @@ abstract class base_form_creator {
      */
     public function definition_after_data() {
         $mform = $this->_form;
-        // Encode graing hints.
+        // Encode grading hints.
         $gradinghints = $mform->getElement('gradinghints');
-        $gradinghints->setValue(urlencode($gradinghints->getValue()));
+        if ($gradinghints->getValue()) {
+            $gradinghints->setValue(urlencode($gradinghints->getValue()));
+        }
 
         if (isset($_POST) && isset($_POST['taskeditor'])) {
             $taskeditor = $mform->getElement('taskeditor');

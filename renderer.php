@@ -165,8 +165,10 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         foreach (qtype_proforma::fileareas_for_studentfiles() as $filearea => $value) { // WITHOUT model solution!!!
             $property = $value['dbcolumn'];
-            foreach (explode(',', $question->$property) as $download) {
-                $result = $result . $this->get_download_uri($question, $filearea, $download);
+            if ($question->$property) {
+                foreach (explode(',', $question->$property) as $download) {
+                    $result = $result . $this->get_download_uri($question, $filearea, $download);
+                }
             }
         }
 

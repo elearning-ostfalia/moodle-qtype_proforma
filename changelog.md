@@ -1,3 +1,7 @@
+## 3.0.2
+
+* minor issues
+
 ## 3.0.1
 
 * taskeditor: improve performance for startup
