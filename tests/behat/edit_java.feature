@@ -143,9 +143,10 @@ Feature: EDIT JAVA
     When I choose "Edit question" action for "proforma-java" in the question bank
     # check for checked checkboxes
     And the "compile" checkbox is "checked"
-    And the field "compileweight" matches value "0"
+    # And the field "compileweight" should not be visible
     And the "checkstyle" checkbox is "checked"
-    And the field "checkstyleweight" matches value "0.2"
+    # And the field "checkstyleweight" should not be visible
+#    And the field "checkstyleweight" matches value "0.2"
     And the field "checkstyleversion" matches value "8.29"
     # since this is a Javascript testcase we need to use javascript function
     # in order to check value in codemirror

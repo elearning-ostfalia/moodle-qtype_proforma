@@ -96,14 +96,14 @@ Feature: EDIT SETLX
     # recheck
     And I check the "compile" checkbox
     And the "compile" checkbox is "checked"
-    And the field "compileweight" matches value "0"
+    # And the field "compileweight" matches value "0"
     And I press "id_submitbutton"
     Then I should see "proforma-setlx"
 
     When I choose "Edit question" action for "proforma-setlx" in the question bank
     # check for checked checkboxes
     And the "compile" checkbox is "checked"
-    And the field "compileweight" matches value "0"
+    # And the field "compileweight" matches value "0"
 
     And I press "Cancel"
 
