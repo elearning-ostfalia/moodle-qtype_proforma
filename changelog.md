@@ -1,6 +1,7 @@
 ## 3.0.2
 
-* minor issues
+* explorer view: adapt to changes in Moodle UI (check and finish attempt)
+* explorer: prevent racing on new file
 
 ## 3.0.1
 
