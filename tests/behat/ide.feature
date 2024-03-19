@@ -51,6 +51,9 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     # Enter text in MyString.java
     # And I doubleclick on "//*[text() = 'MyString.java']" "xpath_element"
     And I set the explorer editor text to "hallo MyString"
+    # wait until autosave passes
+    # And I wait "30" seconds
+    # THIS MUST WORK WITHOUT WAITING!!!
     # Submit
     And I press "Check"
     # Response does not matter (grade ris not configured)
