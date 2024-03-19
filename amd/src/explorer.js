@@ -60,7 +60,7 @@ function _start(nodename, options) {
 
     console.log('change submit function');
     let parent = explorer.closest('.que');
-    let submitbutton = parent.querySelector('input[type="submit"]');
+    let submitbutton = parent.querySelector('[type="submit"]');
     if (submitbutton !== null) {
         // In student review there will be no button!
         submitbutton.onclick = (event) => {
