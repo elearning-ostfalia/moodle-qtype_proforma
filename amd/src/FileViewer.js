@@ -128,7 +128,7 @@ function modalPrompt(titleId, labelId, defaultValue, callback) {
             modal.setTitle(strings[0]);
             modal.setSaveButtonText('Ok');
             modal.setBody(strings[1] +
-                '<input type="text" name="promptname" value="' + defaultValue + '" size="63"></input>');
+                '<input type="text" name="promptname" value="' + defaultValue + '" size="40"></input>');
             modal.getRoot().on(ModalEvents.save, () => {
                 let result = document.querySelector("input[name='promptname']").value;
                 // console.log(result);
