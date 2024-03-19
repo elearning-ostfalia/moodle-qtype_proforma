@@ -21,7 +21,7 @@ Feature: IMPORT (Moodle-XML format)
       | taskmaxbytes        | 10485760          | qtype_proforma |
 
   @javascript @_file_upload
-  Scenario: import Java question.
+  Scenario: import Java question from xml file.
     When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
     # When I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_xml" to "1"
@@ -34,11 +34,14 @@ Feature: IMPORT (Moodle-XML format)
     And I should see "palindrom"
 
     When I choose "Edit question" action for "palindrom" in the question bank
+    # Moodle seems to remove unneeded <br> tags from general feedback.
+    # So this is removed from xml file, too in order to have compatible
+    # tests across the different moodle versions
     Then the following fields match these values:
       | Question name            | palindrom              |
       | Question text            | write a function that checks if a given string is a palindrom |
       | Default mark             | 1                              |
-      | General feedback         | <p>general feedback<br></p>       |
+      | General feedback         | <p>general feedback</p>       |
       | Response format          | editor                         |
       | Input box size           | 15 lines                       |
       | Response filename        | MyString.java                   |
