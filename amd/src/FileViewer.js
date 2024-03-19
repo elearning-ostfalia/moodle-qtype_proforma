@@ -459,10 +459,12 @@ export class FolderNode extends TreeNode {
                     thecontext.appendFile(node);
                     node.displayInTreeview(thecontext.element.querySelector('[role="group"]'));
                     thecontext.expand(true);
-                    thecontext.getFramework().syncer.newfile(node.getPath());
-                    // Open editor with new empty file for input
-                    thecontext.getFramework().addEditor(node);
-                    thecontext.getFramework().setFocusTo(node.element);
+                    thecontext.getFramework().syncer.newfile(node.getPath())
+                        .then(() => {
+                            // Open editor with new empty file for input
+                            thecontext.getFramework().addEditor(node);
+                            thecontext.getFramework().setFocusTo(node.element);
+                        });
                 }
             });
         };

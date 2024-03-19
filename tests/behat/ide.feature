@@ -80,6 +80,10 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     And I should see "MyString.java"
     And I should not see "New file"
     And I should not see "Filename"
+    # There should not a text inside the editor
+    # (if there is text then it is the whole side as error)    
+    And I should not see "Error | Acceptance test site"
+
     # Create new file Dummy.java with text 'hallo Dummy'
     And I click on "New file..." in "Solution" contextmenu
     And I should see "New file"
