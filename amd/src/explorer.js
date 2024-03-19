@@ -45,6 +45,26 @@ function _start(nodename, options) {
         console.log('create readwrite framework');
         let syncer = new MoodleSyncer(options);
         framework.init(explorer, syncer, false, options);
+
+        console.log('change submit function for check button');
+        let parent = explorer.closest('.que');
+        let submitbutton = parent.querySelector('[type="submit"]');
+        if (submitbutton !== null) {
+            // In student review there will be no button!
+            submitbutton.onclick = (event) => {
+                console.log('save before check');
+                // alert('button submit');
+                framework.save(); // synchronous action!
+            };
+        }
+
+        console.log('change submit function for finish attempt');
+        let buttons = document.querySelectorAll('.submitbtns');
+        buttons.forEach(button => button.onclick = (event) => {
+            console.log('save before finish');
+            // alert('button finish');
+            framework.save(); // synchronous action!
+        });
     }
 
     // Change submit function: Save before submit!
@@ -58,17 +78,7 @@ function _start(nodename, options) {
         // framework.save(); // synchronous action!
     }; */
 
-    console.log('change submit function');
-    let parent = explorer.closest('.que');
-    let submitbutton = parent.querySelector('[type="submit"]');
-    if (submitbutton !== null) {
-        // In student review there will be no button!
-        submitbutton.onclick = (event) => {
-            console.log('save before submit');
-            // alert('button submit');
-            framework.save(); // synchronous action!
-        };
-    }
+
 
     if (!options['readonly']) {
         // Mark form as dirty as there is no other change detection...
