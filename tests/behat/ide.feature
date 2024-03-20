@@ -23,8 +23,6 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     And the following "activities" exist:
       | activity | name   | intro              | course | idnumber | preferredbehaviour | canredoquestions |
       | quiz     | Quiz 1 | Quiz 1 description | C1     | quiz1    | immediatefeedback  | 1                |
-    And quiz "Quiz 1" contains the following questions:
-      | proforma-001 | 1 |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
@@ -34,6 +32,9 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
   @javascript @_file_upload @_switch_window
   Scenario: Explorer/Student Submit file, finish and return to attempt
 ##########################################################################
+    Given quiz "Quiz 1" contains the following questions:
+      | proforma-001 | 1 |
+
     # student activity
     When I am on the "Quiz 1" "quiz activity" page logged in as student1
     And I press "Attempt quiz"
@@ -67,6 +68,9 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
   @javascript @_file_upload @_switch_window
   Scenario: Explorer/Student Finish and return to attempt with two files
 ##########################################################################
+    Given quiz "Quiz 1" contains the following questions:
+      | proforma-001 | 1 |
+
     # student activity
     When I am on the "Quiz 1" "quiz activity" page logged in as student1
     And I press "Attempt quiz"
@@ -113,13 +117,18 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
-  Scenario: Run test as a student TODO
+  Scenario: Run explorer test as a student
 ##########################################################################
     # teacher creates question in quiz
-    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
-    # And I log in as "teacher1"
-    # And I am on "Course 1" course homepage with editing mode on
-    When I press "Create a new question ..."
+    # todo: put question into xml file and import
+
+    Given I am on the "Quiz 1" "mod_quiz > Edit" page logged in as teacher1
+    And the following config values are set as admin:
+      | graderuri_host | http://praktomat:8010  | qtype_proforma |
+
+    And I open the "last" add to quiz menu
+    And I follow "a new question"
+
     And I set the field "item_qtype_proforma" to "1"
     And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
     And I set the field "item_java" to "1"
@@ -162,52 +171,41 @@ public class PalindromTest {
 	}
 }
 """
-
     And I press "id_submitbutton"
-    And I am on the "Quiz" "mod_quiz > edit" page
-    # Add Question Essay 01 from question bank.
-    And I open the "Page 1" add to quiz menu
-    And I pause
-    And I follow "from question bank"
-    And I click on "Add to quiz" "link" in the "Java question" "table_row"
-    And I should see "Java question" on quiz page "1"
-    And I pause
-    And I log out
+#    And I log out
 
     # student activity
     When I am on the "Quiz 1" "quiz activity" page logged in as student1
-    And I pause
     # And I press "Attempt quiz now"
     And I press "Attempt quiz"
     And I should see "Solution"
-#    And I pause
-    # The following code does not work!!!
-    And I click on "New empty file..." in "Solution" contextmenu
-    And I should see "New filename:"
-#    And "New filename" "dialogue" should be visible
-    # And I click on "//*[text() = 'Solution']" "xpath_element"
-#    And I click on "//*[normalize-space() = 'Solution']" "xpath_element"
-#    And I click on "//span[contains(@class, 'name')]" "xpath_element"
-#    And I click on ".name" "css_element"
 
-#    And I pause
+    And I click on "New file..." in "Solution" contextmenu
+    And I set the field with xpath "//input[@name='promptname']" to "MyString.java"
+    And I press "Ok"
+    And I set the explorer editor text to multiline:
+        """
+    public class MyString {
+        static public Boolean isPalindrom(String aString) {
+            String reverse = new StringBuilder(aString).reverse().toString();
+            return (aString.equalsIgnoreCase(reverse));
+        }
+    }
+    """
 
+    # check solution
+    When I press "Check"
+    And I wait "2" seconds
+    Then I should see "Junit 1 (100/100"
+    And I should see "Correct"
+    And I should see "Marks for this submission: 1.00/1.00."
+
+    # finish attempt
     And I press "Finish attempt"
     And I press "Submit all and finish"
-    And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
-    And I should see "5.00 out of 10.00"
-    And I log out
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I delete "Quiz 1" activity
-    And I run all adhoc tasks
-    And I navigate to "Recycle bin" in current page administration
-    And I should see "Quiz 1"
-    And I click on "Restore" "link" in the "region-main" "region"
-    And I log out
-    And I log in as "student1"
-    And I am on "Course 1" course homepage
-    When I navigate to "User report" in the course gradebook
-    Then "Quiz 1" row "Grade" column of "user-grade" table should contain "5"
-    And "Quiz 1" row "Percentage" column of "user-grade" table should contain "50"
+    And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
+
+    # check that code is visible
+    And I should see "MyString.java"
+    And I should see "isPalindrom(String aString)"
 

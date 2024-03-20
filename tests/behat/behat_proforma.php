@@ -431,6 +431,26 @@ class behat_proforma extends behat_base {
     }
 
     /**
+     * Set editor text (in Codemirror) with javascript in explorer *Javascript* testcases.
+     *
+     * @When /^I set the explorer editor text to multiline:$/
+     */
+    public function set_editor_text_to_multiline(PyStringNode $value) {
+        $search = array("\r", "\n");
+        $value = str_replace($search, "\\n", $value);
+        $value = str_replace("\"", "\\\"", $value);
+
+        $command = 'return (function() { 
+            const editor = document.querySelector(".editor");
+            let cm = editor.parentNode.querySelector(".CodeMirror:not([style*=\"display: none\"])");
+            cm.CodeMirror.setValue("'. $value. '"); 
+        })();';
+        // fwrite(STDOUT, $command);
+        $output = $this->getSession()->getDriver()->evaluateScript($command);
+        // fwrite(STDOUT, $output);
+    }
+
+    /**
      * Set codemirror text with javascript in *Javascript* testcases.
      *
      * @When /^I set the codemirror "(?P<name_string>(?:[^"]|\\")*)" to multiline:$/
