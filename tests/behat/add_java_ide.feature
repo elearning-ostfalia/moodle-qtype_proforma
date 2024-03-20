@@ -32,7 +32,7 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
 ##########################################################################
     Given I am on the "Quiz 1" "quiz activity" page logged in as teacher1
     And I navigate to "Question bank" in current page administration
-    And I set the field "Select a category" to "Default for Quiz 1"
+    # And I set the field "Select a category" to "Default for Quiz 1"
     And I press "Create a new question ..."
     And I set the field "item_qtype_proforma" to "1"
     And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
