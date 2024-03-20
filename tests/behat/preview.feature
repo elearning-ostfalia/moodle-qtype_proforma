@@ -9,6 +9,8 @@ Feature: PREVIEW
     Given the following "users" exist:
       | username | firstname | lastname | email               |
       | teacher1 | T1        | Teacher1 | teacher1@moodle.com |
+    And the following config values are set as admin:
+      | graderuri_host | http://praktomat:8010  | qtype_proforma |
     And the following "courses" exist:
       | fullname | shortname | category |
       | Course 1 | C1        | 0        |
@@ -69,7 +71,7 @@ Feature: PREVIEW
     And I switch to the main window
 
   @javascript @_switch_window
-  Scenario: Preview a ProFormA question with explorer TODO
+  Scenario: Preview a ProFormA question with explorer
     When I am on the "proforma-004" "core_question > preview" page logged in as teacher1
     And I expand all fieldsets
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
@@ -89,13 +91,18 @@ Feature: PREVIEW
     And I set the field with xpath "//input[@name='promptname']" to "MyString.java"
     And I press "Ok"
     And I should see "MyString.java"
+    And I set the explorer editor text to multiline:
+        """
+    public class MyString {
+        static public Boolean isPalindrom(String aString) {
+            String reverse = new StringBuilder(aString).reverse().toString();
+            return (aString.equalsIgnoreCase(reverse));
+        }
+    }
+    """
 
-    And I should see "TODO copy from ide student..."
-
-    # text in response template
-#    And I should not see "#code snippet for python"
-    # check download links
-#    And I should not see "codesnippet.py"
-#    And I should not see "template.txt"
-
-#    And I switch to the main window
+    When I press "Check"
+    And I wait "2" seconds
+    # no actual grading as the question is not a valid question (todo)
+    Then I should see "Error in grading process"
+    And I should see "Praktomat: Version"
