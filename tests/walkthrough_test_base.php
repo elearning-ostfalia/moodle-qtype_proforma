@@ -551,7 +551,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         $doc = new DOMDocument();
         $doc->loadHTML($this->currentoutput, LIBXML_NOERROR);
         $options = array();
-        $options['tag'] = 'input';
+        // $options['tag'] = 'button';
         $options['class'] = 'submit';
         // $options['attributes'] = 'disabled';
         $result = $this->findNodes($doc, $options);
@@ -559,6 +559,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
             $this->assertFalse($result);
             return;
         }
+        $this->assertNotFalse($result);
         $this->assertEquals(1, count($result));
         $element = $result[0];
         $this->assertNotEquals(null, $element);
