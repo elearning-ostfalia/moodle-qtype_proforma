@@ -59,6 +59,14 @@ abstract class base_form_creator {
     protected $_taskhandler = null;
 
     /**
+     * flag indicates if a new question is to be created. For new questions
+     * an invalid chooser option is preselected.
+     * For existing questions the old value is preselected.
+     * @var type
+     */
+    protected $_newquestion = false;
+
+    /**
      * response options
      */
     protected $_responseformats = null;

@@ -37,15 +37,6 @@ class java_form_creator extends base_form_creator {
     const CHOOSE_OPTION = '0';
 
     /**
-     * flag indicates if a new question is to be created. For new questions
-     * an invalid cohooser option is preselected.
-     * For existing questions the old value is preselected.
-     * @var type
-     */
-    protected $_newquestion = false;
-
-
-    /**
      * java_form_creator constructor.
      * @param type $form form instance OR formdata
      * @param bool $newquestion new question indicator
