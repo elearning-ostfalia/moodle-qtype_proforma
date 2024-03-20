@@ -183,6 +183,7 @@ public class PalindromTest {
     And I click on "New file..." in "Solution" contextmenu
     And I set the field with xpath "//input[@name='promptname']" to "MyString.java"
     And I press "Ok"
+    And I wait "2" seconds
     And I set the explorer editor text to multiline:
         """
     public class MyString {
