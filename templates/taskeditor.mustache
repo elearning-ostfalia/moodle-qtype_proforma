@@ -93,19 +93,25 @@
     <div id="check-feedback-id" class="outcome" style='display: none'>Feedback</div>
 </div>
 
-<button id="check-modelsolution-{{uniqid}}" class="btn btn-secondary" title="{{#str}} checkmodelsol_help, qtype_proforma {{/str}}">
-    {{# pix }} i/grade_correct, core, {{/ pix }}/{{# pix }} i/grade_incorrect, core, {{/ pix }}{{#str}} checkmodelsol, qtype_proforma {{/str}}
-</button>
-<button id="upload_task-{{uniqid}}" class="btn btn-secondary">
-    {{# pix }} i/import, core, {{/ pix }}{{#str}} upload, qtype_proforma {{/str}}
-</button>
-<button id="download_task-{{uniqid}}" class="btn btn-secondary">
-    {{# pix }} i/export, core, {{/ pix }}{{#str}} downloadtask, qtype_proforma {{/str}}
-</button>
-<button id="download-modelsol-{{uniqid}}" class="btn btn-secondary">
-    {{# pix }} i/export, core, {{/ pix }}{{#str}} downloadmodelsolution, qtype_proforma {{/str}}
-</button>
-<!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary">Save task</button> -->
+<div class="taskeditor-buttons">
+    <button id="check-modelsolution-{{uniqid}}" class="btn btn-secondary" title="{{#str}} checkmodelsol_help, qtype_proforma {{/str}}">
+        {{# pix }} i/grade_correct, core, {{/ pix }}/{{# pix }} i/grade_incorrect, core, {{/ pix }}{{#str}} checkmodelsol, qtype_proforma {{/str}}
+    </button>
+    <button id="upload_task-{{uniqid}}" class="btn btn-secondary">
+        {{# pix }} i/import, core, {{/ pix }}{{#str}} upload, qtype_proforma {{/str}}
+    </button>
+    <button id="download_task-{{uniqid}}" class="btn btn-secondary">
+        {{# pix }} i/export, core, {{/ pix }}{{#str}} downloadtask, qtype_proforma {{/str}}
+    </button>
+    <button id="download-modelsol-{{uniqid}}" class="btn btn-secondary">
+        {{# pix }} i/export, core, {{/ pix }}{{#str}} downloadmodelsolution, qtype_proforma {{/str}}
+    </button>
+
+    <!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary">Save task</button> -->
+
+    <button id="toggle-fullscreen-{{uniqid}}" class="btn btn-secondary fullscreen" style="float:right; ">{{# pix }}e/fullscreen,core,{{/ pix }}</button>
+</div>
+
 </div>
 
 
@@ -115,6 +121,7 @@
         editor.checkModelsolution("check-modelsolution-{{uniqid}}", "check-feedback-id");
         editor.downloadModelsolution("download-modelsol-{{uniqid}}");
         editor.uploadTaskToGrader("upload_task-{{uniqid}}");
+        editor.toggleFullscreen("toggle-fullscreen-{{uniqid}}");
     });
 {{/js}}
 

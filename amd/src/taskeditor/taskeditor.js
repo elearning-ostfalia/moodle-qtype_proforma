@@ -700,6 +700,23 @@ export const downloadModelsolution = (buttonid) => {
     }
 }
 
+export const toggleFullscreen = (buttonid) => {
+    let button = document.getElementById(buttonid);
+
+    button.onclick = function (e) {
+        e.preventDefault();
+        if (document.fullscreenElement) {
+            // If there is a fullscreen element, exit full screen.
+            document.exitFullscreen();
+            return;
+        }
+        // Bei dieser Lösung funktioniert das Scrollen nicht!!
+        // Daher reicht das noch nicht aus!
+        document.querySelector('.proforma-taskeditor').requestFullscreen();
+    }
+}
+
+
 function createGradingHints(temporary=false) {
     let doc = document.implementation.createDocument(null, null, null);
     let gh = doc.createElement("grading-hints");
