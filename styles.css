@@ -77,6 +77,8 @@ body .proforma-taskeditor:fullscreen {
     overflow: auto;
     /* set background colour otherwise it will be set to dark in dark mode */
     background-color: white;
+    margin: 2rem;
+    padding: 3rem;
 }
 
 /*
