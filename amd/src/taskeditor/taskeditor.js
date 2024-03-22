@@ -705,14 +705,17 @@ export const toggleFullscreen = (buttonid) => {
 
     button.onclick = function (e) {
         e.preventDefault();
+        let editor = document.querySelector('.proforma-taskeditor');
         if (document.fullscreenElement) {
             // If there is a fullscreen element, exit full screen.
+            // editor.querySelector('.nav-tabs').classList.remove('fullscreen');
             document.exitFullscreen();
             return;
         }
-        // Bei dieser Lösung funktioniert das Scrollen nicht!!
-        // Daher reicht das noch nicht aus!
-        document.querySelector('.proforma-taskeditor').requestFullscreen();
+        editor.requestFullscreen()
+/*            .then(() =>
+                editor.querySelector('.nav-tabs').classList.add('fullscreen')
+            ) */
     }
 }
 
