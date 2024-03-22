@@ -1,3 +1,7 @@
+## 3.1.0
+
+* taskeditor: provide fullscreen mode 
+
 ## 3.0.2
 
 * explorer view: adapt to changes in Moodle UI (check and finish attempt)
