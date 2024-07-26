@@ -632,6 +632,13 @@ Prüfung beendet.
             array(null, ['Response format error: no test result available', 'plaintext']),
     );
 
+    private function setStudentUser() {
+        $generator = $this->getDataGenerator();
+        $user = $generator->create_user();
+
+        self::setUser($user);
+    }
+
     private function moodle_3_11_converter($text) {
         global $CFG;
         $moodleversion = $CFG->version;
@@ -891,6 +898,7 @@ Prüfung beendet.
             $this->render_collapsible_region_score(1, 0.0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1).
             $this->render_collapsible_region_score(2, 0.0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2, true);
 
+        $this->setStudentUser();
         $this->assert_same_feedback(self::RESPONSE_1, '', null, $expected);
     }
 
@@ -906,7 +914,7 @@ Prüfung beendet.
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1).
                 $this->render_collapsible_region_subtests(2, 0.5, null, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1);
-
+        $this->setStudentUser();
         $this->assert_same_feedback(self::RESPONSE_2, '', null, $expected);
     }
 
@@ -918,7 +926,7 @@ Prüfung beendet.
         $expected =
                 $this->render_collapsible_region_score(1, 1, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_3_1).
                 $this->render_collapsible_region_score(2, 0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_3_2);
-
+        $this->setStudentUser();
         $this->assert_same_feedback(self::RESPONSE_3, '', null, $expected);
     }
 
@@ -934,7 +942,7 @@ Prüfung beendet.
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0.0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1).
                 $this->render_collapsible_region_score(2, 0.0, 0.6, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2, true);
-
+        $this->setStudentUser();
         $this->assert_same_feedback(self::RESPONSE_1, '', self::GRADINGHINTS_1, $expected);
     }
 
@@ -951,7 +959,7 @@ Prüfung beendet.
                 $this->render_collapsible_region_score(1, 0, 0.4, 'TEST 1', 'DESCRIPTION 1', self::LOGS_2_1).
                 $this->render_collapsible_region_subtests(2, 0.45, 0.6, 'TEST 2', 'DESCRIPTION 2', self::SUBTEST_2_1);
 
-        // $this->setAdminUser();
+        $this->setStudentUser();
         $this->assert_same_feedback(self::RESPONSE_2, '', self::GRADINGHINTS_1, $expected);
     }
 
