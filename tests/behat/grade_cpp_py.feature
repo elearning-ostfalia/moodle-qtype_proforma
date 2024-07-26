@@ -58,7 +58,7 @@ Feature: GRADE C/C++/Python
     # When I choose "Preview" action for "C question" in the question bank
     # And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
     And I set the response to
     """
 #include <stdio.h>
@@ -170,7 +170,7 @@ class PalindromeTest(unittest.TestCase):
     # When I choose "Preview" action for "Python Question with 2 tests" in the question bank
     # And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
     And I set the response to
 """
 # coding=utf-8
@@ -253,7 +253,7 @@ def is_palindrome(text):
     # When I choose "Preview" action for "C++ question" in the question bank
     # And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
     And I set the response to
     """
     #include <math.h>

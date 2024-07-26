@@ -32,7 +32,7 @@ Feature: PREVIEW
     And I should see "//text in responsetemplate"
     And I expand all fieldsets
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
     And I should see "Please code the reverse string function not using a library function.(äöüß)"
     # text in response template
     And I should see "//text in responsetemplate"
@@ -53,7 +53,7 @@ Feature: PREVIEW
     When I am on the "proforma-003" "core_question > preview" page logged in as teacher1
     And I expand all fieldsets
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
 
     And I should see "Please code the reverse string function not using a library function.(äöüß)"
     # text in response template
@@ -75,7 +75,7 @@ Feature: PREVIEW
     When I am on the "proforma-004" "core_question > preview" page logged in as teacher1
     And I expand all fieldsets
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
 
     And I should see "Please code the reverse string function not using a library function.(äöüß)"
 

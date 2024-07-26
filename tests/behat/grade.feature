@@ -145,7 +145,7 @@ public class PalindromTest {
     When I am on the "Java question" "core_question > preview" page
     And I expand all fieldsets
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
     And I set the response to
     """
     public class MyString {
@@ -183,7 +183,7 @@ public class PalindromTest {
     ##When I choose "Preview" action for "Palindrom mit Checkstyle Vorne V2" in the question bank
     ##And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
     And I set the response to
     """
     public class MyString {
@@ -239,7 +239,7 @@ public class PalindromTest {
     # When I choose "Preview" action for "setlx question" in the question bank
     # And I switch to "questionpreview" window
     And I set the field "How questions behave" to "Adaptive mode (no penalties)"
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
     And I set the response to
     """
 operation := procedure(a,b){
