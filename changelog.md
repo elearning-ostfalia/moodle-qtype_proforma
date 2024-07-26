@@ -1,6 +1,7 @@
 ## 3.1.0
 
 * taskeditor: provide fullscreen mode 
+* improve compatibility with old moodle XML for import
 
 ## 3.0.2
 
