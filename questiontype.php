@@ -527,7 +527,7 @@ class qtype_proforma extends question_type {
         if (empty($qo->inlinemessages)) {
             $qo->inlinemessages = 0;
         }
-        if (empty($qo->vcssystem)) {
+        if ($qo->responseformat == self::RESPONSE_VERSION_CONTROL and empty($qo->vcssystem)) {
             $qo->vcssystem = qtype_proforma::VCS_SVN;
         }
         // todo: restore $comment['itemid']
