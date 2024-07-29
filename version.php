@@ -26,10 +26,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_proforma';
-$plugin->version   = 2024072600;
+$plugin->version   = 2024072900;
 
 $plugin->requires  = 2018051700;
-$plugin->release = '3.1.0';
+$plugin->release = '3.1.1';
 
 $plugin->maturity  = MATURITY_STABLE;
 

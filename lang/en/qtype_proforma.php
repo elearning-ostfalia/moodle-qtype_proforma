@@ -70,10 +70,10 @@ $string['modelsolution_help'] = 'An exemplary solution for this question. It is 
 $string['msfilename'] = 'File';
 
 $string['taskpath'] = 'Task path';
-$string['taskpath_hint'] = $string['taskpath'];
+$string['taskpath_hint'] = 'Task path';
 $string['taskpath_hint_help'] = 'location of task zip file (in repository)';
 $string['repository'] = 'Repository';
-$string['repository_hint'] = $string['repository'];
+$string['repository_hint'] = 'Repository';
 $string['repository_hint_help'] = 'URI of ProFormA questions repository';
 
 $string['repositoryhost'] = 'Host of repository';
@@ -82,29 +82,29 @@ $string['repositorypath'] = 'Path in repository';
 $string['repositorypath_desc'] = 'Path of ProFormA task in Repository';
 
 $string['responsefilename'] = 'Response filename';
-$string['filename_hint'] = $string['responsefilename'];
+$string['filename_hint'] = 'Response filename';
 $string['filename_hint_help'] = 'filename used for submitted source code (if necessary consider package name)';
 
 $string['taskfilename'] = 'ProFormA task file';
-$string['taskfilename_hint'] = $string['taskfilename'];
+$string['taskfilename_hint'] = 'ProFormA task file';
 $string['taskfilename_hint_help'] = 'Corresponding ProFormA task file';
-$string['createdtask_hint'] = $string['taskfilename'];
+$string['createdtask_hint'] = 'ProFormA task file';
 $string['createdtask_hint_help'] = 'Corresponding ProFormA task file. Question must be saved in order to generate ProFormA task file!';
-$string['task_hint'] = $string['taskfilename'];
-$string['task_hint_help'] = 'Corresponding ProFormA task file. '
-. 'In order to update this file please consider that the updated file must be \'compatible\' with the old one. '
-. 'That means: <br>'
-. '- same programming language<br>'
-. '- same number of tests<br>'
-. '- same test types in same order';
+$string['task_hint'] = 'ProFormA task file';
+$string['task_hint_help'] = 'Corresponding ProFormA task file.<br> 
+In order to update this file please consider that the updated file must be <it>compatible</it> with the old one.<br>
+That means: <br>
+- same programming language<br>
+- same number of tests<br>
+- same test types in same order';
 
 
 $string['highlight'] = 'Syntax highlighting';
-$string['highlight_hint'] = $string['highlight'];
+$string['highlight_hint'] = 'Syntax highlighting';
 $string['highlight_hint_help'] = 'The programming language is used to set syntax highlighting in all editors associated with this question';
 
 $string['proglang'] = 'Programming language';
-$string['proglang_hint'] = $string['proglang'];
+$string['proglang_hint'] = 'Programming language';
 $string['proglang_hint_help'] = 'Programming language of task. Currently only Java questions can be created.';
 $string['other'] = 'other';
 
@@ -112,7 +112,7 @@ $string['version'] = 'Version';
 
 
 $string['proglangversion'] = 'Programming language version';
-$string['proglangversion_hint'] = $string['proglangversion'];
+$string['proglangversion_hint'] = 'Programming language version';
 $string['proglangversion_hint_help'] = 'Version der Programmiersprache.';
 
 $string['compile'] = 'Compilation';
@@ -208,8 +208,8 @@ $string['feedbackoptions_heading'] = 'Feedback Options';
 
 $string['collapse'] = 'Initially collapse/expand';
 $string['admincollapse'] = 'Feedback collapse/expand';
-$string['collapse_help'] = 'Some test feedback will be presented as collapsible regions. '
-. 'This setting defines the initial state of this region, i.e. if it is visible (expanded) or not (collapsed).';
+$string['collapse_help'] = 'Some test feedback will be presented as collapsible regions.<br>
+This setting defines the initial state of this region, i.e. if it is visible (expanded) or not (collapsed).';
 $string['always_collapse'] = 'collapse';
 $string['always_expand'] = 'expand';
 $string['expand_student'] = 'expand for students';
@@ -262,11 +262,11 @@ $string['testinternalerror'] = 'An internal error occured during test execution:
 $string['usecodemirror'] = 'Use CodeMirror as source code editor. ';
 $string['usecodemirror_desc'] = 'For student response and for input of model solution and template. ';
 $string['uuid'] = 'UUID';
-$string['uuid_hint'] = $string['uuid'];
+$string['uuid_hint'] = 'UUID';
 $string['uuid_hint_help'] = 'universal unique identifier of ProFormA task file';
 $string['configmaxbytes'] = 'Maximum sum of all uploaded files';
 $string['maxbytes'] = 'Max. response upload size';
-$string['maximumsubmissionsize'] = $string['maxbytes'];
+$string['maximumsubmissionsize'] = 'Max. response upload size';
 $string['maximumsubmissionsize_help'] = 'Files uploaded by students may be up to this size.';
 $string['taskmaxbytes'] = 'Maximum task size';
 $string['maximumtasksize_help'] = 'Maximum size of a ProForma task';
@@ -275,13 +275,13 @@ $string['acceptedfiletypes'] = 'Accepted file types';
 $string['acceptedfiletypes_help'] = 'Accepted file types can be restricted by entering a semicolon-separated list of mimetypes, for example \'text/plain; application/java-archive; application/zip; application/xml\'. You may also limit to extensions by including the dot, for example \'.java; .jar\' If the field is left empty, then all file types are allowed..';
 $string['nonexistentfiletypes'] = 'The following file types were not recognised: {$a}';
 $string['templates'] = 'Additional template files';
-$string['templates_hint'] = $string['templates'];
+$string['templates_hint'] = 'Additional template files';
 $string['templates_hint_help'] = 'Filenames of additional template files (normally there is only one template file)';
 $string['downloads'] = 'Downloadable files';
-$string['downloads_hint'] = $string['downloads'];
+$string['downloads_hint'] = 'Downloadable files';
 $string['downloads_hint_help'] = 'Files needed to solve the task (can be downloaded by student)';
 $string['modelsolfiles'] = 'Model solution files';
-$string['modelsolfiles_hint'] = $string['modelsolfiles'];
+$string['modelsolfiles_hint'] = 'Model solution files';
 $string['modelsolfiles_hint_help'] = 'Model solution files';
 
 $string['attachments'] = 'Downloads:';

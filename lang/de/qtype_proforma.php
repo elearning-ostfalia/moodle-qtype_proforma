@@ -65,8 +65,8 @@ $string['feedbackoptions_heading'] = 'Feedback';
 
 $string['collapse'] = 'Initial Ein-/Ausklappen';
 $string['admincollapse'] = 'Feedback initial ein-/ausklappen';
-$string['collapse_help'] = 'Das Feedback einiger Tests wird als sog. "Collapsible Region" dargestellt. '
-. 'Diese Einstellung gibt an, ob die Region initial eingeklappt (collapsed) oder ausgeklappt (expanded) ist.';
+$string['collapse_help'] = 'Das Feedback einiger Tests wird als sog. "Collapsible Region" dargestellt.<br>
+Diese Einstellung gibt an, ob die Region initial eingeklappt (collapsed) oder ausgeklappt (expanded) ist.';
 $string['always_collapse'] = 'einklappen';
 $string['always_expand'] = 'ausklappen';
 $string['expand_student'] = 'für Studierende ausklappen';
@@ -119,12 +119,12 @@ $string['taskfilename_hint'] = 'ProFormA-Aufgabendatei';
 $string['taskfilename_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei';
 $string['createdtask_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei. Achtung: Aufgabe muss erst gespeichert werden, damit die entsprechende ProFormA-Datei erzeugt wird.';
 $string['task_hint'] = 'ProFormA-Aufgabendatei';
-$string['task_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei. '
-. 'Wenn diese ersetzt werden soll, bitte beachten, dass die neue Datei \'kompatibel\' zur alten ist. '
-. 'Das bedeutet: <br>'
-. '- gleiche Programmiersprache<br>'
-. '- gleiche Anzahl Tests<br>'
-. '- gleiche Testtypen in gleicher Reihenfolge';
+$string['task_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei.<br>
+Wenn diese ersetzt werden soll, bitte beachten, dass die neue Datei <it>kompatibel</it> zur alten ist.<br>
+Das bedeutet: <br>
+- gleiche Programmiersprache<br>
+- gleiche Anzahl Tests<br>
+- gleiche Testtypen in gleicher Reihenfolge';
 
 $string['compile'] = 'Compilation';
 $string['syntaxcheck'] = 'Syntax Check';
@@ -244,7 +244,7 @@ $string['usecodemirror_desc'] = 'CodeMirror kann im Editor (studentische Sicht) 
 $string['uuid_hint_help'] = 'UUID (universal unique identifier) der ProFormA-Aufgabendatei';
 $string['configmaxbytes'] = 'maximale Summe der Dateigrößen der studentischen Einreichung';
 $string['maxbytes'] = 'Max. Größe aller Dateien';
-$string['maximumsubmissionsize'] = $string['maxbytes'];
+$string['maximumsubmissionsize'] = 'Max. Größe aller Dateien';
 $string['maximumsubmissionsize_help'] = 'Die Summe der Dateigrößen aller hochgeladene Dateien darf diesen Wert nicht überschreiten.';
 $string['taskmaxbytes'] = 'Maximale Größe Aufgabendatei';
 $string['maximumtasksize_help'] = 'Maximale Größe einer ProFormA-Aufgabendatei';
@@ -253,13 +253,13 @@ $string['acceptedfiletypes'] = 'Akzeptierte Dateitypen';
 $string['acceptedfiletypes_help'] = 'Akzeptierte Dateien können durch Eingabe einer mit Semikolon getrennten Liste von Mimetypes eingeschränkt werden, z.B. \'text/plain; application/java-archive; application/zip; application/xml\'. Auch können Dateiendungen vorgegeben werden (inkl "."): z.B. \'.java; .jar\'. Wenn das Feld leer bleibt, dann werden alle Dateien erlaubt.';
 $string['nonexistentfiletypes'] = 'Die folgenden Dateitypen konnten nicht erkannt werden: {$a}';
 $string['templates'] = 'Weitere Codevorlagen';
-$string['templates_hint'] = $string['templates'];
+$string['templates_hint'] = 'Weitere Codevorlagen';
 $string['templates_hint_help'] = 'Namen der zusätzlichen Codevorlagen (meist gibt es nur eine Codevorlage)';
 $string['downloads'] = 'Dateianhänge zur Aufgabenstellung';
-$string['downloads_hint'] = $string['downloads'];
+$string['downloads_hint'] = 'Dateianhänge zur Aufgabenstellung';
 $string['downloads_hint_help'] = 'Dateien, die zum Lösen der Aufgabe benötigt werden und von den Studierenden heruntergeladen werden können';
 $string['modelsolfiles'] = 'Datei(en) der Musterlösung';
-$string['modelsolfiles_hint'] = $string['modelsolfiles'];
+$string['modelsolfiles_hint'] = 'Datei(en) der Musterlösung';
 $string['modelsolfiles_hint_help'] = 'Dateien, die zusammen die Musterlösung bilden';
 $string['attachments'] = 'Downloads:';
 $string['questiondefaults'] = 'Standardwerte bei neuen Aufgaben';
@@ -324,8 +324,8 @@ Die tatsächliche URI einer studentischen Einreichung wird aus dem URI-Template 
 // Maybe for future use: '{func}: return value of configured helper function'.
 
 $string['proglang_hdr'] = 'Programmiersprachen';
-$string['proglang_hdr_info'] = 'Java wird standardmäßig unterstützt. '
-. 'Andere Programmiersprachen, die nicht benötigt werden, können hier abgeschaltet werden.';
+$string['proglang_hdr_info'] = 'Java wird standardmäßig unterstützt. 
+Andere Programmiersprachen, die nicht benötigt werden, können hier abgeschaltet werden.';
 
 $string['selectlangtitle'] = 'Markieren Sie die gewünschte Programmiersprache';
 

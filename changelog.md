@@ -1,3 +1,8 @@
+## 3.1.1
+
+* make string resources compliant to AMOS requirements (fix coding errors)
+* improve compatibility with old moodle XML for import
+
 ## 3.1.0
 
 * taskeditor: provide fullscreen mode 
