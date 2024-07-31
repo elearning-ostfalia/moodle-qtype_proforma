@@ -17,8 +17,7 @@
 /**
  * Strings for component 'qtype_proforma', language 'de''
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2017 Ostfalia University of Applied Sciences
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>*
@@ -46,7 +45,7 @@ $string['responseformat'] = 'Eingabeform';
 $string['responseoptions'] = 'Antwortformat';
 $string['graderoptions_header'] = 'Grader';
 
-// Buttons
+// Buttons.
 $string['upload'] = 'Upload Aufgabendatei zum Grader';
 $string['edittestdetails'] = 'Testdetails bearbeiten (experimentell)';
 $string['checkmodelsol'] = 'Prüfe Musterlösung';
@@ -78,17 +77,11 @@ $string['useembeddedmessages'] = 'verwenden';
 $string['inlinemessages_help'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können direkt in den Editor eingeblendet werden. Dies ist u.U. nicht für alle Werkzeuge verfügbar.';
 $string['inlinemessages_desc'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können direkt in den Editor eingeblendet werden. Erfordert die Nutzung von CodeMirror.';
 $string['regexpfromgrader'] = 'Regular Expressions des Praktomat nutzen';
-$string['regexpfromgrader_desc'] = 'Um die Compilermeldungen anzuzeigen, wird der Compileroutput mittels Regular Expression geparst. Normalerweise sollte der Regular Expression vom Grader verwendet werden. 
+$string['regexpfromgrader_desc'] = 'Um die Compilermeldungen anzuzeigen, wird der Compileroutput mittels Regular Expression geparst. Normalerweise sollte der Regular Expression vom Grader verwendet werden.
     Bei Problemen kann jedoch auf den Regular Expression des Plugins zurückgegriffen werden.';
 
 
 $string['nocodemirror'] = 'CodeMirror ist deaktiviert. Daher kann das Anzeigen von Meldungen im Editor nicht genutzt werden.';
-
-/*
-$string['admininitiallyembedded'] = 'Meldungen sofort im Editor anzeigen';
-$string['initiallyembedded'] = 'sofort anzeigen';
-$string['initiallyembedded_help'] = 'Wenn gesetzt, dann werden die Meldungen sofort im Editor angezeigt, sobald sie verfügbar sind.';
-*/
 
 $string['modelsolution'] = 'Musterlösung';
 $string['modelsolutionheader'] = 'Musterlösung';
@@ -324,8 +317,8 @@ Die tatsächliche URI einer studentischen Einreichung wird aus dem URI-Template 
 // Maybe for future use: '{func}: return value of configured helper function'.
 
 $string['proglang_hdr'] = 'Programmiersprachen';
-$string['proglang_hdr_info'] = 'Java wird standardmäßig unterstützt. 
-Andere Programmiersprachen, die nicht benötigt werden, können hier abgeschaltet werden.';
+$string['proglang_hdr_info'] = 'Java wird standardmäßig unterstützt.
+ Andere Programmiersprachen, die nicht benötigt werden, können hier abgeschaltet werden.';
 
 $string['selectlangtitle'] = 'Markieren Sie die gewünschte Programmiersprache';
 
@@ -354,7 +347,7 @@ $string['passed'] = 'OK';
 $string['failed'] = 'Fehler';
 $string['bulktestcontinuefromhere'] = 'Nochmal starten oder fortsetzen, beginnend ab hier';
 
-// Javascript strings
+// Javascript strings.
 $string['delete'] = 'Löschen';
 $string['rename'] = 'Umbenennen';
 $string['loadfile'] = 'Datei laden';
@@ -385,7 +378,7 @@ $string['errtestconfigambiguous'] = 'Testkonfiguration konnte nicht eindeutig er
 "{$a->title}".
 Es wird "{$a->config}" angenommen.';
 
-// Taskeditor
+// Taskeditor.
 $string['taskeditor'] = 'Aufgabe bearbeiten';
 $string['taskeditortests'] = 'Tests';
 $string['taskeditorfiles'] = 'Dateien';

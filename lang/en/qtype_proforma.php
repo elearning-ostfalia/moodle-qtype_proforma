@@ -13,11 +13,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * The ProFormA Question texts
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2017 Ostfalia University of Applied Sciences
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -39,8 +39,6 @@ $string['formatfilepicker'] = 'File picker';
 $string['formatexplorer'] = 'File explorer';
 $string['infoexplorer'] = 'currently subdirectories are not supported in explorer';
 
-
-
 $string['comment'] = 'Comment';
 $string['commentheader'] = 'Comment';
 $string['nlines'] = '{$a} lines';
@@ -49,7 +47,7 @@ $string['responseformat'] = 'Response format';
 $string['responseoptions'] = 'Response Options';
 $string['graderoptions_header'] = 'Grader Settings';
 
-// Buttons
+// Buttons.
 $string['upload'] = 'Upload taskfile to grader';
 $string['edittestdetails'] = 'Edit test details (experimental)';
 $string['checkmodelsol'] = 'Check model solution';
@@ -91,7 +89,7 @@ $string['taskfilename_hint_help'] = 'Corresponding ProFormA task file';
 $string['createdtask_hint'] = 'ProFormA task file';
 $string['createdtask_hint_help'] = 'Corresponding ProFormA task file. Question must be saved in order to generate ProFormA task file!';
 $string['task_hint'] = 'ProFormA task file';
-$string['task_hint_help'] = 'Corresponding ProFormA task file.<br> 
+$string['task_hint_help'] = 'Corresponding ProFormA task file.<br>
 In order to update this file please consider that the updated file must be <it>compatible</it> with the old one.<br>
 That means: <br>
 - same programming language<br>
@@ -139,18 +137,18 @@ $string['cunit_help_short'] = 'The test files must contain a Makefile (<code>CMa
 <code>main()</code> must return 0 in case of an error-free test run, otherwise <> 0.<br>
 CUnit must be run in <i>basic mode</i>.<br>
 All files can be uploaded individually or packed as exactly one zip archive.';
-$string['gtest_help'] = 'The test files must contain a Makefile (<code>CMakeLists.txt</code> for <i>cmake</i> possible) 
-and one or more files with testcode.<br>
+$string['gtest_help'] = 'The test files must contain a Makefile (<code>CMakeLists.txt</code> for <i>cmake</i> possible)
+ and one or more files with testcode.<br>
 <code>main()</code> must return 0 in case of an error-free test run, otherwise <> 0.<br>
 All files can be uploaded individually or packed as exactly one zip archive.<br>
-If the executable created by the Makefile is <code>test</code>, then the 
-command to run the test is <code>./test</code>.';
-$string['gtest_help_short'] = 'The test files must contain a Makefile (<code>CMakeLists.txt</code> for <i>cmake</i> possible) 
-and one or more files with testcode.<br>
+If the executable created by the Makefile is <code>test</code>, then the
+ command to run the test is <code>./test</code>.';
+$string['gtest_help_short'] = 'The test files must contain a Makefile (<code>CMakeLists.txt</code> for <i>cmake</i> possible)
+ and one or more files with testcode.<br>
 <code>main()</code> must return 0 in case of an error-free test run, otherwise <> 0.<br>
 All files can be uploaded individually or packed as exactly one zip archive.<br>';
-$string['makerun_help'] = 'E.g. if the executable created by the Makefile is <code>test</code>, then the 
-command to run the test is <code>./test</code>.';
+$string['makerun_help'] = 'E.g. if the executable created by the Makefile is <code>test</code>, then the
+ command to run the test is <code>./test</code>.';
 
 $string['pythondoc_help'] = 'Only one test file is supported.';
 
@@ -170,7 +168,7 @@ $string['invalidproglang'] = 'Check programming language version:';
 
 $string['notaskfile'] = 'Taskfile is missing.';
 
-// Settings
+// Settings.
 $string['miscellaneousheader'] = 'Miscellaneous';
 $string['defaultpenalty'] = 'Default penalty';
 $string['defaultpenalty_desc'] = 'Penalty for each wrong submission (if question behaviour is set to adaptive with penalty)';
@@ -183,8 +181,7 @@ $string['graderuri_path_desc'] = 'Path Part of Grader URI';
 $string['uploaduri_path'] = 'URI: Path for uploading task';
 $string['uploaduri_path_desc'] = 'Path Part of Grader URI for uploads';
 $string['runtesturi_path'] = 'URI: Path for running tests';
-$string['runtesturi_path_desc'] = 'Path Part of Grader URI for running the tests with progress information, 
-requires at least Praktomat 4.17';
+$string['runtesturi_path_desc'] = 'Path Part of Grader URI for running the tests with progress information, requires at least Praktomat 4.17';
 $string['c_graderuri_host'] = 'Grader for c';
 $string['c_graderuri_host_desc'] = '';
 $string['cpp_graderuri_host'] = 'Grader for C++';
@@ -195,8 +192,8 @@ $string['alternativegrader'] = 'For (almost) all programming languages an altern
 Only protocol (scheme) and server (host) part of grader URI must be set, no path.';
 
 $string['submissionproformaversion'] = 'ProFormA version';
-$string['submissionproformaversion_help'] = 'ProFormA version for communication between Moodle and grader. 
-Version "2.1 new"requires at least Praktomat 4.150. "2.1 new" is required for testing submission in git.';
+$string['submissionproformaversion_help'] = 'ProFormA version for communication between Moodle and grader.
+ Version "2.1 new"requires at least Praktomat 4.150. "2.1 new" is required for testing submission in git.';
 $string['new'] = 'new';
 $string['old'] = 'old';
 
@@ -221,21 +218,12 @@ $string['useembeddedmessages'] = 'Use';
 $string['inlinemessages_help'] = 'Show Compiler messages or messages from static code analysis tools inline in editor. May not be possible for all messages.';
 $string['inlinemessages_desc'] = 'Show Compiler messages or messages from static code analysis tools inline in editor. Requires CodeMirror. ';
 $string['regexpfromgrader'] = 'Use regular expressions from Praktomat';
-$string['regexpfromgrader_desc'] = 'To display the compiler messages, the compiler output is parsed using a regular expression. 
-Normally the regular expression should be used by the grader. In case of an error, however, the regular expression of the plugin can be used.';
+$string['regexpfromgrader_desc'] = 'To display the compiler messages, the compiler output is parsed using a regular expression.
+ Normally the regular expression should be used by the grader. In case of an error, however, the regular expression of the plugin can be used.';
 
 
 
 $string['nocodemirror'] = 'CodeMirror is disabled. So embedding messages into editor will not work.';
-
-/*
-$string['admininitiallyembedded'] = 'Initially show messages in editor';
-$string['initiallyembedded'] = 'Initially embedded';
-$string['initiallyembedded_help'] = 'If set the messages are already embedded when feedback is available.';
-*/
-
-
-
 
 $string['javasettings_header'] = 'Java Settings for Java questions created with Moodle';
 $string['checkstyleversion'] = 'Checkstyle version';
@@ -376,7 +364,7 @@ $string['passed'] = 'passed';
 $string['failed'] = 'failed';
 $string['bulktestcontinuefromhere'] = 'Run again or resume, starting from here';
 
-// Javascript strings
+// Javascript strings.
 $string['delete'] = 'Delete';
 $string['rename'] = 'Rename';
 $string['loadfile'] = 'Load file';
@@ -405,7 +393,7 @@ $string['errmissingtest'] = 'At least one test element and its corresponding fil
 $string['errtestconfigambiguous'] = 'Test configuration not unique for "{$a->title}".
 Assume "{$a->config}".';
 
-// Taskeditor
+// Taskeditor.
 $string['taskeditor'] = 'Edit task';
 $string['taskeditortests'] = 'Tests';
 $string['taskeditorfiles'] = 'Files';
@@ -439,8 +427,7 @@ $string['fileexists'] = 'A file named "{$a}" already exists.';
 $string['checkmodelsollog'] = 'Check model solution log';
 $string['uploadlog'] = 'Upload log';
 
-$string['changejavafilename'] = 'Java filenames shall consist of the 
-package name, if any, and the class name.
+$string['changejavafilename'] = 'Java filenames shall consist of the package name, if any, and the class name.
 
 So the expected filename is "{$a}".
 Do you want to change the filename to "{$a}"?';
