@@ -1,3 +1,7 @@
+## 3.1.2
+
+* make string resources compliant to AMOS requirements (fix coding errors)
+
 ## 3.1.1
 
 * make string resources compliant to AMOS requirements (fix coding errors)

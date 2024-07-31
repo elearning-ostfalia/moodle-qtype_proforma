@@ -221,8 +221,8 @@ $string['useembeddedmessages'] = 'Use';
 $string['inlinemessages_help'] = 'Show Compiler messages or messages from static code analysis tools inline in editor. May not be possible for all messages.';
 $string['inlinemessages_desc'] = 'Show Compiler messages or messages from static code analysis tools inline in editor. Requires CodeMirror. ';
 $string['regexpfromgrader'] = 'Use regular expressions from Praktomat';
-$string['regexpfromgrader_desc'] = 'To display the compiler messages, the compiler output is parsed using a regular expression. ' .
-        'Normally the regular expression should be used by the grader. In case of an error, however, the regular expression of the plugin can be used.';
+$string['regexpfromgrader_desc'] = 'To display the compiler messages, the compiler output is parsed using a regular expression. 
+Normally the regular expression should be used by the grader. In case of an error, however, the regular expression of the plugin can be used.';
 
 
 

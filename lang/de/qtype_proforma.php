@@ -78,8 +78,8 @@ $string['useembeddedmessages'] = 'verwenden';
 $string['inlinemessages_help'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können direkt in den Editor eingeblendet werden. Dies ist u.U. nicht für alle Werkzeuge verfügbar.';
 $string['inlinemessages_desc'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können direkt in den Editor eingeblendet werden. Erfordert die Nutzung von CodeMirror.';
 $string['regexpfromgrader'] = 'Regular Expressions des Praktomat nutzen';
-$string['regexpfromgrader_desc'] = 'Um die Compilermeldungen anzuzeigen, wird der Compileroutput mittels Regular Expression geparst. Normalerweise sollte der Regular Expression vom Grader verwendet werden. ' .
-        'Bei Problemen kann jedoch auf den Regular Expression des Plugins zurückgegriffen werden.';
+$string['regexpfromgrader_desc'] = 'Um die Compilermeldungen anzuzeigen, wird der Compileroutput mittels Regular Expression geparst. Normalerweise sollte der Regular Expression vom Grader verwendet werden. 
+    Bei Problemen kann jedoch auf den Regular Expression des Plugins zurückgegriffen werden.';
 
 
 $string['nocodemirror'] = 'CodeMirror ist deaktiviert. Daher kann das Anzeigen von Meldungen im Editor nicht genutzt werden.';
