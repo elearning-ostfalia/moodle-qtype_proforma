@@ -591,8 +591,16 @@ class behat_proforma extends behat_base {
         } catch(Exception $err) {
             // Moodle 3: Ignore
         }
+    }
 
-
+    /**
+     * maximize window
+     *
+     * @Then /^I maximize window$/
+     * @return void
+     */
+    public function I_maximize_window() {
+        $this->getSession()->getDriver()->maximizeWindow();
     }
 
 }
