@@ -736,7 +736,8 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
     }
 
     protected function is_deferred() : bool {
-        return ($this->preferredbehaviour == 'deferredfeedback');
+        return ($this->preferredbehaviour == 'deferredfeedback' ||
+                $this->preferredbehaviour == "deferredcbm");
     }
     protected function check_not_yet_graded($answer = null) {
         // $this->step_counter

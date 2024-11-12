@@ -31,7 +31,7 @@ Feature: DEFERRED
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
-  Scenario: Deferred Proforma
+  Scenario: Deferred Proforma without grading
 ##########################################################################
 #    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
 #    And I set the field "id_format_xml" to "1"
@@ -121,4 +121,101 @@ Feature: DEFERRED
     When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
     And I follow "Attempts: 1"
     Then I should see "Finished" in the "Student 1" "table_row"
+    Then I should see "Not yet graded" in the "Student 1" "table_row"
+    Then I should see "Requires grading" in the "Student 1" "table_row"
+
+##########################################################################
+  @javascript @_file_upload @_switch_window
+  Scenario: Deferred Proforma with grading
+##########################################################################
+    Given the following config values are set as admin:
+      | graderuri_host | http://praktomat:8010  | qtype_proforma |
+
+    And I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I navigate to "Question bank" in current page administration
+
+    When I press "Create a new question ..."
+    And I set the field "item_qtype_proforma" to "1"
+    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
+    And I set the field "item_python" to "1"
+    And I click on "Ok" "button" in the "Select programming language" "dialogue"
+    Then I should see "Adding a ProFormA question"
+
+    When I set the following fields to these values:
+      | Question name            | Python Question with 2 tests    |
+      | Question text            | write a Python program that..... |
+      | Aggregation strategy     | Weighted sum                |
+      | Comment                  | a comment                   |
+      | Response format          | editor                     |
+      | Response filename        | palindrome.py                   |
+
+    And I set the field "testtitle[0]" to "Python #1"
+    And I set the field "id_testcodeformat_0_2" to "1"
+    And I upload "question/type/proforma/tests/fixtures/behat/python/test.py" to "testfiles[0]" filemanager by name
+
+    # add new Test
+    When I press "id_option_add_fields"
+    And I set the field "testtitle[1]" to "Python #2"
+    And I set the field "testdescription[1]" to "this is the second Python test"
+    And I set the field "testweight[1]" to "3"
+    And I set the codemirror "testcode_1" to multiline:
+"""
+# coding=utf-8
+
+import unittest
+from palindrome import is_palindrome
+
+class PalindromeTest(unittest.TestCase):
+
+    def test_long(self):
+        self.assertEqual(True, is_palindrome('Roma tibi subito motibus ibit amor'), 'Roma tibi subito motibus ibit amor')
+
+    def test_short(self):
+        self.assertEqual(True, is_palindrome('otto'), 'otto')
+        self.assertEqual(True, is_palindrome('rentner'), 'rentner')
+        self.assertEqual(True, is_palindrome('a'), 'a')
+
+    def test_empty(self):
+        self.assertEqual(True, is_palindrome(''), '<empty>')
+"""
+
+    And I press "id_submitbutton"
+    Then I should see "Python Question with 2 tests"
+
+    Given quiz "Quiz 1" contains the following questions:
+      | question        | page |
+      | Python Question with 2 tests    | 1  |
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Attempt quiz"
+
+    And I set the response to
+"""
+# coding=utf-8
+
+import sys
+
+def is_palindrome(text):
+    print('is_palindrome ' + text)
+    sys.stderr.write('to stderr')
+    text = text.lower()
+    text = text.replace(' ', '')
+    reversestring = text[::-1]
+    return reversestring == text
+"""
+
+    And I press "Finish attempt"
+    And I press "Submit all and finish"
+    # confirm dialog
+    And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
+    And I follow "Finish review"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "Finished" in the "Student 1" "table_row"
+    Then I should not see "Not yet graded" in the "Student 1" "table_row"
+    Then I should not see "Requires grading" in the "Student 1" "table_row"
+    Then I should see "100.00" in the "Student 1" "table_row"
+
 

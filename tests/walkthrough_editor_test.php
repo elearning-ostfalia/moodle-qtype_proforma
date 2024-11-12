@@ -90,6 +90,10 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
         }
         $testfunction('deferredfeedback');
 
+        if (DEBUG) {
+            print('deferredfeedback'.PHP_EOL);flush();
+        }
+        $testfunction('deferredcbm');
     }
 
     protected function run_on_mulitiple_tries_behaviours($testfunction) {
