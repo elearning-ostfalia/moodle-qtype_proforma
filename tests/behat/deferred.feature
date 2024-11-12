@@ -27,7 +27,7 @@ Feature: DEFERRED
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
-    And I maximize window
+
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
@@ -44,6 +44,7 @@ Feature: DEFERRED
 #    And I should see "palindrom"
 
     When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
+    And I maximize window
     And I add a "Numerical" question filling the form with:
       | Question name                      | Numerical-002                               |
       | Question text                      | How many meter is 1m + 20cm + 50mm?         |
@@ -72,9 +73,21 @@ Feature: DEFERRED
       | Numerical-002   | 1    |
 #      | palindrom | 1    |
 
-    # student activity
+    # 1. Start test => not yet answered / In progress
     When I am on the "Quiz 1" "quiz activity" page logged in as student1
     And I press "Attempt quiz"
+
+    When I press "Finish attempt"
+    And I should see "Not yet answered" in the "2" "table_row"
+    And I should see "Not yet answered" in the "1" "table_row"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "In progress" in the "Student 1" "table_row"
+
+    # 2. Enter response => Answer saved / In progress
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+     And I press "Continue your attempt"
 
     And I set the field with xpath "//input[@type='text']" to "11"
     And I set the field with xpath "//select" to "m"
@@ -88,7 +101,24 @@ Feature: DEFERRED
     And I should see "Answer saved" in the "2" "table_row"
     And I should see "Answer saved" in the "1" "table_row"
 
-    And I press "Return to attempt"
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "In progress" in the "Student 1" "table_row"
+
+    # 3. Submit response => Answer saved / In progress
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Continue your attempt"
     And I should see "This is some test input"
     And the field with xpath "//input[@type='text']" matches value "11"
     And the field with xpath "//select" matches value "m"
+
+    And I press "Finish attempt"
+    And I press "Submit all and finish"
+    # confirm dialog
+    And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
+    And I follow "Finish review"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "Finished" in the "Student 1" "table_row"
+

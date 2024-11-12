@@ -319,7 +319,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
     }
 
 
-    private function set_mockbuilder_for_grader(qtype_proforma_question $q) {
+    protected function set_mockbuilder_for_grader(qtype_proforma_question $q) {
         $response = $this->get_response_text();
         if (self::USE_TEST_DOUBLE) {
             // Create a stub for the grader
@@ -396,7 +396,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         $fs->create_file_from_string($filerecord, $contents);
     }
 
-    private function save_response($response, $sequencecheck = '1') {
+    protected function save_response($response, $sequencecheck = '1') {
         $prefix = $this->quba->get_field_prefix($this->slot);
         $fieldname = $prefix . 'answer';
         $this->quba->process_all_actions(null, array(
@@ -735,10 +735,19 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         $this->check_step_count($this->expected_step_counter);
     }
 
+    protected function is_deferred() : bool {
+        return ($this->preferredbehaviour == 'deferredfeedback');
+    }
     protected function check_not_yet_graded($answer = null) {
         // $this->step_counter
         $this->check_step_count($this->expected_step_counter);
-        $this->check_current_state(question_state::$todo);
+        $expectedstate = question_state::$todo;
+        if ($this->is_deferred()) {
+            if (!empty($this->current_response) || !empty($this->current_attachments)) {
+                $expectedstate = question_state::$complete;
+            }
+        }
+        $this->check_current_state($expectedstate);
         $this->check_current_mark(null);
         $this->render();
         $verify_exists = $this->preferredbehaviour != 'deferredfeedback';
@@ -748,7 +757,15 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
                 $this->get_contains_question_text_expectation($this->question),
                 $this->get_does_not_contain_feedback_expectation(),
                 $this->get_does_not_contain_specific_feedback_expectation());
-        $this->check_remaining_tries("Not complete", $this->remainingtries);
+        $expectedstate = "Not complete";
+        if ($this->is_deferred()) {
+            if (empty($this->current_response) && empty($this->current_attachments)) {
+                $expectedstate = "Not yet answered";
+            } else {
+                $expectedstate = "Answer saved";
+            }
+        }
+        $this->check_remaining_tries($expectedstate, $this->remainingtries);
     }
 
 
@@ -986,8 +1003,6 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
                 $this->assertFalse(true);
         }
     }
-
-
 
     protected function save($response, $sequencecheck = '1')
     {
