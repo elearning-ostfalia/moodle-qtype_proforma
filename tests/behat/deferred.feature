@@ -27,21 +27,321 @@ Feature: DEFERRED
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
+    And the following config values are set as admin:
+      | graderuri_host | http://praktomat:8010  | qtype_proforma |
 
+##########################################################################
+  @javascript @_file_upload @_switch_window
+  Scenario Outline: Proforma behaviour states with no input (with actual grading)
+##########################################################################
+    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
+    And I set the field "id_format_xml" to "1"
+    And I upload "question/type/proforma/tests/fixtures/palindrome_in_python.xml" file to "Import" filemanager
+    And I press "id_submitbutton"
+    Then I should see "Parsing questions from import file."
+    And I should see "Importing 1 questions from file"
+    And I should see "Write a python function named"
+    And I press "Continue"
+    And I should see "Palindrome in Python"
+
+    Given quiz "Quiz 1" contains the following questions:
+      | question             | page |
+      | Palindrome in Python | 1    |
+
+    Given I am on the "Quiz 1" "quiz activity editing" page logged in as teacher1
+    And I set the following fields to these values:
+      | preferredbehaviour | <behaviour> |
+
+    # 1. Start test => not yet answered / In progress
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Attempt quiz"
+
+    When I press "Finish attempt"
+    # There is a template given for the question so that the template text is stored as a result
+    And I should see "Answer saved" in the "1" "table_row"
+    #And I should see "Not yet answered" in the "1" "table_row"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "In progress" in the "Student 1" "table_row"
+
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Continue your attempt"
+    And I press "Finish attempt"
+    And I press "Submit all and finish"
+    # confirm dialog
+    And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
+    And I follow "Finish review"
+
+    And I should see "0.00" in the "Finished" "table_row"
+
+    When I follow "Review"
+    And I should see "Incorrect"
+    And I should see "0/100 %"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "Finished" in the "Student 1" "table_row"
+    # The input is handled as if there is no input (because there is only the template).
+    # Therefore there is no grading result.
+    Then I should not see "Not yet graded" in the "Student 1" "table_row"
+    Then I should not see "Requires grading" in the "Student 1" "table_row"
+    And I should see "0.00" in the "Student 1" "table_row"
+    And I follow "Review attempt"
+    And I should see "Incorrect"
+    And I should see "0/100 %"
+
+    Examples:
+      | behaviour          |
+      | deferredfeedback   |
+      | immediatefeedback  |
+      | interactive        |
+      | adaptivenopenalty  |
+      | adaptive           |
+      | immediatecbm       |
+      | deferredcbm        |
+
+
+##########################################################################
+  @javascript @_file_upload @_switch_window
+  Scenario Outline: Proforma behaviour states with correct input (no grader)
+##########################################################################
+    And the following config values are set as admin:
+      | graderuri_host |   | qtype_proforma |
+
+    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
+    And I set the field "id_format_xml" to "1"
+    And I upload "question/type/proforma/tests/fixtures/palindrome_in_python.xml" file to "Import" filemanager
+    And I press "id_submitbutton"
+    Then I should see "Parsing questions from import file."
+    And I should see "Importing 1 questions from file"
+    And I should see "Write a python function named"
+    And I press "Continue"
+    And I should see "Palindrome in Python"
+
+    Given quiz "Quiz 1" contains the following questions:
+      | question             | page |
+      | Palindrome in Python | 1    |
+
+    Given I am on the "Quiz 1" "quiz activity editing" page logged in as teacher1
+    And I set the following fields to these values:
+      | preferredbehaviour | <behaviour> |
+
+    # 1. Start test => not yet answered / In progress
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Attempt quiz"
+
+    And I set the response to
+"""
+# coding=utf-8
+
+import sys
+
+def is_palindrome(text):
+    print('is_palindrome ' + text)
+    sys.stderr.write('to stderr')
+    text = text.lower()
+    text = text.replace(' ', '')
+    reversestring = text[::-1]
+    return reversestring == text
+"""
+
+    When I press "Finish attempt"
+    # There is a template given for the question so that the template text is stored as a result
+    And I should see "Answer saved" in the "1" "table_row"
+    #And I should see "Not yet answered" in the "1" "table_row"
+
+    And I press "Submit all and finish"
+    # confirm dialog
+    And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
+    And I follow "Finish review"
+
+    Then I should see "Not yet graded" in the "Finished" "table_row"
+
+    When I follow "Review"
+    And I should see "Not yet graded"
+    And I should see "Model solution"
+    And I should see "INTERNAL ERROR"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "Finished" in the "Student 1" "table_row"
+    # The input is handled as if there is no input (because there is only the template).
+    # Therefore there is no grading result.
+    Then I should see "Not yet graded" in the "Student 1" "table_row"
+    Then I should see "Requires grading" in the "Student 1" "table_row"
+
+    And I follow "Review attempt"
+    And I should see "Not yet graded"
+    And I should see "Model solution"
+    And I should see "INTERNAL ERROR"
+
+    Examples:
+      | behaviour          |
+      | deferredfeedback   |
+      | immediatefeedback  |
+      | interactive        |
+      | adaptivenopenalty  |
+      | adaptive           |
+      | immediatecbm       |
+      | deferredcbm        |
+
+##########################################################################
+  @javascript @_file_upload @_switch_window
+  Scenario Outline: Proforma behaviour states with correct input (with actual grading)
+##########################################################################
+    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
+    And I set the field "id_format_xml" to "1"
+    And I upload "question/type/proforma/tests/fixtures/palindrome_in_python.xml" file to "Import" filemanager
+    And I press "id_submitbutton"
+    Then I should see "Parsing questions from import file."
+    And I should see "Importing 1 questions from file"
+    And I should see "Write a python function named"
+    And I press "Continue"
+    And I should see "Palindrome in Python"
+
+    Given quiz "Quiz 1" contains the following questions:
+      | question             | page |
+      | Palindrome in Python | 1    |
+
+    Given I am on the "Quiz 1" "quiz activity editing" page logged in as teacher1
+    And I set the following fields to these values:
+      | preferredbehaviour | <behaviour> |
+
+    # Start test and enter correct answer => Answer saved / In progress
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Attempt quiz"
+
+    And I set the response to
+"""
+# coding=utf-8
+
+import sys
+
+def is_palindrome(text):
+    print('is_palindrome ' + text)
+    sys.stderr.write('to stderr')
+    text = text.lower()
+    text = text.replace(' ', '')
+    reversestring = text[::-1]
+    return reversestring == text
+"""
+
+    When I press "Finish attempt"
+    And I should see "Answer saved" in the "1" "table_row"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "In progress" in the "Student 1" "table_row"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Continue your attempt"
+    And I press "Finish attempt"
+    And I press "Submit all and finish"
+    # confirm dialog
+    And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
+    And I follow "Finish review"
+    And I should see "1.00" in the "Finished" "table_row"
+    And I should see "100.00" in the "Finished" "table_row"
+    When I follow "Review"
+    And I should see "Correct"
+    And I should see "100/100 %"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "Finished" in the "Student 1" "table_row"
+    And I should not see "Not yet graded" in the "Student 1" "table_row"
+    And I should not see "Requires grading" in the "Student 1" "table_row"
+    And I should see "100.00" in the "Student 1" "table_row"
+    And I follow "Review attempt"
+    And I should see "Correct"
+    And I should see "100/100 %"
+
+    Examples:
+      | behaviour          |
+      | deferredfeedback   |
+      | immediatefeedback  |
+      | interactive        |
+      | adaptivenopenalty  |
+      | adaptive           |
+      | immediatecbm       |
+      | deferredcbm        |
+
+##########################################################################
+  @javascript @_file_upload @_switch_window
+  Scenario Outline: Proforma behaviour states with incorrect input (with actual grading)
+##########################################################################
+    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
+    And I set the field "id_format_xml" to "1"
+    And I upload "question/type/proforma/tests/fixtures/palindrome_in_python.xml" file to "Import" filemanager
+    And I press "id_submitbutton"
+    Then I should see "Parsing questions from import file."
+    And I should see "Importing 1 questions from file"
+    And I should see "Write a python function named"
+    And I press "Continue"
+    And I should see "Palindrome in Python"
+
+    Given quiz "Quiz 1" contains the following questions:
+      | question             | page |
+      | Palindrome in Python | 1    |
+
+    Given I am on the "Quiz 1" "quiz activity editing" page logged in as teacher1
+    And I set the following fields to these values:
+      | preferredbehaviour | <behaviour> |
+
+    # Start test and enter correct answer => Answer saved / In progress
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Attempt quiz"
+
+    And I set the response to
+"""
+# coding=utf-8
+
+import sys
+
+def is_palindrome(text):
+    return 0
+"""
+
+    When I press "Finish attempt"
+    And I should see "Answer saved" in the "1" "table_row"
+
+    And I press "Submit all and finish"
+    # confirm dialog
+    And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
+    And I follow "Finish review"
+    And I should see "0.25" in the "Finished" "table_row"
+    And I should see "25.00" in the "Finished" "table_row"
+
+    When I follow "Review"
+    And I should see "Partially correct"
+    And I should see "25/100 %"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "Finished" in the "Student 1" "table_row"
+    And I should not see "Not yet graded" in the "Student 1" "table_row"
+    And I should not see "Requires grading" in the "Student 1" "table_row"
+    And I should see "25.00" in the "Student 1" "table_row"
+    And I follow "Review attempt"
+    And I should see "Partially correct"
+    And I should see "25/100 %"
+
+    Examples:
+      | behaviour          |
+      | deferredfeedback   |
+      | deferredcbm        |
+      | immediatefeedback  |
+      | immediatecbm       |
+      | interactive        |
+      | adaptive           |
+      | adaptivenopenalty  |
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
   Scenario: Deferred Proforma without grading
 ##########################################################################
-#    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
-#    And I set the field "id_format_xml" to "1"
-#    And I upload "question/type/proforma/tests/fixtures/javaquestion.xml" file to "Import" filemanager
-#    And I press "id_submitbutton"
-#    Then I should see "Parsing questions from import file."
-#    And I should see "Importing 1 questions from file"
-#    And I should see "1. write a function that checks if a given string is a palindrom"
-#    And I press "Continue"
-#    And I should see "palindrom"
 
     When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
     And I maximize window
@@ -128,9 +428,6 @@ Feature: DEFERRED
   @javascript @_file_upload @_switch_window
   Scenario: Deferred Proforma with grading
 ##########################################################################
-    Given the following config values are set as admin:
-      | graderuri_host | http://praktomat:8010  | qtype_proforma |
-
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
@@ -178,6 +475,9 @@ class PalindromeTest(unittest.TestCase):
 
     def test_empty(self):
         self.assertEqual(True, is_palindrome(''), '<empty>')
+
+    def test_no_palindrome(self):
+        self.assertEqual(False, is_palindrome('Berlin'), 'Berlin')
 """
 
     And I press "id_submitbutton"

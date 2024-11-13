@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 14206  -->
+  <question type="proforma">
+    <name>
+      <text>Palindrome in Python</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p dir="ltr" style="text-align: left;">Write a python function named </p><pre>is_palindrome<br></pre>that gets a text and chacks if the text is a palindrome.<br><p><br></p><p></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.1</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <uuid></uuid>
+    <proformaversion></proformaversion>
+    <taskrepository></taskrepository>
+    <taskpath></taskpath>
+    <taskfilename>task.xml</taskfilename>
+    <responsefilename>palindrome.py</responsefilename>
+    <programminglanguage>python</programminglanguage>
+    <responsetemplate># coding=utf-8
+
+import sys
+
+def is_palindrome(text):
+    # it's your turn...</responsetemplate>
+    <responseformat>editor</responseformat>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <maxbytes>0</maxbytes>
+    <filetypes></filetypes>
+    <taskstorage>7</taskstorage>
+    <aggregationstrategy>2</aggregationstrategy>
+    <gradinghints><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<grading-hints>
+ <root function="sum">
+  <test-ref ref="1" weight="1">
+   <title>Test</title>
+   <description/>
+   <test-type>python</test-type>
+  </test-ref>
+ </root>
+</grading-hints>
+]]></gradinghints>
+    <vcsuritemplate>https://code.ostfalia.de/svn/i-gdp-exp-ws2017/Gruppe{group}/GDP-Aufgabe1/</vcsuritemplate>
+    <vcssystem>1</vcssystem>
+    <vcslabel>Gruppennummer</vcslabel>
+    <expandcollapse>0</expandcollapse>
+    <inlinemessages>1</inlinemessages>
+    <templates>template.txt</templates>
+    <downloads></downloads>
+    <modelsolfiles>palindrome.py</modelsolfiles>
+    <comment format="html">
+      <text></text>
+    </comment>
+<templatefiles><file name="template.txt" path="/" encoding="base64">IyBjb2Rpbmc9dXRmLTgNCg0KaW1wb3J0IHN5cw0KDQpkZWYgaXNfcGFsaW5kcm9tZSh0ZXh0KToNCiAgICAjIGl0J3MgeW91ciB0dXJuLi4u</file>
+</templatefiles>
+<downloadfiles></downloadfiles>
+<modelsolutionfiles><file name="palindrome.py" path="/" encoding="base64">IyBjb2Rpbmc9dXRmLTgNCg0KaW1wb3J0IHN5cw0KDQpkZWYgaXNfcGFsaW5kcm9tZSh0ZXh0KToNCiAgICBwcmludCgnaXNfcGFsaW5kcm9tZSAnICsgdGV4dCkNCiAgICBzeXMuc3RkZXJyLndyaXRlKCd0byBzdGRlcnInKQ0KICAgIHRleHQgPSB0ZXh0Lmxvd2VyKCkNCiAgICB0ZXh0ID0gdGV4dC5yZXBsYWNlKCcgJywgJycpDQogICAgcmV2ZXJzZXN0cmluZyA9IHRleHRbOjotMV0NCiAgICByZXR1cm4gcmV2ZXJzZXN0cmluZyA9PSB0ZXh0</file>
+</modelsolutionfiles>
+<task><file name="task.xml" path="/" encoding="base64">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHRhc2sgeG1sbnM9InVybjpwcm9mb3JtYTp2Mi4wIiBsYW5nPSJkZSIgdXVpZD0iZDc1MDcyZjgtZTk5NS00ZWE2LWIwNmYtYTI5MGFiMzY0ZjllIiB4bWxuczp1bml0PSJ1cm46cHJvZm9ybWE6dGVzdHM6dW5pdHRlc3Q6djEuMSI+CiAgICA8dGl0bGU+UGFsaW5kcm9tZSBpbiBQeXRob248L3RpdGxlPgogICAgPGRlc2NyaXB0aW9uPiZsdDtwIGRpcj0mcXVvdDtsdHImcXVvdDsgc3R5bGU9JnF1b3Q7dGV4dC1hbGlnbjogbGVmdDsmcXVvdDsmZ3Q7V3JpdGUgYSBweXRob24gZnVuY3Rpb24gbmFtZWQgJmx0Oy9wJmd0OyZsdDtwcmUmZ3Q7aXNfcGFsaW5kcm9tZSZsdDticiZndDsmbHQ7L3ByZSZndDt0aGF0IGdldHMgYSB0ZXh0IGFuZCBjaGFja3MgaWYgdGhlIHRleHQgaXMgYSBwYWxpbmRyb21lLiZsdDticiZndDsmbHQ7cCZndDsmbHQ7YnImZ3Q7Jmx0Oy9wJmd0OyZsdDtwJmd0OyZsdDsvcCZndDs8L2Rlc2NyaXB0aW9uPgogICAgPHByb2dsYW5nIHZlcnNpb249IiI+cHl0aG9uPC9wcm9nbGFuZz4KICAgIDxzdWJtaXNzaW9uLXJlc3RyaWN0aW9ucy8+CiAgICA8ZmlsZXM+CiAgICAgICAgPGZpbGUgaWQ9IjEiIHVzZWQtYnktZ3JhZGVyPSJ0cnVlIiB2aXNpYmxlPSJubyI+CiAgICAgICAgICAgIDxlbWJlZGRlZC10eHQtZmlsZSBmaWxlbmFtZT0idGVzdF9weXRob250ZXN0MS5weSI+IyBjb2Rpbmc9dXRmLTgmIzEzOwomIzEzOwppbXBvcnQgdW5pdHRlc3QmIzEzOwpmcm9tIHBhbGluZHJvbWUgaW1wb3J0IGlzX3BhbGluZHJvbWUmIzEzOwomIzEzOwpjbGFzcyBQYWxpbmRyb21lVGVzdCh1bml0dGVzdC5UZXN0Q2FzZSk6JiMxMzsKJiMxMzsKICAgIGRlZiB0ZXN0X2xvbmcoc2VsZik6JiMxMzsKICAgICAgICBzZWxmLmFzc2VydEVxdWFsKFRydWUsIGlzX3BhbGluZHJvbWUoJ1JvbWEgdGliaSBzdWJpdG8gbW90aWJ1cyBpYml0IGFtb3InKSwgJ1JvbWEgdGliaSBzdWJpdG8gbW90aWJ1cyBpYml0IGFtb3InKSYjMTM7CiYjMTM7CiAgICBkZWYgdGVzdF9zaG9ydChzZWxmKTomIzEzOwogICAgICAgIHNlbGYuYXNzZXJ0RXF1YWwoVHJ1ZSwgaXNfcGFsaW5kcm9tZSgnb3R0bycpLCAnb3R0bycpJiMxMzsKICAgICAgICBzZWxmLmFzc2VydEVxdWFsKFRydWUsIGlzX3BhbGluZHJvbWUoJ3JlbnRuZXInKSwgJ3JlbnRuZXInKSYjMTM7CiAgICAgICAgc2VsZi5hc3NlcnRFcXVhbChUcnVlLCBpc19wYWxpbmRyb21lKCdhJyksICdhJykmIzEzOwomIzEzOwogICAgZGVmIHRlc3RfZW1wdHkoc2VsZik6JiMxMzsKICAgICAgICBzZWxmLmFzc2VydEVxdWFsKFRydWUsIGlzX3BhbGluZHJvbWUoJycpLCAnJmx0O2VtcHR5Jmd0OycpJiMxMzsKICAgICAgICAgICAgJiMxMzsKICAgIGRlZiB0ZXN0X25vX3BhbGluZHJvbWUoc2VsZik6JiMxMzsKICAgICAgICBzZWxmLmFzc2VydEVxdWFsKEZhbHNlLCBpc19wYWxpbmRyb21lKCdCZXJsaW4nKSwgJ0JlcmxpbicpICAgICAgICAgICAgPC9lbWJlZGRlZC10eHQtZmlsZT4KICAgICAgICA8L2ZpbGU+CiAgICAgICAgPGZpbGUgaWQ9Ik1TIiB1c2VkLWJ5LWdyYWRlcj0iZmFsc2UiIHZpc2libGU9Im5vIj4KICAgICAgICAgICAgPGVtYmVkZGVkLXR4dC1maWxlIGZpbGVuYW1lPSJtb2RlbHNvbHV0aW9uLmphdmEiPi8vIG5vIG1vZGVsIHNvbHV0aW9uIGF2YWlsYWJsZSA8L2VtYmVkZGVkLXR4dC1maWxlPgogICAgICAgIDwvZmlsZT4KICAgIDwvZmlsZXM+CiAgICA8bW9kZWwtc29sdXRpb25zPgogICAgICAgIDxtb2RlbC1zb2x1dGlvbiBpZD0iMSI+CiAgICAgICAgICAgIDxmaWxlcmVmcz4KICAgICAgICAgICAgICAgIDxmaWxlcmVmIHJlZmlkPSJNUyIvPgogICAgICAgICAgICA8L2ZpbGVyZWZzPgogICAgICAgIDwvbW9kZWwtc29sdXRpb24+CiAgICA8L21vZGVsLXNvbHV0aW9ucz4KICAgIDx0ZXN0cz4KICAgICAgICA8dGVzdCBpZD0iMSI+CiAgICAgICAgICAgIDx0aXRsZT5UZXN0PC90aXRsZT4KICAgICAgICAgICAgPHRlc3QtdHlwZT51bml0dGVzdDwvdGVzdC10eXBlPgogICAgICAgICAgICA8dGVzdC1jb25maWd1cmF0aW9uPgogICAgICAgICAgICAgICAgPGZpbGVyZWZzPgogICAgICAgICAgICAgICAgICAgIDxmaWxlcmVmIHJlZmlkPSIxIi8+CiAgICAgICAgICAgICAgICA8L2ZpbGVyZWZzPgogICAgICAgICAgICAgICAgPHVuaXQ6dW5pdHRlc3QvPgogICAgICAgICAgICA8L3Rlc3QtY29uZmlndXJhdGlvbj4KICAgICAgICA8L3Rlc3Q+CiAgICA8L3Rlc3RzPgogICAgPGdyYWRpbmctaGludHM+CiAgICAgICAgPHJvb3QvPgogICAgPC9ncmFkaW5nLWhpbnRzPgogICAgPG1ldGEtZGF0YS8+CjwvdGFzaz4K</file>
+</task>
+<commentfiles></commentfiles>
+  </question>
+
+</quiz>
