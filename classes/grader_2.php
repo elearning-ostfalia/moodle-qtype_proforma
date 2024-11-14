@@ -728,6 +728,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $feedbackformat = self::FEEDBACK_FORMAT_PROFORMA2;
         $testswithinternalerror = false;
 
+        $resultfound = false;
         try {
             $gradecalc = 0;
             $totalweight = 0;
@@ -748,6 +749,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             }
 
             foreach ($response->{'separate-test-feedback'}->{'tests-response'}->{'test-response'} as $test) {
+                $resultfound = true;
                 // Handle test with score.
                 if (count($test->{'test-result'}) > 0) {
                     $testresult = $test->{'test-result'}->result;
@@ -775,24 +777,31 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             return array($questionstate, $grade, $e->getMessage(), $result, $feedbackformat);
         }
 
-        // Convert grade fraction to state, make sure approx. 1.0 is exactely 1.0.
-        if (abs($gradecalc - 1.0) < 0.001) {
-            $grade = 1.0;
-            $questionstate = question_state::$gradedright;
-        } else if (abs($gradecalc - 0.0) < 0.001) {
+        if ($resultfound) {
+            // Convert grade fraction to state, make sure approx. 1.0 is exactely 1.0.
+            if (abs($gradecalc - 1.0) < 0.001) {
+                $grade = 1.0;
+                $questionstate = question_state::$gradedright;
+            } else if (abs($gradecalc - 0.0) < 0.001) {
                 $grade = 0.0;
                 $questionstate = question_state::$gradedwrong;
-        } else {
-            // Exact value does not matter since it is always not right.
-            $grade = $gradecalc;
-            if ($question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) { // Do not use === here.
-                // Only use weighted mean in case of appropriate aggregation strategy.
-                $questionstate = question_state::$gradedpartial;
             } else {
-                // Sorry.
-                $grade = 0.0;
-                $questionstate = question_state::$gradedwrong;
+                // Exact value does not matter since it is always not right.
+                $grade = $gradecalc;
+                if ($question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) { // Do not use === here.
+                    // Only use weighted mean in case of appropriate aggregation strategy.
+                    $questionstate = question_state::$gradedpartial;
+                } else {
+                    // Sorry.
+                    $grade = 0.0;
+                    $questionstate = question_state::$gradedwrong;
+                }
             }
+        } else {
+            // No test result could be evaluated, this is treated as an internal error.
+            return array(question_state::$needsgrading, null,
+                '' /*get_string('internaltesterror', 'qtype_proforma')*/, $result, $feedbackformat);
+
         }
 
         if ($testswithinternalerror) {

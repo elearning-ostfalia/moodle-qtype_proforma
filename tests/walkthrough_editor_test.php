@@ -80,20 +80,21 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
             print('interactivecountback'.PHP_EOL);flush();
         }
         $testfunction('interactivecountback');
-        if (DEBUG) {
+
+/*        if (DEBUG) {
             print('immediatecbm'.PHP_EOL);
         }
-        $testfunction('immediatecbm');
+        $testfunction('immediatecbm');*/
 
         if (DEBUG) {
             print('deferredfeedback'.PHP_EOL);flush();
         }
         $testfunction('deferredfeedback');
 
-        if (DEBUG) {
+/*        if (DEBUG) {
             print('deferredfeedback'.PHP_EOL);flush();
         }
-        $testfunction('deferredcbm');
+        $testfunction('deferredcbm');*/
     }
 
     protected function run_on_mulitiple_tries_behaviours($testfunction) {

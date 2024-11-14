@@ -73,7 +73,7 @@ Feature: PROFORMA BEHAVIOUR
     And I press "Attempt quiz"
 
     When I press "Finish attempt"
-#    And I should see "Answer saved" in the "1" "table_row"
+    And I should see "<answersaved>" in the "1" "table_row"
 
     When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
     And I follow "Attempts: 1"
@@ -84,39 +84,32 @@ Feature: PROFORMA BEHAVIOUR
     And I press "Finish attempt"
     And I press "Submit all and finish"
     # confirm dialog
-########    And I pause
-
     And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
     And I follow "Finish review"
 
-### TODO: better: needs grading (because of internal error!)
-    And I should see "0.00" in the "Finished" "table_row"
+    And I should see "Not yet graded" in the "Finished" "table_row"
 
     When I follow "Review"
-    And I should see "Incorrect"
+    And I should see "Not yet graded"
     And I should see "INTERNAL ERROR"
 
     When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
     And I follow "Attempts: 1"
-    Then I should see "Finished" in the "Student 1" "table_row"
-### TODO: better: needs grading (because of internal error!)
-    Then I should not see "Not yet graded" in the "Student 1" "table_row"
-    Then I should not see "Requires grading" in the "Student 1" "table_row"
-    And I should see "0.00" in the "Student 1" "table_row"
+    Then I should see "Not yet graded" in the "Student 1" "table_row"
+    Then I should see "Requires grading" in the "Student 1" "table_row"
     And I follow "Review attempt"
-    And I should see "Incorrect"
+    And I should see "Not yet graded"
     And I should see "INTERNAL ERROR"
 
     Examples:
-      | behaviour          |
-#      | deferredcbm        |
-#     | immediatecbm       |
-      | deferredfeedback   |
-      | immediatefeedback  |
-      | interactive        |
-      | adaptivenopenalty  |
-      | adaptive           |
-
+      | behaviour         | noanswer         | answersaved  |
+      | immediatefeedback | Not complete     | Not complete |
+      | deferredfeedback  | Not yet answered | Answer saved |
+#      | deferredcbm       | Not yet answered | Answer saved |
+#      | immediatecbm      | Not complete     | Not complete |
+      | interactive       | Not complete     | Not complete |
+      | adaptive          | Not complete     | Not complete |
+      | adaptivenopenalty | Not complete     | Not complete |
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
