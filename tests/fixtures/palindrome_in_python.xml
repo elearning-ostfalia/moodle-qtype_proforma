@@ -6,7 +6,7 @@
       <text>Palindrome in Python</text>
     </name>
     <questiontext format="html">
-      <text><![CDATA[<p dir="ltr" style="text-align: left;">Write a python function named </p><pre>is_palindrome<br></pre>that gets a text and chacks if the text is a palindrome.<br><p><br></p><p></p>]]></text>
+      <text><![CDATA[<p dir="ltr" style="text-align: left;">Write a python function named </p><pre>is_palindrome<br></pre>that gets a text and checks if the text is a palindrome.<br><p><br></p><p></p>]]></text>
     </questiontext>
     <generalfeedback format="html">
       <text></text>
