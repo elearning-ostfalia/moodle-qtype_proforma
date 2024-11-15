@@ -27,7 +27,7 @@ Feature: DUPLICATE PROFORMA
     And I navigate to "Question bank" in current page administration
 
   @javascript
-  Scenario: Edit a ProFormA question
+  Scenario: Duplicate a ProFormA question
     When I choose "Duplicate" action for "proforma-001" in the question bank
     #When I click on "Edit" "link" in the "proforma-001" "table_row"
     Then the following fields match these values:
