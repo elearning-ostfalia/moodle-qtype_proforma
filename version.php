@@ -29,7 +29,7 @@ $plugin->component = 'qtype_proforma';
 $plugin->version   = 2024073100;
 
 $plugin->requires  = 2018051700;
-$plugin->release = '3.1.2';
+$plugin->release = '3.1.3';
 
 $plugin->maturity  = MATURITY_STABLE;
 

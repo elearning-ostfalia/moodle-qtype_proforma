@@ -161,6 +161,9 @@ class PalindromeTest(unittest.TestCase):
 
     def test_empty(self):
         self.assertEqual(True, is_palindrome(''), '<empty>')
+
+    def test_no_palindrome(self):
+        self.assertEqual(False, is_palindrome('Berlin'), 'Berlin')
 """
 
     And I press "id_submitbutton"
@@ -206,10 +209,10 @@ def is_palindrome(text):
 
     And I press "Check"
     Then I should see "Python #1 (0/25 %)"
-    And I should see "Python #2 (0/75 %)"
+    And I should see "Python #2 (19/75 %)"
     And I should see "Log"
-    And I should see "Incorrect"
-    And I should see "Marks for this submission: 0.00/1.00."
+    And I should see "Partially correct"
+    And I should see "Marks for this submission: 0.19/1.00."
 
 ##########################################################################
   @javascript @_switch_window @_file_upload

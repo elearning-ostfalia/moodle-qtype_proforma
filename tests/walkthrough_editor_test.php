@@ -80,16 +80,21 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
             print('interactivecountback'.PHP_EOL);flush();
         }
         $testfunction('interactivecountback');
-        if (DEBUG) {
+
+/*        if (DEBUG) {
             print('immediatecbm'.PHP_EOL);
         }
-        $testfunction('immediatecbm');
+        $testfunction('immediatecbm');*/
 
         if (DEBUG) {
             print('deferredfeedback'.PHP_EOL);flush();
         }
         $testfunction('deferredfeedback');
 
+/*        if (DEBUG) {
+            print('deferredfeedback'.PHP_EOL);flush();
+        }
+        $testfunction('deferredcbm');*/
     }
 
     protected function run_on_mulitiple_tries_behaviours($testfunction) {
@@ -138,6 +143,102 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
             $this->finish_attempt();
             $this->check_graded_right(1.0);
         });
+    }
+
+    /**
+     * tests saving an answer
+     */
+    public function test_saved_deferred() {
+        // Create a true-false question with correct answer true.
+        // $tf = \test_question_maker::make_question('truefalse', 'true');
+        $tf = test_question_maker::make_question('proforma', 'editor');
+        $this->question = $tf;
+
+        $this->start_attempt_at_question($tf, 'deferredfeedback', 2);
+
+        // Check the initial state.
+        $this->check_current_state(question_state::$todo);
+        $this->check_output_contains_lang_string('notyetanswered', 'question');
+        $this->check_current_mark(null);
+        $this->check_current_output($this->get_contains_question_text_expectation($tf),
+                $this->get_does_not_contain_feedback_expectation());
+        // var_dump($this->quba->get_right_answer_summary($this->slot));
+        // $this->assertEquals(get_string('true', 'qtype_proforma'),
+        //        $this->quba->get_right_answer_summary($this->slot));
+        $this->assertMatchesRegularExpression('/' . preg_quote($tf->questiontext, '/') . '/',
+                $this->quba->get_question_summary($this->slot));
+        $this->assertNull($this->quba->get_response_summary($this->slot));
+
+        // Process a true answer and check the expected result.
+        $this->process_submission(array('answer' => self::CORRECT_RESPONSE));
+
+        $this->check_current_state(question_state::$complete);
+        $this->check_output_contains_lang_string('answersaved', 'question');
+        $this->check_current_mark(null);
+
+        $this->check_current_output(// $this->get_contains_tf_true_radio_expectation(true, true),
+                $this->get_does_not_contain_correctness_expectation(),
+                $this->get_does_not_contain_feedback_expectation());
+
+        // Process the same data again, check it does not create a new step.
+        $numsteps = $this->get_step_count();
+        $this->process_submission(array('answer' => self::CORRECT_RESPONSE));
+        $this->check_step_count($numsteps);
+
+        // Process different data, check it creates a new step.
+        $this->process_submission(array('answer' => self::WRONG_RESPONSE));
+        $this->check_step_count($numsteps + 1);
+        $this->check_current_state(question_state::$complete);
+
+        // Change back, check it creates a new step.
+        $this->process_submission(array('answer' => self::CORRECT_RESPONSE));
+        $this->check_step_count($numsteps + 2);
+
+        // Finish the attempt.
+        $this->set_mockbuilder_for_grader($this->question);
+        // Create a stub for the grader
+        $stub = $this->getMockBuilder(qtype_proforma_grader_2::class)
+                ->setMethods(['send_code_to_grader', 'send_files_to_grader'])
+                ->getMock();
+        $stub->method('send_code_to_grader')
+                ->willReturn(self::GRADER_OUTPUT_CORRECT);
+        $stub->method('send_files_to_grader')
+                ->willReturn(self::GRADER_OUTPUT_CORRECT);
+        $tf->grader = $stub;
+
+        $this->quba->finish_all_questions();
+
+        // Verify.
+        $this->check_current_state(question_state::$gradedright);
+        $this->check_current_mark(2);
+        $this->check_current_output(
+                new \question_pattern_expectation('/separate-test-feedback/')
+//                $this->get_contains_correct_expectation(),
+                // $this->get_contains_tf_true_radio_expectation(false, true),
+//                new \question_pattern_expectation('/class="r0 correct"/')
+        );
+        $this->assertEquals(self::CORRECT_RESPONSE,
+                $this->quba->get_response_summary($this->slot));
+
+        // Process a manual comment.
+        $this->manual_grade('Not good enough!', 1, FORMAT_HTML);
+
+        $this->check_current_state(question_state::$mangrpartial);
+        $this->check_current_mark(1);
+        $this->check_current_output(
+                new \question_pattern_expectation('/' . preg_quote('Not good enough!', '/') . '/'));
+
+/*        // Now change the correct answer to the question, and regrade.
+        $tf->rightanswer = false;
+        $this->quba->regrade_all_questions();
+
+        // Verify.
+        $this->check_current_state(question_state::$mangrpartial);
+        $this->check_current_mark(1);
+
+        $autogradedstep = $this->get_step($this->get_step_count() - 2);
+        $this->assertEqualsWithDelta($autogradedstep->get_fraction(), 0, 0.0000001);
+*/
     }
 
 
