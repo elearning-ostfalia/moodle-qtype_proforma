@@ -86,8 +86,7 @@ Feature: PROFORMA BEHAVIOUR
     # confirm dialog
     And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
     And I follow "Finish review"
-
-    And I should see "Not yet graded" in the "Finished" "table_row"
+    And I should see "Not yet graded" in the "Grade" "table_row"
 
     When I follow "Review"
     And I should see "Not yet graded"
@@ -156,7 +155,7 @@ Feature: PROFORMA BEHAVIOUR
     And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
     And I follow "Finish review"
 
-    And I should see "0.00" in the "Finished" "table_row"
+    And I should see "0.00" in the "Grade" "table_row"
 
     When I follow "Review"
     And I should see "Incorrect"
@@ -240,7 +239,7 @@ def is_palindrome(text):
     And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
     And I follow "Finish review"
 
-    Then I should see "Not yet graded" in the "Finished" "table_row"
+    Then I should see "Not yet graded" in the "Grade" "table_row"
 
     When I follow "Review"
     And I should see "Not yet graded"
@@ -326,8 +325,9 @@ def is_palindrome(text):
     # confirm dialog
     And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
     And I follow "Finish review"
-    And I should see "1.00" in the "Finished" "table_row"
-    And I should see "100.00" in the "Finished" "table_row"
+    And I should see "Finished" in the "Status" "table_row"
+    And I should see "1.00/1.00" in the "Marks" "table_row"
+    And I should see "100.00 out of 100.00" in the "Grade" "table_row"
     When I follow "Review"
     And I should see "Correct"
     And I should see "100/100 %"
@@ -396,8 +396,9 @@ def is_palindrome(text):
     # confirm dialog
     And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
     And I follow "Finish review"
-    And I should see "0.25" in the "Finished" "table_row"
-    And I should see "25.00" in the "Finished" "table_row"
+    And I should see "Finished" in the "Status" "table_row"
+    And I should see "0.25/1.00" in the "Marks" "table_row"
+    And I should see "25.00 out of 100.00" in the "Grade" "table_row"
 
     When I follow "Review"
     And I should see "Partially correct"

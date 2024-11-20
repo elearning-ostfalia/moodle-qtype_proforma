@@ -32,6 +32,8 @@ Feature: BACKUP AND RESTORE
       | proforma-002 | 1 |
       | proforma-003 | 1 |
       | proforma-setlx | 1 |
+    And the following config values are set as admin:
+      | enableasyncbackup | 0 |
     And I log in as "admin"
     And I am on "Course 1" course homepage
 
@@ -39,6 +41,7 @@ Feature: BACKUP AND RESTORE
   Scenario: Backup and restore a course containing 2 ProFormA questions
     When I backup "Course 1" course using this options:
       | Confirmation | Filename | test_backup.mbz |
+#    And I pause
     And I restore "test_backup.mbz" backup into a new course using this options:
       | Schema | Course name | Course 2 |
     And I navigate to "Question bank" in current page administration

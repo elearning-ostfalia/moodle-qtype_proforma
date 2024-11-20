@@ -1,3 +1,7 @@
+## 3.1.4
+
+* adapt to Moodle 4.4
+
 ## 3.1.3
 
 * if there is no test result than handle as internal error (needs grading state) 

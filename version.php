@@ -28,8 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'qtype_proforma';
 $plugin->version   = 2024111900;
 
-$plugin->requires  = 2018051700;
-$plugin->release = '3.1.3';
+$plugin->requires  = 2024042204; // Moodle 4.4
+$plugin->release = '3.1.4';
 
 $plugin->maturity  = MATURITY_STABLE;
 

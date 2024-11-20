@@ -649,7 +649,7 @@ Prüfung beendet.
     }
 
 
-    private function assert_same_xml($expectedxml, $xml) {
+    public function assert_same_xml($expectedxml, $xml) {
         // Remove comments.
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
         $expectedxml = preg_replace('/<!--(.|\s)*?-->/', '', $expectedxml);

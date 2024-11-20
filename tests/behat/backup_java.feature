@@ -21,6 +21,8 @@ Feature: BACKUP AND RESTORE JAVA
     And the following "activities" exist:
       | activity   | name   | intro                           | course | idnumber |
       | quiz       | Quiz 1 | Quiz 1 for testing the Add menu | C1     | quiz1    |
+    And the following config values are set as admin:
+      | enableasyncbackup | 0 |
 
     And I am on the "Quiz 1" "mod_quiz > Edit" page logged in as "admin"
 

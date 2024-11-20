@@ -47,15 +47,6 @@ class qtype_proforma_renderer extends qtype_renderer {
      */
     private $collapseid = 0;
 
-
-    /**
-     * return protected member page for use in class feedback_renderer
-     * @return type
-     */
-    public function get_page() {
-        return $this->page;
-    }
-
     /**
      * make feedback_image public because we have no friend feature in PHP
      */
