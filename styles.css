@@ -522,7 +522,9 @@ code#proforma-modal-message {
 /* Styles for the editing form. */
 
 /* align elements in title line in a row */
-body#page-question-type-proforma div[id^=fgroup_id_testoptions_] div.fitem {
+body#page-question-type-proforma div[id^=fgroup_id_testoptions_] div.fitem,
+body#page-question-type-proforma div[id^=fgroup_id_checkstyleoptions] div.fitem
+{
     display: flex;
     flex-direction: row;
     align-items: center;
