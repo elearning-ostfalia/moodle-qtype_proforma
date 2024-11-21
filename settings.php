@@ -200,7 +200,7 @@ $settings->add(new admin_setting_heading('java',
 
 $settings->add(new admin_setting_configtext('qtype_proforma/javaversion',
         get_string('javaversion', 'qtype_proforma'),
-        get_string('javaversion_desc', 'qtype_proforma'), '17, 11, 1.8' ));
+        get_string('javaversion_desc', 'qtype_proforma'), '21, 17, 11, 1.8' ));
 
 
 $settings->add(new admin_setting_configtext('qtype_proforma/junitversion',
@@ -209,7 +209,7 @@ $settings->add(new admin_setting_configtext('qtype_proforma/junitversion',
 
 $settings->add(new admin_setting_configtext('qtype_proforma/checkstyleversion',
         get_string('checkstyleversion', 'qtype_proforma'),
-        get_string('checkstyleversion_desc', 'qtype_proforma'), '8.29, 8.23'));
+        get_string('checkstyleversion_desc', 'qtype_proforma'), '10.17, 10.1, 8.29, 8.23'));
 
 
 // Miscellaneous
