@@ -524,29 +524,38 @@ code#proforma-modal-message {
 /* first field */
 body#page-question-type-proforma div[id^=fgroup_id_testoptions_] {
     margin-top: 1em;
-    background: #e9ecef;
+    background: #ced4da;;
     margin-bottom: 0;
-    padding-bottom: 0.1em;
+    padding-bottom: 0; /*0.1em;*/
     padding-top: 0.3em;
 }
 
-/* mid field */
-body#page-question-type-proforma div[id^=fgroup_id_testcode] /*:not([id^=fgroup_id_testoptions_])*/,
-body#page-question-type-proforma div[id^=fitem_id_test] {
-    margin-top: 0;
-    background: #e9ecef;
-    margin-bottom: 0;
-    padding-bottom: 0.1em;
-}
 
 /* last field */
 body#page-question-type-proforma div[id^=fitem_id_testentrypoint],
 body#page-question-type-proforma div[id^=fitem_id_testcode] {
-    margin-top: 0;
+/*    margin-top: 0;*/
     padding-bottom: 0.3em;
-    background: #e9ecef;
     margin-bottom: 1em;
 }
+
+body#page-question-type-proforma div[id^=fgroup_id_testcode] /*:not([id^=fgroup_id_testoptions_])*/,
+body#page-question-type-proforma div[id^=fitem_id_test] {
+    margin-top: -1.0em;
+    padding-top: 0.3em;
+    background: #e9ecef;
+}
+
+/* mid field */
+/* as fitem_id_testcode and fitem_id_testentrypoint also begin with fitem_id_test
+   they have to be excluded.
+ */
+body#page-question-type-proforma div[id^=fgroup_id_testcode] /*:not([id^=fgroup_id_testoptions_])*/,
+body#page-question-type-proforma div[id^=fitem_id_test]:not([id^=fitem_id_testcode]):not([id^=fitem_id_testentrypoint]) {
+    margin-bottom: 0;
+    padding-bottom: 0; /*0.1em;*/
+}
+
 
 /* workaround for not detecting the last element */
 body#page-question-type-proforma div[id^=fitem_id_penalty] {
