@@ -521,12 +521,20 @@ code#proforma-modal-message {
 
 /* Styles for the editing form. */
 
+/* align elements in title line in a row */
+body#page-question-type-proforma div[id^=fgroup_id_testoptions_] div.fitem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+
 /* first field */
 body#page-question-type-proforma div[id^=fgroup_id_testoptions_] {
     margin-top: 1em;
     background: #ced4da;;
     margin-bottom: 0;
-    padding-bottom: 0; /*0.1em;*/
+    padding-bottom: 0.1em;
     padding-top: 0.3em;
 }
 
@@ -539,21 +547,22 @@ body#page-question-type-proforma div[id^=fitem_id_testcode] {
     margin-bottom: 1em;
 }
 
+
+/* mid field and last fields */
 body#page-question-type-proforma div[id^=fgroup_id_testcode] /*:not([id^=fgroup_id_testoptions_])*/,
 body#page-question-type-proforma div[id^=fitem_id_test] {
-    margin-top: -1.0em;
+    margin-top: -1.2em;
     padding-top: 0.3em;
     background: #e9ecef;
 }
-
-/* mid field */
+/* mid fields */
 /* as fitem_id_testcode and fitem_id_testentrypoint also begin with fitem_id_test
    they have to be excluded.
  */
 body#page-question-type-proforma div[id^=fgroup_id_testcode] /*:not([id^=fgroup_id_testoptions_])*/,
 body#page-question-type-proforma div[id^=fitem_id_test]:not([id^=fitem_id_testcode]):not([id^=fitem_id_testentrypoint]) {
-    margin-bottom: 0;
-    padding-bottom: 0; /*0.1em;*/
+    margin-bottom: 0.1em;
+    padding-bottom: 0;
 }
 
 
