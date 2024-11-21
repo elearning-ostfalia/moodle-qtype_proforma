@@ -260,11 +260,11 @@ class qtype_proforma_question_test extends advanced_testcase {
         $proforma = $this->make_a_proforma_question();
         $proforma->start_attempt(new question_attempt_step(), 1);
 
-        // Test the "traditional" case, where we must recieve a response from the user.
-        $proforma->responserequired = 1;
+        // Test the "traditional" case, where we must receive a response from the user.
+/*        $proforma->responserequired = 1;
         $proforma->attachmentsrequired = 0;
+*/
         $proforma->responseformat = 'editor';
-
         // The empty string should be considered an incomplete response, as should a lack of a response.
         $this->assertFalse($proforma->is_complete_response(array('answer' => '')));
         $this->assertFalse($proforma->is_complete_response(array()));
@@ -349,7 +349,7 @@ class qtype_proforma_question_test extends advanced_testcase {
                 array('attachments' => $attachments[1])));
 
         // Ensure that responserequired is ignored when we're in inline response mode.
-        $proforma->reponserequired = 1;
+        //$proforma->reponserequired = 1;
         $this->assertTrue($proforma->is_complete_response(
                 array('attachments' => $attachments[1])));
 

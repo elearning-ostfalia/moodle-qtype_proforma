@@ -127,6 +127,14 @@ class qtype_proforma_question extends question_graded_automatically {
     /** feedback option: shall messages be initially embedded into editor? */
     // public $initiallyinline;
 
+    // in Moodle 3.6 and later the property 'template' is overridden by the test environment
+    // which results in failing Behat tests.
+    // Workaround: we use a copy of the value named 'original_template'.
+    // Even if no template is used we must set this variable. Otherwise
+    // the proforma code thinks that there is a template.
+    // In order to prevent getting a deprecation warning there is a member variable added here.
+    public $original_template = '';
+
     /**
      * get grader URI
      * @return string|null
