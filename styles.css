@@ -532,7 +532,8 @@ body#page-question-type-proforma div[id^=fgroup_id_testoptions_] div.fitem {
 /* first field */
 body#page-question-type-proforma div[id^=fgroup_id_testoptions_] {
     margin-top: 1em;
-    background: #ced4da;;
+    /*background: #ced4da;*/
+    background: #e9ecef;
     margin-bottom: 0;
     padding-bottom: 0.1em;
     padding-top: 0.3em;
