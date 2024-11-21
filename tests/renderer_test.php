@@ -639,11 +639,15 @@ Prüfung beendet.
         self::setUser($user);
     }
 
-    private function moodle_3_11_converter($text) {
+    private function moodle_4_5_converter($text) {
+        $text = str_replace( 'aria-label=', 'role="img" aria-label=', $text);
         global $CFG;
         $moodleversion = $CFG->version;
-        if ($moodleversion > 2021051705) {
-            return str_replace( 'aria-label=', 'role="img" aria-label=', $text);
+        if ($moodleversion > 2024100700) { // Moodle 4.5
+            $text = str_replace( 'fa fa-check', 'fa-regular fa-circle-check', $text);
+            $text = str_replace( 'fa fa-exclamation', 'fa fa-warning', $text);
+            $text = str_replace( 'fa fa-remove', 'fa-regular fa-circle-xmark', $text);
+            $text = str_replace( 'fa-regular fa-circle-check-square', 'fa fa-circle-half-stroke text-warning', $text);
         }
         return $text;
     }
@@ -733,9 +737,9 @@ Prüfung beendet.
         $idprefix = '{COLLAPSE_ID}';
         $id = $idprefix.'-'.$number;
 
-        $iconpassed = $this->moodle_3_11_converter('class="icon fa fa-check text-success fa-fw "  title="Correct" aria-label="Correct"');
-        $iconfailed = $this->moodle_3_11_converter('class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"');
-        $iconinternalerror = $this->moodle_3_11_converter('class="icon fa fa-exclamation text-warning fa-fw " title="info" aria-label="info"');
+        $iconpassed = $this->moodle_4_5_converter('class="icon fa fa-check text-success fa-fw "  title="Correct" aria-label="Correct"');
+        $iconfailed = $this->moodle_4_5_converter('class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"');
+        $iconinternalerror = $this->moodle_4_5_converter('class="icon fa fa-exclamation text-warning fa-fw " title="info" aria-label="info"');
 
         if (isset($total)) {
             // With subtests.
@@ -803,12 +807,13 @@ Prüfung beendet.
         $output = '<div id="'.$id.'" class="collapsibleregion ' . ($collapsed?' collapsed':'') . '"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">';
 
+
         if ($score == 0) {
-            $output .= $this->moodle_3_11_converter('<i class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"></i> ').$title;
+            $output .= $this->moodle_4_5_converter('<i class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"></i> ').$title;
         } else if ($score == 1.0) {
-            $output .= $this->moodle_3_11_converter('<i class="icon fa fa-check text-success fa-fw " title="Correct" aria-label="Correct"></i> '.$title);
+            $output .= $this->moodle_4_5_converter('<i class="icon fa fa-check text-success fa-fw " title="Correct" aria-label="Correct"></i> '.$title);
         } else {
-            $output .= $this->moodle_3_11_converter('<i class="icon fa fa-check-square fa-fw " title="Partially correct" aria-label="Partially correct"></i> '.$title);
+            $output .= $this->moodle_4_5_converter('<i class="icon fa fa-check-square fa-fw " title="Partially correct" aria-label="Partially correct"></i> '.$title);
         }
 
         if (isset($total)) {
@@ -825,9 +830,9 @@ Prüfung beendet.
             $output .= '<div class="proforma_subtest_title">
 ';
             if ($subtest[0] == 1) {
-                $output .= $this->moodle_3_11_converter('<i class="icon fa fa-check text-success fa-fw " title="Correct" aria-label="Correct"></i>');
+                $output .= $this->moodle_4_5_converter('<i class="icon fa fa-check text-success fa-fw " title="Correct" aria-label="Correct"></i>');
             } else {
-                $output .= $this->moodle_3_11_converter('<i class="icon fa fa-remove text-danger fa-fw " title="Incorrect" aria-label="Incorrect"></i>');
+                $output .= $this->moodle_4_5_converter('<i class="icon fa fa-remove text-danger fa-fw " title="Incorrect" aria-label="Incorrect"></i>');
             }
             $output .= $subtest[1][0].'</div>';
             if (count($subtest[1]) > 1)  {
