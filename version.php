@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_proforma';
-$plugin->version   = 2024111900;
+$plugin->version   = 2024112200;
 
 $plugin->requires  = 2024042204; // Moodle 4.4
 $plugin->release = '3.1.4';
