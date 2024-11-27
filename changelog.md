@@ -1,6 +1,7 @@
 ## 3.1.4
 
 * adapt to Moodle 4.4
+* update default versions for test environments
 
 ## 3.1.3
 

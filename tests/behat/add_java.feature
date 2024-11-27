@@ -65,7 +65,7 @@ Feature: ADD JAVA QUESTION
       | Title                    | JUnit test title               |
       | Description              |                                |
       | Penalty for each incorrect try  | 10%                     |
-      | Programming language version  | 17                       |
+      | Programming language version  | 21                       |
       | Model solution           |    |
     # compile
       | compileweight              |      0                       |

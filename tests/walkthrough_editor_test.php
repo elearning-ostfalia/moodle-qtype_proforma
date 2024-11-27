@@ -139,6 +139,9 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
             $this->press_submit(self::CORRECT_RESPONSE);
             $this->check_graded_right();
 
+            // simulate quiz_attempt::get_number_of_unanswered_questions
+            // $state = $this->quba->get_question_state($this->slot);
+            // $this->assertFalse ($state == question_state::$todo || $state == question_state::$invalid);
             // Finish the attempt
             $this->finish_attempt();
             $this->check_graded_right(1.0);
@@ -259,11 +262,47 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
             $this->press_submit(self::WRONG_RESPONSE);
             $this->check_graded_wrong();
 
+            // simulate quiz_attempt::get_number_of_unanswered_questions
+            // $state = $this->quba->get_question_state($this->slot);
+            // $this->assertFalse ($state == question_state::$todo || $state == question_state::$invalid);
+
             // Finish the attempt.
             $this->finish_attempt();
 
             // Verify  => response is graded.
             $this->check_graded_wrong();
+
+            //        $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
+        });
+    }
+
+    /* tests a wrong answer with finishing attempt  */
+    public function test_part_correct() {
+        $this->run_on_all_behaviours(function($preferredbehaviour) {
+            // TODO : show that there is no feeback for students??
+
+            // The current text editor depends on the users profile setting - so it needs a valid user.
+            // $this->setAdminUser();
+
+            // Create a proforma question.
+            $q = test_question_maker::make_question('proforma', 'editor');
+            $q->aggregationstrategy = qtype_proforma::WEIGHTED_SUM;
+            $this->start_attempt_at_question($q, $preferredbehaviour, 1);
+            $this->prepare_test($preferredbehaviour, $q);
+
+            // Submit partially correct answer.
+            $this->press_submit(self::PART_CORRECT_RESPONSE);
+            $this->check_graded_partially_correct();
+
+            // simulate quiz_attempt::get_number_of_unanswered_questions
+            // $state = $this->quba->get_question_state($this->slot);
+            // $this->assertFalse ($state == question_state::$todo || $state == question_state::$invalid);
+
+            // Finish the attempt.
+            $this->finish_attempt();
+
+            // Verify  => response is graded.
+            $this->check_graded_partially_correct();
 
             //        $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
         });

@@ -65,7 +65,7 @@ Feature: ADD JAVA QUESTION WITH VERSION CONTROL SYSTEM USE
       | Comment                  |                                |
       | Penalty for each incorrect try  | 10%                     |
 #      | compileweight              |      0                       |
-      | Programming language version |    17                    |
+      | Programming language version |     21                   |
 
     And I should not see "Response filename"
     And I should see "1" elements in "Model solution files" filemanager

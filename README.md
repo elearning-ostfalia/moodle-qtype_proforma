@@ -45,6 +45,10 @@ Small code parts (in particular in qbehaviour_adaptiveexternalgrading) are copie
 - immediate feedback for students (optional) 
 - supported programming languages are only limited by the available grader back-ends 
 
+Please note that when completing a quiz attempt, you may see the message 'questions without a response'.
+Questions are considered unanswered even if the answer is not correct. 
+This is a characteristic of 'adaptive' behavior and can also be observed with other question types.
+
 ## Screenshots
 
 Student view with editor input (code template and syntax highlighting): 

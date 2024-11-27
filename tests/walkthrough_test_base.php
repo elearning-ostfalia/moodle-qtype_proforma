@@ -54,6 +54,13 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
 }';
     const WRONG_RESPONSE = 'attempt 1';
     const WRONG_RESPONSE_2 = 'attempt 2';
+    const PART_CORRECT_RESPONSE = 'public class MyString
+{
+	static public String flip( String aString)
+	{
+		return aString;
+	}
+}';
 
     const GRADER_OUTPUT_CORRECT = array('<?xml version="1.0" encoding="utf-8"?>
 <response lang="en" xmlns="urn:proforma:v2.0">
@@ -131,6 +138,84 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
     <grader-engine name="praktomat" version="xyz" />
   </response-meta-data>
 </response>', 200);
+
+    const GRADER_OUTPUT_PART_CORRECT = array('<?xml version="1.0" encoding="utf-8"?>
+<response lang="en" xmlns="urn:proforma:v2.0">
+  <separate-test-feedback>
+    <submission-feedback-list>
+      <student-feedback level="debug">
+        <title>title1</title>
+        <content format="html">content1</content>
+        <filerefs>
+        </filerefs>
+      </student-feedback>
+      <teacher-feedback level="debug">
+        <title>title1</title>
+        <content format="plaintext">content4</content>
+        <filerefs>
+        </filerefs>
+      </teacher-feedback>
+    </submission-feedback-list>
+    <tests-response>
+      <test-response id="1">
+        <test-result>
+          <result is-internal-error="false">
+            <score>0.0</score>
+            <validity>1.0</validity>
+          </result>
+          <feedback-list>
+            <student-feedback level="error">
+              <title>MyString cannot be resolved to a variable</title>
+              <content format="plaintext">Sample.java	line 55</content>
+              <filerefs>
+              </filerefs>
+            </student-feedback>
+            <student-feedback level="error">
+                <title>Inline cannot be resolved</title>
+              <content format="plaintext">Sample.java	line 56</content>
+              <filerefs>
+              </filerefs>
+            </student-feedback>
+            <teacher-feedback level="debug">
+              <title>Java-Compilation (teacher)</title>
+              <content format="html">content11</content>
+              <filerefs>
+              </filerefs>
+            </teacher-feedback>
+          </feedback-list>
+        </test-result>
+      </test-response>
+      <test-response id="2">
+        <test-result>
+          <result is-internal-error="false">
+            <score>1.0</score>
+            <validity>1.0</validity>
+          </result>
+          <feedback-list>
+            <student-feedback level="debug">
+              <title>JUnit</title>
+              <content format="html">content15</content>
+              <filerefs>
+              </filerefs>
+            </student-feedback>
+            <teacher-feedback level="debug">
+              <title>JUnit</title>
+              <content format="plaintext">content18</content>
+              <filerefs>
+              </filerefs>
+            </teacher-feedback>
+          </feedback-list>
+        </test-result>
+      </test-response>
+    </tests-response>
+  </separate-test-feedback>
+  <files>
+  </files>
+  <response-meta-data>
+    <grader-engine name="praktomat" version="xyz" />
+  </response-meta-data>
+</response>', 200);
+
 
     const GRADER_OUTPUT_INCORRECT = array('<?xml version="1.0" encoding="utf-8"?>
 <response lang="en" xmlns="urn:proforma:v2.0">
@@ -347,6 +432,12 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
                                     ->willReturn(self::GRADER_OUTPUT_CORRECT);
                             $stub->method('send_files_to_grader')
                                     ->willReturn(self::GRADER_OUTPUT_CORRECT);
+                            break;
+                        case self::PART_CORRECT_RESPONSE:
+                            $stub->method('send_code_to_grader')
+                                ->willReturn(self::GRADER_OUTPUT_PART_CORRECT);
+                            $stub->method('send_files_to_grader')
+                                ->willReturn(self::GRADER_OUTPUT_PART_CORRECT);
                             break;
                         case self::WRONG_RESPONSE:
                             $stub->method('send_code_to_grader')
@@ -637,6 +728,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         // remember state
         $this->last_state = $this->current_state;
         $this->current_state = $state;
+        // echo 'current state is ' . $state . PHP_EOL;
         parent::check_current_state($state);
     }
 
@@ -669,6 +761,68 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
                 $this->get_contains_specific_feedback_expectation());
         // $this->check_specific_feedback_text('Your answer is correct.');
         $this->check_remaining_tries(self::STATE_CORRECT);
+    }
+
+
+    protected function check_graded_partially_correct($mark = 0.6) {
+        $mustbegraded = true;
+        switch (self::EXPECTED_BEHAVIOUR) {
+            case "interactivewithfeedback":
+                // answer must be graded if it is the last try
+                $mustbegraded = ($this->remainingtries == 0);
+                break;
+            case "adaptiveexternalgrading":
+                // answer is graded if it is finished
+                $mustbegraded = $this->is_finished;
+                break;
+            default:
+                $this->assertFalse(true);
+        }
+        if ($mustbegraded) {
+            //if ($mark === 0.0)
+            //    $this->check_current_state(question_state::$gradedwrong);
+            //else
+                $this->check_current_state(question_state::$gradedpartial);
+            $this->check_current_mark($mark);
+        } else {
+            $this->check_current_state(question_state::$todo);
+            // mark is set for adaptive but not for interactive
+            switch (self::EXPECTED_BEHAVIOUR) {
+                case "interactivewithfeedback":
+                    // state is todo
+                    $this->check_current_mark(null);
+                    // $this->check_current_mark(0.0);
+                    break;
+                case "adaptiveexternalgrading":
+                    //$this->check_current_mark(null);
+                    $this->check_current_mark($mark);
+                    break;
+                default:
+                    $this->assertFalse(true);
+            }
+        }
+
+        $this->render();
+        // answer field is disabled because you have to press 'Try again' Button
+        // $this->check_answer_text($response, true); //????
+        $verify_exists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $this->check_verify_button_enabled($verify_exists);
+        $this->check_current_output(
+            $this->get_contains_question_text_expectation($this->question),
+            // $this->get_contains_general_feedback_expectation($q),
+            $this->get_contains_specific_feedback_expectation());
+        // $this->check_specific_feedback_text('Your answer is not completely correct.');
+        $remainingtries = null;
+
+        if (!$this->is_finished && $this->remainingtries) {
+            $remainingtries = $this->remainingtries;
+        }
+        if ($mark === 0.0)
+            $this->check_remaining_tries(self::STATE_WRONG, $remainingtries);
+        else
+            $this->check_remaining_tries(self::STATE_WEIGHTED_SUM_WRONG, $remainingtries);
+
+        $this->check_step_count($this->expected_step_counter);
     }
 
 
@@ -908,6 +1062,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
     }
 
     protected function finish_attempt() {
+        // echo 'finished ' . PHP_EOL;
         $this->finish_pending = true;
         $increment_step = false;
         /*

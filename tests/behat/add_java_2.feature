@@ -99,7 +99,7 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
       | Response template        |                                |
       | Comment                  |                                |
       | Penalty for each incorrect try  | 10%                     |
-      | Programming language version  | 17                       |
+      | Programming language version  | 21                       |
 
     # compilation
     And the field "compileweight" matches value "5"
@@ -193,7 +193,7 @@ Feature: ADD JAVA JUNIT TESTCODE UPLOAD QUESTION
       | Response template        |                                |
       | Comment                  |                                |
       | Penalty for each incorrect try  | 10%                     |
-      | Programming language version  | 17                       |
+      | Programming language version  | 21                       |
 
     # compilation
     And the field "compileweight" matches value "5"

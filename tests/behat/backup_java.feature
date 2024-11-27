@@ -111,7 +111,7 @@ Feature: BACKUP AND RESTORE JAVA
       | Response template        |                                |
       | Comment                  |                                |
       | Penalty for each incorrect try  | 10%                     |
-      | Programming language version  | 17                       |
+      | Programming language version  | 21                       |
 
     # compilation
     And the field "compileweight" matches value "5"

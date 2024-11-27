@@ -427,7 +427,7 @@ def is_palindrome(text):
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
-  Scenario Outline: Proforma and numerical question types without grader
+  Scenario Outline: Proforma and numerical question types without grader without check
 ##########################################################################
 
     When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
@@ -526,4 +526,99 @@ def is_palindrome(text):
       | interactive        | Not complete     | Tries remaining: 1 | Not complete | Tries remaining: 1 |
       | adaptive           | Not complete     | Not complete       | Not complete | Not complete       |
       | adaptivenopenalty  | Not complete     | Not complete       | Not complete | Not complete       |
+
+
+##########################################################################
+  @javascript @_file_upload @_switch_window
+  Scenario Outline: Proforma and numerical question types with check
+##########################################################################
+
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
+    And I maximize window
+    And I add a "Numerical" question filling the form with:
+      | Question name                      | Numerical-002                               |
+      | Question text                      | How many meter is 1m + 20cm + 50mm?         |
+      | Default mark                       | 1                                           |
+      | General feedback                   | The correct answer is 1.25m                 |
+      | id_answer_0                        | 1.25                                        |
+      | id_tolerance_0                     | 0                                           |
+      | id_fraction_0                      | 100%                                        |
+      | id_answer_1                        | 125                                         |
+      | id_tolerance_1                     | 0                                           |
+      | id_fraction_1                      | 0%                                          |
+      | id_answer_2                        | 1250                                        |
+      | id_tolerance_2                     | 0                                           |
+      | id_fraction_2                      | 0%                                          |
+      | id_unitrole                        | The unit must be given, and will be graded. |
+      | id_unitpenalty                     | 0.15                                        |
+      | id_unitgradingtypes                | as a fraction (0-1) of the question grade   |
+      | id_unitsleft                       | on the right, for example 1.00cm or 1.00km  |
+      | id_multichoicedisplay              | a drop-down menu                            |
+      | id_unit_0                          | m                                           |
+    Then I should see "Numerical-002"
+
+    Given quiz "Quiz 1" contains the following questions:
+      | question        | page |
+      | proforma-001    | 1    |
+      | Numerical-002   | 1    |
+#      | palindrom | 1    |
+    Given I am on the "Quiz 1" "quiz activity editing" page logged in as teacher1
+    And I set the following fields to these values:
+      | preferredbehaviour | <behaviour> |
+    And I press "Save and display"
+
+    # 1. Start test => not yet answered / In progress
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Attempt quiz"
+
+    # 2. Enter response => Answer saved / In progress
+    And I set the field with xpath "//input[@type='text']" to "11"
+    And I set the field with xpath "//select" to "m"
+    And I set the response to
+    """
+    // This is some test input
+    """
+
+    # Check both responses
+    And I click on "(//button[contains(text(), 'Check')])[1]" "xpath_element"
+    And I click on "(//button[contains(text(), 'Check')])[2]" "xpath_element"
+    And I press "Finish attempt"
+
+    And I should see "<answersaved2>" in the "2" "table_row"
+    And I should see "<answersaved1>" in the "1" "table_row"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "In progress" in the "Student 1" "table_row"
+
+    # 3. Submit response => Answer saved / In progress
+    When I am on the "Quiz 1" "quiz activity" page logged in as student1
+    And I press "Continue your attempt"
+    And I should see "This is some test input"
+    And the field with xpath "//input[@type='text']" matches value "11"
+    And the field with xpath "//select" matches value "m"
+
+    And I press "Finish attempt"
+    And I press "Submit all and finish"
+    # confirm dialog
+    And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
+    And I follow "Finish review"
+
+    When I am on the "Quiz 1" "quiz activity" page logged in as teacher1
+    And I follow "Attempts: 1"
+    Then I should see "Finished" in the "Student 1" "table_row"
+    Then I should see "Not yet graded" in the "Student 1" "table_row"
+    Then I should see "Requires grading" in the "Student 1" "table_row"
+
+    Examples:
+    # 1: proforma
+    # 2: numerical question
+      | behaviour          |  answersaved1      | answersaved2      |
+#      | interactive        |  Incomplete answer | Tries remaining: 1 |
+      | interactive        |  Incomplete answer | Incorrect |
+      | immediatefeedback  |  Incomplete answer | Incorrect      |
+#      | immediatecbm       |  Not complete | Not complete      |
+      | adaptive           |  Incomplete answer | Incorrect       |
+      | adaptivenopenalty  |  Incomplete answer | Incorrect       |
+
 
