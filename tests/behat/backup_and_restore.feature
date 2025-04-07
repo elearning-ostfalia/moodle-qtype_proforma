@@ -38,6 +38,27 @@ Feature: BACKUP AND RESTORE
     And I am on "Course 1" course homepage
 
   @javascript
+  Scenario: Duplicate a proforma quiz
+    When I am on "Course 1" course homepage with editing mode on
+    And I duplicate "quiz" activity editing the new copy with:
+      | Name | Quiz 2 |
+    And I am on the "Quiz 2" "mod_quiz > Edit" page
+    Then I should see "proforma-001"
+    And I should see "proforma-002"
+    And I should see "proforma-003"
+    And I should see "proforma-setlx"
+    And I am on the "quiz" "mod_quiz > Edit" page
+    Then I should see "proforma-001"
+    And I should see "proforma-002"
+    And I should see "proforma-003"
+    And I should see "proforma-setlx"
+    When I am on "Course 1" course homepage
+    And I navigate to "Question bank" in current page administration
+    And I pause
+    And I should see "(4)"
+
+
+  @javascript
   Scenario: Backup and restore a course containing 2 ProFormA questions
     When I backup "Course 1" course using this options:
       | Confirmation | Filename | test_backup.mbz |
