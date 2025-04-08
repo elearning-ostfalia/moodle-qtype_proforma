@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+define("PROFORMA_OPTION", "proforma");
+
 /**
  * restore plugin class that provides the necessary information
  * needed to restore one proforma qtype plugin
@@ -40,23 +42,18 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         $paths = [];
 
         // Add options to the restore structure.
-        // $this->add_question_options($paths);
-        $elename = 'proforma_option';
-        $elepath = $this->get_pathfor('/proforma_option');
+        $elename = PROFORMA_OPTION;
+        $elepath = $this->get_pathfor('/' . PROFORMA_OPTION);
         // We used get_recommended_name() so this works.
         $paths[] = new restore_path_element($elename, $elepath);
 
         return $paths; // And return the paths.
-
 //        return array(
 //                new restore_path_element('proforma', $this->get_pathfor('/proforma'))
 //        );
     }
 
-
-
-    public function process_proforma_option($data)
-    {
+    public function process_proforma($data) {
         global $DB;
 
         $data = (object)$data;
@@ -80,6 +77,7 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         /**
      * Process the qtype/proforma element
      */
+        /*
      public function process_proforma($data) {
         global $DB;
 
@@ -89,13 +87,13 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         if (!isset($data->responsetemplate)) {
             $data->responsetemplate = '';
         }
-        /*
-        if (!isset($data->responserequired)) {
-            $data->responserequired = 1;
-        }
-        if (!isset($data->attachmentsrequired)) {
-            $data->attachmentsrequired = 0;
-        }*/
+
+        //if (!isset($data->responserequired)) {
+        //    $data->responserequired = 1;
+        //}
+        //if (!isset($data->attachmentsrequired)) {
+        //    $data->attachmentsrequired = 0;
+        // }
 
         // Detect if the question is created or mapped.
         $questioncreated = $this->get_mappingid('question_created',
@@ -109,7 +107,7 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
             $this->set_mapping('qtype_proforma', $oldid, $newitemid);
         }
     }
-
+*/
     /**
      * Return the contents of this qtype to be processed by the links decoder
      */
@@ -156,11 +154,11 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
     public static function convert_backup_to_questiondata(array $backupdata): \stdClass {
         $questiondata = parent::convert_backup_to_questiondata($backupdata);
 //        var_dump($questiondata);
-        $questiondata->options = (object) $backupdata["plugin_qtype_proforma_question"]['proforma_option'][0];
+        $questiondata->options = (object) $backupdata["plugin_qtype_proforma_question"][PROFORMA_OPTION][0];
         return $questiondata;
     }
 
-/*
+
     #[\Override]
     protected function define_excluded_identity_hash_fields(): array {
         return [
@@ -168,5 +166,5 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
             '/options/questionid',
         ];
     }
-*/
+
 }
