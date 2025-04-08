@@ -31,6 +31,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 class restore_qtype_proforma_plugin extends restore_qtype_plugin {
 
+    //TODO: proforma_option in proforma umbenennen
+
     /**
      * Returns the paths to be handled by the plugin at question level
      */
@@ -38,7 +40,11 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         $paths = [];
 
         // Add options to the restore structure.
-        $this->add_question_options($paths);
+        // $this->add_question_options($paths);
+        $elename = 'proforma_option';
+        $elepath = $this->get_pathfor('/proforma_option');
+        // We used get_recommended_name() so this works.
+        $paths[] = new restore_path_element($elename, $elepath);
 
         return $paths; // And return the paths.
 
@@ -47,22 +53,9 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
 //        );
     }
 
-    /*
-     * Add the options to the restore structure.
-     */
-    private function add_question_options(&$paths) {
-        // Check $paths is an array.
-        if (!is_array($paths)) {
-            throw new restore_step_exception('paths_must_be_array', $paths);
-        }
 
-        $elename = 'proforma_options';
-        $elepath = $this->get_pathfor('/proforma_options/proforma_option');
-        // We used get_recommended_name() so this works.
-        $paths[] = new restore_path_element($elename, $elepath);
-    }
 
-    public function process_proforma_options($data)
+    public function process_proforma_option($data)
     {
         global $DB;
 
@@ -134,7 +127,7 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         global $DB;
 
         $proformaswithoutoptions = $DB->get_records_sql("
-                    SELECT *
+                    SELECT q.*
                       FROM {question} q
                       JOIN {backup_ids_temp} bi ON bi.newitemid = q.id
                  LEFT JOIN {qtype_proforma_options} qeo ON qeo.questionid = q.id
@@ -142,8 +135,7 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
                        AND qeo.id IS NULL
                        AND bi.backupid = ?
                        AND bi.itemname = ?
-                     )
-                ", array('proforma', $this->get_restoreid(), 'question_created'));
+                   ", array('proforma', $this->get_restoreid(), 'question_created'));
 
         foreach ($proformaswithoutoptions as $q) {
             throw new coding_exception('qtype_proforma_options do not exist for question ' . $q->id);
@@ -164,10 +156,11 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
     public static function convert_backup_to_questiondata(array $backupdata): \stdClass {
         $questiondata = parent::convert_backup_to_questiondata($backupdata);
 //        var_dump($questiondata);
-        $questiondata->options = (object) $backupdata["plugin_qtype_proforma_question"]['proforma'][0];
+        $questiondata->options = (object) $backupdata["plugin_qtype_proforma_question"]['proforma_option'][0];
         return $questiondata;
     }
 
+/*
     #[\Override]
     protected function define_excluded_identity_hash_fields(): array {
         return [
@@ -175,4 +168,5 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
             '/options/questionid',
         ];
     }
+*/
 }
