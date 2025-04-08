@@ -6,8 +6,6 @@ Feature: BACKUP AND RESTORE
   I need to be able to backup and restore them
 
   Background:
-    # the correct values of all templates should be tested in other testcases
-    # such as edit_stlx.feature
 
     Given the following "users" exist:
       | username | firstname | lastname | email               |
@@ -18,24 +16,73 @@ Feature: BACKUP AND RESTORE
     And the following "question categories" exist:
       | contextlevel | reference | name           |
       | Course       | C1        | Test questions |
-    And the following "questions" exist:
-      | questioncategory | qtype        | name         | template         |
-      | Test questions   | proforma     | proforma-001 | editor           |
-      | Test questions   | proforma     | proforma-002 | java1            |
-      | Test questions   | proforma     | proforma-003 | filepicker       |
-      | Test questions   | proforma     | proforma-setlx | setlx2       |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+#    And the following "questions" exist:
+#      | questioncategory | qtype        | name         | template         |
+#     | Test questions   | proforma     | proforma-001 | editor           |
+#      | Test questions   | proforma     | proforma-002 | java1            |
+#      | Test questions   | proforma     | proforma-003 | filepicker       |
+#      | Test questions   | proforma     | proforma-setlx | setlx2       |
     And the following "activities" exist:
       | activity   | name      | course | idnumber |
       | quiz       | Test quiz | C1     | quiz1    |
-    And quiz "Test quiz" contains the following questions:
-      | proforma-001 | 1 |
-      | proforma-002 | 1 |
-      | proforma-003 | 1 |
-      | proforma-setlx | 1 |
+#    And quiz "Test quiz" contains the following questions:
+#      | proforma-001 | 1 |
+#      | proforma-002 | 1 |
+#      | proforma-003 | 1 |
+#      | proforma-setlx | 1 |
     And the following config values are set as admin:
       | enableasyncbackup | 0 |
-    And I log in as "admin"
+
+    And I log in as "teacher1"
     And I am on "Course 1" course homepage
+    And I navigate to "Question bank" in current page administration
+    And I create a new "java" question
+    And I set the following fields to these values:
+      | Question name            | java-question                  |
+      | Question text            | write a java program that..... |
+      | Response format          | editor                         |
+      | Response filename        | MyClass.java                   |
+      | Title                    | JUnit test title               |
+    # feedback options
+    And I expand all fieldsets
+    And the field "Initially collapse/expand" matches value "collapse"
+    # 'Show messages in editor'
+    And the "inlinemessages" checkbox is "1"
+    # JUnit
+    When I set the codemirror "testcode_0" to "class XClass {}"
+    And I press "id_submitbutton"
+    Then I should see "java-question"
+    And quiz "Test quiz" contains the following questions:
+      | java-question | 1 |
+#      | proforma-002 | 1 |
+#      | proforma-003 | 1 |
+#      | proforma-setlx | 1 |
+
+  @javascript
+  Scenario: Duplicate a proforma quiz
+    When I am on "Course 1" course homepage with editing mode on
+#    And I pause
+    And I duplicate "quiz" activity editing the new copy with:
+      | Name | Quiz 2 |
+    And I am on the "Quiz 2" "mod_quiz > Edit" page
+    Then I should see "java"
+#    And I should see "proforma-002"
+#    And I should see "proforma-003"
+#    And I should see "proforma-setlx"
+    And I pause
+    And I am on the "quiz" "mod_quiz > Edit" page
+    Then I should see "java"
+#    And I should see "proforma-002"
+#    And I should see "proforma-003"
+#    And I should see "proforma-setlx"
+    When I am on "Course 1" course homepage
+    And I navigate to "Question bank" in current page administration
+    And I pause
+    And I should see "(4)"
+
 
   @javascript
   Scenario: Backup and restore a course containing 2 ProFormA questions

@@ -48,23 +48,7 @@ class backup_qtype_proforma_plugin extends backup_qtype_plugin {
         // Connect the visible container ASAP.
         $plugin->add_child($pluginwrapper);
 
-        // Now create the qtype own structures.
-        $dummy = new qtype_proforma();
-
-        $extrafields = $dummy->extra_question_fields();
-        array_shift($extrafields); // remove first element (= table name)
-
-        $extrafields[] = 'comment';
-        $extrafields[] = 'commentformat';
-
-        $proforma = new backup_nested_element('proforma', array('id'), $extrafields);
-
-        // Now the own qtype tree.
-        $pluginwrapper->add_child($proforma);
-
-        // Set source to populate the data.
-        $proforma->set_source_table('qtype_proforma_options',
-                array('questionid' => backup::VAR_PARENTID));
+        $this->add_question_proforma_options($pluginwrapper);
 
         // Don't need to annotate ids nor files.
 
@@ -88,5 +72,34 @@ class backup_qtype_proforma_plugin extends backup_qtype_plugin {
         }
 
         return $result;
+    }
+
+    /**
+     * @param backup_nested_element $pluginwrapper
+     * @return an|string[]
+     * @throws base_element_struct_exception
+     */
+    protected function add_question_proforma_options(backup_nested_element $pluginwrapper) {
+        // Now create the qtype own structures.
+        $dummy = new qtype_proforma();
+
+        // Check $element is one nested_backup_element.
+        if (! $pluginwrapper instanceof backup_nested_element) {
+            throw new \core\exception\coding_exception('bad element type');
+        }
+
+        $extrafields = $dummy->extra_question_fields();
+        array_shift($extrafields); // remove first element (= table name)
+
+        $extrafields[] = 'comment';
+        $extrafields[] = 'commentformat';
+
+        $proforma = new backup_nested_element('proforma_option', array('id'), $extrafields);
+
+        // Now the own qtype tree.
+        $pluginwrapper->add_child($proforma);
+
+        // Set source to populate the data.
+        $proforma->set_source_table('qtype_proforma_options', array('questionid' => backup::VAR_PARENTID));
     }
 }

@@ -35,15 +35,59 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
      * Returns the paths to be handled by the plugin at question level
      */
     protected function define_question_plugin_structure() {
-        return array(
-                new restore_path_element('proforma', $this->get_pathfor('/proforma'))
-        );
+        $paths = [];
+
+        // Add options to the restore structure.
+        $this->add_question_options($paths);
+
+        return $paths; // And return the paths.
+
+//        return array(
+//                new restore_path_element('proforma', $this->get_pathfor('/proforma'))
+//        );
     }
 
-    /**
+    /*
+     * Add the options to the restore structure.
+     */
+    private function add_question_options(&$paths) {
+        // Check $paths is an array.
+        if (!is_array($paths)) {
+            throw new restore_step_exception('paths_must_be_array', $paths);
+        }
+
+        $elename = 'proforma_options';
+        $elepath = $this->get_pathfor('/proforma_options/proforma_option');
+        // We used get_recommended_name() so this works.
+        $paths[] = new restore_path_element($elename, $elepath);
+    }
+
+    public function process_proforma_options($data)
+    {
+        global $DB;
+
+        $data = (object)$data;
+
+        // Detect if the question is created or mapped.
+        $oldquestionid   = $this->get_old_parentid('question');
+        $newquestionid   = $this->get_new_parentid('question');
+        $questioncreated = $this->get_mappingid('question_created', $oldquestionid) ? true : false;
+
+        // If the question has been created by restore, we need to insert a new options record.
+        if ($questioncreated) {
+            $data->questionid = $newquestionid;
+
+            // Insert the record.
+            $DB->insert_record("qtype_proforma_options", $data);
+        }
+        // Nothing to remap if the question already existed.
+    }
+
+
+        /**
      * Process the qtype/proforma element
      */
-    public function process_proforma($data) {
+     public function process_proforma($data) {
         global $DB;
 
         $data = (object) $data;
@@ -92,17 +136,18 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         $proformaswithoutoptions = $DB->get_records_sql("
                     SELECT *
                       FROM {question} q
+                      JOIN {backup_ids_temp} bi ON bi.newitemid = q.id
+                 LEFT JOIN {qtype_proforma_options} qeo ON qeo.questionid = q.id
                      WHERE q.qtype = ?
-                       AND NOT EXISTS (
-                        SELECT 1
-                          FROM {qtype_proforma_options}
-                         WHERE questionid = q.id
+                       AND qeo.id IS NULL
+                       AND bi.backupid = ?
+                       AND bi.itemname = ?
                      )
-                ", array('proforma'));
+                ", array('proforma', $this->get_restoreid(), 'question_created'));
 
         foreach ($proformaswithoutoptions as $q) {
             throw new coding_exception('qtype_proforma_options do not exist for question ' . $q->id);
-
+/*
             $defaultoptions = new stdClass();
             $defaultoptions->questionid = $q->id;
             $defaultoptions->responseformat = 'editor';
@@ -111,7 +156,23 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
             $defaultoptions->comment = '';
             $defaultoptions->commentformat = FORMAT_HTML;
             $defaultoptions->responsetemplate = '';
-            $DB->insert_record('qtype_proforma_options', $defaultoptions);
+            $DB->insert_record('qtype_proforma_options', $defaultoptions);*/
         }
+    }
+
+    #[\Override]
+    public static function convert_backup_to_questiondata(array $backupdata): \stdClass {
+        $questiondata = parent::convert_backup_to_questiondata($backupdata);
+//        var_dump($questiondata);
+        $questiondata->options = (object) $backupdata["plugin_qtype_proforma_question"]['proforma'][0];
+        return $questiondata;
+    }
+
+    #[\Override]
+    protected function define_excluded_identity_hash_fields(): array {
+        return [
+            '/options/id',
+            '/options/questionid',
+        ];
     }
 }
