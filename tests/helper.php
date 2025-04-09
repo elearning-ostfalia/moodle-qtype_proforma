@@ -37,6 +37,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 require_once($CFG->dirroot . '/lib/accesslib.php');
+require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 
 /**
  * Test helper class for the proforma question type.
@@ -279,7 +280,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $container->maxbytes = 10240;
         $container->filetypes = '.java, .jar';
 
-
+/*
         $container->hint = array(
                 0 => array(
                         'text' => 'hint 1<br>',
@@ -289,7 +290,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'text' => 'hint 2<br>',
                         'format' => '1',
                         'itemid' => '34635511'));
-
+*/
         if (isset($container->taskstorage) && $container->taskstorage == qtype_proforma::PERSISTENT_TASKFILE) {
 
             $container->task =  file_get_unused_draft_itemid();
@@ -341,12 +342,12 @@ class qtype_proforma_test_helper extends question_test_helper {
         $q->inlinemessages = 1;
         // $q->initiallyinline = 1;
 
-
+/*
         $q->hints = array(
                 new question_hint(1, 'hint 1', FORMAT_HTML),
                 new question_hint(2, 'hint 2', FORMAT_HTML),
         );
-
+*/
 
         $this->get_proforma_data($q);
 
@@ -664,7 +665,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // handle different line ending on different platforms
         $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
-        $form->hint = array(
+/*        $form->hint = array(
                 0 => array(
                         'text' => 'hint 1<br>',
                         'format' => '1',
@@ -673,7 +674,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'text' => 'hint 2<br>',
                         'format' => '1',
                         'itemid' => '34635511'));
-
+*/
         return $form;
     }
 
@@ -887,7 +888,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // handle different line ending on different platforms
 //        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
-        $form->hint = array(
+/*        $form->hint = array(
                 0 => array(
                         'text' => 'hint 1<br>',
                         'format' => '1',
@@ -896,7 +897,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'text' => 'hint 2<br>',
                         'format' => '1',
                         'itemid' => '34635511'));
-
+*/
         return $form;
     }
 
@@ -1000,7 +1001,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // handle different line ending on different platforms
         //        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
-        $form->hint = array(
+/*        $form->hint = array(
                 0 => array(
                         'text' => 'hint 1<br>',
                         'format' => '1',
@@ -1009,7 +1010,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'text' => 'hint 2<br>',
                         'format' => '1',
                         'itemid' => '34635511'));
-
+*/
         return $form;
     }
 
@@ -1108,7 +1109,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // handle different line ending on different platforms
         //        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
-        $form->hint = array(
+/*        $form->hint = array(
             0 => array(
                 'text' => 'hint 1<br>',
                 'format' => '1',
@@ -1117,7 +1118,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                 'text' => 'hint 2<br>',
                 'format' => '1',
                 'itemid' => '34635511'));
-
+*/
         return $form;
     }
 
@@ -1207,7 +1208,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // handle different line ending on different platforms
         //        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
-        $form->hint = array(
+    /*    $form->hint = array(
             0 => array(
                 'text' => 'hint 1<br>',
                 'format' => '1',
@@ -1216,7 +1217,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                 'text' => 'hint 2<br>',
                 'format' => '1',
                 'itemid' => '34635511'));
-
+*/
         return $form;
     }
 
