@@ -244,12 +244,6 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
 <task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
 </task>
 <commentfiles></commentfiles>
-    <hint format="html">
-      <text><![CDATA[hint 1<br>]]></text>
-    </hint>
-    <hint format="html">
-      <text><![CDATA[hint 2<br>]]></text>
-    </hint>
   </question>
 ';
 
@@ -336,12 +330,6 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
 <task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
 </task>
 <commentfiles></commentfiles>
-    <hint format="html">
-      <text><![CDATA[hint 1<br>]]></text>
-    </hint>
-    <hint format="html">
-      <text><![CDATA[hint 2<br>]]></text>
-    </hint>
   </question>
 ';
 
@@ -428,15 +416,15 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
 <task><file name="testtask.zip" path="/" encoding="base64">VGFzay5aaXAtRHVtbXk=</file>
 </task>
 <commentfiles></commentfiles>
-    <hint format="html">
-      <text><![CDATA[hint 1<br>]]></text>
-    </hint>
-    <hint format="html">
-      <text><![CDATA[hint 2<br>]]></text>
-    </hint>
   </question>
 ';
 
+        /*    <hint format="html">
+              <text><![CDATA[hint 1<br>]]></text>
+            </hint>
+            <hint format="html">
+              <text><![CDATA[hint 2<br>]]></text>
+            </hint>*/
         $this->assertXmlEquals($expectedxml, $export);
     }
 

@@ -19,23 +19,17 @@ Feature: BACKUP AND RESTORE
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
-#    And the following "questions" exist:
-#      | questioncategory | qtype        | name         | template         |
-#     | Test questions   | proforma     | proforma-001 | editor           |
-#      | Test questions   | proforma     | proforma-002 | java1            |
-#      | Test questions   | proforma     | proforma-003 | filepicker       |
-#      | Test questions   | proforma     | proforma-setlx | setlx2       |
     And the following "activities" exist:
       | activity   | name      | course | idnumber |
       | quiz       | Test quiz | C1     | quiz1    |
-#    And quiz "Test quiz" contains the following questions:
-#      | proforma-001 | 1 |
-#      | proforma-002 | 1 |
-#      | proforma-003 | 1 |
-#      | proforma-setlx | 1 |
     And the following config values are set as admin:
       | enableasyncbackup | 0 |
+    And the following config values are set as admin:
+      | taskmaxbytes        | 10485760          | qtype_proforma |
 
+  @javascript
+  Scenario: Duplicate a proforma quiz with Java question
+        # create Java question
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
@@ -57,205 +51,73 @@ Feature: BACKUP AND RESTORE
     Then I should see "java-question"
     And quiz "Test quiz" contains the following questions:
       | java-question | 1 |
-#      | proforma-002 | 1 |
-#      | proforma-003 | 1 |
-#      | proforma-setlx | 1 |
-
-  @javascript
-  Scenario: Duplicate a proforma quiz
+    # duplicate
     When I am on "Course 1" course homepage with editing mode on
-#    And I pause
-    And I duplicate "quiz" activity editing the new copy with:
+    And I duplicate "Test quiz" activity editing the new copy with:
       | Name | Quiz 2 |
     And I am on the "Quiz 2" "mod_quiz > Edit" page
     Then I should see "java"
-#    And I should see "proforma-002"
-#    And I should see "proforma-003"
-#    And I should see "proforma-setlx"
-    And I pause
-    And I am on the "quiz" "mod_quiz > Edit" page
+    And I am on the "Test quiz" "mod_quiz > Edit" page
     Then I should see "java"
-#    And I should see "proforma-002"
-#    And I should see "proforma-003"
-#    And I should see "proforma-setlx"
     When I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    And I pause
-    And I should see "(4)"
+    And I should see "(1)"
+    And I should not see "(2)"
 
+  @javascript @_file_upload
+  Scenario: Duplicate a proforma quiz with imported Java question
+        # create Java question
+    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
+    # When I navigate to "Question bank > Import" in current page administration
+    And I set the field "id_format_xml" to "1"
+    And I upload "question/type/proforma/tests/fixtures/javaquestion.xml" file to "Import" filemanager
+    And I press "id_submitbutton"
+    Then I should see "Parsing questions from import file."
+    And I should see "Importing 1 questions from file"
+    And I should see "1. write a function that checks if a given string is a palindrom"
+    And I press "Continue"
+    And I should see "palindrom"
+    And quiz "Test quiz" contains the following questions:
+      | palindrom | 1 |
 
-  @javascript
-  Scenario: Backup and restore a course containing 2 ProFormA questions
-    When I backup "Course 1" course using this options:
-      | Confirmation | Filename | test_backup.mbz |
-#    And I pause
-    And I restore "test_backup.mbz" backup into a new course using this options:
-      | Schema | Course name | Course 2 |
+    # duplicate
+    When I am on "Course 1" course homepage with editing mode on
+    And I duplicate "Test quiz" activity editing the new copy with:
+      | Name | Quiz 2 |
+    And I am on the "Quiz 2" "mod_quiz > Edit" page
+    Then I should see "palindrom"
+    And I am on the "Test quiz" "mod_quiz > Edit" page
+    Then I should see "palindrom"
+    When I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    And I should see "proforma-001"
-    And I should see "proforma-002"
-    And I should see "proforma-003"
-    And I should see "proforma-setlx"
+    And I should see "(1)"
+    And I should not see "(2)"
 
-    # Check Setlx
-    When I choose "Edit question" action for "proforma-setlx" in the question bank
-    # assert(expected old values)
-    Then the following fields match these values:
-      | Question name            | proforma-setlx           |
-      | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
-      | Default mark             | 3                              |
-      | General feedback         | <p>You must not use a library function.</p>        |
-      | Syntax highlighting      | SetlX                           |
-      | Input box size           | 10 lines                       |
-      | Response template        | //text in responsetemplate     |
-      | Model solution           | // code for model solution                 |
-      | Comment                  | <p>Check if the code uses a library function.</p>                 |
-      | Aggregation strategy      | All or nothing                |
-      | Penalty for each incorrect try  | 20%                     |
-    # Syntax Check
-    And the "compile" checkbox is "checked"
-    And the field "compileweight" matches value "2"
-    # Setlx Test 1
-    And the field "testid[0]" matches value "1"
-    And the field "testtitle[0]" matches value "Setlx Test 1"
-    And the field "testdescription[0]" matches value "DESCRIPTION 1"
-    And the field "testtype[0]" matches value "setlx"
-    And the field "testweight[0]" matches value "3"
-    And the field "testcode[0]" matches value "some testcode"
-    # Setlx Test 2
-    And the field "testid[1]" matches value "2"
-    And the field "testtitle[1]" matches value "Setlx Test 2"
-    And the field "testdescription[1]" matches value "DESCRIPTION 2"
-    And the field "testtype[1]" matches value "setlx"
-    And the field "testweight[1]" matches value "6"
-    And the field "testcode[1]" matches value "some other testcode"
+  @javascript @_file_upload
+  Scenario: Duplicate a proforma quiz with imported Proforma task file question
+    # import
+    When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
+    And I set the field "id_format_proforma" to "1"
+    And I upload "question/type/proforma/tests/fixtures/isPalindrom.zip" file to "Import" filemanager
+    And I press "id_submitbutton"
+    Then I should see "Parsing questions from import file."
+    And I should see "Importing 1 questions from file"
+#    And I should see "1. write a function that checks if a given string is a palindrom"
+    And I press "Continue"
+    And I should see "isPalindrom"
+    And quiz "Test quiz" contains the following questions:
+      | isPalindrom | 1 |
 
-    # Finish
-    And I press "Cancel"
+    # duplicate
+    When I am on "Course 1" course homepage with editing mode on
+    And I duplicate "Test quiz" activity editing the new copy with:
+      | Name | Quiz 2 |
+    And I am on the "Quiz 2" "mod_quiz > Edit" page
+    Then I should see "isPalindrom"
+    And I am on the "Test quiz" "mod_quiz > Edit" page
+    Then I should see "isPalindrom"
+    When I am on "Course 1" course homepage
+    And I navigate to "Question bank" in current page administration
+    And I should see "(1)"
+    And I should not see "(2)"
 
-    When I choose "Edit question" action for "proforma-002" in the question bank
-    Then the following fields match these values:
-      | Question name            | proforma-002           |
-      | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
-      | Default mark             | 1                              |
-      | General feedback         | <p>You must not use a library function.</p>        |
-      | Response format          | Editor                         |
-      | Syntax highlighting      | Java                           |
-      | Input box size           | 10 lines                       |
-
-      | Syntax highlighting      | Java                         |
-      | Comment                  | <p>Check if the code uses a library function.</p>                 |
-      | Aggregation strategy      | All or nothing                 |
-      | Penalty for each incorrect try  | 20%                     |
-      | Model solution           | // code for model solution     |
-      | Response filename        | MyString.java                  |
-#      | Response template        | multiline              |
-    And the field with name "testtitle[0]" matches value "Junit Test 1"
-    And the field with name "testdescription[0]" matches value "DESCRIPTION 2"
-    And the field with name "testtype[0]" matches value "unittest"
-    And the field with name "testid[0]" matches value "1"
-  # cannot be tested that way
-#    And I set the field with xpath "//textarea[@name='testcode[0]']" to "class XClass {}"
-    And the field with name "compileweight" matches value "2"
-    And the field with name "testweight[0]" matches value "3"
-#    And the field with name "testweight[1]" matches value "4"
-
-    And I press "Cancel"
-
-    When I choose "Edit question" action for "proforma-001" in the question bank
-    Then the following fields match these values:
-      | Question name            | proforma-001                  |
-      | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
-      | Default mark             | 1                              |
-      | General feedback         | <p>You must not use a library function.</p>        |
-      | Response format          | Editor                         |
-      | Syntax highlighting      | Java                           |
-      | Input box size           | 10 lines                       |
-      | Response template        | //text in responsetemplate     |
-      | Comment                  | <p>Check if the code uses a library function.</p>                 |
-      | Aggregation strategy      | All or nothing                |
-      | Penalty for each incorrect try  | 20%                     |
-      | Response filename        | MyString.java                     |
-      | UUID                     | UUID 1                     |
-      | ProFormA Version         | 2.0                        |
-    And the field with name "testweight[0]" matches value "2"
-    And the field with name "testweight[1]" matches value "3"
-    And the field with name "testtitle[0]" matches value "TEST 1"
-    And the field with name "testtitle[1]" matches value "TEST 2"
-    And the field with name "testdescription[0]" matches value "DESCRIPTION 1"
-    And the field with name "testdescription[1]" matches value "DESCRIPTION 2"
-    And the field with name "testid[0]" matches value "1"
-    And the field with name "testid[1]" matches value "2"
-    And the field with name "testtype[0]" matches value "TEST-CONFIG 1"
-    And the field with name "testtype[1]" matches value "TEST-CONFIG 2"
-    # download links
-    # And I should see "instruction.txt, lib.txt"
-    And I should see "2" elements in "Downloadable files" filemanager
-    And I should see "ms1.txt"
-    And I should see "ms2.txt"
-#    And I should see "MyString.java"
-    # grader settings
-#    And I should see "UUID 1"
-    And I should see "testtask.zip"
-#    And I should see "2.0"
-
-    And I press "Cancel"
-
-    When I choose "Edit question" action for "proforma-003" in the question bank
-    Then the following fields match these values:
-      | Question name            | proforma-003          |
-      | Question text            | Please code the reverse string function not using a library function.(äöüß)           |
-      | Default mark             | 1                              |
-      | General feedback         | <p>You must not use a library function.</p>        |
-      | Response format          | File picker                         |
-      | Max. number of uploaded files          | 3                         |
-      | Accepted file types          | .java, .jar                         |
-      | Syntax highlighting      | Python                         |
-
-      | Response template        | //text in responsetemplate     |
-      | Comment                  | <p>Check if the code uses a library function.</p>                 |
-      | Aggregation strategy      | All or nothing                |
-      | Penalty for each incorrect try  | 20%                     |
-#      | Response template        | multiline              |
-      | UUID                     | UUID 2                     |
-      | ProFormA Version         | 2.0                        |
-    And the field "Max. response upload size" matches value "10240"
-    And the field "testweight[0]" matches value "2"
-    And the field "testweight[1]" matches value "3"
-    And the field with name "testtitle[0]" matches value "TEST 1"
-    And the field with name "testtitle[1]" matches value "TEST 2"
-    And the field with name "testdescription[0]" matches value "DESCRIPTION 1"
-    And the field with name "testdescription[1]" matches value "DESCRIPTION 2"
-    And the field with name "testid[0]" matches value "1"
-    And the field with name "testid[1]" matches value "2"
-    And the field with name "testtype[0]" matches value "TEST-CONFIG 1"
-    And the field with name "testtype[1]" matches value "TEST-CONFIG 2"
-# todo: try and check values of static fields
-    # download links
-    # And I should see "instruction.txt, lib.txt"
-    And I should see "2" elements in "Downloadable files" filemanager
-    And I should see "ms1.txt"
-    And I should see "ms2.txt"
-    # grader settings
-#    And I should see "UUID 2"
-    And I should see "testtask.zip"
-#    And I should see "2.0"
-    And I press "Cancel"
-
-    # check for download link in "proforma-001"    
-    # And I navigate to "Question bank" in current page administration
-    When I open preview for "proforma-001" in the question bank
-    Then I should see "lib.txt"
-    Then I should see "instruction.txt"
-    And following "instruction.txt" should download file with between "17" and "20" bytes
-    And following "lib.txt" should download file with between "9" and "12" bytes
-    # Close preview does not work in Moodle 4, so we stop the script here
-    #And I press "Close preview"
-
-    # check for download link in "proforma-003"
-    #When I open preview for "proforma-003" in the question bank
-    #Then I should see "lib.txt"
-    #Then I should see "instruction.txt"
-    #And following "instruction.txt" should download file with between "17" and "20" bytes
-    #And following "lib.txt" should download file with between "9" and "12" bytes
-    #And I press "Close preview"

@@ -76,9 +76,9 @@ final class repeated_restore_test extends advanced_testcase {
         $questiongenerator->update_question($saq);
         // Add question to quiz.
         quiz_add_quiz_question($saq->id, $quiz);
-/*
+
         // Create a numerical question.
-        $numq = $questiongenerator->create_question('numerical', null, ['category' => $cat->id]);
+        $numq = $questiongenerator->create_question('proforma', null, ['category' => $cat->id]);
         // Update the question to simulate multiple versions.
         $questiongenerator->update_question($numq);
         $questiongenerator->update_question($numq);
@@ -86,13 +86,13 @@ final class repeated_restore_test extends advanced_testcase {
         quiz_add_quiz_question($numq->id, $quiz);
 
         // Create a true false question.
-        $tfq = $questiongenerator->create_question('truefalse', null, ['category' => $cat->id]);
+        $tfq = $questiongenerator->create_question('proforma', null, ['category' => $cat->id]);
         // Update the question to simulate multiple versions.
         $questiongenerator->update_question($tfq);
         $questiongenerator->update_question($tfq);
         // Add question to quiz.
         quiz_add_quiz_question($tfq->id, $quiz);
-*/
+
         // Capture original question IDs for verification after import.
         $modules1 = get_fast_modinfo($course1->id)->get_instances_of('quiz');
         $module1 = reset($modules1);
@@ -179,11 +179,11 @@ final class repeated_restore_test extends advanced_testcase {
         $cat = $questiongenerator->create_question_category(['contextid' => $coursecontext->id]);
 
         // Create questions and add to the quiz.
-        $q1 = $questiongenerator->create_question('truefalse', null, [
+        $q1 = $questiongenerator->create_question('proforma', null, [
             'category' => $cat->id,
             'questiontext' => ['text' => "<p>Question</p>\r\n<p>One</p>", 'format' => FORMAT_MOODLE]
         ]);
-        $q2 = $questiongenerator->create_question('truefalse', null, [
+        $q2 = $questiongenerator->create_question('proforma', null, [
             'category' => $cat->id,
             'questiontext' => ['text' => "<p>Question</p>\n<p>Two</p>", 'format' => FORMAT_MOODLE]
         ]);
@@ -268,7 +268,7 @@ final class repeated_restore_test extends advanced_testcase {
             }
             $generators[$qtype->name] = [
                 'qtype' => $qtype->name,
-                'testquestion' => $testquestion,
+                'testquestion' => $testquestion, // $testquestion, // bis java2 läuft es
             ];
         }
         return $generators;

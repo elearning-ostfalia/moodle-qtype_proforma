@@ -33,8 +33,6 @@ define("PROFORMA_OPTION", "proforma");
  */
 class restore_qtype_proforma_plugin extends restore_qtype_plugin {
 
-    //TODO: proforma_option in proforma umbenennen
-
     /**
      * Returns the paths to be handled by the plugin at question level
      */
@@ -44,13 +42,9 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         // Add options to the restore structure.
         $elename = PROFORMA_OPTION;
         $elepath = $this->get_pathfor('/' . PROFORMA_OPTION);
-        // We used get_recommended_name() so this works.
         $paths[] = new restore_path_element($elename, $elepath);
 
         return $paths; // And return the paths.
-//        return array(
-//                new restore_path_element('proforma', $this->get_pathfor('/proforma'))
-//        );
     }
 
     public function process_proforma($data) {
@@ -153,18 +147,15 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
     #[\Override]
     public static function convert_backup_to_questiondata(array $backupdata): \stdClass {
         $questiondata = parent::convert_backup_to_questiondata($backupdata);
-//        var_dump($questiondata);
         $questiondata->options = (object) $backupdata["plugin_qtype_proforma_question"][PROFORMA_OPTION][0];
         return $questiondata;
     }
-
-
+    /*
     #[\Override]
-    protected function define_excluded_identity_hash_fields(): array {
-        return [
-            '/options/id',
-            '/options/questionid',
-        ];
-    }
-
+    public static function remove_excluded_question_data(stdClass $questiondata, array $excludefields = []): stdClass {
+        if (isset($questiondata->options->answers)) {
+            unset($questiondata->options->answers);
+        }
+        return parent::remove_excluded_question_data($questiondata, $excludefields);
+    }*/
 }
