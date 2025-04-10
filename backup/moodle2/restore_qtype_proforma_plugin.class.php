@@ -47,10 +47,14 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         return $paths; // And return the paths.
     }
 
+    /**
+     * Process the qtype/proforma element
+     */
     public function process_proforma($data) {
         global $DB;
 
         $data = (object)$data;
+        $oldid = $data->id;
 
         // Detect if the question is created or mapped.
         $oldquestionid   = $this->get_old_parentid('question');
@@ -60,48 +64,14 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         // If the question has been created by restore, we need to insert a new options record.
         if ($questioncreated) {
             $data->questionid = $newquestionid;
-
             // Insert the record.
-            $DB->insert_record("qtype_proforma_options", $data);
+            $newitemid = $DB->insert_record("qtype_proforma_options", $data);
+            // Create mapping
+            $this->set_mapping('qtype_proforma', $oldid, $newitemid);
         }
         // Nothing to remap if the question already existed.
     }
 
-
-        /**
-     * Process the qtype/proforma element
-     */
-        /*
-     public function process_proforma($data) {
-        global $DB;
-
-        $data = (object) $data;
-        $oldid = $data->id;
-
-        if (!isset($data->responsetemplate)) {
-            $data->responsetemplate = '';
-        }
-
-        //if (!isset($data->responserequired)) {
-        //    $data->responserequired = 1;
-        //}
-        //if (!isset($data->attachmentsrequired)) {
-        //    $data->attachmentsrequired = 0;
-        // }
-
-        // Detect if the question is created or mapped.
-        $questioncreated = $this->get_mappingid('question_created',
-                $this->get_old_parentid('question')) ? true : false;
-
-        // If the question has been created by restore, we need to create its
-        // qtype_proforma too.
-        if ($questioncreated) {
-            $data->questionid = $this->get_new_parentid('question');
-            $newitemid = $DB->insert_record('qtype_proforma_options', $data);
-            $this->set_mapping('qtype_proforma', $oldid, $newitemid);
-        }
-    }
-*/
     /**
      * Return the contents of this qtype to be processed by the links decoder
      */
