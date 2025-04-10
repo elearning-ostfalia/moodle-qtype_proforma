@@ -1,3 +1,8 @@
+## 3.2.0
+
+* adapt to Moodle 4.5.3
+* delete unused columns from table
+
 ## 3.1.4
 
 * adapt to Moodle 4.4
