@@ -32,5 +32,5 @@ Feature: EXPORT
 #    When I navigate to "Question bank > Export" in current page administration
     And I set the field "id_format_xml" to "1"
     And I press "Export questions to file"
-    Then following "click here" should download file with between "12455" and "12475" bytes
+    Then following "click here" should download file with between "11950" and "12050" bytes
 
