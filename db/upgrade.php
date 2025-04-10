@@ -343,13 +343,27 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022111100, 'qtype', 'proforma');
     }
 
-    if ($oldversion < 2025041000) {
+    if ($oldversion < 2025041001) {
+        // Remove unused columns as they cause problems on restore
         $field = new xmldb_field('displayfiles', XMLDB_TYPE_TEXT, null, null, null, null, null, 'downloads');
         if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field);
         }
+        $field = new xmldb_field('instructions_unused', XMLDB_TYPE_TEXT, null, null, null, null, null, 'downloads');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        $field = new xmldb_field('libraries_unused', XMLDB_TYPE_TEXT, null, null, null, null, null, 'downloads');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        $field = new xmldb_field('initallyembedded', XMLDB_TYPE_INTEGER, null, null, null, null, null, 'downloads');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
         // ProFormA savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041000, 'qtype', 'proforma');
+        upgrade_plugin_savepoint(true, 2025041001, 'qtype', 'proforma');
     }
 
     return true;
