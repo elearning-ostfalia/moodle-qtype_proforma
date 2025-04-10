@@ -27,7 +27,7 @@
         <FIELD NAME="taskfilename" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Name of task file if stored in Moodle."/>
         <FIELD NAME="taskstorage" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="task Location, 0=undefined, 1=internal, 2=external "/>
         <FIELD NAME="downloads" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of names for downloadable files"/>
-        <FIELD NAME="displayfiles" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of names for display files"/>
+     <!--   <FIELD NAME="displayfiles" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of names for display files"/> -->
         <FIELD NAME="templates" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of further template filenames (to be be downloaded by student)"/>
         <FIELD NAME="modelsolfiles" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of model solution files (to be be downloaded by student, for future use)"/>
         <FIELD NAME="aggregationstrategy" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="aggregation strategy, 1=all or nothing, 2=weighted mean"/>

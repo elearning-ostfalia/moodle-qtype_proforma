@@ -74,7 +74,7 @@ class qtype_proforma_question extends question_graded_automatically {
     public $templates;
 
     public $downloads;
-    public $displayfiles; // Not used so far!!!
+    // public $displayfiles; // Not used so far!!!
 
 
     public $modelsolfiles;

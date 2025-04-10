@@ -343,5 +343,14 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022111100, 'qtype', 'proforma');
     }
 
+    if ($oldversion < 2025041000) {
+        $field = new xmldb_field('displayfiles', XMLDB_TYPE_TEXT, null, null, null, null, null, 'downloads');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        // ProFormA savepoint reached.
+        upgrade_plugin_savepoint(true, 2025041000, 'qtype', 'proforma');
+    }
+
     return true;
 }
