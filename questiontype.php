@@ -232,6 +232,8 @@ class qtype_proforma extends question_type {
                 'inlinemessages',
                 // 'initiallyinline'
                 // Attributes 'comment' and 'commentformat' build an array => do not add.
+                // 'comment',
+                // 'commentformat',
         );
 
         foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
@@ -328,6 +330,7 @@ class qtype_proforma extends question_type {
          *  - array with comment (text, format)
          *  - comment contains only flat text with seperate variable 'commentformat'
          *  (The handling is kept here because import_or_save_files is protected)*/
+
         if (!empty($formdata->comment['format'])) {
             // Option 'comment' is array (when data comes from form input).
             $options->comment = $this->import_or_save_files($formdata->comment,

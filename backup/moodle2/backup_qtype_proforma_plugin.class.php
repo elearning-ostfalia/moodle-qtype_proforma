@@ -63,11 +63,9 @@ class backup_qtype_proforma_plugin extends backup_qtype_plugin {
         $pluginwrapper->add_child($proforma);
 
         // Set source to populate the data.
-        $proforma->set_source_table('qtype_proforma_options',
-                array('questionid' => backup::VAR_PARENTID));
+        $proforma->set_source_table('qtype_proforma_options', array('questionid' => backup::VAR_PARENTID));
 
         // Don't need to annotate ids nor files.
-
         return $plugin;
     }
 
@@ -89,4 +87,5 @@ class backup_qtype_proforma_plugin extends backup_qtype_plugin {
 
         return $result;
     }
+
 }

@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+define("PROFORMA_OPTION", "proforma");
+
 /**
  * restore plugin class that provides the necessary information
  * needed to restore one proforma qtype plugin
@@ -35,9 +37,14 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
      * Returns the paths to be handled by the plugin at question level
      */
     protected function define_question_plugin_structure() {
-        return array(
-                new restore_path_element('proforma', $this->get_pathfor('/proforma'))
-        );
+        $paths = [];
+
+        // Add options to the restore structure.
+        $elename = PROFORMA_OPTION;
+        $elepath = $this->get_pathfor('/' . PROFORMA_OPTION);
+        $paths[] = new restore_path_element($elename, $elepath);
+
+        return $paths; // And return the paths.
     }
 
     /**
@@ -46,31 +53,23 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
     public function process_proforma($data) {
         global $DB;
 
-        $data = (object) $data;
+        $data = (object)$data;
         $oldid = $data->id;
 
-        if (!isset($data->responsetemplate)) {
-            $data->responsetemplate = '';
-        }
-        /*
-        if (!isset($data->responserequired)) {
-            $data->responserequired = 1;
-        }
-        if (!isset($data->attachmentsrequired)) {
-            $data->attachmentsrequired = 0;
-        }*/
-
         // Detect if the question is created or mapped.
-        $questioncreated = $this->get_mappingid('question_created',
-                $this->get_old_parentid('question')) ? true : false;
+        $oldquestionid   = $this->get_old_parentid('question');
+        $newquestionid   = $this->get_new_parentid('question');
+        $questioncreated = $this->get_mappingid('question_created', $oldquestionid) ? true : false;
 
-        // If the question has been created by restore, we need to create its
-        // qtype_proforma too.
+        // If the question has been created by restore, we need to insert a new options record.
         if ($questioncreated) {
-            $data->questionid = $this->get_new_parentid('question');
-            $newitemid = $DB->insert_record('qtype_proforma_options', $data);
+            $data->questionid = $newquestionid;
+            // Insert the record.
+            $newitemid = $DB->insert_record("qtype_proforma_options", $data);
+            // Create mapping
             $this->set_mapping('qtype_proforma', $oldid, $newitemid);
         }
+        // Nothing to remap if the question already existed.
     }
 
     /**
@@ -90,19 +89,19 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         global $DB;
 
         $proformaswithoutoptions = $DB->get_records_sql("
-                    SELECT *
+                    SELECT q.*
                       FROM {question} q
+                      JOIN {backup_ids_temp} bi ON bi.newitemid = q.id
+                 LEFT JOIN {qtype_proforma_options} qeo ON qeo.questionid = q.id
                      WHERE q.qtype = ?
-                       AND NOT EXISTS (
-                        SELECT 1
-                          FROM {qtype_proforma_options}
-                         WHERE questionid = q.id
-                     )
-                ", array('proforma'));
+                       AND qeo.id IS NULL
+                       AND bi.backupid = ?
+                       AND bi.itemname = ?
+                   ", array('proforma', $this->get_restoreid(), 'question_created'));
 
         foreach ($proformaswithoutoptions as $q) {
             throw new coding_exception('qtype_proforma_options do not exist for question ' . $q->id);
-
+/*
             $defaultoptions = new stdClass();
             $defaultoptions->questionid = $q->id;
             $defaultoptions->responseformat = 'editor';
@@ -111,7 +110,22 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
             $defaultoptions->comment = '';
             $defaultoptions->commentformat = FORMAT_HTML;
             $defaultoptions->responsetemplate = '';
-            $DB->insert_record('qtype_proforma_options', $defaultoptions);
+            $DB->insert_record('qtype_proforma_options', $defaultoptions);*/
         }
     }
+
+    #[\Override]
+    public static function convert_backup_to_questiondata(array $backupdata): \stdClass {
+        $questiondata = parent::convert_backup_to_questiondata($backupdata);
+        $questiondata->options = (object) $backupdata["plugin_qtype_proforma_question"][PROFORMA_OPTION][0];
+        return $questiondata;
+    }
+    /*
+    #[\Override]
+    public static function remove_excluded_question_data(stdClass $questiondata, array $excludefields = []): stdClass {
+        if (isset($questiondata->options->answers)) {
+            unset($questiondata->options->answers);
+        }
+        return parent::remove_excluded_question_data($questiondata, $excludefields);
+    }*/
 }
