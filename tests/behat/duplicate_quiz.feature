@@ -1,5 +1,5 @@
 @qtype @qtype_proforma
-Feature: BACKUP AND RESTORE
+Feature: DUPLICATE QUIZ
   Test duplicating a quiz containing a ProFormA question
   As a teacher
   In order re-use my courses containing ProFormA questions
@@ -29,10 +29,8 @@ Feature: BACKUP AND RESTORE
 
   @javascript
   Scenario: Duplicate a proforma quiz with Java question
-        # create Java question
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    # create Java question
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
     And I create a new "java" question
     And I set the following fields to these values:
       | Question name            | java-question                  |
@@ -51,18 +49,33 @@ Feature: BACKUP AND RESTORE
     Then I should see "java-question"
     And quiz "Test quiz" contains the following questions:
       | java-question | 1 |
+
     # duplicate
+    # Note: Quiz will be duplicated but not the question
     When I am on "Course 1" course homepage with editing mode on
     And I duplicate "Test quiz" activity editing the new copy with:
       | Name | Quiz 2 |
+
     And I am on the "Quiz 2" "mod_quiz > Edit" page
-    Then I should see "java"
+    Then I should see "java-question"
     And I am on the "Test quiz" "mod_quiz > Edit" page
-    Then I should see "java"
-    When I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    And I should see "(1)"
-    And I should not see "(2)"
+    Then I should see "java-question"
+
+    # Change question name
+    When I am on the "Course 1" "core_question > course question bank" page
+    And I follow "Edit"
+    And I type "same question"
+    Then I press the enter key
+
+    And I am on the "Quiz 2" "mod_quiz > Edit" page
+    Then I should see "same question"
+    And I am on the "Test quiz" "mod_quiz > Edit" page
+    Then I should see "same question"
+
+    # only one question, not two!
+    When I am on the "Course 1" "core_question > course question bank" page
+    And I should see "same question"
+    And I should not see "java-question"
 
   @javascript @_file_upload
   Scenario: Duplicate a proforma quiz with imported Java question
@@ -88,10 +101,22 @@ Feature: BACKUP AND RESTORE
     Then I should see "palindrom"
     And I am on the "Test quiz" "mod_quiz > Edit" page
     Then I should see "palindrom"
-    When I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    And I should see "(1)"
-    And I should not see "(2)"
+
+      # Change question name
+    When I am on the "Course 1" "core_question > course question bank" page
+    And I follow "Edit"
+    And I type "same question"
+    Then I press the enter key
+
+    And I am on the "Quiz 2" "mod_quiz > Edit" page
+    Then I should see "same question"
+    And I am on the "Test quiz" "mod_quiz > Edit" page
+    Then I should see "same question"
+
+    # only one question, not two!
+    When I am on the "Course 1" "core_question > course question bank" page
+    And I should see "same question"
+    And I should not see "java-question"
 
   @javascript @_file_upload
   Scenario: Duplicate a proforma quiz with imported Proforma task file question
@@ -116,8 +141,19 @@ Feature: BACKUP AND RESTORE
     Then I should see "isPalindrom"
     And I am on the "Test quiz" "mod_quiz > Edit" page
     Then I should see "isPalindrom"
-    When I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    And I should see "(1)"
-    And I should not see "(2)"
 
+    # Change question name
+    When I am on the "Course 1" "core_question > course question bank" page
+    And I follow "Edit"
+    And I type "same question"
+    Then I press the enter key
+
+    And I am on the "Quiz 2" "mod_quiz > Edit" page
+    Then I should see "same question"
+    And I am on the "Test quiz" "mod_quiz > Edit" page
+    Then I should see "same question"
+
+    # only one question, not two!
+    When I am on the "Course 1" "core_question > course question bank" page
+    And I should see "same question"
+    And I should not see "java-question"

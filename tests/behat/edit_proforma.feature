@@ -19,12 +19,10 @@ Feature: EDIT PROFORMA
       | contextlevel | reference | name           |
       | Course       | C1        | Test questions |
     And the following "questions" exist:
-      | questioncategory | qtype | name      | template         |
+      | questioncategory | qtype    | name         | template         |
       | Test questions   | proforma | proforma-001 | editor           |
-      | Test questions   | proforma | proforma-003 | filepicker            |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+      | Test questions   | proforma | proforma-003 | filepicker       |
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
 
   @javascript @_file_upload
   Scenario: Edit a ProFormA question

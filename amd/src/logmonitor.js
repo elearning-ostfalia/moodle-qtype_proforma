@@ -25,8 +25,7 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-
-import ModalFactory from 'core/modal_factory';
+import CancelModal from 'core/modal_cancel';
 import ModalEvents from 'core/modal_events';
 import {get_string as getString} from 'core/str';
 import Config from 'core/config';
@@ -146,11 +145,17 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
      * shows dialog window
      */
     function showDialog() {
+        CancelModal.create({
+            title: titleString,
+            body: '<span><code id ="proforma-modal-message"></code></span>',
+            large: true,
+            removeOnClose: true
+        /*
         ModalFactory.create({
             type: ModalFactory.types.CANCEL,
             title: titleString,
             body: '<span><code id ="proforma-modal-message"></code></span>',
-            large: true
+            large: true */
         }).then(function (modal) {
             // close eventsource on cancel
             modalroot = modal.getRoot();

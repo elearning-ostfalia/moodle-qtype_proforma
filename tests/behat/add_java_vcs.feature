@@ -20,9 +20,7 @@ Feature: ADD JAVA QUESTION WITH VERSION CONTROL SYSTEM USE
       | cpp| 0  | qtype_proforma |
       | python| 0  | qtype_proforma |
       | setlx| 0  | qtype_proforma |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    And I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
 
 ##########################################################################
   @javascript @_file_upload

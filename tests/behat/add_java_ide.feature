@@ -25,7 +25,6 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
 #      | clang | 0  | qtype_proforma |
 #      | cpp | 0  | qtype_proforma |
 
-
 ##########################################################################
   @javascript @_file_upload
   Scenario: Create a Proforma question in quiz subcategory
@@ -59,9 +58,6 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
   @javascript @_file_upload
   Scenario: Create ProFormA java explorer question with compilation, one Junit test (default values)
 ##########################################################################
-    # And I log in as "teacher1"
-    # And I am on "Course 1" course homepage
-    # And I navigate to "Question bank" in current page administration
     When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
 
     When I press "Create a new question ..."

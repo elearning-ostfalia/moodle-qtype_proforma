@@ -24,7 +24,6 @@ Feature: DUPLICATE JAVA
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
 
-
 ##########################################################################
   @javascript @_file_upload
   Scenario: Duplicate a Java question with use of filepicker

@@ -17,7 +17,7 @@ Feature: PROFORMA BEHAVIOUR
     And the following "question categories" exist:
       | contextlevel | reference | name           |
       | Course       | C1        | Test questions |
-      And the following "questions" exist:
+    And the following "questions" exist:
       | questioncategory | qtype        | name         | template         |
       | Test questions   | proforma     | proforma-001 | editor           |
     And the following "activities" exist:
@@ -66,7 +66,6 @@ Feature: PROFORMA BEHAVIOUR
     And I set the following fields to these values:
       | preferredbehaviour | <behaviour> |
     And I press "Save and display"
-
 
     # 1. Start test => not yet answered / In progress
     When I am on the "Quiz 1" "quiz activity" page logged in as student1
@@ -146,7 +145,6 @@ Feature: PROFORMA BEHAVIOUR
     And I follow "Attempts: 1"
     Then I should see "In progress" in the "Student 1" "table_row"
 
-
     When I am on the "Quiz 1" "quiz activity" page logged in as student1
     And I press "Continue your attempt"
     And I press "Finish attempt"
@@ -182,7 +180,6 @@ Feature: PROFORMA BEHAVIOUR
       | interactive       | Not complete     | Not complete |
       | adaptive          | Not complete     | Not complete |
       | adaptivenopenalty | Not complete     | Not complete |
-
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
@@ -424,7 +421,6 @@ def is_palindrome(text):
       | adaptive           | Not complete |
       | adaptivenopenalty  | Not complete |
 
-
 ##########################################################################
   @javascript @_file_upload @_switch_window
   Scenario Outline: Proforma and numerical question types without grader without check
@@ -478,7 +474,7 @@ def is_palindrome(text):
 
     # 2. Enter response => Answer saved / In progress
     When I am on the "Quiz 1" "quiz activity" page logged in as student1
-     And I press "Continue your attempt"
+    And I press "Continue your attempt"
 
     And I set the field with xpath "//input[@type='text']" to "11"
     And I set the field with xpath "//select" to "m"
@@ -526,7 +522,6 @@ def is_palindrome(text):
       | interactive        | Not complete     | Tries remaining: 1 | Not complete | Tries remaining: 1 |
       | adaptive           | Not complete     | Not complete       | Not complete | Not complete       |
       | adaptivenopenalty  | Not complete     | Not complete       | Not complete | Not complete       |
-
 
 ##########################################################################
   @javascript @_file_upload @_switch_window
@@ -620,5 +615,3 @@ def is_palindrome(text):
 #      | immediatecbm       |  Not complete | Not complete      |
       | adaptive           |  Incomplete answer | Incorrect       |
       | adaptivenopenalty  |  Incomplete answer | Incorrect       |
-
-

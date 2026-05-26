@@ -88,9 +88,16 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
             // Otherwise the CodeMirror is not visible.
             init_codemirror: function(textarea_id, readonly, mode, header_id, enlarge_width) {
                 //alert("init_codemirror called for " + textarea_id); //  + " Mimemodes " + cm.mimeModes);
-                // console.log("init_codemirror called for " + classname );
                 try {
-                    var editor = CodeMirror.fromTextArea(document.getElementById(textarea_id), {
+                    const textarea = document.getElementById(textarea_id);
+                    if (textarea == null) {
+                        // Ignore silently
+                        console.error('Invalid textarea id for init_codemirror: ' + textarea_id + '. Element not found.');
+                        return;
+                    }
+                    console.log("init_codemirror called for " + textarea_id);
+                    console.log(textarea);
+                    let editor = CodeMirror.fromTextArea(textarea, {
                         tabMode: "indent",
                         indentUnit: 4,
                         matchBrackets: true,
@@ -101,13 +108,15 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                         lineNumbers: true
                         //viewportMargin: Infinity
                     });
+                    console.log("CodeMirror.fromTextArea called");
 
                     // mode is not set when fromTextArea is used (why???)
                     // So mode is set later
-                    var newMode =  map_proglang_to_codemirror_mode(mode);
+                    const newMode =  map_proglang_to_codemirror_mode(mode);
                     require([newMode[1]], function() {
                         editor.setOption("mode", newMode[0]);
                     });
+                    console.log("CodeMirror.map_proglang_to_codemirror_mode called");
 
 
                     if (enlarge_width) {

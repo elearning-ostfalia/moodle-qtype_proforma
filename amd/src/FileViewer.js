@@ -26,6 +26,9 @@
  */
 
 
+
+
+
 /** NOTE:
  * Currently creating subfolders is disabled, because the moodle question filesaver does not support it */
 
@@ -51,9 +54,10 @@ import "./active-line";
 // import Config from 'core/config';
 import * as Str from 'core/str';
 // import * as notification from 'core/notification';
-import {get_string as getString} from 'core/str';
-import ModalFactory from 'core/modal_factory';
+// import {get_string as getString} from 'core/str';
 import ModalEvents from 'core/modal_events';
+import SaveCancelModal from 'core/modal_save_cancel';
+import CancelModal from "core/modal_cancel";
 
 // Use this for editortest.html
 // -----------------------------
@@ -121,7 +125,7 @@ function modalPrompt(titleId, labelId, defaultValue, callback) {
         {key: titleId, component: 'qtype_proforma'},
         {key: labelId, component: 'qtype_proforma'},
         ]);
-    let modalPromise = ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL});
+    let modalPromise = SaveCancelModal.create();
 
     Promise.all([stringsPromise, modalPromise])
         .then(([strings, modal]) => {
@@ -168,7 +172,7 @@ function modalAlert(textId, param) {
             {key: textId, component: 'qtype_proforma'},
         ]);
     }
-    let modalPromise = ModalFactory.create({type: ModalFactory.types.DEFAULT});
+    let modalPromise = CancelModal.create();
     Promise.all([stringsPromise, modalPromise])
         .then(([strings, modal]) => {
             modal.setTitle(strings[0]);
@@ -194,7 +198,7 @@ function modalConfirm(titleId, textId, callback, param) {
             {key: textId, component: 'qtype_proforma'},
         ]);
     }
-    let modalPromise = ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL});
+    let modalPromise = SaveCancelModal.create();
     Promise.all([stringsPromise, modalPromise])
         .then(([strings, modal]) => {
             modal.setTitle(strings[0]);
@@ -1133,7 +1137,7 @@ export class Framework {
         domnode.innerHTML = `<div class="ide" style="display: flex;flex-direction: column; align-items: stretch;
     resize: vertical;
     overflow: hidden;
-    min-height: 150px">
+    min-height: 450px">
     <!--<div class="menu" style="flex: none">menu</div>-->
 
     <div class="body" style="display: flex; flex-direction: row; flex: 1 1 0; min-height: 0">

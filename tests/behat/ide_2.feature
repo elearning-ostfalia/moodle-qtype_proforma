@@ -50,7 +50,6 @@ Feature: WORK IN EXPLORER
     And I set the explorer editor text to "hallo Dummy"
     And I should see "hallo Dummy"
 
-
 ##########################################################################
   @javascript @_file_upload @_switch_window
   Scenario: Explorer/Student duplicate filename
@@ -61,7 +60,6 @@ Feature: WORK IN EXPLORER
     And I set the field with xpath "//input[@name='promptname']" to "MyString.java"
     And I press "Ok"
     And I should see "MyString.java already exists"
-
 
 ##########################################################################
   @javascript @_file_upload @_switch_window

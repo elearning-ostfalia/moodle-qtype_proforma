@@ -271,7 +271,7 @@ export function convertToXML() {
         let task = new TaskClass();
         task.title = $("#id_name").val();
         task.comment = '';
-        task.description = $("#id_questiontexteditable").val();
+        task.description = $("#id_questiontext").val();
         task.proglang = $('#xml_programming-language').val();
         task.proglang = task.proglang.trim();
         // console.log('READ FROM UI: ' + task.proglang);

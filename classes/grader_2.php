@@ -28,9 +28,9 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/grader.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.php');
 
-
-
-
+/**
+ * interface class for the grader (Praktomat))
+ */
 class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
     /** @var programming|null programming language (for selecting grader) */
@@ -248,7 +248,8 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         // return array($this->set_dummy_result3(), 200); // Fake.
 
         // Send task and submission to grader with Curl with a configured timeout.
-        $curl = new curl();
+        // Connection to Praktpomat is allowed to use 'localhost' and other potentially blocked hosts/ports.
+        $curl = new curl(['ignoresecurity' => true]);
         $output = $curl->post($uri, $postfields, $options);
         $info = $curl->get_info();
         $httpcode = $info["http_code"];
@@ -301,7 +302,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             }
         }
 
-        ob_flush();
+        // ob_flush(); // results in error message in 5.1
         flush();
     }
 
@@ -336,10 +337,13 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         }
         $postfields['task-file'] = $task;
 
-        debugging($uri);
+        // No debugging message here because the function might be called via ajax
+        // which results in cancelling the whole action!
+        // debugging($uri);
 
         // Send task and submission to grader with Curl with a configured timeout.
-        $curl = new curl();
+        // Connection to Praktpomat is allowed to use 'localhost' and other potentially blocked hosts/ports.
+        $curl = new curl(['ignoresecurity' => true]);
         $output = $curl->post($uri, $postfields, $options);
         $info = $curl->get_info();
         $httpcode = $info["http_code"];

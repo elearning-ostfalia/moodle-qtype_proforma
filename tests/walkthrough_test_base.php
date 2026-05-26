@@ -31,7 +31,7 @@ use PHPUnit\Runner\Version as PHPUnitVersion;
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 
-class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_base {
+class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 
     const EXPECTED_BEHAVIOUR = "adaptiveexternalgrading";
     //const EXPECTED_BEHAVIOUR = "interactivewithfeedback";
@@ -409,7 +409,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
         if (self::USE_TEST_DOUBLE) {
             // Create a stub for the grader
             $stub = $this->getMockBuilder(qtype_proforma_grader_2::class)
-                    ->setMethods(['send_code_to_grader', 'send_files_to_grader'])
+                    ->onlyMethods(['send_code_to_grader', 'send_files_to_grader'])
                     ->getMock();
 
             // Configure the stub.
@@ -568,7 +568,7 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
 
 
     protected function get_contains_specific_feedback_expectation() {
-        return new question_pattern_expectation('/class="specificfeedback"/');
+        return new question_pattern_expectation('/class="specificfeedback clearfix"/');
     }
     protected function get_contains_feedback_expectation() {
         return new question_pattern_expectation('/class="feedback"/');
@@ -630,12 +630,12 @@ class qtype_proforma_walkthrough_test_base extends qbehaviour_walkthrough_test_b
                 $this->currentoutput);
 
         if (!is_null($content)) {
-            if (PHPUnitVersion::id() >= 9) {
+//            if (PHPUnitVersion::id() >= 9) {
                 $this->assertMatchesRegularExpression('/' . preg_quote(s($content), '/') . '/', $this->currentoutput);
-            } else {
+/*            } else {
                 $this->assertRegExp('/' . preg_quote(s($content), '/') . '/', $this->currentoutput);
             }
-        }
+*/        }
     }
 
     protected function check_verify_button_enabled($exists = true, $enabled = true) {

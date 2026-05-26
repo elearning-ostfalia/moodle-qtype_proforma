@@ -48,15 +48,13 @@ require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_bas
 define("DEBUG", 0);
 
 
-class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthrough_test_base {
-
+class walkthrough_editor_test extends walkthrough_test_base {
 
     private $behavmultipletries = array(
             array('interactive', self::interactive_tries),
             array('adaptive', self::interactive_tries),
             array('adaptivenopenalty', self::adaptivenopenalty_tries)
     );
-
 
     protected function run_on_all_behaviours($testfunction) {
         if (DEBUG) {
@@ -201,7 +199,7 @@ class qtype_proforma_walkthrough_editor_testcase extends qtype_proforma_walkthro
         $this->set_mockbuilder_for_grader($this->question);
         // Create a stub for the grader
         $stub = $this->getMockBuilder(qtype_proforma_grader_2::class)
-                ->setMethods(['send_code_to_grader', 'send_files_to_grader'])
+                ->onlyMethods(['send_code_to_grader', 'send_files_to_grader'])
                 ->getMock();
         $stub->method('send_code_to_grader')
                 ->willReturn(self::GRADER_OUTPUT_CORRECT);

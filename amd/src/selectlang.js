@@ -25,7 +25,10 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-define(['core/modal_factory', 'core/modal_events'], function(ModalFactory, ModalEvents) {
+import SaveCancelModal from 'core/modal_save_cancel';
+import * as ModalEvents from 'core/modal_events';
+
+export const select_lang = (title, proglangs, returnurl) => {
     function create_body(proglangs) {
         let body = "<form>";
         body += '<fieldset>';
@@ -52,47 +55,47 @@ define(['core/modal_factory', 'core/modal_events'], function(ModalFactory, Modal
         body += '</form>';
         return body;
     }
+    function doModal() {
+        SaveCancelModal.create({
+            title,
+            body: create_body(proglangs),
+            large: false,
+            buttons: {
+                save: 'Ok',
+            },
+            removeOnClose: true
+        })
+        .then(function(modal) {
+            // modal.setSaveButtonText('Ok');
+            modal.getRoot().on(ModalEvents.save, function() {
+                // Check which radio button is checked.
+                let radioButtons = modal.getRoot().find('input');
+                for (var i = 0; i < radioButtons.length; i++) {
+                    if(radioButtons[i].checked === true) {
+                        let language = radioButtons[i].value;
+                        // Preset task storage.
+                        // document.getElementById("id_taskstorage").setAttribute('value', language);
+                        // Append language value to URI and
+                        // reload page.
+                        let uri = window.location.href;
+                        uri += '&proglang=' + language;
+                        window.location.assign(uri);
+                        return;
+                    }
+                }
+            });
+            modal.getRoot().on(ModalEvents.cancel, function() {
+                // Cancel was pressed => redirect to returnurl.
+                window.location.assign(returnurl);
+            });
+            modal.show();
+        }).catch(Notification.exception);
+    }
+    try {
+        doModal();
+    } catch(err) {
+        console.error("Exception caught in select-lang.js function select_lang\n " + err.toString());
+    }
+};
 
-    return {
-        select_lang: function(title, proglangs, returnurl) {
-            function doModal() {
-                ModalFactory.create({
-                    type: ModalFactory.types.SAVE_CANCEL,
-                    title: title,
-                    body: create_body(proglangs),
-                    large: false
-                })
-                .then(function(modal) {
-                    modal.setSaveButtonText('Ok');
-                    modal.getRoot().on(ModalEvents.save, function() {
-                        // Check which radio button is checked.
-                        let radioButtons = modal.getRoot().find('input');
-                        for (var i = 0; i < radioButtons.length; i++) {
-                            if(radioButtons[i].checked === true) {
-                                let language = radioButtons[i].value;
-                                // Preset task storage.
-                                // document.getElementById("id_taskstorage").setAttribute('value', language);
-                                // Append language value to URI and
-                                // reload page.
-                                let uri = window.location.href;
-                                uri += '&proglang=' + language;
-                                window.location.assign(uri);
-                                return;
-                            }
-                        }
-                    });
-                    modal.getRoot().on(ModalEvents.cancel, function() {
-                        // Cancel was pressed => redirect to returnurl.
-                        window.location.assign(returnurl);
-                    });
-                    modal.show();
-                }).catch(Notification.exception);
-            }
-            try {
-                doModal();
-            } catch(err) {
-                console.error("Exception caught in select-lang.js function select_lang\n " + err.toString());
-            }
-        }
-    };
-});
+

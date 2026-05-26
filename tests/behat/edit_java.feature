@@ -259,7 +259,6 @@ Feature: EDIT JAVA
     And I press "id_submitbutton"
     Then I should see "updated proforma-java"
 
-
     # check for download link
     When I open preview for "updated proforma-java" in the question bank
     #Then I should see "questiondownload.txt"
@@ -274,8 +273,8 @@ Feature: EDIT JAVA
     And following "template.txt" should download file with between "69" and "73" bytes
     # And I switch to the main window
 
-@javascript
 ##########################################################################
+  @javascript
   Scenario: Edit a Java question (remove and add Junit)
 ##########################################################################
     When I am on the "proforma-java" "core_question > edit" page logged in as teacher1

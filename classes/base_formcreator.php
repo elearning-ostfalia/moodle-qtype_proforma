@@ -548,13 +548,15 @@ abstract class base_form_creator {
 
         if ($this->_taskhandler->can_be_edited()) {
             // Set CodeMirror for unit test code.
-            for ($i = 0; $i < $repeats; $i++) {
-                qtype_proforma\lib\as_codemirror('id_testcode_' . $i);
-                /* Here you can add further element handling that cannot be done in
-                 * adjust_test_repeatoptions which is the preferred solution.
-                 * This can be done as e.g.
-                 * $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
-                 */
+            if ($this->_testcode) {
+                for ($i = 0; $i < $repeats; $i++) {
+                    qtype_proforma\lib\as_codemirror('id_testcode_' . $i);
+                    /* Here you can add further element handling that cannot be done in
+                     * adjust_test_repeatoptions which is the preferred solution.
+                     * This can be done as e.g.
+                     * $mform->hideif('testtype[' . $i . ']', 'aggregationstrategy', 'neq', 111);
+                     */
+                }
             }
         } else {
             // There is no option not to create the button for

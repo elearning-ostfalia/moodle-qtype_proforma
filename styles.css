@@ -111,6 +111,14 @@ body .proforma-taskeditor .box-typ {
     margin-bottom: 1em;
 }
 
+.proforma-taskeditor .que {
+    gap: 0;
+}
+
+.proforma-taskeditor .que  .outcome {
+    max-width: 100%;
+}
+
 /* left side labels */
 .proforma-taskeditor p label:first-child,
 .proforma-taskeditor br + label,

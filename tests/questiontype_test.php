@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_bas
 require_once($CFG->dirroot . '/question/format/xml/format.php');
 
 
-class questiontype_test extends qtype_proforma_walkthrough_test_base {
+class questiontype_test extends walkthrough_test_base {
     protected $qtype;
 
     protected function setUp(): void {
@@ -79,9 +79,15 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
                 str_replace("\r\n", "\n", $xml));
     }
 
-    private function _export_and_reimport($question, $novcs) {
-        $question->contextid = 1; // Must be the same as in questiontype.save_question_options
-        // where do we get it? evaluated by debugging...
+    private static function get_contextid_for_question_cat($cat) {
+        global $DB;
+        $record = $DB->get_record('question_categories', ['id' => $cat->id], 'contextid');
+        //var_dump($record);
+        return $record->contextid;
+    }
+
+    private function _export_and_reimport($question, $novcs, $cat) {
+        $question->contextid = self::get_contextid_for_question_cat($cat);
         $question->hidden = null; // Dummy.
 
         $questiontype = new qtype_proforma();
@@ -89,8 +95,16 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         // Export.
         $questiontype->get_question_options($question);
         $export1 = $exporter->writequestion($question);
+        // var_dump($export1);
 
-        $xmldata = xmlize($export1);
+        global $CFG;
+        $moodleversion = $CFG->version;
+        if ($moodleversion > 2025100603) { // Moodle 5.1
+            $xmldata = (new \core\xml_parser())->parse($export1);
+        } else {
+            $xmldata = xmlize($export1);
+        }
+        // var_dump($xmldata);
 
         // Re-import.
         $importer = new qformat_xml();
@@ -118,6 +132,7 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         }
         // Re-Export.
         $export2 = $exporter->writequestion($importedq);
+        // var_dump($export2);
 
         return [$export1, $export2];
     }
@@ -131,7 +146,8 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         $cat = $generator->create_question_category();
         $question = $generator->create_question('proforma', 'editor', array('category' => $cat->id));
 
-        list($export1, $export2) = $this->_export_and_reimport($question, True);
+        list($export1, $export2) = $this->_export_and_reimport($question, True, $cat);
+
         $this->assertXmlEquals($export1, $export2);
     }
     public function test_xml_export_and_reimport_filepicker()
@@ -144,7 +160,7 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         $cat = $generator->create_question_category();
         $question = $generator->create_question('proforma', 'filepicker', array('category' => $cat->id));
 
-        list($export1, $export2) = $this->_export_and_reimport($question, True);
+        list($export1, $export2) = $this->_export_and_reimport($question, True, $cat);
         $this->assertXmlEquals($export1, $export2);
     }
 
@@ -158,7 +174,7 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         $cat = $generator->create_question_category();
         $question = $generator->create_question('proforma', 'vcs_git', array('category' => $cat->id));
 
-        list($export1, $export2) = $this->_export_and_reimport($question, False);
+        list($export1, $export2) = $this->_export_and_reimport($question, False, $cat);
         $this->assertXmlEquals($export1, $export2);
     }
 
@@ -174,8 +190,7 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
         $question = $generator->create_question('proforma', 'editor', array('category' => $cat->id));
-        $question->contextid = 1; // must be the same as in questiontype.save_question_options
-        // where do we get it? evaluated by debugging :-(
+        $question->contextid = self::get_contextid_for_question_cat($cat);
         $question->hidden = null; // dummy
 
         $questiontype = new qtype_proforma();
@@ -261,8 +276,7 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
         $question = $generator->create_question('proforma', 'filepicker', array('category' => $cat->id));
-        $question->contextid = 1; // Must be the same as in questiontype.save_question_options
-        // where do we get it? evaluated by debugging :-(
+        $question->contextid = self::get_contextid_for_question_cat($cat);
         $question->hidden = null; // Dummy.
 
         $questiontype = new qtype_proforma();
@@ -347,8 +361,7 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
         $question = $generator->create_question('proforma', 'vcs_git', array('category' => $cat->id));
-        $question->contextid = 1; // Must be the same as in questiontype.save_question_options
-        // where do we get it? evaluated by debugging :-(
+        $question->contextid = self::get_contextid_for_question_cat($cat);
         $question->hidden = null; // Dummy.
 
         $questiontype = new qtype_proforma();
@@ -491,7 +504,13 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
-        $xmldata = xmlize($xml);
+        global $CFG;
+        $moodleversion = $CFG->version;
+        if ($moodleversion > 2025100603) { // Moodle 5.1
+            $xmldata = (new \core\xml_parser())->parse($xml);
+        } else {
+            $xmldata = xmlize($xml);
+        }
 
         $importer = new qformat_xml();
         $importedq = $importer->try_importing_using_qtypes(
@@ -642,7 +661,13 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
-        $xmldata = xmlize($xml);
+        global $CFG;
+        $moodleversion = $CFG->version;
+        if ($moodleversion > 2025100603) { // Moodle 5.1
+            $xmldata = (new \core\xml_parser())->parse($xml);
+        } else {
+            $xmldata = xmlize($xml);
+        }
 
         $importer = new qformat_xml();
         $importedq = $importer->try_importing_using_qtypes(
@@ -783,7 +808,13 @@ class questiontype_test extends qtype_proforma_walkthrough_test_base {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
-        $xmldata = xmlize($xml);
+        global $CFG;
+        $moodleversion = $CFG->version;
+        if ($moodleversion > 2025100603) { // Moodle 5.1
+            $xmldata = (new \core\xml_parser())->parse($xml);
+        } else {
+            $xmldata = xmlize($xml);
+        }
 
         $importer = new qformat_xml();
         $importedq = $importer->try_importing_using_qtypes(

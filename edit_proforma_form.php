@@ -68,7 +68,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             array_push($proglangs, [qtype_proforma::SETLX_TASKFILE, 'SetlX']);
         }
 
-        array_push($proglangs, [qtype_proforma::PERSISTENT_TASKFILE, 'Proforma-Taskeditor (experimental)']);
+        array_push($proglangs, [qtype_proforma::PERSISTENT_TASKFILE, 'Proforma-Taskeditor']);
 
         if (count($proglangs) > 1) {
             // More than one programming language:

@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_bas
 // TODO
 // - check student versus teacher feedback
 
-class renderer_test extends qtype_proforma_walkthrough_test_base {
+class renderer_test extends walkthrough_test_base {
 
 
     const GRADINGHINTS_1 = '<grading-hints>'.
@@ -643,10 +643,19 @@ Prüfung beendet.
         $text = str_replace( 'aria-label=', 'role="img" aria-label=', $text);
         global $CFG;
         $moodleversion = $CFG->version;
-        if ($moodleversion > 2024100700) { // Moodle 4.5
-            $text = str_replace( 'fa fa-check', 'fa-regular fa-circle-check', $text);
-            $text = str_replace( 'fa fa-exclamation', 'fa fa-warning', $text);
-            $text = str_replace( 'fa fa-remove', 'fa-regular fa-circle-xmark', $text);
+        $text = str_replace( 'fa fa-check', 'fa-regular fa-circle-check', $text);
+        $text = str_replace( 'fa fa-exclamation', 'fa fa-warning', $text);
+        $text = str_replace( 'fa fa-remove', 'fa-regular fa-circle-xmark', $text);
+        if ($moodleversion > 2025041406) { // Moodle 5.0
+            $text1 = str_replace( 'fa-regular fa-circle-check-square fa-fw ', '', $text);
+            if ($text1 != $text) {
+                $text1 = str_replace( 'title="Partially correct" role="img"', 'alt="Partially correct" title="Partially correct"', $text1);
+                $text1 = str_replace( 'aria-label="Partially correct"', 'src="https://www.example.com/moodle/theme/image.php/boost/core/1/i/grade_partiallycorrect"', $text1);
+                $text1 = str_replace( '<i', '<img', $text1);
+                $text1 = str_replace( '</i', '</img', $text1);
+                $text = $text1;
+            }
+        } else {
             $text = str_replace( 'fa-regular fa-circle-check-square', 'fa fa-circle-half-stroke text-warning', $text);
         }
         return $text;

@@ -31,7 +31,7 @@ global $CFG;
 require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_base.php');
 
 
-class qtype_proforma_walkthrough_filepicker_testcase extends qtype_proforma_walkthrough_test_base {
+class walkthrough_filepicker_test extends walkthrough_test_base {
 
     protected function check_answer_text($content = null, $isReadonly = false) {
         // has no answer field

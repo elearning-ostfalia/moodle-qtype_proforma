@@ -941,7 +941,7 @@ export function checkModelsolution(buttonid, containerid) {
                 const gradinghints = createGradingHints(true);
                 const proglang = document.getElementById("xml_programming-language").value;
                 // Model solution is zipped => send to Moodle server
-                console.log('created model solution zip');
+                console.log('upload files to moodle');
                 const url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php';
                 const questionId = document.querySelector("input[name='id']").value;
                 const formData = new FormData();
@@ -977,6 +977,7 @@ export function checkModelsolution(buttonid, containerid) {
                     console.log(json);
                     return Promise.reject(json.error);
                 }
+                console.log('run tests on grader and stream output');
                 let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
                 url += '&sesskey=' + Config.sesskey +
                     //                        '&questionid=' + questionId +
@@ -1076,7 +1077,7 @@ export function uploadTaskToGrader(buttonid) {
                 return zipme(context, false, taskmaxbytes);
             })
             .then(blobtask => {
-                console.log('now let us upload task to grader');
+                console.log('upload file to Moodle');
                 const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
                 // const questionId = document.querySelector("input[name='id']").value;
                 const formData = new FormData();
@@ -1108,6 +1109,7 @@ export function uploadTaskToGrader(buttonid) {
                     console.log(json);
                     return Promise.reject(json.error);
                 }
+                console.log('upload file from Moodle to grader');
                 const questionId = document.querySelector("input[name='id']").value;
                 let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
                 url += '?sesskey=' + Config.sesskey + '&id=' + questionId;

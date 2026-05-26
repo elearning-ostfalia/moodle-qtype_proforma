@@ -53,24 +53,35 @@
 }}
 
 <div>
-    <label for="xml_programming-language">{{#str}} proglang, qtype_proforma {{/str}} </label>
-
-    <select id="xml_programming-language" class="custom-select">
-        {{#proglang}}
-            <option value="{{ value }}">{{ language }}</option>
-        {{/proglang}}
-    </select>
-
-    <label>{{#str}} version, qtype_proforma {{/str}} </label>
-    <span id="proglangversion-{{uniqid}}">
-        {{#proglang}}
-            <select id="xml_programming-language-{{ value }}" style='display: none' class="custom-select">
-                {{#version}}
-                    <option value="{{ . }}">{{ . }}</option>
-                {{/version}}
+    <div class="row fitem mb-1 ">
+        <div class="col-md-3 col-form-label">
+            <label for="xml_programming-language">{{#str}} proglang, qtype_proforma {{/str}} </label>
+        </div>
+        <div class="col-md-3 felement">
+            <select id="xml_programming-language" class="form-select">
+                {{#proglang}}
+                    <option value="{{ value }}">{{ language }}</option>
+                {{/proglang}}
             </select>
-        {{/proglang}}
-    <span/">
+        </div>
+    </div>
+
+    <div class="row fitem mb-1 ">
+        <div class="col-md-3 col-form-label">
+            <label>{{#str}} version, qtype_proforma {{/str}} </label>
+        </div>
+        <div class="col-md-3 felement">
+            <span id="proglangversion-{{uniqid}}">
+                {{#proglang}}
+                    <select id="xml_programming-language-{{ value }}" style='display: none' class="form-select">
+                        {{#version}}
+                            <option value="{{ . }}">{{ . }}</option>
+                        {{/version}}
+                    </select>
+                {{/proglang}}
+            </span>
+        </div>
+    </div>
 </div>
 
 <p>

@@ -34,17 +34,18 @@ Feature: BACKUP AND RESTORE
       | proforma-setlx | 1 |
     And the following config values are set as admin:
       | enableasyncbackup | 0 |
-    And I log in as "admin"
-    And I am on "Course 1" course homepage
 
   @javascript
   Scenario: Backup and restore a course containing 2 ProFormA questions
+    When I am on the "Course 1" course page logged in as admin
     When I backup "Course 1" course using this options:
       | Confirmation | Filename | test_backup.mbz |
 #    And I pause
     And I restore "test_backup.mbz" backup into a new course using this options:
-      | Schema | Course name | Course 2 |
-    And I navigate to "Question bank" in current page administration
+      | Schema | Course name       | Course 2 |
+      | Schema | Course short name | C2       |
+    And I am on the "Course 2" "core_question > course question bank" page
+#    And I navigate to "Question bank" in current page administration
     And I should see "proforma-001"
     And I should see "proforma-002"
     And I should see "proforma-003"
@@ -195,7 +196,7 @@ Feature: BACKUP AND RESTORE
 #    And I should see "2.0"
     And I press "Cancel"
 
-    # check for download link in "proforma-001"    
+    # check for download link in "proforma-001"
     # And I navigate to "Question bank" in current page administration
     When I open preview for "proforma-001" in the question bank
     Then I should see "lib.txt"

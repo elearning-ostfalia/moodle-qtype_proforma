@@ -5,7 +5,6 @@ Feature: GRADE
   In order to check my ProFormA questions will work for students
   I need to preview them
 
-  # Requires valid Praktomat connection on http://praktomat:8010
   Background:
     Given the following "users" exist:
       | username | firstname | lastname | email               |
@@ -29,10 +28,10 @@ Feature: GRADE
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
 
-
   @javascript @_switch_window @_file_upload
   Scenario: Create a Java question, preview and submit a response.
-    When I navigate to "Question bank" in current page administration
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
+
     And I create a new "java" question
     And I set the following fields to these values:
       | Question name            | Java question                  |
@@ -65,7 +64,6 @@ public class PalindromTest {
 		assertTrue( MyString.isPalindrom(""));
 	}
 
-
 	@Test
 	public void testFalse1() {
 		assertFalse( MyString.isPalindrom("abc123321cbc"));
@@ -81,7 +79,7 @@ public class PalindromTest {
     And I set the field "testversion[1]" to "4.12"
     And I select "id_testcodeformat_1_2" radio button
     # upload JUnit test file
-    And I upload "question/type/proforma/tests/fixtures/behat/Palindrom2Test.java" to "testfiles[1]" filemanager by name
+    And I upload "question/type/proforma/tests/fixtures/behat/java/Palindrom2Test.java" to "testfiles[1]" filemanager by name
     And I set the field "testentrypoint[1]" to "Palindrom2Test"
 
     # JUnit 3
@@ -92,7 +90,7 @@ public class PalindromTest {
     And I set the field "testversion[2]" to "4.12"
     And I select "id_testcodeformat_2_2" radio button
     # upload JUnit test file
-    And I upload "question/type/proforma/tests/fixtures/behat/JunitPalindromTest.jar" to "testfiles[2]" filemanager by name
+    And I upload "question/type/proforma/tests/fixtures/behat/java/JunitPalindromTest.jar" to "testfiles[2]" filemanager by name
     And I set the field "testentrypoint[2]" to "PalindromTest"
 
     # Checkstyle
@@ -175,10 +173,10 @@ public class PalindromTest {
     And I press "id_submitbutton"
     Then I should see "Parsing questions from import file."
     And I should see "Importing 1 questions from file"
-    And I should see "1. Implementieren Sie"
+    And I should see "Implement a method"
     And I press "Continue"
-    And I should see "Palindrom mit Checkstyle Vorne V2"
-    When I am on the "Palindrom mit Checkstyle Vorne V2" "core_question > preview" page
+    And I should see "Palindrome with JUnit and Checkstyle test"
+    When I am on the "Palindrome with JUnit and Checkstyle test" "core_question > preview" page
     And I expand all fieldsets
     ##When I choose "Preview" action for "Palindrom mit Checkstyle Vorne V2" in the question bank
     ##And I switch to "questionpreview" window
@@ -202,12 +200,12 @@ public class PalindromTest {
     And I should see "Marks for this submission: 0.83/1.00."
     # And I switch to the main window
 
-
   @javascript @_switch_window @_file_upload
   Scenario: Create a Setlx question, preview and submit a response.
     When the following config values are set as admin:
       | setlx | 1  | qtype_proforma |
-    And I navigate to "Question bank" in current page administration
+    And I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
+
     And I press "Create a new question ..."
     And I set the field "item_qtype_proforma" to "1"
     And I click on "Add" "button" in the "Choose a question type to add" "dialogue"

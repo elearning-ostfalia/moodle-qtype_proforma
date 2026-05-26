@@ -20,9 +20,7 @@ Feature: ADD JAVA QUESTION
       | cpp| 0  | qtype_proforma |
       | python| 0  | qtype_proforma |
       | setlx| 0  | qtype_proforma |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    And I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
 
 ##########################################################################
   @javascript
@@ -38,13 +36,13 @@ Feature: ADD JAVA QUESTION
     # Step is automatically finished with: I press "id_submitbutton"
     And I press "id_submitbutton"
     Then I should see "Testcode required"
-    
+
     # feedback options
     And I expand all fieldsets
     And the field "Initially collapse/expand" matches value "collapse"
     # 'Show messages in editor'
-    And the "inlinemessages" checkbox is "1"    
-    
+    And the "inlinemessages" checkbox is "1"
+
     And I should not see "Model solution files "
     # JUnit
     When I set the codemirror "testcode_0" to "class XClass {}"
@@ -193,8 +191,8 @@ Feature: ADD JAVA QUESTION
     # And I switch to the main window
     # And I close preview
 
-@javascript
 ##########################################################################
+  @javascript
   Scenario: Create, save and open a ProFormA java question with compilation and two Junit tests
 ##########################################################################
     When I create a new "java" question
@@ -255,4 +253,3 @@ Feature: ADD JAVA QUESTION
     And the "checkstyle" checkbox is "not checked"
 
     And I press "Cancel"
-

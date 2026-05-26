@@ -508,7 +508,7 @@ class behat_proforma extends behat_base {
      * @When /^I create a new "(?P<proglang_string>(?:[^"]|\\")*)" question$/
      */
     public function create_new_question($proglang) {
-
+/*
         // new for Moodle 5.x: create default question bank
         try {
             $this->execute("behat_general::assert_page_not_contains_text", ["This course doesn't have any question banks yet."]);
@@ -522,7 +522,7 @@ class behat_proforma extends behat_base {
             }
             $this->execute("behat_general::i_click_on", [$node->getText() . ' course question bank', 'link']);
         }
-
+*/
         $this->execute("behat_forms::press_button", 'Create a new question ...');
         $this->execute("behat_forms::i_set_the_field_to", ['item_qtype_proforma', '1']);
         $this->execute("behat_general::i_click_on_in_the", ["Add", "button", "Choose a question type to add", "dialogue"]);

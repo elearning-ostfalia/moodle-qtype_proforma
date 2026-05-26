@@ -199,7 +199,7 @@ class qtype_proforma extends question_type {
      * Defines the table which extends the question table. This allows the base questiontype
      * to automatically save, backup and restore the extra fields.
      *
-     * @return an array with the table name (first) and then the column names (apart from id and questionid)
+     * @return array with the table name (first) and then the column names (apart from id and questionid)
      */
     public function extra_question_fields() {
         $result = array('qtype_proforma_options',

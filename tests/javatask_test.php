@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/java_task.php');
 
 
-class qtype_proforma_java_task_test extends advanced_testcase {
+class javatask_test extends advanced_testcase {
 
     // TODO: also used in question_test.php!
     public function assert_same_xml($expectedxml, $xml) {

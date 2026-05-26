@@ -28,9 +28,8 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
 // TODO: cleanup: LON-CAPA format is no longer needed!
 
-/*
+/**
  * base class for graders (and this one is for LON-CAPA feedback)
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class qtype_proforma_grader {
 
@@ -166,7 +165,7 @@ class qtype_proforma_grader {
         $path = get_config('qtype_proforma', 'graderuri_path');
         $uri = $protocolhost . $path;
 
-        $curl = new curl();
+        $curl = new curl(['ignoresecurity' => true]);
         $output = $curl->post($uri, $postfields);
         $info = $curl->get_info();
 

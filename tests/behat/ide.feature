@@ -1,9 +1,9 @@
 @qtype @qtype_proforma
-Feature: ADD JAVA EXPLORER/IDE QUESTION
+Feature: ADD EXPLORER/IDE QUESTION
   Test creating a ProFormA java question
   As a teacher
   In order to test my students
-  I need to be able to create a Java questions that support file upload with many files (explorer)
+  I need to be able to create a question that support file upload with many files (explorer)
 
   Background:
     Given the following "users" exist:
@@ -85,7 +85,7 @@ Feature: ADD JAVA EXPLORER/IDE QUESTION
     And I should not see "New file"
     And I should not see "Filename"
     # There should not a text inside the editor
-    # (if there is text then it is the whole side as error)    
+    # (if there is text then it is the whole side as error)
     And I should not see "Error | Acceptance test site"
 
     # Create new file Dummy.java with text 'hallo Dummy'
@@ -164,7 +164,6 @@ public class PalindromTest {
 		assertTrue( MyString.isPalindrom(""));
 	}
 
-
 	@Test
 	public void testFalse1() {
 		assertFalse( MyString.isPalindrom("abc123321cbc"));
@@ -209,4 +208,3 @@ public class PalindromTest {
     # check that code is visible
     And I should see "MyString.java"
     And I should see "isPalindrom(String aString)"
-

@@ -21,14 +21,15 @@ Feature: DUPLICATE SetlX
     And the following "questions" exist:
       | questioncategory | qtype | name      | template         |
       | Test questions   | proforma | proforma-setlx | setlx2           |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    And the following "activities" exist:
+      | activity   | name      | course | idnumber |
+      | quiz       | Test quiz | C1     | quiz1    |
 
 ##########################################################################
   Scenario: Duplicate a Setlx question without editing
 ##########################################################################
-    When I choose "Duplicate" action for "proforma-setlx" in the question bank
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
+    And I choose "Duplicate" action for "proforma-setlx" in the question bank
     Then the following fields match these values:
       | Question name            | proforma-setlx (copy)            |
       | Default mark             | 3                              |

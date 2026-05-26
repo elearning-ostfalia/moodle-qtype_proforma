@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/grader_2.php');
 require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_base.php');
 
 
-class grader_test extends qtype_proforma_walkthrough_test_base {
+class grader_test extends walkthrough_test_base {
 
     const GRADINGHINTS_1 = '<grading-hints>'.
     '<root function="sum">'.

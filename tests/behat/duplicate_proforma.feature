@@ -19,17 +19,17 @@ Feature: DUPLICATE PROFORMA
       | contextlevel | reference | name           |
       | Course       | C1        | Test questions |
     And the following "questions" exist:
-      | questioncategory | qtype | name      | template         |
-      | Test questions   | proforma | proforma-001 | editor           |
-      | Test questions   | proforma | proforma-003 | filepicker            |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+      | questioncategory | qtype    | name         | template     |
+      | Test questions   | proforma | proforma-001 | editor       |
+      | Test questions   | proforma | proforma-003 | filepicker   |
+    And the following "activities" exist:
+      | activity   | name      | course | idnumber |
+      | quiz       | Test quiz | C1     | quiz1    |
 
   @javascript
   Scenario: Duplicate a ProFormA question
+    And I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
     When I choose "Duplicate" action for "proforma-001" in the question bank
-    #When I click on "Edit" "link" in the "proforma-001" "table_row"
     Then the following fields match these values:
       | Question name            | proforma-001 (copy)            |
       | Question text            | Please code the reverse string function not using a library function.(äöüß)           |

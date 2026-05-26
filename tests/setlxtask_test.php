@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 require_once($CFG->dirroot . '/question/type/proforma/tests/task_testcase.php');
 
 
-class qtype_proforma_setlx_task_test extends task_testcase {
+class setlxtask_test extends task_testcase {
 
     const EXPECTED_BASE = '<?xml version="1.0" encoding="UTF-8"?>
 <task xmlns="urn:proforma:v2.0" lang="de" uuid="bbbf6679-0226-4fb3-8da0-4f370dd027cb">

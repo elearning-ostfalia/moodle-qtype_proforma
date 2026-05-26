@@ -36,84 +36,87 @@
 }}
 
 <div class="proforma-taskeditor" style="display: None">
-    <ul class="nav nav-tabs" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active"file
-                data-toggle="tab"
-                href="#proforma-tests-section"
-                role="tab">
-                {{#str}} taskeditortests, qtype_proforma {{/str}}
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link"
-                data-toggle="tab"
-                href="#proforma-model-solution-section"
-                role="tab">
-                {{#str}} modelsolution, qtype_proforma {{/str}}
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link"
-                data-toggle="tab"
-                href="#proforma-files-section"
-                role="tab">
-                {{#str}} taskeditorfiles, qtype_proforma {{/str}}
-            </a>
-        </li>
-    </ul>
+    <div class="border border-3 rounded p-1">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active"file
+                    data-bs-toggle="tab"
+                    href="#proforma-tests-section"
+                    role="tab">
+                    {{#str}} taskeditortests, qtype_proforma {{/str}}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
+                    data-bs-toggle="tab"
+                    href="#proforma-model-solution-section"
+                    role="tab">
+                    {{#str}} modelsolution, qtype_proforma {{/str}}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
+                    data-bs-toggle="tab"
+                    href="#proforma-files-section"
+                    role="tab">
+                    {{#str}} taskeditorfiles, qtype_proforma {{/str}}
+                </a>
+            </li>
+        </ul>
 
-    <div class="tab-content" data-region="tab-content">
-        <div class="tab-pane active pt-3"
-            id="proforma-tests-section"
-            role="tabpanel"
-            data-region="tests-container">
+        <div class="tab-content" data-region="tab-content">
+            <div class="tab-pane active pt-3"
+                id="proforma-tests-section"
+                role="tabpanel"
+                data-region="tests-container">
 
-            {{> qtype_proforma/taskeditor_tests }}
+                {{> qtype_proforma/taskeditor_tests }}
 
-            {{{ tests }}}
+                {{{ tests }}}
 
+            </div>
+            <div class="tab-pane pt-3"
+                id="proforma-files-section"
+                role="tabpanel"
+                data-region="files-container">
+
+                {{{ files }}}
+
+            </div>
+            <div class="tab-pane pt-3"
+                id="proforma-model-solution-section"
+                role="tabpanel"
+                data-region="model-solution-container">
+            </div>
         </div>
-        <div class="tab-pane pt-3"
-            id="proforma-files-section"
-            role="tabpanel"
-            data-region="files-container">
 
-            {{{ files }}}
-
-        </div>
-        <div class="tab-pane pt-3"
-            id="proforma-model-solution-section"
-            role="tabpanel"
-            data-region="model-solution-container">
-        </div>
+    <div class="que">
+        <div id="check-feedback-id" class="outcome" style='display: none'>Feedback</div>
     </div>
 
-<div class="que">
-    <div id="check-feedback-id" class="outcome" style='display: none'>Feedback</div>
+    <div class="taskeditor-buttons d-grid gap-2 d-md-flex justify-content-md-center">
+        <span class=" ">
+            <button id="check-modelsolution-{{uniqid}}" class="btn btn-secondary" title="{{#str}} checkmodelsol_help, qtype_proforma {{/str}}">
+                {{# pix }} i/grade_correct, core, {{/ pix }}/{{# pix }} i/grade_incorrect, core, {{/ pix }}{{#str}} checkmodelsol, qtype_proforma {{/str}}
+            </button>
+            <button id="upload_task-{{uniqid}}" title="{{#str}} upload_help, qtype_proforma {{/str}}" class="btn btn-secondary">
+                {{# pix }} i/import, core, {{/ pix }}{{#str}} upload, qtype_proforma {{/str}}
+            </button>
+            <button id="download_task-{{uniqid}}" class="btn btn-secondary">
+                {{# pix }} i/export, core, {{/ pix }}{{#str}} downloadtask, qtype_proforma {{/str}}
+            </button>
+            <button id="download-modelsol-{{uniqid}}" class="btn btn-secondary">
+                {{# pix }} i/export, core, {{/ pix }}{{#str}} downloadmodelsolution, qtype_proforma {{/str}}
+            </button>
+        </span>
+
+        <!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary">Save task</button> -->
+
+        <button id="toggle-fullscreen-{{uniqid}}" class="btn btn-secondary fullscreen"  title="{{#str}} fullscreen_help, qtype_proforma {{/str}}">{{# pix }}e/fullscreen,core,{{/ pix }}</button>
+    </div>
+
+    </div>
 </div>
-
-<div class="taskeditor-buttons">
-    <button id="check-modelsolution-{{uniqid}}" class="btn btn-secondary" title="{{#str}} checkmodelsol_help, qtype_proforma {{/str}}">
-        {{# pix }} i/grade_correct, core, {{/ pix }}/{{# pix }} i/grade_incorrect, core, {{/ pix }}{{#str}} checkmodelsol, qtype_proforma {{/str}}
-    </button>
-    <button id="upload_task-{{uniqid}}" class="btn btn-secondary">
-        {{# pix }} i/import, core, {{/ pix }}{{#str}} upload, qtype_proforma {{/str}}
-    </button>
-    <button id="download_task-{{uniqid}}" class="btn btn-secondary">
-        {{# pix }} i/export, core, {{/ pix }}{{#str}} downloadtask, qtype_proforma {{/str}}
-    </button>
-    <button id="download-modelsol-{{uniqid}}" class="btn btn-secondary">
-        {{# pix }} i/export, core, {{/ pix }}{{#str}} downloadmodelsolution, qtype_proforma {{/str}}
-    </button>
-
-    <!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary">Save task</button> -->
-
-    <button id="toggle-fullscreen-{{uniqid}}" class="btn btn-secondary fullscreen" style="float:right; ">{{# pix }}e/fullscreen,core,{{/ pix }}</button>
-</div>
-
-</div>
-
 
 {{#js}}
     require(['qtype_proforma/taskeditor/taskeditor'], function(editor) {

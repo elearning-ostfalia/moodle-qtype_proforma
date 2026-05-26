@@ -49,11 +49,13 @@ $string['graderoptions_header'] = 'Grader Settings';
 
 // Buttons.
 $string['upload'] = 'Upload taskfile to grader';
-$string['edittestdetails'] = 'Edit test details (experimental)';
+$string['upload_help'] = 'Uploading the task in advance can shorten the initial testing time';
+$string['edittestdetails'] = 'Edit test details';
 $string['checkmodelsol'] = 'Check model solution';
 $string['checkmodelsol_help'] = 'Run tests with model solution';
 $string['downloadtask'] = 'Download Task';
 $string['downloadmodelsolution'] = 'Download Model solution';
+$string['fullscreen_help'] = 'Toggle fullscreen';
 
 
 

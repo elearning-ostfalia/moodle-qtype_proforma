@@ -28,7 +28,7 @@ Feature: BACKUP AND RESTORE JAVA
 
 ##########################################################################
   @javascript @_file_upload
-  Scenario: Add some new question to the quiz using '+ a new question' options of the 'Add' menu.
+  Scenario: Create questions for quiz, backup, restore and add new proforma question to quiz of new course.
 ##########################################################################
     When I open the "last" add to quiz menu
     And I follow "a new question"
@@ -70,7 +70,7 @@ Feature: BACKUP AND RESTORE JAVA
     And I upload "question/type/proforma/tests/fixtures/reverseJUnit1.java" to "testfiles[1]" filemanager by name
     And I set the field "testentrypoint[1]" to "XClass"
 
-    # There seems to be a bug in the test environment uploading files 
+    # There seems to be a bug in the test environment uploading files
     # into a second filemenager. So we close and reopen.
     And I press "id_submitbutton"
     And I click on "Edit question java-question" "link"
@@ -96,10 +96,20 @@ Feature: BACKUP AND RESTORE JAVA
     When I backup "Course 1" course using this options:
       | Confirmation | Filename | test_backup.mbz |
     And I restore "test_backup.mbz" backup into a new course using this options:
-      | Schema | Course name | Course 2 |
-    And I navigate to "Question bank" in current page administration
-  
-    When I choose "Edit question" action for "java-question" in the question bank
+      | Schema | Course name       | Course 2 |
+      | Schema | Course short name | C2       |
+
+    # rename quiz in course 2 in order to be unique for testing
+    And I am on "Course 2" course homepage
+    And I follow "Quiz 1"
+    When I navigate to "Settings" in current page administration
+    And I set the following fields to these values:
+      | Name  | Quiz 2           |
+    And I click on "Save and return to course" "button"
+
+    And I am on "Course 2" course homepage with editing mode on
+    Given I am on the "Quiz 2" "mod_quiz > question bank" page
+    And I choose "Edit question" action for "java-question" in the question bank
     Then the following fields match these values:
       | Question name            | java-question              |
       | Question text            | write a java program that..... |
@@ -152,4 +162,3 @@ Feature: BACKUP AND RESTORE JAVA
     And the "checkstyle" checkbox is "not checked"
     # Finish
     And I press "Cancel"
-

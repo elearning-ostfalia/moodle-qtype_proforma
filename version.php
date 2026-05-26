@@ -26,10 +26,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_proforma';
-$plugin->version   = 2025041001;
+$plugin->version   = 2026052001;
 
-$plugin->requires  = 2024042204; // Moodle 4.4
-$plugin->release = '3.2.0';
+$plugin->requires  = 2025041400; // Moodle 5.0
+$plugin->release = '3.2.1';
 
 $plugin->maturity  = MATURITY_STABLE;
 

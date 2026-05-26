@@ -156,8 +156,6 @@ Feature: REPLACE TASK
     # undo changes
     And I press "Cancel"
 
-
-
 ### Delete task
 
   @_file_upload

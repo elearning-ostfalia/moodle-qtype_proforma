@@ -1,3 +1,8 @@
+## 3.2.1
+
+* adapt to Moodle 5.0, 5.1, 5.2
+* bugfixes
+
 ## 3.2.0
 
 * adapt to Moodle 4.5.3

@@ -292,24 +292,22 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'itemid' => '34635511'));
 */
         if (isset($container->taskstorage) && $container->taskstorage == qtype_proforma::PERSISTENT_TASKFILE) {
-
-            $container->task =  file_get_unused_draft_itemid();
+            $container->task = 0;
             $this->make_attachment_in_draft_area($container->task, $container->taskfilename,
                     'Task.Zip-Dummy');
 
-            $container->modelsol = file_get_unused_draft_itemid();
+            $container->modelsol = 0;
             $this->make_attachment_in_draft_area($container->modelsol, 'ms1.txt',
                     'MS1-Dummy');
             $this->make_attachment_in_draft_area($container->modelsol, 'ms2.txt',
                     'MS2-Dummy');
 
-            $container->download = file_get_unused_draft_itemid();
+            $container->download = 0;
             $this->make_attachment_in_draft_area($container->download, self::QUESTION_LIBRARIES,
                     'LIB-Dummy');
 
             $this->make_attachment_in_draft_area($container->download, self::QUESTION_INSTRUCTIONS,
                     'INSTRUCTION-Dummy');
-
         }
     }
 
@@ -483,7 +481,8 @@ class qtype_proforma_test_helper extends question_test_helper {
         $fromform->inlinemessages = 1;
         // $fromform->initiallyinline = 1;
 
-        $fromform->template = file_get_unused_draft_itemid();
+        // $fromform->template = file_get_unused_draft_itemid();
+        $fromform->template = 0;
         $this->make_attachment_in_draft_area($fromform->template, self::QUESTION_TEMPLATES,
                 self::QUESTION_TEMPLATE);
 
@@ -491,6 +490,11 @@ class qtype_proforma_test_helper extends question_test_helper {
         // which results in failing tests.
         // Workaround: we use a copy of the value named 'original_template'
         $fromform->original_template = $fromform->template;
+//        var_dump($fromform);
+
+        $fromform->status = \core_question\local\bank\question_version_status::QUESTION_STATUS_READY;
+
+        // $this->dump_draft_area('get_proforma_question_form_data_editor');
 
         return $fromform;
     }
@@ -505,7 +509,9 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $fromform->templates = self::QUESTION_TEMPLATES_2;
         $property = qtype_proforma::FILEAREA_TEMPLATE;
-        $fromform->$property = file_get_unused_draft_itemid();
+        $fromform->$property = 0;
+        // file_prepare_draft_area($fromform->$property, null, null, null, null);
+        // $fromform->$property = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
                 '#code snippet for python');
 
@@ -526,7 +532,9 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $fromform->templates = self::QUESTION_TEMPLATES_2;
         $property = qtype_proforma::FILEAREA_TEMPLATE;
-        $fromform->$property = file_get_unused_draft_itemid();
+//        $fromform->$property = file_get_unused_draft_itemid();
+        $fromform->$property = 0;
+        // file_prepare_draft_area($fromform->$property, null, null, null, null);
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
             '#code snippet for python');
 
@@ -549,7 +557,9 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $fromform->templates = self::QUESTION_TEMPLATES_2;
         $property = qtype_proforma::FILEAREA_TEMPLATE;
-        $fromform->$property = file_get_unused_draft_itemid();
+        $fromform->$property = 0;
+//        file_prepare_draft_area($fromform->$property, null, null, null, null);
+//        $fromform->$property = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
             '#code snippet for python');
 
@@ -572,7 +582,9 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $fromform->templates = self::QUESTION_TEMPLATES_2;
         $property = qtype_proforma::FILEAREA_TEMPLATE;
-        $fromform->$property = file_get_unused_draft_itemid();
+        $fromform->$property = 0;
+//        file_prepare_draft_area($fromform->$property, null, null, null, null);
+//        $fromform->$property = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
             '#code snippet for python');
 
@@ -618,7 +630,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         // $container->modelsolution = self::QUESTION_MODELSOLUTION;
         // set redundant :-( template
         $form->responsetemplate = self::QUESTION_TEMPLATE;
-        $form->template = file_get_unused_draft_itemid();
+        $form->template = 0;
+//        file_prepare_draft_area($form->template, null, null, null, null);
+//        $form->template = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($form->template, 'template.txt',
                 self::QUESTION_TEMPLATE);
 
@@ -768,7 +782,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = 'entrypoint';
         $form->testfiles = array();
-        $form->testfiles[0] = file_get_unused_draft_itemid();
+//        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles[0] = 0;
+//        file_prepare_draft_area($form->testfiles[0], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest.java',
                 'class Junittest {}');
 
@@ -784,7 +800,10 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = 'entrypoint1';
         $form->testfiles = array();
-        $form->testfiles[0] = file_get_unused_draft_itemid();
+//        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles[0] = 0;
+//        file_prepare_draft_area($form->testfiles[0], null, null, null, null);
+
         $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest1.java',
                 'class XTest1 {}');
         $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest2.java',
@@ -793,7 +812,10 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[1] = 'entrypoint2';
-        $form->testfiles[1] = file_get_unused_draft_itemid();
+//        $form->testfiles[1] = file_get_unused_draft_itemid();
+        $form->testfiles[1] = 0;
+        file_prepare_draft_area($form->testfiles[1], null, null, null, null);
+
         $this->make_attachment_in_draft_area($form->testfiles[1], 'junittest.java',
                 'class Junittest {}');
 
@@ -809,7 +831,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = 'entrypoint1';
         $form->testfiles = array();
-        $form->testfiles[0] = file_get_unused_draft_itemid();
+        //$form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles[0] = 0;
+//        file_prepare_draft_area($form->testfiles[0], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest1.java',
                 'class XTest1 {}');
         $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest2.java',
@@ -818,7 +842,9 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[1] = 'entrypoint2';
-        $form->testfiles[1] = file_get_unused_draft_itemid();
+//        $form->testfiles[1] = file_get_unused_draft_itemid();
+        $form->testfiles[1] = 0;
+//        file_prepare_draft_area($form->testfiles[1], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[1], 'junittest.java',
                 'class Junittest {}');
 
@@ -855,7 +881,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         // $container->modelsolution = self::QUESTION_MODELSOLUTION;
         // set redundant :-( template
         $form->responsetemplate = self::QUESTION_TEMPLATE;
-        $form->template = file_get_unused_draft_itemid();
+        $form->template = 0;
+//        file_prepare_draft_area($form->form, null, null, null, null);
+//        $form->template = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($form->template, 'template.txt',
                 self::QUESTION_TEMPLATE);
 
@@ -961,7 +989,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         // $container->modelsolution = self::QUESTION_MODELSOLUTION;
         // set redundant :-( template
         $form->responsetemplate = self::QUESTION_TEMPLATE;
-        $form->template = file_get_unused_draft_itemid();
+        $form->template = 0;
+//        file_prepare_draft_area($form->template, null, null, null, null);
+ //       $form->template = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($form->template, 'template.txt',
                 self::QUESTION_TEMPLATE);
 
@@ -988,7 +1018,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = './test';
         $form->testfiles = array();
-        $form->testfiles[0] = file_get_unused_draft_itemid();
+//        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles[0] = 0;
+//        file_prepare_draft_area($form->testfiles[0], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[0], 'cunit1.c',
                 'int cunit_1() { return 1; }');
         $this->make_attachment_in_draft_area($form->testfiles[0], 'main.c',
@@ -1035,7 +1067,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[1] = './test2';
         // $form->testfiles = array();
-        $form->testfiles[1] = file_get_unused_draft_itemid();
+//        $form->testfiles[1] = file_get_unused_draft_itemid();
+        $form->testfiles[1] = 0;
+//        file_prepare_draft_area($form->testfiles[1], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[1], 'main.c',
                 'int main() { return 1; }');
 
@@ -1067,7 +1101,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         // $container->modelsolution = self::QUESTION_MODELSOLUTION;
         // set redundant :-( template
         $form->responsetemplate = self::QUESTION_TEMPLATE;
-        $form->template = file_get_unused_draft_itemid();
+        //$form->template = file_get_unused_draft_itemid();
+        $form->template = 0;
+//        file_prepare_draft_area($form->template, null, null, null, null);
         $this->make_attachment_in_draft_area($form->template, 'template.txt',
             self::QUESTION_TEMPLATE);
 
@@ -1094,7 +1130,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = './runtest';
         $form->testfiles = array();
-        $form->testfiles[0] = file_get_unused_draft_itemid();
+//        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles[0] = 0;
+//        file_prepare_draft_area($form->testfiles[0], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[0], 'gtest.cpp',
             'int cunit_1() { return 1; }');
         $this->make_attachment_in_draft_area($form->testfiles[0], 'main.cpp',
@@ -1137,7 +1175,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[1] = './test2';
         // $form->testfiles = array();
-        $form->testfiles[1] = file_get_unused_draft_itemid();
+//        $form->testfiles[1] = file_get_unused_draft_itemid();
+        $form->testfiles[1] = 0;
+//        file_prepare_draft_area($form->testfiles[1], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[1], 'main.cpp',
             'int main() { return 1; }');
 
@@ -1169,8 +1209,8 @@ class qtype_proforma_test_helper extends question_test_helper {
         // $container->modelsolution = self::QUESTION_MODELSOLUTION;
         // set redundant :-( template
         $form->responsetemplate = self::QUESTION_TEMPLATE;
-        $form->template = file_get_unused_draft_itemid();
-        $this->make_attachment_in_draft_area($form->template, 'template.txt',
+        $form->templates = 0;
+        $this->make_attachment_in_draft_area($form->templates, 'template.txt',
             self::QUESTION_TEMPLATE);
 
         $form->gradinghints = self::QUESTION_GRADINGHINTS_C2;
@@ -1195,7 +1235,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         // They must also exist as test variables.
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testfiles = array();
-        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles[0] = 0;
         $this->make_attachment_in_draft_area($form->testfiles[0], 'test1.py',
             '# testfile 1 ...');
         $this->make_attachment_in_draft_area($form->testfiles[0], 'test2.py',
@@ -1267,15 +1307,18 @@ class qtype_proforma_test_helper extends question_test_helper {
      * @param string $filename The filename for the file to be created.
      * @param string $contents The contents of the file to be created.
      */
-    protected function make_attachment_in_draft_area($draftid, $filename, $contents) {
+    protected function make_attachment_in_draft_area(&$draftid, $filename, $contents) {
         global $USER;
+        $usercontext = context_user::instance($USER->id);
 
         if (!is_numeric($draftid)) {
             throw new coding_exception('draftid is not numeric!' . $draftid);
         }
-        $fs = get_file_storage();
-        $usercontext = context_user::instance($USER->id);
+        if ($draftid == 0) {
+            file_prepare_draft_area($draftid, null, null, null, null);
+        }
 
+        $fs = get_file_storage();
         // Create the file in the provided draft area.
         $fileinfo = array(
             'contextid' => $usercontext->id,
@@ -1312,9 +1355,45 @@ class qtype_proforma_test_helper extends question_test_helper {
      * @param int $:attachments The number of attachments to generate.
      * @return question_file_saver a question_file_saver that contains the given amount of dummy files, for use in testing.
      */
-
     public function make_attachments_saver($attachments) {
         return new question_file_saver($this->make_attachments($attachments), 'question', 'response_attachments');
     }
 
+    public static function dump_draft_area($text) {
+        global $DB;
+        echo 'table files for ' . $text . PHP_EOL . PHP_EOL; // filepath, filename
+        $records = $DB->get_records('files', [], 'id', 'id, filename, filepath, filearea, itemid, contextid');
+        foreach ($records as $key => $record) {
+            if ($record->filearea == 'stamps')
+                unset($records[$key]);
+            if ($record->filearea == 'tilephoto')
+                unset($records[$key]);
+            if ($record->filename == '.')
+                unset($records[$key]);
+        }
+        foreach ($records as $key => $record) {
+            echo
+                'contextid:'. $record->contextid . ' ' .
+                'itemid:'. $record->itemid . ' ' .
+                $record->filearea . ' ' . $record->filename .
+                PHP_EOL;
+        }
+        echo PHP_EOL;
+
+        $records = $DB->get_records('context', [], 'id', '*');
+        foreach ($records as $key => $record) {
+            echo
+                'id:'. $record->id . ' ' .
+                'contextlevel:'. $record->contextlevel . ' ' .
+                'instanceid:'. $record->instanceid . ' ' .
+                'path:'. $record->path . ' ' .
+                'depth:'. $record->depth . ' ' .
+                'locked:'. $record->locked . ' ' .
+                PHP_EOL;
+        }
+        echo PHP_EOL;
+
+        $records = $DB->get_records('question_categories', [], 'id', '*');
+        print_r($records);
+    }
 }

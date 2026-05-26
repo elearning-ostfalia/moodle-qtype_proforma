@@ -18,8 +18,7 @@
  * This PHP file is used for uploading a task from Javascript taskeditor into the draft area
  * for later upload to grader.
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
@@ -36,11 +35,9 @@ require_once(__DIR__ . '/renderer.php');
 
 $err = new stdClass();
 
-// Parameters
-// $questionid = required_param('questionid', PARAM_INT); // Question id
-$contextid = required_param('contextid', PARAM_INT); // Context ID
-$itemid    = optional_param('itemid', 0, PARAM_INT);            // Itemid of task (draft)
-$coursecontextid = required_param('coursecontextid', PARAM_INT); // Question id
+$contextid = required_param('contextid', PARAM_INT); // Context ID.
+$itemid    = optional_param('itemid', 0, PARAM_INT);  // Itemid of task (draft).
+$coursecontextid = required_param('coursecontextid', PARAM_INT);
 
 
 // If uploaded file is larger than post_max_size (php.ini) setting, $_POST content will be empty.
@@ -52,6 +49,13 @@ if (empty($_POST)) {
 if (!confirm_sesskey()) {
     $err->error = get_string('invalidsesskey', 'error');
     die(json_encode($err));
+}
+
+$moodleversion = $CFG->version;
+if ($moodleversion > 2025100600) {
+    \core\ajax::capture_output();
+} else {
+    ajax_capture_output();
 }
 
 if (!isloggedin()) {
@@ -106,28 +110,36 @@ foreach ($_FILES as $uploadedfile) {
 
 
 $fs = get_file_storage();
-$record = array(
+$record = [
     'contextid' => $context->id,
     'component' => 'user',
     'filearea' => 'draft',
-    'itemid' => $itemid, // $contentid,
+    'itemid' => $itemid,
     'filepath' => '/',
-    'userid'    => $USER->id
-);
+    'userid'    => $USER->id,
+];
 
 
-// Delete old files from last attempt
+// Delete old files from last attempt.
 $fs->delete_area_files($context->id, 'user', 'draft', $itemid);
 
 $record['filename'] = clean_param($_FILES['task']['name'], PARAM_FILE);
 $taskfile = $fs->create_file_from_pathname($record, $_FILES['task']['tmp_name']);
 
-$result = array(
+$result = [
     'itemid' => $itemid,
     'contextid' => $context->id,
-    'filename' => $_FILES['task']['name']
-);
-ajax_check_captured_output();
+    'filename' => $_FILES['task']['name'],
+];
+
+
+$moodleversion = $CFG->version;
+if ($moodleversion > 2025100600) {
+    \core\ajax::check_captured_output();
+} else {
+    ajax_check_captured_output();
+}
+
 echo json_encode($result);
 die();
 

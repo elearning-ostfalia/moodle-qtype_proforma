@@ -22,9 +22,7 @@ Feature: GRADE C/C++/Python
 #    And the following "question categories" exist:
 #      | contextlevel | reference | name           |
 #      | Course       | C1        | Test questions |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
 
 ##########################################################################
   @javascript @_switch_window @_file_upload
@@ -112,7 +110,6 @@ int is_palidrome(const char *input) {
     And I should see "Wrong"
     And I should see "Marks for this submission: 0.00/1.00."
 
-
 ##########################################################################
   @javascript @_switch_window @_file_upload
   Scenario: Python question grading
@@ -195,7 +192,6 @@ def is_palindrome(text):
     And I should see "Log"
     And I should see "Correct"
     And I should see "Marks for this submission: 1.00/1.00."
-
 
     And I set the response to
 """
@@ -292,5 +288,3 @@ def is_palindrome(text):
     And I should see "Log"
     And I should see "Correct"
     And I should see "Marks for this submission: 1.00/1.00."
-
-
