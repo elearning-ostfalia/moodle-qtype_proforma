@@ -57,7 +57,7 @@ function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $fo
     }
 
     // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
-    require_login($course, false, $cm);
+    require_login($course, false);
 
     // Make sure the filearea is one of those used by the plugin and:
     // Check the relevant capabilities - these vary depending on the filearea being accessed.

@@ -1,3 +1,7 @@
+## 3.2.2
+
+bugfix attachment download as student
+
 ## 3.2.1
 
 * adapt to Moodle 5.0, 5.1, 5.2
