@@ -38,7 +38,7 @@ $context = context::instance_by_id($contextid);
 require_login();
 require_capability('qtype/proforma:runbulktest', $context);
 
-$PAGE->set_url('/question/type/proforma/bulktest.php', array('contextid' => $context->id));
+$PAGE->set_url('/question/type/proforma/bulktest.php', ['contextid' => $context->id]);
 $PAGE->set_context($context);
 $title = get_string('bulktesttitle', 'qtype_proforma', $context->get_context_name());
 $PAGE->set_title($title);
@@ -47,7 +47,7 @@ if ($context->contextlevel == CONTEXT_MODULE) {
     // Calling $PAGE->set_context should be enough, but it seems that it is not.
     // Therefore, we get the right $cm and $course, and set things up ourselves.
     $cm = get_coursemodule_from_id(false, $context->instanceid, 0, false, MUST_EXIST);
-    $PAGE->set_cm($cm, $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST));
+    $PAGE->set_cm($cm, $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST));
 }
 
 // Create the helper class.
@@ -61,7 +61,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
 
 // Run the tests.
-list($allpassed, $failing) = $bulktester->run_all_tests_for_context($context);
+[$allpassed, $failing] = $bulktester->run_all_tests_for_context($context);
 
 // Display the final summary.
 $bulktester->print_overall_result($allpassed, $failing);

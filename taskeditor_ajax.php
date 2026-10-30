@@ -142,4 +142,3 @@ if ($moodleversion > 2025100600) {
 
 echo json_encode($result);
 die();
-

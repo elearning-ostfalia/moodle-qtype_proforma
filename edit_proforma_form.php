@@ -36,7 +36,6 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/select_formcreator
  * ProFormA question type editing form.
  */
 class qtype_proforma_edit_form extends question_edit_form {
-
     /**
      * @var base_form_creator The class that creates the form elements
      */
@@ -47,8 +46,7 @@ class qtype_proforma_edit_form extends question_edit_form {
      * return true: if programming language will be selected.
      * Otherwise false.
      *
-     * @global type $CFG
-     * @global type $PAGE
+     * @return bool
      */
     private function create_creator_for_new_question() {
         // Check how many programming languages are available at this site.
@@ -81,8 +79,11 @@ class qtype_proforma_edit_form extends question_edit_form {
             // (Create 2-dimensional array with available programming languages
             // because it is easier to handle in Javascript).
             $title = get_string('selectlangtitle', 'qtype_proforma');
-            $PAGE->requires->js_call_amd('qtype_proforma/selectlang', 'select_lang',
-                array($title, $proglangs, $originalreturnurl));
+            $PAGE->requires->js_call_amd(
+                'qtype_proforma/selectlang',
+                'select_lang',
+                [$title, $proglangs, $originalreturnurl]
+            );
 
             // Create a dummy form selector.
             $this->formcreator = new select_form_creator($this->_form, true);
@@ -179,6 +180,12 @@ class qtype_proforma_edit_form extends question_edit_form {
         return $this->question;
     }
 
+    /**
+     * Creates the form creator matching the task storage type.
+     *
+     * @param int $taskstorage task storage type (see qtype_proforma constants)
+     * @param bool $newquestion true if a new question is created
+     */
     protected function create_form_creator($taskstorage, bool $newquestion) {
         if (!isset($taskstorage)) {
             throw new coding_exception('do not know what edit form to create');
@@ -248,8 +255,13 @@ class qtype_proforma_edit_form extends question_edit_form {
 
         // Internal description (Comment).
         $mform->addElement('header', 'commentheader', get_string('commentheader', 'qtype_proforma'));
-        $mform->addElement('editor', 'comment', get_string('comment', 'qtype_proforma'),
-                array('rows' => 10), $this->editoroptions);
+        $mform->addElement(
+            'editor',
+            'comment',
+            get_string('comment', 'qtype_proforma'),
+            ['rows' => 10],
+            $this->editoroptions
+        );
 
         // Move general feedback element into 'feedback' elements folder in order to have a cleaner form.
         $mform->insertElementBefore($mform->removeElement('generalfeedback', false), 'expandcollapse');

@@ -71,14 +71,13 @@ function is_teacher() {
 /**
  * get name of first group or '' if no groups exist.
  *
- * @global type $COURSE
  * @return string
  */
 function get_groupname_sample() {
     global $COURSE;
     // Get all groupings.
     $groups = groups_get_all_groups($COURSE->id);
-    if (isset($groups) and count($groups) > 0) {
+    if (isset($groups) && count($groups) > 0) {
         // Return name of first group.
         $group = reset($groups);
         return $group->name;
@@ -88,17 +87,20 @@ function get_groupname_sample() {
     return '';
 }
 /**
+ * Returns the name of the group that the current user belongs to.
+ *
+ * @param context $context context of the question usage
  * @return string returns the name of the group that the current user belongs to
  */
 function get_groupname($context) {
-    if (CONTEXT_MODULE != $context->contextlevel or !isset($context->instanceid)) {
-        // No quiz context (e.g. in question bank preview)
+    if (CONTEXT_MODULE != $context->contextlevel || !isset($context->instanceid)) {
+        // No quiz context (e.g. in question bank preview).
         return '';
     }
 
     global $USER;
     // Get all groups.
-    list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid, 'quiz');
+    [$course, $cm] = get_course_and_cm_from_cmid($context->instanceid, 'quiz');
     $groups = groups_get_activity_allowed_groups($cm, $USER->id);
 
     // Count groups and fetch name.
@@ -114,7 +116,7 @@ function get_groupname($context) {
             break;
         default:
             // More than one group found.
-            if (!is_teacher() and !is_admin()) {
+            if (!is_teacher() && !is_admin()) {
                 debugging('group is not unique');
             } else {
                 $groupname = '';
@@ -150,12 +152,18 @@ function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = 
         if ($moodleversion > 2018051700) {
             // Starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
             // so this must be done explicitly in Javascript.
-            $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                    array($textareaid, $readonly, $mode, $header, 1));
+            $PAGE->requires->js_call_amd(
+                'qtype_proforma/codemirrorif',
+                'init_codemirror',
+                [$textareaid, $readonly, $mode, $header, 1]
+            );
         } else {
             // In 3.4 resizing must be prohibited because the window is too small.
-            $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'init_codemirror',
-                    array($textareaid, $readonly, $mode, $header));
+            $PAGE->requires->js_call_amd(
+                'qtype_proforma/codemirrorif',
+                'init_codemirror',
+                [$textareaid, $readonly, $mode, $header]
+            );
         }
     }
 }
@@ -170,18 +178,18 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
     /**
      * @var type grader instance
      */
-    private $_grader = null;
+    private $grader = null;
     /**
      * @var XML string connection test result
      */
-    private $_graderoutput = null;
+    private $graderoutput = null;
     /**
      * @var int HTTP code of test response
      */
-    private $_httpcode = null;
+    private $httpcode = null;
 
     /** @var null Uri for this config grader */
-    private $_uri = null;
+    private $uri = null;
 
     /**
      * Constructor
@@ -193,7 +201,6 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
      */
     public function __construct($name, $visiblename, $description, $defaultdirectory) {
         parent::__construct($name, $visiblename, $description, $defaultdirectory, PARAM_RAW, 50);
-
     }
 
     /**
@@ -207,7 +214,7 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
      * @param string $query
      * @return string XHTML field
      */
-    public function output_html($data, $query='') {
+    public function output_html($data, $query = '') {
         global $OUTPUT;
 
         $default = $this->get_defaultsetting();
@@ -232,13 +239,12 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
      * @throws \dml_exception
      */
     private function set_grader() {
-        if (!isset($this->_grader)) {
+        if (!isset($this->grader)) {
             $host = trim(get_config('qtype_proforma', $this->name));
             if (strlen($host) > 0) {
                 $path = trim(get_config('qtype_proforma', 'graderuri_path'));
-                $this->_uri = $host . $path;
-                // ebugging($this->_uri);
-                $this->_grader = new \qtype_proforma_grader_2($this->_uri);
+                $this->uri = $host . $path;
+                $this->grader = new \qtype_proforma_grader_2($this->uri);
             }
         }
     }
@@ -251,20 +257,20 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
     protected function get_grader_response() {
         $this->set_grader();
 
-        if (!isset($this->_uri)) {
+        if (!isset($this->uri)) {
             return '';
         }
         if (!isset($this->_result)) {
-            list($this->_graderoutput, $this->_httpcode) = $this->_grader->test_connection();
+            [$this->graderoutput, $this->httpcode] = $this->grader->test_connection();
         }
 
-        switch ($this->_httpcode) {
+        switch ($this->httpcode) {
             case 0:
-                return $this->_graderoutput;
+                return $this->graderoutput;
             case 200:
                 // Show grader info if available.
                 try {
-                    $response = new \SimpleXMLElement($this->_graderoutput, LIBXML_PARSEHUGE);
+                    $response = new \SimpleXMLElement($this->graderoutput, LIBXML_PARSEHUGE);
                     $graderinfo = $response->{'response-meta-data'}->{'grader-engine'};
                     return $graderinfo['name'] . ' ' . $graderinfo['version'];
                 } catch (Exception $e) {
@@ -274,7 +280,7 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
             case 404:
                 return 'HTTP status code 404, check URI';
             default:
-                return 'HTTP status code ' . $this->_httpcode;
+                return 'HTTP status code ' . $this->httpcode;
         }
     }
 
@@ -284,16 +290,15 @@ class admin_setting_configproformagrader extends \admin_setting_configtext {
      *
      * @return bool
      */
-    protected function is_proforma_grader() : bool {
+    protected function is_proforma_grader(): bool {
         $this->set_grader();
-        if (!isset($this->_grader)) {
+        if (!isset($this->grader)) {
             return false;
         }
         if (!isset($this->_result)) {
-            list($this->_graderoutput, $this->_httpcode) = $this->_grader->test_connection();
+            [$this->graderoutput, $this->httpcode] = $this->grader->test_connection();
         }
         // Test for HTTP OK.
-        return $this->_httpcode == 200;
+        return $this->httpcode == 200;
     }
 }
-

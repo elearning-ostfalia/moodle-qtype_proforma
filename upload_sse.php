@@ -25,7 +25,7 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-require_once(__DIR__.'/../../../config.php');
+require_once(__DIR__ . '/../../../config.php');
 global $CFG;
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/externallib.php');
@@ -40,6 +40,7 @@ try {
     if (!isloggedin()) {
         throw new Exception('user is not logged in');
     }
+    require_login();
 
     $itemid    = optional_param('itemid', -1, PARAM_INT);
     if ($itemid > 0) {
@@ -76,7 +77,7 @@ try {
             throw new invalid_parameter_exception('No task file available');
         }
 
-        // Use default grader and set upload URI
+        // Use default grader and set upload URI.
         $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
         $path = trim(get_config('qtype_proforma', 'uploaduri_path'));
         $uri = $protocolhost . $path;
@@ -95,9 +96,9 @@ try {
             throw new invalid_parameter_exception('invalid question type');
         }
 
-        // Security checks
+        // Security checks.
         global $DB;
-        $contextid = $DB->get_field('question_categories', 'contextid', array('id' => $question->category));
+        $contextid = $DB->get_field('question_categories', 'contextid', ['id' => $question->category]);
         $context = \context::instance_by_id($contextid, IGNORE_MISSING);
         if (isset($context)) {
             external_api::validate_context($context);
@@ -113,16 +114,11 @@ try {
         $grader = new \qtype_proforma_grader_2($question->get_uri($path));
     }
 
-    list($graderoutput, $httpcode) = $grader->upload_task_to_grader($task);
+    [$graderoutput, $httpcode] = $grader->upload_task_to_grader($task);
     if ($graderoutput === true) {
         $graderoutput = 'successfully started';
     }
-
 } catch (Exception $ex) {
-    // Send error message as event data
+    // Send error message as event data.
     echo "data: $ex\n\n";
 }
-
-
-
-
