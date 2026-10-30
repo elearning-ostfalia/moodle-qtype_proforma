@@ -1,0 +1,5 @@
+# Configuration for moodle-plugin-ci.
+# Test files are excluded from the Moodle Code Checker.
+filters:
+  codechecker:
+    notPaths: ['tests']

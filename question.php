@@ -32,26 +32,25 @@ require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/grader_2.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
 
-define("ANSWER",      "answer");
+define("ANSWER", "answer");
 define("ATTACHMENTS", "attachments");
-define("VCSINPUT",    "vcsinput");
+define("VCSINPUT", "vcsinput");
 define("VCSUSERNAME", "vcsuser");
-define("VCSGROUP",    "vcsgroup");
+define("VCSGROUP", "vcsgroup");
 
 // Place holder for use of Version Control System.
-define("PHINPUT",    "{input}");
+define("PHINPUT", "{input}");
 define("PHUSERNAME", "{username}");
-define("PHGROUP",    "{group}");
-define("PHGROUPL",   "{groupl}");
+define("PHGROUP", "{group}");
+define("PHGROUPL", "{groupl}");
 
 // Initialise static variable.
-qtype_proforma_question::$sutstate =question_state::$gradedwrong;
+qtype_proforma_question::$sutstate = question_state::$gradedwrong;
 
 /**
  * Represents the proforma question.
  */
 class qtype_proforma_question extends question_graded_automatically {
-
     /** @var bool Flag indicates that the grading behaviour is externally controlled
     for testing */
     public static $systemundertest = false;
@@ -60,28 +59,28 @@ class qtype_proforma_question extends question_graded_automatically {
     /** @var float grading result state when $systemundertest is set to true */
     public static $sutstate;
 
-    // Defines the maximum number of char shown in the response summary.
+    /** Defines the maximum number of char shown in the response summary. */
     const SUMMARY_LENGTH = 500;
 
     /** @var  text The UUID of the associated ProFormA task (could be extracted from file). */
     public $uuid;
+    /** @var string repository of the ProFormA task */
     public $taskrepository;
+    /** @var string path of the ProFormA task in the repository */
     public $taskpath;
     /** @var string filename of the ProFormA task file stored in Moodle  */
     public $taskfilename;
 
-    // Additional files for download in student view. All filenames are comma separated.
+    /** @var string Template files for download in student view. All filenames are comma separated. */
     public $templates;
-
+    /** @var string Additional files for download in student view. All filenames are comma separated. */
     public $downloads;
-    // public $displayfiles; // Not used so far!!!
-
-
+    /** @var string Model solution files. All filenames are comma separated. */
     public $modelsolfiles;
-
+    /** @var string Filename of the response */
     public $responsefilename;
 
-    /** Syntax highlighting, not actual programming language */
+    /** @var string Syntax highlighting, not actual programming language */
     public $programminglanguage;
     /** @var  string Initial text in response editor */
     public $responsetemplate;
@@ -97,12 +96,15 @@ class qtype_proforma_question extends question_graded_automatically {
     /** @var  string allowed filetypes for upload */
     public $filetypes;
 
+    /** @var string Internal comment */
     public $comment;
+    /** @var int Format of internal comment */
     public $commentformat;
 
+    /** @var int Aggregation strategy for grading */
     public $aggregationstrategy;
+    /** @var string Grading hints */
     public $gradinghints;
-
 
     /** @var  int type of question (programming language resp. imported).
      */
@@ -111,6 +113,7 @@ class qtype_proforma_question extends question_graded_automatically {
     /** @var null is made a member variable in oder to use test doubles */
     public $grader = null;
 
+    /** @var string ProFormA version of the task */
     public $proformaversion;
 
     /** @var string The URI template for accessing a version control system with submissions. */
@@ -119,21 +122,21 @@ class qtype_proforma_question extends question_graded_automatically {
     public $vcslabel;
     /** @var int what kind of version control system? 1=git, 2=SVN */
     public $vcssystem;
-    /** feedback option for collapsible regions */
+    /** @var int feedback option for collapsible regions */
     public $expandcollapse;
 
-    /** feedback option: shall messages be embedded into editor code? */
+    /** @var bool feedback option: shall messages be embedded into editor code? */
     public $inlinemessages;
-    /** feedback option: shall messages be initially embedded into editor? */
-    // public $initiallyinline;
 
-    // in Moodle 3.6 and later the property 'template' is overridden by the test environment
-    // which results in failing Behat tests.
-    // Workaround: we use a copy of the value named 'original_template'.
-    // Even if no template is used we must set this variable. Otherwise
-    // the proforma code thinks that there is a template.
-    // In order to prevent getting a deprecation warning there is a member variable added here.
-    public $original_template = '';
+    /**
+     * @var string In Moodle 3.6 and later the property 'template' is overridden by the test environment
+     * which results in failing Behat tests.
+     * Workaround: we use a copy of the value named 'original_template'.
+     * Even if no template is used we must set this variable. Otherwise
+     * the proforma code thinks that there is a template.
+     * In order to prevent getting a deprecation warning there is a member variable added here.
+     */
+    public $original_template = ''; // phpcs:ignore moodle.NamingConventions.ValidVariableName.MemberNameUnderscore
 
     /**
      * get grader URI
@@ -161,7 +164,7 @@ class qtype_proforma_question extends question_graded_automatically {
         if (!isset($path)) {
             $path = trim(get_config('qtype_proforma', 'graderuri_path'));
         }
-        if (isset($alternativehost) and strlen($alternativehost) > 0) {
+        if (isset($alternativehost) && strlen($alternativehost) > 0) {
             // Use alternative host.
             return $alternativehost . $path;
         }
@@ -180,6 +183,7 @@ class qtype_proforma_question extends question_graded_automatically {
         if ($this->grader == null) {
             $this->grader = new qtype_proforma_grader_2($this->get_uri());
             return $this->grader;
+
 
             // Use default Uri.
             // For using fake results use the following code:
@@ -201,7 +205,7 @@ class qtype_proforma_question extends question_graded_automatically {
      * @return question_behaviour
      */
     public function make_behaviour(question_attempt $qa, $preferredbehaviour) {
-        switch($preferredbehaviour) {
+        switch ($preferredbehaviour) {
             /* The question behaviour must be changed because we need the grader feedback
                stored in the database !!
                If there the original behaviour is desired we need to overload
@@ -229,7 +233,9 @@ class qtype_proforma_question extends question_graded_automatically {
     }
 
     /**
-     * @param moodle_page the page we are outputting to.
+     * Returns the renderer for the response format.
+     *
+     * @param moodle_page $page the page we are outputting to.
      * @return qtype_proforma_format_renderer_base the response-format-specific renderer.
      */
     public function get_format_renderer(moodle_page $page) {
@@ -248,7 +254,7 @@ class qtype_proforma_question extends question_graded_automatically {
      *      meaning take all the raw submitted data belonging to this question.
      */
     public function get_expected_data() {
-        $expecteddata = array();
+        $expecteddata = [];
         switch ($this->responseformat) {
             case qtype_proforma::RESPONSE_EDITOR:
                 $expecteddata[ANSWER] = PARAM_RAW;
@@ -264,7 +270,7 @@ class qtype_proforma_question extends question_graded_automatically {
                 $expecteddata[VCSGROUP] = PARAM_TEXT;
                 break;
             default:
-                throw new coding_exception('unsupported responseformat '. $this->responseformat);
+                throw new coding_exception('unsupported responseformat ' . $this->responseformat);
         }
         return $expecteddata;
     }
@@ -288,7 +294,6 @@ class qtype_proforma_question extends question_graded_automatically {
             }
             return $text;
         } else if (isset($response[ATTACHMENTS])) {
-
             if (is_a($response[ATTACHMENTS], 'question_file_loader')) {
                 $files = $response[ATTACHMENTS]->get_files();
                 if (!$files) {
@@ -299,7 +304,7 @@ class qtype_proforma_question extends question_graded_automatically {
 
                 if (count($files) > 1) {
                     // More than one file: return filenames.
-                    $filenames = array();
+                    $filenames = [];
                     foreach ($files as $file) {
                         $filenames[] = $file->get_filename();
                     }
@@ -316,17 +321,17 @@ class qtype_proforma_question extends question_graded_automatically {
             }
 
             return '(uploaded file)';
-        } else if (isset($response[VCSINPUT]) or isset($response[VCSGROUP]) or isset($response[VCSUSERNAME])) {
+        } else if (isset($response[VCSINPUT]) || isset($response[VCSGROUP]) || isset($response[VCSUSERNAME])) {
             $revision = '';
             if (isset($response['_feedback'])) {
                 try {
                     $feedback = new SimpleXMLElement($response['_feedback'], LIBXML_PARSEHUGE | LIBXML_NOERROR);
                     $praktomat = $feedback->{'response-meta-data'}->children('praktomat', true);
                     $vcs = $praktomat->{'response-meta-data'}->{'version-control-system'};
-                    if (isset($vcs) and $vcs->asXML() !== false) {
+                    if (isset($vcs) && $vcs->asXML() !== false) {
                         $attrib = $vcs->attributes();
-                        if (isset($attrib['submission-uri']) and isset($attrib['submission-revision'])) {
-                            $revision = ' (' . $attrib['submission-uri'] . ' Revision '. $attrib['submission-revision'] . ')';
+                        if (isset($attrib['submission-uri']) && isset($attrib['submission-revision'])) {
+                            $revision = ' (' . $attrib['submission-uri'] . ' Revision ' . $attrib['submission-revision'] . ')';
                         }
                     }
                 } catch (Exception $e) {
@@ -335,11 +340,11 @@ class qtype_proforma_question extends question_graded_automatically {
                 }
             }
             if (isset($response[VCSINPUT])) {
-                return $this->vcslabel . ' '. $response[VCSINPUT] . $revision;
+                return $this->vcslabel . ' ' . $response[VCSINPUT] . $revision;
             } else if (isset($response[VCSGROUP])) {
-                return get_string('groupname', 'qtype_proforma') . ': '. $response[VCSGROUP] . $revision;
+                return get_string('groupname', 'qtype_proforma') . ': ' . $response[VCSGROUP] . $revision;
             } else if (isset($response[VCSUSERNAME])) {
-                return 'User '. ' '. $response[VCSUSERNAME] . $revision;
+                return 'User ' . ' ' . $response[VCSUSERNAME] . $revision;
             }
         }
 
@@ -360,11 +365,9 @@ class qtype_proforma_question extends question_graded_automatically {
                     return [ANSWER => $summary ];
                 case qtype_proforma::RESPONSE_FILEPICKER:
                 case qtype_proforma::RESPONSE_EXPLORER:
-/*                    $expecteddata[ATTACHMENTS] = question_attempt::PARAM_FILES;
-                    break;*/
                 case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 default:
-                    throw new coding_exception('unsupported responseformat '. $this->responseformat);
+                    throw new coding_exception('unsupported responseformat ' . $this->responseformat);
             }
         } else {
             return [];
@@ -469,22 +472,20 @@ class qtype_proforma_question extends question_graded_automatically {
                 return $value1 === $value2;
                 break;
             case qtype_proforma::RESPONSE_FILEPICKER:
-                if (!question_utils::arrays_same_at_key_missing_is_blank(
-                        $prevresponse, $newresponse, ATTACHMENTS)) {
+                if (!question_utils::arrays_same_at_key_missing_is_blank($prevresponse, $newresponse, ATTACHMENTS)) {
                     return false;
                 }
                 return true;
                 break;
             case qtype_proforma::RESPONSE_EXPLORER:
-                // Compare files by comparing the content hashes
-                return question_utils::arrays_same_at_key_missing_is_blank(
-                    $prevresponse, $newresponse, ATTACHMENTS);
-           case qtype_proforma::RESPONSE_VERSION_CONTROL:
+                // Compare files by comparing the content hashes.
+                return question_utils::arrays_same_at_key_missing_is_blank($prevresponse, $newresponse, ATTACHMENTS);
+            case qtype_proforma::RESPONSE_VERSION_CONTROL:
                 // We cannot decide if the student's response has changed
                 // since it is located somewhere else. So we always return false.
                 return false;
             default:
-                throw new coding_exception('invalid response format "'. $this->responseformat . '"');
+                throw new coding_exception('invalid response format "' . $this->responseformat . '"');
         }
     }
 
@@ -499,7 +500,7 @@ class qtype_proforma_question extends question_graded_automatically {
     public function grade_response(array $response) {
         if (self::$systemundertest) {
             // System is under test => do not call actual grading functions.
-            return array(self::$sutfraction, self::$sutstate, []);
+            return [self::$sutfraction, self::$sutstate, []];
         }
 
         if (!$this->is_complete_response($response)) {
@@ -520,7 +521,7 @@ class qtype_proforma_question extends question_graded_automatically {
             } else {
                 $uri = $this->vcsuritemplate;
             }
-            list($graderoutput, $httpcode) = $grader->send_external_submission_to_grader($uri, $this);
+            [$graderoutput, $httpcode] = $grader->send_external_submission_to_grader($uri, $this);
         } else {
             // Quite complex determination of grading function,
             // we might simply use the response format.
@@ -561,23 +562,22 @@ class qtype_proforma_question extends question_graded_automatically {
                     throw new coding_exception("wrong class");
                 }
 
-                list($graderoutput, $httpcode) = $grader->send_files_to_grader(
-                        $files,
-                        $this);
+                [$graderoutput, $httpcode] = $grader->send_files_to_grader($files, $this);
             } else if (!empty($code)) {
-                list($graderoutput, $httpcode) = $grader->send_code_to_grader(
-                        $code,
-                        $this);
+                [$graderoutput, $httpcode] = $grader->send_code_to_grader($code, $this);
             } else {
                 throw new coding_exception('no attachments and no code available');
             }
         }
 
-        list($state, $fraction, $error, $feedback, $feedbackformat) =
+        [$state, $fraction, $error, $feedback, $feedbackformat] =
                 $grader->extract_grade($graderoutput, $httpcode, $this);
 
-        return array($fraction, $state,
-            array ('_feedback' => $feedback, '_errormsg' => $error, '_feedbackformat' => $feedbackformat));
+        return [
+            $fraction,
+            $state,
+            ['_feedback' => $feedback, '_errormsg' => $error, '_feedbackformat' => $feedbackformat],
+        ];
     }
 
 
@@ -600,17 +600,10 @@ class qtype_proforma_question extends question_graded_automatically {
                 return true;
             }
             return $this->attachments != 0;
-
-            /* } else if ($component == 'question' && $filearea == 'response_answer') {
-            // Response attachments visible if the question has them.
-            return $this->responseformat === 'editorfilepicker';
-            */
         } else if ($component == 'qtype_proforma' && $filearea == qtype_proforma::FILEAREA_COMMENT) {
             return $options->manualcomment && $args[0] == $this->id;
-
         } else {
-            return parent::check_file_access($qa, $options, $component,
-                    $filearea, $args, $forcedownload);
+            return parent::check_file_access($qa, $options, $component, $filearea, $args, $forcedownload);
         }
     }
 

@@ -22,8 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 define("PROFORMA_OPTION", "proforma");
 
 /**
@@ -31,7 +29,6 @@ define("PROFORMA_OPTION", "proforma");
  * needed to restore one proforma qtype plugin
  */
 class restore_qtype_proforma_plugin extends restore_qtype_plugin {
-
     /**
      * Returns the paths to be handled by the plugin at question level
      */
@@ -65,7 +62,7 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
             $data->questionid = $newquestionid;
             // Insert the record.
             $newitemid = $DB->insert_record("qtype_proforma_options", $data);
-            // Create mapping
+            // Create mapping.
             $this->set_mapping('qtype_proforma', $oldid, $newitemid);
         }
         // Nothing to remap if the question already existed.
@@ -75,9 +72,9 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
      * Return the contents of this qtype to be processed by the links decoder
      */
     public static function define_decode_contents() {
-        return array(
+        return [
                 new restore_decode_content('qtype_proforma_options', 'comment', 'qtype_proforma'),
-        );
+        ];
     }
 
     /**
@@ -96,20 +93,10 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
                        AND qeo.id IS NULL
                        AND bi.backupid = ?
                        AND bi.itemname = ?
-                   ", array('proforma', $this->get_restoreid(), 'question_created'));
+                   ", ['proforma', $this->get_restoreid(), 'question_created']);
 
         foreach ($proformaswithoutoptions as $q) {
             throw new coding_exception('qtype_proforma_options do not exist for question ' . $q->id);
-/*
-            $defaultoptions = new stdClass();
-            $defaultoptions->questionid = $q->id;
-            $defaultoptions->responseformat = 'editor';
-            $defaultoptions->responsefieldlines = 15;
-            $defaultoptions->attachments = 0;
-            $defaultoptions->comment = '';
-            $defaultoptions->commentformat = FORMAT_HTML;
-            $defaultoptions->responsetemplate = '';
-            $DB->insert_record('qtype_proforma_options', $defaultoptions);*/
         }
     }
 
@@ -119,12 +106,4 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
         $questiondata->options = (object) $backupdata["plugin_qtype_proforma_question"][PROFORMA_OPTION][0];
         return $questiondata;
     }
-    /*
-    #[\Override]
-    public static function remove_excluded_question_data(stdClass $questiondata, array $excludefields = []): stdClass {
-        if (isset($questiondata->options->answers)) {
-            unset($questiondata->options->answers);
-        }
-        return parent::remove_excluded_question_data($questiondata, $excludefields);
-    }*/
 }

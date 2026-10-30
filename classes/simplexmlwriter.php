@@ -23,13 +23,10 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * class is used to write XML with less lines of code
  */
 class SimpleXmlWriter extends XMLWriter {
-
     /** Create attribute for current element.
      *
      * @param string $name attribute name
@@ -57,5 +54,4 @@ class SimpleXmlWriter extends XMLWriter {
         }
         $this->endElement();
     }
-
 }

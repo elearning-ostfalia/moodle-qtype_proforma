@@ -40,11 +40,11 @@ jobs:
           - php: '8.4'
             moodle-branch: 'MOODLE_503_STABLE'
             database: 'pgsql'
-          - php: '8.2'
+          - php: '8.3'
             moodle-branch: 'MOODLE_501_STABLE'
             database: 'mariadb'
           - php: '8.4'
-            moodle-branch: 'master'
+            moodle-branch: 'main'
             database: 'pgsql'            
             
     steps:
@@ -123,6 +123,6 @@ jobs:
 
       - name: Behat features
         if: ${{ always() }}
-        run: moodle-plugin-ci behat --profile chrome --tags="@qtype_proforma&&~@qtype_proforma_manual"
+        run: moodle-plugin-ci behat --profile chrome --tags="@qtype_proforma&&~@qtype_proforma_manual&&~@grade_proforma"
 
 

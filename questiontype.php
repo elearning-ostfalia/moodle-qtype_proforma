@@ -39,7 +39,6 @@ require_once($CFG->dirroot . '/question/type/proforma/question.php');
  *
  */
 class qtype_proforma extends question_type {
-
     // We use separate file areas to be able to handle different purposes
     // differently in the future.
 
@@ -85,7 +84,8 @@ class qtype_proforma extends question_type {
      */
     /** task file that is not yet completed */
     const SELECT_TASKFILE = 0;
-    const VOLATILE_TASKFILE = 3; // Deprecated: Use JAVA_TASKFILE instead.
+    /** Deprecated: Use JAVA_TASKFILE instead. */
+    const VOLATILE_TASKFILE = 3;
     /** Java task file */
     const JAVA_TASKFILE = self::VOLATILE_TASKFILE;
     /** SetlX task file */
@@ -97,7 +97,7 @@ class qtype_proforma extends question_type {
     /** Python task file */
     const PYTHON_TASKFILE = 7;
 
-    // Collapse options
+    // Collapse options.
     /**
      * always collapse feedback
      */
@@ -142,7 +142,9 @@ class qtype_proforma extends question_type {
     const RESPONSE_EXPLORER = 'explorer';
 
     // Version Control Systems.
+    /** Git */
     const VCS_GIT = 1;
+    /** Subversion */
     const VCS_SVN = 2;
 
     /**
@@ -151,18 +153,18 @@ class qtype_proforma extends question_type {
      * @return array with filearea data
      */
     public static function fileareas_for_studentfiles() {
-        return array(
-                self::FILEAREA_TEMPLATE => array(
+        return [
+                self::FILEAREA_TEMPLATE => [
                         "files" => "templatefiles",
                         "dbcolumn" => "templates",
                         "formlist" => "templatelist",
-                ),
-                self::FILEAREA_DOWNLOAD => array(
+                ],
+                self::FILEAREA_DOWNLOAD => [
                         "files" => "downloadfiles", // Tag in xml export.
                         "dbcolumn" => "downloads", // Name of question attribute resp. database column.
                         "formlist" => "downloadlist", // Name of bound input in edit form.
-                )
-        );
+                ],
+        ];
     }
 
     /**
@@ -173,11 +175,11 @@ class qtype_proforma extends question_type {
      */
     public static function fileareas_with_model_solutions() {
         $fileareas = self::fileareas_for_studentfiles();
-        $fileareas[self::FILEAREA_MODELSOL] = array(
+        $fileareas[self::FILEAREA_MODELSOL] = [
                 "files" => "modelsolutionfiles",
                 "dbcolumn" => "modelsolfiles",
                 "formlist" => "modelsollist",
-        );
+        ];
         return $fileareas;
     }
 
@@ -188,10 +190,10 @@ class qtype_proforma extends question_type {
      */
     public static function proforma_fileareas() {
         $fileareas = self::fileareas_with_model_solutions();
-        $fileareas[self::FILEAREA_TASK] = array(
+        $fileareas[self::FILEAREA_TASK] = [
                 "files"    => "task",
                 "dbcolumn" => "taskfilename",
-        );
+        ];
         return $fileareas;
     }
 
@@ -202,7 +204,7 @@ class qtype_proforma extends question_type {
      * @return array with the table name (first) and then the column names (apart from id and questionid)
      */
     public function extra_question_fields() {
-        $result = array('qtype_proforma_options',
+        $result = ['qtype_proforma_options',
                 'uuid',
                 'proformaversion',
 
@@ -230,11 +232,9 @@ class qtype_proforma extends question_type {
 
                 'expandcollapse',
                 'inlinemessages',
-                // 'initiallyinline'
+                // Not added: 'initiallyinline'.
                 // Attributes 'comment' and 'commentformat' build an array => do not add.
-                // 'comment',
-                // 'commentformat',
-        );
+        ];
 
         foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
             $result[] = $value['dbcolumn'];
@@ -249,7 +249,7 @@ class qtype_proforma extends question_type {
      * @return array
      */
     public function response_file_areas() {
-        return array(ATTACHMENTS, ANSWER);
+        return [ATTACHMENTS, ANSWER];
     }
 
     /**
@@ -259,8 +259,12 @@ class qtype_proforma extends question_type {
      */
     public function get_question_options($question) {
         global $DB;
-        $question->options = $DB->get_record('qtype_proforma_options',
-                array('questionid' => $question->id), '*', MUST_EXIST);
+        $question->options = $DB->get_record(
+            'qtype_proforma_options',
+            ['questionid' => $question->id],
+            '*',
+            MUST_EXIST
+        );
         parent::get_question_options($question);
     }
 
@@ -293,7 +297,7 @@ class qtype_proforma extends question_type {
         parent::save_question_options($formdata);
         $this->save_hints($formdata, false);
 
-        $options = $DB->get_record('qtype_proforma_options', array('questionid' => $formdata->id));
+        $options = $DB->get_record('qtype_proforma_options', ['questionid' => $formdata->id]);
         if (!$options) {
             throw new coding_exception('proforma: save_question_options no database record available');
         }
@@ -333,8 +337,13 @@ class qtype_proforma extends question_type {
 
         if (!empty($formdata->comment['format'])) {
             // Option 'comment' is array (when data comes from form input).
-            $options->comment = $this->import_or_save_files($formdata->comment,
-                    $formdata->context, 'qtype_proforma', 'comment', $formdata->id);
+            $options->comment = $this->import_or_save_files(
+                $formdata->comment,
+                $formdata->context,
+                'qtype_proforma',
+                'comment',
+                $formdata->id
+            );
             $options->commentformat = $formdata->comment['format'];
         } else {
             // Data comes from file import, different internal structure.
@@ -373,42 +382,47 @@ class qtype_proforma extends question_type {
     public function delete_question($questionid, $contextid) {
         global $DB;
 
-        $DB->delete_records('qtype_proforma_options', array('questionid' => $questionid));
+        $DB->delete_records('qtype_proforma_options', ['questionid' => $questionid]);
         parent::delete_question($questionid, $contextid);
     }
 
     /**
-     * @return array the different response formats that the question type supports.
-     * internal name => human-readable name.
+     * Returns the different response formats that the question type supports.
+     *
+     * @return array internal name => human-readable name.
      */
     public static function response_formats() {
-        return array(
+        return [
             self::RESPONSE_EDITOR => get_string('formateditor', 'qtype_proforma'),
             self::RESPONSE_FILEPICKER => get_string('formatfilepicker', 'qtype_proforma'),
             self::RESPONSE_VERSION_CONTROL => get_string('versioncontrol', 'qtype_proforma'),
             self::RESPONSE_EXPLORER => get_string('formatexplorer', 'qtype_proforma'),
-        );
+        ];
     }
 
     /**
+     * Returns the supported programming languages.
+     *
      * @return array the supported programming languages
      */
     public static function get_proglang_options() {
-        return array(
+        return [
                 'java' => "Java",
                 'python' => "Python",
                 'setlx' => 'SetlX',
                 'cpp' => 'C/C++',
                 'c' => 'C',
                 'none' => get_string('none', 'qtype_proforma'),
-        );
+        ];
     }
 
     /**
+     * Returns the choices that should be offered for the input box size.
+     *
      * @return array the choices that should be offered for the input box size.
      */
     public function response_sizes() {
-        $choices = array();
+        $choices = [];
         for ($lines = 5; $lines <= 40; $lines += 5) {
             $choices[$lines] = get_string('nlines', 'qtype_proforma', $lines);
         }
@@ -416,10 +430,12 @@ class qtype_proforma extends question_type {
     }
 
     /**
+     * Returns the choices that should be offered for the number of attachments.
+     *
      * @return array the choices that should be offered for the number of attachments.
      */
     public function attachment_options() {
-        return array(
+        return [
                 1 => '1',
                 2 => '2',
                 3 => '3',
@@ -427,7 +443,7 @@ class qtype_proforma extends question_type {
                 5 => '5',
             // Currently unlimited is disabled.
             // To enable set -1 => get_string('unlimited').
-        );
+        ];
     }
 
     /**
@@ -440,14 +456,29 @@ class qtype_proforma extends question_type {
     public function move_files($questionid, $oldcontextid, $newcontextid) {
         parent::move_files($questionid, $oldcontextid, $newcontextid);
         $fs = get_file_storage();
-        $fs->move_area_files_to_new_context($oldcontextid,
-                $newcontextid, 'qtype_proforma', self::FILEAREA_COMMENT, $questionid);
-        $fs->move_area_files_to_new_context($oldcontextid,
-                $newcontextid, 'qtype_proforma', self::FILEAREA_TASK, $questionid);
+        $fs->move_area_files_to_new_context(
+            $oldcontextid,
+            $newcontextid,
+            'qtype_proforma',
+            self::FILEAREA_COMMENT,
+            $questionid
+        );
+        $fs->move_area_files_to_new_context(
+            $oldcontextid,
+            $newcontextid,
+            'qtype_proforma',
+            self::FILEAREA_TASK,
+            $questionid
+        );
 
         foreach (self::fileareas_with_model_solutions() as $filearea => $value) {
-            $fs->move_area_files_to_new_context($oldcontextid,
-                    $newcontextid, 'qtype_proforma', $filearea, $questionid);
+            $fs->move_area_files_to_new_context(
+                $oldcontextid,
+                $newcontextid,
+                'qtype_proforma',
+                $filearea,
+                $questionid
+            );
         }
     }
 
@@ -510,7 +541,7 @@ class qtype_proforma extends question_type {
 
         // Set empty answer array in order to prevent error message
         // in call of base class function.
-        $data['#']['answer'] = array();
+        $data['#']['answer'] = [];
         $qo = parent::import_from_xml($data, $question, $format, $extra);
         // Remember that we come from import.
         $qo->import_process = true;
@@ -519,28 +550,31 @@ class qtype_proforma extends question_type {
         $format->import_hints($qo, $data, true, false);
 
         // Restore files in grader info.
-        $comment = $format->import_text_with_files($data,
-                array('#', 'comment', 0));
+        $comment = $format->import_text_with_files(
+            $data,
+            ['#', 'comment', 0]
+        );
         $qo->comment = $comment['text'];
         $qo->commentformat = $comment['format'];
-        // Set defaults if missing
+        // Set defaults if missing.
         if (empty($qo->expandcollapse)) {
             $qo->expandcollapse = 0;
         }
         if (empty($qo->inlinemessages)) {
             $qo->inlinemessages = 0;
         }
-        if ($qo->responseformat == self::RESPONSE_VERSION_CONTROL and empty($qo->vcssystem)) {
-            $qo->vcssystem = qtype_proforma::VCS_SVN;
+        if ($qo->responseformat == self::RESPONSE_VERSION_CONTROL && empty($qo->vcssystem)) {
+            $qo->vcssystem = self::VCS_SVN;
         }
-        // todo: restore $comment['itemid']
-        // if (!empty($comment['itemid'])) {
-        // $qo->commentitemid = $comment['itemid'];
+        // TODO: Restore item id of comment files.
 
         // Import files.
         foreach (self::proforma_fileareas() as $filearea => $value) {
-            $datafiles = $format->getpath($data,
-                    array('#', $value["files"], 0, '#', 'file'), array());
+            $datafiles = $format->getpath(
+                $data,
+                ['#', $value["files"], 0, '#', 'file'],
+                []
+            );
             if (is_array($datafiles)) {
                 // Seems like a non-array does occur in some versions of PHP!
                 // check for import with old style filenames.
@@ -550,16 +584,15 @@ class qtype_proforma extends question_type {
                     if (strpos($filename, '/') != false) {
                         $oldfilename = trim(clean_param($filename, PARAM_FILE));
                         foreach ($datafiles as &$file) { // Note: use reference here!
-                            $originalfilename = $format->getpath($file, array('@', 'name'), '', true);
+                            $originalfilename = $format->getpath($file, ['@', 'name'], '', true);
                             if ($originalfilename == $oldfilename) {
                                 // Modify filename and path.
-                                $pathparts = pathinfo('/'. $filename);
+                                $pathparts = pathinfo('/' . $filename);
                                 $dirname = trim($pathparts['dirname']);
                                 $basename = trim($pathparts['basename']);
                                 if ($dirname[strlen($dirname) - 1] !== '/') {
                                     $dirname = $dirname . '/';
                                 }
-                                // $originalfilepath = $format->getpath($file, array('@', 'path'), '/', true);
                                 $file['@']['name'] = $basename;
                                 $file['@']['path'] = $dirname;
                             }
@@ -586,14 +619,12 @@ class qtype_proforma extends question_type {
 
         // Copy the question so we can modify it for export
         // (Just in case the original gets used elsewhere).
-        $questiontoexport = $question; // clone $question;
+        $questiontoexport = $question; // Note: not cloned.
 
         $expout = parent::export_to_xml($questiontoexport, $format, $extra);
-        // $expout .= "    <DUMMY " . $questiontoexport->modelsolution . ">\n";
 
         $expout .= "    <comment {$format->format($questiontoexport->options->commentformat)}>\n";
         $expout .= $format->writetext($questiontoexport->options->comment, 3);
-        // $expout .= $format->write_files($questiontoexport->options->questiontextfiles);
         $expout .= "    </comment>\n";
 
         // Export files.
@@ -602,11 +633,19 @@ class qtype_proforma extends question_type {
 
         foreach (self::proforma_fileareas() as $filearea => $value) {
             $datafiles = $fs->get_area_files(
-                    $contextid, 'qtype_proforma', $filearea, $question->id);
+                $contextid,
+                'qtype_proforma',
+                $filearea,
+                $question->id
+            );
             $expout .= '<' . $value['files'] . '>' . $format->write_files($datafiles) . "</" . $value['files'] . ">\n";
         }
         $datafiles = $fs->get_area_files(
-                $contextid, 'qtype_proforma', self::FILEAREA_COMMENT, $question->id);
+            $contextid,
+            'qtype_proforma',
+            self::FILEAREA_COMMENT,
+            $question->id
+        );
         $expout .= '<commentfiles>' . $format->write_files($datafiles) . "</commentfiles>\n";
 
         return $expout;

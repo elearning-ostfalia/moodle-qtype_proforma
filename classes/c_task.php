@@ -26,8 +26,10 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
+/**
+ * Creates ProFormA c task file resp. extracts data from such a file.
+ */
 class qtype_proforma_c_task extends qtype_proforma_base_task {
-
     /**
      * add extra namespaces to XML
      *
@@ -56,7 +58,6 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
      */
     protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index, $formdata) {
         $xw->startElement('unit:unittest');
-        // $xw->create_attribute('framework', 'JUnit');
         $entrypoint = $formdata->testentrypoint[$index];
         $xw->create_childelement_with_text('unit:entry-point', trim($entrypoint));
         $xw->endElement(); // End tag unit:unittest.
@@ -75,7 +76,6 @@ class qtype_proforma_c_task extends qtype_proforma_base_task {
         $config = $test->{'test-configuration'};
         // Switch to namespace 'unit'.
         $unittest = $config->children('unit', true)->{'unittest'};
-        // $question->testversion[$index] = (string)$unittest->attributes()->version;
         // Call parent function for setting testcode attribute.
         // Note that index will be increemented there, too.
         $originalindex = $index;

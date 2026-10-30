@@ -37,8 +37,7 @@ $startfromcontextid = optional_param('startfromcontextid', 0, PARAM_INT);
 $context = context_system::instance();
 require_login();
 require_capability('moodle/site:config', $context);
-$PAGE->set_url('/question/type/proforma/bulktestall.php',
-        array('startfromcontextid' => $startfromcontextid));
+$PAGE->set_url('/question/type/proforma/bulktestall.php', ['startfromcontextid' => $startfromcontextid]);
 $PAGE->set_context($context);
 $title = get_string('bulktesttitle', 'qtype_proforma', $context->get_context_name());
 $PAGE->set_title($title);
@@ -48,7 +47,7 @@ require_login();
 // Create the helper class.
 $bulktester = new proforma_bulk_tester();
 $allpassed = true;
-$allfailing = array();
+$allfailing = [];
 $skipping = $startfromcontextid != 0;
 
 // Release the session, so the user can do other things while this runs.
@@ -71,17 +70,16 @@ foreach ($bulktester->get_proforma_questions_by_context() as $record) {
     $testcontext = context::instance_by_id($contextid);
 
     echo $OUTPUT->heading(get_string('bulktesttitle', 'qtype_proforma', $testcontext->get_context_name()));
-    echo html_writer::tag('p', html_writer::link(
-            new moodle_url('/question/type/proforma/bulktestall.php',
-                array('startfromcontextid' => $testcontext->id)),
-            get_string('bulktestcontinuefromhere', 'qtype_proforma')));
+    $continueurl = new moodle_url('/question/type/proforma/bulktestall.php', ['startfromcontextid' => $testcontext->id]);
+    $continuelink = html_writer::link($continueurl, get_string('bulktestcontinuefromhere', 'qtype_proforma'));
+    echo html_writer::tag('p', $continuelink);
 
-    list($passed, $failing) = $bulktester->run_all_tests_for_context($testcontext);
+    [$passed, $failing] = $bulktester->run_all_tests_for_context($testcontext);
     $allpassed = $allpassed && $passed;
     foreach ($failing as $key => $arrvals) {
         // Guard clause here to future proof any new fields from the bulk tester.
         if (!array_key_exists($key, $allfailing)) {
-            $allfailing[$key] = array();
+            $allfailing[$key] = [];
         }
         $allfailing[$key] = array_merge($allfailing[$key], $arrvals);
     }

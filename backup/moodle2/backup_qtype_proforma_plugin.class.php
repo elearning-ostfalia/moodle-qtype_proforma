@@ -52,18 +52,18 @@ class backup_qtype_proforma_plugin extends backup_qtype_plugin {
         $dummy = new qtype_proforma();
 
         $extrafields = $dummy->extra_question_fields();
-        array_shift($extrafields); // remove first element (= table name)
+        array_shift($extrafields); // Remove first element (= table name).
 
         $extrafields[] = 'comment';
         $extrafields[] = 'commentformat';
 
-        $proforma = new backup_nested_element('proforma', array('id'), $extrafields);
+        $proforma = new backup_nested_element('proforma', ['id'], $extrafields);
 
         // Now the own qtype tree.
         $pluginwrapper->add_child($proforma);
 
         // Set source to populate the data.
-        $proforma->set_source_table('qtype_proforma_options', array('questionid' => backup::VAR_PARENTID));
+        $proforma->set_source_table('qtype_proforma_options', ['questionid' => backup::VAR_PARENTID]);
 
         // Don't need to annotate ids nor files.
         return $plugin;
@@ -76,10 +76,10 @@ class backup_qtype_proforma_plugin extends backup_qtype_plugin {
      * files to be processed both in backup and restore.
      */
     public static function get_qtype_fileareas() {
-        $result = array (
+        $result = [
                 qtype_proforma::FILEAREA_COMMENT => 'question_created',
                 qtype_proforma::FILEAREA_TASK => 'question_created',
-        );
+        ];
 
         foreach (qtype_proforma::fileareas_with_model_solutions() as $filearea => $value) {
             $result[$filearea] = 'question_created';
@@ -87,5 +87,4 @@ class backup_qtype_proforma_plugin extends backup_qtype_plugin {
 
         return $result;
     }
-
 }

@@ -45,7 +45,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
  * @param array $options additional options affecting the file serving
  * @return bool
  */
-function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
     switch ($context->contextlevel) {
         case CONTEXT_COURSE:
@@ -56,7 +56,8 @@ function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $fo
             return false;
     }
 
-    // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
+    // Make sure the user is logged in and has access to the module
+    // (plugins that are not course modules should leave out the 'cm' part).
     require_login($course, false);
 
     // Make sure the filearea is one of those used by the plugin and:
@@ -95,30 +96,30 @@ function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $fo
     // $filename = array_pop($args); // The last item in the $args array.
 
     if (!$args) {
-        // echo 'no file given';
+        // No file given.
         return false;
     }
 
-    $filename = implode('/', $args); // $args contains elements of the filepath
+    $filename = implode('/', $args); // The $args array contains elements of the filepath.
     // $filepath = '/';
 
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
-    // for historical reasons we use two approaches for retrieving the file:
-    // (I want to avoid updating database values to fit the new model)
+    // For historical reasons we use two approaches for retrieving the file
+    // (I want to avoid updating database values to fit the new model).
     // New approach:
-    // properly split filename into path and basename
-    list($filepath, $basename) = qtype_proforma_filearea::split_filename($filename);
-    $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $itemid, $filepath , $basename);
+    // Properly split filename into path and basename.
+    [$filepath, $basename] = qtype_proforma_filearea::split_filename($filename);
+    $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $itemid, $filepath, $basename);
     if (!$file) {
         // Old approach:
-        // filename also contains path part
+        // Filename also contains path part.
         $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $itemid, '/', $filename);
     }
     if (!$file) {
         return false; // The file does not exist.
     }
 
-    // We can now send the file back to the browser
-    send_stored_file($file, 0, 0, true, $options); // download MUST be forced - security!
+    // We can now send the file back to the browser.
+    send_stored_file($file, 0, 0, true, $options); // Download MUST be forced - security!
 }

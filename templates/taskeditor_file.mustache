@@ -28,19 +28,17 @@
     Context variables required for this template:
     * none
 
-    Example context (json):
-    {
-        fileid,
-        filesize
-    }
-
-
     Ursprüngliche Klassen für das Top-Level-Div:
     class='ui-widget ui-widget-content ui-corner-all xml_file drop_zone'
 
     Ursprüngliche Klassen für den Header:
     class='ui-widget-header'
 
+    Example context (json):
+    {
+        "fileid": "1",
+        "filesize": "1024"
+    }
 }}
 
 <div id='file_{{ fileid }}' class='xml_file drop_zone fcontainer clearfix'>

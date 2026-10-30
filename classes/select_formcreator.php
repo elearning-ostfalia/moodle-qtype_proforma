@@ -27,9 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.php');
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
+/**
+ * Form creator for selecting the programming language of a new question.
+ */
 class select_form_creator extends base_form_creator {
-
-
     /**
      * select_form_creator constructor.
      *
@@ -65,9 +66,13 @@ class select_form_creator extends base_form_creator {
     public function add_proglang_selection() {
         $mform = $this->_form;
 
-        $programminglangs = array('java' => 'Java', 'setlx' => 'SetlX');
-        $mform->addElement('select', 'programminglanguage',
-                get_string('proglang', 'qtype_proforma'), $programminglangs);
+        $programminglangs = ['java' => 'Java', 'setlx' => 'SetlX'];
+        $mform->addElement(
+            'select',
+            'programminglanguage',
+            get_string('proglang', 'qtype_proforma'),
+            $programminglangs
+        );
         $mform->setType('programminglanguage', PARAM_TEXT);
         $mform->setDefault('programminglanguage', 'Java');
     }
@@ -91,8 +96,6 @@ class select_form_creator extends base_form_creator {
      * @param $question
      * @param $questioneditform
      * @return int
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function add_tests($question, $questioneditform) {
     }
@@ -102,7 +105,6 @@ class select_form_creator extends base_form_creator {
      *
      * @param $question
      * @param $qtype
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function add_response_options($question, $qtype) {
     }

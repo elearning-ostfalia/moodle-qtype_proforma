@@ -32,7 +32,6 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
  * Edit form for creating Java questions.
  */
 class java_form_creator extends base_form_creator {
-
     /** Key for Choose option in version selection. */
     const CHOOSE_OPTION = '0';
 
@@ -65,7 +64,7 @@ class java_form_creator extends base_form_creator {
 
         $mform = $this->_form;
         $javaversions = get_config('qtype_proforma', 'javaversion');
-        $proglangversions = array();
+        $proglangversions = [];
         if (!$this->_newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
             // In case no other value can be selected this is chosen by default.
@@ -74,8 +73,12 @@ class java_form_creator extends base_form_creator {
         foreach (explode(',', $javaversions) as $version) {
             $proglangversions[trim($version)] = trim($version);
         }
-        $mform->addElement('select', 'proglangversion',
-                get_string('proglangversion', 'qtype_proforma'), $proglangversions);
+        $mform->addElement(
+            'select',
+            'proglangversion',
+            get_string('proglangversion', 'qtype_proforma'),
+            $proglangversions
+        );
         $mform->addHelpButton('proglangversion', 'proglangversion_hint', 'qtype_proforma');
 
         $mform->addRule('proglangversion', get_string('error'), 'nonzero', null, 'client', false, false);
@@ -90,10 +93,7 @@ class java_form_creator extends base_form_creator {
     protected function adjust_test_repeatoptions(&$repeatoptions) {
         parent::adjust_test_repeatoptions($repeatoptions);
 
-        $repeatoptions['testentrypoint']['hideif'] = array('testcodeformat', 'eq', self::TESTCODE_EDITOR);
-        /*if ($this->_newquestion) {
-            $repeatoptions['testcodeformat']['default'] = self::TESTCODE_EDITOR;
-        }*/
+        $repeatoptions['testentrypoint']['hideif'] = ['testcodeformat', 'eq', self::TESTCODE_EDITOR];
     }
 
     /**
@@ -104,9 +104,9 @@ class java_form_creator extends base_form_creator {
     protected function adjust_test_testoptions(&$testoptions) {
         $mform = $this->_form;
         $csversion = get_config('qtype_proforma', 'junitversion');
-        $versions = array();
+        $versions = [];
         // Force PHP to use strings as key even if the first key is an integer.
-        $obj = new stdClass;
+        $obj = new stdClass();
 
         if (!$this->_newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
@@ -119,8 +119,12 @@ class java_form_creator extends base_form_creator {
         }
         $versions = (array) $obj;
 
-        $testoptions[] = $mform->createElement('select', 'testversion',
-                get_string('version', 'qtype_proforma'), $versions);
+        $testoptions[] = $mform->createElement(
+            'select',
+            'testversion',
+            get_string('version', 'qtype_proforma'),
+            $versions
+        );
     }
 
 
@@ -130,12 +134,12 @@ class java_form_creator extends base_form_creator {
     private function add_checkstyle() {
         $mform = $this->_form;
         // Create a Checkstyle test (not part of the repeat group).
-        $testoptions = array();
+        $testoptions = [];
         // Add checkbox.
         $testoptions[] =& $mform->createElement('advcheckbox', 'checkstyle', '', '');
         // Add Checkstyle versions.
         $csversion = get_config('qtype_proforma', 'checkstyleversion');
-        $versions = array();
+        $versions = [];
         if (!$this->_newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
             // In case no other value can be selected this is chosen by default.
@@ -144,14 +148,23 @@ class java_form_creator extends base_form_creator {
         foreach (explode(',', $csversion) as $version) {
             $versions[trim($version)] = trim($version);
         }
-        $testoptions[] =& $mform->createElement('select', 'checkstyleversion',
-                get_string('version', 'qtype_proforma'), $versions);
+        $testoptions[] =& $mform->createElement(
+            'select',
+            'checkstyleversion',
+            get_string('version', 'qtype_proforma'),
+            $versions
+        );
         // Add weight.
         $this->add_test_weight_option($testoptions, 'checkstyle', '0.2');
-        $mform->addGroup($testoptions, 'checkstyleoptions', 'Checkstyle',
-                array(' '), false);
-        $mform->addGroupRule('checkstyleoptions', array(
-                'checkstyleweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
+        $mform->addGroup(
+            $testoptions,
+            'checkstyleoptions',
+            'Checkstyle',
+            [' '],
+            false
+        );
+        $mform->addGroupRule('checkstyleoptions', [
+                'checkstyleweight' => [[get_string('err_numeric', 'form'), 'numeric', '', 'client']]]);
         // Add textarea.
         $mform->addElement('textarea', 'checkstylecode', '', 'rows="20" cols="80"');
         qtype_proforma\lib\as_codemirror('id_checkstylecode', 'xml');
@@ -190,11 +203,11 @@ class java_form_creator extends base_form_creator {
      * @throws coding_exception
      */
     protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
-        list($errors, $valid) = parent::validate_unittest($editor, $fromform, $files, $i, $errors);
+        [$errors, $valid] = parent::validate_unittest($editor, $fromform, $files, $i, $errors);
         if ($valid) {
             if (0 == $fromform["testversion"][$i]) {
                 // Unsupported version and no new choice.
-                $errors['testoptions['.$i.']'] = get_string('versionrequired', 'qtype_proforma');
+                $errors['testoptions[' . $i . ']'] = get_string('versionrequired', 'qtype_proforma');
                 $valid = false;
             }
             $format = $fromform["testcodeformat"][$i];
@@ -203,17 +216,17 @@ class java_form_creator extends base_form_creator {
                     $code = $fromform["testcode"][$i];
                     if (!qtype_proforma_java_task::get_java_file($code)) {
                         // Cannot determine filename from test code.
-                        $errors['testcode['.$i.']'] = get_string('filenameerror', 'qtype_proforma');
+                        $errors['testcode[' . $i . ']'] = get_string('filenameerror', 'qtype_proforma');
                     } else if (!qtype_proforma_java_task::get_java_entrypoint($code)) {
                         // Cannot determine entrypoint from test code.
-                        $errors['testcode['.$i.']'] = get_string('entrypointerror', 'qtype_proforma');
+                        $errors['testcode[' . $i . ']'] = get_string('entrypointerror', 'qtype_proforma');
                     }
                     break;
                 case self::TESTCODE_FILES: // Filemanager.
                     $entrypoint = $fromform["testentrypoint"][$i];
                     if (0 == strlen(trim($entrypoint))) {
                         // Entrypoint missing.
-                        $errors['testentrypoint['.$i.']'] = get_string('entrypointrequired', 'qtype_proforma');
+                        $errors['testentrypoint[' . $i . ']'] = get_string('entrypointrequired', 'qtype_proforma');
                     }
                     break;
                 default:
@@ -221,7 +234,7 @@ class java_form_creator extends base_form_creator {
             }
         }
 
-        return array($errors, $valid);
+        return [$errors, $valid];
     }
 
 
@@ -249,11 +262,11 @@ class java_form_creator extends base_form_creator {
         }
 
         // Check Junit tests.
-        if (isset($fromform["responseformat"]) and $fromform["responseformat"] == 'editor') {
+        if (isset($fromform["responseformat"]) && $fromform["responseformat"] == 'editor') {
             // Check response filename.
             if (0 < strlen(trim($fromform["modelsolution"]))) {
                 $filename = qtype_proforma_java_task::get_java_file($fromform["modelsolution"]);
-                if ($filename != null and trim($filename) != trim($fromform["responsefilename"])) {
+                if ($filename != null && trim($filename) != trim($fromform["responsefilename"])) {
                     $errors['responsefilename'] = $filename . ' expected';
                 }
             }
@@ -292,7 +305,7 @@ class java_form_creator extends base_form_creator {
         }
         // Get options.
         $options = $versionelement->_options;
-        if (!isset($options) or !is_array($options) or count($options) <= 1) {
+        if (!isset($options) || !is_array($options) || count($options) <= 1) {
             debugging('no options found');
             return false;
         }
@@ -309,7 +322,7 @@ class java_form_creator extends base_form_creator {
             return true;
         }
 
-        if (is_array($value) and count($value) == 1) {
+        if (is_array($value) && count($value) == 1) {
             $selection = $value[0];
             if ($selection != get_string('choose')) {
                 // If 'choose' option is NOT selected then first option can be removed.
@@ -327,15 +340,11 @@ class java_form_creator extends base_form_creator {
      */
     public function definition_after_data() {
         parent::definition_after_data();
-        // debugging('definition_after_data');
         $i = 0;
         while ($this->_form->elementExists('testcodearray[' . $i . ']')) {
             $group = &$this->_form->getElement('testcodearray[' . $i . ']');
             $elements = &$group->getElements();
-            // debugging('testcodearray');
-            // var_dump($elements);
-            // $testcodeformat = &$this->_form->getElement('testcodeformat[' . $i . ']');
-            $i ++;
+            $i++;
         }
          // Try and remove 'Choose' option from JUnit version field.
         $i = 0;
@@ -357,7 +366,7 @@ class java_form_creator extends base_form_creator {
                 $firstoption = array_shift($options);
                 $versionelement->_options = $options;
             }
-            $i ++;
+            $i++;
         }
     }
 }

@@ -76,34 +76,4 @@ class python_form_creator extends base_form_creator {
         $mform = $this->_form;
         $mform->setExpanded('graderoptions_header');
     }
-
-    /**
-     * Validate form fields.
-     *
-     * @param qtype_proforma_edit_form $editor actual editor instance
-     * @param Validation $fromform
-     * @param Validation $files
-     * @param array $errors
-     * @return array
-     */
-    /*
-    public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
-        $errors = parent::validation($editor, $fromform, $files, $errors);
-
-        // Sum of weights must be > 0.
-        if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
-            $repeats = count($fromform["testweight"]);
-            $sumweight = 0;
-            for ($i = 0; $i < $repeats; $i++) {
-                $sumweight += $fromform["testweight"][$i];
-            }
-            if ($repeats > 0 && $sumweight == 0) {
-                // Error message must be attached to testoptions group
-                // otherwise it is not visible.
-                $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
-            }
-        }
-
-        return $errors;
-    } */
 }
