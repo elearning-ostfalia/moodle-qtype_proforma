@@ -1,3 +1,4 @@
+@qtype @qtype_proforma @qtype_proforma_manual
 Feature: PREPARE MANUAL TESTS
   Test creating course and quiz for manual testing
   (not to be used for automatic tests)
