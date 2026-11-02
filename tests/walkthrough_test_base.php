@@ -362,23 +362,23 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 
     protected function prepare_test($preferredbehaviour, &$q,
             $responsetemplate = qtype_proforma_test_helper::QUESTION_TEMPLATE) {
-        $this->expected_step_counter = 1;
+        $this->expectedstepcounter = 1;
 
-        $this->last_state = null;
-        $this->current_state = null;
+        $this->laststate = null;
+        $this->currentstate = null;
 
-        $this->last_response = null;
-        $this->current_response = null;
+        $this->lastresponse = null;
+        $this->currentresponse = null;
 
-        $this->last_attachments = null;
-        $this->current_attachments = null;
+        $this->lastattachments = null;
+        $this->currentattachments = null;
 
-        $this->is_graded = false;
-        $this->is_finished = false;
+        $this->isgraded = false;
+        $this->isfinished = false;
 
         $this->remainingtries = 0;
 
-        $this->force_internal_grading_error = false;
+        $this->forceinternalgradingerror = false;
 
         $this->preferredbehaviour = $preferredbehaviour;
         switch ($preferredbehaviour) {
@@ -415,14 +415,14 @@ break;
                 ->getMock();
 
             // Configure the stub.
-            if ($this->force_internal_grading_error) {
+            if ($this->forceinternalgradingerror) {
                 $stub->method('send_code_to_grader')
                     ->willReturn(self::GRADER_OUTPUT_INTERNAL_ERROR);
                 $stub->method('send_files_to_grader')
                     ->willReturn(self::GRADER_OUTPUT_INTERNAL_ERROR);
-                $this->force_internal_grading_error = false;
+                $this->forceinternalgradingerror = false;
             } else {
-                if ($this->is_graded && $this->finish_pending) {
+                if ($this->isgraded && $this->finishpending) {
                     // expect stub never to be called
                     $stub->expects($this->never())->method('send_code_to_grader');
                     $stub->expects($this->never())->method('send_files_to_grader');
@@ -523,12 +523,12 @@ break;
 
 
     private function is_same_response() {
-        if (($this->last_response != $this->current_response)) {
+        if (($this->lastresponse != $this->currentresponse)) {
             return false;
         }
 
-        $last = $this->get_attachments_with_content($this->last_attachments);
-        $current = $this->get_attachments_with_content($this->current_attachments);
+        $last = $this->get_attachments_with_content($this->lastattachments);
+        $current = $this->get_attachments_with_content($this->currentattachments);
         if (empty($last) && empty($current)) {
             // no attachments and same editor conent
             return true;
@@ -549,25 +549,25 @@ break;
             throw new coding_exception('Moodle *test* environment does not support arrays for attachements, sorry!');
         }
 
-        $this->last_response = $this->current_response;
-        $this->current_response = $response;
+        $this->lastresponse = $this->currentresponse;
+        $this->currentresponse = $response;
 
-        $this->last_attachments = $this->current_attachments;
-        $this->current_attachments = $attachedfiles;
+        $this->lastattachments = $this->currentattachments;
+        $this->currentattachments = $attachedfiles;
     }
 
     private function get_response_text() {
         // TODO: handle response with file and text
-        if ($this->current_response) {
-            return $this->current_response;
+        if ($this->currentresponse) {
+            return $this->currentresponse;
         }
 
-        if ($this->current_attachments) {
-            if (!array_key_exists($this->current_attachments[0], $this->files)) {
+        if ($this->currentattachments) {
+            if (!array_key_exists($this->currentattachments[0], $this->files)) {
                 return '';
             }
 
-            $file = $this->files[$this->current_attachments[0]];
+            $file = $this->files[$this->currentattachments[0]];
             return $file['content'];
         }
 
@@ -672,7 +672,7 @@ break;
 
     protected function check_answer_text($content = null, $isreadonly = false) {
         if (is_null($content)) {
-            $content = $this->current_response;
+            $content = $this->currentresponse;
         }
 
         if (!$isreadonly) {
@@ -736,8 +736,8 @@ break;
 
     protected function check_current_state($state) {
         // remember state
-        $this->last_state = $this->current_state;
-        $this->current_state = $state;
+        $this->laststate = $this->currentstate;
+        $this->currentstate = $state;
         // echo 'current state is ' . $state . PHP_EOL;
         parent::check_current_state($state);
     }
@@ -748,7 +748,7 @@ break;
                 $this->check_current_state(question_state::$gradedright);
                 break;
             case "adaptiveexternalgrading":
-                if ($this->is_finished) {
+                if ($this->isfinished) {
                     $this->check_current_state(question_state::$gradedright);
                 }
                 else {
@@ -758,13 +758,13 @@ break;
             default:
                 $this->assertFalse(true);
         }
-        $this->check_step_count($this->expected_step_counter);
+        $this->check_step_count($this->expectedstepcounter);
         $this->check_current_mark($mark);
         $this->render();
-        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->isfinished;
         $this->check_verify_button_enabled($verifyexists);
-        $this->check_answer_text($this->current_response, // self::CORRECT_RESPONSE,
-                (self::EXPECTED_BEHAVIOUR == "interactivewithfeedback" or $this->is_finished) ? true : false);
+        $this->check_answer_text($this->currentresponse, // self::CORRECT_RESPONSE,
+                (self::EXPECTED_BEHAVIOUR == "interactivewithfeedback" or $this->isfinished) ? true : false);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
                 // $this->get_contains_general_feedback_expectation($q),
@@ -783,7 +783,7 @@ break;
                 break;
             case "adaptiveexternalgrading":
                 // answer is graded if it is finished
-                $mustbegraded = $this->is_finished;
+                $mustbegraded = $this->isfinished;
                 break;
             default:
                 $this->assertFalse(true);
@@ -815,7 +815,7 @@ break;
         $this->render();
         // answer field is disabled because you have to press 'Try again' Button
         // $this->check_answer_text($response, true); //????
-        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->isfinished;
         $this->check_verify_button_enabled($verifyexists);
         $this->check_current_output(
             $this->get_contains_question_text_expectation($this->question),
@@ -824,7 +824,7 @@ break;
         // $this->check_specific_feedback_text('Your answer is not completely correct.');
         $remainingtries = null;
 
-        if (!$this->is_finished && $this->remainingtries) {
+        if (!$this->isfinished && $this->remainingtries) {
             $remainingtries = $this->remainingtries;
         }
         if ($mark === 0.0) {
@@ -833,7 +833,7 @@ break;
             $this->check_remaining_tries(self::STATE_WEIGHTED_SUM_WRONG, $remainingtries);
         }
 
-        $this->check_step_count($this->expected_step_counter);
+        $this->check_step_count($this->expectedstepcounter);
     }
 
 
@@ -848,7 +848,7 @@ break;
                 break;
             case "adaptiveexternalgrading":
                 // answer is graded if it is finished
-                $mustbegraded = $this->is_finished;
+                $mustbegraded = $this->isfinished;
                 break;
             default:
                 $this->assertFalse(true);
@@ -881,7 +881,7 @@ break;
         $this->render();
         // answer field is disabled because you have to press 'Try again' Button
         // $this->check_answer_text($response, true); //????
-        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->isfinished;
         $this->check_verify_button_enabled($verifyexists);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
@@ -890,7 +890,7 @@ break;
         // $this->check_specific_feedback_text('Your answer is not completely correct.');
         $remainingtries = null;
 
-        if (!$this->is_finished && $this->remainingtries) {
+        if (!$this->isfinished && $this->remainingtries) {
             $remainingtries = $this->remainingtries;
         }
         if ($mark === 0.0) {
@@ -899,7 +899,7 @@ break;
             $this->check_remaining_tries(self::STATE_WEIGHTED_SUM_WRONG, $remainingtries);
         }
 
-        $this->check_step_count($this->expected_step_counter);
+        $this->check_step_count($this->expectedstepcounter);
     }
 
     protected function is_deferred(): bool {
@@ -908,10 +908,10 @@ break;
     }
     protected function check_not_yet_graded($answer = null) {
         // $this->step_counter
-        $this->check_step_count($this->expected_step_counter);
+        $this->check_step_count($this->expectedstepcounter);
         $expectedstate = question_state::$todo;
         if ($this->is_deferred()) {
-            if (!empty($this->current_response) || !empty($this->current_attachments)) {
+            if (!empty($this->currentresponse) || !empty($this->currentattachments)) {
                 $expectedstate = question_state::$complete;
             }
         }
@@ -927,7 +927,7 @@ break;
                 $this->get_does_not_contain_specific_feedback_expectation());
         $expectedstate = "Not complete";
         if ($this->is_deferred()) {
-            if (empty($this->current_response) && empty($this->current_attachments)) {
+            if (empty($this->currentresponse) && empty($this->currentattachments)) {
                 $expectedstate = "Not yet answered";
             } else {
                 $expectedstate = "Answer saved";
@@ -953,7 +953,7 @@ break;
         }
 
         $this->render();
-        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->isfinished;
         $this->check_verify_button_enabled($verifyexists);
         $this->check_answer_text(null, true);
         $this->check_current_output(
@@ -966,7 +966,7 @@ break;
     protected function check_invalid($initialstate = true, $internalerror = false) {
 
         if ($internalerror) {
-            // if ($this->is_finished)
+            // if ($this->isfinished)
             // $this->check_current_state(question_state::$needsgrading) ; // $needsgrading);
             // else
                 $this->check_current_state(question_state::$invalid); // $invalid); // $todo);
@@ -1000,7 +1000,7 @@ break;
         $this->check_answer_text();
         $verifyexists = $this->preferredbehaviour != 'deferredfeedback';
         $this->check_verify_button_enabled($verifyexists);
-        // if (!$this->is_finished)
+        // if (!$this->isfinished)
         // $this->check_contains_submit();
         /*        $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
@@ -1014,7 +1014,7 @@ break;
             $this->check_current_output($this->get_does_not_contain_specific_feedback_expectation());
         }
 
-        // if ($this->is_finished) {
+        // if ($this->isfinished) {
         // $this->check_remaining_tries('Requires grading');
         // } else
             $this->check_remaining_tries(self::STATE_INCOMPLETE);
@@ -1026,7 +1026,7 @@ break;
      * @param bool $initialstate not yet graded
      */
     protected function check_needs_grading($initialstate = true) {
-        if ($this->is_finished) {
+        if ($this->isfinished) {
             $this->check_current_state(question_state::$needsgrading); // $needsgrading);
         } else {
             $this->check_current_state(question_state::$invalid); // $invalid); // $todo);
@@ -1035,7 +1035,7 @@ break;
         $this->check_current_mark(null);
 
         $this->render();
-        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->isfinished;
         $this->check_verify_button_enabled($verifyexists);
         $this->check_answer_text(null, true);
         $this->check_current_output(
@@ -1075,13 +1075,13 @@ break;
 
     protected function finish_attempt() {
         // echo 'finished ' . PHP_EOL;
-        $this->finish_pending = true;
+        $this->finishpending = true;
         $incrementstep = false;
         /*
-                if (strcmp($this->current_response, $response) != 0) {
-                    $this->last_response = $this->current_response;
-                    $this->current_response = $response;
-                    $this->expected_step_counter++;
+                if (strcmp($this->currentresponse, $response) != 0) {
+                    $this->lastresponse = $this->currentresponse;
+                    $this->currentresponse = $response;
+                    $this->expectedstepcounter++;
                     $increment_step = true;
                 }
         */
@@ -1089,13 +1089,13 @@ break;
         $this->set_mockbuilder_for_grader($this->question);
         $this->quba->finish_all_questions();
 
-        if (!$incrementstep and !$this->is_graded) {
-            $this->expected_step_counter++;
+        if (!$incrementstep and !$this->isgraded) {
+            $this->expectedstepcounter++;
             $incrementstep = true;
         }
 
-        if (!$incrementstep and $this->current_state == question_state::$invalid) {
-            $this->expected_step_counter++;
+        if (!$incrementstep and $this->currentstate == question_state::$invalid) {
+            $this->expectedstepcounter++;
             $incrementstep = true;
         }
 
@@ -1104,17 +1104,17 @@ break;
                 break;
             case "adaptiveexternalgrading":
                 if (!$incrementstep) {
-                    $this->expected_step_counter++;
+                    $this->expectedstepcounter++;
                 }
                 break;
             default:
                 $this->assertFalse(true);
         }
 
-        // $this->check_step_count($this->expected_step_counter);
-        $this->is_graded = true;
-        $this->is_finished = true;
-        $this->finish_pending = false;
+        // $this->check_step_count($this->expectedstepcounter);
+        $this->isgraded = true;
+        $this->isfinished = true;
+        $this->finishpending = false;
 
     }
 
@@ -1126,9 +1126,9 @@ break;
 
         $this->store_response_data($response, $attachedfiles);
 
-        $this->check_step_count($this->expected_step_counter);
+        $this->check_step_count($this->expectedstepcounter);
 
-        $this->is_graded = !$this->force_internal_grading_error;
+        $this->isgraded = !$this->forceinternalgradingerror;
         $this->set_mockbuilder_for_grader($this->question);
         if ($attachedfiles) {
             if (!is_null($response)) {
@@ -1146,8 +1146,8 @@ break;
             $this->process_submission(['-submit' => 1, 'answer' => $response]);
         }
 
-        $this->expected_step_counter++;
-        $this->check_step_count($this->expected_step_counter);
+        $this->expectedstepcounter++;
+        $this->check_step_count($this->expectedstepcounter);
         if ($this->quba->get_question_state($this->slot) != question_state::$invalid) {
             $this->assertGreaterThan(0, $this->remainingtries);
             $this->remainingtries--;
@@ -1157,13 +1157,13 @@ break;
     protected function press_try_again() {
         switch (self::EXPECTED_BEHAVIOUR) {
             case "interactivewithfeedback":
-                $this->check_step_count($this->expected_step_counter);
+                $this->check_step_count($this->expectedstepcounter);
                 $this->check_current_output($this->get_contains_try_again_button_expectation(true));
                 $this->process_submission(['-tryagain' => 1]);
                 // $this->check_current_output($this->get_contains_try_again_button_expectation(false));
-                $this->expected_step_counter++;
-                $this->check_step_count($this->expected_step_counter);
-                $this->is_graded = false;
+                $this->expectedstepcounter++;
+                $this->check_step_count($this->expectedstepcounter);
+                $this->isgraded = false;
                 break;
             case "adaptiveexternalgrading":
                 $this->check_current_output($this->get_does_not_contain_try_again_button_expectation());
@@ -1174,26 +1174,26 @@ break;
     }
 
     protected function save($response, $sequencecheck = '1') {
-        $this->check_step_count($this->expected_step_counter);
+        $this->check_step_count($this->expectedstepcounter);
         $this->store_response_data($response, null);
         /*
-        $this->last_response = $this->current_response;
-        $this->current_response = $response;
-        $this->last_attachments = $this->current_attachments;
-        $this->current_attachments = null;
+        $this->lastresponse = $this->currentresponse;
+        $this->currentresponse = $response;
+        $this->lastattachments = $this->currentattachments;
+        $this->currentattachments = null;
         */
         $this->save_response($response, $sequencecheck);
         if (!$this->is_same_response()) {
-            $this->expected_step_counter++;
+            $this->expectedstepcounter++;
         }
-        $this->check_step_count($this->expected_step_counter);
-        $this->is_graded = false;
+        $this->check_step_count($this->expectedstepcounter);
+        $this->isgraded = false;
     }
 
 
     // difference to save??
     protected function save_with_attachment($response = null, $attachedfiles = null) {
-        $this->check_step_count($this->expected_step_counter);
+        $this->check_step_count($this->expectedstepcounter);
         $this->store_response_data($response, $attachedfiles);
 
         if ($attachedfiles) {
@@ -1212,11 +1212,11 @@ break;
 
         // check if response has been changed
         if (!$this->is_same_response()) {
-            $this->expected_step_counter++;
+            $this->expectedstepcounter++;
         }
 
-        $this->check_step_count($this->expected_step_counter);
-        $this->is_graded = false;
+        $this->check_step_count($this->expectedstepcounter);
+        $this->isgraded = false;
     }
 
     protected function determine_draftid() {
@@ -1246,10 +1246,10 @@ break;
                 'filename' => $filename,
                 'content' => $response];
 
-        // $this->last_attachments = $this->current_attachments;
-        // $this->current_attachments = $response;
+        // $this->lastattachments = $this->currentattachments;
+        // $this->currentattachments = $response;
 
-        $this->is_graded = false;
+        $this->isgraded = false;
 
         return $attachementsdraftid;
     }

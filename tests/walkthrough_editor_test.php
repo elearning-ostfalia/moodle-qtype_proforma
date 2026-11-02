@@ -319,13 +319,13 @@ class walkthrough_editor_test extends walkthrough_test_base {
             $this->check_not_yet_graded();
 
             // Submit correct answer
-            $this->force_internal_grading_error = true;
+            $this->forceinternalgradingerror = true;
             $this->press_submit(self::CORRECT_RESPONSE);
             // verify, not accepted as valid response
             $this->check_invalid(true, true);
 
             // Finish the attempt
-            $this->force_internal_grading_error = true;
+            $this->forceinternalgradingerror = true;
             $this->finish_attempt();
             $this->check_needs_grading(true);
         });
@@ -344,13 +344,13 @@ class walkthrough_editor_test extends walkthrough_test_base {
             $this->check_not_yet_graded();
 
             // Submit correct answer
-            $this->force_internal_grading_error = true;
+            $this->forceinternalgradingerror = true;
             $this->press_submit(self::CORRECT_RESPONSE);
             // verify, not accepted as valid response
             $this->check_invalid(true, true);
 
             // Finish the attempt
-            $this->force_internal_grading_error = false;
+            $this->forceinternalgradingerror = false;
             $this->finish_attempt();
             $this->check_graded_right();
         });
@@ -369,13 +369,13 @@ class walkthrough_editor_test extends walkthrough_test_base {
             $this->check_not_yet_graded();
 
             // Submit correct answer
-            $this->force_internal_grading_error = true;
+            $this->forceinternalgradingerror = true;
             $this->press_submit(self::WRONG_RESPONSE);
             // verify, not accepted as valid response
             $this->check_invalid(true, true);
 
             // Finish the attempt
-            $this->force_internal_grading_error = false;
+            $this->forceinternalgradingerror = false;
             $this->finish_attempt();
             $this->check_graded_wrong();
         });
@@ -394,13 +394,13 @@ class walkthrough_editor_test extends walkthrough_test_base {
             $this->check_not_yet_graded();
 
             // Submit blank.
-            $this->force_internal_grading_error = true;
+            $this->forceinternalgradingerror = true;
             $this->press_submit(self::WRONG_RESPONSE);
             // verify, not accepted as valid response
             $this->check_invalid(true, true);
 
             // Finish the attempt
-            $this->force_internal_grading_error = true;
+            $this->forceinternalgradingerror = true;
             $this->finish_attempt();
             $this->check_needs_grading(true);
         });
@@ -418,13 +418,13 @@ class walkthrough_editor_test extends walkthrough_test_base {
             $this->check_graded_wrong(0.0);
 
             // Submit correct answer
-            $this->force_internal_grading_error = true;
+            $this->forceinternalgradingerror = true;
             $this->press_submit(self::CORRECT_RESPONSE);
             // verify, not accepted as valid response
             $this->check_invalid(false, true);
 
             // Finish the attempt
-            $this->force_internal_grading_error = true;
+            $this->forceinternalgradingerror = true;
             $this->finish_attempt();
             $this->check_needs_grading(false);
         });
@@ -442,13 +442,13 @@ class walkthrough_editor_test extends walkthrough_test_base {
             $this->check_graded_right(1.0);
 
             // Submit wrong answer
-            $this->force_internal_grading_error = true;
+            $this->forceinternalgradingerror = true;
             $this->press_submit(self::WRONG_RESPONSE);
             // verify, not accepted as valid response
             $this->check_invalid(false, true);
 
             // Finish the attempt
-            $this->force_internal_grading_error = true;
+            $this->forceinternalgradingerror = true;
             $this->finish_attempt();
             $this->check_needs_grading(false);
         });

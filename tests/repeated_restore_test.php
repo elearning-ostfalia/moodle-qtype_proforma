@@ -188,11 +188,11 @@ final class repeated_restore_test extends advanced_testcase {
         // Create questions and add to the quiz.
         $q1 = $questiongenerator->create_question('proforma', null, [
             'category' => $cat->id,
-            'questiontext' => ['text' => "<p>Question</p>\r\n<p>One</p>", 'format' => FORMAT_MOODLE]
+            'questiontext' => ['text' => "<p>Question</p>\r\n<p>One</p>", 'format' => FORMAT_MOODLE],
         ]);
         $q2 = $questiongenerator->create_question('proforma', null, [
             'category' => $cat->id,
-            'questiontext' => ['text' => "<p>Question</p>\n<p>Two</p>", 'format' => FORMAT_MOODLE]
+            'questiontext' => ['text' => "<p>Question</p>\n<p>Two</p>", 'format' => FORMAT_MOODLE],
         ]);
         // Add question to quiz.
         quiz_add_quiz_question($q1->id, $quiz);

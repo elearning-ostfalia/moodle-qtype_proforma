@@ -108,7 +108,7 @@ class walkthrough_filepicker_test extends walkthrough_test_base {
         $this->save_with_attachment(null, array($file));
         $this->check_not_yet_graded();
 
-        $steps = $this->expected_step_counter;
+        $steps = $this->expectedstepcounter;
         $this->save_to_database();
         // Save the same response again, and verify no new step is created.
         $this->load_from_database();
