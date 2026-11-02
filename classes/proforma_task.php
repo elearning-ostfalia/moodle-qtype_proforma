@@ -26,17 +26,18 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
+require_once($CFG->dirroot . '/question/type/proforma/classes/invalid_task_exception.php');
 
-class invalid_task_exception extends Exception {
-}
-
-/*
- * (class for handling ProFormA tasks for different programming languages
- * (i.e. create task and extract data for editor)
+/**
+ * Class for handling imported ProFormA tasks (i.e. tasks that are not created in Moodle).
+ *
  * Note that this class is stateless i.e. has no member variables.
+ *
+ * @package    qtype_proforma
+ * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_proforma_proforma_task extends qtype_proforma_base_task {
-
     /**
      * returns false if the task is imported and cannot be modified,
      * returns true if the task is created and can be modified inside Moodle.
@@ -54,7 +55,6 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
      * @param string $ref test ref
      * @param string $weight test weight
      * @return bool true if handled otherweise false
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)*      *
      */
     protected function set_formdata_from_gradinghints($question, $ref, $weight) {
         return false;
@@ -82,9 +82,9 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
         if (empty($gradinghints)) {
             return 0;
         }
-        $xmldoc = new DOMDocument;
+        $xmldoc = new DOMDocument();
 
-        if (!$xmldoc->loadXML($gradinghints )) {
+        if (!$xmldoc->loadXML($gradinghints)) {
             debugging('variable gradinghints is not valid XML');
             return 0; // INTERNAL ERROR: $taskresult is not XML!
         }
@@ -181,5 +181,3 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
         return $question;
     }
 }
-
-

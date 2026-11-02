@@ -32,8 +32,7 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
  * base class for graders (and this one is for LON-CAPA feedback)
  */
 class qtype_proforma_grader {
-
-    // different message formats
+    // Different message formats.
 
     /**
      * ProFormA 2 format
@@ -42,7 +41,7 @@ class qtype_proforma_grader {
     /**
      * LON-CAPA format (no longer supported)
      */
-    const FEEDBACK_FORMAT_LC = 1; // LON CAPA
+    const FEEDBACK_FORMAT_LC = 1; // LON CAPA.
     /**
      * invalid
      */
@@ -112,7 +111,7 @@ class qtype_proforma_grader {
     }
 
 
-    // override!
+    // Override!
 
     /**
      * generates the grade from the given input parameters
@@ -137,7 +136,7 @@ class qtype_proforma_grader {
     private function post_to_grader(&$postfields, qtype_proforma_question $question) {
         global $USER, $COURSE;
 
-        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE) { // do not use === here!
+        if ($question->taskstorage == qtype_proforma::PERSISTENT_TASKFILE) { // Do not use === here!
             $task = $question->get_task_file();
             if (!$task instanceof stored_file) {
                 throw new coding_exception("no task file available");
@@ -148,20 +147,11 @@ class qtype_proforma_grader {
             $postfields['task-path'] = $question->taskpath;
         }
 
-        // debugging('send user=' . $USER->id . '='. $user_id .', course='. $COURSE->id . '='.$course_id);
         $postfields['course'] = $this->get_course();
         $postfields['user'] = $this->get_user();
 
         $protocolhost = get_config('qtype_proforma', 'graderuri_host');
 
-        /*
-        if (!empty(strstr($protocolhost, '2.2.2.2' ))) {
-         // no actual host configured (debug host name)
-         // => return fake result (in order to avoid waiting for timeout
-         // of unreachable host)
-         return $this->set_dummy_result(); // fake
-        }
-        */
         $path = get_config('qtype_proforma', 'graderuri_path');
         $uri = $protocolhost . $path;
 

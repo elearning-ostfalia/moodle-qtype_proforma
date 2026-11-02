@@ -22,22 +22,24 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
-defined('MOODLE_INTERNAL') || die();
 
-/*
- * abstract class for creating and reading ProFormA task files.
- * Note that this class is stateless i.e. has no member variables.
+/**
+ * Abstract class for creating and reading ProFormA task files.
+ *
+ * @package    qtype_proforma
+ * @copyright  2020 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 abstract class qtype_proforma_base_task {
-    protected $_reservedids;
+    /** @var array ids that are reserved (must not be used for tests) */
+    protected $reservedids;
 
     /**
      * constructor
      * @param array $reservedids
      */
     public function __construct($reservedids = []) {
-        $this->_reservedids = $reservedids;
+        $this->reservedids = $reservedids;
     }
     /**
      * returns false if the task is imported and cannot be modified,
@@ -73,8 +75,10 @@ abstract class qtype_proforma_base_task {
     protected function is_test_set($formdata, $index) {
         // Check format: editor or filemanager?
         $editor = true;
-        if (isset($formdata->testcodeformat[$index]) and
-            $formdata->testcodeformat[$index] == base_form_creator::TESTCODE_FILES) {
+        if (
+            isset($formdata->testcodeformat[$index]) &&
+            $formdata->testcodeformat[$index] == base_form_creator::TESTCODE_FILES
+        ) {
                 $editor = false;
         }
 
@@ -100,7 +104,6 @@ abstract class qtype_proforma_base_task {
     /**
      * Add extra namespaces
      * @param SimpleXmlWriter $xw
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)*
      */
     protected function add_namespace_to_xml(SimpleXmlWriter $xw) {
     }
@@ -308,7 +311,7 @@ abstract class qtype_proforma_base_task {
             return;
         }
 
-        $xmldoc = new DOMDocument;
+        $xmldoc = new DOMDocument();
 
         if (!$xmldoc->loadXML($question->gradinghints)) {
             // Fatal error: grading hints cannot be loaded!
@@ -322,7 +325,6 @@ abstract class qtype_proforma_base_task {
         $key = 0;
         if ($xpathresult->length == 0) {
             // No debug message. This situation can occur when input is not validated successfully.
-            // debugging('no tests in gradinghints found ' . $question->gradinghints);
             return;
         }
 
@@ -352,20 +354,9 @@ abstract class qtype_proforma_base_task {
                 $testtype = '';
             }
 
-            /*
-              // from edit_numerical_form
-              // See comment in the parent method about this hack:
-              // Evil hack alert. Formslib can store defaults in two ways for
-              // repeat elements:
-              //   ->_defaultValues['fraction[0]'] and
-              //   ->_defaultValues['fraction'][0].
-              // The $repeatedoptions['fraction']['default'] = 0 bit above means
-              // that ->_defaultValues['fraction[0]'] has already been set, but we
-              // are using object notation here, so we will be setting
-              // ->_defaultValues['fraction'][0]. That does not work, so we have
-              // to unset ->_defaultValues['fraction[0]'].
-              unset($this->_form->_defaultValues["testtitle[{$key}]"]);
-             */
+            // Evil hack (see edit_numerical_form): Formslib can store defaults in two ways for
+            // repeat elements: ->_defaultValues['field[0]'] and ->_defaultValues['field'][0].
+            // The first one has already been set and must be unset here.
             unset($mform->_defaultValues["testtitle[{$key}]"]);
             unset($mform->_defaultValues["testid[{$key}]"]);
             unset($mform->_defaultValues["testweight[{$key}]"]);
@@ -393,8 +384,14 @@ abstract class qtype_proforma_base_task {
      */
     protected function get_task_xml($category, $question) {
         $fs = get_file_storage();
-        $file = $fs->get_file($category, 'qtype_proforma', qtype_proforma::FILEAREA_TASK,
-        $question->id, '/', $question->taskfilename);
+        $file = $fs->get_file(
+            $category,
+            'qtype_proforma',
+            qtype_proforma::FILEAREA_TASK,
+            $question->id,
+            '/',
+            $question->taskfilename
+        );
         if (!$file) {
             throw new moodle_exception("proforma task not found");
         }
@@ -456,12 +453,6 @@ abstract class qtype_proforma_base_task {
      * @param int $index index of next unit test (in/out)
      */
     protected function extract_formdata_from_taskfile_test($question, $test, $files, &$index) {
-        /*foreach ($this->_reservedids as $reserved) {
-            if ($reserved == $test['id']) {
-                return;
-            }
-        }*/
-
         // Default implementation:
         // only unit tests are available. No other test.
         $code = null;
@@ -484,7 +475,8 @@ abstract class qtype_proforma_base_task {
                 } else {
                     // Binary file.
                     if (isset($code)) {
-                        debugging('inconsistent task file: embedded-txt-file and embedded-bin-file mixed for ' . (string)$test['id']);
+                        debugging('inconsistent task file: embedded-txt-file and embedded-bin-file mixed for ' .
+                            (string)$test['id']);
                     }
                     $filetype = base_form_creator::TESTCODE_FILES;
                     // Store in draft area.
@@ -497,14 +489,16 @@ abstract class qtype_proforma_base_task {
                         $filearea->prepare_draft($contextid, $question);
                     }
                     $text = base64_decode($fileobject['xmlelement']);
-                    $filearea->save_text_to_draft($contextid, $question->$attribute,
-                        $fileobject['filename'], $text);
+                    $filearea->save_text_to_draft(
+                        $contextid,
+                        $question->$attribute,
+                        $fileobject['filename'],
+                        $text
+                    );
                 }
             }
         }
-        // debugging('set testcodeformat_' . $index . ' to ' . $filetype);
         $question->testcodeformat[$index] = $filetype;
-        // $question->testcodearray[$index] = $question->testcodeformat[$index];
         if (isset($code)) {
             $question->testcode[$index] = $code;
         }
@@ -517,9 +511,8 @@ abstract class qtype_proforma_base_task {
      * @param stdClass $formdata
      * @param int $testindex
      * @return stored_file[]
-     * @global type $USER
      */
-    protected static function _get_draft_testfiles($formdata, $testindex) {
+    protected static function get_draft_testfiles($formdata, $testindex) {
         global $USER;
         $usercontext = context_user::instance($USER->id);
 
@@ -553,7 +546,7 @@ abstract class qtype_proforma_base_task {
                     $xw->endElement(); // End tag fileref.
                 } else {
                     $counter = 1;
-                    foreach (self::_get_draft_testfiles($formdata, $index) as $draftfile) {
+                    foreach (self::get_draft_testfiles($formdata, $index) as $draftfile) {
                         $xw->startElement('fileref');
                         $xw->create_attribute('refid', $formdata->testid[$index] . '-' . $counter);
                         $xw->endElement(); // End tag fileref.
@@ -572,10 +565,25 @@ abstract class qtype_proforma_base_task {
         }
     }
 
+    /**
+     * Returns the filename of the test file in the task (must be overridden).
+     *
+     * @param int $index test index
+     * @param string $id test id
+     * @param string $code test code
+     * @return string filename
+     */
     protected function get_testfilename($index, $id, $code) {
         throw new coding_exception('missing implementation of get_testfilename');
     }
 
+    /**
+     * Adds the unittest element of a test to the XML (must be overridden).
+     *
+     * @param SimpleXmlWriter $xw
+     * @param int $index test index
+     * @param stdClass $formdata
+     */
     protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index, $formdata) {
         throw new coding_exception('missing implementation of add_testframework_to_xml');
     }
@@ -595,7 +603,7 @@ abstract class qtype_proforma_base_task {
         foreach ($gh->root->{'test-ref'} as $test) {
             $id = (string)$test['ref'];
             $reserved = false;
-            foreach ($this->_reservedids as $resid) {
+            foreach ($this->reservedids as $resid) {
                 if ($resid == $id) {
                     $reserved = true;
                 }
@@ -628,7 +636,6 @@ abstract class qtype_proforma_base_task {
                     $xw->startElement('embedded-txt-file');
                     $code = $formdata->testcode[$index];
                     $filename = $this->get_testfilename($index, $id, $code);
-                    // $filename = self::get_java_file($code);
                     $xw->create_attribute('filename', $filename);
                     $xw->text($formdata->testcode[$index]);
                     $xw->endElement(); // End tag embedded-txt-file.
@@ -636,7 +643,7 @@ abstract class qtype_proforma_base_task {
                 } else {
                     // Handle uploaded test files.
                     $counter = 1;
-                    foreach (self::_get_draft_testfiles($formdata, $index) as $draftfile) {
+                    foreach (self::get_draft_testfiles($formdata, $index) as $draftfile) {
                         $xw->startElement('file');
                         $xw->create_attribute('id', $formdata->testid[$index] . '-' . $counter);
                         $xw->create_attribute('used-by-grader', 'true');
@@ -652,5 +659,4 @@ abstract class qtype_proforma_base_task {
             }
         }
     }
-
 }

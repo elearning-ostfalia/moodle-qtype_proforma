@@ -26,8 +26,17 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
+/**
+ * Class for handling ProFormA tasks with SetlX tests.
+ *
+ * @package    qtype_proforma
+ * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class qtype_proforma_setlx_task extends qtype_proforma_base_task {
+    /** Test type for the compiler test. */
     const COMPILER   = 'compiler';
+    /** Test type for the checkstyle test. */
     const CHECKSTYLE = 'checkstyle';
 
     /**
@@ -82,6 +91,14 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         parent::add_files_to_xml($xw, $formdata);
     }
 
+    /**
+     * Returns the filename of the test file in the task.
+     *
+     * @param int $index test index
+     * @param string $id test id
+     * @param string $code test code
+     * @return string filename
+     */
     protected function get_testfilename($index, $id, $code) {
         return 'test' . $id . '.stlx';
     }
@@ -114,8 +131,15 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
         parent::add_tests_to_xml($xw, $formdata, 'setlx');
     }
 
+    /**
+     * Adds the unittest element of a test to the XML (not needed for SetlX).
+     *
+     * @param SimpleXmlWriter $xw
+     * @param int $index test index
+     * @param stdClass $formdata
+     */
     protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index, $formdata) {
-        // Empty
+        // Nothing to do.
     }
 
     /**

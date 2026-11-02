@@ -313,10 +313,11 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     /**
      * CURLOPT_WRITEFUNCTION which flushes the output buffer.
      *
-     * @param resource $curl_handle
-     * @param string   $chunk
+     * @param resource $curlhandle
+     * @param string $chunk
+     * @return int number of bytes handled
      */
-    function curl_write_flush($curlhandle, $chunk) {
+    public function curl_write_flush($curlhandle, $chunk) {
         $len = strlen($chunk);
         $this->chunks[] = $chunk;
         $this->write_data();

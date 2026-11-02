@@ -26,6 +26,13 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/c_task.php');
 
+/**
+ * Class for handling ProFormA tasks with C++ unit tests.
+ *
+ * @package    qtype_proforma
+ * @copyright  2022 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class qtype_proforma_cpp_task extends qtype_proforma_c_task {
     // Currently there is no difference except for the programming language.
 }

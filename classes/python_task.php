@@ -27,8 +27,14 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
+/**
+ * Class for handling ProFormA tasks with Python unit tests.
+ *
+ * @package    qtype_proforma
+ * @copyright  2022 Ostfalia Hochschule fuer angewandte Wissenschaften
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class qtype_proforma_python_task extends qtype_proforma_base_task {
-
     /**
      * add extra namespaces to XML
      *
@@ -48,6 +54,14 @@ class qtype_proforma_python_task extends qtype_proforma_base_task {
         $xw->text($formdata->programminglanguage);
     }
 
+    /**
+     * Returns the filename of the test file in the task.
+     *
+     * @param int $index test index
+     * @param string $id test id
+     * @param string $code test code
+     * @return string filename
+     */
     protected function get_testfilename($index, $id, $code) {
         return 'test_pythontest' . $id . '.py';
     }
@@ -63,25 +77,4 @@ class qtype_proforma_python_task extends qtype_proforma_base_task {
         $xw->startElement('unit:unittest');
         $xw->endElement(); // End tag unit:unittest.
     }
-
-    /**
-     * called by extract_formdata_from_taskfile in order to
-     * extract form data from task test.
-     *
-     * @param stdClass $question return instance
-     * @param SimpleXMLElement $test test entity from task
-     * @param array $files files array
-     * @param int $index index of next unit test (in/out)
-     */
-    /*
-    protected function extract_formdata_from_test($question, $test, $files, &$index) {
-        $config = $test->{'test-configuration'};
-        // Switch to namespace 'unit'.
-        // $unittest = $config->children('unit', true)->{'unittest'};
-        // $question->testversion[$index] = (string)$unittest->attributes()->version;
-        // Call parent function for setting testcode attribute.
-        // Note that index will be increemented there, too.
-        parent::extract_formdata_from_test($question, $test, $files, $index);
-    }
-    */
 }
