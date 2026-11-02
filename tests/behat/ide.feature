@@ -116,7 +116,7 @@ Feature: ADD EXPLORER/IDE QUESTION
     And I should see "hallo MyString"
 
 ##########################################################################
-  @javascript @_file_upload @_switch_window
+  @javascript @_file_upload @_switch_window @grade_proforma
   Scenario: Run explorer test as a student
 ##########################################################################
     # teacher creates question in quiz

@@ -70,7 +70,7 @@ Feature: PREVIEW
 
     And I switch to the main window
 
-  @javascript @_switch_window
+  @javascript @_switch_window @grade_proforma
   Scenario: Preview a ProFormA question with explorer
     When I am on the "proforma-004" "core_question > preview" page logged in as teacher1
     And I expand all fieldsets

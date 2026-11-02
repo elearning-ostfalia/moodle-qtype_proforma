@@ -110,7 +110,7 @@ Feature: PROFORMA BEHAVIOUR
       | adaptivenopenalty | Not complete     | Not complete |
 
 ##########################################################################
-  @javascript @_file_upload @_switch_window
+  @javascript @_file_upload @_switch_window @grade_proforma
   Scenario Outline: Proforma behaviour states with no input (with actual grading)
 ##########################################################################
     When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
@@ -267,7 +267,7 @@ def is_palindrome(text):
       | adaptivenopenalty | Not complete     | Not complete |
 
 ##########################################################################
-  @javascript @_file_upload @_switch_window
+  @javascript @_file_upload @_switch_window @grade_proforma
   Scenario Outline: Proforma behaviour states with correct input (with actual grading)
 ##########################################################################
     When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
@@ -350,7 +350,7 @@ def is_palindrome(text):
       | adaptivenopenalty | Not complete |
 
 ##########################################################################
-  @javascript @_file_upload @_switch_window
+  @javascript @_file_upload @_switch_window @grade_proforma
   Scenario Outline: Proforma behaviour states with incorrect input (with actual grading)
 ##########################################################################
     When I am on the "Course 1" "core_question > course question import" page logged in as teacher1
