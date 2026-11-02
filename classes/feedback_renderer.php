@@ -415,12 +415,12 @@ class feedback_renderer {
             $response = new SimpleXMLElement($message, LIBXML_PARSEHUGE);
             if (!isset($response->{'separate-test-feedback'})) {
                 return $result . 'UNSUPPORTED FEEDBACK FORMAT: ' .
-                        html_writer::tag('xmp', $message, ['class' => 'proforma_testlog']);
+                        html_writer::tag('pre', s($message), ['class' => 'proforma_testlog proforma_raw']);
             }
         } catch (Exception $e) {
             // No Xml message => output message
             return $result .
-                    html_writer::tag('xmp', $message, ['class' => 'proforma_testlog']);
+                    html_writer::tag('pre', s($message), ['class' => 'proforma_testlog proforma_raw']);
         }
 
         // Preset member variables.
@@ -531,7 +531,7 @@ class feedback_renderer {
             $qaid = $this->_mainrenderer->create_collapsible_region_id();
             $result .= print_collapsible_region_start('', $qaid,
                     'raw response', '', true, true);
-            $result .= html_writer::tag('xmp', $message, ['class' => 'proforma_testlog']);
+            $result .= html_writer::tag('pre', s($message), ['class' => 'proforma_testlog proforma_raw']);
             $result .= print_collapsible_region_end(true);
 
             $result .= html_writer::end_tag('small');
@@ -556,7 +556,7 @@ class feedback_renderer {
 
                         $result .= print_collapsible_region_start('', $qaid,
                             '<code>Log</code>', '', true, true);
-                        $content = html_writer::tag('xmp', $log, ['class' => 'proforma_testlog']);
+                        $content = html_writer::tag('pre', s((string) $log), ['class' => 'proforma_testlog proforma_raw']);
                         $result .= html_writer::tag('small', $content);
                         $result .= print_collapsible_region_end(true);
 

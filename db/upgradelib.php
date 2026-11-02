@@ -250,7 +250,7 @@ function initialise_proforma_gradinghints() {
         $contextid = get_proforma_contextid($DB, $question->questionid);
         $gradinghints = extract_proformatask($contextid, $question->questionid, $question->taskfilename);
         if (isset($gradinghints)) {
-            echo '<xmp>' . $gradinghints . '</xmp><br>';
+            echo '<pre>' . s($gradinghints) . '</pre><br>';
         }
         $DB->execute('UPDATE {qtype_proforma_options} ' .
                 'SET gradinghints = ? WHERE gradinghints is null and questionid = ?',

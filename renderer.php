@@ -293,7 +293,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             case qtype_proforma_grader::FEEDBACK_FORMAT_NONE: // No feedback.
             case qtype_proforma_grader::FEEDBACK_FORMAT_HTTP_ERROR: // No feedback.
                 if (!empty($feedback) && qtype_proforma\lib\is_teacher()) {
-                    return html_writer::tag('xmp', $feedback, ['class' => 'proforma_testlog']);
+                    return html_writer::tag('pre', s($feedback), ['class' => 'proforma_testlog proforma_raw']);
                 } else {
                     return $result;
                 }
@@ -404,9 +404,9 @@ class qtype_proforma_renderer extends qtype_renderer {
                     ['class' => 'proforma_testlog_title']);
 
             $msarea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
-            $output .= html_writer::tag('div', '<xmp>' .
-                    $msarea->read_file_content($question->contextid, $ms, $question->id) .
-                    '</xmp>', ['class' => 'proforma_testlog']);
+            $output .= html_writer::tag('div', html_writer::tag('pre',
+                    s($msarea->read_file_content($question->contextid, $ms, $question->id))),
+                    ['class' => 'proforma_testlog']);
         }
 
         $output .= print_collapsible_region_end(true);

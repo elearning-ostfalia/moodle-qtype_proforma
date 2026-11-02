@@ -723,12 +723,12 @@ Prüfung beendet.
         $output .= '<div id="'.$id.'" class="collapsibleregion  collapsed"><div id="'.$id.'_sizer">
 ';
         $output .= '<div id="'.$id.'_caption" class="collapsibleregioncaption">raw response </div>
-<div id="'.$id.'_inner" class="collapsibleregioninner"><xmp class="proforma_testlog"><?xml version="1.0" encoding="utf-8"?>
-';
-        // Strip prolog.
+<div id="'.$id.'_inner" class="collapsibleregioninner"><pre class="proforma_testlog proforma_raw">';
+        // Replace prolog.
         // $response = str_replace('\r\n', '\n', $response);
-        $response = substr($response, 39);
-        $output .= $response . '</xmp></div>
+        $response = '<?xml version="1.0" encoding="utf-8"?>
+' . substr($response, 39);
+        $output .= s($response) . '</pre></div>
 </div></div>';
         return $output;
     }

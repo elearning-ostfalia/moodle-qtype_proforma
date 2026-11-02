@@ -206,14 +206,14 @@ class proforma_bulk_tester {
         if ($httpcode != 200) {
             $result = get_string('failed', 'qtype_proforma');
             $feedback .= html_writer::tag('p', 'HTTP-Code ' . $httpcode);
-            $feedback .= html_writer::tag('small', html_writer::tag('xmp', $graderoutput));
+            $feedback .= html_writer::tag('small', html_writer::tag('pre', s($graderoutput)));
         } else {
             list($state, $fraction, $error, $feedback, $feedbackformat) =
                 $grader->extract_grade($graderoutput, $httpcode, $question);
             if ($fraction < 1) {
                 $result = get_string('failed', 'qtype_proforma');
                 if ($feedbackformat != qtype_proforma_grader::FEEDBACK_FORMAT_PROFORMA2) {
-                    $result .= html_writer::tag('xmp', $feedback, ['class' => 'proforma_testlog']);
+                    $result .= html_writer::tag('pre', s($feedback), ['class' => 'proforma_testlog']);
                 } else {
                     global $PAGE;
                     $renderer = new qtype_proforma_renderer($PAGE, null);

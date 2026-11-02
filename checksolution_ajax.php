@@ -268,7 +268,7 @@ $question->gradinghints = urldecode($gradinghints);
 if ($httpcode != 200) {
     $result = get_string('failed', 'qtype_proforma');
     $feedback .= html_writer::tag('p', 'HTTP-Code ' . $httpcode);
-    $feedback .= html_writer::tag('small', html_writer::tag('xmp', $graderoutput));
+    $feedback .= html_writer::tag('small', html_writer::tag('pre', s($graderoutput)));
 } else {
     list($state, $fraction, $error, $feedback, $feedbackformat) =
         $grader->extract_grade($graderoutput, $httpcode, $question);

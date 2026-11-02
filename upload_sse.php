@@ -51,12 +51,13 @@ try {
         // in the draft area that shall be uploaded to the grader.
         $contextid = required_param('contextid', PARAM_INT);
         $context = \context::instance_by_id($contextid, IGNORE_MISSING);
-        if (!isset($context)) {
+        if (!$context) {
             throw new invalid_parameter_exception('invalid context');
         }
         external_api::validate_context($context);
-        if ($context->contextlevel == CONTEXT_COURSE) {
-            require_capability('moodle/question:editmine', $context);
+        // The draft file must belong to the current user.
+        if ($context->id != context_user::instance($USER->id)->id) {
+            throw new invalid_parameter_exception('context is no user context');
         }
 
         // Since we're in the context of the user, it does not make sense checking course-level rights.
@@ -73,7 +74,7 @@ try {
         $filename = required_param('filename', PARAM_FILE);
         $fs = get_file_storage();
         $task = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', $filename);
-        if ($task === null) {
+        if (!$task) {
             throw new invalid_parameter_exception('No task file available');
         }
 
@@ -100,12 +101,12 @@ try {
         global $DB;
         $contextid = $DB->get_field('question_categories', 'contextid', ['id' => $question->category]);
         $context = \context::instance_by_id($contextid, IGNORE_MISSING);
-        if (isset($context)) {
-            external_api::validate_context($context);
-            if ($context->contextlevel == CONTEXT_COURSE) {
-                require_capability('moodle/question:editmine', $context);
-            }
+        if (!$context) {
+            throw new invalid_parameter_exception('invalid context');
         }
+        external_api::validate_context($context);
+        // Check capability independent of context level (question banks are in module contexts).
+        question_require_capability_on($question, 'edit');
         $task = $question->get_task_file();
         if (!$task instanceof stored_file) {
             throw new coding_exception("task variable has wrong class");
