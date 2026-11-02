@@ -99,16 +99,23 @@ function get_groupname($context) {
     }
 
     global $USER;
-    // Get all groups.
     [$course, $cm] = get_course_and_cm_from_cmid($context->instanceid, 'quiz');
-    $groups = groups_get_activity_allowed_groups($cm, $USER->id);
+    // Get the groups the user belongs to (restricted to the grouping of the quiz, if any).
+    // Note: groups_get_activity_allowed_groups() is not used because it returns all groups
+    // in 'visible groups' mode or for users with 'moodle/site:accessallgroups'.
+    $groups = groups_get_all_groups($course->id, $USER->id, $cm->groupingid);
+    if (count($groups) > 1) {
+        // Not unique => try to restrict by the access restrictions (availability) of the quiz.
+        $groups = filter_groups_by_availability($cm, $groups);
+    }
 
     // Count groups and fetch name.
     $groupname = '???';
 
     switch (count($groups)) {
         case 0:
-            return 'N/A'; // No group found.
+            // No group found (teachers may enter a group name manually).
+            return (is_teacher() || is_admin()) ? '' : 'N/A';
         case 1:
             // Exactly one group found.
             $group = reset($groups);
@@ -125,6 +132,72 @@ function get_groupname($context) {
     }
 
     return $groupname;
+}
+
+/**
+ * Restricts a list of groups to the groups that are required by the access restrictions
+ * (availability conditions) of the course module.
+ *
+ * Only positive (non-negated) 'group' and 'grouping' conditions are considered.
+ * If the restrictions do not reference any of the given groups, the list is returned unchanged.
+ *
+ * @param \cm_info $cm course module
+ * @param array $groups groups (indexed by group id)
+ * @return array filtered groups (indexed by group id)
+ */
+function filter_groups_by_availability($cm, array $groups) {
+    if (empty($cm->availability)) {
+        return $groups;
+    }
+    $tree = json_decode($cm->availability);
+    if (!is_object($tree)) {
+        return $groups;
+    }
+
+    $groupids = [];
+    collect_availability_groupids($tree, $cm->course, $groupids);
+    if (count($groupids) == 0) {
+        return $groups;
+    }
+
+    $filtered = array_intersect_key($groups, $groupids);
+    return count($filtered) > 0 ? $filtered : $groups;
+}
+
+/**
+ * Collects the ids of all groups referenced by positive group or grouping conditions
+ * of an availability (sub)tree.
+ *
+ * @param \stdClass $node availability tree node (decoded JSON)
+ * @param int $courseid course id
+ * @param array $groupids collected group ids (as keys)
+ */
+function collect_availability_groupids($node, $courseid, array &$groupids) {
+    if (isset($node->op)) {
+        if ($node->op !== '&' && $node->op !== '|') {
+            // Negated tree ('!&' or '!|') => ignore.
+            return;
+        }
+        foreach ($node->c ?? [] as $child) {
+            collect_availability_groupids($child, $courseid, $groupids);
+        }
+        return;
+    }
+
+    if (!isset($node->type) || empty($node->id)) {
+        // No group condition or condition without specific group ('any group').
+        return;
+    }
+    switch ($node->type) {
+        case 'group':
+            $groupids[$node->id] = true;
+            break;
+        case 'grouping':
+            foreach (groups_get_all_groups($courseid, 0, $node->id, 'g.id') as $group) {
+                $groupids[$group->id] = true;
+            }
+            break;
+    }
 }
 
 
