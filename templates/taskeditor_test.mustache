@@ -15,9 +15,11 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template qtype_proforma/taskeditor_file
+    @template qtype_proforma/taskeditor_test
 
-    The purpose of this template is to render a Junit test in ProFormA task editor
+    The purpose of this template is to render a test in ProFormA task editor.
+    Test specific fields are added by templates extending this one
+    via the block "testspecific".
 
     Classes required for JS:
     * none
@@ -30,10 +32,67 @@
 
     Example context (json):
     {
+        "testid": "1",
+        "testtitle": "Name of test",
+        "description": "This tests deals with...",
+        "testtype": "java-checkstyle",
+        "testheader": "Java Checkstyle"
     }
 }}
 
+<div id='test_{{ testid }}' class='xml_test'>
 
-{{> qtype_proforma/taskeditor_test_start }}
+    <span class='test-header' draggable='true'>
+        <span class='box-typ'><label> Test {{ testid }} </label>
+            <span>{{ testheader }}</span>
+            <span>
+<!--            {{#str}} testtype, qtype_proforma {{/str}}-->
+<!--            <label for='xml_test_type'>{{#str}} testtype, qtype_proforma {{/str}} </label>-->
+            <input class='xml_test_type' disabled="disabled" value='{{ testtype }}' style='display: none'>
+            {{#framework}}
+                <input class="xml_framework" value="{{ framework }}" disabled="disabled" style='display: none'>
+            {{/framework}}
+             &nbsp;
+            {{#framework_version}}
+                <!-- no label because of format -->
+                <!-- <label for="xml_framework_version">{{#str}} version, qtype_proforma {{/str}}<span class="red">*</span> </label> -->
+                {{#str}} version, qtype_proforma {{/str}}
+                <select class="xml_framework_version" id="{{uniqid}}-version">
+                            <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                </select>
+            {{/framework_version}}
+            </span>
+        </span>
 
-{{> qtype_proforma/taskeditor_test_end }}
+        <input class='xml_test_id' type="text" style='display: none' value="{{ testid }}" size="2" disabled="disabled">
+
+        <span class='rightButton'><button>x</button></span>
+    </span>
+
+<div class="proforma-test-row">
+    <label>{{#str}} testtitle, qtype_proforma {{/str}} <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}"></i> </label>
+    <input class='xml_test_title' size="80" value='{{ testtitle }}'>
+</div>
+<div class="proforma-test-row">
+    <label>{{#str}} testdescription, qtype_proforma {{/str}} </label>
+    <textarea rows='2' cols='80' class='xml_description'>{{ description }}</textarea>
+</div>
+<div class="proforma-test-row">
+    <label>{{#str}} weight, qtype_proforma {{/str}}
+        <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+    </label>
+    <input class='tinyinput xml_test_weight' value='{{ weight }}' size='3'>
+</div>
+<div class="proforma-test-row">
+    <label class='leftlabel' style='display: none'>Internal Description</label>
+    <textarea rows='2' class='xml_internal_description' title='Internal description (not visible for students)'
+        style='display: none'>{{ comment }}</textarea>
+</div>
+{{$testspecific}}{{/testspecific}}
+
+{{! create table for referenced files }}
+{{> qtype_proforma/taskeditor_fileref_table }}
+<span class='drop_zone_text'>{{#str}} taskeditordropzone, qtype_proforma {{/str}}</span>
+
+
+</div>

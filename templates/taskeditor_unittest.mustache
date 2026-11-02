@@ -34,20 +34,18 @@
 }}
 
 
-{{> qtype_proforma/taskeditor_test_start }}
-
-<br>
-
+{{< qtype_proforma/taskeditor_test }}
+{{$testspecific}}
+<div class="proforma-test-row">
     <label>{{#str}} executable, qtype_proforma {{/str}}
     <!-- <span class='red'>*</span> -->
     {{#entrypointinfo}}
-        {{>core/help_icon}}
+    {{>core/help_icon}}
     {{/entrypointinfo}}
-        <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+    <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
     </label>
     <input class='mediuminput xml_entry_point' value='{{ entrypoint }}' size="80">
-
-    <br>
-
-{{> qtype_proforma/taskeditor_test_end }}
+</div>
+{{/testspecific}}
+{{/ qtype_proforma/taskeditor_test }}
 

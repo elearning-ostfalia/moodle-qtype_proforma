@@ -34,17 +34,17 @@
 }}
 
 
-{{> qtype_proforma/taskeditor_test_start }}
-
-<br>
-
+{{< qtype_proforma/taskeditor_test }}
+{{$testspecific}}
+<div class="proforma-test-row">
     <label>{{#str}} checkstylewarnings, qtype_proforma {{/str}}
     <!--<span class="red">*</span>-->
-            <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+    <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
     </label>
     <input class="tinyinput xml_pr_CS_warnings" value="{{ warnings }}">
-
-{{> qtype_proforma/taskeditor_test_end }}
+</div>
+{{/testspecific}}
+{{/ qtype_proforma/taskeditor_test }}
 
 {{#js}}
     require(['qtype_proforma/taskeditor/taskeditor'], function(editor) {

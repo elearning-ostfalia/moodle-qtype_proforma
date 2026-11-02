@@ -142,6 +142,7 @@ body .proforma-taskeditor .box-typ {
 /* first column should have label width and be more indented  */
 .proforma-taskeditor p label:first-child,
 .proforma-taskeditor br + label,
+.proforma-taskeditor .proforma-test-row > label:first-child,
 .proforma-taskeditor .xml_file_non_binary label,
 .proforma-taskeditor .test-header label,
 .proforma-taskeditor .xml_fileref_table td:first-child,
@@ -151,6 +152,15 @@ body .proforma-taskeditor .box-typ {
     /*padding-left: 0.3em;*/
     text-align: left;
     vertical-align: top;
+}
+
+/* one row per field in a test with small uniform spacing */
+.proforma-taskeditor .proforma-test-row {
+    margin-bottom: 0.25rem;
+}
+
+.proforma-taskeditor .proforma-test-row > label {
+    margin-bottom: 0;
 }
 
 /* use bold font for unit test label */
