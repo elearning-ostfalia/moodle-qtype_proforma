@@ -130,7 +130,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
             $question->proglang = (string)$task->proglang;
 
             // Read tests.
-            $question->test = array();
+            $question->test = [];
             foreach ($task->tests->test as $test) {
                 $question->test[(string)$test['id']] = $test->{'test-type'};
             }
@@ -166,7 +166,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
         $question = new stdClass();
 
         // Read tests.
-        $question->test = array();
+        $question->test = [];
         foreach ($gh->root->{'test-ref'} as $test) {
             $testtype = $test->{'test-type'};
             if (!isset($testtype)) {

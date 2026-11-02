@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * This file contains base functions for testing task files
@@ -34,30 +34,30 @@ require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
 class task_testcase extends advanced_testcase {
 
-    
+
     // TODO: also used in question_test.php!
     public function assert_same_xml($expectedxml, $xml) {
-        
-        // Only for expectedxml: 
-        // Delete newlines remaing when a child node is deleted.        
-        $expectedxml = preg_replace("#\>\r\n[\s]*\r\n#", ">\r\n", $expectedxml); // Windows.        
-        $expectedxml = preg_replace("#\>\n[\s]*\n#", ">\n", $expectedxml); // Unix.        
-        
+
+        // Only for expectedxml:
+        // Delete newlines remaing when a child node is deleted.
+        $expectedxml = preg_replace("#\>\r\n[\s]*\r\n#", ">\r\n", $expectedxml); // Windows.
+        $expectedxml = preg_replace("#\>\n[\s]*\n#", ">\n", $expectedxml); // Unix.
+
         // remove comments
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
         $expectedxml = preg_replace('/<!--(.|\s)*?-->/', '', $expectedxml);
         // remove uuid
         $xml = preg_replace('/uuid="(.|\s)*?"/', 'uuid="removed"', $xml);
         $expectedxml = preg_replace('/uuid="(.|\s)*?"/', 'uuid="removed"', $expectedxml);
-        
-        // escaped 
+
+        // escaped
         $xmldoc = new DOMDocument();
         $xmldoc->loadXML($expectedxml);
         $expectedxml = $xmldoc->saveXML();
 
         $xmldoc->loadXML($xml);
         $xml = $xmldoc->saveXML();
-        
+
         $this->assertEquals(str_replace("\r\n", "\n", $expectedxml),
                 str_replace("\r\n", "\n", $xml));
     }

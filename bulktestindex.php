@@ -64,7 +64,7 @@ foreach ($bulktester->get_proforma_questions_by_context() as $record) {
             $coursename = '<a href="'. new moodle_url('/course/view.php', ['id' => $record->courseid]) . '">'.$coursename.'</a>';
         }
         echo html_writer::tag('li', $coursename . html_writer::link(
-                new moodle_url('/question/type/proforma/bulktest.php', array('contextid' => $contextid)),
+                new moodle_url('/question/type/proforma/bulktest.php', ['contextid' => $contextid]),
                 ' (' . $numproformaquestions . ')'));
         if ($contextinst->get_course_context(false) !== false) {
             $courseid = $record->courseid;

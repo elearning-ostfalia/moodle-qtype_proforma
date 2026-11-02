@@ -90,7 +90,7 @@ class proforma_bulk_tester {
         global $DB, $OUTPUT;
 
         // Load the necessary data.
-        $categories = question_category_options(array($context));
+        $categories = question_category_options([$context]);
         $categories = reset($categories);
         $questiontestsurl = new moodle_url('/question/question.php');
         switch ($context->contextlevel) {
@@ -105,16 +105,16 @@ class proforma_bulk_tester {
                 debugging('unexpected contextlevel: ' . $context->contextlevel);
         }
         $allpassed = true;
-        $failingtests = array();
-        $notaskfile = array();
-        $nomodelsolution = array();
+        $failingtests = [];
+        $notaskfile = [];
+        $nomodelsolution = [];
 
         foreach ($categories as $key => $category) {
             list($categoryid) = explode(',', $key);
             echo $OUTPUT->heading(get_string('questioncategory', 'question'). ': ' . $category, 4);
 
             $questionids = $DB->get_records_menu('question',
-                    array('category' => $categoryid, 'qtype' => 'proforma'), 'name', 'id,name');
+                    ['category' => $categoryid, 'qtype' => 'proforma'], 'name', 'id,name');
             if (!$questionids) {
                 // No ProFormA questions found.
                 echo html_writer::tag('p', get_string('replacedollarscount', 'qtype_proforma', 0));
@@ -129,9 +129,9 @@ class proforma_bulk_tester {
                 $question = question_bank::load_question($questionid);
                 $questionname = format_string($name);
                 $questionnamelink = html_writer::link(new moodle_url($questiontestsurl,
-                        array('id' => $questionid)), format_string($name));
+                        ['id' => $questionid]), format_string($name));
 
-                $questionproblems = array();
+                $questionproblems = [];
                 // Load model solution.
                 $modelsolution = self::load_model_solution($questionid, $context->id);
                 if (empty($modelsolution)) {
@@ -146,13 +146,13 @@ class proforma_bulk_tester {
                     $questionproblems[] = html_writer::tag('li', get_string('bulktestnofile', 'qtype_proforma'));
                 }
 
-                if ($questionproblems !== array()) {
+                if ($questionproblems !== []) {
                     // Cannot run tests.
                     echo $OUTPUT->heading($questionnamelink, 5);
                     echo html_writer::tag('ul', implode("\n", $questionproblems));
                 } else {
                     // Run tests.
-                    $previewurl = new moodle_url($questiontestsurl, array('id' => $questionid));
+                    $previewurl = new moodle_url($questiontestsurl, ['id' => $questionid]);
                     $questionnamelink = html_writer::link($previewurl, $questionname);
                     echo $OUTPUT->heading($questionnamelink, 5);
 
@@ -171,11 +171,11 @@ class proforma_bulk_tester {
                 }
             }
         }
-        $failing = array(
+        $failing = [
             'failingtests'      => $failingtests,
             'notests'           => $notaskfile,
-            'nomodelsolution'   => $nomodelsolution);
-        return array($allpassed, $failing);
+            'nomodelsolution'   => $nomodelsolution];
+        return [$allpassed, $failing];
     }
 
     /**
@@ -210,7 +210,7 @@ class proforma_bulk_tester {
             if ($fraction < 1) {
                 $result = get_string('failed', 'qtype_proforma');
                 if ($feedbackformat != qtype_proforma_grader::FEEDBACK_FORMAT_PROFORMA2) {
-                    $result .= html_writer::tag('xmp', $feedback, array('class' => 'proforma_testlog'));
+                    $result .= html_writer::tag('xmp', $feedback, ['class' => 'proforma_testlog']);
                 } else {
                     global $PAGE;
                     $renderer = new qtype_proforma_renderer($PAGE, null);
@@ -224,10 +224,10 @@ class proforma_bulk_tester {
             }
         }
         if (!$quiet) {
-            $message .= html_writer::tag('p', $result, array('class' => $class));
+            $message .= html_writer::tag('p', $result, ['class' => $class]);
         }
 
-        return array($ok, $message, $feedback);
+        return [$ok, $message, $feedback];
     }
 
     /**
@@ -241,10 +241,10 @@ class proforma_bulk_tester {
         echo $OUTPUT->heading(get_string('overallresult', 'qtype_proforma'), 2);
         if ($allpassed) {
             echo html_writer::tag('p', get_string('proformaInstall_testsuite_pass', 'qtype_proforma'),
-                    array('class' => 'overallresult pass'));
+                    ['class' => 'overallresult pass']);
         } else {
             echo html_writer::tag('p', get_string('proformaInstall_testsuite_fail', 'qtype_proforma'),
-                    array('class' => 'overallresult fail'));
+                    ['class' => 'overallresult fail']);
         }
 
         foreach ($failing as $key => $failarray) {

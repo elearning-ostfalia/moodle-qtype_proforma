@@ -169,7 +169,7 @@ class qtype_proforma_grader {
         $output = $curl->post($uri, $postfields);
         $info = $curl->get_info();
 
-        return array($output, $info->httpcode === 200 ? null : $info->httpcode);
+        return [$output, $info->httpcode === 200 ? null : $info->httpcode];
     }
 
     /** sends a student's uploaded file to the grader. Exactly one file is supported.
@@ -184,9 +184,9 @@ class qtype_proforma_grader {
             throw new coding_exception("wrong class");
         }
 
-        $postfields = array(
+        $postfields = [
                 'submission-file' => $file,
-                'submission-filename' => $question->responsefilename);
+                'submission-filename' => $question->responsefilename];
 
         return $this->post_to_grader($postfields, $question);
     }
@@ -224,9 +224,9 @@ class qtype_proforma_grader {
 
         $filename = $question->responsefilename;
 
-        $postfields = array(
+        $postfields = [
             'submission' => $code,
-            'submission-filename' => $filename);
+            'submission-filename' => $filename];
 
         return $this->post_to_grader($postfields, $question);
     }

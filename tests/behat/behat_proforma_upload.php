@@ -83,7 +83,7 @@ class behat_proforma_upload extends behat_repository_upload {
 
     protected function check_range($text, $min, $max) {
         $textparts = explode(' ',  $text);
-        $matches = array();
+        $matches = [];
         preg_match('/(?P<digit>[\d,\.]+)\s*(?P<unit>[a-zA-Z]+)/', $text, $matches);
         $value = floatval($matches['digit']);
         switch ($matches['unit']) {

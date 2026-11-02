@@ -1,5 +1,10 @@
 # Configuration for moodle-plugin-ci.
-# Test files are excluded from the Moodle Code Checker.
-filters:
-  codechecker:
-    notPaths: ['tests']
+# Test files are excluded from the Moodle Code Checker (command 'phpcs', alias 'codechecker')
+# and from the Moodle PHPDoc Checker (command 'phpdoc').
+filter-phpcs:
+  notPaths:
+    - tests
+
+filter-phpdoc:
+  notPaths:
+    - tests

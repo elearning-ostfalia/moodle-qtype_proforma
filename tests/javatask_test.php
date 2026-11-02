@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * This file contains unit tests for handling ProFormA task files
@@ -739,7 +739,7 @@ class javatask_test extends advanced_testcase {
 
     public function test_class1() {
         $code =
-'// class FakeClass (this is not the class)
+        '// class FakeClass (this is not the class)
 public class MyClass {
     int x = 11;
 }';
@@ -750,7 +750,7 @@ public class MyClass {
 
     public function test_class2() {
         $code =
-'/*
+        '/*
     class FakeClass (this is not the class)
 */
 public class MyClass {
@@ -763,7 +763,7 @@ public class MyClass {
 
     public function test_class3() {
         $code =
-'/*
+        '/*
     class FakeClass (this is not the class)
 */
 // class FakeClass1 (this is not the class, too)
@@ -869,6 +869,6 @@ class Dog extends Animal {}
         $this->assertEquals('IName.java', $instance->get_java_file($code));
         $this->assertEquals('IName<T>', $instance->get_java_entrypoint($code));
     }
-*/
+    */
 
 }

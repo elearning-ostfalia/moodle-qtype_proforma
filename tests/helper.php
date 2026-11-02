@@ -48,7 +48,7 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
  */
 class qtype_proforma_test_helper extends question_test_helper {
     public function get_test_questions() {
-        return array(
+        return [
             // Different response formats.
             'editor',
             'filepicker',
@@ -76,7 +76,7 @@ class qtype_proforma_test_helper extends question_test_helper {
             // Different values set in question.
             'downloads',
             'responsetemplate', 'modelsolution', 'penalty', // Different values.
-            'gradecorrect', 'gradeincorrect', 'wronggraderfilename');
+            'gradecorrect', 'gradeincorrect', 'wronggraderfilename'];
     }
 
     const QUESTION_NAME = 'ProFormA question (äöüß)';
@@ -91,13 +91,13 @@ class qtype_proforma_test_helper extends question_test_helper {
     const QUESTION_REPOSITORY = '';
     const QUESTION_PATH = '';
     const QUESTION_FILENAME = 'MyString.java';
-    //const QUESTION_MODELSOLUTION = '//text in modelsolution (äöüß)';
+    // const QUESTION_MODELSOLUTION = '//text in modelsolution (äöüß)';
     const QUESTION_TEMPLATE = '//text in responsetemplate';
 
     const QUESTION_INSTRUCTIONS = 'instruction.txt';
     const QUESTION_LIBRARIES = 'lib.txt';
-    const QUESTION_DOWNLOADS =  qtype_proforma_test_helper::QUESTION_INSTRUCTIONS .', '.
-        qtype_proforma_test_helper::QUESTION_LIBRARIES;
+    const QUESTION_DOWNLOADS = self::QUESTION_INSTRUCTIONS .', '.
+        self::QUESTION_LIBRARIES;
 
     const QUESTION_TEMPLATES = 'template.txt';
     const QUESTION_TEMPLATES_2 = 'codesnippet.py';
@@ -109,19 +109,19 @@ class qtype_proforma_test_helper extends question_test_helper {
     const QUESTION_PROFORMAVERSION = '2.0';
     const QUESTION_AGGREGATIONSTRATEGY = qtype_proforma::ALL_OR_NOTHING;
     const QUESTION_GRADINGHINTS = '<grading-hints>'.
-  '<root function="sum">'.
-   '<test-ref ref="1" weight="2">
+    '<root function="sum">'.
+    '<test-ref ref="1" weight="2">
         <title>TEST 1</title>
         <test-type>TEST-CONFIG 1</test-type>
         <description>DESCRIPTION 1</description>
     </test-ref>'.
-   '<test-ref ref="2" weight="3">
+    '<test-ref ref="2" weight="3">
         <title>TEST 2</title>
         <test-type>TEST-CONFIG 2</test-type>
         <description>DESCRIPTION 2</description>
     </test-ref>'.
-  '</root>'.
- '</grading-hints>';
+    '</root>'.
+    '</grading-hints>';
 
 
     const QUESTION_GRADINGHINTS_JAVA = '<grading-hints>'.
@@ -185,7 +185,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     '</root>'.
     '</grading-hints>';
 
-    const QUESTION_GRADINGHINTS_SETLX2= '<grading-hints>'.
+    const QUESTION_GRADINGHINTS_SETLX2 = '<grading-hints>'.
     '<root function="sum">'.
     '<test-ref ref="compiler" weight="2">
         <title>Compiler Test</title>
@@ -205,7 +205,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     '</root>'.
     '</grading-hints>';
 
-    const QUESTION_GRADINGHINTS_C2= '<grading-hints>'.
+    const QUESTION_GRADINGHINTS_C2 = '<grading-hints>'.
     '<root function="sum">'.
     '<test-ref ref="1" weight="3">
         <title>C Test 1</title>
@@ -235,7 +235,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     }
 
     private function get_proforma_data($container) {
-        //$container->qtype = 'proforma';
+        // $container->qtype = 'proforma';
         $container->uuid = 'UUID 1';
 
         // valid data for a task file in the repository!
@@ -268,19 +268,19 @@ class qtype_proforma_test_helper extends question_test_helper {
     private function get_form_data($container) {
         $this->get_proforma_data($container);
         $container->name = self::QUESTION_NAME;
-        $container->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        $container->questiontext = ['text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML];
         $container->defaultmark = 1.0;
-        $container->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
+        $container->generalfeedback = ['text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML];
         $container->penalty = 0.2;
 
         $container->responseformat = 'editor';
         $container->responsefieldlines = 10;
         $container->attachments = 15;
-        $container->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
+        $container->comment = ['text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML];
         $container->maxbytes = 10240;
         $container->filetypes = '.java, .jar';
 
-/*
+        /*
         $container->hint = array(
                 0 => array(
                         'text' => 'hint 1<br>',
@@ -290,7 +290,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'text' => 'hint 2<br>',
                         'format' => '1',
                         'itemid' => '34635511'));
-*/
+        */
         if (isset($container->taskstorage) && $container->taskstorage == qtype_proforma::PERSISTENT_TASKFILE) {
             $container->task = 0;
             $this->make_attachment_in_draft_area($container->task, $container->taskfilename,
@@ -320,7 +320,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         question_bank::load_question_definition_classes('proforma');
         $q = new qtype_proforma_question();
         test_question_maker::initialise_a_question($q);
-        //$q->contextid = context_system::instance()->id;
+        // $q->contextid = context_system::instance()->id;
         $q->name = self::QUESTION_NAME;
         $q->questiontext = self::QUESTION_TEXT;
         $q->generalfeedback = self::QUESTION_GENERAL_FEEDBACK;
@@ -340,12 +340,12 @@ class qtype_proforma_test_helper extends question_test_helper {
         $q->inlinemessages = 1;
         // $q->initiallyinline = 1;
 
-/*
+        /*
         $q->hints = array(
                 new question_hint(1, 'hint 1', FORMAT_HTML),
                 new question_hint(2, 'hint 2', FORMAT_HTML),
         );
-*/
+        */
 
         $this->get_proforma_data($q);
 
@@ -363,7 +363,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         $sql = 'select id 
             from {context} 
             where contextlevel = :level';
-        $result = $DB->get_records_sql($sql, array('level' => CONTEXT_COURSE));
+        $result = $DB->get_records_sql($sql, ['level' => CONTEXT_COURSE]);
         $q->contextid = array_keys($result)[0];
         $q->id = 75;
         $q->responseformat = 'editor';
@@ -490,7 +490,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         // which results in failing tests.
         // Workaround: we use a copy of the value named 'original_template'
         $fromform->original_template = $fromform->template;
-//        var_dump($fromform);
+        // var_dump($fromform);
 
         $fromform->status = \core_question\local\bank\question_version_status::QUESTION_STATUS_READY;
 
@@ -516,7 +516,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                 '#code snippet for python');
 
         $fromform->programminglanguage = 'python';
-        //$fromform->responsetemplate = '';
+        // $fromform->responsetemplate = '';
 
         $fromform->uuid = 'UUID 2';
 
@@ -532,14 +532,14 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $fromform->templates = self::QUESTION_TEMPLATES_2;
         $property = qtype_proforma::FILEAREA_TEMPLATE;
-//        $fromform->$property = file_get_unused_draft_itemid();
+        // $fromform->$property = file_get_unused_draft_itemid();
         $fromform->$property = 0;
         // file_prepare_draft_area($fromform->$property, null, null, null, null);
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
             '#code snippet for python');
 
         $fromform->programminglanguage = 'python';
-        //$fromform->responsetemplate = '';
+        // $fromform->responsetemplate = '';
 
         $fromform->uuid = 'UUID 2';
 
@@ -558,13 +558,13 @@ class qtype_proforma_test_helper extends question_test_helper {
         $fromform->templates = self::QUESTION_TEMPLATES_2;
         $property = qtype_proforma::FILEAREA_TEMPLATE;
         $fromform->$property = 0;
-//        file_prepare_draft_area($fromform->$property, null, null, null, null);
-//        $fromform->$property = file_get_unused_draft_itemid();
+        // file_prepare_draft_area($fromform->$property, null, null, null, null);
+        // $fromform->$property = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
             '#code snippet for python');
 
         $fromform->programminglanguage = 'python';
-        //$fromform->responsetemplate = '';
+        // $fromform->responsetemplate = '';
 
         $fromform->uuid = 'UUID 2';
 
@@ -583,13 +583,13 @@ class qtype_proforma_test_helper extends question_test_helper {
         $fromform->templates = self::QUESTION_TEMPLATES_2;
         $property = qtype_proforma::FILEAREA_TEMPLATE;
         $fromform->$property = 0;
-//        file_prepare_draft_area($fromform->$property, null, null, null, null);
-//        $fromform->$property = file_get_unused_draft_itemid();
+        // file_prepare_draft_area($fromform->$property, null, null, null, null);
+        // $fromform->$property = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($fromform->$property, self::QUESTION_TEMPLATES_2,
             '#code snippet for python');
 
         $fromform->programminglanguage = 'python';
-        //$fromform->responsetemplate = '';
+        // $fromform->responsetemplate = '';
 
         $fromform->uuid = 'UUID 2';
 
@@ -631,8 +631,8 @@ class qtype_proforma_test_helper extends question_test_helper {
         // set redundant :-( template
         $form->responsetemplate = self::QUESTION_TEMPLATE;
         $form->template = 0;
-//        file_prepare_draft_area($form->template, null, null, null, null);
-//        $form->template = file_get_unused_draft_itemid();
+        // file_prepare_draft_area($form->template, null, null, null, null);
+        // $form->template = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($form->template, 'template.txt',
                 self::QUESTION_TEMPLATE);
 
@@ -640,18 +640,18 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->aggregationstrategy = self::QUESTION_AGGREGATIONSTRATEGY;
 
         $form->name = self::QUESTION_NAME;
-        //$form->questiontext = self::QUESTION_TEXT;
-        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        // $form->questiontext = self::QUESTION_TEXT;
+        $form->questiontext = ['text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML];
         $form->defaultmark = 1.0;
-        $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
+        $form->generalfeedback = ['text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML];
         $form->penalty = 0.2;
 
         $form->responseformat = 'editor';
         $form->modelsolution = '// code for model solution';
         $form->responsefieldlines = 10;
-        $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
-        //$form->maxbytes = 10240;
-        //$form->filetypes = '.java';
+        $form->comment = ['text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML];
+        // $form->maxbytes = 10240;
+        // $form->filetypes = '.java';
 
         $form->testcodeformat[0] = base_form_creator::TESTCODE_EDITOR;
         $form->testcode[0] = 'class XTest {}';
@@ -679,7 +679,7 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         // handle different line ending on different platforms
         $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
-/*        $form->hint = array(
+        /*        $form->hint = array(
                 0 => array(
                         'text' => 'hint 1<br>',
                         'format' => '1',
@@ -688,7 +688,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'text' => 'hint 2<br>',
                         'format' => '1',
                         'itemid' => '34635511'));
-*/
+        */
         return $form;
     }
 
@@ -696,7 +696,7 @@ class qtype_proforma_test_helper extends question_test_helper {
      * same as java1 except for PHPUnit tests
      */
     public function get_proforma_question_form_data_java1unit() {
-            //$form->questiontext = self::QUESTION_TEXT;
+            // $form->questiontext = self::QUESTION_TEXT;
         $form = $this->get_proforma_question_form_data_java1();
         $form->questiontext = self::QUESTION_TEXT;
         return $form;
@@ -727,7 +727,7 @@ class qtype_proforma_test_helper extends question_test_helper {
     public function get_proforma_question_form_data_java_2junit() {
         $form = $this->get_proforma_question_form_data_java1unit();
         // question format for behat
-        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        $form->questiontext = ['text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML];
 
         // this is redundant => do we need ist?
         $form->gradinghints = self::QUESTION_GRADINGHINTS_JAVA_2JUNIT;
@@ -750,10 +750,9 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $form->defaultmark = 3.0;
 
-//       $form->download = file_get_unused_draft_itemid();
-//        $this->make_attachment_in_draft_area($form->download, 'a.txt', 'text');
+        // $form->download = file_get_unused_draft_itemid();
+        // $this->make_attachment_in_draft_area($form->download, 'a.txt', 'text');
         // self::QUESTION_TEMPLATES, self::QUESTION_TEMPLATE);
-
 
         return $form;
     }
@@ -763,7 +762,6 @@ class qtype_proforma_test_helper extends question_test_helper {
      */
     public function get_proforma_question_form_data_java5() {
         $form = $this->get_proforma_question_form_data_java1unit();
-
 
         $form->testcode[0] = '';
         $form->testtitle[0] = '';
@@ -781,10 +779,10 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = 'entrypoint';
-        $form->testfiles = array();
-//        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles = [];
+        // $form->testfiles[0] = file_get_unused_draft_itemid();
         $form->testfiles[0] = 0;
-//        file_prepare_draft_area($form->testfiles[0], null, null, null, null);
+        // file_prepare_draft_area($form->testfiles[0], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest.java',
                 'class Junittest {}');
 
@@ -799,20 +797,19 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = 'entrypoint1';
-        $form->testfiles = array();
-//        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles = [];
+        // $form->testfiles[0] = file_get_unused_draft_itemid();
         $form->testfiles[0] = 0;
-//        file_prepare_draft_area($form->testfiles[0], null, null, null, null);
+        // file_prepare_draft_area($form->testfiles[0], null, null, null, null);
 
         $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest1.java',
                 'class XTest1 {}');
         $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest2.java',
                 'class XTest2 {}');
 
-
         $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[1] = 'entrypoint2';
-//        $form->testfiles[1] = file_get_unused_draft_itemid();
+        // $form->testfiles[1] = file_get_unused_draft_itemid();
         $form->testfiles[1] = 0;
         file_prepare_draft_area($form->testfiles[1], null, null, null, null);
 
@@ -830,21 +827,20 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = 'entrypoint1';
-        $form->testfiles = array();
-        //$form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles = [];
+        // $form->testfiles[0] = file_get_unused_draft_itemid();
         $form->testfiles[0] = 0;
-//        file_prepare_draft_area($form->testfiles[0], null, null, null, null);
+        // file_prepare_draft_area($form->testfiles[0], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest1.java',
                 'class XTest1 {}');
         $this->make_attachment_in_draft_area($form->testfiles[0], 'junittest2.java',
                 'class XTest2 {}');
 
-
         $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[1] = 'entrypoint2';
-//        $form->testfiles[1] = file_get_unused_draft_itemid();
+        // $form->testfiles[1] = file_get_unused_draft_itemid();
         $form->testfiles[1] = 0;
-//        file_prepare_draft_area($form->testfiles[1], null, null, null, null);
+        // file_prepare_draft_area($form->testfiles[1], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[1], 'junittest.java',
                 'class Junittest {}');
 
@@ -882,8 +878,8 @@ class qtype_proforma_test_helper extends question_test_helper {
         // set redundant :-( template
         $form->responsetemplate = self::QUESTION_TEMPLATE;
         $form->template = 0;
-//        file_prepare_draft_area($form->form, null, null, null, null);
-//        $form->template = file_get_unused_draft_itemid();
+        // file_prepare_draft_area($form->form, null, null, null, null);
+        // $form->template = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($form->template, 'template.txt',
                 self::QUESTION_TEMPLATE);
 
@@ -891,16 +887,16 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->aggregationstrategy = qtype_proforma::ALL_OR_NOTHING;
 
         $form->name = self::QUESTION_NAME;
-        //$form->questiontext = self::QUESTION_TEXT;
-        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        // $form->questiontext = self::QUESTION_TEXT;
+        $form->questiontext = ['text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML];
         $form->defaultmark = 3.0;
-        $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
+        $form->generalfeedback = ['text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML];
         $form->penalty = 0.2;
 
         $form->responseformat = 'editor';
         $form->modelsolution = '// code for model solution';
         $form->responsefieldlines = 10;
-        $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
+        $form->comment = ['text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML];
 
         $form->compile = 1;
         $form->compileweight = 2;
@@ -913,10 +909,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testid[0] = '1';
         $form->testcodeformat[0] = base_form_creator::TESTCODE_EDITOR;
 
-
         // handle different line ending on different platforms
-//        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
-/*        $form->hint = array(
+        // $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
+        /*        $form->hint = array(
                 0 => array(
                         'text' => 'hint 1<br>',
                         'format' => '1',
@@ -925,7 +920,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'text' => 'hint 2<br>',
                         'format' => '1',
                         'itemid' => '34635511'));
-*/
+        */
         return $form;
     }
 
@@ -990,8 +985,8 @@ class qtype_proforma_test_helper extends question_test_helper {
         // set redundant :-( template
         $form->responsetemplate = self::QUESTION_TEMPLATE;
         $form->template = 0;
-//        file_prepare_draft_area($form->template, null, null, null, null);
- //       $form->template = file_get_unused_draft_itemid();
+        // file_prepare_draft_area($form->template, null, null, null, null);
+        // $form->template = file_get_unused_draft_itemid();
         $this->make_attachment_in_draft_area($form->template, 'template.txt',
                 self::QUESTION_TEMPLATE);
 
@@ -999,16 +994,16 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->aggregationstrategy = qtype_proforma::ALL_OR_NOTHING;
 
         $form->name = self::QUESTION_NAME;
-        //$form->questiontext = self::QUESTION_TEXT;
-        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        // $form->questiontext = self::QUESTION_TEXT;
+        $form->questiontext = ['text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML];
         $form->defaultmark = 3.0;
-        $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
+        $form->generalfeedback = ['text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML];
         $form->penalty = 0.2;
 
         $form->responseformat = 'editor';
         $form->modelsolution = '// code for model solution';
         $form->responsefieldlines = 10;
-        $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
+        $form->comment = ['text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML];
 
         $form->compile = 1;
         $form->compileweight = 2;
@@ -1017,10 +1012,10 @@ class qtype_proforma_test_helper extends question_test_helper {
         // They must also exist as test variables.
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = './test';
-        $form->testfiles = array();
-//        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles = [];
+        // $form->testfiles[0] = file_get_unused_draft_itemid();
         $form->testfiles[0] = 0;
-//        file_prepare_draft_area($form->testfiles[0], null, null, null, null);
+        // file_prepare_draft_area($form->testfiles[0], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[0], 'cunit1.c',
                 'int cunit_1() { return 1; }');
         $this->make_attachment_in_draft_area($form->testfiles[0], 'main.c',
@@ -1030,10 +1025,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testweight[0] = '3';
         $form->testid[0] = '1';
 
-
         // handle different line ending on different platforms
-        //        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
-/*        $form->hint = array(
+        // $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
+        /*        $form->hint = array(
                 0 => array(
                         'text' => 'hint 1<br>',
                         'format' => '1',
@@ -1042,7 +1036,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                         'text' => 'hint 2<br>',
                         'format' => '1',
                         'itemid' => '34635511'));
-*/
+        */
         return $form;
     }
 
@@ -1067,9 +1061,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[1] = './test2';
         // $form->testfiles = array();
-//        $form->testfiles[1] = file_get_unused_draft_itemid();
+        // $form->testfiles[1] = file_get_unused_draft_itemid();
         $form->testfiles[1] = 0;
-//        file_prepare_draft_area($form->testfiles[1], null, null, null, null);
+        // file_prepare_draft_area($form->testfiles[1], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[1], 'main.c',
                 'int main() { return 1; }');
 
@@ -1101,9 +1095,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         // $container->modelsolution = self::QUESTION_MODELSOLUTION;
         // set redundant :-( template
         $form->responsetemplate = self::QUESTION_TEMPLATE;
-        //$form->template = file_get_unused_draft_itemid();
+        // $form->template = file_get_unused_draft_itemid();
         $form->template = 0;
-//        file_prepare_draft_area($form->template, null, null, null, null);
+        // file_prepare_draft_area($form->template, null, null, null, null);
         $this->make_attachment_in_draft_area($form->template, 'template.txt',
             self::QUESTION_TEMPLATE);
 
@@ -1111,16 +1105,16 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->aggregationstrategy = qtype_proforma::WEIGHTED_SUM;
 
         $form->name = self::QUESTION_NAME;
-        //$form->questiontext = self::QUESTION_TEXT;
-        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        // $form->questiontext = self::QUESTION_TEXT;
+        $form->questiontext = ['text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML];
         $form->defaultmark = 3.0;
-        $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
+        $form->generalfeedback = ['text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML];
         $form->penalty = 0.2;
 
         $form->responseformat = 'editor';
         $form->modelsolution = '// code for model solution';
         $form->responsefieldlines = 10;
-        $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
+        $form->comment = ['text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML];
 
         $form->compile = 1;
         $form->compileweight = 2;
@@ -1129,10 +1123,10 @@ class qtype_proforma_test_helper extends question_test_helper {
         // They must also exist as test variables.
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[0] = './runtest';
-        $form->testfiles = array();
-//        $form->testfiles[0] = file_get_unused_draft_itemid();
+        $form->testfiles = [];
+        // $form->testfiles[0] = file_get_unused_draft_itemid();
         $form->testfiles[0] = 0;
-//        file_prepare_draft_area($form->testfiles[0], null, null, null, null);
+        // file_prepare_draft_area($form->testfiles[0], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[0], 'gtest.cpp',
             'int cunit_1() { return 1; }');
         $this->make_attachment_in_draft_area($form->testfiles[0], 'main.cpp',
@@ -1144,10 +1138,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testweight[0] = '3';
         $form->testid[0] = '1';
 
-
         // handle different line ending on different platforms
-        //        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
-/*        $form->hint = array(
+        // $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
+        /*        $form->hint = array(
             0 => array(
                 'text' => 'hint 1<br>',
                 'format' => '1',
@@ -1156,7 +1149,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                 'text' => 'hint 2<br>',
                 'format' => '1',
                 'itemid' => '34635511'));
-*/
+        */
         return $form;
     }
 
@@ -1175,9 +1168,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testcodeformat[1] = base_form_creator::TESTCODE_FILES;
         $form->testentrypoint[1] = './test2';
         // $form->testfiles = array();
-//        $form->testfiles[1] = file_get_unused_draft_itemid();
+        // $form->testfiles[1] = file_get_unused_draft_itemid();
         $form->testfiles[1] = 0;
-//        file_prepare_draft_area($form->testfiles[1], null, null, null, null);
+        // file_prepare_draft_area($form->testfiles[1], null, null, null, null);
         $this->make_attachment_in_draft_area($form->testfiles[1], 'main.cpp',
             'int main() { return 1; }');
 
@@ -1217,16 +1210,16 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->aggregationstrategy = qtype_proforma::WEIGHTED_SUM;
 
         $form->name = self::QUESTION_NAME;
-        //$form->questiontext = self::QUESTION_TEXT;
-        $form->questiontext = array('text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML);
+        // $form->questiontext = self::QUESTION_TEXT;
+        $form->questiontext = ['text' => self::QUESTION_TEXT, 'format' => FORMAT_HTML];
         $form->defaultmark = 3.0;
-        $form->generalfeedback = array('text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML);
+        $form->generalfeedback = ['text' => self::QUESTION_GENERAL_FEEDBACK, 'format' => FORMAT_HTML];
         $form->penalty = 0.2;
 
         $form->responseformat = 'editor';
         $form->modelsolution = '# code for model solution';
         $form->responsefieldlines = 10;
-        $form->comment = array('text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML);
+        $form->comment = ['text' => self::QUESTION_COMMENT, 'format' => FORMAT_HTML];
 
         $form->compile = 1;
         $form->compileweight = 2;
@@ -1234,7 +1227,7 @@ class qtype_proforma_test_helper extends question_test_helper {
         // test weight, title and description are taken from grading hints.
         // They must also exist as test variables.
         $form->testcodeformat[0] = base_form_creator::TESTCODE_FILES;
-        $form->testfiles = array();
+        $form->testfiles = [];
         $form->testfiles[0] = 0;
         $this->make_attachment_in_draft_area($form->testfiles[0], 'test1.py',
             '# testfile 1 ...');
@@ -1245,10 +1238,9 @@ class qtype_proforma_test_helper extends question_test_helper {
         $form->testweight[0] = '3';
         $form->testid[0] = '1';
 
-
         // handle different line ending on different platforms
-        //        $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
-    /*    $form->hint = array(
+        // $form->checkstylecode = str_replace("\r\n", "\n", $form->checkstylecode);
+        /*    $form->hint = array(
             0 => array(
                 'text' => 'hint 1<br>',
                 'format' => '1',
@@ -1257,7 +1249,7 @@ class qtype_proforma_test_helper extends question_test_helper {
                 'text' => 'hint 2<br>',
                 'format' => '1',
                 'itemid' => '34635511'));
-*/
+        */
         return $form;
     }
 
@@ -1320,14 +1312,14 @@ class qtype_proforma_test_helper extends question_test_helper {
 
         $fs = get_file_storage();
         // Create the file in the provided draft area.
-        $fileinfo = array(
+        $fileinfo = [
             'contextid' => $usercontext->id,
             'component' => 'user',
             'filearea'  => 'draft',
             'itemid'    => $draftid,
             'filepath'  => '/',
             'filename' => $filename,
-        );
+        ];
         $fs->create_file_from_string($fileinfo, $contents);
     }
 
@@ -1364,12 +1356,15 @@ class qtype_proforma_test_helper extends question_test_helper {
         echo 'table files for ' . $text . PHP_EOL . PHP_EOL; // filepath, filename
         $records = $DB->get_records('files', [], 'id', 'id, filename, filepath, filearea, itemid, contextid');
         foreach ($records as $key => $record) {
-            if ($record->filearea == 'stamps')
+            if ($record->filearea == 'stamps') {
                 unset($records[$key]);
-            if ($record->filearea == 'tilephoto')
+            }
+            if ($record->filearea == 'tilephoto') {
                 unset($records[$key]);
-            if ($record->filename == '.')
+            }
+            if ($record->filename == '.') {
                 unset($records[$key]);
+            }
         }
         foreach ($records as $key => $record) {
             echo

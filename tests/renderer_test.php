@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * This file contains unit tests for class qtype_proforma_renderer
@@ -39,19 +39,19 @@ class renderer_test extends walkthrough_test_base {
 
 
     const GRADINGHINTS_1 = '<grading-hints>'.
-'<root function="sum">'.
-'<test-ref ref="1" weight="2">
+    '<root function="sum">'.
+    '<test-ref ref="1" weight="2">
             <title>TEST 1</title>
             <test-type>TEST-CONFIG 1</test-type>
             <description>DESCRIPTION 1</description>
         </test-ref>'.
-'<test-ref ref="2" weight="3">
+    '<test-ref ref="2" weight="3">
             <title>TEST 2</title>
             <test-type>TEST-CONFIG 2</test-type>
             <description>DESCRIPTION 2</description>
         </test-ref>'.
-'</root>'.
-'</grading-hints>';
+    '</root>'.
+    '</grading-hints>';
 
 
     const GRADINGHINTS_2 = '<grading-hints>'.
@@ -138,22 +138,22 @@ EOD;
 
     // Format:
     // array (array(titel 1, content 1), array(titel 2, content 2)...)
-    const LOGS_1_1 = array(
-            array('MyString cannot be resolved to a variable', 'Sample.java	line 55'),
-            array('Inline cannot be resolved', 'Sample.java	line 56'),
-    );
-    const LOGS_1_2 = array(
-            array('JUnit', ['Fake Message', 'html'])
-    );
-    const LOGS_1_1_TEACHER = array(
-            array('MyString cannot be resolved to a variable', 'Sample.java	line 55'),
-            array('Inline cannot be resolved', 'Sample.java	line 56'),
-            array('Java-Compilation (teacher)', ['content11 <b>sample</b>', 'html']),
-    );
-    const LOGS_1_2_TEACHER = array(
-            array('JUnit', ['Fake Message', 'html']),
-            array('JUnit', 'content18')
-    );
+    const LOGS_1_1 = [
+            ['MyString cannot be resolved to a variable', 'Sample.java	line 55'],
+            ['Inline cannot be resolved', 'Sample.java	line 56'],
+    ];
+    const LOGS_1_2 = [
+            ['JUnit', ['Fake Message', 'html']],
+    ];
+    const LOGS_1_1_TEACHER = [
+            ['MyString cannot be resolved to a variable', 'Sample.java	line 55'],
+            ['Inline cannot be resolved', 'Sample.java	line 56'],
+            ['Java-Compilation (teacher)', ['content11 <b>sample</b>', 'html']],
+    ];
+    const LOGS_1_2_TEACHER = [
+            ['JUnit', ['Fake Message', 'html']],
+            ['JUnit', 'content18'],
+    ];
 
     // ProformA Version 2.0
     const RESPONSE_2 = <<<'EOD'
@@ -294,21 +294,21 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
 </response>
 EOD;
 
-    const LOGS_2_1 = array(
-        array('MyString cannot be resolved to a variable', 'Sample.java	line 55'),
-        array('Inline cannot be resolved', 'Sample.java	line 56'),
-    );
-    const SUBTEST_2_1 = array(
-            array(1,  array('Even Number Of Characters')),
-            array(0,  array('Failes Always', 'testet Erwartungswert expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;')),
-            array(1,  array('Empty String')),
-            array(1,  array('Odd Number Of Characters')),
-    );
-    const LOGS_2_1_TEACHER = array(
-            array('MyString cannot be resolved to a variable', 'Sample.java	line 55'),
-            array('Inline cannot be resolved', 'Sample.java	line 56'),
-            array('Java-Compilation (teacher)', ['content11 <b>sample</b>', 'html'])
-    );
+    const LOGS_2_1 = [
+        ['MyString cannot be resolved to a variable', 'Sample.java	line 55'],
+        ['Inline cannot be resolved', 'Sample.java	line 56'],
+    ];
+    const SUBTEST_2_1 = [
+            [1,  ['Even Number Of Characters']],
+            [0,  ['Failes Always', 'testet Erwartungswert expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;']],
+            [1,  ['Empty String']],
+            [1,  ['Odd Number Of Characters']],
+    ];
+    const LOGS_2_1_TEACHER = [
+            ['MyString cannot be resolved to a variable', 'Sample.java	line 55'],
+            ['Inline cannot be resolved', 'Sample.java	line 56'],
+            ['Java-Compilation (teacher)', ['content11 <b>sample</b>', 'html']],
+    ];
     const SUBTEST_2_1_CALLSTACK = 'testFailesAlways(reverse_task.MyStringTest): liefert immer einen Fehler expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;
 org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;
 	at org.junit.Assert.assertEquals(Assert.java:115)
@@ -344,13 +344,13 @@ org.junit.ComparisonFailure: liefert immer einen Fehler expected:&lt;[cba]&gt; b
 	at org.junit.runner.JUnitCore.run(JUnitCore.java:94)
 	at de.ostfalia.zell.praktomat.JunitProFormAListener.main(JunitProFormAListener.java:264)
                         ';
-    const SUBTEST_2_1_TEACHER = array(
-            array(1, array ('Even Number Of Characters')),
-            array(0, array('Failes Always', 'testet Erwartungswert expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;'),
-                    array('Exception', self::SUBTEST_2_1_CALLSTACK)),
-            array(1,  array('Empty String')),
-            array(1,  array('Odd Number Of Characters')),
-    );
+    const SUBTEST_2_1_TEACHER = [
+            [1,  ['Even Number Of Characters']],
+            [0, ['Failes Always', 'testet Erwartungswert expected:&lt;[cba]&gt; but was:&lt;[hallo]&gt;'],
+                    ['Exception', self::SUBTEST_2_1_CALLSTACK]],
+            [1,  ['Empty String']],
+            [1,  ['Odd Number Of Characters']],
+    ];
 
 
     const RESPONSE_3 = <<<'EOD'
@@ -412,9 +412,9 @@ xx errors
 </response>
 EOD;
 
-    const LOGS_3_1 = array(array('JUnit Test: Junit Test #1', null));
-    const LOGS_3_2 = array(
-            array('JUnit Test: Junit Test de/ostfalia/DoSomethingTest', ['<pre>
+    const LOGS_3_1 = [['JUnit Test: Junit Test #1', null]];
+    const LOGS_3_2 = [
+            ['JUnit Test: Junit Test de/ostfalia/DoSomethingTest', ['<pre>
 
 ======== Test Results ======
 
@@ -428,8 +428,8 @@ EOD;
 xx errors
 1
 </pre>
-', 'html']),
-    );
+', 'html']],
+    ];
 
     const RESPONSE_4 = <<<'EOD'
 <?xml version="1.0" encoding="utf-8"?>
@@ -506,9 +506,9 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
 </response>
 EOD;
 
-    const LOGS_4_1 = array(
-            array('1 Java user-submitted file(s) found for compilation', 'de/ostfalia/zell/isPalindromTask/MyString.java'),
-            array('Compilation failed', 'de/ostfalia/zell/isPalindromTask/MyString.java:8: error: not a statement
+    const LOGS_4_1 = [
+            ['1 Java user-submitted file(s) found for compilation', 'de/ostfalia/zell/isPalindromTask/MyString.java'],
+            ['Compilation failed', 'de/ostfalia/zell/isPalindromTask/MyString.java:8: error: not a statement
             was
             ^
 de/ostfalia/zell/isPalindromTask/MyString.java:8: error: \';\' expected
@@ -519,8 +519,8 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
            ^
 3 errors
 1
-'),
-    );
+'],
+    ];
     const LOGS_4_2 = self::LOGS_4_1;
 
     const RESPONSE_COMP_ERROR_V21 = <<<'EOD'
@@ -576,14 +576,14 @@ de/ostfalia/zell/isPalindromTask/MyString.java:12: error: class, interface, or e
 </response>
 EOD;
 
-    const LOGS_COMP_ERROR_V21_1 = array(
-            array('1 Java user-submitted file(s) found for compilation', 'MyString.java '),
-            array('Compilation finished successfully.'),
-    );
-    const LOGS_COMP_ERROR_V21_2 = array(
-            array('1 Java user-submitted file(s) found for compilation', 'MyString.java '),
-            array('Compilation failed', 'Palindrom2Test.java:14: error: &lt;identifier&gt; expected 	j public void testGetImmerSchief() { ^ 1 error 1'),
-    );
+    const LOGS_COMP_ERROR_V21_1 = [
+            ['1 Java user-submitted file(s) found for compilation', 'MyString.java '],
+            ['Compilation finished successfully.'],
+    ];
+    const LOGS_COMP_ERROR_V21_2 = [
+            ['1 Java user-submitted file(s) found for compilation', 'MyString.java '],
+            ['Compilation failed', 'Palindrom2Test.java:14: error: &lt;identifier&gt; expected 	j public void testGetImmerSchief() { ^ 1 error 1'],
+    ];
 
     const RESPONSE_EMPTY = <<<'EOD'
 <?xml version="1.0" encoding="utf-8"?>
@@ -623,16 +623,16 @@ Pr&#252;fung beendet.
 EOD;
 
 
-    const LOGS_EMPTY_1 = array(
-            array('', 'Beginne Prüfung...
+    const LOGS_EMPTY_1 = [
+            ['', 'Beginne Prüfung...
 Prüfung beendet.
-', ''),
-    );
-    const LOGS_EMPTY_2 = array(
-            array(null, ['Response format error: no test result available', 'plaintext']),
-    );
+', ''],
+    ];
+    const LOGS_EMPTY_2 = [
+            [null, ['Response format error: no test result available', 'plaintext']],
+    ];
 
-    private function setStudentUser() {
+    private function setstudentuser() {
         $generator = $this->getDataGenerator();
         $user = $generator->create_user();
 
@@ -725,8 +725,8 @@ Prüfung beendet.
         $output .= '<div id="'.$id.'_caption" class="collapsibleregioncaption">raw response </div>
 <div id="'.$id.'_inner" class="collapsibleregioninner"><xmp class="proforma_testlog"><?xml version="1.0" encoding="utf-8"?>
 ';
-        //Strip prolog.
-        //$response = str_replace('\r\n', '\n', $response);
+        // Strip prolog.
+        // $response = str_replace('\r\n', '\n', $response);
         $response = substr($response, 39);
         $output .= $response . '</xmp></div>
 </div></div>';
@@ -757,16 +757,16 @@ Prüfung beendet.
             $icon = $iconpassed;
             if ($internalerror) {
                 $icon = $iconinternalerror;
-            } else if (($score/$total) < 1) {
+            } else if (($score / $total) < 1) {
                 $icon = $iconfailed;
             }
-            $output = '<div id="'.$id.'" class="collapsibleregion ' . ($collapsed?' collapsed':'') . '"><div id="'.$id.'_sizer">
+            $output = '<div id="'.$id.'" class="collapsibleregion ' . ($collapsed ? ' collapsed' : '') . '"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">
 <i ' . $icon . '></i> '.$title;
             if ($internalerror and !isset($score)) {
-                $output .= ' ( ? /'.($total*100).' %)';
+                $output .= ' ( ? /'.($total * 100).' %)';
             } else {
-                $output .= ' ('.($score*100) .'/'.($total*100).' %)';
+                $output .= ' ('.($score * 100) .'/'.($total * 100).' %)';
             }
         } else {
             // Without subtests.
@@ -777,11 +777,10 @@ Prüfung beendet.
                 $icon = $iconfailed;
             }
 
-            $output = '<div id="'.$id.'" class="collapsibleregion ' . ($collapsed?' collapsed':'') . '"><div id="'.$id.'_sizer">
+            $output = '<div id="'.$id.'" class="collapsibleregion ' . ($collapsed ? ' collapsed' : '') . '"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">
 <i ' . $icon . '></i> '.$title;
         }
-
 
         $output .= ' </div>
 <div id="'.$id.'_inner" class="collapsibleregioninner">';
@@ -815,9 +814,8 @@ Prüfung beendet.
         $idprefix = '{COLLAPSE_ID}';
         $id = $idprefix.'-'.$number;
 
-        $output = '<div id="'.$id.'" class="collapsibleregion ' . ($collapsed?' collapsed':'') . '"><div id="'.$id.'_sizer">
+        $output = '<div id="'.$id.'" class="collapsibleregion ' . ($collapsed ? ' collapsed' : '') . '"><div id="'.$id.'_sizer">
 <div id="'.$id.'_caption" class="collapsibleregioncaption">';
-
 
         if ($score == 0) {
             $output .= $this->moodle_4_5_converter('<i class="icon fa fa-remove text-danger fa-fw "  title="Incorrect" aria-label="Incorrect"></i> ').$title;
@@ -828,7 +826,7 @@ Prüfung beendet.
         }
 
         if (isset($total)) {
-            $output .= ' ('.($score*100) .'/'.($total*100).' %)';
+            $output .= ' ('.($score * 100) .'/'.($total * 100).' %)';
         }
         $output .= ' </div>
 <div id="'.$id.'_inner" class="collapsibleregioninner">';
@@ -890,13 +888,13 @@ Prüfung beendet.
 
         $expected = str_replace('{COLLAPSE_ID}', 'm-id-test-proforma-0000', $expected);
 
-        //$dom->loadHTML($output);
+        // $dom->loadHTML($output);
         $dom->loadHTML($output, LIBXML_NOERROR | LIBXML_NOXMLDECL | LIBXML_NOWARNING);
-        $output_pretty = $dom->saveHTML();
+        $outputpretty = $dom->saveHTML();
         $dom->loadHTML($expected, LIBXML_NOERROR | LIBXML_NOXMLDECL | LIBXML_NOWARNING);
-        $expected_pretty = $dom->saveHTML();
+        $expectedpretty = $dom->saveHTML();
 
-        $this->assert_same_xml($expected_pretty, $output_pretty);
+        $this->assert_same_xml($expectedpretty, $outputpretty);
     }
 
 
@@ -905,7 +903,7 @@ Prüfung beendet.
      * internal error
      * all or nothing, student feedback
      */
-    public function test_specific_feedback_internal_error_AON() {
+    public function test_specific_feedback_internal_error_aon() {
         $expected =
             '<p>'.
             $this->render_title('title1').
@@ -922,7 +920,7 @@ Prüfung beendet.
      * subtest
      * all or nothing, student feedback
      */
-    public function test_specific_feedback_subtest_partially_correct_AON() {
+    public function test_specific_feedback_subtest_partially_correct_aon() {
         $expected =
                 '<p>'.
                 $this->render_title('title1').
@@ -938,7 +936,7 @@ Prüfung beendet.
      * subtest
      * all or nothing, student feedback
      */
-    public function test_specific_feedback_log_error_AON() {
+    public function test_specific_feedback_log_error_aon() {
         $expected =
                 $this->render_collapsible_region_score(1, 1, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_3_1).
                 $this->render_collapsible_region_score(2, 0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_3_2);
@@ -950,7 +948,7 @@ Prüfung beendet.
      * internal error
      * weighted sum (WS), student feedback
      */
-    public function test_specific_feedback_internal_error_WS() {
+    public function test_specific_feedback_internal_error_ws() {
         $expected =
                 '<p>'.
                 $this->render_title('title1').
@@ -966,7 +964,7 @@ Prüfung beendet.
      * subtest
      * weighted sum, student feedback
      */
-    public function test_specific_feedback_subtest_partially_correct_WS() {
+    public function test_specific_feedback_subtest_partially_correct_ws() {
         $expected =
                 '<p>'.
                 $this->render_title('title1').
@@ -983,7 +981,7 @@ Prüfung beendet.
      * internal error
      * all or nothing (AON), teacher feedback
      */
-    public function test_specific_feedback_internal_error_AON_ADMIN() {
+    public function test_specific_feedback_internal_error_aon_admin() {
         $expected =
                 '<p>'.
                 $this->render_title('title1').
@@ -994,7 +992,7 @@ Prüfung beendet.
                 '</p>'.
                 $this->render_collapsible_region_score(1, 0.0, null, 'TEST 1', 'DESCRIPTION 1', self::LOGS_1_1_TEACHER).
                 $this->render_collapsible_region_score(2, 0.0, null, 'TEST 2', 'DESCRIPTION 2', self::LOGS_1_2_TEACHER, true).
-                $this->render_graderinfo(3, 'praktomat 1.2.3', self::RESPONSE_1) ;
+                $this->render_graderinfo(3, 'praktomat 1.2.3', self::RESPONSE_1);
 
         $this->setAdminUser();
         $this->assert_same_feedback(self::RESPONSE_1, '', null, $expected);
@@ -1004,7 +1002,7 @@ Prüfung beendet.
      * subtest
      * all or nothing, teacher feedback
      */
-    public function test_specific_feedback_subtest_partially_correct_AON_ADMIN() {
+    public function test_specific_feedback_subtest_partially_correct_aon_admin() {
         $expected =
                 '<p>'.
                 $this->render_title('title1').
@@ -1025,7 +1023,7 @@ Prüfung beendet.
      * internal error
      * weighted sum (WS), teacher feedback
      */
-    public function test_specific_feedback_internal_error_WS_ADMIN() {
+    public function test_specific_feedback_internal_error_ws_admin() {
         $expected =
                 '<p>'.
                 $this->render_title('title1').
@@ -1046,7 +1044,7 @@ Prüfung beendet.
      * subtest
      * weighted sum, teacher feedback
      */
-    public function test_specific_feedback_subtest_partially_correct_WS_ADMIN() {
+    public function test_specific_feedback_subtest_partially_correct_ws_admin() {
         $expected =
                 '<p>'.
                 $this->render_title('title1').
@@ -1092,7 +1090,7 @@ Prüfung beendet.
     /**
      * compilation error version 2.1
      */
-    public function test_compilation_error_V21() {
+    public function test_compilation_error_v21() {
         $expected =
                 $this->render_collapsible_region_score(1, 0.4, 0.4, 'Compilation', 'DESCRIPTION 1', self::LOGS_COMP_ERROR_V21_1).
                 $this->render_collapsible_region_score(2, 0, 0.6, 'JUnit', 'DESCRIPTION 2', self::LOGS_COMP_ERROR_V21_2).
@@ -1105,7 +1103,7 @@ Prüfung beendet.
     /**
      * compilation error version 2.1
      */
-    public function test_compilation_error_V21_expanded() {
+    public function test_compilation_error_v21_expanded() {
         $expected =
                 $this->render_collapsible_region_score(1, 0.4, 0.4, 'Compilation', 'DESCRIPTION 1', self::LOGS_COMP_ERROR_V21_1, false, true).
                 $this->render_collapsible_region_score(2, 0, 0.6, 'JUnit', 'DESCRIPTION 2', self::LOGS_COMP_ERROR_V21_2, false, true).

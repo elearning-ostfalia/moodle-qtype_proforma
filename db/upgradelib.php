@@ -179,7 +179,7 @@ function extract_proformatask($category, $questionid, $taskfilename) {
             throw new coding_exception("could not extract zip file");
         }
 
-        $filenames = array();
+        $filenames = [];
         $iterator = new DirectoryIterator($tempdir);
         foreach ($iterator as $fileinfo) {
             if ($fileinfo->isFile() && strtolower(pathinfo($fileinfo->getFilename(), PATHINFO_BASENAME)) == 'task.xml') {
@@ -252,7 +252,7 @@ function initialise_proforma_gradinghints() {
         }
         $DB->execute('UPDATE {qtype_proforma_options} ' .
                 'SET gradinghints = ? WHERE gradinghints is null and questionid = ?',
-                array($gradinghints, $question->questionid));
+                [$gradinghints, $question->questionid]);
     }
 }
 
@@ -331,7 +331,7 @@ function get_proforma_contextid($DB, $itemid) {
     $contextids = $DB->get_recordset_sql(
             "SELECT distinct(contextid) " .
             "FROM {files} " .
-            "WHERE component = 'qtype_proforma' and itemid = ?", array($itemid));
+            "WHERE component = 'qtype_proforma' and itemid = ?", [$itemid]);
 
     if (count($contextids) !== 1) {
         $contextids->close();

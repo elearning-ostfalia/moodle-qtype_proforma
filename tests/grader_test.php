@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * This file contains unit tests for class qtype_proforma_grader_2
@@ -352,64 +352,64 @@ EOD;
 
 
     // Weighted Sum.
-    public function test_1_WS() {
+    public function test_1_ws() {
         $this->assert_grade(self::RESPONSE_1, self::GRADINGHINTS_1,
                 question_state::$needsgrading, 0.0, 'Internal error in a test', '');
     }
-    
-    public function test_2_WS() {
+
+    public function test_2_ws() {
         $this->assert_grade(self::RESPONSE_2, self::GRADINGHINTS_1,
                 question_state::$gradedwrong, 0.0, '', '');
     }
 
-    public function test_3_WS() {
+    public function test_3_ws() {
         $this->assert_grade(self::RESPONSE_3, self::GRADINGHINTS_1,
                 question_state::$gradedright, 1.0, '', '');
     }
 
-    public function test_4_WS() {
+    public function test_4_ws() {
         $this->assert_grade(self::RESPONSE_4, self::GRADINGHINTS_1,
                 question_state::$gradedpartial, 0.36, '', '');
     }
 
-    public function test_5_WS() {
+    public function test_5_ws() {
         // fraction = (2*0)+ (3*(1+0+1+1)/4)/5
         $this->assert_grade(self::RESPONSE_5, self::GRADINGHINTS_1,
                 question_state::$gradedpartial, 0.45, '', '');
     }
 
-    public function test_6_WS() {
+    public function test_6_ws() {
         $this->assert_grade(self::RESPONSE_6, self::GRADINGHINTS_1,
                 question_state::$gradedwrong, 0.0, '', '');
     }
 
     // All or nothing.
-    public function test_1_AON() {
+    public function test_1_aon() {
         $this->assert_grade(self::RESPONSE_1, null,
                 question_state::$needsgrading, 0.0, 'Internal error in a test', '');
     }
 
-    public function test_2_AON() {
+    public function test_2_aon() {
         $this->assert_grade(self::RESPONSE_2, null,
                 question_state::$gradedwrong, 0.0, '', '');
     }
 
-    public function test_3_AON() {
+    public function test_3_aon() {
         $this->assert_grade(self::RESPONSE_3, null,
                 question_state::$gradedright, 1.0, '', '');
     }
 
-    public function test_4_AON() {
+    public function test_4_aon() {
         $this->assert_grade(self::RESPONSE_4, null,
                 question_state::$gradedwrong, 0.0, '', '');
     }
 
-    public function test_5_AON() {
+    public function test_5_aon() {
         $this->assert_grade(self::RESPONSE_5, null,
                 question_state::$gradedwrong, 0.0, '', '');
     }
 
-    public function test_6_AON() {
+    public function test_6_aon() {
         $this->assert_grade(self::RESPONSE_6, null,
                 question_state::$gradedwrong, 0.0, '', '');
     }
@@ -420,12 +420,12 @@ EOD;
         $method = new ReflectionMethod(
             'qtype_proforma_grader_2', 'create_submission_xml'
         );
-        $method->setAccessible(TRUE);
+        $method->setAccessible(true);
         $doc = new DOMDocument();
         return [$grader, $method, $doc];
     }
 
-/*
+    /*
     public function test_xml_for_code_2_0() {
         $question = test_question_maker::make_question('proforma', 'editor');
         list($grader, $method, $doc) = $this->init_xml_generation("2.0");
@@ -451,7 +451,7 @@ EOD;
         $this->assertEquals(base64_encode($code), $embeddedfile);
         $this->assertEquals("filename.txt", $embeddedfile['filename']);
     }
-    
+
     public function test_xml_for_editor_2_1_new() {
         $code = "code";
         $question = test_question_maker::make_question('proforma', 'editor');
@@ -472,7 +472,7 @@ EOD;
     /**
      * test old 2.1 XML. Here only SVN is supported!!
      */
-    public function test_xml_for_SVN_2_1_old() {
+    public function test_xml_for_svn_2_1_old() {
         $question = test_question_maker::make_question('proforma', 'vcs_svn');
         list($grader, $method, $doc) = $this->init_xml_generation("2.1_old");
         $xml = $method->invoke($grader, "code", null, "filename.txt", "SVN-URI", $question);
@@ -512,13 +512,13 @@ EOD;
         $fs = get_file_storage();
 
         // Prepare file record object
-        $fileinfo = array(
+        $fileinfo = [
             'contextid' => context_system::instance()->id, // ID of context
             'component' => 'qtype_proforma',     // usually = table name
             'filearea' => 'test',     // usually = table name
             'itemid' => 0,               // usually = ID of row in table
             'filepath' => '/',           // any path beginning and ending in /
-            'filename' => 'filename.txt'); // any filename
+            'filename' => 'filename.txt']; // any filename
 
         // Create file containing text 'hello world'
         $file = $fs->create_file_from_string($fileinfo, 'hello world');
@@ -542,13 +542,13 @@ EOD;
         $fs = get_file_storage();
 
         // Prepare file record object
-        $fileinfo = array(
+        $fileinfo = [
             'contextid' => context_system::instance()->id, // ID of context
             'component' => 'qtype_proforma',     // usually = table name
             'filearea' => 'test',     // usually = table name
             'itemid' => 0,               // usually = ID of row in table
             'filepath' => '/',           // any path beginning and ending in /
-            'filename' => 'filename.txt'); // any filename
+            'filename' => 'filename.txt']; // any filename
 
         // Create file containing text 'hello world'
         $file = $fs->create_file_from_string($fileinfo, 'hello world');

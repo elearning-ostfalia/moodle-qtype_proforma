@@ -68,7 +68,7 @@ class behat_proforma extends behat_base {
     public function click_on_contextmenue_item($menuelement) {
         $session = $this->getSession();
         $driver = $session->getDriver();
-        $webDriver = $session->getDriver()->getWebDriver();
+        $webdriver = $session->getDriver()->getWebDriver();
 
         // Gets the node based on the requested selector type and locator.
         // $node = $this->get_selected_node($selectortype, $element);
@@ -85,30 +85,28 @@ class behat_proforma extends behat_base {
         // Selenium hangs...
         echo 'click on menu item' . PHP_EOL;
         $js = "document.evaluate(\"".$element."\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()";
-        $webDriver->executeAsyncScript($js);
+        $webdriver->executeAsyncScript($js);
 
         sleep(2000);
 
         echo 'switch to alert' . PHP_EOL;
-        $alert = $webDriver->switchTo()->alert();
+        $alert = $webdriver->switchTo()->alert();
 
         echo 'get state' . PHP_EOL;
-        $state = $webDriver->executeAsyncScript('return document.readyState');
+        $state = $webdriver->executeAsyncScript('return document.readyState');
         echo 'state async ' . $state . PHP_EOL;
 
-//        $state = $this->evaluate_script('return document.readyState');
-//        echo 'state ' . $state . PHP_EOL;
+        // $state = $this->evaluate_script('return document.readyState');
+        // echo 'state ' . $state . PHP_EOL;
 
+        // $state = $this->evaluate_script('return document.readyState');
+        // echo 'state ' . $state . PHP_EOL;
 
-//        $state = $this->evaluate_script('return document.readyState');
-//        echo 'state ' . $state . PHP_EOL;
-
-
-//        $state = $webDriver->executeAsyncScript('return document.readyState');
-//        echo 'state async ' . $state . PHP_EOL;
+        // $state = $webDriver->executeAsyncScript('return document.readyState');
+        // echo 'state async ' . $state . PHP_EOL;
         return;
 
-        $alert = $webDriver->switchTo()->alert();
+        $alert = $webdriver->switchTo()->alert();
         var_dump($alert);
         $alert->dismiss();
         return;
@@ -120,16 +118,15 @@ class behat_proforma extends behat_base {
 
         return;
 
-
         echo 'Switch to alert' . PHP_EOL;
         sleep(2000);
         // $js = "browser.switchTo().activeElement().sendKeys('Test')";
         // browser.actions().sendKeys('Test').perform();
         $this->execute_script($js);
         // self::type_keys($session, 'filename.java');
-        $webDriver->switchTo()->activeElement()->sendKeys('Test');
+        $webdriver->switchTo()->activeElement()->sendKeys('Test');
 
-        $alert = $webDriver->switchTo()->alert();
+        $alert = $webdriver->switchTo()->alert();
         // $this->wait_for_pending_js();
 
         ob_flush();
@@ -195,7 +192,7 @@ class behat_proforma extends behat_base {
     public function following_should_download_file_with_between_and_bytes($link, $minexpectedsize, $maxexpectedsize) {
         // If the minimum is greater than the maximum then swap the values.
         if ((int)$minexpectedsize > (int)$maxexpectedsize) {
-            list($minexpectedsize, $maxexpectedsize) = array($maxexpectedsize, $minexpectedsize);
+            list($minexpectedsize, $maxexpectedsize) = [$maxexpectedsize, $minexpectedsize];
         }
 
         $exception = new ExpectationException('Error while downloading data from ' . $link, $this->getSession());
@@ -207,7 +204,7 @@ class behat_proforma extends behat_base {
 
                     return $this->download_file_from_link_and_store($link);
                 },
-                array('link' => $link),
+                ['link' => $link],
                 behat_base::get_extended_timeout(),
                 $exception
         );
@@ -250,9 +247,9 @@ class behat_proforma extends behat_base {
         // Download the URL and check the size.
         $session = $this->getSession()->getCookie('MoodleSession');
         // Download twice.
-        download_file_content($url, array('Cookie' => 'MoodleSession=' . $session),
+        download_file_content($url, ['Cookie' => 'MoodleSession=' . $session],
                 null, false, 300, 20, false, $this->downloadfile);
-        return download_file_content($url, array('Cookie' => 'MoodleSession=' . $session));
+        return download_file_content($url, ['Cookie' => 'MoodleSession=' . $session]);
     }
 
     /**
@@ -424,7 +421,7 @@ class behat_proforma extends behat_base {
     public function set_the_codemirror_to($name, $value) {
         $command = 'return (function() { $("#id_' . $name .
             '").next(".CodeMirror").get(0).CodeMirror.setValue("'. $value. '"); })();';
-        // fwrite(STDOUT, $command);	    
+        // fwrite(STDOUT, $command);
         $this->getSession()->getDriver()->evaluateScript($command);
     }
 
@@ -453,7 +450,7 @@ class behat_proforma extends behat_base {
      * @param PyStringNode $value the text to set
      */
     public function set_editor_text_to_multiline(PyStringNode $value) {
-        $search = array("\r", "\n");
+        $search = ["\r", "\n"];
         $value = str_replace($search, "\\n", $value);
         $value = str_replace("\"", "\\\"", $value);
 
@@ -475,7 +472,7 @@ class behat_proforma extends behat_base {
      * @param PyStringNode $value the value to set
      */
     public function set_the_codemirror_to_multiline($name, PyStringNode $value) {
-        $search = array("\r", "\n");
+        $search = ["\r", "\n"];
         $value = str_replace($search, "\\n", $value);
         $value = str_replace("\"", "\\\"", $value);
         // fwrite(STDOUT, $value);
@@ -493,7 +490,7 @@ class behat_proforma extends behat_base {
      */
     public function set_the_response_to(PyStringNode $value) {
         // Remove newline and carriage return.
-        $search = array("\r", "\n");
+        $search = ["\r", "\n"];
         $value = str_replace($search, "\\n", $value);
         $value = str_replace("\"", "\\\"", $value);
         // Do not use inline comments in response.
@@ -531,7 +528,7 @@ class behat_proforma extends behat_base {
      * @param string $proglang the programming language
      */
     public function create_new_question($proglang) {
-/*
+        /*
         // new for Moodle 5.x: create default question bank
         try {
             $this->execute("behat_general::assert_page_not_contains_text", ["This course doesn't have any question banks yet."]);
@@ -545,7 +542,7 @@ class behat_proforma extends behat_base {
             }
             $this->execute("behat_general::i_click_on", [$node->getText() . ' course question bank', 'link']);
         }
-*/
+        */
         $this->execute("behat_forms::press_button", 'Create a new question ...');
         $this->execute("behat_forms::i_set_the_field_to", ['item_qtype_proforma', '1']);
         $this->execute("behat_general::i_click_on_in_the", ["Add", "button", "Choose a question type to add", "dialogue"]);
@@ -566,7 +563,7 @@ class behat_proforma extends behat_base {
      * @param string $questionname the question name.
      */
     public function i_open_preview_for_the_question($questionname) {
-/*        global $CFG;
+        /*        global $CFG;
         $moodleversion = $CFG->version;
         if ($moodleversion > 2022112800) {
             // Moodle 4.1
@@ -578,7 +575,7 @@ class behat_proforma extends behat_base {
             // Moodle 3
             // echo 'Moodle 3 ';
         }
-*/
+        */
         // Open Question bank context
         // echo '0';
         try {
@@ -588,8 +585,8 @@ class behat_proforma extends behat_base {
         }
         // echo '1';
         // Open the menu.
-//        $this->execute("behat_general::i_click_on_in_the",
-//                    [get_string('edit'), 'link', $questionname, 'table_row']);
+        // $this->execute("behat_general::i_click_on_in_the",
+        // [get_string('edit'), 'link', $questionname, 'table_row']);
         $this->execute("behat_general::i_click_on_in_the",
             [get_string('edit'), 'button', $questionname, 'table_row']);
         // echo '2';
@@ -637,7 +634,7 @@ class behat_proforma extends behat_base {
      * @Then /^I maximize window$/
      * @return void
      */
-    public function I_maximize_window() {
+    public function i_maximize_window() {
         $this->getSession()->getDriver()->maximizeWindow();
     }
 

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * This file contains tests that walks a question using the filepicker (unit tests)
@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/question/type/proforma/tests/walkthrough_test_bas
 
 class walkthrough_filepicker_test extends walkthrough_test_base {
 
-    protected function check_answer_text($content = null, $isReadonly = false) {
+    protected function check_answer_text($content = null, $isreadonly = false) {
         // has no answer field
     }
 
@@ -52,7 +52,7 @@ class walkthrough_filepicker_test extends walkthrough_test_base {
 
         // Process a response and check the expected result.
         $file = $this->upload_file(self::CORRECT_RESPONSE);
-        $this->save_with_attachment(null, array($file));
+        $this->save_with_attachment(null, [$file]);
         $this->check_not_yet_graded();
 
         // Submit blank (no file attached).
@@ -61,14 +61,14 @@ class walkthrough_filepicker_test extends walkthrough_test_base {
         $this->check_invalid();
 
         // Submit correct answer as attachment
-        $this->press_submit('', array($file));
+        $this->press_submit('', [$file]);
         $this->check_graded_right();
 
         // Finish the attempt
         $this->finish_attempt();
         $this->check_graded_right(1.0);
 
-        //        $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
+        // $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
     }
 
     public function test_immediatefeedback() {
@@ -81,7 +81,7 @@ class walkthrough_filepicker_test extends walkthrough_test_base {
 
 
 
-/* TODO: check what test is actually doing ...
+    /* TODO: check what test is actually doing ...
     public function test_deferredfeedback_attempt_on_last() {
         global $PAGE;
 
@@ -215,9 +215,9 @@ class walkthrough_filepicker_test extends walkthrough_test_base {
         $this->load_from_database();
         $this->check_not_yet_graded();
     }
-*/
+    */
 
-    public function run_test_multiple_tries_1($preferredbehaviour, $no_of_tries) {
+    public function run_test_multiple_tries_1($preferredbehaviour, $nooftries) {
         // user is needed for upload
         $this->setAdminUser();
         // Create a proforma question.
@@ -227,43 +227,39 @@ class walkthrough_filepicker_test extends walkthrough_test_base {
 
         // Process a response and check the expected result.
         $file1 = $this->upload_file(self::WRONG_RESPONSE);
-        $this->save_with_attachment(null, array($file1));
+        $this->save_with_attachment(null, [$file1]);
         $this->check_not_yet_graded();
 
-
-        $this->press_submit(null,  array($file1));
+        $this->press_submit(null,  [$file1]);
         $this->check_graded_wrong();
 
         // Try again.
         $this->press_try_again();
 
         // Submit blank.
-        //$this->press_submit(null);
-        //$this->check_invalid();
+        // $this->press_submit(null);
+        // $this->check_invalid();
 
         // Submit correct answer.
         $file2 = $this->upload_file(self::CORRECT_RESPONSE);
-        $this->press_submit(null, array($file2));
-        $this->check_graded_right($preferredbehaviour != 'adaptivenopenalty'?0.8:1.0);
+        $this->press_submit(null, [$file2]);
+        $this->check_graded_right($preferredbehaviour != 'adaptivenopenalty' ? 0.8 : 1.0);
 
         // Finish the attempt
         $this->finish_attempt();
         // Verify  => response is graded
-        $this->check_graded_right($preferredbehaviour != 'adaptivenopenalty'?0.8:1.0);
+        $this->check_graded_right($preferredbehaviour != 'adaptivenopenalty' ? 0.8 : 1.0);
     }
 
-    public function test_interactive_editor_multiple_tries_1()
-    {
+    public function test_interactive_editor_multiple_tries_1() {
         $this->run_test_multiple_tries_1('interactive', self::interactive_tries);
     }
 
-    public function test_adaptive_editor_multiple_tries_1()
-    {
+    public function test_adaptive_editor_multiple_tries_1() {
         $this->run_test_multiple_tries_1('adaptive', self::interactive_tries);
     }
 
-    public function test_adaptivenopenalty_editor_multiple_tries_1()
-    {
+    public function test_adaptivenopenalty_editor_multiple_tries_1() {
         $this->run_test_multiple_tries_1('adaptivenopenalty', self::adaptivenopenalty_tries);
     }
 }

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * This file contains unit tests for handling Setlx task files
@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/cpp_task.php');
 require_once($CFG->dirroot . '/question/type/proforma/tests/task_testcase.php');
 
 
-class qtype_proforma_cpp_task_test extends task_testcase {
+class cpp_task_test extends task_testcase {
 
     const EXPECTED_BASE = '<?xml version="1.0" encoding="UTF-8"?>
 <task xmlns="urn:proforma:v2.0" lang="de" uuid="bbbf6679-0226-4fb3-8da0-4f370dd027cb" xmlns:unit="urn:proforma:tests:unittest:v1.1">
@@ -99,32 +99,32 @@ class qtype_proforma_cpp_task_test extends task_testcase {
     </grading-hints>
     <meta-data/>
 </task>
-';    
+';
 
     /*
     // TODO: also used in question_test.php!
     public function assert_same_xml($expectedxml, $xml) {
-        
-        // Only for expectedxml: 
-        // Delete newlines remaing when a child node is deleted.        
-        $expectedxml = preg_replace("#\>\r\n[\s]*\r\n#", ">\r\n", $expectedxml); // Windows.        
-        $expectedxml = preg_replace("#\>\n[\s]*\n#", ">\n", $expectedxml); // Unix.        
-        
+
+        // Only for expectedxml:
+        // Delete newlines remaing when a child node is deleted.
+        $expectedxml = preg_replace("#\>\r\n[\s]*\r\n#", ">\r\n", $expectedxml); // Windows.
+        $expectedxml = preg_replace("#\>\n[\s]*\n#", ">\n", $expectedxml); // Unix.
+
         // remove comments
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
         $expectedxml = preg_replace('/<!--(.|\s)*?-->/', '', $expectedxml);
         // remove uuid
         $xml = preg_replace('/uuid="(.|\s)*?"/', 'uuid="removed"', $xml);
         $expectedxml = preg_replace('/uuid="(.|\s)*?"/', 'uuid="removed"', $expectedxml);
-        
-        // escaped 
+
+        // escaped
         $xmldoc = new DOMDocument();
         $xmldoc->loadXML($expectedxml);
         $expectedxml = $xmldoc->saveXML();
 
         $xmldoc->loadXML($xml);
         $xml = $xmldoc->saveXML();
-        
+
         $this->assertEquals(str_replace("\r\n", "\n", $expectedxml),
                 str_replace("\r\n", "\n", $xml));
     }*/
@@ -145,8 +145,8 @@ class qtype_proforma_cpp_task_test extends task_testcase {
         $node->parentNode->removeChild($node);
         $node = $xmldoc->getElementsByTagName('files')[0]->getElementsByTagName('file')[3];
         $node->parentNode->removeChild($node);
-        $expectedxml = $xmldoc->saveXML();      
-               
+        $expectedxml = $xmldoc->saveXML();
+
         $this->assert_same_xml($expectedxml, $taskfile);
     }
 
@@ -173,11 +173,11 @@ class qtype_proforma_cpp_task_test extends task_testcase {
         $node->parentNode->removeChild($node);
         $node = $xmldoc->getElementsByTagName('files')[0]->getElementsByTagName('file')[0];
         $node->parentNode->removeChild($node);
-        $expectedxml = $xmldoc->saveXML();      
-               
+        $expectedxml = $xmldoc->saveXML();
+
         $this->assert_same_xml($expectedxml, $taskfile);
     }
-*/
+    */
     public function test_create_cpp_file_2_tests() {
         $this->resetAfterTest(true);
         $this->setAdminUser();
@@ -200,7 +200,7 @@ class qtype_proforma_cpp_task_test extends task_testcase {
         $node = $xmldoc->getElementsByTagName('files')[0]->getElementsByTagName('file')[2];
         $node->parentNode->removeChild($node);
         $expectedxml = $xmldoc->saveXML();*/
-               
+
         $this->assert_same_xml($expectedxml, $taskfile);
     }
 }

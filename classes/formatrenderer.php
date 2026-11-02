@@ -100,12 +100,12 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
     public function response_area_read_only($qa, $step, $options) {
         // return '';
         $files = $qa->get_last_qt_files('attachments', $options->context->id);
-        $output = array();
+        $output = [];
 
         foreach ($files as $file) {
             $output[] = html_writer::tag('p', html_writer::link($qa->get_response_file_url($file),
                 $this->output->pix_icon(file_file_icon($file), get_mimetype_description($file),
-                    'moodle', array('class' => 'icon')) . ' ' . s($file->get_filename())));
+                    'moodle', ['class' => 'icon']) . ' ' . s($file->get_filename())));
         }
         return implode($output);
     }
@@ -139,11 +139,10 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
         $fm = new form_filemanager($pickeroptions);
         $filesrenderer = $this->page->get_renderer('core', 'files');
         return $filesrenderer->render($fm) . html_writer::empty_tag(
-                'input', array('type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
-                'value' => $pickeroptions->itemid));
+                'input', ['type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
+                'value' => $pickeroptions->itemid]);
 
-
-//         return '';
+        // return '';
     }
 
     /**
@@ -187,7 +186,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
         $inputname = $qa->get_qt_field_name($name);
         $id = $this->get_textarea_id($qa);
 
-        $attributes = array();
+        $attributes = [];
         $attributes['name'] = $inputname;
         $attributes['id'] = $id;
         $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
@@ -195,8 +194,8 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
         $attributes['cols'] = 60;
 
         $input = html_writer::tag('textarea', s($step->get_qt_var($name)), $attributes);
-        $input .= html_writer::empty_tag('input', array('type' => 'hidden',
-                'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
+        $input .= html_writer::empty_tag('input', ['type' => 'hidden',
+                'name' => $inputname . 'format', 'value' => FORMAT_PLAIN]);
         // Convert textarea to codemirror editor.
         qtype_proforma\lib\as_codemirror($id, $mode, null, false, false);
         // Remember Codemirror id.
@@ -233,7 +232,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
         $mode = $question->programminglanguage;
         $id = $this->get_textarea_id($qa);
 
-        $attributes = array();
+        $attributes = [];
         $attributes['id'] = $id;
         $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
         $attributes['rows'] = $question->responsefieldlines;
@@ -328,7 +327,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
             $inputname = $qa->get_qt_field_name($this->name);
             $id = 'id_' . $qa->get_qt_field_name($this->name);
 
-            $attributes = array();
+            $attributes = [];
             $attributes['name'] = $inputname;
             $attributes['id'] = $id;
             $attributes['type'] = 'text';
@@ -336,16 +335,16 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
             $attributes['size'] = 20;
             $attributes['value'] = s($step->get_qt_var($this->name));
 
-            $input = html_writer::tag('label', $question->vcslabel, array('for' => $inputname));
+            $input = html_writer::tag('label', $question->vcslabel, ['for' => $inputname]);
             $input .= html_writer::tag('input', '' /*s($step->get_qt_var($name))*/, $attributes);
-            $input .= html_writer::empty_tag('input', array('type' => 'hidden',
-                    'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
+            $input .= html_writer::empty_tag('input', ['type' => 'hidden',
+                    'name' => $inputname . 'format', 'value' => FORMAT_PLAIN]);
 
         } else if ($this->has_group_field($question)) {
             global $COURSE;
             $this->name = VCSGROUP;
             $groupname = qtype_proforma\lib\get_groupname($options->context);
-            $attributes = array();
+            $attributes = [];
             $id = 'id_' . $qa->get_qt_field_name($this->name);
             $inputname = $qa->get_qt_field_name($this->name);
             $attributes['name'] = $inputname;
@@ -356,7 +355,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
                 // $attributes['readonly'] = 'true';
                 $attributes['type'] = 'text';
                 $attributes['size'] = 10;
-                $input = html_writer::tag('label', get_string('groupname', 'qtype_proforma') . ': ', array('for' => $inputname));
+                $input = html_writer::tag('label', get_string('groupname', 'qtype_proforma') . ': ', ['for' => $inputname]);
                 $input .= html_writer::tag('input', '', $attributes);
                 try {
                     // Get actual groupname if any.
@@ -377,10 +376,10 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
                 $input = get_string('groupname', 'qtype_proforma') . ': ' . $groupname;
                 $input .= html_writer::tag('input', '', $attributes);
             }
-            $input .= html_writer::empty_tag('input', array('type' => 'hidden',
-                    'name' => $inputname . 'format', 'value' => FORMAT_PLAIN));
+            $input .= html_writer::empty_tag('input', ['type' => 'hidden',
+                    'name' => $inputname . 'format', 'value' => FORMAT_PLAIN]);
 
-            return html_writer::tag('div', $input, array('class' => VCSGROUP));
+            return html_writer::tag('div', $input, ['class' => VCSGROUP]);
 
         }
 
@@ -453,7 +452,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
 
         // debugging('itemid = ' . $itemid);
         // debugging('context = ' . $options->context->id);
-// DEBUGGING
+        // DEBUGGING
 
         $clientid = uniqid();
 
@@ -469,12 +468,12 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
 
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
-            array('fileexplorer_' . $clientid, $params));
+            ['fileexplorer_' . $clientid, $params]);
 
-        return html_writer::tag('div', '', array('id' => 'fileexplorer_' . $clientid)) .
+        return html_writer::tag('div', '', ['id' => 'fileexplorer_' . $clientid]) .
             html_writer::empty_tag(
-                'input', array('type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
-                'value' => $itemid));
+                'input', ['type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
+                'value' => $itemid]);
     }
 
     /**
@@ -489,7 +488,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $question = $qa->get_question();
 
         // $draftid = file_get_unused_draft_itemid();
-/*
+        /*
         $files = $qa->get_last_qt_files('attachments', $options->context->id);
         $itemid = null;
         $responsefiles = [];
@@ -501,7 +500,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         }
         debugging('itemid = ' . $itemid);
         debugging('context = ' . $options->context->id);
-*/
+        */
 
         $itemid = $qa->prepare_response_files_draft_itemid('attachments', $options->context->id);
 
@@ -509,7 +508,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         // debugging('---');
         // debugging($sql);
         $clientid = uniqid();
-        $defaults = array(
+        $defaults = [
             'readonly' => false,
             'areamaxbytes' => $question->maxbytes,
             'maxbytes' => $question->maxbytes,
@@ -520,13 +519,13 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
             'accepted_types' => '*',
             'return_types' => FILE_INTERNAL,
             'rootnode' => get_string('rootsubmission', 'qtype_proforma'),
-        );
+        ];
 
         $context = $options->context;
 
         // debugging('itemid = ' . $itemid);
         // debugging('context = ' . $options->context->id);
-        $repo = repository::get_instances(array('type' => 'upload', 'currentcontext' => $context));
+        $repo = repository::get_instances(['type' => 'upload', 'currentcontext' => $context]);
         if (empty($repo)) {
             throw new moodle_exception('errornouploadrepo', 'moodle');
         }
@@ -537,7 +536,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $params = new stdClass();
         // $params = file_get_drafarea_files($defaults['itemid'], '/');
         $params->repo_id = $repo->id;
-        foreach ($defaults as $name=>$value) {
+        foreach ($defaults as $name => $value) {
             $params->$name = $value;
         }
         global $USER;
@@ -551,12 +550,12 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         // var_dump($options);
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
-            array('fileexplorer_' . $clientid, $params));
+            ['fileexplorer_' . $clientid, $params]);
 
-        return html_writer::tag('div', '', array('id' => 'fileexplorer_' . $clientid)) .
+        return html_writer::tag('div', '', ['id' => 'fileexplorer_' . $clientid]) .
         html_writer::empty_tag(
-                'input', array('type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
-                'value' => $itemid));
+                'input', ['type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
+                'value' => $itemid]);
     }
 
     /**

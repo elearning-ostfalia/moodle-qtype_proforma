@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * This file contains unit tests for handling Setlx task files
@@ -96,8 +96,8 @@ class setlxtask_test extends task_testcase {
     </grading-hints>
     <meta-data/>
 </task>
-';    
-    
+';
+
 
     /* one setlx test with syntax check */
     public function test_create_setlx_file1() {
@@ -115,8 +115,8 @@ class setlxtask_test extends task_testcase {
         $node->parentNode->removeChild($node);
         $node = $xmldoc->getElementsByTagName('files')[0]->getElementsByTagName('file')[2];
         $node->parentNode->removeChild($node);
-        $expectedxml = $xmldoc->saveXML();      
-               
+        $expectedxml = $xmldoc->saveXML();
+
         $this->assert_same_xml($expectedxml, $taskfile);
     }
 
@@ -136,13 +136,13 @@ class setlxtask_test extends task_testcase {
         $node->parentNode->removeChild($node);
         $node = $xmldoc->getElementsByTagName('files')[0]->getElementsByTagName('file')[2];
         $node->parentNode->removeChild($node);
-        
+
         $node = $xmldoc->getElementsByTagName('tests')[0]->getElementsByTagName('test')[1];
         $node->parentNode->removeChild($node);
         $node = $xmldoc->getElementsByTagName('files')[0]->getElementsByTagName('file')[1];
         $node->parentNode->removeChild($node);
-        $expectedxml = $xmldoc->saveXML();      
-               
+        $expectedxml = $xmldoc->saveXML();
+
         $this->assert_same_xml($expectedxml, $taskfile);
     }
 
@@ -167,8 +167,8 @@ class setlxtask_test extends task_testcase {
         $node->parentNode->removeChild($node);
         $node = $xmldoc->getElementsByTagName('files')[0]->getElementsByTagName('file')[0];
         $node->parentNode->removeChild($node);
-        $expectedxml = $xmldoc->saveXML();      
-               
+        $expectedxml = $xmldoc->saveXML();
+
         $this->assert_same_xml($expectedxml, $taskfile);
     }
 
@@ -194,7 +194,7 @@ class setlxtask_test extends task_testcase {
         $node = $xmldoc->getElementsByTagName('files')[0]->getElementsByTagName('file')[2];
         $node->parentNode->removeChild($node);
         $expectedxml = $xmldoc->saveXML();*/
-               
+
         $this->assert_same_xml($expectedxml, $taskfile);
     }
 }

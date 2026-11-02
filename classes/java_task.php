@@ -291,7 +291,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      * @return string The classname evaluated from sourcse code.
      */
     private static function get_java_classname($code) {
-        $matches = array();
+        $matches = [];
         $classnamematch = preg_match('/class\s+([\S]+\s*(?:\<(?:.|\R)+\>)?)\s(?:\{|extends|implements)/', $code, $matches);
         if ($classnamematch === 0) {
             return "";
@@ -324,7 +324,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      * @return string
      */
     private static function get_java_packagename($code) {
-        $matches = array();
+        $matches = [];
         $package = preg_match('/package([\s\S]*?);/', $code, $matches);
         if ($package === 0) {
             return "";

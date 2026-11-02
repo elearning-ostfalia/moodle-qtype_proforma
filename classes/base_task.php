@@ -277,13 +277,13 @@ abstract class qtype_proforma_base_task {
         $fs = get_file_storage();
         // Prepare file record object.
 
-        $fileinfo = array(
+        $fileinfo = [
             'contextid' => $contextid, // Category id.
             'component' => 'qtype_proforma',
             'filearea' => qtype_proforma::FILEAREA_TASK,
             'itemid' => $questionid,
             'filepath' => '/',
-            'filename' => $filename);
+            'filename' => $filename];
 
         // Delete old file if any.
         $fs->delete_area_files($contextid, 'qtype_proforma', qtype_proforma::FILEAREA_TASK, $questionid);
@@ -297,11 +297,11 @@ abstract class qtype_proforma_base_task {
      * @param MoodleQuickForm $mform
      */
     public function extract_formdata_from_gradinghints($question, $mform) {
-        $question->testtitle = array();
-        $question->testdescription = array();
-        $question->testtype = array();
-        $question->testweight = array();
-        $question->testid = array();
+        $question->testtitle = [];
+        $question->testdescription = [];
+        $question->testtype = [];
+        $question->testweight = [];
+        $question->testid = [];
 
         if (empty($question->gradinghints)) {
             // Nothing to be done.
@@ -419,7 +419,7 @@ abstract class qtype_proforma_base_task {
 
         // Read files.
         foreach ($task->files->file as $file) {
-            $fileobject = array();
+            $fileobject = [];
             $fileobject['id'] = (string)$file['id'];
             if (isset($file->{'embedded-txt-file'})) {
                 $code = $file->{'embedded-txt-file'};
@@ -553,7 +553,7 @@ abstract class qtype_proforma_base_task {
                     $xw->endElement(); // End tag fileref.
                 } else {
                     $counter = 1;
-                    foreach (qtype_proforma_base_task::_get_draft_testfiles($formdata, $index) as $draftfile) {
+                    foreach (self::_get_draft_testfiles($formdata, $index) as $draftfile) {
                         $xw->startElement('fileref');
                         $xw->create_attribute('refid', $formdata->testid[$index] . '-' . $counter);
                         $xw->endElement(); // End tag fileref.
@@ -636,7 +636,7 @@ abstract class qtype_proforma_base_task {
                 } else {
                     // Handle uploaded test files.
                     $counter = 1;
-                    foreach (qtype_proforma_base_task::_get_draft_testfiles($formdata, $index) as $draftfile) {
+                    foreach (self::_get_draft_testfiles($formdata, $index) as $draftfile) {
                         $xw->startElement('file');
                         $xw->create_attribute('id', $formdata->testid[$index] . '-' . $counter);
                         $xw->create_attribute('used-by-grader', 'true');

@@ -247,7 +247,7 @@ abstract class base_form_creator {
             $errors['testtitle['.$i.']'] = get_string('titleempty', 'qtype_proforma');
         }
 
-        return array($errors, $codeavailable and $titleavailable);
+        return [$errors, $codeavailable and $titleavailable];
     }
 
 
@@ -285,7 +285,7 @@ abstract class base_form_creator {
         $mform->addElement('button', 'uploadbutton', get_string('upload', 'qtype_proforma'));
         // Add js.
         global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/logmonitor', 'uploadToGrader', array('id_uploadbutton'));
+        $PAGE->requires->js_call_amd('qtype_proforma/logmonitor', 'uploadToGrader', ['id_uploadbutton']);
     }
 
     /**
@@ -303,7 +303,7 @@ abstract class base_form_creator {
         }
 
         foreach ($hiddenfields as $field) {
-            $mform->addElement('hidden', $field, null, array('size' => '30'));
+            $mform->addElement('hidden', $field, null, ['size' => '30']);
             $mform->setType($field, PARAM_RAW);
         }
 
@@ -327,7 +327,7 @@ abstract class base_form_creator {
         // Remove hidden element in base class.
         $mform->removeElement(self::DOWNLOADMANAGER);
         $mform->addElement('filemanager', self::DOWNLOADMANAGER, get_string('downloads', 'qtype_proforma'), null,
-        array('subdirs' => true));
+        ['subdirs' => true]);
         $mform->addHelpButton(self::DOWNLOADMANAGER, 'downloads_hint', 'qtype_proforma');
     }
 
@@ -345,7 +345,7 @@ abstract class base_form_creator {
                 $this->_syntaxhighlighting, 'id_responsetemplateheader');
             global $PAGE;
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
-                array('id_programminglanguage', 'id_responsetemplate'));
+                ['id_programminglanguage', 'id_responsetemplate']);
         }
         $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_proforma');
         // Show only if response format is editor.
@@ -357,7 +357,7 @@ abstract class base_form_creator {
      */
     protected function add_responsefilename() {
         $mform = $this->_form;
-        $mform->addElement('text', 'responsefilename', get_string('responsefilename', 'qtype_proforma'), array('size' => '60'));
+        $mform->addElement('text', 'responsefilename', get_string('responsefilename', 'qtype_proforma'), ['size' => '60']);
         $mform->setType('responsefilename', PARAM_TEXT);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
         // $mform->addRule('responsefilename', get_string('required'), 'required');
@@ -383,7 +383,7 @@ abstract class base_form_creator {
             qtype_proforma\lib\as_codemirror('id_modelsolution', $this->_syntaxhighlighting);
             global $PAGE;
             $PAGE->requires->js_call_amd('qtype_proforma/codemirrorif', 'switch_mode',
-            array('id_programminglanguage', 'id_modelsolution'));
+            ['id_programminglanguage', 'id_modelsolution']);
         }
         $mform->addHelpButton('modelsolution', 'modelsolution', 'qtype_proforma');
         $mform->hideIf('modelsolution', 'responseformat', 'neq', 'editor');
@@ -392,7 +392,7 @@ abstract class base_form_creator {
         // Replace hidden element by actual model solution filemanager.
         $mform->removeElement(self::MODELSOLMANAGER);
         $mform->addElement('filemanager', self::MODELSOLMANAGER, get_string('modelsolfiles', 'qtype_proforma'), null,
-        array('subdirs' => true));
+        ['subdirs' => true]);
 
         $mform->hideIf(self::MODELSOLMANAGER, 'responseformat', 'eq', 'editor');
     }
@@ -407,7 +407,7 @@ abstract class base_form_creator {
 
         if ($this->_testcode and $this->_testfiles) {
             // Add choice for test code input: editor or filemanager.
-            $radioarray = array();
+            $radioarray = [];
             $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
                     get_string('editorinput', 'qtype_proforma'), self::TESTCODE_EDITOR);
             $radioarray[] = $mform->createElement('radio', 'testcodeformat', '',
@@ -419,7 +419,7 @@ abstract class base_form_creator {
         if ($this->_testcode) {
             // Add textarea for unit test code.
             $repeatarray[] = $mform->createElement('textarea', 'testcode', '',
-                    array('rows' => 20, 'cols' => 80));
+                    ['rows' => 20, 'cols' => 80]);
         } else {
             $repeatarray[] = $mform->createElement("hidden", "testcodeformat", self::TESTCODE_FILES);
             $this->_form->setType('testcodeformat', PARAM_INT);
@@ -428,7 +428,7 @@ abstract class base_form_creator {
         if ($this->_testfiles) {
             // Add filemanager.
             $repeatarray[] = $mform->createElement('filemanager', 'testfiles', '', null,
-                    array('subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 15));
+                    ['subdirs' => 0, 'areamaxbytes' => 10485760, 'maxfiles' => 15]);
         } else {
             $repeatarray[] = $mform->createElement("hidden", "testcodeformat", self::TESTCODE_EDITOR);
             $this->_form->setType('testcodeformat', PARAM_INT);
@@ -438,7 +438,7 @@ abstract class base_form_creator {
         if ($this->_entrypoint) {
             // Add Unit test entry point.
             $repeatarray[] = $mform->createElement('text', 'testentrypoint',
-                    $this->_entrypointlabel, array('size' => 80));
+                    $this->_entrypointlabel, ['size' => 80]);
             $this->_form->setType('testentrypoint', PARAM_TEXT);
         }
     }
@@ -450,14 +450,14 @@ abstract class base_form_creator {
      */
     protected function adjust_test_repeatoptions(&$repeatoptions) {
         // Always HIDE testtype and test identifier.
-        $repeatoptions['testid']['hideif'] = array('aggregationstrategy', 'neq', 111);
-        $repeatoptions['testtype']['hideif'] = array('aggregationstrategy', 'neq', 111);
+        $repeatoptions['testid']['hideif'] = ['aggregationstrategy', 'neq', 111];
+        $repeatoptions['testtype']['hideif'] = ['aggregationstrategy', 'neq', 111];
         // Hide weight for case of all-or-nothing.
-        $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
+        $repeatoptions['testweight']['hideif'] = ['aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM];
 
         // Show testcode editor/filemanager depending on radio button.
-        $repeatoptions['testcode']['hideif'] = array('testcodeformat', 'eq', self::TESTCODE_FILES);
-        $repeatoptions['testfiles']['hideif'] = array('testcodeformat', 'eq', self::TESTCODE_EDITOR);
+        $repeatoptions['testcode']['hideif'] = ['testcodeformat', 'eq', self::TESTCODE_FILES];
+        $repeatoptions['testfiles']['hideif'] = ['testcodeformat', 'eq', self::TESTCODE_EDITOR];
 
         // Note that setting the testcodeformat default ($repeatoptions['testcodeformat']['default'])
         // also applies to already existing questions. So this is not set here.
@@ -494,32 +494,32 @@ abstract class base_form_creator {
         }
 
         // Create test group with 'small' elements.
-        $testoptions = array();
+        $testoptions = [];
         // Test id.
         $testoptions[] = $mform->createElement('text', 'testid', '');
         // Test type.
         $testoptions[] = $mform->createElement('text', 'testtype',
-            get_string('testtype', 'qtype_proforma'), array('size' => 80));
+            get_string('testtype', 'qtype_proforma'), ['size' => 80]);
         // Derived class could modify test options.
         $this->adjust_test_testoptions($testoptions);
         // Weight.
         $this->add_test_weight_option($testoptions, 'test', '1', false);
 
-        $repeatarray = array();
+        $repeatarray = [];
         $label = get_string('testlabela', 'qtype_proforma', $this->_unittestlabel);
         $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
         // Title.
         $repeatarray[] = $mform->createElement('text', 'testtitle',
-            get_string('testtitle', 'qtype_proforma'), array('size' => 60));
+            get_string('testtitle', 'qtype_proforma'), ['size' => 60]);
         $mform->setType('testtitle', PARAM_TEXT);
         // Description.
         $repeatarray[] = $mform->createElement('text', 'testdescription',
-            get_string('testdescription', 'qtype_proforma'), array('size' => 120));
+            get_string('testdescription', 'qtype_proforma'), ['size' => 120]);
 
         // Derived class could modify array.
         $this->adjust_test_repeatarray($repeatarray);
 
-        $repeatoptions = array();
+        $repeatoptions = [];
         $repeatoptions['testweight']['default'] = 1;
         $repeatoptions['testdescription']['default'] = '';
         $repeatoptions['testtype']['default'] = $testtype;
@@ -570,12 +570,12 @@ abstract class base_form_creator {
      */
     protected function add_compilation($label) {
         $mform = $this->_form;
-        $compilegroup = array();
+        $compilegroup = [];
         $compilegroup[] = & $mform->createElement('advcheckbox', 'compile', '', '');
         $this->add_test_weight_option($compilegroup, 'compile', '0');
         $mform->addGroup($compilegroup, 'compilegroup', $label, ' ', false);
-        $mform->addGroupRule('compilegroup', array(
-            'compileweight' => array(array(get_string('err_numeric', 'form'), 'numeric', '', 'client'))));
+        $mform->addGroupRule('compilegroup', [
+            'compileweight' => [[get_string('err_numeric', 'form'), 'numeric', '', 'client']]]);
         $mform->hideIf('compileweight', 'compile');
         // Compilation is done in all tests. So we do not need to again
         $mform->setDefault('compile', 0);
@@ -690,13 +690,13 @@ abstract class base_form_creator {
             $name1 = get_string('maximumsubmissionsize', 'qtype_proforma');
             $name2 = get_string('acceptedfiletypes', 'qtype_proforma');
 
-            $filepickeroptions = array();
+            $filepickeroptions = [];
             $filepickeroptions[] = $mform->createElement('select', 'attachments',
             get_string('allowattachments', 'qtype_proforma'), $qtype->attachment_options());
             $filepickeroptions[] = $mform->createElement('select', 'maxbytes', $name1, $choices);
             $filepickeroptions[] = $mform->createElement('text', 'filetypes', $name2);
             $mform->addGroup($filepickeroptions, 'filepickergroup',
-                get_string('filepickeroptions', 'qtype_proforma'), array(' '), false);
+                get_string('filepickeroptions', 'qtype_proforma'), [' '], false);
             $mform->hideIf('filepickergroup', 'responseformat', 'eq', 'editor');
             $mform->hideIf('filepickergroup', 'responseformat', 'eq', 'versioncontrol');
             $mform->hideIf('attachments', 'responseformat', 'eq', 'explorer');
@@ -709,7 +709,7 @@ abstract class base_form_creator {
         if (array_key_exists(qtype_proforma::RESPONSE_VERSION_CONTROL, $this->_responseformats)) {
             $vcssystems = [
                 qtype_proforma::VCS_GIT => 'Git',
-                qtype_proforma::VCS_SVN => 'Subversion (SVN)'
+                qtype_proforma::VCS_SVN => 'Subversion (SVN)',
             ];
             $mform->addElement('select', 'vcssystem',
                 get_string('vcssystem', 'qtype_proforma'), $vcssystems);
@@ -718,20 +718,20 @@ abstract class base_form_creator {
             $mform->hideIf('vcssystem', 'responseformat', 'neq', 'versioncontrol');
 
             $mform->addElement('text', 'vcsuritemplate',
-                get_string('vcsuritemplate', 'qtype_proforma'), array('size' => '80'));
+                get_string('vcsuritemplate', 'qtype_proforma'), ['size' => '80']);
             $mform->setDefault('vcsuritemplate', get_config('qtype_proforma', 'defaultvcsuri'));
             $mform->setType('vcsuritemplate', PARAM_TEXT);
             $mform->addHelpButton('vcsuritemplate', 'vcsuritemplate', 'qtype_proforma');
             $mform->hideIf('vcsuritemplate', 'responseformat', 'neq', 'versioncontrol');
 
-            $mform->addElement('text', 'vcslabel', get_string('vcslabel', 'qtype_proforma'), array('size' => '20'));
+            $mform->addElement('text', 'vcslabel', get_string('vcslabel', 'qtype_proforma'), ['size' => '20']);
             $mform->setDefault('vcslabel', get_config('qtype_proforma', 'vcslabeldefault'));
             $mform->setType('vcslabel', PARAM_TEXT);
             $mform->addHelpButton('vcslabel', 'vcslabel', 'qtype_proforma');
             // Hide label if not used. Done with JavaScript.
             global $PAGE;
-            $PAGE->requires->js_call_amd('qtype_proforma/formhelper', 'showif', array('id_vcslabel',
-                'id_vcsuritemplate', '{input}', 'id_responseformat', 'versioncontrol'));
+            $PAGE->requires->js_call_amd('qtype_proforma/formhelper', 'showif', ['id_vcslabel',
+                'id_vcsuritemplate', '{input}', 'id_responseformat', 'versioncontrol']);
         }
 
         // Response template.
@@ -756,7 +756,7 @@ abstract class base_form_creator {
                 [
                     "language" => "Java",
                     "value" => "java",
-                ]
+                ],
             ],
         ];
 
@@ -772,21 +772,21 @@ abstract class base_form_creator {
             $context["proglang"][] = [
                 "language" => "C++",
                 "value" => "cpp",
-                "version" => []
+                "version" => [],
             ];
         }
         if (get_config('qtype_proforma', 'clang')) {
             $context["proglang"][] = [
                 "language" => "C",
                 "value" => "c",
-                "version" => []
+                "version" => [],
             ];
         }
         if (get_config('qtype_proforma', 'python')) {
             $context["proglang"][] = [
                 "language" => "Python",
                 "value" => "python",
-                "version" => ["3"]
+                "version" => ["3"],
             ];
         }
         // if (get_config('qtype_proforma', 'setlx')) {
@@ -799,7 +799,7 @@ abstract class base_form_creator {
         $context = (object)$context;
 
         $taskclientid = uniqid();
-        $taskrepoparams = array(
+        $taskrepoparams = [
             'type' => 'upload',
             'currentcontext' => $usercontext,
             'contextid' => $usercontext->id,
@@ -808,7 +808,7 @@ abstract class base_form_creator {
             'accepted_types' => '.xml,.zip',
             'client_id' => $taskclientid,
             'subdirs' => 0,
-        );
+        ];
         $repo1 = repository::get_instances($taskrepoparams);
         if (empty($repo1)) {
             throw new moodle_exception('errornouploadrepo', 'moodle');
@@ -818,7 +818,7 @@ abstract class base_form_creator {
         $params1->repo_id = $repo1->id;
 
         $msclientid = uniqid();
-        $msrepoparams = array(
+        $msrepoparams = [
             'type' => 'upload',
             'currentcontext' => $usercontext,
             'contextid' => $usercontext->id,
@@ -828,8 +828,8 @@ abstract class base_form_creator {
             'client_id' => $msclientid,
             'subdirs' => 1,
             'newitemid' => file_get_unused_draft_itemid(),
-            'checkitemid' => file_get_unused_draft_itemid()
-        );
+            'checkitemid' => file_get_unused_draft_itemid(),
+        ];
         $repo2 = repository::get_instances($msrepoparams);
         if (empty($repo2)) {
             throw new moodle_exception('errornouploadrepo', 'moodle');
@@ -847,7 +847,7 @@ abstract class base_form_creator {
 
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/taskeditor/taskeditor', 'edit',
-             array('id_editdetails', $context, $params1, $params2, true));
+             ['id_editdetails', $context, $params1, $params2, true]);
 
         /*
         } else {
@@ -875,30 +875,30 @@ abstract class base_form_creator {
         $mform->setExpanded('test_header');
 
         // Aggreagation strategy.
-        $aggregationstrategy = array(
+        $aggregationstrategy = [
             qtype_proforma::ALL_OR_NOTHING => get_string('all_or_nothing', 'qtype_proforma'),
-            qtype_proforma::WEIGHTED_SUM => get_string('weighted_sum', 'qtype_proforma')
-        );
+            qtype_proforma::WEIGHTED_SUM => get_string('weighted_sum', 'qtype_proforma'),
+        ];
         $mform->addElement('select', 'aggregationstrategy',
             get_string('aggregationstrategy', 'qtype_proforma'), $aggregationstrategy);
         $mform->addHelpButton('aggregationstrategy', 'aggregationstrategy', 'qtype_proforma');
         $mform->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
 
         // Penalty.
-        $penalties = array(
+        $penalties = [
             1.0000000,
             0.5000000,
             0.3333333,
             0.2500000,
             0.2000000,
             0.1000000,
-            0.0000000
-        );
+            0.0000000,
+        ];
         if (!empty($question->penalty) && !in_array($question->penalty, $penalties)) {
             $penalties[] = $question->penalty;
             sort($penalties);
         }
-        $penaltyoptions = array();
+        $penaltyoptions = [];
         foreach ($penalties as $penalty) {
             $penaltyoptions["{$penalty}"] = (100 * $penalty) . '%';
         }
@@ -920,7 +920,7 @@ abstract class base_form_creator {
         $mform->addElement('header', 'feedbackoptions', get_string('feedbackoptions_heading', 'qtype_proforma'));
 
         // Collapse/Expand.
-        $collapse = array(
+        $collapse = [
             qtype_proforma::ALWAYS_COLLPASE => get_string('always_collapse', 'qtype_proforma'),
             qtype_proforma::ALWAYS_EXPAND => get_string('always_expand', 'qtype_proforma'),
             /* Maybe for future use:
@@ -928,16 +928,16 @@ abstract class base_form_creator {
             qtype_proforma::EXPAND_TEACHER => get_string('expand_teacher', 'qtype_proforma'),
             qtype_proforma::EXPAND_SMALL => get_string('expand_small', 'qtype_proforma'),
              */
-        );
+        ];
         $mform->addElement('select', 'expandcollapse',
             get_string('collapse', 'qtype_proforma'), $collapse);
         $mform->addHelpButton('expandcollapse', 'collapse', 'qtype_proforma');
         $mform->setDefault('expandcollapse', get_config('qtype_proforma', 'expandcollapse'));
 
-        $embedmessageoptions = array();
+        $embedmessageoptions = [];
         // Switch on/off.
         $embedmessageoptions[] = $mform->createElement('advcheckbox', 'inlinemessages',
-            '', null, array(0, 1));
+            '', null, [0, 1]);
         // Initial state.
         // $embedmessageoptions[] = $mform->createElement('advcheckbox', 'initiallyembedded',
         // get_string('initiallyembedded', 'qtype_proforma'), null, array(0, 1));
@@ -998,7 +998,7 @@ abstract class base_form_creator {
 
         // Special handling for comment.
         $draftid = file_get_submitted_draft_itemid(qtype_proforma::FILEAREA_COMMENT);
-        $question->comment = array();
+        $question->comment = [];
         $question->comment['text'] = file_prepare_draft_area(
             $draftid, // Draftid.
             $editor->context->id, // Context id.
@@ -1074,7 +1074,7 @@ abstract class base_form_creator {
         } else if (isset($this->question->$field)) {
             $size = $question->options->$field;
         }
-        $mform->addElement('text', $field, $label, array('size' => $size));
+        $mform->addElement('text', $field, $label, ['size' => $size]);
         $mform->disabledIf($field, 'responseformat', 'neq', 'alwaysdisabled');
         $mform->setType($field, PARAM_TEXT);
     }
@@ -1090,9 +1090,9 @@ abstract class base_form_creator {
         $mform = $this->_form;
         if (isset($sizefield)) {
             if (isset($this->question->options->$sizefield)) {
-                $attributes = array('size' => strlen($question->options->$sizefield));
+                $attributes = ['size' => strlen($question->options->$sizefield)];
             } else if (isset($this->question->$sizefield)) {
-                $attributes = array('size' => strlen($question->$sizefield));
+                $attributes = ['size' => strlen($question->$sizefield)];
             }
         }
 
@@ -1118,13 +1118,13 @@ abstract class base_form_creator {
         if ($withtitle) {
             // Title.
             $testoptions[] = $mform->createElement('text', $prefix . 'title',
-                get_string('testtitle', 'qtype_proforma'), array('size' => 60));
+                get_string('testtitle', 'qtype_proforma'), ['size' => 60]);
             $mform->setType($prefix . 'title', PARAM_TEXT);
         }
 
         // Weight.
         $testoptions[] = $mform->createElement('text', $prefix . 'weight',
-        get_string('weight', 'qtype_proforma'), array('size' => 2));
+        get_string('weight', 'qtype_proforma'), ['size' => 2]);
         $mform->setType($prefix . 'weight', PARAM_FLOAT);
         $mform->setDefault($prefix . 'weight', $defaultweight);
         $mform->hideIf($prefix . 'weight', 'aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);

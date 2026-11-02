@@ -256,6 +256,6 @@ EOD;
     }
 
     protected function post_to_grader(&$postfields, qtype_proforma_question $question) {
-        return array($this->set_dummy_result2(), 200); // fake
+        return [$this->set_dummy_result2(), 200]; // fake
     }
 }

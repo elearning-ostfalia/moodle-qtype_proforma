@@ -105,7 +105,7 @@ class c_form_creator extends base_form_creator {
                 $valid = false;
             }
         }
-        return array($errors, $valid);
+        return [$errors, $valid];
     }
 
 }

@@ -49,7 +49,6 @@ class taskeditor extends \external_api {
         }
         $itemid = $params['itemid'];
 
-
         global $DB, $USER;
         $usercontext = \context_user::instance($USER->id);
         $records = $DB->get_records('files', [
@@ -84,7 +83,7 @@ class taskeditor extends \external_api {
         return [
             'itemid' => $itemid,
             'fileurl' => $fileurl,
-            'message' => 'ok'
+            'message' => 'ok',
         ];
     }
 
@@ -171,34 +170,34 @@ class taskeditor extends \external_api {
 
     public static function get_junit_versions_returns() {
         return new external_function_parameters (
-            array(
+            [
                 'junitversions' => new external_multiple_structure(
                     new external_value(PARAM_TEXT, 'JUnit version',
                     VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
-                    'Array of JUnit versions', VALUE_DEFAULT, array()),
-            )
+                    'Array of JUnit versions', VALUE_DEFAULT, []),
+            ]
         );
     }
 
     public static function get_checkstyle_versions_returns() {
         return new external_function_parameters (
-            array(
+            [
                 'checkstyleversions' => new external_multiple_structure(
                     new external_value(PARAM_TEXT, 'Checkstyle version',
                         VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
-                    'Array of Checkstyle versions', VALUE_DEFAULT, array()),
-            )
+                    'Array of Checkstyle versions', VALUE_DEFAULT, []),
+            ]
         );
     }
 
     public static function get_java_versions_returns() {
         return new external_function_parameters (
-            array(
+            [
                 'javaversions' => new external_multiple_structure(
                     new external_value(PARAM_TEXT, 'Java version',
                         VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
-                    'Array of Java versions', VALUE_DEFAULT, array()),
-            )
+                    'Array of Java versions', VALUE_DEFAULT, []),
+            ]
         );
     }
 }

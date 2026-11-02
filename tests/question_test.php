@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * This file contains unit tests for class qtype_proforma_question
@@ -32,7 +32,7 @@ global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 
 
-class qtype_proforma_question_test extends advanced_testcase {
+class question_test extends advanced_testcase {
 
     public function make_a_proforma_question() {
         $q = test_question_maker::make_question('proforma');
@@ -50,7 +50,7 @@ class qtype_proforma_question_test extends advanced_testcase {
         $longstring = str_repeat('0123456789', 50);
         $proforma = $this->make_a_proforma_question();
         $this->assertEquals($longstring, $proforma->summarise_response(
-                array('answer' => $longstring, 'answerformat' => FORMAT_HTML)));
+                ['answer' => $longstring, 'answerformat' => FORMAT_HTML]));
     }
 
     public function test_is_same_response() {
@@ -61,52 +61,52 @@ class qtype_proforma_question_test extends advanced_testcase {
         $proforma->start_attempt(new question_attempt_step(), 1);
 
         $this->assertTrue($proforma->is_same_response(
-                array(),
-                array('answer' => '')));
+                [],
+                ['answer' => '']));
 
         $this->assertTrue($proforma->is_same_response(
-                array('answer' => ''),
-                array('answer' => '')));
+                ['answer' => ''],
+                ['answer' => '']));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => ''),
-                array('answer' => 'class MyString ')));
+                ['answer' => ''],
+                ['answer' => 'class MyString ']));
 
         $this->assertTrue($proforma->is_same_response(
-                array('answer' => 'class MyString '),
-                array('answer' => 'class MyString ')));
+                ['answer' => 'class MyString '],
+                ['answer' => 'class MyString ']));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => 'class MyString '),
-                array('answer' => 'class MyString {')));
+                ['answer' => 'class MyString '],
+                ['answer' => 'class MyString {']));
 
         $this->assertTrue($proforma->is_same_response(
-                array('answer' => ''),
-                array()));
+                ['answer' => ''],
+                []));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => 'class'),
-                array()));
+                ['answer' => 'class'],
+                []));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => 'class'),
-                array('answer' => '')));
+                ['answer' => 'class'],
+                ['answer' => '']));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => 0),
-                array('answer' => '')));
+                ['answer' => 0],
+                ['answer' => '']));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => ''),
-                array('answer' => 0)));
+                ['answer' => ''],
+                ['answer' => 0]));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => '0'),
-                array('answer' => '')));
+                ['answer' => '0'],
+                ['answer' => '']));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => ''),
-                array('answer' => '0')));
+                ['answer' => ''],
+                ['answer' => '0']));
     }
 
     public function test_is_same_response_with_template() {
@@ -118,61 +118,60 @@ class qtype_proforma_question_test extends advanced_testcase {
         $proforma->start_attempt(new question_attempt_step(), 1);
 
         $this->assertTrue($proforma->is_same_response(
-                array(),
-                array('answer' => $template)));
+                [],
+                ['answer' => $template]));
 
         $this->assertTrue($proforma->is_same_response(
-                array('answer' => ''),
-                array('answer' => $template)));
+                ['answer' => ''],
+                ['answer' => $template]));
 
         $this->assertTrue($proforma->is_same_response(
-                array('answer' => $template),
-                array('answer' => '')));
+                ['answer' => $template],
+                ['answer' => '']));
 
         $this->assertTrue($proforma->is_same_response(
-                array('answer' => $template),
-                array('answer' => $template)));
+                ['answer' => $template],
+                ['answer' => $template]));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => $template),
-                array('answer' => $template . ' ')));
+                ['answer' => $template],
+                ['answer' => $template . ' ']));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => $template),
-                array('answer' => ' ' . $template)));
+                ['answer' => $template],
+                ['answer' => ' ' . $template]));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => ' ' . $template),
-                array('answer' => $template)));
+                ['answer' => ' ' . $template],
+                ['answer' => $template]));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => $template),
-                array('answer' => 'class MyString1 {}')));
-
+                ['answer' => $template],
+                ['answer' => 'class MyString1 {}']));
 
         $this->assertTrue($proforma->is_same_response(
-                array('answer' => ''),
-                array()));
+                ['answer' => ''],
+                []));
 
         $this->assertTrue($proforma->is_same_response(
-                array('answer' => $template),
-                array()));
+                ['answer' => $template],
+                []));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => 0),
-                array('answer' => '')));
+                ['answer' => 0],
+                ['answer' => '']));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => ''),
-                array('answer' => 0)));
+                ['answer' => ''],
+                ['answer' => 0]));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => '0'),
-                array('answer' => '')));
+                ['answer' => '0'],
+                ['answer' => '']));
 
         $this->assertFalse($proforma->is_same_response(
-                array('answer' => ''),
-                array('answer' => '0')));
+                ['answer' => ''],
+                ['answer' => '0']));
     }
 
     public function test_is_same_response_with_filepicker() {
@@ -184,28 +183,26 @@ class qtype_proforma_question_test extends advanced_testcase {
 
         $proforma->start_attempt(new question_attempt_step(), 1);
 
-/*        $this->assertFalse($proforma->is_same_response(
+        /*        $this->assertFalse($proforma->is_same_response(
                 array('attachments' => 'file1.c'),
                 array('attachments' => 'file2.c')));
-*/
+        */
         $file1 = $this->upload_file('text1', 'file1.c');
         $file2 = $this->upload_file('text1', 'file2.c');
         $file3 = $this->upload_file('text2', 'file3.c');
 
         $this->assertTrue($proforma->is_same_response(
-                array('attachments' => $file1),
-                array('attachments' => $file1)));
-
+                ['attachments' => $file1],
+                ['attachments' => $file1]));
 
         // could also be true but actual (expensive) file compare is necessary
         $this->assertFalse($proforma->is_same_response(
-                array('attachments' => $file1),
-                array('attachments' => $file2)));
+                ['attachments' => $file1],
+                ['attachments' => $file2]));
 
         $this->assertFalse($proforma->is_same_response(
-                array('attachments' => $file2),
-                array('attachments' => $file3)));
-
+                ['attachments' => $file2],
+                ['attachments' => $file3]));
 
         // reset test state
         self::setUser(0);
@@ -234,10 +231,10 @@ class qtype_proforma_question_test extends advanced_testcase {
         $fs->create_file_from_string($filerecord, $content);
 
         // update storage for uploaded files
-/*        $this->files[$attachementsdraftid] = array(
+        /*        $this->files[$attachementsdraftid] = array(
                 'filename' => $filename,
                 'content' => $content);
-*/
+        */
         return $attachementsdraftid;
 
     }
@@ -251,7 +248,7 @@ class qtype_proforma_question_test extends advanced_testcase {
 
         // Create sample attachments to use in testing.
         $helper = test_question_maker::get_test_helper('proforma');
-        $attachments = array();
+        $attachments = [];
         for ($i = 0; $i < 4; ++$i) {
             $attachments[$i] = $helper->make_attachments_saver($i);
         }
@@ -261,20 +258,20 @@ class qtype_proforma_question_test extends advanced_testcase {
         $proforma->start_attempt(new question_attempt_step(), 1);
 
         // Test the "traditional" case, where we must receive a response from the user.
-/*        $proforma->responserequired = 1;
+        /*        $proforma->responserequired = 1;
         $proforma->attachmentsrequired = 0;
-*/
+        */
         $proforma->responseformat = 'editor';
         // The empty string should be considered an incomplete response, as should a lack of a response.
-        $this->assertFalse($proforma->is_complete_response(array('answer' => '')));
-        $this->assertFalse($proforma->is_complete_response(array()));
+        $this->assertFalse($proforma->is_complete_response(['answer' => '']));
+        $this->assertFalse($proforma->is_complete_response([]));
 
         // Any nonempty string should be considered a complete response.
-        $this->assertTrue($proforma->is_complete_response(array('answer' => 'A student response.')));
-        $this->assertTrue($proforma->is_complete_response(array('answer' => '0 times.')));
-        $this->assertTrue($proforma->is_complete_response(array('answer' => '0')));
+        $this->assertTrue($proforma->is_complete_response(['answer' => 'A student response.']));
+        $this->assertTrue($proforma->is_complete_response(['answer' => '0 times.']));
+        $this->assertTrue($proforma->is_complete_response(['answer' => '0']));
 
-/*
+        /*
         // Test the case where two files are required.
         //$proforma->attachmentsrequired = 2;
         $proforma->responseformat = 'editorfilepicker';
@@ -331,27 +328,27 @@ class qtype_proforma_question_test extends advanced_testcase {
 
         $this->assertTrue($proforma->is_complete_response(
                 array('answer' => 'A', 'attachments' => $attachments[2])));
-*/
+        */
 
         // Test the case in which we're in "no inline response" mode,
         // in which the response is not required (as it's not provided).
-        //$proforma->reponserequired = 0;
+        // $proforma->reponserequired = 0;
         $proforma->responseformat = 'filepicker';
-        //$proforma->attachmensrequired = 1;
+        // $proforma->attachmensrequired = 1;
 
         $this->assertFalse($proforma->is_complete_response(
-                array()));
+                []));
         $this->assertFalse($proforma->is_complete_response(
-                array('attachments' => $attachments[0])));
+                ['attachments' => $attachments[0]]));
 
         // Providing an attachment should result in a complete response.
         $this->assertTrue($proforma->is_complete_response(
-                array('attachments' => $attachments[1])));
+                ['attachments' => $attachments[1]]));
 
         // Ensure that responserequired is ignored when we're in inline response mode.
-        //$proforma->reponserequired = 1;
+        // $proforma->reponserequired = 1;
         $this->assertTrue($proforma->is_complete_response(
-                array('attachments' => $attachments[1])));
+                ['attachments' => $attachments[1]]));
 
     }
 

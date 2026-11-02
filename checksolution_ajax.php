@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * PHP file for dealing with running tests for the model solution
  *
@@ -138,11 +137,11 @@ function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
     $feedback = $fbrenderer->render_proforma2_message($feedback1);
 
     if (!$quiet) {
-        $message .= html_writer::tag('p', $graderoutput, array('class' => $class));
+        $message .= html_writer::tag('p', $graderoutput, ['class' => $class]);
     }
 
     $output = html_writer::nonempty_tag('div', $feedback,
-        array('class' => 'specificfeedback'));
+        ['class' => 'specificfeedback']);
 
     $lines = explode("\n", $output);
     foreach ($lines as $line) {
@@ -174,26 +173,26 @@ if (!$runtest) {
     }
 
     $fs = get_file_storage();
-    $record = array(
+    $record = [
         'contextid' => $context->id,
         'component' => 'user',
         'filearea' => 'draft',
         'itemid' => $itemid, // $contentid,
         'filepath' => '/',
-        'userid'    => $USER->id
-    );
+        'userid'    => $USER->id,
+    ];
 
     // Delete old files from last attempt
     $fs->delete_area_files($context->id, 'user', 'draft', $itemid);
 
     $record['filename'] = clean_param($_FILES['task']['name'], PARAM_FILE);
-    $task_file = $fs->create_file_from_pathname($record, $_FILES['task']['tmp_name']);
+    $taskfile = $fs->create_file_from_pathname($record, $_FILES['task']['tmp_name']);
 
     $record['filename'] = clean_param($_FILES['modelsolution']['name'], PARAM_FILE);
-    $ms_file = $fs->create_file_from_pathname($record, $_FILES['modelsolution']['tmp_name']);
+    $msfile = $fs->create_file_from_pathname($record, $_FILES['modelsolution']['tmp_name']);
 
     $record['filename'] = 'gradinghints.txt';
-    $gh_file = $fs->create_file_from_string($record, urldecode($gradinghints));
+    $ghfile = $fs->create_file_from_string($record, urldecode($gradinghints));
 
 
     $data = [
@@ -211,19 +210,19 @@ if (!$runtest) {
 
     $fs = get_file_storage();
 
-    $task_file = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', $taskfilename);
-    if (!$task_file) {
+    $taskfile = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', $taskfilename);
+    if (!$taskfile) {
         throw new moodle_exception('no task file');
     }
-    $ms_file = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', $modelsolutionfilename);
-    if (!$ms_file) {
+    $msfile = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', $modelsolutionfilename);
+    if (!$msfile) {
         throw new moodle_exception('no model solution file');
     }
-    $gh_file = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', 'gradinghints.txt');
-    if (!$gh_file) {
+    $ghfile = $fs->get_file($contextid, 'user', 'draft', $itemid, '/', 'gradinghints.txt');
+    if (!$ghfile) {
         throw new moodle_exception('no grading hints file');
     }
-    $gh = $gh_file->get_content();
+    $gh = $ghfile->get_content();
 
     // Wait as long as it takes for this script to finish
     core_php_time_limit::raise();
@@ -242,10 +241,10 @@ if (!$runtest) {
     $path = trim(get_config('qtype_proforma', 'runtest_path'));
     $grader = new \qtype_proforma_grader_2($question->get_uri($path));
     $files = [];
-    $files[$modelsolutionfilename] = $ms_file;
+    $files[$modelsolutionfilename] = $msfile;
 
     list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader_and_stream_result($files,
-        $task_file, 'on_grader_response', $question, $gh);
+        $taskfile, 'on_grader_response', $question, $gh);
     if ($graderoutput === true) {
         $graderoutput = 'successfully started';
     }

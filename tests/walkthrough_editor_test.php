@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * This file contains tests that walks a question using the editor
@@ -50,11 +50,11 @@ define("DEBUG", 0);
 
 class walkthrough_editor_test extends walkthrough_test_base {
 
-    private $behavmultipletries = array(
-            array('interactive', self::interactive_tries),
-            array('adaptive', self::interactive_tries),
-            array('adaptivenopenalty', self::adaptivenopenalty_tries)
-    );
+    private $behavmultipletries = [
+            ['interactive', self::interactive_tries],
+            ['adaptive', self::interactive_tries],
+            ['adaptivenopenalty', self::adaptivenopenalty_tries],
+    ];
 
     protected function run_on_all_behaviours($testfunction) {
         if (DEBUG) {
@@ -79,7 +79,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
         }
         $testfunction('interactivecountback');
 
-/*        if (DEBUG) {
+        /*        if (DEBUG) {
             print('immediatecbm'.PHP_EOL);
         }
         $testfunction('immediatecbm');*/
@@ -89,7 +89,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
         }
         $testfunction('deferredfeedback');
 
-/*        if (DEBUG) {
+        /*        if (DEBUG) {
             print('deferredfeedback'.PHP_EOL);flush();
         }
         $testfunction('deferredcbm');*/
@@ -101,10 +101,10 @@ class walkthrough_editor_test extends walkthrough_test_base {
         $testfunction('interactive', self::interactive_tries);
 
         // todo: müsste interactivecountback nicht auch funktionieren????
-        //$testfunction('interactivecountback', self::interactive_tries);
+        // $testfunction('interactivecountback', self::interactive_tries);
 
-        //$testfunction('immediatefeedback');
-        //$testfunction('immediatecbm', self::interactive_tries);
+        // $testfunction('immediatefeedback');
+        // $testfunction('immediatecbm', self::interactive_tries);
     }
 
 
@@ -165,13 +165,13 @@ class walkthrough_editor_test extends walkthrough_test_base {
                 $this->get_does_not_contain_feedback_expectation());
         // var_dump($this->quba->get_right_answer_summary($this->slot));
         // $this->assertEquals(get_string('true', 'qtype_proforma'),
-        //        $this->quba->get_right_answer_summary($this->slot));
+        // $this->quba->get_right_answer_summary($this->slot));
         $this->assertMatchesRegularExpression('/' . preg_quote($tf->questiontext, '/') . '/',
                 $this->quba->get_question_summary($this->slot));
         $this->assertNull($this->quba->get_response_summary($this->slot));
 
         // Process a true answer and check the expected result.
-        $this->process_submission(array('answer' => self::CORRECT_RESPONSE));
+        $this->process_submission(['answer' => self::CORRECT_RESPONSE]);
 
         $this->check_current_state(question_state::$complete);
         $this->check_output_contains_lang_string('answersaved', 'question');
@@ -183,28 +183,28 @@ class walkthrough_editor_test extends walkthrough_test_base {
 
         // Process the same data again, check it does not create a new step.
         $numsteps = $this->get_step_count();
-        $this->process_submission(array('answer' => self::CORRECT_RESPONSE));
+        $this->process_submission(['answer' => self::CORRECT_RESPONSE]);
         $this->check_step_count($numsteps);
 
         // Process different data, check it creates a new step.
-        $this->process_submission(array('answer' => self::WRONG_RESPONSE));
+        $this->process_submission(['answer' => self::WRONG_RESPONSE]);
         $this->check_step_count($numsteps + 1);
         $this->check_current_state(question_state::$complete);
 
         // Change back, check it creates a new step.
-        $this->process_submission(array('answer' => self::CORRECT_RESPONSE));
+        $this->process_submission(['answer' => self::CORRECT_RESPONSE]);
         $this->check_step_count($numsteps + 2);
 
         // Finish the attempt.
         $this->set_mockbuilder_for_grader($this->question);
         // Create a stub for the grader
         $stub = $this->getMockBuilder(qtype_proforma_grader_2::class)
-                ->onlyMethods(['send_code_to_grader', 'send_files_to_grader'])
-                ->getMock();
+            ->onlyMethods(['send_code_to_grader', 'send_files_to_grader'])
+            ->getMock();
         $stub->method('send_code_to_grader')
-                ->willReturn(self::GRADER_OUTPUT_CORRECT);
+            ->willReturn(self::GRADER_OUTPUT_CORRECT);
         $stub->method('send_files_to_grader')
-                ->willReturn(self::GRADER_OUTPUT_CORRECT);
+            ->willReturn(self::GRADER_OUTPUT_CORRECT);
         $tf->grader = $stub;
 
         $this->quba->finish_all_questions();
@@ -214,9 +214,9 @@ class walkthrough_editor_test extends walkthrough_test_base {
         $this->check_current_mark(2);
         $this->check_current_output(
                 new \question_pattern_expectation('/separate-test-feedback/')
-//                $this->get_contains_correct_expectation(),
+        // $this->get_contains_correct_expectation(),
                 // $this->get_contains_tf_true_radio_expectation(false, true),
-//                new \question_pattern_expectation('/class="r0 correct"/')
+        // new \question_pattern_expectation('/class="r0 correct"/')
         );
         $this->assertEquals(self::CORRECT_RESPONSE,
                 $this->quba->get_response_summary($this->slot));
@@ -229,7 +229,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
         $this->check_current_output(
                 new \question_pattern_expectation('/' . preg_quote('Not good enough!', '/') . '/'));
 
-/*        // Now change the correct answer to the question, and regrade.
+        /*        // Now change the correct answer to the question, and regrade.
         $tf->rightanswer = false;
         $this->quba->regrade_all_questions();
 
@@ -239,7 +239,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
 
         $autogradedstep = $this->get_step($this->get_step_count() - 2);
         $this->assertEqualsWithDelta($autogradedstep->get_fraction(), 0, 0.0000001);
-*/
+        */
     }
 
 
@@ -270,7 +270,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
             // Verify  => response is graded.
             $this->check_graded_wrong();
 
-            //        $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
+            // $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
         });
     }
 
@@ -302,7 +302,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
             // Verify  => response is graded.
             $this->check_graded_partially_correct();
 
-            //        $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
+            // $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
         });
     }
 
@@ -472,7 +472,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
             // Verify  => response is graded
             $this->check_graded_wrong(0.6);
 
-            //        $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
+            // $this->assertRegExp('/' . preg_quote($response, '/') . '/', $this->currentoutput);
         });
     }
 
@@ -541,7 +541,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
      * save correct, submit blank, submit correct, finish
      */
     public function test_test_multiple_tries_1() {
-        $this->run_on_mulitiple_tries_behaviours(function($preferredbehaviour, $no_of_tries) {
+        $this->run_on_mulitiple_tries_behaviours(function($preferredbehaviour, $nooftries) {
             // Create a proforma question.
             $q = test_question_maker::make_question('proforma', 'editor');
             $this->start_attempt_at_question($q, $preferredbehaviour, 1);
@@ -571,7 +571,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
      * submit wrong, submit blank, finish
      */
     public function test_test_multiple_tries_2() {
-        $this->run_on_mulitiple_tries_behaviours(function($preferredbehaviour, $no_of_tries) {
+        $this->run_on_mulitiple_tries_behaviours(function($preferredbehaviour, $nooftries) {
             // Create a proforma question.
             $q = test_question_maker::make_question('proforma', 'editor');
             $this->start_attempt_at_question($q, $preferredbehaviour, 1);
@@ -589,8 +589,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
             $this->check_invalid(false);
 
             $this->check_current_output($this->get_does_not_contain_try_again_button_expectation());
-            //        $this->press_try_again();
-
+            // $this->press_try_again();
 
             /*        // Submit correct answer.
                     $this->press_submit(self::CORRECT_RESPONSE);
@@ -603,8 +602,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
             $this->check_gave_up();
         });
 
-
-/*        foreach($this->behaviours_multiple_tries as $behaviour) {
+        /*        foreach($this->behaviours_multiple_tries as $behaviour) {
             $this->run_test_multiple_tries_2($behaviour[0], $behaviour[1]);
         }*/
     }
@@ -615,7 +613,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
      * - penalty for wrong responses
      */
     public function test_test_multiple_tries_3() {
-        $this->run_on_mulitiple_tries_behaviours(function($preferredbehaviour, $no_of_tries) {
+        $this->run_on_mulitiple_tries_behaviours(function($preferredbehaviour, $nooftries) {
             // Create a proforma question.
             $q = test_question_maker::make_question('proforma', 'editor');
             $this->start_attempt_at_question($q, $preferredbehaviour, 1);
@@ -629,13 +627,13 @@ class walkthrough_editor_test extends walkthrough_test_base {
             $this->press_try_again();
             // Submit correct answer.
             $this->press_submit(self::CORRECT_RESPONSE);
-            $this->check_graded_right($preferredbehaviour != 'adaptivenopenalty'?0.8:1.0);
+            $this->check_graded_right($preferredbehaviour != 'adaptivenopenalty' ? 0.8 : 1.0);
 
             // Finish the attempt
             $this->finish_attempt();
 
             // Verify  => response is graded
-            $this->check_graded_right($preferredbehaviour != 'adaptivenopenalty'?0.8:1.0); // , true);
+            $this->check_graded_right($preferredbehaviour != 'adaptivenopenalty' ? 0.8 : 1.0); // , true);
         });
     }
 
@@ -643,7 +641,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
      * save correct, submit, save wrong answer, finish
      */
     public function test_test_multiple_tries_4() {
-        $this->run_on_mulitiple_tries_behaviours(function($preferredbehaviour, $no_of_tries) {
+        $this->run_on_mulitiple_tries_behaviours(function($preferredbehaviour, $nooftries) {
             // Create a proforma question.
             $q = test_question_maker::make_question('proforma', 'editor');
             $this->start_attempt_at_question($q, $preferredbehaviour, 1);
@@ -679,7 +677,7 @@ class walkthrough_editor_test extends walkthrough_test_base {
             // Create a proforma question in the DB.
             $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
             $cat = $generator->create_question_category();
-            $question = $generator->create_question('proforma', 'editor', array('category' => $cat->id));
+            $question = $generator->create_question('proforma', 'editor', ['category' => $cat->id]);
 
             // Start attempt at the question.
             $q = question_bank::load_question($question->id);
@@ -712,7 +710,6 @@ class walkthrough_editor_test extends walkthrough_test_base {
             $this->slot = $this->quba->add_question($q, 1);
             $this->question = $q;
             $this->quba->start_question_based_on($this->slot, $oldqa);
-
 
             $this->check_current_state(question_state::$complete);
 

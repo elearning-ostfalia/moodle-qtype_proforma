@@ -26,9 +26,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$functions = array(
+$functions = [
     // ProformA question type webservice functions.
-    'qtype_proforma_get_task_url' => array(
+    'qtype_proforma_get_task_url' => [
         'classname'    => 'qtype_proforma\external\taskeditor',
         'methodname'   => 'get_task_url',
         'classpath'    => '',
@@ -36,9 +36,9 @@ $functions = array(
         'type'         => 'read',
         'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
-    ),
+    ],
 
-    'qtype_proforma_get_junit_versions' => array(
+    'qtype_proforma_get_junit_versions' => [
         'classname'    => 'qtype_proforma\external\taskeditor',
         'methodname'   => 'get_junit_versions',
         'classpath'    => '',
@@ -46,9 +46,9 @@ $functions = array(
         'type'         => 'read',
         // 'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
-    ),
+    ],
 
-    'qtype_proforma_get_checkstyle_versions' => array(
+    'qtype_proforma_get_checkstyle_versions' => [
         'classname'    => 'qtype_proforma\external\taskeditor',
         'methodname'   => 'get_checkstyle_versions',
         'classpath'    => '',
@@ -56,9 +56,9 @@ $functions = array(
         'type'         => 'read',
         // 'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
-    ),
+    ],
 
-    'qtype_proforma_get_java_versions' => array(
+    'qtype_proforma_get_java_versions' => [
         'classname'    => 'qtype_proforma\external\taskeditor',
         'methodname'   => 'get_java_versions',
         'classpath'    => '',
@@ -66,6 +66,6 @@ $functions = array(
         'type'         => 'read',
         // 'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
-    ),
-);
+    ],
+];
 

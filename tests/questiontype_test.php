@@ -68,10 +68,10 @@ class questiontype_test extends walkthrough_test_base {
 
     public function test_get_possible_responses() {
         $q = $this->get_test_question_data();
-        $this->assertEquals(array(), $this->qtype->get_possible_responses($q));
+        $this->assertEquals([], $this->qtype->get_possible_responses($q));
     }
 
-    public function assertXmlEquals($expectedxml, $xml) {
+    public function assertxmlequals($expectedxml, $xml) {
         // Remove comments.
         $xml = preg_replace('/<!--(.|\s)*?-->/', '', $xml);
         $expectedxml = preg_replace('/<!--(.|\s)*?-->/', '', $expectedxml);
@@ -82,7 +82,7 @@ class questiontype_test extends walkthrough_test_base {
     private static function get_contextid_for_question_cat($cat) {
         global $DB;
         $record = $DB->get_record('question_categories', ['id' => $cat->id], 'contextid');
-        //var_dump($record);
+        // var_dump($record);
         return $record->contextid;
     }
 
@@ -136,45 +136,42 @@ class questiontype_test extends walkthrough_test_base {
 
         return [$export1, $export2];
     }
-    public function test_xml_export_and_reimport_editor()
-    {
+    public function test_xml_export_and_reimport_editor() {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
         // Create a proforma question in the DB.
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
-        $question = $generator->create_question('proforma', 'editor', array('category' => $cat->id));
+        $question = $generator->create_question('proforma', 'editor', ['category' => $cat->id]);
 
-        list($export1, $export2) = $this->_export_and_reimport($question, True, $cat);
+        list($export1, $export2) = $this->_export_and_reimport($question, true, $cat);
 
         $this->assertXmlEquals($export1, $export2);
     }
-    public function test_xml_export_and_reimport_filepicker()
-    {
+    public function test_xml_export_and_reimport_filepicker() {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
         // Create a proforma question in the DB.
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
-        $question = $generator->create_question('proforma', 'filepicker', array('category' => $cat->id));
+        $question = $generator->create_question('proforma', 'filepicker', ['category' => $cat->id]);
 
-        list($export1, $export2) = $this->_export_and_reimport($question, True, $cat);
+        list($export1, $export2) = $this->_export_and_reimport($question, true, $cat);
         $this->assertXmlEquals($export1, $export2);
     }
 
-    public function test_xml_export_and_reimport_vcs_git()
-    {
+    public function test_xml_export_and_reimport_vcs_git() {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
         // Create a proforma question in the DB.
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
-        $question = $generator->create_question('proforma', 'vcs_git', array('category' => $cat->id));
+        $question = $generator->create_question('proforma', 'vcs_git', ['category' => $cat->id]);
 
-        list($export1, $export2) = $this->_export_and_reimport($question, False, $cat);
+        list($export1, $export2) = $this->_export_and_reimport($question, false, $cat);
         $this->assertXmlEquals($export1, $export2);
     }
 
@@ -189,14 +186,14 @@ class questiontype_test extends walkthrough_test_base {
         // Create a proforma question in the DB.
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
-        $question = $generator->create_question('proforma', 'editor', array('category' => $cat->id));
+        $question = $generator->create_question('proforma', 'editor', ['category' => $cat->id]);
         $question->contextid = self::get_contextid_for_question_cat($cat);
         $question->hidden = null; // dummy
 
         $questiontype = new qtype_proforma();
         $questiontype->get_question_options($question);
         $exporter = new qformat_xml();
-        //$export = $questiontype->export_to_xml($question, $exporter);
+        // $export = $questiontype->export_to_xml($question, $exporter);
         $export = $exporter->writequestion($question);
 
         // Special handling for Moodle 3/4.
@@ -275,14 +272,14 @@ class questiontype_test extends walkthrough_test_base {
         // Create a proforma question in the DB.
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
-        $question = $generator->create_question('proforma', 'filepicker', array('category' => $cat->id));
+        $question = $generator->create_question('proforma', 'filepicker', ['category' => $cat->id]);
         $question->contextid = self::get_contextid_for_question_cat($cat);
         $question->hidden = null; // Dummy.
 
         $questiontype = new qtype_proforma();
         $questiontype->get_question_options($question);
         $exporter = new qformat_xml();
-        //$export = $questiontype->export_to_xml($question, $exporter);
+        // $export = $questiontype->export_to_xml($question, $exporter);
         $export = $exporter->writequestion($question);
 
         // Special handling for Moodle 3/4.
@@ -360,14 +357,14 @@ class questiontype_test extends walkthrough_test_base {
         // Create a proforma question in the DB.
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category();
-        $question = $generator->create_question('proforma', 'vcs_git', array('category' => $cat->id));
+        $question = $generator->create_question('proforma', 'vcs_git', ['category' => $cat->id]);
         $question->contextid = self::get_contextid_for_question_cat($cat);
         $question->hidden = null; // Dummy.
 
         $questiontype = new qtype_proforma();
         $questiontype->get_question_options($question);
         $exporter = new qformat_xml();
-        //$export = $questiontype->export_to_xml($question, $exporter);
+        // $export = $questiontype->export_to_xml($question, $exporter);
         $export = $exporter->writequestion($question);
 
         // Special handling for Moodle 3/4.
@@ -557,10 +554,10 @@ class questiontype_test extends walkthrough_test_base {
         $expectedq->inlinemessages = 0;
         // $expectedq->initiallyinline = 0;
 
-        $expectedq->hint = array(
-                array('text' => 'hint 1<br>', 'format' => FORMAT_HTML),
-                array('text' => 'hint 2<br>', 'format' => FORMAT_HTML),
-        );
+        $expectedq->hint = [
+                ['text' => 'hint 1<br>', 'format' => FORMAT_HTML],
+                ['text' => 'hint 2<br>', 'format' => FORMAT_HTML],
+        ];
 
         $this->assertEquals($expectedq->hint, $importedq->hint); // redundant but better feedback on fail
         $this->assert(new question_check_specified_fields_expectation($expectedq), $importedq);
@@ -581,14 +578,14 @@ class questiontype_test extends walkthrough_test_base {
     private function assert_file_exists_in_draftarea($filename, $filepath, $draftid) {
         global $USER;
         // Prepare file record object.
-        $fileinfo = array(
+        $fileinfo = [
                 'contextid' => context_user::instance($USER->id)->id,
                 'component' => 'user',
                 'filearea'  => 'draft',
                 'itemid'    => $draftid,
                 'filepath'  => $filepath,
                 'filename'  => $filename,
-        );
+        ];
         // Get file.
         $fs = get_file_storage();
         $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
@@ -715,10 +712,10 @@ class questiontype_test extends walkthrough_test_base {
         $expectedq->downloads = 'instruction.txt, test/lib/lib.txt';
         $expectedq->modelsolfiles = qtype_proforma_test_helper::QUESTION_MODELSOLS;
 
-        $expectedq->hint = array(
-                array('text' => 'hint 1<br>', 'format' => FORMAT_HTML),
-                array('text' => 'hint 2<br>', 'format' => FORMAT_HTML),
-        );
+        $expectedq->hint = [
+                ['text' => 'hint 1<br>', 'format' => FORMAT_HTML],
+                ['text' => 'hint 2<br>', 'format' => FORMAT_HTML],
+        ];
 
         $this->assertEquals($expectedq->hint, $importedq->hint); // redundant but better feedback on fail
         $this->assert(new question_check_specified_fields_expectation($expectedq), $importedq);
@@ -862,10 +859,10 @@ class questiontype_test extends walkthrough_test_base {
         $expectedq->downloads = 'instruction.txt, test/lib/lib.txt';
         $expectedq->modelsolfiles = qtype_proforma_test_helper::QUESTION_MODELSOLS;
 
-        $expectedq->hint = array(
-            array('text' => 'hint 1<br>', 'format' => FORMAT_HTML),
-            array('text' => 'hint 2<br>', 'format' => FORMAT_HTML),
-        );
+        $expectedq->hint = [
+            ['text' => 'hint 1<br>', 'format' => FORMAT_HTML],
+            ['text' => 'hint 2<br>', 'format' => FORMAT_HTML],
+        ];
 
         $this->assertEquals($expectedq->hint, $importedq->hint); // redundant but better feedback on fail
         $this->assert(new question_check_specified_fields_expectation($expectedq), $importedq);

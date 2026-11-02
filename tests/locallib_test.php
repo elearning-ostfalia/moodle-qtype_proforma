@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * This file contains unit tests for locallib file
@@ -148,12 +148,12 @@ class locallib_test extends advanced_testcase {
         $context = $this->create_group_objects();
 
         // Add user1 to group1 and group2.
-        $generator->create_group_member(array('groupid' => $this->group1->id, 'userid' => $this->user1->id));
-        $generator->create_group_member(array('groupid' => $this->group2->id, 'userid' => $this->user1->id));
+        $generator->create_group_member(['groupid' => $this->group1->id, 'userid' => $this->user1->id]);
+        $generator->create_group_member(['groupid' => $this->group2->id, 'userid' => $this->user1->id]);
 
         // Add user2 to group2 and group3.
-        $generator->create_group_member(array('groupid' => $this->group2->id, 'userid' => $this->user2->id));
-        $generator->create_group_member(array('groupid' => $this->group3->id, 'userid' => $this->user2->id));
+        $generator->create_group_member(['groupid' => $this->group2->id, 'userid' => $this->user2->id]);
+        $generator->create_group_member(['groupid' => $this->group3->id, 'userid' => $this->user2->id]);
 
         // Retrieve groups for user1.
         // User1 belongs to group1 and group2.
@@ -176,7 +176,7 @@ class locallib_test extends advanced_testcase {
         $context = $this->create_group_objects();
 
         // User1 belongs to group1.
-        $generator->create_group_member(array('groupid' => $this->group1->id, 'userid' => $this->user1->id));
+        $generator->create_group_member(['groupid' => $this->group1->id, 'userid' => $this->user1->id]);
 
         // Retrieve groups for user1.
         $groupname = qtype_proforma\lib\get_groupname($context);
@@ -192,8 +192,8 @@ class locallib_test extends advanced_testcase {
         $context = $this->create_group_objects();
 
         // User1 and User2 belong to group1.
-        $generator->create_group_member(array('groupid' => $this->group1->id, 'userid' => $this->user1->id));
-        $generator->create_group_member(array('groupid' => $this->group2->id, 'userid' => $this->user2->id));
+        $generator->create_group_member(['groupid' => $this->group1->id, 'userid' => $this->user1->id]);
+        $generator->create_group_member(['groupid' => $this->group2->id, 'userid' => $this->user2->id]);
 
         // Retrieve groups for user1.
         $groupname = qtype_proforma\lib\get_groupname($context);
@@ -209,15 +209,15 @@ class locallib_test extends advanced_testcase {
 
         $generator = $this->getDataGenerator();
         $context = $this->create_group_objects();
-        $generator->create_grouping_group(array('groupingid' => $this->groupingid, 'groupid' => $this->group1->id));
+        $generator->create_grouping_group(['groupingid' => $this->groupingid, 'groupid' => $this->group1->id]);
 
         // Add user1 to group1 and group2.
-        $generator->create_group_member(array('groupid' => $this->group1->id, 'userid' => $this->user1->id));
-        $generator->create_group_member(array('groupid' => $this->group2->id, 'userid' => $this->user1->id));
+        $generator->create_group_member(['groupid' => $this->group1->id, 'userid' => $this->user1->id]);
+        $generator->create_group_member(['groupid' => $this->group2->id, 'userid' => $this->user1->id]);
 
         // Add user2 to group2 and group3.
-        $generator->create_group_member(array('groupid' => $this->group2->id, 'userid' => $this->user2->id));
-        $generator->create_group_member(array('groupid' => $this->group3->id, 'userid' => $this->user2->id));
+        $generator->create_group_member(['groupid' => $this->group2->id, 'userid' => $this->user2->id]);
+        $generator->create_group_member(['groupid' => $this->group3->id, 'userid' => $this->user2->id]);
 
         // Retrieve groups for user1.
         // User1 belongs to group1 and group2.
@@ -229,7 +229,6 @@ class locallib_test extends advanced_testcase {
         $this->assertEquals(1, count($debugging));
         $this->assertStringContainsString('group is not unique', $debugging[0]->message);
 
-
         $this->assertEquals('???', $groupname, 'two groups, no grouping');
     }
 
@@ -239,10 +238,10 @@ class locallib_test extends advanced_testcase {
 
         $generator = $this->getDataGenerator();
         $context = $this->create_group_objects();
-        $generator->create_grouping_group(array('groupingid' => $this->groupingid, 'groupid' => $this->group1->id));
+        $generator->create_grouping_group(['groupingid' => $this->groupingid, 'groupid' => $this->group1->id]);
 
         // User1 belongs to group1.
-        $generator->create_group_member(array('groupid' => $this->group1->id, 'userid' => $this->user1->id));
+        $generator->create_group_member(['groupid' => $this->group1->id, 'userid' => $this->user1->id]);
 
         // Retrieve groups for user1.
         $groupname = qtype_proforma\lib\get_groupname($context);
@@ -256,12 +255,11 @@ class locallib_test extends advanced_testcase {
 
         $generator = $this->getDataGenerator();
         $context = $this->create_group_objects();
-        $generator->create_grouping_group(array('groupingid' => $this->groupingid, 'groupid' => $this->group1->id));
-
+        $generator->create_grouping_group(['groupingid' => $this->groupingid, 'groupid' => $this->group1->id]);
 
         // User1 and User2 belong to group1.
-        $generator->create_group_member(array('groupid' => $this->group1->id, 'userid' => $this->user1->id));
-        $generator->create_group_member(array('groupid' => $this->group2->id, 'userid' => $this->user2->id));
+        $generator->create_group_member(['groupid' => $this->group1->id, 'userid' => $this->user1->id]);
+        $generator->create_group_member(['groupid' => $this->group2->id, 'userid' => $this->user2->id]);
 
         // Retrieve groups for user1.
         $groupname = qtype_proforma\lib\get_groupname($context);

@@ -260,9 +260,9 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         if ($output === false) {
             // In case of a curl error get the erro number.
             $msg = 'curl request failed: Errno = ' . $curl->get_errno() . ', error = "' . $curl->error . '"';
-            return array($msg, $httpcode);
+            return [$msg, $httpcode];
         } else {
-            return array($output, $httpcode);
+            return [$output, $httpcode];
         }
     }
 
@@ -316,7 +316,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @param resource $curl_handle
      * @param string   $chunk
      */
-    function curl_write_flush($curl_handle, $chunk) {
+    function curl_write_flush($curlhandle, $chunk) {
         $len = strlen($chunk);
         $this->chunks[] = $chunk;
         $this->write_data();
@@ -330,7 +330,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         // Get timeout.
         $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'upload_timeout');
         // $options['CURLOPT_SUPPRESS_CONNECT_HEADERS'] = True;
-        $options['CURLOPT_WRITEFUNCTION'] = array(&$this, 'curl_write_flush');
+        $options['CURLOPT_WRITEFUNCTION'] = [&$this, 'curl_write_flush'];
 
         // Add task file.
         if (!$task) {
@@ -354,9 +354,9 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         if ($output === false) {
             // In case of a curl error get the erro number.
             $msg = 'curl request failed: Errno = ' . $curl->get_errno() . ', error = "' . $curl->error . '"';
-            return array($msg, $httpcode);
+            return [$msg, $httpcode];
         } else {
-            return array($output, $httpcode);
+            return [$output, $httpcode];
         }
     }
 
@@ -378,7 +378,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         // Create submission.
         $submission = $this->create_submission_xml(null, $files, $question->responsefilename, null, $question);
-        $postfields = array('submission.xml' => $submission);
+        $postfields = ['submission.xml' => $submission];
         foreach ($files as $file) {
             $postfields[$file->get_filename()] = $file;
         }
@@ -405,7 +405,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         // Create submission.
         $submission = $this->create_submission_xml(null, $files, null, null, null, $task);
-        $postfields = array('submission.xml' => $submission);
+        $postfields = ['submission.xml' => $submission];
         foreach ($files as $file) {
             // debugging(print_r($file));
             $postfields[$file->get_filename()] = $file;
@@ -442,7 +442,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         // Create submission.
         $submission = $this->create_submission_xml(null, $files, null, null, null, $task);
-        $postfields = array('submission.xml' => $submission);
+        $postfields = ['submission.xml' => $submission];
         foreach ($files as $file) {
             // debugging(print_r($file));
             $postfields[$file->get_filename()] = $file;
@@ -477,10 +477,10 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         $submissionxml = $this->create_submission_xml($code, null, $filename, null, $question);
 
-        $postfields = array(
+        $postfields = [
                 'submission.xml' => $submissionxml,
-                $filename => $code
-        );
+                $filename => $code,
+        ];
 
         return $this->post_to_grader($postfields, $question);
     }
@@ -499,10 +499,10 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $submissionxml = $this->create_submission_xml('no source code available',
             null, 'nofilenameneeded', null, null, $task);
 
-        $postfields = array(
+        $postfields = [
             'submission.xml' => $submissionxml,
-            'nofilenameneeded' => ''
-        );
+            'nofilenameneeded' => '',
+        ];
 
         // Get URI.
         $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
@@ -571,24 +571,24 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         global $USER;
         $fs = get_file_storage();
         $itemid = file_get_unused_draft_itemid();
-        $filerecord = array(
+        $filerecord = [
                 'contextid' => context_user::instance($USER->id)->id,
                 'component' => 'user',
                 'filearea' => 'draft',
                 'itemid' => $itemid,
                 'filepath' => '/',
                 'filename' => 'task.xml',
-        );
+        ];
         $taskfile = $fs->create_file_from_string($filerecord, $task);
 
         $code = "class X {};";
         $filename = "X.java";
         $submissionxml = $this->create_submission_xml($code, null, $filename, null, null, $taskfile);
 
-        $postfields = array(
+        $postfields = [
                 'submission.xml' => $submissionxml,
-                $filename => $code
-        );
+                $filename => $code,
+        ];
 
         return $this->post_to_grader($postfields, null, $taskfile, true);
     }
@@ -608,9 +608,9 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         $submissionxml = $this->create_submission_xml(null, null, null, $uri, $question);
 
-        $postfields = array(
-                'submission.xml' => $submissionxml
-        );
+        $postfields = [
+                'submission.xml' => $submissionxml,
+        ];
 
         return $this->post_to_grader($postfields, $question);
     }
@@ -688,10 +688,10 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         // Avoid division by zero.
         if (!$testsfound) {
-            return array(0.0, $internalerror);
+            return [0.0, $internalerror];
         }
 
-        return array($score / $counttests, $internalerror);
+        return [$score / $counttests, $internalerror];
     }
 
     /**
@@ -711,7 +711,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
         $grade = null;
 
         if (isset($httpcode) && $httpcode != 200) {
-            return array($questionstate, $grade, 'HTTP Status Code ' . $httpcode, $result, self::FEEDBACK_FORMAT_HTTP_ERROR);
+            return [$questionstate, $grade, 'HTTP Status Code ' . $httpcode, $result, self::FEEDBACK_FORMAT_HTTP_ERROR];
         }
         if ($result === false) {
             // ERROR: no result
@@ -719,21 +719,21 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             // - return only error text and calling function must convert???
             // - or throw exception??
             // - or use if-else.
-            return array($questionstate, $grade, 'No result from grader (maybe grader is unreachable)', '',
-                self::FEEDBACK_FORMAT_ERROR);
+            return [$questionstate, $grade, 'No result from grader (maybe grader is unreachable)', '',
+                self::FEEDBACK_FORMAT_ERROR];
         }
         $response = '';
         try {
             $response = new SimpleXMLElement($result);
         } catch (Exception $e) {
-            return array($questionstate, $grade, 'Unsupported feedback from grader, no valid XML: ' . $e->getMessage(),
-                    $result, self::FEEDBACK_FORMAT_ERROR);
+            return [$questionstate, $grade, 'Unsupported feedback from grader, no valid XML: ' . $e->getMessage(),
+                    $result, self::FEEDBACK_FORMAT_ERROR];
         }
 
         if (!isset($response->{'separate-test-feedback'})) {
             // Invalid response format.
-            return array($questionstate, $grade, 'Unsupported feedback format',
-                $result, self::FEEDBACK_FORMAT_INVALID);
+            return [$questionstate, $grade, 'Unsupported feedback format',
+                $result, self::FEEDBACK_FORMAT_INVALID];
         }
 
         $feedbackformat = self::FEEDBACK_FORMAT_PROFORMA2;
@@ -785,7 +785,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                 }
             }
         } catch (Exception $e) {
-            return array($questionstate, $grade, $e->getMessage(), $result, $feedbackformat);
+            return [$questionstate, $grade, $e->getMessage(), $result, $feedbackformat];
         }
 
         if ($resultfound) {
@@ -810,18 +810,18 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             }
         } else {
             // No test result could be evaluated, this is treated as an internal error.
-            return array(question_state::$needsgrading, null,
-                '' /*get_string('internaltesterror', 'qtype_proforma')*/, $result, $feedbackformat);
+            return [question_state::$needsgrading, null,
+                '' /*get_string('internaltesterror', 'qtype_proforma')*/, $result, $feedbackformat];
 
         }
 
         if ($testswithinternalerror) {
             // TODO: get language string on display not here.
             // debugging('internaltesterror');
-            return array(question_state::$needsgrading, null,
-                    get_string('internaltesterror', 'qtype_proforma'), $result, $feedbackformat);
+            return [question_state::$needsgrading, null,
+                    get_string('internaltesterror', 'qtype_proforma'), $result, $feedbackformat];
         }
 
-        return array($questionstate, $grade, '', $result, $feedbackformat);
+        return [$questionstate, $grade, '', $result, $feedbackformat];
     }
 }

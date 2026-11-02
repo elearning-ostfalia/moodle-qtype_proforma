@@ -27,8 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Define a custom exception class
  */
-class feedback_exception extends Exception
-{
+class feedback_exception extends Exception {
+
     // Custom string representation of object.
     public function __toString() {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
@@ -93,24 +93,24 @@ class feedback_renderer {
 
         if ($general) {
             // Feedback independend from tests.
-            $csstitle = array();
-            $csscontent = array('class' => 'proforma_general');
+            $csstitle = [];
+            $csscontent = ['class' => 'proforma_general'];
         } else if ($subtest) {
             // Detailed subtest results.
-            $csstitle = array('class' => 'proforma_subtest_title');
-            $csscontent = array('class' => 'proforma_subtest_testlog');
+            $csstitle = ['class' => 'proforma_subtest_title'];
+            $csscontent = ['class' => 'proforma_subtest_testlog'];
             if ($printpassedinfo) {
                 $truefeedbackimg = $this->_mainrenderer->feedback_image((int) 1);
                 $falsefeedbackimg = $this->_mainrenderer->feedback_image((int) 0);
                 $title = ($passed ? $truefeedbackimg : $falsefeedbackimg) . $title;
             } else {
                 // Adjust left space.
-                $csstitle = array('class' => 'proforma_subtest_title_2');
+                $csstitle = ['class' => 'proforma_subtest_title_2'];
             }
         } else {
             // Simple logs.
-            $csstitle = array('class' => 'proforma_testlog_title');
-            $csscontent = array('class' => 'proforma_testlog');
+            $csstitle = ['class' => 'proforma_testlog_title'];
+            $csscontent = ['class' => 'proforma_testlog'];
         }
 
         // Todo: show different level.
@@ -202,7 +202,7 @@ class feedback_renderer {
             // Do not use regular expressions from grader.
             return null;
         }
-        
+
         $feedbacklist = $testresponse->{'test-result'}->{'feedback-list'};
         if (isset($feedbacklist)) {
             foreach ($feedbacklist->children() as $feedback) {
@@ -325,18 +325,18 @@ class feedback_renderer {
             if (isset($regexp) && $this->_question->responseformat == qtype_proforma::RESPONSE_EDITOR) {
                 // Add button for inline errors.
                 $this->_mainrenderer->get_page()->requires->js_call_amd('qtype_proforma/inlinemessages',
-                        'embedError', array(qtype_proforma_format_renderer_base::$codemirrorid,
-                                $collid, $regexp, $this->_question->responsefilename));
+                        'embedError', [qtype_proforma_format_renderer_base::$codemirrorid,
+                                $collid, $regexp, $this->_question->responsefilename]);
             }
         }
 
         if (isset($ghtest->description) and strlen($ghtest->description) > 0) {
-            $result .= html_writer::tag('span', $ghtest->description, array('class' => 'proforma_testlog_description'));
+            $result .= html_writer::tag('span', $ghtest->description, ['class' => 'proforma_testlog_description']);
         }
 
         if ($internalerror) {
             $result .= html_writer::tag('p', get_string('testinternalerror', 'qtype_proforma'),
-                array('class' => 'proforma_testlog_description'));
+                ['class' => 'proforma_testlog_description']);
         }
     }
 
@@ -386,7 +386,7 @@ class feedback_renderer {
                 $containsinternalerror = true;
                 $allcorrect = false;
                 $this->render_test_title($testresponse, null, true, $result, $allcorrect);
-                $result .= html_writer::tag('pre', $ex->getMessage(), array('class' => 'proforma_testlog'));
+                $result .= html_writer::tag('pre', $ex->getMessage(), ['class' => 'proforma_testlog']);
             }
         } else {
             // Handle tests with subtest results.
@@ -399,7 +399,7 @@ class feedback_renderer {
         }
         // Collapsible region is created inside render_proforma_test_title.
         $result .= print_collapsible_region_end(true);
-        return array($containsinternalerror, $result, $allcorrect);
+        return [$containsinternalerror, $result, $allcorrect];
     }
 
     /**
@@ -415,12 +415,12 @@ class feedback_renderer {
             $response = new SimpleXMLElement($message, LIBXML_PARSEHUGE);
             if (!isset($response->{'separate-test-feedback'})) {
                 return $result . 'UNSUPPORTED FEEDBACK FORMAT: ' .
-                        html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
+                        html_writer::tag('xmp', $message, ['class' => 'proforma_testlog']);
             }
         } catch (Exception $e) {
             // No Xml message => output message
             return $result .
-                    html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
+                    html_writer::tag('xmp', $message, ['class' => 'proforma_testlog']);
         }
 
         // Preset member variables.
@@ -531,7 +531,7 @@ class feedback_renderer {
             $qaid = $this->_mainrenderer->create_collapsible_region_id();
             $result .= print_collapsible_region_start('', $qaid,
                     'raw response', '', true, true);
-            $result .= html_writer::tag('xmp', $message, array('class' => 'proforma_testlog'));
+            $result .= html_writer::tag('xmp', $message, ['class' => 'proforma_testlog']);
             $result .= print_collapsible_region_end(true);
 
             $result .= html_writer::end_tag('small');
@@ -556,7 +556,7 @@ class feedback_renderer {
 
                         $result .= print_collapsible_region_start('', $qaid,
                             '<code>Log</code>', '', true, true);
-                        $content = html_writer::tag('xmp', $log, array('class' => 'proforma_testlog'));
+                        $content = html_writer::tag('xmp', $log, ['class' => 'proforma_testlog']);
                         $result .= html_writer::tag('small', $content);
                         $result .= print_collapsible_region_end(true);
 

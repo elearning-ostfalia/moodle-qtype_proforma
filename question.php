@@ -185,7 +185,6 @@ class qtype_proforma_question extends question_graded_automatically {
             $this->grader = new qtype_proforma_grader_2($this->get_uri());
             return $this->grader;
 
-
             // Use default Uri.
             // For using fake results use the following code:
             // (for testing renderer).

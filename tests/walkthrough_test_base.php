@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with ProFormA Question Type for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * support function for walkthrough tests
@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 
     const EXPECTED_BEHAVIOUR = "adaptiveexternalgrading";
-    //const EXPECTED_BEHAVIOUR = "interactivewithfeedback";
+    // const EXPECTED_BEHAVIOUR = "interactivewithfeedback";
 
     /**  true: do not use actual grader (use test double) */
     const USE_TEST_DOUBLE = true;
@@ -62,7 +62,7 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 	}
 }';
 
-    const GRADER_OUTPUT_CORRECT = array('<?xml version="1.0" encoding="utf-8"?>
+    const GRADER_OUTPUT_CORRECT = ['<?xml version="1.0" encoding="utf-8"?>
 <response lang="en" xmlns="urn:proforma:v2.0">
   <separate-test-feedback>
     <submission-feedback-list>
@@ -137,9 +137,9 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
   <response-meta-data>
     <grader-engine name="praktomat" version="xyz" />
   </response-meta-data>
-</response>', 200);
+</response>', 200];
 
-    const GRADER_OUTPUT_PART_CORRECT = array('<?xml version="1.0" encoding="utf-8"?>
+    const GRADER_OUTPUT_PART_CORRECT = ['<?xml version="1.0" encoding="utf-8"?>
 <response lang="en" xmlns="urn:proforma:v2.0">
   <separate-test-feedback>
     <submission-feedback-list>
@@ -214,10 +214,10 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
   <response-meta-data>
     <grader-engine name="praktomat" version="xyz" />
   </response-meta-data>
-</response>', 200);
+</response>', 200];
 
 
-    const GRADER_OUTPUT_INCORRECT = array('<?xml version="1.0" encoding="utf-8"?>
+    const GRADER_OUTPUT_INCORRECT = ['<?xml version="1.0" encoding="utf-8"?>
 <response lang="en" xmlns="urn:proforma:v2.0">
   <separate-test-feedback>
     <submission-feedback-list>
@@ -268,10 +268,10 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
   <response-meta-data>
     <grader-engine name="praktomat" version="xyz" />
   </response-meta-data>
-</response>', 200);
+</response>', 200];
 
 
-    const GRADER_OUTPUT_COMPLETELY_INCORRECT = array('<?xml version="1.0" encoding="utf-8"?>
+    const GRADER_OUTPUT_COMPLETELY_INCORRECT = ['<?xml version="1.0" encoding="utf-8"?>
 <response lang="en" xmlns="urn:proforma:v2.0">
   <separate-test-feedback>
     <submission-feedback-list>
@@ -316,15 +316,15 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
   <response-meta-data>
     <grader-engine name="praktomat" version="xyz" />
   </response-meta-data>
-</response>', 200);
+</response>', 200];
 
-    const GRADER_OUTPUT_ERROR_NO_SUBMISSION = array('<loncapagrade>
+    const GRADER_OUTPUT_ERROR_NO_SUBMISSION = ['<loncapagrade>
         <awarddetail>ERROR</awarddetail>
         <message><![CDATA[No path to student submission or submission attached]]></message>
         <awarded></awarded>
-        </loncapagrade>', 200);
+        </loncapagrade>', 200];
 
-    const GRADER_OUTPUT_INTERNAL_ERROR = array('internal grader error', 404);
+    const GRADER_OUTPUT_INTERNAL_ERROR = ['internal grader error', 404];
 
     const interactive_tries = 5;
     const adaptivenopenalty_tries = 15;
@@ -336,22 +336,22 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 
     const STATE_INCOMPLETE = 'Incomplete answer';
 
-    protected $force_internal_grading_error = false;
+    protected $forceinternalgradingerror = false;
 
     // track question relevant data
-    protected $expected_step_counter = 1;
-    protected $last_state = null;
-    protected $current_state = null;
+    protected $expectedstepcounter = 1;
+    protected $laststate = null;
+    protected $currentstate = null;
 
-    protected $last_response = null;
-    protected $current_response = null;
+    protected $lastresponse = null;
+    protected $currentresponse = null;
 
-    protected $last_attachments = null;
-    protected $current_attachments = null;
+    protected $lastattachments = null;
+    protected $currentattachments = null;
 
-    protected $is_graded = false;
-    protected $is_finished = false;
-    protected $finish_pending = false;
+    protected $isgraded = false;
+    protected $isfinished = false;
+    protected $finishpending = false;
     protected $preferredbehaviour = null;
     protected $remainingtries = 0;
     protected $question = null;
@@ -380,19 +380,21 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 
         $this->force_internal_grading_error = false;
 
-
-
         $this->preferredbehaviour = $preferredbehaviour;
         switch ($preferredbehaviour) {
-            case 'interactive': $this->remainingtries = self::interactive_tries; break;
-            case 'adaptive': $this->remainingtries = self::interactive_tries; break;
-            case 'adaptivenopenalty': $this->remainingtries = self::adaptivenopenalty_tries; break;
-            default: $this->remainingtries = 1; break;
+            case 'interactive': $this->remainingtries = self::interactive_tries;
+break;
+            case 'adaptive': $this->remainingtries = self::interactive_tries;
+break;
+            case 'adaptivenopenalty': $this->remainingtries = self::adaptivenopenalty_tries;
+break;
+            default: $this->remainingtries = 1;
+break;
         }
         $this->question = $q;
         // Create question category.
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $q->contextid = $generator->create_question_category(array())->contextid;
+        $q->contextid = $generator->create_question_category([])->contextid;
 
         // check the behaviour is changed
         $this->assertEquals(self::EXPECTED_BEHAVIOUR,
@@ -409,15 +411,15 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         if (self::USE_TEST_DOUBLE) {
             // Create a stub for the grader
             $stub = $this->getMockBuilder(qtype_proforma_grader_2::class)
-                    ->onlyMethods(['send_code_to_grader', 'send_files_to_grader'])
-                    ->getMock();
+                ->onlyMethods(['send_code_to_grader', 'send_files_to_grader'])
+                ->getMock();
 
             // Configure the stub.
             if ($this->force_internal_grading_error) {
                 $stub->method('send_code_to_grader')
-                        ->willReturn(self::GRADER_OUTPUT_INTERNAL_ERROR);
+                    ->willReturn(self::GRADER_OUTPUT_INTERNAL_ERROR);
                 $stub->method('send_files_to_grader')
-                        ->willReturn(self::GRADER_OUTPUT_INTERNAL_ERROR);
+                    ->willReturn(self::GRADER_OUTPUT_INTERNAL_ERROR);
                 $this->force_internal_grading_error = false;
             } else {
                 if ($this->is_graded && $this->finish_pending) {
@@ -425,13 +427,13 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
                     $stub->expects($this->never())->method('send_code_to_grader');
                     $stub->expects($this->never())->method('send_files_to_grader');
                 } else {
-                    //$stub->expects($this->atLeastOnce());
+                    // $stub->expects($this->atLeastOnce());
                     switch ($response) {
                         case self::CORRECT_RESPONSE:
                             $stub->method('send_code_to_grader')
-                                    ->willReturn(self::GRADER_OUTPUT_CORRECT);
+                                ->willReturn(self::GRADER_OUTPUT_CORRECT);
                             $stub->method('send_files_to_grader')
-                                    ->willReturn(self::GRADER_OUTPUT_CORRECT);
+                                ->willReturn(self::GRADER_OUTPUT_CORRECT);
                             break;
                         case self::PART_CORRECT_RESPONSE:
                             $stub->method('send_code_to_grader')
@@ -441,15 +443,15 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
                             break;
                         case self::WRONG_RESPONSE:
                             $stub->method('send_code_to_grader')
-                                    ->willReturn(self::GRADER_OUTPUT_INCORRECT);
+                                ->willReturn(self::GRADER_OUTPUT_INCORRECT);
                             $stub->method('send_files_to_grader')
-                                    ->willReturn(self::GRADER_OUTPUT_INCORRECT);
+                                ->willReturn(self::GRADER_OUTPUT_INCORRECT);
                             break;
                         case self::WRONG_RESPONSE_2:
                             $stub->method('send_code_to_grader')
-                                    ->willReturn(self::GRADER_OUTPUT_COMPLETELY_INCORRECT);
+                                ->willReturn(self::GRADER_OUTPUT_COMPLETELY_INCORRECT);
                             $stub->method('send_files_to_grader')
-                                    ->willReturn(self::GRADER_OUTPUT_COMPLETELY_INCORRECT);
+                                ->willReturn(self::GRADER_OUTPUT_COMPLETELY_INCORRECT);
                             break;
                         case '':
                             // no grading
@@ -490,12 +492,12 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
     protected function save_response($response, $sequencecheck = '1') {
         $prefix = $this->quba->get_field_prefix($this->slot);
         $fieldname = $prefix . 'answer';
-        $this->quba->process_all_actions(null, array(
+        $this->quba->process_all_actions(null, [
                 'slots'                    => $this->slot,
                 $fieldname                 => $response,
                 $fieldname . 'format'      => FORMAT_HTML,
                 $prefix . ':sequencecheck' => $sequencecheck,
-        ));
+        ]);
     }
 
     /**
@@ -508,15 +510,15 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
             return $attachment;
         }
 
-        $new_array = [];
+        $newarray = [];
 
         foreach ($attachment as $id) {
             if (array_key_exists($id, $this->files)) {
-                $new_array[] = $id;
+                $newarray[] = $id;
             }
         }
 
-        return $new_array;
+        return $newarray;
     }
 
 
@@ -542,9 +544,10 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
     }
 
     private function store_response_data($response, $attachedfiles) {
-        if (isset($attachedfiles) && count($attachedfiles) > 1)
+        if (isset($attachedfiles) && count($attachedfiles) > 1) {
             // prohibit crashing in process_submission
             throw new coding_exception('Moodle *test* environment does not support arrays for attachements, sorry!');
+        }
 
         $this->last_response = $this->current_response;
         $this->current_response = $response;
@@ -555,8 +558,9 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 
     private function get_response_text() {
         // TODO: handle response with file and text
-        if ($this->current_response)
+        if ($this->current_response) {
             return $this->current_response;
+        }
 
         if ($this->current_attachments) {
             if (!array_key_exists($this->current_attachments[0], $this->files)) {
@@ -582,18 +586,17 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
     // CHECKS
 
     protected function check_contains_class_and_content($classname, $content, $fullcontent = true) {
-        $xmlDoc = new DOMDocument();
+        $xmldoc = new DOMDocument();
         // use of '&nbsp' prevents loadXML from loading a document!
         $output = str_replace('&nbsp', ' ', $this->currentoutput);
         // remove <xmp ...* ...</xmp>
         $output = preg_replace('/\<xmp[\s\S]*?\<\/xmp\>/m', '', $output);
 
-
         // $this->assertTrue($xmlDoc->loadXML($output, LIBXML_NOERROR ), 'invalid XML output from renderer');
-        $this->assertTrue($xmlDoc->loadXML($output  ), 'invalid XML output from renderer');
+        $this->assertTrue($xmldoc->loadXML($output  ), 'invalid XML output from renderer');
         // LIBXML_NOERROR is set in order to ignore errors in result
 
-        $xpath = new DomXPath($xmlDoc);
+        $xpath = new DomXPath($xmldoc);
 
         $elements = $xpath->query("//div[@class='$classname']");
         $this->assertTrue(count($elements) == 1);
@@ -607,8 +610,8 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
                 $this->assertSame($content1, $element1);
             } else {
                 $element = $elements[0]; // leave DOM element
-                $elementFull = $element->ownerDocument->saveXML($element);
-                $element1 = preg_replace('/\r\n?/', "\n", $elementFull);
+                $elementfull = $element->ownerDocument->saveXML($element);
+                $element1 = preg_replace('/\r\n?/', "\n", $elementfull);
                 if (PHPUnitVersion::id() >= 9) {
                     $this->assertMatchesRegularExpression('/' . preg_quote(s($content1), '/') . '/', $element1);
                 } else {
@@ -616,36 +619,37 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
                 }
             }
         } else {
-            $this->assertTrue(empty($elementFull));
+            $this->assertTrue(empty($elementfull));
         }
     }
 
-/*    protected function check_contains_submit() {
+    /*    protected function check_contains_submit() {
         $this->assertTag(array('tag' => 'input', 'attributes' => array('type' => 'submit')),
                 $this->currentoutput);
     }
-*/
+    */
     protected function check_contains_textarea($name, $content = '', $height = 10) {
         $fieldname = $this->quba->get_field_prefix($this->slot) . $name;
 
-        $this->assertTag(array('tag' => 'textarea',
-                'attributes' => array('cols' => '60', 'rows' => $height,
-                        'name' => $fieldname)),
+        $this->assertTag(['tag' => 'textarea',
+                'attributes' => ['cols' => '60', 'rows' => $height,
+                        'name' => $fieldname]],
                 $this->currentoutput);
 
         if (!is_null($content)) {
-//            if (PHPUnitVersion::id() >= 9) {
+            // if (PHPUnitVersion::id() >= 9) {
                 $this->assertMatchesRegularExpression('/' . preg_quote(s($content), '/') . '/', $this->currentoutput);
-/*            } else {
+            /*            } else {
                 $this->assertRegExp('/' . preg_quote(s($content), '/') . '/', $this->currentoutput);
             }
-*/        }
+            */
+        }
     }
 
     protected function check_verify_button_enabled($exists = true, $enabled = true) {
         $doc = new DOMDocument();
         $doc->loadHTML($this->currentoutput, LIBXML_NOERROR);
-        $options = array();
+        $options = [];
         // $options['tag'] = 'button';
         $options['class'] = 'submit';
         // $options['attributes'] = 'disabled';
@@ -659,22 +663,24 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         $element = $result[0];
         $this->assertNotEquals(null, $element);
         $value = $element->getAttribute('disabled');
-        if ($enabled)
+        if ($enabled) {
             $this->assertEquals('', $value);
-        else
+        } else {
             $this->assertEquals('disabled', $value);
+        }
     }
 
-    protected function check_answer_text($content = null, $isReadonly = false) {
-        if (is_null($content))
+    protected function check_answer_text($content = null, $isreadonly = false) {
+        if (is_null($content)) {
             $content = $this->current_response;
+        }
 
-        if (!$isReadonly) {
+        if (!$isreadonly) {
             $this->check_contains_textarea('answer', $content);
         } else {
             $fieldname = $this->quba->get_field_prefix($this->slot) . 'answer';
-            $this->assertNotTag(array('tag' => 'textarea',
-                    'attributes' => array('name' => $fieldname)),
+            $this->assertNotTag(['tag' => 'textarea',
+                    'attributes' => ['name' => $fieldname]],
                     $this->currentoutput);
         }
 
@@ -688,29 +694,29 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         $textareas = $xpath->query('//div[@class="answer"]//textarea');
         $answertext = '???';
         foreach ($textareas as $textarea) {
-            //echo $textarea->nodeValue,PHP_EOL;
+            // echo $textarea->nodeValue,PHP_EOL;
             $answertext = $textarea->nodeValue;
         }
 
         $this->assertEquals($content, $answertext);
-        //$this->check_contains_class_and_content('answer', $content);
+        // $this->check_contains_class_and_content('answer', $content);
     }
 
-//    protected function check_remaining_tries($numberOfTries, $incorrect = false) {
-    protected function check_remaining_tries($state = "Not complete", $numberOfTries = null) {
-        if (!is_null($numberOfTries)) {
+    // protected function check_remaining_tries($numberOfTries, $incorrect = false) {
+    protected function check_remaining_tries($state = "Not complete", $numberoftries = null) {
+        if (!is_null($numberoftries)) {
             switch (self::EXPECTED_BEHAVIOUR) {
                 case "adaptiveexternalgrading":
-                    //if ($incorrect)
+                    // if ($incorrect)
                         $this->check_contains_class_and_content('state',
-                                $state); //self::TRIES_REMAINING_WRONG);
-                    //else
-                    //    $this->check_contains_class_and_content('state',
-                    //            "Not complete");
+                                $state); // self::TRIES_REMAINING_WRONG);
+                    // else
+                    // $this->check_contains_class_and_content('state',
+                    // "Not complete");
                     break;
                 case "interactivewithfeedback":
                     $this->check_contains_class_and_content('state',
-                            'Tries remaining: ' . $numberOfTries);
+                            'Tries remaining: ' . $numberoftries);
                     break;
                 default:
                     $this->assertFalse(true); // ???
@@ -755,13 +761,13 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         $this->check_step_count($this->expected_step_counter);
         $this->check_current_mark($mark);
         $this->render();
-        $verify_exists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
-        $this->check_verify_button_enabled($verify_exists);
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $this->check_verify_button_enabled($verifyexists);
         $this->check_answer_text($this->current_response, // self::CORRECT_RESPONSE,
-                (self::EXPECTED_BEHAVIOUR == "interactivewithfeedback" or $this->is_finished)?true:false);
+                (self::EXPECTED_BEHAVIOUR == "interactivewithfeedback" or $this->is_finished) ? true : false);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
-                //            $this->get_contains_general_feedback_expectation($q),
+                // $this->get_contains_general_feedback_expectation($q),
                 $this->get_contains_specific_feedback_expectation());
         // $this->check_specific_feedback_text('Your answer is correct.');
         $this->check_remaining_tries(self::STATE_CORRECT);
@@ -783,9 +789,9 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
                 $this->assertFalse(true);
         }
         if ($mustbegraded) {
-            //if ($mark === 0.0)
-            //    $this->check_current_state(question_state::$gradedwrong);
-            //else
+            // if ($mark === 0.0)
+            // $this->check_current_state(question_state::$gradedwrong);
+            // else
                 $this->check_current_state(question_state::$gradedpartial);
             $this->check_current_mark($mark);
         } else {
@@ -798,7 +804,7 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
                     // $this->check_current_mark(0.0);
                     break;
                 case "adaptiveexternalgrading":
-                    //$this->check_current_mark(null);
+                    // $this->check_current_mark(null);
                     $this->check_current_mark($mark);
                     break;
                 default:
@@ -809,8 +815,8 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         $this->render();
         // answer field is disabled because you have to press 'Try again' Button
         // $this->check_answer_text($response, true); //????
-        $verify_exists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
-        $this->check_verify_button_enabled($verify_exists);
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $this->check_verify_button_enabled($verifyexists);
         $this->check_current_output(
             $this->get_contains_question_text_expectation($this->question),
             // $this->get_contains_general_feedback_expectation($q),
@@ -821,10 +827,11 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         if (!$this->is_finished && $this->remainingtries) {
             $remainingtries = $this->remainingtries;
         }
-        if ($mark === 0.0)
+        if ($mark === 0.0) {
             $this->check_remaining_tries(self::STATE_WRONG, $remainingtries);
-        else
+        } else {
             $this->check_remaining_tries(self::STATE_WEIGHTED_SUM_WRONG, $remainingtries);
+        }
 
         $this->check_step_count($this->expected_step_counter);
     }
@@ -847,10 +854,11 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
                 $this->assertFalse(true);
         }
         if ($mustbegraded) {
-            if ($mark === 0.0)
+            if ($mark === 0.0) {
                 $this->check_current_state(question_state::$gradedwrong);
-            else
+            } else {
                 $this->check_current_state(question_state::$gradedpartial);
+            }
             $this->check_current_mark($mark);
         } else {
             $this->check_current_state(question_state::$todo);
@@ -862,7 +870,7 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
                     // $this->check_current_mark(0.0);
                     break;
                 case "adaptiveexternalgrading":
-                    //$this->check_current_mark(null);
+                    // $this->check_current_mark(null);
                     $this->check_current_mark($mark);
                     break;
                 default:
@@ -873,8 +881,8 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         $this->render();
         // answer field is disabled because you have to press 'Try again' Button
         // $this->check_answer_text($response, true); //????
-        $verify_exists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
-        $this->check_verify_button_enabled($verify_exists);
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $this->check_verify_button_enabled($verifyexists);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
                 // $this->get_contains_general_feedback_expectation($q),
@@ -885,15 +893,16 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         if (!$this->is_finished && $this->remainingtries) {
             $remainingtries = $this->remainingtries;
         }
-        if ($mark === 0.0)
+        if ($mark === 0.0) {
             $this->check_remaining_tries(self::STATE_WRONG, $remainingtries);
-        else
+        } else {
             $this->check_remaining_tries(self::STATE_WEIGHTED_SUM_WRONG, $remainingtries);
+        }
 
         $this->check_step_count($this->expected_step_counter);
     }
 
-    protected function is_deferred() : bool {
+    protected function is_deferred(): bool {
         return ($this->preferredbehaviour == 'deferredfeedback' ||
                 $this->preferredbehaviour == "deferredcbm");
     }
@@ -909,8 +918,8 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         $this->check_current_state($expectedstate);
         $this->check_current_mark(null);
         $this->render();
-        $verify_exists = $this->preferredbehaviour != 'deferredfeedback';
-        $this->check_verify_button_enabled($verify_exists);
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback';
+        $this->check_verify_button_enabled($verifyexists);
         $this->check_answer_text($answer);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
@@ -928,8 +937,7 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
     }
 
 
-    protected function check_gave_up()
-    {
+    protected function check_gave_up() {
         $this->check_current_state(question_state::$gaveup);
         switch (self::EXPECTED_BEHAVIOUR) {
             case "interactivewithfeedback":
@@ -945,12 +953,12 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         }
 
         $this->render();
-        $verify_exists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
-        $this->check_verify_button_enabled($verify_exists);
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $this->check_verify_button_enabled($verifyexists);
         $this->check_answer_text(null, true);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
-                //$this->get_does_not_contain_feedback_expectation(),
+                // $this->get_does_not_contain_feedback_expectation(),
                 $this->get_does_not_contain_specific_feedback_expectation());
         $this->check_remaining_tries("Not answered");
     }
@@ -958,9 +966,9 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
     protected function check_invalid($initialstate = true, $internalerror = false) {
 
         if ($internalerror) {
-            //if ($this->is_finished)
-            //    $this->check_current_state(question_state::$needsgrading) ; // $needsgrading);
-            //else
+            // if ($this->is_finished)
+            // $this->check_current_state(question_state::$needsgrading) ; // $needsgrading);
+            // else
                 $this->check_current_state(question_state::$invalid); // $invalid); // $todo);
         }
         else {
@@ -975,12 +983,12 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
             case "adaptiveexternalgrading":
                 // evtl. wird der Wert nicht geändert, so
                 // dass der letzte Wert erhalten bleibt ???
-                if ($internalerror)
+                if ($internalerror) {
                     $this->check_current_mark(null);
-                else {
-                    //if (!$initialstate)
-                    //    $this->check_current_mark(0.0);
-                    //else
+                } else {
+                    // if (!$initialstate)
+                    // $this->check_current_mark(0.0);
+                    // else
                         $this->check_current_mark(null);
                 }
                 break;
@@ -990,25 +998,25 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 
         $this->render();
         $this->check_answer_text();
-        $verify_exists = $this->preferredbehaviour != 'deferredfeedback';
-        $this->check_verify_button_enabled($verify_exists);
-//        if (!$this->is_finished)
-//            $this->check_contains_submit();
-/*        $this->check_current_output(
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback';
+        $this->check_verify_button_enabled($verifyexists);
+        // if (!$this->is_finished)
+        // $this->check_contains_submit();
+        /*        $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
                 $this->get_does_not_contain_feedback_expectation(),
                 $this->get_does_not_contain_specific_feedback_expectation());*/
         $this->check_current_output($this->get_contains_question_text_expectation($this->question));
-        if ($internalerror)
+        if ($internalerror) {
             $this->check_output_contains('INTERNAL ERROR');
-        else {
+        } else {
             $this->check_current_output($this->get_does_not_contain_feedback_expectation());
             $this->check_current_output($this->get_does_not_contain_specific_feedback_expectation());
         }
 
-//        if ($this->is_finished) {
-//            $this->check_remaining_tries('Requires grading');
-//        } else
+        // if ($this->is_finished) {
+        // $this->check_remaining_tries('Requires grading');
+        // } else
             $this->check_remaining_tries(self::STATE_INCOMPLETE);
     }
 
@@ -1018,16 +1026,17 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
      * @param bool $initialstate not yet graded
      */
     protected function check_needs_grading($initialstate = true) {
-        if ($this->is_finished)
-            $this->check_current_state(question_state::$needsgrading) ; // $needsgrading);
-        else
+        if ($this->is_finished) {
+            $this->check_current_state(question_state::$needsgrading); // $needsgrading);
+        } else {
             $this->check_current_state(question_state::$invalid); // $invalid); // $todo);
+        }
 
         $this->check_current_mark(null);
 
         $this->render();
-        $verify_exists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
-        $this->check_verify_button_enabled($verify_exists);
+        $verifyexists = $this->preferredbehaviour != 'deferredfeedback' && !$this->is_finished;
+        $this->check_verify_button_enabled($verifyexists);
         $this->check_answer_text(null, true);
         $this->check_current_output(
                 $this->get_contains_question_text_expectation($this->question),
@@ -1036,7 +1045,6 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 
         global $COURSE, $USER;
         $context = context_course::instance($COURSE->id);
-
 
         global $COURSE, $USER;
         if (has_capability('moodle/grade:viewhidden', $context, $USER->id)) {
@@ -1068,7 +1076,7 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
     protected function finish_attempt() {
         // echo 'finished ' . PHP_EOL;
         $this->finish_pending = true;
-        $increment_step = false;
+        $incrementstep = false;
         /*
                 if (strcmp($this->current_response, $response) != 0) {
                     $this->last_response = $this->current_response;
@@ -1081,28 +1089,29 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         $this->set_mockbuilder_for_grader($this->question);
         $this->quba->finish_all_questions();
 
-        if (!$increment_step and !$this->is_graded) {
+        if (!$incrementstep and !$this->is_graded) {
             $this->expected_step_counter++;
-            $increment_step = true;
+            $incrementstep = true;
         }
 
-        if (!$increment_step and $this->current_state == question_state::$invalid) {
+        if (!$incrementstep and $this->current_state == question_state::$invalid) {
             $this->expected_step_counter++;
-            $increment_step = true;
+            $incrementstep = true;
         }
 
         switch (self::EXPECTED_BEHAVIOUR) {
             case "interactivewithfeedback":
                 break;
             case "adaptiveexternalgrading":
-                if (!$increment_step)
+                if (!$incrementstep) {
                     $this->expected_step_counter++;
+                }
                 break;
             default:
                 $this->assertFalse(true);
         }
 
-//        $this->check_step_count($this->expected_step_counter);
+        // $this->check_step_count($this->expected_step_counter);
         $this->is_graded = true;
         $this->is_finished = true;
         $this->finish_pending = false;
@@ -1111,8 +1120,9 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 
     protected function press_submit($response = null, $attachedfiles = null) {
 
-        if (is_null($response) && is_null($attachedfiles))
+        if (is_null($response) && is_null($attachedfiles)) {
             throw new coding_exception('editor content or attachment must be set');
+        }
 
         $this->store_response_data($response, $attachedfiles);
 
@@ -1122,18 +1132,18 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         $this->set_mockbuilder_for_grader($this->question);
         if ($attachedfiles) {
             if (!is_null($response)) {
-                $this->process_submission(array(
+                $this->process_submission([
                         '-submit' => 1,
                         'answer' => $response,
-                        'attachments' => $attachedfiles[0]));
+                        'attachments' => $attachedfiles[0]]);
             } else {
-                $this->process_submission(array(
+                $this->process_submission([
                         '-submit' => 1,
-                        'attachments' => $attachedfiles[0]));
+                        'attachments' => $attachedfiles[0]]);
             }
         }
         else {
-            $this->process_submission(array('-submit' => 1, 'answer' => $response));
+            $this->process_submission(['-submit' => 1, 'answer' => $response]);
         }
 
         $this->expected_step_counter++;
@@ -1144,14 +1154,13 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         }
     }
 
-    protected function press_try_again()
-    {
+    protected function press_try_again() {
         switch (self::EXPECTED_BEHAVIOUR) {
             case "interactivewithfeedback":
                 $this->check_step_count($this->expected_step_counter);
                 $this->check_current_output($this->get_contains_try_again_button_expectation(true));
-                $this->process_submission(array('-tryagain' => 1));
-                //        $this->check_current_output($this->get_contains_try_again_button_expectation(false));
+                $this->process_submission(['-tryagain' => 1]);
+                // $this->check_current_output($this->get_contains_try_again_button_expectation(false));
                 $this->expected_step_counter++;
                 $this->check_step_count($this->expected_step_counter);
                 $this->is_graded = false;
@@ -1164,16 +1173,15 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         }
     }
 
-    protected function save($response, $sequencecheck = '1')
-    {
+    protected function save($response, $sequencecheck = '1') {
         $this->check_step_count($this->expected_step_counter);
         $this->store_response_data($response, null);
-/*
+        /*
         $this->last_response = $this->current_response;
         $this->current_response = $response;
         $this->last_attachments = $this->current_attachments;
         $this->current_attachments = null;
-*/
+        */
         $this->save_response($response, $sequencecheck);
         if (!$this->is_same_response()) {
             $this->expected_step_counter++;
@@ -1184,23 +1192,22 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
 
 
     // difference to save??
-    protected function save_with_attachment($response = null, $attachedfiles = null)
-    {
+    protected function save_with_attachment($response = null, $attachedfiles = null) {
         $this->check_step_count($this->expected_step_counter);
         $this->store_response_data($response, $attachedfiles);
 
         if ($attachedfiles) {
             if (!is_null($response)) {
-                $this->process_submission(array(
+                $this->process_submission([
                         'answer' => $response,
-                        'attachments' => $attachedfiles[0]));
+                        'attachments' => $attachedfiles[0]]);
             } else {
-                $this->process_submission(array(
-                        'attachments' => $attachedfiles[0]));
+                $this->process_submission([
+                        'attachments' => $attachedfiles[0]]);
             }
         } else {
-            $this->process_submission(array(
-                    'answer' => $response));
+            $this->process_submission([
+                    'answer' => $response]);
         }
 
         // check if response has been changed
@@ -1235,12 +1242,12 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         $this->save_file_to_draft_area($usercontextid, $attachementsdraftid, $filename, $response);
 
         // update storage for uploaded files
-        $this->files[$attachementsdraftid] = array(
+        $this->files[$attachementsdraftid] = [
                 'filename' => $filename,
-                'content' => $response);
+                'content' => $response];
 
-        //$this->last_attachments = $this->current_attachments;
-        //$this->current_attachments = $response;
+        // $this->last_attachments = $this->current_attachments;
+        // $this->current_attachments = $response;
 
         $this->is_graded = false;
 

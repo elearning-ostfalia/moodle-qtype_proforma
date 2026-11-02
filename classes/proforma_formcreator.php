@@ -58,7 +58,7 @@ class proforma_form_creator extends base_form_creator {
      */
     public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
         $errors = parent::validation($editor, $fromform, $files, $errors);
-/*
+        /*
         if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
             $repeats = count($fromform["testweight"]);
             $sumweight = 0;
@@ -71,7 +71,7 @@ class proforma_form_creator extends base_form_creator {
                 $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
             }
         }
-*/
+        */
 
         if ((!isset($fromform['taskeditor'])) or (!$fromform['taskeditor'])) {
             $errors = $this->validate_taskfile($editor, $fromform, $errors);
@@ -81,7 +81,7 @@ class proforma_form_creator extends base_form_creator {
     }
 
     protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
-        return array($errors, true);
+        return [$errors, true];
     }
 
 
@@ -171,7 +171,7 @@ class proforma_form_creator extends base_form_creator {
             return $errors;
         }
 
-        $message = array();
+        $message = [];
         // Compare programming language.
         if ($datadraft->proglang != $dataold->proglang) {
             $message[] = get_string('errinvalidproglang', 'qtype_proforma', $dataold->proglang);
@@ -247,7 +247,7 @@ class proforma_form_creator extends base_form_creator {
                 throw new Exception(get_string('cannotunzip', 'question'));
             }
             // Look for task.xml.
-            $taskfiles = array();
+            $taskfiles = [];
             $iterator = new DirectoryIterator($tempdir);
             foreach ($iterator as $fileinfo) {
                 if ($fileinfo->isFile() &&
@@ -317,8 +317,8 @@ class proforma_form_creator extends base_form_creator {
             get_string('taskfilename', 'qtype_proforma'), null, [
                 'subdirs' => false,
                 'maxfiles' => 1,
-                'accepted_types' => array('.zip', '.xml'),
-                'maxbytes' => $tasksize
+                'accepted_types' => ['.zip', '.xml'],
+                'maxbytes' => $tasksize,
             ]
         );
         $mform->addHelpButton(qtype_proforma::FILEAREA_TASK, 'task_hint', 'qtype_proforma');
@@ -339,7 +339,7 @@ class proforma_form_creator extends base_form_creator {
         $mform->addElement('button', 'uploadbutton', get_string('upload', 'qtype_proforma'));
         // Add js.
         global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/logmonitor', 'uploadToGrader', array('id_uploadbutton'));
+        $PAGE->requires->js_call_amd('qtype_proforma/logmonitor', 'uploadToGrader', ['id_uploadbutton']);
     }
 
     /**
@@ -350,10 +350,10 @@ class proforma_form_creator extends base_form_creator {
     protected function adjust_test_repeatoptions(&$repeatoptions) {
         // DISABLE testtype and test identifier for imported tasks.
         // Do not hide as in base class!
-        $repeatoptions['testid']['disabledif'] = array('aggregationstrategy', 'neq', 111);
-        $repeatoptions['testtype']['disabledif'] = array('aggregationstrategy', 'neq', 111);
+        $repeatoptions['testid']['disabledif'] = ['aggregationstrategy', 'neq', 111];
+        $repeatoptions['testtype']['disabledif'] = ['aggregationstrategy', 'neq', 111];
         // Hide weight for case of all-or-nothing.
-        $repeatoptions['testweight']['hideif'] = array('aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM);
+        $repeatoptions['testweight']['hideif'] = ['aggregationstrategy', 'neq', qtype_proforma::WEIGHTED_SUM];
     }
 
     /**
