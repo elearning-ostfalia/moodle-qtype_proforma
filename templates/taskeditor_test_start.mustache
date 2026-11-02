@@ -53,7 +53,7 @@
             <span>
 <!--            {{#str}} testtype, qtype_proforma {{/str}}-->
 <!--            <label for='xml_test_type'>{{#str}} testtype, qtype_proforma {{/str}} </label>-->
-            <input class='xml_test_type' disabled="disabled" value='{{ testtype }}' style='display: none'></input>
+            <input class='xml_test_type' disabled="disabled" value='{{ testtype }}' style='display: none'>
             {{#framework}}
                 <input class="xml_framework" value="{{ framework }}" disabled="disabled" style='display: none'>
             {{/framework}}
@@ -69,29 +69,29 @@
             </span>
         </span>
 
-        <input class='xml_test_id' type="text" style='display: none' value="{{ testid }}" size="2" disabled="disabled"></input>
+        <input class='xml_test_id' type="text" style='display: none' value="{{ testid }}" size="2" disabled="disabled">
 
         <span class='rightButton'><button>x</button></span>
     </span>
 
 <p>
-        <label for='xml_test_title'>{{#str}} testtitle, qtype_proforma {{/str}} <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}"></i> </label>
-        <input class='xml_test_title' size="80" value='{{ testtitle }}'/>
+        <label>{{#str}} testtitle, qtype_proforma {{/str}} <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}"></i> </label>
+        <input class='xml_test_title' size="80" value='{{ testtitle }}'>
 <br>
 
-    <label for='xml_description'>{{#str}} testdescription, qtype_proforma {{/str}} </label>
+    <label>{{#str}} testdescription, qtype_proforma {{/str}} </label>
     <textarea rows='2' cols='80' class='xml_description'>{{ description }}</textarea>
 
 <br>
         <label>{{#str}} weight, qtype_proforma {{/str}}
             <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
         </label>
-        <input class='tinyinput xml_test_weight' value='{{ weight }}' size='3'></input>
+        <input class='tinyinput xml_test_weight' value='{{ weight }}' size='3'>
 
 <br>
 
-    <label for='xml_internal_description'  class='leftlabel' style='display: none'>Internal Description</label>
-    <textarea rows='2' class='xml_internal_description' "title = 'Internal description (not visible for students)'
+    <label class='leftlabel' style='display: none'>Internal Description</label>
+    <textarea rows='2' class='xml_internal_description' title='Internal description (not visible for students)'
         style='display: none'>{{ comment }}</textarea>
 
 

@@ -52,6 +52,7 @@
 .proforma-taskeditor .xml_fileref_table td {
     /*background-color: green;*/
     width: 1px;
+    padding: 0; /* replaces cellpadding="0" in template */
 } /* min width, actually: this causes the width to fit the content */
 
 .proforma-taskeditor .xml_fileref_table td:last-child {
