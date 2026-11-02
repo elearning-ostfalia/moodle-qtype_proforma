@@ -27,6 +27,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 
+/**
+ * Abstraction of a Moodle filearea in order to ease handling.
+ */
 class qtype_proforma_filearea {
 
     /**

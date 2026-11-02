@@ -26,6 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
 
+/**
+ * Creates ProFormA java task file resp. extracts data from such a file.
+ */
 class qtype_proforma_java_task extends qtype_proforma_base_task {
     const COMPILER   = 'compiler';
     const CHECKSTYLE = 'checkstyle';

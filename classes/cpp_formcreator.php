@@ -28,6 +28,9 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/c_formcreator.php'
 require_once($CFG->dirroot . '/question/type/proforma/classes/cpp_task.php');
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
+/**
+ * Creates the edit form for C++ questions.
+ */
 class cpp_form_creator extends c_form_creator {
 
     /**

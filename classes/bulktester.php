@@ -29,6 +29,9 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/feedback_renderer.
 require_once($CFG->dirroot . '/question/type/proforma/renderer.php');
 
 
+/**
+ * Runs bulk tests on all ProFormA questions.
+ */
 class proforma_bulk_tester {
 
     /**

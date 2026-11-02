@@ -26,9 +26,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 
-// copy SimpleXmlWriter class into this file because other plugin code is
-// not available during update!
-// rename to UpgradeSimpleXmlWriter in order to avoid name clashes
+/**
+ * Copy of SimpleXmlWriter class because other plugin code is not available during update.
+ *
+ * Renamed to UpgradeSimpleXmlWriter in order to avoid name clashes.
+ */
 class UpgradeSimpleXmlWriter extends XMLWriter {
 
     public function create_attribute($name, $value) {

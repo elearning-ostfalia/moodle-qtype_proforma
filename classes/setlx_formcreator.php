@@ -27,6 +27,9 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/base_formcreator.p
 require_once($CFG->dirroot . '/question/type/proforma/classes/setlx_task.php');
 require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 
+/**
+ * Creates the edit form for SetlX questions.
+ */
 class setlx_form_creator extends base_form_creator {
 
     /**

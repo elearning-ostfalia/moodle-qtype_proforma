@@ -36,6 +36,9 @@ use external_single_structure;
 use external_value;
 
 
+/**
+ * External API for the ProFormA task editor.
+ */
 class taskeditor extends \external_api {
     /**
      * Get task URL
