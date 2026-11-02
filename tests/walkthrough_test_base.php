@@ -589,8 +589,8 @@ break;
         $xmldoc = new DOMDocument();
         // use of '&nbsp' prevents loadXML from loading a document!
         $output = str_replace('&nbsp', ' ', $this->currentoutput);
-        // remove <xmp ...* ...</xmp>
-        $output = preg_replace('/\<xmp[\s\S]*?\<\/xmp\>/m', '', $output);
+        // Remove raw grader output (<pre class="... proforma_raw">...</pre>).
+        $output = preg_replace('/<pre class="[^"]*proforma_raw[^"]*">[\s\S]*?<\/pre>/m', '', $output);
 
         // $this->assertTrue($xmlDoc->loadXML($output, LIBXML_NOERROR ), 'invalid XML output from renderer');
         $this->assertTrue($xmldoc->loadXML($output  ), 'invalid XML output from renderer');

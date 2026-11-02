@@ -518,7 +518,7 @@ from https://codepen.io/cksachdev/pen/YNPmqe */
 
 /* default color is red for code (in log message box), switch to something like black */
 code#proforma-modal-message {
-    color: #111111;
+    color: #111;
 }
 
 /* Styles for the editing form. */
@@ -546,7 +546,7 @@ body#page-question-type-proforma div[id^=fgroup_id_testoptions_] {
 /* last field */
 body#page-question-type-proforma div[id^=fitem_id_testentrypoint],
 body#page-question-type-proforma div[id^=fitem_id_testcode] {
-/*    margin-top: 0;*/
+    /* margin-top: 0;*/
     padding-bottom: 0.3em;
     margin-bottom: 1em;
 }
