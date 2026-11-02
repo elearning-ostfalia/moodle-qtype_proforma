@@ -15,9 +15,10 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template qtype_proforma/taskeditor_testfile_row
+    @template qtype_proforma/taskeditor_fileref_table
 
-    The purpose of this template is to render a file in ProFormA task editor
+    The purpose of this template is to render a table with one file reference row in ProFormA task editor.
+    Further rows are created in JS by copying the row of this template.
 
     Classes required for JS:
     * none
@@ -34,9 +35,11 @@
     }
 }}
 
+<table class="dynamic_table xml_fileref_table" cellpadding="0">
+<tbody>
 <tr>
     <td>
-        <label for="xml_fileref_filename">{{#str}} taskeditorfiles, qtype_proforma {{/str}}
+        <label>{{#str}} taskeditorfiles, qtype_proforma {{/str}}
 {{#info}}
     {{>core/help_icon}}
 {{/info}}
@@ -48,14 +51,15 @@
     </td>
     <td>
         <select class="mediuminput fileref_filename xml_fileref_filename">
-            <option> </option>
+            <option value=" " label=" "> </option>
             <option>&lt;open...&gt;</option>
             <option>&lt;new file&gt;</option>
         </select>
     </td>
     <td>
-        <label for="fileref_fileref" style="display: none;">Fileref: </label>
-        <input class="tinyinput fileref_fileref" readonly="" style="display: none;"></input>
+        <label class="fileref_fileref_label" style="display: none;">Fileref:
+            <input class="tinyinput fileref_fileref" readonly="" style="display: none;">
+        </label>
     </td>
     <td>
         <button class="taskeditor-collapse" disabled="">{{#str}} taskeditorview, qtype_proforma {{/str}}</button>
@@ -70,3 +74,5 @@
     <td>
     </td>
 </tr>
+</tbody>
+</table>

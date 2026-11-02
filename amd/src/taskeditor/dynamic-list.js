@@ -53,10 +53,11 @@ export class DynamicList {
         let context = {
             'filenamelabel' : '???'
         };
-        return Templates.renderForPromise('qtype_proforma/taskeditor_fileref_row', context)
+        return Templates.renderForPromise('qtype_proforma/taskeditor_fileref_table', context)
             .then(({html, js}) => {
-                this.rowTemplateHtml = html;
-                return html;
+                // The template contains a complete table => only use the content of its row.
+                this.rowTemplateHtml = $('<div>').html(html).find('tr').first().html();
+                return this.rowTemplateHtml;
             });
     }
 

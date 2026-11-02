@@ -554,7 +554,7 @@ export class FileWrapper {
                 ui_file.root.find(".xml_file_binary").hide(); // hide binary text
                 if (!DEBUG_MODE) {
                     ui_file.root.find(".xml_file_id").hide();
-                    ui_file.root.find("label[for='xml_file_id']").hide();
+                    ui_file.root.find("label[for^='xml_file_id_']").hide();
                     ui_file.root.find(".xml_file_class").hide();
                     ui_file.root.find("label[for='xml_file_class']").hide();
                 }

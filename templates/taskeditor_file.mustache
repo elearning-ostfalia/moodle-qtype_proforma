@@ -49,15 +49,14 @@
 </span>
 
 <p>
-    <label for='xml_file_filename'>{{#str}} filename, qtype_proforma {{/str}}<span class='red'>*</span> </label>
-    <input class='mediuminput xml_file_filename'>
-    </input>
+    <label for='xml_file_filename_{{ fileid }}'>{{#str}} filename, qtype_proforma {{/str}}<span class='red'>*</span> </label>
+    <input id='xml_file_filename_{{ fileid }}' class='mediuminput xml_file_filename'>
 
-    <label for='xml_file_id'>ID: </label>
-    <input class='tinyinput xml_file_id' value='{{ fileid }}'/>
+    <label for='xml_file_id_{{ fileid }}'>ID: </label>
+    <input id='xml_file_id_{{ fileid }}' class='tinyinput xml_file_id' value='{{ fileid }}'>
 
-    <label for='xml_file_type'>{{#str}} taskeditorstore, qtype_proforma {{/str}} </label>
-    <select class='xml_file_type'>
+    <label for='xml_file_type_{{ fileid }}'>{{#str}} taskeditorstore, qtype_proforma {{/str}} </label>
+    <select id='xml_file_type_{{ fileid }}' class='xml_file_type'>
         <option value = 'embedded' selected='selected'>{{#str}} taskeditorembedded, qtype_proforma {{/str}}</option>
         <option value = 'file'>{{#str}} taskeditorattached, qtype_proforma {{/str}}</option>
     </select>
@@ -66,8 +65,8 @@
 </p>
 
 <p style='display: none'>
-    <label for='xml_internal_description'>Internal Description</label>
-    <textarea rows='1' class='xml_internal_description'></textarea>
+    <label for='xml_internal_description_{{ fileid }}'>Internal Description</label>
+    <textarea id='xml_internal_description_{{ fileid }}' rows='1' class='xml_internal_description'></textarea>
 </p>
 
 <p>
@@ -76,9 +75,7 @@
 
     <span class='xml_file_non_binary'>
         <button class='xml_file_edit'>{{#str}} taskeditoredit, qtype_proforma {{/str}}</button>
-        <label for='xml_file_editor_close'>
-            <button class='xml_file_editor_close'>{{#str}} taskeditorhide, qtype_proforma {{/str}}</button>
-        </label>
+        <button class='xml_file_editor_close'>{{#str}} taskeditorhide, qtype_proforma {{/str}}</button>
         <span>
             <textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>
         </span>

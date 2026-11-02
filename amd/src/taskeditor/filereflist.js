@@ -118,7 +118,7 @@ export class FileReferenceList extends DynamicList {
         FileReferenceList.rowEnableEditorButton(root, false);
         if (!DEBUG_MODE) {
             root.find(".fileref_fileref").hide();
-            root.find("label[for='fileref_fileref']").hide();
+            root.find("label.fileref_fileref_label").hide();
         }
 
         // register dragenter, dragover.
@@ -229,7 +229,7 @@ export class FileReferenceList extends DynamicList {
                 if (!DEBUG_MODE) {
                     // hide new fileref fields
                     table_body.find(".fileref_fileref").hide();
-                    table_body.find("label[for='fileref_fileref']").hide();
+                    table_body.find("label.fileref_fileref_label").hide();
                 }
                 FileReferenceList.addCallbacks(newRow[0]);
             });
