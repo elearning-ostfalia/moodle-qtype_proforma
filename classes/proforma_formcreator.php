@@ -35,7 +35,7 @@ class proforma_form_creator extends base_form_creator {
     /**
      * proforma_form_creator constructor.
      *
-     * @param $form
+     * @param MoodleQuickForm|stdClass $form form instance OR formdata
      */
     public function __construct($form) {
         parent::__construct($form, new qtype_proforma_proforma_task());
@@ -51,9 +51,9 @@ class proforma_form_creator extends base_form_creator {
      * validate field values
      *
      * @param qtype_proforma_edit_form $editor actual editor instance
-     * @param $fromform Validation argument
-     * @param $files Validation argument
-     * @param $errors Array with error messages (so far)
+     * @param array $fromform Validation argument
+     * @param array $files Validation argument
+     * @param array $errors Array with error messages (so far)
      * @return array with error messages
      */
     public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
@@ -89,9 +89,9 @@ class proforma_form_creator extends base_form_creator {
      * Checks if the replaced taskfile is valid
      *
      * @param qtype_proforma_edit_form $editor actual editor instance
-     * @param type $fromform
-     * @param type $errors
-     * @return type $errors
+     * @param array $fromform form data
+     * @param array $errors errors array
+     * @return array errors
      */
     protected function validate_taskfile(qtype_proforma_edit_form &$editor, $fromform, $errors) {
         // Get Taskfile from draft area.
@@ -131,10 +131,10 @@ class proforma_form_creator extends base_form_creator {
      * checks if two task files are compatble
      *
      * @param qtype_proforma_edit_form $editor actual editor instance
-     * @param type $draftfile
-     * @param type $taskfile
-     * @param type $errors
-     * @return type $errors
+     * @param stored_file $draftfile new task file (draft)
+     * @param stored_file $taskfile old task file
+     * @param array $errors errors array
+     * @return array errors
      */
     protected function check_if_taskfiles_are_compatible(qtype_proforma_edit_form &$editor, $draftfile, $taskfile, $errors) {
         // Extract relevent data for both files.
@@ -212,8 +212,8 @@ class proforma_form_creator extends base_form_creator {
     /**
      * gets the task.xml file from a task file stored in Moodle
      *
-     * @param type $moodlefile
-     * @return type
+     * @param stored_file $moodlefile task file
+     * @return string content of task.xml
      */
     protected function get_task_xml($moodlefile) {
         $filename = pathinfo($moodlefile->get_filename(), PATHINFO_BASENAME);
@@ -231,8 +231,8 @@ class proforma_form_creator extends base_form_creator {
 
     /**
      * gets the task.xml file from a task file stored as draft in Moodle
-     * @param type $draftfile
-     * @return boolean
+     * @param stored_file $draftfile zipped task file
+     * @return string content of task.xml
      * @throws Exception
      */
     protected function get_task_xml_from_zip($draftfile) {
@@ -284,7 +284,7 @@ class proforma_form_creator extends base_form_creator {
     /**
      * Add response template editor for main template and links for further templates.
      *
-     * @param $question
+     * @param stdClass $question question data
      */
     protected function add_responsetemplate($question) {
         $mform = $this->_form;
@@ -298,7 +298,8 @@ class proforma_form_creator extends base_form_creator {
     /**
      * Display grader settings.
      *
-     * @param $question
+     * @param stdClass $question question data
+     * @param context $context context
      */
     public function add_grader_settings($question, $context) {
         // ProFormA fields.
@@ -344,7 +345,7 @@ class proforma_form_creator extends base_form_creator {
     /**
      * Modify respeatoptions
      *
-     * @param $repeatoptions
+     * @param array $repeatoptions repeat options
      */
     protected function adjust_test_repeatoptions(&$repeatoptions) {
         // DISABLE testtype and test identifier for imported tasks.
@@ -358,7 +359,7 @@ class proforma_form_creator extends base_form_creator {
     /**
      * Modify repeatarray in add_tests.
      *
-     * @param $repeatarray
+     * @param array $repeatarray repeat array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -367,9 +368,9 @@ class proforma_form_creator extends base_form_creator {
     /**
      * Add test section
      *
-     * @param $question
-     * @param $questioneditform
-     * @return int
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     * @return int number of tests
      */
     protected function add_tests($question, $questioneditform) {
         return $this->add_test_fields($question, $questioneditform, 'unittest');
@@ -381,10 +382,10 @@ class proforma_form_creator extends base_form_creator {
     }
 
     /**
-     * @param $question
-     * @param $questioneditform
-     * @param $testtype
-     * @return int|null
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     * @param string $testtype default test type
+     * @return int number of tests
      */
     protected function add_test_fields($question, $questioneditform, $testtype) {
         if (!isset($question->id)) {
@@ -397,10 +398,9 @@ class proforma_form_creator extends base_form_creator {
     /**
      * Prepare question to fit form field names and values.
      *
-     * @param $question
-     * @param category $cat
-     * @param MoodleQuickForm $form
-     * @param qtype_proforma_edit_form $editor
+     * @param stdClass $question question data
+     * @param int $cat context id of category
+     * @param qtype_proforma_edit_form $editor question edit form
      */
     public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
         parent::data_preprocessing($question, $cat, $editor);
@@ -441,8 +441,7 @@ class proforma_form_creator extends base_form_creator {
     /**
      * handle polymorphic behaviour when saving a question
      *
-     * @param $formdata
-     * @param $options
+     * @param stdClass $options question options record
      */
     public function save_question_options(&$options) {
         $formdata = $this->_form;

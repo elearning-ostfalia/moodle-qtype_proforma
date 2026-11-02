@@ -498,7 +498,11 @@ class walkthrough_test_base extends qbehaviour_walkthrough_test_base {
         ));
     }
 
-    /** iterates through array and removes all attached ids that do not match a file  */
+    /**
+     * iterates through array and removes all attached ids that do not match a file
+     * @param array|null $attachment list of attachment ids
+     * @return array|null
+     */
     private function get_attachments_with_content($attachment) {
         if (is_null($attachment)) {
             return $attachment;

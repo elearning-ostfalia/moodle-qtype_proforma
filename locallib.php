@@ -43,7 +43,7 @@ function is_admin() {
 
 /**
  * checks if the current user is allowed to see ProFormA system information
- * @param type $contextid: current course
+ * @param int $contextid current course
  * @return bool
  */
 function can_view_systeminfo($contextid) {
@@ -131,11 +131,11 @@ function get_groupname($context) {
 /**
  * Helper function for converting a text area into a CodeMirror window
  *
- * @param $textareaid: html identifier
- * @param string $mode: Syntax highlighting mode
- * @param null $header: header in form
- * @param bool $readonly: is input disabled?
- * @param bool $loadjquery: does jquery need to be loaded by page?
+ * @param string $textareaid html identifier
+ * @param string $mode Syntax highlighting mode
+ * @param string|null $header header in form
+ * @param bool $readonly is input disabled?
+ * @param bool $loadjquery does jquery need to be loaded by page?
  */
 function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = false, $loadjquery = true) {
     if (get_config('qtype_proforma', 'usecodemirror')) {

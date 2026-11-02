@@ -701,9 +701,10 @@ Prüfung beendet.
 
     /**
      * Generate expected grader info
-     * @param $number number for collapsible region (sequence)
-     * @param $graderinfo grader info string
-     * @param $response test response string
+     * @param int $number number for collapsible region (sequence)
+     * @param string $graderinfo grader info string
+     * @param string $response test response string
+     * @param string|null $svn optional svn uri
      * @return string
      */
     private function render_graderinfo($number, $graderinfo, $response, $svn = null) {
@@ -733,13 +734,14 @@ Prüfung beendet.
     }
 
     /** Generate output for a complete test
-     * @param $number (sequence)
-     * @param $score expected score for this test
-     * @param $total
-     * @param $title Title of this test (from grading hints)
-     * @param $description Description of the test (from grading hints)
-     * @param $logs
+     * @param int $number (sequence)
+     * @param float $score expected score for this test
+     * @param float|null $total
+     * @param string $title Title of this test (from grading hints)
+     * @param string $description Description of the test (from grading hints)
+     * @param array $logs
      * @param bool $internalerror
+     * @param bool $collapsed
      * @return string
      */
     private function render_collapsible_region_score($number, $score, $total, $title, $description, $logs, $internalerror = false, $collapsed = false) {

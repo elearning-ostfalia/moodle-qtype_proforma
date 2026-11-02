@@ -59,6 +59,7 @@ class feedback_renderer {
      * feedback_renderer constructor.
      *
      * @param qtype_proforma_renderer $renderer
+     * @param qtype_proforma_question $question
      */
     public function __construct(qtype_proforma_renderer $renderer, $question) {
         $this->_mainrenderer = $renderer;
@@ -67,7 +68,7 @@ class feedback_renderer {
 
     /**
      * creates the html fragmenbt for a single freedback element
-     * @param $feedback
+     * @param SimpleXMLElement $feedback
      * @param bool $teacher
      * @param bool $subtest
      * @param bool $printpassedinfo
@@ -152,7 +153,7 @@ class feedback_renderer {
 
     /**
      * creates the html fragment for a subtest result
-     * @param $testresult
+     * @param SimpleXMLElement $testresult
      * @return string
      */
     private function render_subtest_result($testresult) {
@@ -180,8 +181,8 @@ class feedback_renderer {
     /**
      * renders a test with its subtests
      *
-     * @param $subtestsresponse
-     * @param $result
+     * @param SimpleXMLElement $subtestsresponse
+     * @param string $result
      */
     private function render_subtest_response($subtestsresponse, &$result) {
 
@@ -193,6 +194,8 @@ class feedback_renderer {
     /**
      * seaches the test response for a regular expression.
      * If more than one regular expression is found then only the first one is returned.
+     * @param SimpleXMLElement $testresponse
+     * @return string|null
      */
     private function search_regexp($testresponse) {
         if (!get_config('qtype_proforma', 'regexpfromgrader')) {
@@ -217,11 +220,11 @@ class feedback_renderer {
     }
     /**
      * creates the html fragment for a test title
-     * @param $test
-     * @param $score
-     * @param $internalerror
-     * @param $result
-     * @param $allcorrect
+     * @param SimpleXMLElement $test
+     * @param float|null $score
+     * @param bool $internalerror
+     * @param string $result
+     * @param bool $allcorrect
      * @throws feedback_exception
      */
     private function render_test_title($test, $score, $internalerror, &$result, &$allcorrect) {
@@ -351,8 +354,8 @@ class feedback_renderer {
     }
 
     /**
-     * @param $testresponse
-     * @param $result
+     * @param SimpleXMLElement $testresponse
+     * @param string $result
      * @return array
      */
     private function render_test_response($testresponse, &$result): array {
@@ -402,7 +405,7 @@ class feedback_renderer {
     /**
      * converts the ProFormA response to html
      *
-     * @param $message
+     * @param string $message
      * @return string
      */
     public function render_proforma2_message($message) {
@@ -504,9 +507,10 @@ class feedback_renderer {
 
     /**
      * generate info text about the grader
-     * @param $message
+     * @param string $message
      * @param SimpleXMLElement $response
      * @param string $result
+     * @param int $contextid
      * @return string
      */
     private function _render_grader_info($message, SimpleXMLElement $response, string $result, $contextid): string {

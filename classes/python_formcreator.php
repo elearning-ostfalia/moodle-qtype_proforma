@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
 class python_form_creator extends base_form_creator {
     /**
      * python_form_creator constructor.
-     * @param type $form form instance OR formdata
+     * @param MoodleQuickForm|stdClass $form form instance OR formdata
      * @param bool $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
@@ -56,9 +56,9 @@ class python_form_creator extends base_form_creator {
     /**
      * add Java specific test section
      *
-     * @param $question
-     * @param $questioneditform
-     * @return int
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     * @return int number of tests
      */
     protected function add_tests($question, $questioneditform) {
         // Add Python Unittest.
@@ -68,8 +68,8 @@ class python_form_creator extends base_form_creator {
     /**
      * Add grader options/information.
      *
-     * @param qtype_proforma_question $question question
-     * @param type $context
+     * @param stdClass $question question data
+     * @param context $context context
      */
     public function add_grader_settings($question, $context) {
         parent::add_grader_settings($question, $context);

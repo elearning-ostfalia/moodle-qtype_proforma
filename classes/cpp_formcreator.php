@@ -33,8 +33,8 @@ class cpp_form_creator extends c_form_creator {
     /**
      * cpp_form_creator constructor.
      *
-     * @param $form
-     * @param null $newquestion new question indicator
+     * @param MoodleQuickForm|stdClass $form form instance OR formdata
+     * @param bool $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
         parent::__construct($form, $newquestion);
@@ -51,9 +51,9 @@ class cpp_form_creator extends c_form_creator {
     /**
      * add C++ specific test section
      *
-     * @param $question
-     * @param $questioneditform
-     * @return int
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     * @return int number of tests
      */
     protected function add_tests($question, $questioneditform) {
         $this->_form->addElement('html', get_string('gtest_help', 'qtype_proforma'));
@@ -65,8 +65,8 @@ class cpp_form_creator extends c_form_creator {
     /**
      * Add test settings.
      *
-     * @param $question
-     * @param $questioneditform
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
      */
     public function add_test_settings($question, $questioneditform) {
         parent::add_test_settings($question, $questioneditform);

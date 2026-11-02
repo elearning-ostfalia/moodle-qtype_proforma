@@ -376,7 +376,7 @@ class qtype_proforma extends question_type {
      * Delete a question.
      *
      * (parent function also calls delete_files)
-     * @param $questionid
+     * @param int $questionid the question being deleted
      * @param int $contextid
      */
     public function delete_question($questionid, $contextid) {
@@ -526,10 +526,10 @@ class qtype_proforma extends question_type {
     /**
      * exports question from question bank to moodle xml
      *
-     * @param $data
-     * @param $question
+     * @param array $data the xml data
+     * @param object $question the question object
      * @param qformat_xml $format
-     * @param null $extra
+     * @param mixed $extra
      * @return object
      * @throws coding_exception
      */
@@ -608,9 +608,9 @@ class qtype_proforma extends question_type {
     /**
      * Export question to the Moodle XML format
      *
-     * @param $question
+     * @param object $question the question data
      * @param qformat_xml $format
-     * @param null $extra
+     * @param mixed $extra
      * @return string
      */
     public function export_to_xml($question, qformat_xml $format, $extra = null) {

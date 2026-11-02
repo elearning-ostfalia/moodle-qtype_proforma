@@ -117,8 +117,8 @@ class qtype_proforma_grader {
     /**
      * generates the grade from the given input parameters
      *
-     * @param $result
-     * @param $httpcode
+     * @param string|bool $result
+     * @param int|null $httpcode
      * @param qtype_proforma_question $question
      * @return array
      */
@@ -129,7 +129,7 @@ class qtype_proforma_grader {
 
     /**
      * send grading request via HTTP post
-     * @param $postfields
+     * @param array $postfields
      * @param qtype_proforma_question $question
      * @return array
      * @throws coding_exception
@@ -174,10 +174,9 @@ class qtype_proforma_grader {
 
     /** sends a student's uploaded file to the grader. Exactly one file is supported.
      *
-     * @param $file
-     * @param $filename
-     * @param $taskrepo
-     * @param $taskpath
+     * @param stored_file $file
+     * @param qtype_proforma_question $question
+     * @return array
      */
     public function send_file_to_grader($file, qtype_proforma_question $question) {
 
@@ -194,7 +193,7 @@ class qtype_proforma_grader {
 
     /**
      * handles grading request for file upload with more than one file
-     * @param $file
+     * @param stored_file[] $file
      * @param qtype_proforma_question $question
      * @throws coding_exception
      */
@@ -204,7 +203,7 @@ class qtype_proforma_grader {
 
     /**
      * sends a grading request for a submission located in a version control system
-     * @param $uri
+     * @param string $uri
      * @param qtype_proforma_question $question
      * @throws coding_exception
      */
@@ -214,10 +213,8 @@ class qtype_proforma_grader {
 
     /** sends the sudent's submitted source code to the grader
      *
-     * @param $code
-     * @param $classname
-     * @param $taskrepo
-     * @param $taskpath
+     * @param string $code
+     * @param qtype_proforma_question $question
      * @return mixed|string
      */
     public function send_code_to_grader($code, qtype_proforma_question $question) {

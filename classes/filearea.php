@@ -37,7 +37,7 @@ class qtype_proforma_filearea {
     /**
      * qtype_proforma_filearea constructor.
      *
-     * @param $name name of qtype_proforma filearea
+     * @param string $name name of qtype_proforma filearea
      */
     public function __construct($name) {
         $this->_name = $name;
@@ -54,7 +54,7 @@ class qtype_proforma_filearea {
     /**
      * Helper function for splitting filename into filepath and basename for use
      * in file_storage function of Moodle
-     * @param $filename
+     * @param string $filename
      * @return array
      */
     public static function split_filename($filename) {
@@ -70,8 +70,8 @@ class qtype_proforma_filearea {
     /**
      * for data_preprocessing
      *
-     * @param $contextid
-     * @param $question
+     * @param int $contextid
+     * @param stdClass $question
      */
     public function prepare_draft($contextid, &$question) {
         $draftid = file_get_submitted_draft_itemid($this->_name);
@@ -93,8 +93,8 @@ class qtype_proforma_filearea {
     /**
      * get all files in filearea
      *
-     * @param $contextid
-     * @param $questionid
+     * @param int $contextid
+     * @param int $questionid
      * @return array
      * @throws coding_exception
      */
@@ -112,7 +112,7 @@ class qtype_proforma_filearea {
 
     /**
      * generates the filename for the user interface
-     * @param $file object
+     * @param stored_file $file
      * @return string filename
      */
     private static function get_visible_filename($file) {
@@ -132,8 +132,8 @@ class qtype_proforma_filearea {
     /**
      * get string with filename list
      *
-     * @param $contextid
-     * @param $questionid
+     * @param int $contextid
+     * @param int $questionid
      * @return string
      * @throws coding_exception
      */
@@ -153,8 +153,8 @@ class qtype_proforma_filearea {
     /**
      * returns the filenames as link list
      *
-     * @param $contextid
-     * @param $questionid
+     * @param int $contextid
+     * @param int $questionid
      * @return string
      * @throws coding_exception
      */
@@ -178,9 +178,9 @@ class qtype_proforma_filearea {
     /** save draft files to filearea and create value for database column
      * (todo: do we really need a database column for that? redundant)
      *
-     * @param $formdata
-     * @param $options
-     * @param $dbcolumn
+     * @param stdClass $formdata
+     * @param stdClass $options
+     * @param string|null $dbcolumn
      * @throws coding_exception
      */
     public function save_draft($formdata, &$options, $dbcolumn) {
@@ -221,12 +221,10 @@ class qtype_proforma_filearea {
 
     /** save text as file with given filename in filearea
      *
-     * @param $contextid
-     * @param $filearea
-     * @param $filename
-     * @param $content
-     * @param $itemid ($question->id)
-     * @param bool $cleanfilearea
+     * @param int $contextid
+     * @param int|null $itemid ($question->id)
+     * @param string $filename
+     * @param string $content
      * @return bool
      * @throws \coding_exception
      */
@@ -270,9 +268,9 @@ class qtype_proforma_filearea {
     /**
      * Helper function for reading a text file stored 'in Moodle'.
      *
-     * @param $contextid
-     * @param $filename
-     * @param $itemid
+     * @param int $contextid
+     * @param string $filename
+     * @param int $itemid
      * @return string file content
      */
     public function read_file_content($contextid, $filename, $itemid) {
@@ -284,9 +282,9 @@ class qtype_proforma_filearea {
     }
 
     /** returns the file with the given filename
-     * @param $contextid
-     * @param $filename
-     * @param $itemid
+     * @param int $contextid
+     * @param string $filename
+     * @param int $itemid
      * @return bool|stored_file
      */
     public function get_file($contextid, $filename, $itemid) {

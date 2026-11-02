@@ -50,9 +50,9 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
     /**
      * Set formdata from grading hints
      *
-     * @param $question question object
-     * @param $ref test ref
-     * @param $weight test weight
+     * @param stdClass $question question object
+     * @param string $ref test ref
+     * @param string $weight test weight
      * @return bool true if handled otherweise false
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)*      *
      */
@@ -63,8 +63,8 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
     /**
      * is testcode for given test index set?
      *
-     * @param $formdata
-     * @param $index
+     * @param stdClass $formdata
+     * @param int $index
      * @return bool
      */
     protected function is_test_set($formdata, $index) {
@@ -75,7 +75,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
     /**
      * Get number of tests from grading hints.
      *
-     * @param $gradinghints
+     * @param string $gradinghints
      * @return int
      */
     public function get_count_tests($gradinghints) {
@@ -100,7 +100,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
     /**
      * get number of unit tests (if any), to be overriden
      *
-     * @param $gradinghints
+     * @param string $gradinghints
      * @return int
      */
     public function get_count_unit_tests($gradinghints) {
@@ -110,7 +110,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
     /**
      * override: task file must not be created.
      *
-     * @param type $formdata
+     * @param stdClass $formdata
      * @throws coding_exception
      */
     public function create_task_file($formdata) {
@@ -120,7 +120,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
     /**
      * extract data for validating new taskfile
      *
-     * @param $taskfile taskfile to extract data from
+     * @param string $taskfile taskfile to extract data from
      */
     public static function extract_validation_data_from_taskfile($taskfile) {
         try {
@@ -159,7 +159,7 @@ class qtype_proforma_proforma_task extends qtype_proforma_base_task {
     /**
      * extract data for validating new taskfile from internal grading hints
      *
-     * @param $gradinghints gradinghints to extract data from
+     * @param string $gradinghints gradinghints to extract data from
      */
     public static function extract_validation_data_from_gradinghints($gradinghints) {
         $gh = new SimpleXMLElement($gradinghints, LIBXML_NOERROR);

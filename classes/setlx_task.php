@@ -40,7 +40,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
     /**
      * is compiler option enabled?
      *
-     * @param $formdata
+     * @param stdClass $formdata
      * @return bool
      */
     private static function has_compiler($formdata) {
@@ -49,8 +49,8 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
 
     /**
      * add programming language to XML
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
      */
     protected function add_programming_language_to_xml(SimpleXmlWriter $xw, $formdata) {
         // Set fix programming language (might be replaced by $formdata->proglangversion).
@@ -61,8 +61,8 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
     /**
      * add test files to XML.
      *
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
      */
     protected function add_files_to_xml(SimpleXmlWriter $xw, $formdata) {
         if (self::has_compiler($formdata)) {
@@ -89,8 +89,9 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
     /**
      * Add tests to xml.
      *
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
+     * @param string $testtype
      */
     protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata, $testtype = 'unittest') {
         // Create Setlx Syntax check.
@@ -120,8 +121,8 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
     /**
      * Add tests to LMS internal grading hints.
      *
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
      */
     protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
         if (self::has_compiler($formdata)) {
@@ -159,10 +160,10 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
      * extract form data from task test.
      * Override if needed!
      *
-     * @param type $question: return instance
-     * @param type $test: test entity from task
-     * @param type $files: files array
-     * @param type $index: index of next unit test (in/out)
+     * @param stdClass $question return instance
+     * @param SimpleXMLElement $test test entity from task
+     * @param array $files files array
+     * @param int $index index of next unit test (in/out)
      */
     protected function extract_formdata_from_taskfile_test($question, $test, $files, &$index) {
         switch ($test['id']) {

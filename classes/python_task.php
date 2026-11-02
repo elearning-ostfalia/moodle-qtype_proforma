@@ -32,7 +32,7 @@ class qtype_proforma_python_task extends qtype_proforma_base_task {
     /**
      * add extra namespaces to XML
      *
-     * @param $xw
+     * @param SimpleXmlWriter $xw
      */
     protected function add_namespace_to_xml(SimpleXmlWriter $xw) {
         $xw->create_attribute('xmlns:unit', 'urn:proforma:tests:unittest:v1.1');
@@ -40,8 +40,8 @@ class qtype_proforma_python_task extends qtype_proforma_base_task {
 
     /**
      * add programming language to XML
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
      */
     protected function add_programming_language_to_xml(SimpleXmlWriter $xw, $formdata) {
         $xw->create_attribute('version', '');
@@ -55,8 +55,8 @@ class qtype_proforma_python_task extends qtype_proforma_base_task {
     /**
      * add unittest element to test in XML
      * @param SimpleXmlWriter $xw
-     * @param $index
-     * @param $formdata
+     * @param int $index
+     * @param stdClass $formdata
      * @return void
      */
     protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index, $formdata) {
@@ -68,10 +68,10 @@ class qtype_proforma_python_task extends qtype_proforma_base_task {
      * called by extract_formdata_from_taskfile in order to
      * extract form data from task test.
      *
-     * @param type $question: return instance
-     * @param type $test: test entity from task
-     * @param type $files: files array
-     * @param type $index: index of next unit test (in/out)
+     * @param stdClass $question return instance
+     * @param SimpleXMLElement $test test entity from task
+     * @param array $files files array
+     * @param int $index index of next unit test (in/out)
      */
     /*
     protected function extract_formdata_from_test($question, $test, $files, &$index) {

@@ -34,7 +34,7 @@ abstract class qtype_proforma_base_task {
 
     /**
      * constructor
-     * @param $reservedids
+     * @param array $reservedids
      */
     public function __construct($reservedids = []) {
         $this->_reservedids = $reservedids;
@@ -66,8 +66,8 @@ abstract class qtype_proforma_base_task {
     /**
      * is testcode for given test index set?
      *
-     * @param $formdata
-     * @param $index
+     * @param stdClass $formdata
+     * @param int $index
      * @return bool
      */
     protected function is_test_set($formdata, $index) {
@@ -99,7 +99,7 @@ abstract class qtype_proforma_base_task {
 
     /**
      * Add extra namespaces
-     * @param $xw
+     * @param SimpleXmlWriter $xw
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)*
      */
     protected function add_namespace_to_xml(SimpleXmlWriter $xw) {
@@ -120,8 +120,8 @@ abstract class qtype_proforma_base_task {
     /**
      * Add test specific data to LMS internal grading hints
      *
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
      */
     protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
         if (!isset($formdata->testid)) {
@@ -148,7 +148,7 @@ abstract class qtype_proforma_base_task {
 
     /** create task.xml from formdata
      *
-     * @param $formdata
+     * @param stdClass $formdata
      * @return string
      */
     public function create_task_file($formdata) {
@@ -231,8 +231,7 @@ abstract class qtype_proforma_base_task {
     /**
      * Create LMS internal grading hints.
      *
-     * @param $formdata
-     * @param bool $withprolog
+     * @param stdClass $formdata
      * @return string
      */
     public function create_lms_grading_hints($formdata) {
@@ -264,9 +263,10 @@ abstract class qtype_proforma_base_task {
     /**
      * Store task file in Moodle.
      *
-     * @param $content task file (xml)
-     * @param $filename task filename
-     * @param $draftitemid draftid
+     * @param string $content task file (xml)
+     * @param string $filename task filename
+     * @param int $contextid context id
+     * @param int $questionid question id
      * @throws coding_exception
      */
     public static function store_task_file($content, $filename, $contextid, $questionid) {
@@ -293,8 +293,8 @@ abstract class qtype_proforma_base_task {
 
     /**
      * extract form data from LMS internal grading hints
-     * @param $question
-     * @param $mform
+     * @param stdClass $question
+     * @param MoodleQuickForm $mform
      */
     public function extract_formdata_from_gradinghints($question, $mform) {
         $question->testtitle = array();
@@ -386,8 +386,8 @@ abstract class qtype_proforma_base_task {
      * returns the task.xml.
      * Does not work for zipped task files!
      *
-     * @param $category
-     * @param $question
+     * @param int $category
+     * @param stdClass $question
      * @return string
      * @throws moodle_exception
      */
@@ -405,8 +405,8 @@ abstract class qtype_proforma_base_task {
     /**
      * extract formdata from taskfile
      *
-     * @param $category
-     * @param $question
+     * @param int $category
+     * @param stdClass $question
      */
     public function extract_formdata_from_taskfile($category, $question) {
         $content = $this->get_task_xml($category, $question);
@@ -450,10 +450,10 @@ abstract class qtype_proforma_base_task {
      * extract form data from task test.
      * Override if needed!
      *
-     * @param type $question: return instance
-     * @param type $test: test entity from task
-     * @param type $files: files array
-     * @param type $index: index of next unit test (in/out)
+     * @param stdClass $question return instance
+     * @param SimpleXMLElement $test test entity from task
+     * @param array $files files array
+     * @param int $index index of next unit test (in/out)
      */
     protected function extract_formdata_from_taskfile_test($question, $test, $files, &$index) {
         /*foreach ($this->_reservedids as $reserved) {
@@ -514,9 +514,9 @@ abstract class qtype_proforma_base_task {
     /**
      * return the testfile from draft area
      *
-     * @param type $formdata
+     * @param stdClass $formdata
      * @param int $testindex
-     * @return type
+     * @return stored_file[]
      * @global type $USER
      */
     protected static function _get_draft_testfiles($formdata, $testindex) {
@@ -531,7 +531,8 @@ abstract class qtype_proforma_base_task {
     /**
      * Default implementaion of adding tests to XML
      * @param SimpleXmlWriter $xw
-     * @param $formdata
+     * @param stdClass $formdata
+     * @param string $testtype
      * @return void
      * @throws coding_exception
      */
@@ -582,7 +583,7 @@ abstract class qtype_proforma_base_task {
     /**
      * get number of Unit tests without any other test types.
      *
-     * @param $gradinghints
+     * @param string $gradinghints
      * @return int
      */
     public function get_count_unit_tests($gradinghints) {
@@ -609,8 +610,8 @@ abstract class qtype_proforma_base_task {
     /**
      * add files to XML output.
      *
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
      */
     protected function add_files_to_xml(SimpleXmlWriter $xw, $formdata) {
         // Create Unit test files.

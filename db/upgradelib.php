@@ -46,9 +46,9 @@ class UpgradeSimpleXmlWriter extends XMLWriter {
 
 /**
  * rename old file in filearea to new filename (filepath is stored filepath)
- * @param $questionid
- * @param $filename
- * @param $filearea
+ * @param int $questionid
+ * @param string $filename
+ * @param string $filearea
  * @throws coding_exception
  * @throws dml_exception
  */
@@ -321,9 +321,9 @@ function update_proforma_download_filearea() {
 }
 
 /**
- * @param $DB
- * @param $itemid
- * @return null
+ * @param moodle_database $DB
+ * @param int $itemid
+ * @return int contextid
  * @throws moodle_exception
  */
 function get_proforma_contextid($DB, $itemid) {

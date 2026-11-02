@@ -145,6 +145,8 @@ class behat_proforma extends behat_base {
 
     /**
      * @When /^I click on "([^"]*)" in "([^"]*)" contextmenu$/
+     * @param string $menuelement the menu element text
+     * @param string $nodename the context menu node name
      */
     public function i_click_on_menu($menuelement, $nodename) {
         $this->execute("behat_general::i_wait_seconds", [0.5]);
@@ -160,6 +162,7 @@ class behat_proforma extends behat_base {
 
     /**
      * @When /^I select "([^"]*)" radio button$/
+     * @param string $name the radio button id
      */
     public function i_select_radio_button($name) {
         $page = $this->getSession()->getPage();
@@ -222,8 +225,8 @@ class behat_proforma extends behat_base {
     /**
      * Given the text of a link, download the linked file and return the contents.
      *
-     * This is a helper method used by {@link following_should_download_bytes()}
-     * and {@link following_should_download_between_and_bytes()}
+     * This is a helper method used by {@see behat_general::following_should_download_bytes()}
+     * and {@see self::following_should_download_file_with_between_and_bytes()}
      *
      * @param string $link the text of the link.
      * @return string the content of the downloaded file.
@@ -258,6 +261,8 @@ class behat_proforma extends behat_base {
      * @Then /^the field with name "(?P<name_string>(?:[^"]|\\")*)" matches value "(?P<value_string>(?:[^"]|\\")*)"$/
      * @throws ExpectationException
      * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $label the field name
+     * @param string $value the expected value
      * @return void
      */
     public function the_field_with_name_matches_value($label, $value) {
@@ -307,6 +312,8 @@ class behat_proforma extends behat_base {
      * @Then /^the field "(?P<label_string>(?:[^"]|\\")*)" matches multiline$/
      * @throws ExpectationException
      * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $label the field label
+     * @param PyStringNode $value the expected value
      * @return void
      */
     public function the_field_matches_multiline($label, PyStringNode $value) {
@@ -331,6 +338,8 @@ class behat_proforma extends behat_base {
      * @Then /^the field "(?P<label_string>(?:[^"]|\\")*)" starts with "(?P<value_string>(?:[^"]|\\")*)"$/
      * @throws ExpectationException
      * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $label the field label
+     * @param string $value the expected prefix
      * @return void
      */
     public function the_field_starts_with($label, $value) {
@@ -354,6 +363,8 @@ class behat_proforma extends behat_base {
      * @Then /^the "(?P<name_string>(?:[^"]|\\")*)" checkbox is "(?P<value_string>(?:[^"]|\\")*)"$/
      * @throws ExpectationException
      * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $name the checkbox name
+     * @param string $value the expected state
      * @return void
      */
     public function the_checkbox_is($name, $value) {
@@ -387,6 +398,7 @@ class behat_proforma extends behat_base {
      * Check checkbox.
      *
      * @When /^I check the "([^"]*)" checkbox$/
+     * @param string $name the checkbox name
      */
     public function i_checkc_checkbox($name) {
         $this->getSession()->getPage()->checkField($name);
@@ -396,6 +408,7 @@ class behat_proforma extends behat_base {
      * Uncheck checkbox.
      *
      * @When /^I uncheck the "([^"]*)" checkbox$/
+     * @param string $name the checkbox name
      */
     public function i_uncheck_checkbox($name) {
         $this->getSession()->getPage()->uncheckField($name);
@@ -405,6 +418,8 @@ class behat_proforma extends behat_base {
      * Set codemirror text with javascript in *Javascript* testcases.
      *
      * @When /^I set the codemirror "(?P<name_string>(?:[^"]|\\")*)" to "(?P<value_string>(?:[^"]|\\")*)"$/
+     * @param string $name the textarea name
+     * @param string $value the value to set
      */
     public function set_the_codemirror_to($name, $value) {
         $command = 'return (function() { $("#id_' . $name .
@@ -417,6 +432,7 @@ class behat_proforma extends behat_base {
      * Set editor text (in Codemirror) with javascript in explorer *Javascript* testcases.
      *
      * @When /^I set the explorer editor text to "(?P<value_string>(?:[^"]|\\")*)"$/
+     * @param string $value the text to set
      */
     public function set_editor_text_to($value) {
         // Only one Codemirror element is visible.
@@ -434,6 +450,7 @@ class behat_proforma extends behat_base {
      * Set editor text (in Codemirror) with javascript in explorer *Javascript* testcases.
      *
      * @When /^I set the explorer editor text to multiline:$/
+     * @param PyStringNode $value the text to set
      */
     public function set_editor_text_to_multiline(PyStringNode $value) {
         $search = array("\r", "\n");
@@ -454,6 +471,8 @@ class behat_proforma extends behat_base {
      * Set codemirror text with javascript in *Javascript* testcases.
      *
      * @When /^I set the codemirror "(?P<name_string>(?:[^"]|\\")*)" to multiline:$/
+     * @param string $name the textarea name
+     * @param PyStringNode $value the value to set
      */
     public function set_the_codemirror_to_multiline($name, PyStringNode $value) {
         $search = array("\r", "\n");
@@ -470,6 +489,7 @@ class behat_proforma extends behat_base {
      * Set codemirror answer with javascript in *Javascript* testcases.
      *
      * @When /^I set the response to$/
+     * @param PyStringNode $value the response text
      */
     public function set_the_response_to(PyStringNode $value) {
         // Remove newline and carriage return.
@@ -488,6 +508,8 @@ class behat_proforma extends behat_base {
      * Check codemirror text with javascript in *Javascript* testcases.
      *
      * @Then /^the codemirror "(?P<name_string>(?:[^"]|\\")*)" matches value "(?P<value_string>(?:[^"]|\\")*)"$/
+     * @param string $name the textarea name
+     * @param string $value the expected value
      */
     public function the_codemirror_matches_value($name, $value) {
         $command = 'return (function() { return $("#id_'. $name . '").next(".CodeMirror").get(0).CodeMirror.getValue(); })();';
@@ -506,6 +528,7 @@ class behat_proforma extends behat_base {
      * Create new question
      *
      * @When /^I create a new "(?P<proglang_string>(?:[^"]|\\")*)" question$/
+     * @param string $proglang the programming language
      */
     public function create_new_question($proglang) {
 /*

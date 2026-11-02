@@ -31,8 +31,8 @@ class c_form_creator extends base_form_creator {
     /**
      * c_form_creator constructor.
      *
-     * @param $form
-     * @param null $newquestion new question indicator
+     * @param MoodleQuickForm|stdClass $form form instance OR formdata
+     * @param bool $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
         parent::__construct($form, new qtype_proforma_c_task());
@@ -60,9 +60,9 @@ class c_form_creator extends base_form_creator {
     /**
      * add c specific test section
      *
-     * @param $question
-     * @param $questioneditform
-     * @return int
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     * @return int number of tests
      */
     protected function add_tests($question, $questioneditform) {
         $this->_form->addElement('html', get_string('cunit_help', 'qtype_proforma'));
@@ -75,8 +75,8 @@ class c_form_creator extends base_form_creator {
     /**
      * Add test settings.
      *
-     * @param $question
-     * @param $questioneditform
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
      */
     public function add_test_settings($question, $questioneditform) {
         parent::add_test_settings($question, $questioneditform);
@@ -87,12 +87,12 @@ class c_form_creator extends base_form_creator {
 
     /**
      * Check for run command (in addition to base function)
-     * @param qtype_proforma_edit_form $editor
-     * @param $fromform
-     * @param $files
-     * @param $i
-     * @param $errors
-     * @return array
+     * @param qtype_proforma_edit_form $editor main editor instance
+     * @param array $fromform input data
+     * @param array $files file array
+     * @param int $i index
+     * @param array $errors errors array
+     * @return array list of errors array and validity flag
      * @throws coding_exception
      */
     protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {

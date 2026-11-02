@@ -55,7 +55,7 @@ class proforma_bulk_tester {
 
     /**
      * get all teachers
-     * @param $courseid
+     * @param int $courseid
      * @return array
      * @throws dml_exception
      */
@@ -182,10 +182,13 @@ class proforma_bulk_tester {
      * Run the tests for one variant of one question and display the results.
      *
      * @param qtype_proforma_question $question the question to test.
-     * @param $proformafile proforma file to run.
-     * @return array with two elements:
+     * @param stored_file $proformafile proforma file to run.
+     * @param stored_file[] $modelsolution model solution files.
+     * @param bool $quiet whether to suppress output.
+     * @return array with three elements:
      *              bool true if the tests passed, else false.
      *              sring message summarising the number of passes and fails.
+     *              string feedback from grader.
      */
     public function run_test_question($question, $proformafile, $modelsolution, $quiet = false) {
         $grader = new qtype_proforma_grader_2(isset($question) ? $question->get_uri() : null);
@@ -231,7 +234,7 @@ class proforma_bulk_tester {
      * Print an overall summary, with a link back to the bulk test index.
      *
      * @param bool $allpassed whether all the tests passed.
-     * @param array $failingtests list of the ones that failed.
+     * @param array $failing list of the ones that failed.
      */
     public function print_overall_result($allpassed, $failing) {
         global $OUTPUT;

@@ -45,6 +45,8 @@ class restore_qtype_proforma_plugin extends restore_qtype_plugin {
 
     /**
      * Process the qtype/proforma element
+     *
+     * @param array $data
      */
     public function process_proforma($data) {
         global $DB;

@@ -111,10 +111,9 @@ class behat_proforma_upload extends behat_repository_upload {
      * Checks if the size of a file uploaded into a filemanager has an expected filesize
      *
      * @Then /^the size of file "(?P<filename_string>(?:[^"]|\\")*)" is between "(?P<min_bytes>\d+)" and "(?P<max_bytes>\d+)" bytes$/
-     * @param type $filename
-     * @param type $min
-     * @param type $max
-     * @param type $filemanagerelement
+     * @param string $filename the file name
+     * @param int $min minimum size in bytes
+     * @param int $max maximum size in bytes
      */
     public function the_size_of_file_is_between_and_bytes($filename, $min, $max) {
         $generalcontext = behat_context_helper::get('behat_general');

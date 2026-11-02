@@ -1352,7 +1352,7 @@ class qtype_proforma_test_helper extends question_test_helper {
      * Generates a question_file_saver that contains the provided number of attachments. You should ensure
      * that a user is logged in with setUser before you run this function.
      *
-     * @param int $:attachments The number of attachments to generate.
+     * @param int $attachments The number of attachments to generate.
      * @return question_file_saver a question_file_saver that contains the given amount of dummy files, for use in testing.
      */
     public function make_attachments_saver($attachments) {

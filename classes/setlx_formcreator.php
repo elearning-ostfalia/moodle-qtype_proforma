@@ -32,8 +32,8 @@ class setlx_form_creator extends base_form_creator {
     /**
      * setlx_form_creator constructor.
      *
-     * @param $form
-     * @param null $newquestion new question indicator
+     * @param MoodleQuickForm|stdClass $form form instance OR formdata
+     * @param bool $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
         parent::__construct($form, new qtype_proforma_setlx_task());
@@ -65,9 +65,9 @@ class setlx_form_creator extends base_form_creator {
     /**
      * add SetlX specific test section
      *
-     * @param $question
-     * @param $questioneditform
-     * @return int
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     * @return int number of tests
      */
     protected function add_tests($question, $questioneditform) {
         // Add compilation = Setlx Syntax check.
@@ -79,8 +79,8 @@ class setlx_form_creator extends base_form_creator {
     /**
      * Add test settings.
      *
-     * @param $question
-     * @param $questioneditform
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
      */
     public function add_test_settings($question, $questioneditform) {
         parent::add_test_settings($question, $questioneditform);
@@ -91,8 +91,8 @@ class setlx_form_creator extends base_form_creator {
 
     /**
      * calculates the sum of all weights (for validation)
-     * @param $fromform
-     * @return int|mixed
+     * @param array $fromform form data
+     * @return float sum of weights
      */
     protected function calc_sumweight($fromform) {
         $sumweight = parent::calc_sumweight($fromform);

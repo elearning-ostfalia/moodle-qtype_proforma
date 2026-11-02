@@ -39,7 +39,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     /**
      * qtype_proforma_grader_2 constructor.
      *
-     * @param $uri programming language (for selecting grader)
+     * @param string|null $uri grader URI (for selecting grader)
      */
     public function __construct($uri = null) {
         parent::__construct();
@@ -48,10 +48,12 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
     /**
      * Creates the submission.xml according to Proforma specification
-     * @param $code
-     * @param $files
-     * @param $filename
-     * @param qtype_proforma_question $question question object
+     * @param string|null $code submitted source code
+     * @param stored_file[]|null $files submitted files
+     * @param string|null $filename filename of submitted code
+     * @param string|null $uri URI of external submission (version control)
+     * @param qtype_proforma_question|null $question question object
+     * @param stored_file|null $taskfile task file (if no question is given)
      * @return string submission.xml string
      * @throws coding_exception
      */
@@ -206,8 +208,10 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     /**
      * send grading request via HTTP post
      *
-     * @param $postfields
-     * @param qtype_proforma_question $question
+     * @param array $postfields
+     * @param qtype_proforma_question|null $question
+     * @param stored_file|null $taskfile task file (if no question is given)
+     * @param bool $test true if only connection is tested
      * @return array
      * @throws coding_exception
      */
@@ -359,7 +363,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     /**
      * send file upload submission to grader
      *
-     * @param $files
+     * @param stored_file[] $files
      * @param qtype_proforma_question $question
      * @return array
      * @throws coding_exception
@@ -386,8 +390,8 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     /**
      * send file upload submission to grader
      *
-     * @param $files
-     * @param qtype_proforma_question $question
+     * @param stored_file[] $files
+     * @param stored_file $task task file
      * @return array
      * @throws coding_exception
      */
@@ -415,8 +419,11 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
     /**
      * send files and task to grader and expect result to be streamed
-     * @param $files
-     * @param $task
+     * @param stored_file[] $files
+     * @param stored_file $task task file
+     * @param callable $callback callback for grader response
+     * @param qtype_proforma_question $question
+     * @param string $gradinghints grading hints
      * @return array
      * @throws coding_exception
      */
@@ -457,8 +464,8 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
     /** sends the sudent's submitted source code to the grader
      *
-     * @param $code
-     * @param $question
+     * @param string $code
+     * @param qtype_proforma_question $question
      * @return mixed|string
      */
     public function send_code_to_grader($code, qtype_proforma_question $question) {
@@ -482,7 +489,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * Function uploads the task associated to question to the grader.
      * It is assumed that this may take longer. So the response is not buffered.
      *
-     * @param qtype_proforma_question $question
+     * @param stored_file $task task file
      * @return array
      * @throws coding_exception
      */
@@ -589,9 +596,9 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     /**
      * send external code (from Source Control) to grader
      *
-     * @param type $uri
+     * @param string $uri
      * @param qtype_proforma_question $question
-     * @return type
+     * @return array
      * @throws coding_exception
      */
     public function send_external_submission_to_grader($uri, qtype_proforma_question $question) {
@@ -611,12 +618,12 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
     /**
      * updates the grade result for this specifix test
-     * @param $test
-     * @param $score
-     * @param $question
-     * @param $totalweight
-     * @param $gradingtests
-     * @param $gradecalc
+     * @param SimpleXMLElement $test
+     * @param float $score
+     * @param qtype_proforma_question $question
+     * @param float $totalweight
+     * @param SimpleXMLElement|null $gradingtests
+     * @param float|int $gradecalc
      * @return float|int
      * @throws moodle_exception
      */
@@ -654,7 +661,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     /**
      * calc score for this specifix test resp. subtest
      *
-     * @param $test
+     * @param SimpleXMLElement $test
      * @return array
      * @throws moodle_exception
      */
@@ -690,8 +697,8 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     /**
      * calculate or extract grade from grader response
      *
-     * @param $result
-     * @param $httpcode
+     * @param string|bool $result
+     * @param int|null $httpcode
      * @param qtype_proforma_question $question
      * @return array
      */

@@ -92,9 +92,9 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
 
     /**
      * returns the html fragment for the reponse area in readonly mode
-     * @param $qa
-     * @param $step
-     * @param $options
+     * @param question_attempt $qa
+     * @param question_attempt_step $step
+     * @param question_display_options $options
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
@@ -113,9 +113,9 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $qa
-     * @param $step
-     * @param $options
+     * @param question_attempt $qa
+     * @param question_attempt_step $step
+     * @param question_display_options $options
      * @return string
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
@@ -174,9 +174,9 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $qa
-     * @param $step
-     * @param $options
+     * @param question_attempt $qa
+     * @param question_attempt_step $step
+     * @param question_display_options $options
      * @return string
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
@@ -207,7 +207,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
 
     /**
      * returns the html identfier for the textarea
-     * @param $qa
+     * @param question_attempt $qa
      * @return string
      */
     protected function get_textarea_id($qa) {
@@ -222,9 +222,9 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $qa
-     * @param $step
-     * @param $options
+     * @param question_attempt $qa
+     * @param question_attempt_step $step
+     * @param question_display_options $options
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
@@ -269,7 +269,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
 
     /**
      * checks if question contains input field in URI template
-     * @param $question
+     * @param qtype_proforma_question $question
      * @return bool
      * @throws coding_exception
      */
@@ -283,7 +283,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
 
     /**
      * checks if question contains group field in URI template
-     * @param $question
+     * @param qtype_proforma_question $question
      * @return bool
      * @throws coding_exception
      */
@@ -298,7 +298,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
 
     /**
      * checks if question contains username field in URI template
-     * @param $question
+     * @param qtype_proforma_question $question
      * @return bool
      * @throws coding_exception
      */
@@ -315,9 +315,9 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $qa
-     * @param $step
-     * @param $options
+     * @param question_attempt $qa
+     * @param question_attempt_step $step
+     * @param question_display_options $options
      * @return string
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
@@ -395,10 +395,9 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $qa
-     * @param $step
-     * @param $lines
-     * @param $options
+     * @param question_attempt $qa
+     * @param question_attempt_step $step
+     * @param question_display_options $options
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
@@ -435,9 +434,9 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
 
     /**
      * returns the html fragment for the reponse area in readonly mode
-     * @param $qa
-     * @param $step
-     * @param $options
+     * @param question_attempt $qa
+     * @param question_attempt_step $step
+     * @param question_display_options $options
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
@@ -481,15 +480,15 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
     /**
      * returns the html fragment for the reponse area in input mode
      *
-     * @param $qa
-     * @param $step
-     * @param $options
+     * @param question_attempt $qa
+     * @param question_attempt_step $step
+     * @param question_display_options $options
      * @return string
      */
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
         $question = $qa->get_question();
 
-        /////// $draftid = file_get_unused_draft_itemid();
+        // $draftid = file_get_unused_draft_itemid();
 /*
         $files = $qa->get_last_qt_files('attachments', $options->context->id);
         $itemid = null;

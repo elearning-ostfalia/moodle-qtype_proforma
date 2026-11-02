@@ -39,8 +39,8 @@ use external_value;
 class taskeditor extends \external_api {
     /**
      * Get task URL
-     * @param int $questionid proforma question id
-     * @return array result (boolean) with log messages
+     * @param int $itemid draft item id of the task file
+     * @return array itemid, fileurl and message
      */
     public static function get_task_url($itemid) {
         $params = self::validate_parameters(self::get_task_url_parameters(), ['itemid' => $itemid]);

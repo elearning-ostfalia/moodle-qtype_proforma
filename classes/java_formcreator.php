@@ -37,7 +37,7 @@ class java_form_creator extends base_form_creator {
 
     /**
      * java_form_creator constructor.
-     * @param type $form form instance OR formdata
+     * @param MoodleQuickForm|stdClass $form form instance OR formdata
      * @param bool $newquestion new question indicator
      */
     public function __construct($form, bool $newquestion = false) {
@@ -88,7 +88,7 @@ class java_form_creator extends base_form_creator {
     /**
      * Modify repeatoptions in add_tests
      *
-     * @param $repeatoptions
+     * @param array $repeatoptions repeat options
      */
     protected function adjust_test_repeatoptions(&$repeatoptions) {
         parent::adjust_test_repeatoptions($repeatoptions);
@@ -99,7 +99,7 @@ class java_form_creator extends base_form_creator {
     /**
      * Modify testoptions in add_tests: add Junit version
      *
-     * @param $testoptions
+     * @param array $testoptions test options
      */
     protected function adjust_test_testoptions(&$testoptions) {
         $mform = $this->_form;
@@ -177,9 +177,9 @@ class java_form_creator extends base_form_creator {
     /**
      * add Java specific test section
      *
-     * @param $question
-     * @param $questioneditform
-     * @return int
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     * @return int number of tests
      */
     protected function add_tests($question, $questioneditform) {
         // Add compilation.
@@ -195,11 +195,11 @@ class java_form_creator extends base_form_creator {
      * validate JUnit test input
      *
      * @param qtype_proforma_edit_form $editor main editor instance
-     * @param type $fromform  input data
-     * @param type $files file array
-     * @param type $i index
-     * @param type $errors errors array
-     * @return type
+     * @param array $fromform input data
+     * @param array $files file array
+     * @param int $i index
+     * @param array $errors errors array
+     * @return array list of errors array and validity flag
      * @throws coding_exception
      */
     protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
@@ -277,8 +277,8 @@ class java_form_creator extends base_form_creator {
 
     /**
      * calculates the sum of all weights (for validation)
-     * @param $fromform
-     * @return int|mixed
+     * @param array $fromform form data
+     * @return float sum of weights
      */
     protected function calc_sumweight($fromform) {
         $sumweight = parent::calc_sumweight($fromform);
@@ -295,8 +295,8 @@ class java_form_creator extends base_form_creator {
     /**
      * checks if the first option can be removed in unit test version
      *
-     * @param type $versionelement
-     * @return boolean
+     * @param MoodleQuickForm_select $versionelement version select element
+     * @return bool
      */
     protected function remove_choose_option($versionelement) {
         if (!isset($versionelement)) {

@@ -34,8 +34,8 @@ class select_form_creator extends base_form_creator {
     /**
      * select_form_creator constructor.
      *
-     * @param $form
-     * @param null $newquestion new question indicator
+     * @param MoodleQuickForm|stdClass $form form instance OR formdata
+     * @param bool|null $newquestion new question indicator
      */
     public function __construct($form, $newquestion = null) {
         parent::__construct($form, null);
@@ -86,16 +86,17 @@ class select_form_creator extends base_form_creator {
     /**
      * Remove grader options/information.
      *
-     * @param $question
+     * @param stdClass $question question data
+     * @param context $context context
      */
     public function add_grader_settings($question, $context) {
     }
 
     /**
      * Add tests as repeat group
-     * @param $question
-     * @param $questioneditform
-     * @return int
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     * @return int number of tests
      */
     protected function add_tests($question, $questioneditform) {
     }
@@ -103,8 +104,8 @@ class select_form_creator extends base_form_creator {
     /**
      * Remove response options.
      *
-     * @param $question
-     * @param $qtype
+     * @param stdClass $question question data
+     * @param qtype_proforma $qtype question type
      */
     public function add_response_options($question, $qtype) {
     }
@@ -112,8 +113,8 @@ class select_form_creator extends base_form_creator {
     /**
      * Remove test settings.
      *
-     * @param $question
-     * @param $questioneditform
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
      */
     public function add_test_settings($question, $questioneditform) {
     }

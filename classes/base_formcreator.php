@@ -94,11 +94,8 @@ abstract class base_form_creator {
     /**
      * constructor
      *
-     * @param type $form form instance OR formdata
-     * @param type $taskhandler task handler instance
-     * @param type $responseformats available response formats
-     * @param type $syntaxhighlight syntax highleighting for editor
-     * @param type $proglang programming language if any
+     * @param MoodleQuickForm|stdClass $form form instance OR formdata
+     * @param qtype_proforma_base_task|null $taskhandler task handler instance
      */
     protected function __construct($form, $taskhandler) {
         $this->_form = $form;
@@ -128,9 +125,9 @@ abstract class base_form_creator {
 
     /**
      * Add tests as repeat group
-     * @param $question
-     * @param $questioneditform
-     * @return int
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     * @return int number of tests
      */
     abstract protected function add_tests($question, $questioneditform);
 
@@ -138,9 +135,9 @@ abstract class base_form_creator {
      * validate field values
      *
      * @param qtype_proforma_edit_form $editor actual editor instance
-     * @param $fromform Validation argument
-     * @param $files Validation argument
-     * @param $errors Array with error messages (so far)
+     * @param array $fromform Validation argument
+     * @param array $files Validation argument
+     * @param array $errors Array with error messages (so far)
      * @return array with error messages
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -194,8 +191,8 @@ abstract class base_form_creator {
 
     /**
      * calculates the sum of all weights (for validation)
-     * @param $fromform
-     * @return int|mixed
+     * @param array $fromform form data
+     * @return float sum of weights
      */
     protected function calc_sumweight($fromform) {
         $repeats = count($fromform["testweight"]);
@@ -210,11 +207,11 @@ abstract class base_form_creator {
      * validate Unit test input
      *
      * @param qtype_proforma_edit_form $editor main editor instance
-     * @param type $fromform  input data
-     * @param type $files file array
-     * @param type $i index
-     * @param type $errors errors array
-     * @return
+     * @param array $fromform input data
+     * @param array $files file array
+     * @param int $i index
+     * @param array $errors errors array
+     * @return array list of errors array and validity flag
      * @throws coding_exception
      */
     protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
@@ -271,8 +268,8 @@ abstract class base_form_creator {
      /**
       * Add grader options/information.
       *
-      * @param qtype_proforma_question $question question
-      * @param type $context
+      * @param stdClass $question question data
+      * @param context $context context
       */
     public function add_grader_settings($question, $context) {
         // Grader/ProFormA fields.
@@ -337,7 +334,7 @@ abstract class base_form_creator {
     /**
      * Add response template.
      *
-     * @param $question
+     * @param stdClass $question question data
      */
     protected function add_responsetemplate($question) {
         $mform = $this->_form;
@@ -357,8 +354,6 @@ abstract class base_form_creator {
 
     /**
      * Add response filename (edit field)
-     *
-     * @param $question
      */
     protected function add_responsefilename() {
         $mform = $this->_form;
@@ -405,7 +400,7 @@ abstract class base_form_creator {
     /**
      * Modify repeatarray in add_tests.
      *
-     * @param $repeatarray
+     * @param array $repeatarray repeat array
      */
     protected function adjust_test_repeatarray(&$repeatarray) {
         $mform = $this->_form;
@@ -451,7 +446,7 @@ abstract class base_form_creator {
     /**
      * Modify repeatoptions in add_tests
      *
-     * @param $repeatoptions
+     * @param array $repeatoptions repeat options
      */
     protected function adjust_test_repeatoptions(&$repeatoptions) {
         // Always HIDE testtype and test identifier.
@@ -474,7 +469,7 @@ abstract class base_form_creator {
     /**
      * Modify testoptions in add_tests
      *
-     * @param $testoptions
+     * @param array $testoptions test options
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -483,9 +478,10 @@ abstract class base_form_creator {
 
     /**
      * Add tests as repeat group
-     * @param $question
-     * @param $questioneditform
-     * @return int
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     * @param string $testtype default test type
+     * @return int number of tests
      */
     protected function add_test_fields($question, $questioneditform, $testtype) {
         $mform = $this->_form;
@@ -569,6 +565,8 @@ abstract class base_form_creator {
 
     /**
      * Add compilation options.
+     *
+     * @param string $label label text
      */
     protected function add_compilation($label) {
         $mform = $this->_form;
@@ -585,8 +583,8 @@ abstract class base_form_creator {
 
     /**
      * get number of unit tests for repeat group
-     * @param $question
-     * @return int
+     * @param stdClass $question question data
+     * @return int number of tests
      */
     protected function get_count_tests($question) {
         $repeats = 0;
@@ -613,7 +611,7 @@ abstract class base_form_creator {
     /**
      * Add response options for editor
      *
-     * @param type $qtype
+     * @param qtype_proforma $qtype question type
      */
     protected function add_editor_options($qtype) {
         $mform = $this->_form;
@@ -636,8 +634,8 @@ abstract class base_form_creator {
     /**
      * Add response options.
      *
-     * @param $question
-     * @param $qtype
+     * @param stdClass $question question data
+     * @param qtype_proforma $qtype question type
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -866,8 +864,8 @@ abstract class base_form_creator {
     /**
      * Add test settings.
      *
-     * @param $question
-     * @param $questioneditform
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
      */
     public function add_test_settings($question, $questioneditform) {
         $mform = $this->_form;
@@ -961,10 +959,9 @@ abstract class base_form_creator {
 
     /**
      * function for handling data preprocessing depending on question type
-     * @param $question
-     * @param $cat category
-     * @param MoodleQuickForm $form
-     * @param qtype_proforma_edit_form $editor
+     * @param stdClass $question question data
+     * @param int $cat context id of category
+     * @param qtype_proforma_edit_form $editor question edit form
      */
     public function data_preprocessing(&$question, $cat, qtype_proforma_edit_form $editor) {
         if (empty($question->options)) {
@@ -1024,9 +1021,9 @@ abstract class base_form_creator {
 
     /**
      * Preset form data for normal questions (not imported)
-     * @param $question
-     * @param $cat
-     * @param qtype_proforma_edit_form $editor
+     * @param stdClass $question question data
+     * @param int $cat context id of category
+     * @param qtype_proforma_edit_form $editor question edit form
      * @return void
      * @throws coding_exception
      */
@@ -1065,11 +1062,10 @@ abstract class base_form_creator {
     /**
      * Add field that shall not be editable.
      *
-     * @param $question
-     * @param $mform form
-     * @param $field fieldname
-     * @param $label labeltext
-     * @param null $sizefield sizefield
+     * @param stdClass $question question data
+     * @param string $field fieldname
+     * @param string $label labeltext
+     * @param int $size size
      */
     protected function add_static_field($question, $field, $label, $size) {
         $mform = $this->_form;
@@ -1086,11 +1082,9 @@ abstract class base_form_creator {
     /**
      * Add static text.
      *
-     * @param $question
-     * @param $mform form
-     * @param $field fieldname
-     * @param $label labeltext
-     * @param null $sizefield sizefield
+     * @param stdClass $question question data
+     * @param string $field fieldname
+     * @param string $label labeltext
      */
     protected function add_static_text($question, $field, $label) {
         $mform = $this->_form;
@@ -1114,9 +1108,9 @@ abstract class base_form_creator {
     /**
      * Helper function to create a weight field.
      *
-     * @param $testoptions array to append field(s) to
-     * @param $prefix prefix of name
-     * @param $defaultweight default value for weight
+     * @param array $testoptions array to append field(s) to
+     * @param string $prefix prefix of name
+     * @param string $defaultweight default value for weight
      * @param bool $withtitle True: also create title field
      */
     protected function add_test_weight_option(&$testoptions, $prefix, $defaultweight, $withtitle = false) {
@@ -1138,8 +1132,7 @@ abstract class base_form_creator {
 
     /**
      * handle polymorphic behaviour when saving a question
-     * @param $formdata
-     * @param $options
+     * @param stdClass $options question options record
      */
     public function save_question_options(&$options) {
         $formdata = $this->_form;

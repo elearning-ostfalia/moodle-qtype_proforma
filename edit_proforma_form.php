@@ -145,7 +145,7 @@ class qtype_proforma_edit_form extends question_edit_form {
 
     /**
      * enable access to form variable for formcreator
-     * @return type
+     * @return \MoodleQuickForm
      */
     public function &get_form() {
         return $this->_form;
@@ -174,7 +174,7 @@ class qtype_proforma_edit_form extends question_edit_form {
 
     /**
      * returns the protected member variable question
-     * @return type protected question
+     * @return \stdClass protected question
      */
     public function get_question() {
         return $this->question;
@@ -281,7 +281,7 @@ class qtype_proforma_edit_form extends question_edit_form {
     }
 
     /**
-     * Perform any preprocessing needed on the data passed to {@link set_data()}
+     * Perform any preprocessing needed on the data passed to {@see self::set_data()}
      * before it is used to initialise the form.
      *
      * different scenarios:

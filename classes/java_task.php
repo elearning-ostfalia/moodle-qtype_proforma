@@ -40,7 +40,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     /**
      * is Checkstyle option enabled?
      *
-     * @param $formdata
+     * @param stdClass $formdata
      * @return bool
      */
     private static function has_checkstyle($formdata) {
@@ -50,7 +50,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     /**
      * is compiler option enabled?
      *
-     * @param $formdata
+     * @param stdClass $formdata
      * @return bool
      */
     private static function has_compiler($formdata) {
@@ -60,7 +60,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     /**
      * add extra namespaces to XML
      *
-     * @param $xw
+     * @param SimpleXmlWriter $xw
      */
     protected function add_namespace_to_xml(SimpleXmlWriter $xw) {
         $xw->create_attribute('xmlns:unit', 'urn:proforma:tests:unittest:v1.1');
@@ -69,8 +69,8 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
 
     /**
      * add programming language to XML
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
      */
     protected function add_programming_language_to_xml(SimpleXmlWriter $xw, $formdata) {
         $xw->create_attribute('version', $formdata->proglangversion);
@@ -85,8 +85,8 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     /**
      * add test files to XML.
      *
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
      */
     protected function add_files_to_xml(SimpleXmlWriter $xw, $formdata) {
         // Create Junit files.
@@ -109,8 +109,9 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     /**
      * Add tests to xml.
      *
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
+     * @param string $testtype
      */
     protected function add_tests_to_xml(SimpleXmlWriter $xw, $formdata, $testtype = 'unittest') {
         // Create compiler test.
@@ -153,8 +154,8 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     /**
      * add unittest element to test in XML
      * @param SimpleXmlWriter $xw
-     * @param $index
-     * @param $formdata
+     * @param int $index
+     * @param stdClass $formdata
      * @return void
      */
     protected function add_unittest_to_xml(SimpleXmlWriter $xw, $index, $formdata) {
@@ -176,8 +177,8 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     /**
      * Add tests to LMS internal grading hints.
      *
-     * @param $xw
-     * @param $formdata
+     * @param SimpleXmlWriter $xw
+     * @param stdClass $formdata
      */
     protected function add_tests_to_lms_grading_hints(SimpleXmlWriter $xw, $formdata) {
         if (self::has_compiler($formdata)) {
@@ -231,10 +232,10 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      * called by extract_formdata_from_taskfile in order to
      * extract form data from task test.
      *
-     * @param type $question: return instance
-     * @param type $test: test entity from task
-     * @param type $files: files array
-     * @param type $index: index of next unit test (in/out)
+     * @param stdClass $question return instance
+     * @param SimpleXMLElement $test test entity from task
+     * @param array $files files array
+     * @param int $index index of next unit test (in/out)
      */
     protected function extract_formdata_from_taskfile_test($question, $test, $files, &$index) {
         switch ($test['id']) {
@@ -277,7 +278,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
 
     /**
      * remove Java comments from code string
-     * @param $code
+     * @param string $code
      */
     private static function remove_java_comment(&$code) {
         $code = preg_replace('/\/\*[\s\S]*?\*\//m', '', $code); // Block comment '/* ...*/'.
@@ -286,7 +287,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
 
     /**
      * Tries to evaluate the class name in the source code.
-     * @param $code
+     * @param string $code
      * @return string The classname evaluated from sourcse code.
      */
     private static function get_java_classname($code) {
@@ -319,7 +320,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
 
     /**
      * Tries and find a package name in the source code.
-     * @param $code
+     * @param string $code
      * @return string
      */
     private static function get_java_packagename($code) {
@@ -347,7 +348,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      * Tries and detects the classname in the code and returns the associated
      * filename.
      *
-     * @param $code
+     * @param string $code
      * @return null|string null if no filename can be evaluated.
      */
     public static function get_java_file($code) {
@@ -377,7 +378,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      * Tries and detects the package and classname in the code and returns
      * the 'full' classname.
      *
-     * @param $code
+     * @param string $code
      * @return null|string null if no classname can be evaluated otherwise
      * the evaluated full classname.
      */

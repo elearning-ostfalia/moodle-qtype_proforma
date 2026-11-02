@@ -49,6 +49,10 @@ class qtype_proforma_renderer extends qtype_renderer {
 
     /**
      * make feedback_image public because we have no friend feature in PHP
+     *
+     * @param float $fraction the fraction.
+     * @param bool $selected whether or not this choice was selected.
+     * @return string HTML fragment.
      */
     public function feedback_image($fraction, $selected = true) {
         return parent::feedback_image($fraction, $selected);
@@ -131,9 +135,9 @@ class qtype_proforma_renderer extends qtype_renderer {
 
     /**
      * returns the download URI for a given file (identfied by filename and filearea)
-     * @param $question
-     * @param $filearea
-     * @param $filename
+     * @param qtype_proforma_question $question the question
+     * @param string $filearea the file area
+     * @param string $filename the file name
      * @return string
      */
     private function get_download_uri($question, $filearea, $filename) {
@@ -148,7 +152,7 @@ class qtype_proforma_renderer extends qtype_renderer {
 
     /**
      * returns the html fragment for download links
-     * @param $question
+     * @param qtype_proforma_question $question the question
      * @return string
      */
     protected function question_downloads($question) {
@@ -176,9 +180,10 @@ class qtype_proforma_renderer extends qtype_renderer {
      * Displays the input control for when the student should upload a single file.
      *
      * @param question_attempt $qa the question attempt to display.
-     * @param int $numallowed the maximum number of attachments allowed. -1 = unlimited.
+     * @param qtype_proforma_question $question the question.
      * @param question_display_options $options controls what should and should
      *      not be displayed. Used to get the context.
+     * @return string HTML fragment.
      */
     protected function files_input(question_attempt $qa, qtype_proforma_question $question,
             question_display_options $options) {
@@ -411,8 +416,9 @@ class qtype_proforma_renderer extends qtype_renderer {
 
     /**
      * @param question_attempt $qa
-     * @param $step
-     * @return int|string
+     * @param question_attempt_step $externalstep step to use if no renderer specific step is found
+     * @param qtype_proforma_format_renderer_base $externalrenderer renderer to use if no renderer specific step is found
+     * @return array [question_attempt_step, renderer]
      */
     protected function determine_renderer(question_attempt $qa, $externalstep, $externalrenderer) {
         foreach ($qa->get_reverse_step_iterator() as $step) {
@@ -436,9 +442,9 @@ class qtype_proforma_renderer extends qtype_renderer {
     /**
      * converts the ProFormA response to html
      *
-     * @param $message
-     * @param $errormsg
-     * @param question_attempt $qa
+     * @param string $message the ProFormA response
+     * @param string $errormsg error message
+     * @param qtype_proforma_question $question the question
      * @return string
      */
     public function render_proforma2_message($message, $errormsg, $question) {
