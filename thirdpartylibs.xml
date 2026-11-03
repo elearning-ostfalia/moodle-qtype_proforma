@@ -1,15 +1,66 @@
 <?xml version="1.0"?>
 <libraries>
     <library>
-        <location>amd/src</location>
+        <location>amd/src/codemirror.js</location>
         <name>CodeMirror</name>
         <version>5.49.2</version>
-        <license>MIT, http://codemirror.net/LICENSE</license>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
     </library>
     <library>
-        <location>amd/src</location>
+        <location>amd/src/active-line.js</location>
+        <name>CodeMirror</name>
+        <version>5.49.2</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>amd/src/clike.js</location>
+        <name>CodeMirror</name>
+        <version>5.49.2</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>amd/src/closebrackets.js</location>
+        <name>CodeMirror</name>
+        <version>5.49.2</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>amd/src/javascriptmode.js</location>
+        <name>CodeMirror</name>
+        <version>5.49.2</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>amd/src/matchbrackets.js</location>
+        <name>CodeMirror</name>
+        <version>5.49.2</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>amd/src/python.js</location>
+        <name>CodeMirror</name>
+        <version>5.49.2</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>amd/src/xml.js</location>
+        <name>CodeMirror</name>
+        <version>5.49.2</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>amd/src/zip/zip.js</location>
         <name>zip.js</name>
         <version>2.7.7</version>
-        <license>???</license>
+        <license>BSD-3-Clause</license>
+        <licenseversion></licenseversion>
     </library>
 </libraries>
