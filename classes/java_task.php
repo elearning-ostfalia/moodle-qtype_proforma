@@ -30,7 +30,9 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/base_task.php');
  * Creates ProFormA java task file resp. extracts data from such a file.
  */
 class qtype_proforma_java_task extends qtype_proforma_base_task {
+    /** Test type for compiler test. */
     const COMPILER   = 'compiler';
+    /** Test type for Checkstyle test. */
     const CHECKSTYLE = 'checkstyle';
 
     /**
@@ -81,6 +83,14 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
     }
 
 
+    /**
+     * Returns the filename of the test file in the task (derived from Java code).
+     *
+     * @param int $index test index
+     * @param string $id test id
+     * @param string $code test code
+     * @return string filename
+     */
     protected function get_testfilename($index, $id, $code) {
         return self::get_java_file($code);
     }

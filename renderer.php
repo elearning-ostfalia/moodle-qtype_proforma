@@ -57,6 +57,12 @@ class qtype_proforma_renderer extends qtype_renderer {
         return parent::feedback_image($fraction, $selected);
     }
 
+    /**
+     * Returns the last step containing version control system data.
+     *
+     * @param question_attempt $qa
+     * @return question_attempt_step step (read-only empty step if none is found)
+     */
     private function get_last_step_for_vcs($qa) {
         foreach ($qa->get_reverse_step_iterator() as $step) {
             if ($step->has_qt_var(VCSINPUT) || $step->has_qt_var(VCSGROUP) || $step->has_qt_var(VCSUSERNAME)) {
@@ -459,6 +465,8 @@ class qtype_proforma_renderer extends qtype_renderer {
     }
 
     /**
+     * Determines the step and the renderer to use for the response.
+     *
      * @param question_attempt $qa
      * @param question_attempt_step $externalstep step to use if no renderer specific step is found
      * @param qtype_proforma_format_renderer_base $externalrenderer renderer to use if no renderer specific step is found

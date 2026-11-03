@@ -265,10 +265,22 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
         }
     }
 
+    /** @var string[] received chunks that are not yet processed */
     private $chunks = [];
+    /** @var string|null received data that is not yet processed */
     private $data = '';
+    /** @var string grader response collected from the stream */
     private $response = '';
+    /** @var bool true if the start of the grader response has been received */
     private $responsestarted = false;
+
+    /**
+     * Processes the received data of the stream.
+     *
+     * Lines before the grader response are passed to the output,
+     * the grader response is collected and the callback is called
+     * when the response is complete.
+     */
     public function write_data() {
         $this->data = $this->data . implode($this->chunks);
         $this->chunks = [];
@@ -323,6 +335,15 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
         return $len; // Tell curl how much data was handled.
     }
 
+    /**
+     * Posts task and submission to the grader and streams the result.
+     *
+     * @param array $postfields post fields (task file is added)
+     * @param stored_file $task task file
+     * @param string $uri grader URI
+     * @return array [output or error message, http code]
+     * @throws coding_exception
+     */
     protected function post_to_grader_and_stream_result(&$postfields, $task, $uri) {
         $this->chunks = [];
         $this->data = null;

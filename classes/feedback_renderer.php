@@ -28,7 +28,11 @@ defined('MOODLE_INTERNAL') || die();
  * Define a custom exception class
  */
 class feedback_exception extends Exception {
-    // Custom string representation of object.
+    /**
+     * Custom string representation of object.
+     *
+     * @return string
+     */
     public function __toString() {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
     }
@@ -52,6 +56,7 @@ class feedback_renderer {
      */
     private $_gradinghints = null;
 
+    /** @var qtype_proforma_question|null question to be rendered */
     private $_question = null;
 
     /**
@@ -362,6 +367,14 @@ class feedback_renderer {
         }
     }
 
+    /**
+     * Renders all feedbacks of a feedback list.
+     *
+     * Teacher feedback is only rendered for teachers.
+     *
+     * @param SimpleXMLElement $feedbacklist feedback list
+     * @param string $result rendered output (feedback is appended)
+     */
     private function render_feedback_list(SimpleXMLElement $feedbacklist, &$result) {
         foreach ($feedbacklist->children() as $feedback) {
             $teacher = ($feedback->getName() != "student-feedback");
@@ -376,9 +389,11 @@ class feedback_renderer {
     }
 
     /**
+     * Renders a single test response.
+     *
      * @param SimpleXMLElement $testresponse
-     * @param string $result
-     * @return array
+     * @param string $result rendered output (test response is appended)
+     * @return array [contains internal error, rendered output, all correct]
      */
     private function render_test_response($testresponse, &$result): array {
         $containsinternalerror = false;
@@ -579,6 +594,13 @@ class feedback_renderer {
         return $result;
     }
 
+    /**
+     * Renders the additional log of a test (if any) as collapsible region.
+     *
+     * @param SimpleXMLElement $response grader response
+     * @param string $id test id
+     * @return string html fragment (empty if there is no log)
+     */
     protected function render_extralog(SimpleXMLElement $response, $id): string {
         try {
             $result = '';
@@ -617,9 +639,11 @@ class feedback_renderer {
     }
 
     /**
-     * @param SimpleXMLElement $response
-     * @param string $result
-     * @return string
+     * Renders the version control system information of the submission (if any).
+     *
+     * @param SimpleXMLElement $response grader response
+     * @param string $result rendered output
+     * @return string rendered output with appended VCS information
      */
     protected function render_vcs_information(SimpleXMLElement $response, string $result): string {
         try {

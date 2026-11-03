@@ -147,21 +147,37 @@ class taskeditor extends \external_api {
         ]);
     }
 
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
     public static function get_junit_versions_parameters() {
         return new external_function_parameters([
         ]);
     }
 
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
     public static function get_checkstyle_versions_parameters() {
         return new external_function_parameters([
         ]);
     }
 
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
     public static function get_java_versions_parameters() {
         return new external_function_parameters([
         ]);
     }
 
+    /**
+     * Returns description of method result value
+     * @return external_function_parameters
+     */
     public static function get_task_url_returns() {
         return new external_function_parameters([
             'itemid' => new external_value(PARAM_INT, 'draft itemid'),
@@ -170,6 +186,10 @@ class taskeditor extends \external_api {
         ]);
     }
 
+    /**
+     * Returns description of method result value
+     * @return external_function_parameters
+     */
     public static function get_junit_versions_returns() {
         return new external_function_parameters(
             [
@@ -189,6 +209,10 @@ class taskeditor extends \external_api {
         );
     }
 
+    /**
+     * Returns description of method result value
+     * @return external_function_parameters
+     */
     public static function get_checkstyle_versions_returns() {
         return new external_function_parameters(
             [
@@ -208,6 +232,10 @@ class taskeditor extends \external_api {
         );
     }
 
+    /**
+     * Returns description of method result value
+     * @return external_function_parameters
+     */
     public static function get_java_versions_returns() {
         return new external_function_parameters(
             [

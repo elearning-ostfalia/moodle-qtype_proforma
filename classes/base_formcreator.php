@@ -67,21 +67,23 @@ abstract class base_form_creator {
 
     /**
      * response options
+     * @var array|null
      */
     protected $_responseformats = null;
-    /** input format for (unit) test code */
+    /** @var bool input format for (unit) test code */
     protected $_testcode = true;
+    /** @var bool tests consist of test files */
     protected $_testfiles = true;
 
-    /** Syntax highlighting mode. */
+    /** @var string Syntax highlighting mode. */
     protected $_syntaxhighlighting = 'java';
 
-    /** Programming language. */
+    /** @var string|null Programming language. */
     protected $_proglang = null;
 
-    /** (Unit) test has entrypoint. */
+    /** @var bool (Unit) test has entrypoint. */
     protected $_entrypoint = false;
-    /** Entrypoint label. */
+    /** @var string|null Entrypoint label. */
     protected $_entrypointlabel = null;
 
     /** @var null numberic identifier of task type */
@@ -846,6 +848,11 @@ abstract class base_form_creator {
         $this->add_modelsolution();
     }
 
+    /**
+     * Adds the button for opening the detailed task editor to the form.
+     *
+     * Nothing is added if the user cannot manage own files.
+     */
     protected function add_detail_edit_button() {
         global $USER, $CFG;
         $usercontext = context_user::instance($USER->id);
@@ -1030,6 +1037,12 @@ abstract class base_form_creator {
         $this->add_tests($question, $questioneditform);
     }
 
+    /**
+     * Adds the feedback options to the form.
+     *
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     */
     public function add_feedback_options($question, $questioneditform) {
         $mform = $this->_form;
 
