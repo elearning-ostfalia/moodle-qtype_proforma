@@ -36,7 +36,7 @@ require_login();
 // Do not check access rights for system context here in order to allow
 // managers or even teachers to check all questions within
 // their course context or course.
-// require_capability('qtype/proforma:runbulktest', $context);
+/* require_capability('qtype/proforma:runbulktest', $context); */
 $PAGE->set_url('/question/type/proforma/bulktestindex.php');
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('bulktestindextitle', 'qtype_proforma'));
@@ -56,7 +56,6 @@ foreach ($bulktester->get_proforma_questions_by_context() as $record) {
     $numproformaquestions = $record->numproformaquestions;
     $contextid = $record->id;
     $contextinst = context::instance_by_id($contextid);
-    // var_dump($coursecontext);
     if (has_capability('qtype/proforma:runbulktest', $contextinst)) {
         // Print course name.
         $coursename = $contextinst->get_context_name(true, false);
@@ -74,7 +73,6 @@ foreach ($bulktester->get_proforma_questions_by_context() as $record) {
                 echo html_writer::tag('small', $teacher->firstname . ' ' . $teacher->lastname . '<br>');
             }
         }
-        // var_dump($coursecontext);
     } else {
         // No access rights.
         if (has_capability('moodle/site:config', context_system::instance())) {

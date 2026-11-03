@@ -566,7 +566,7 @@ class qtype_proforma extends question_type {
         if ($qo->responseformat == self::RESPONSE_VERSION_CONTROL && empty($qo->vcssystem)) {
             $qo->vcssystem = self::VCS_SVN;
         }
-        // TODO: Restore item id of comment files.
+        // Still open: restore item id of comment files.
 
         // Import files.
         foreach (self::proforma_fileareas() as $filearea => $value) {

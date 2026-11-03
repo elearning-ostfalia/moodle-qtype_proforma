@@ -33,28 +33,27 @@ require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/externallib.php');
 require_once(__DIR__ . '/renderer.php');
 
+// The course context is validated below (external_api::validate_context).
+require_login(null, false, null, false, true);
+
 
 
 $err = new stdClass();
 
-// Parameters
-// $questionid = required_param('questionid', PARAM_INT); // Question id
-$coursecontextid = required_param('coursecontextid', PARAM_INT); // Question id
-$proglang = required_param('proglang', PARAM_TEXT); // Aggregation strategy
-$maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes
+// Parameters.
+/* $questionid = required_param('questionid', PARAM_INT); // Question id */
+$coursecontextid = required_param('coursecontextid', PARAM_INT); // Course context id.
+$proglang = required_param('proglang', PARAM_TEXT); // Programming language.
+$maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes.
 $areamaxbytes  = optional_param('areamaxbytes', FILE_AREA_MAX_BYTES_UNLIMITED, PARAM_INT); // Area max bytes.
-$gradinghints = optional_param('gradinghints', '', PARAM_TEXT); // Grading hints
-$aggregationstrategy = optional_param('aggregationstrategy', '', PARAM_INT); // Aggregation strategy
-
+$gradinghints = optional_param('gradinghints', '', PARAM_TEXT); // Grading hints.
+$aggregationstrategy = optional_param('aggregationstrategy', '', PARAM_INT); // Aggregation strategy.
 
 $runtest  = optional_param('runtest', 0, PARAM_BOOL); // Files are already available, run test.
 $taskfilename  = optional_param('taskfilename', '', PARAM_FILE);
 $modelsolutionfilename  = optional_param('modelsolutionfilename', '', PARAM_FILE);
-$contextid = required_param('contextid', PARAM_INT); // Context ID
-$itemid    = required_param('itemid', PARAM_INT);            // Itemid
-
-
-
+$contextid = required_param('contextid', PARAM_INT); // Context ID.
+$itemid    = required_param('itemid', PARAM_INT);            // Itemid.
 
 // Create events.
 if ($runtest) {
@@ -86,13 +85,13 @@ switch ($proglang) {
     case 'clang':
     case 'cpp':
     case 'python':
-    case 'setlx': // ????
+    case 'setlx': // Unclear if anything is needed here?
         break;
     default:
         throw new Exception('invalid programming language');
 }
 
-// Security checks
+// Security checks.
 global $DB, $USER;
 // Context is user context.
 $context = \context::instance_by_id($contextid, IGNORE_MISSING);
@@ -121,7 +120,16 @@ external_api::validate_context($coursecontext);
 require_capability('moodle/question:editmine', $coursecontext);
 
 
-// Callback function for server sent events by grader.
+/**
+ * Callback function for server sent events by grader.
+ *
+ * Renders the feedback of the grader response and sends it as server sent event.
+ *
+ * @param string $graderoutput output of the grader
+ * @param qtype_proforma_grader_2 $grader grader instance
+ * @param qtype_proforma_question $question question
+ * @param string $gradinghints grading hints
+ */
 function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
     $ok = false;
     $message = "";
@@ -150,7 +158,7 @@ function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
 }
 
 if (!$runtest) {
-    // STEP 1 (upload files):
+    // STEP 1 (upload files).
     if (!isset($_FILES['task'])) {
         throw new moodle_exception('no task file');
     }
@@ -177,12 +185,12 @@ if (!$runtest) {
         'contextid' => $context->id,
         'component' => 'user',
         'filearea' => 'draft',
-        'itemid' => $itemid, // $contentid,
+        'itemid' => $itemid, // Previously $contentid.
         'filepath' => '/',
         'userid'    => $USER->id,
     ];
 
-    // Delete old files from last attempt
+    // Delete old files from last attempt.
     $fs->delete_area_files($context->id, 'user', 'draft', $itemid);
 
     $record['filename'] = clean_param($_FILES['task']['name'], PARAM_FILE);
@@ -206,7 +214,7 @@ if (!$runtest) {
     echo json_encode( $data );
 
 } else {
-    // STEP 2 (execute tests)
+    // STEP 2 (execute tests).
 
     $fs = get_file_storage();
 
@@ -224,12 +232,12 @@ if (!$runtest) {
     }
     $gh = $ghfile->get_content();
 
-    // Wait as long as it takes for this script to finish
+    // Wait as long as it takes for this script to finish.
     core_php_time_limit::raise();
 
     $question = new qtype_proforma_question();
     // Override grading hints with temporary grading hints from client.
-    // (needed for correct feedback)
+    // (needed for correct feedback).
     $question->gradinghints = $gh;
     $question->aggregationstrategy = $aggregationstrategy;
     $question->contextid = $contextid;
@@ -251,7 +259,7 @@ if (!$runtest) {
 }
 
 /*
-// Version without server sent events and with direct output of feedback
+// Version without server sent events and with direct output of feedback.
 
 list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader($files, $task_file);
 
@@ -262,7 +270,7 @@ $class = 'fail';
 $quiet = false;
 
 // Override grading hints with temporary grading hints from client.
-// (needed for correct feedback)
+// (needed for correct feedback).
 $question->gradinghints = urldecode($gradinghints);
 
 if ($httpcode != 200) {

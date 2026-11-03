@@ -146,7 +146,7 @@ class qtype_proforma_question extends question_graded_automatically {
      */
     public function get_uri($path = null) {
         // Check for alternative grader.
-        // TODO: The programming language is only the highlight language!!
+        // Still open: the programming language is only the highlight language!!
         // Use the actual language.
         if (isset($this->programminglanguage)) {
             switch ($this->programminglanguage) {
@@ -594,7 +594,7 @@ class qtype_proforma_question extends question_graded_automatically {
      * @return bool true if the user can access this file.
      */
     public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
-        // TODO: response_attachments gibt es nicht mehr...
+        // Still open: response_attachments gibt es nicht mehr...
         if ($component == 'question' && $filearea == 'response_attachments') {
             // Response attachments visible if the question has them.
             if ($this->responseformat == qtype_proforma::RESPONSE_EXPLORER) {

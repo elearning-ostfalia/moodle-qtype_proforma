@@ -327,17 +327,18 @@ class feedback_renderer {
             // Look for regular expression in test response.
             $regexp = $this->search_regexp($test);
 
-            // debugging($regexp);
             if (!isset($regexp)) {
                 // No regular expression in test response. Use default ones.
                 switch ($testtype) {
                     case 'java-compilation':
                         // Regular expression for Java compilation.
-                        $regexp = '(?<filename>\/?(.+\/)*(.+)\.([^\s:]+)):(?<line>[0-9]+)(:(?<column>[0-9]+))?:\s(?<msgtype>[a-z]+):\s(?<text>.+)';
+                        $regexp = '(?<filename>\/?(.+\/)*(.+)\.([^\s:]+)):(?<line>[0-9]+)(:(?<column>[0-9]+))?:' .
+                            '\s(?<msgtype>[a-z]+):\s(?<text>.+)';
                         break;
                     case 'java-checkstyle':
                         // Regular expression for Checkstyle messages.
-                        $regexp = '\[(?<msgtype>[A-Z]+)\]\s(?<filename>\/?(.+\/)*(.+)\.([^\s:]+)):(?<line>[0-9]+)(:(?<column>[0-9]+))?:\s(?<text>.+\.)\s\[(?<short>\w+)\]';
+                        $regexp = '\[(?<msgtype>[A-Z]+)\]\s(?<filename>\/?(.+\/)*(.+)\.([^\s:]+)):' .
+                            '(?<line>[0-9]+)(:(?<column>[0-9]+))?:\s(?<text>.+\.)\s\[(?<short>\w+)\]';
                         break;
                 }
             }
@@ -470,9 +471,11 @@ class feedback_renderer {
             $this->_totalweight += floatval((string) $testresponse['weight']);
         }
 
-        // $xpath = new DOMXPath($xmldoc);
-        // todo: check namespace!
-        // $xpath->registerNamespace('dns','urn:proforma:v2.0');
+        /*
+        $xpath = new DOMXPath($xmldoc);
+        // Still open: check namespace!
+        $xpath->registerNamespace('dns','urn:proforma:v2.0');
+        */
 
         // Create general feedback for student and teacher.
         foreach ($response->{'separate-test-feedback'}->{'submission-feedback-list'}->{'student-feedback'} as $feedback) {
@@ -549,7 +552,7 @@ class feedback_renderer {
         // Render version control information.
         $result = $this->render_vcs_information($response, $result);
         // Render grading information.
-        $result = $this->_render_grader_info($message, $response, $result, $this->_question->contextid);
+        $result = $this->render_grader_info($message, $response, $result, $this->_question->contextid);
 
         return $result;
     }
@@ -562,7 +565,7 @@ class feedback_renderer {
      * @param int $contextid
      * @return string
      */
-    private function _render_grader_info($message, SimpleXMLElement $response, string $result, $contextid): string {
+    private function render_grader_info($message, SimpleXMLElement $response, string $result, $contextid): string {
         if (qtype_proforma\lib\can_view_systeminfo($contextid)) {
             // Infos for admins are displayed as smaller text.
             $result .= html_writer::start_tag('small', null);
@@ -614,7 +617,7 @@ class feedback_renderer {
                         $log = $testlog->{'log'}->{'content'};
 
                         $qaid = $this->_mainrenderer->create_collapsible_region_id();
-                        // $icon = $this->_mainrenderer->pix_icon('i/report', 'log');
+                        /* $icon = $this->_mainrenderer->pix_icon('i/report', 'log'); */
 
                         $result .= print_collapsible_region_start(
                             '',
@@ -633,7 +636,8 @@ class feedback_renderer {
                 }
             }
         } catch (Exception $e) {
-            // Ignore exception.
+            // Ignore exception (only shown in developer debug mode).
+            debugging($e->getMessage(), DEBUG_DEVELOPER);
         }
         return $result;
     }

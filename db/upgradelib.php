@@ -23,9 +23,6 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-
 /**
  * Copy of SimpleXmlWriter class because other plugin code is not available during update.
  *
@@ -33,12 +30,24 @@ defined('MOODLE_INTERNAL') || die();
  */
 class UpgradeSimpleXmlWriter extends XMLWriter {
 
+    /**
+     * Creates an attribute with the given value.
+     *
+     * @param string $name attribute name
+     * @param string $value attribute value
+     */
     public function create_attribute($name, $value) {
         $this->startAttribute($name);
         $this->text($value);
         $this->endAttribute();
     }
 
+    /**
+     * Creates a child element with the given text.
+     *
+     * @param string $name element name
+     * @param string $text element text
+     */
     public function create_childelement_with_text($name, $text) {
         $this->startElement($name);
         $this->text($text);
@@ -67,7 +76,7 @@ function update_filename($questionid, $filename, $filearea) {
         $dirname = $dirname . '/';
     }
 
-    // Get associated file from {files} table
+    // Get associated file from {files} table.
     $files  = $DB->get_recordset_sql("SELECT * " .
             "FROM {files} " .
             "WHERE itemid = :itemid " .
@@ -76,7 +85,6 @@ function update_filename($questionid, $filename, $filearea) {
             ['itemid' => $questionid, 'filearea' => $filearea, 'filename' => $oldfilename]);
 
     foreach ($files as $file) {
-        // echo 'F=(' . $file->filearea . ') ' . $file->filepath . ' '. $file->filename . '<br>';
         $fs = get_file_storage();
         $file = $fs->get_file_by_id($file->id);
         try {
@@ -90,7 +98,7 @@ function update_filename($questionid, $filename, $filearea) {
     $files->close();
 
     if ($count == 0) {
-        // check for new format:
+        // Check for new format.
         $files  = $DB->get_recordset_sql("SELECT * " .
                 "FROM {files} " .
                 "WHERE itemid = :itemid " .
@@ -101,7 +109,6 @@ function update_filename($questionid, $filename, $filearea) {
 
         foreach ($files as $file) {
             // Filename is already in new format => ignore.
-            // echo 'NEW F=(' . $file->filearea . ') ' . $file->filepath . ' '. $file->filename . '<br>';
             $count++;
         }
         $files->close();
@@ -110,7 +117,6 @@ function update_filename($questionid, $filename, $filearea) {
     if ($count != 1) {
         echo 'WARNING: number of files found for "' . $filename . '" ('. $oldfilename . ') in ('. $filearea . ') is ' . $count .
                 ' (Question id=' . $questionid . ')<br>';
-        // debugging('number of files found for "' . $filename . '" ('. $oldfilename . ') in ('. $filearea . ') is ' . $count);
     }
 }
 
@@ -125,7 +131,6 @@ function update_filename($questionid, $filename, $filearea) {
 function update_filenames() {
     global $DB;
 
-    // echo 'start updating filenames <br>';
     // Get all questions with a '/' in the filename list.
     $sql = "FROM {qtype_proforma_options} " .
            "WHERE  modelsolfiles  LIKE '%/%' " .
@@ -136,9 +141,7 @@ function update_filenames() {
     $i = 0;
     $pbar = new progress_bar('', $total, true);
     foreach ($questions as $question) {
-        // echo 'Q=' . $question->questionid  . ' - ' . $question->modelsolfiles. ' - ' . $question->templates . ' - ' . $question->downloads . '<br>';
-
-        // Examine modelsol filenames:
+        // Examine modelsol filenames.
         foreach (explode(',', $question->modelsolfiles) as $file) {
             if (strpos($file, '/') != false) {
                 update_filename($question->questionid, $file, 'modelsol');
@@ -156,11 +159,18 @@ function update_filenames() {
         }
         $i++;
         $pbar->update($i, $total, "Updating ProFormA filename: $i/$total.");
-        // echo '<br>';
     }
     $questions->close();
 }
 
+/**
+ * Extracts the grading hints from the task file of a question.
+ *
+ * @param int $category context id of the task file
+ * @param int $questionid question id
+ * @param string $taskfilename name of the task file
+ * @return string|null grading hints (XML) or null if the task file cannot be found
+ */
 function extract_proformatask($category, $questionid, $taskfilename) {
 
     // Retrieve the file from the Files API.
@@ -213,27 +223,30 @@ function extract_proformatask($category, $questionid, $taskfilename) {
     $xw->startDocument('1.0', 'UTF-8');
 
     $xw->startElement('grading-hints');
-    // $xw->createAttribute('xmlns', 'urn:proforma:v2.0');
+    /* $xw->createAttribute('xmlns', 'urn:proforma:v2.0'); */
 
     $xw->startElement('root');
     $xw->create_attribute('function', 'sum');
 
     foreach ($task->tests->test as $test) {
         $xw->startElement('test-ref');
-        $xw->create_attribute('ref', (string) $test['id']); // $id);
+        $xw->create_attribute('ref', (string) $test['id']); // Previously $id.
         $xw->create_attribute('weight', '-1');
         $xw->create_childelement_with_text('title', (string) $test->title);
-        $xw->endElement(); // test-ref
+        $xw->endElement(); // End test-ref.
     }
 
-    $xw->endElement(); // root
-    $xw->endElement(); // grading-hints
+    $xw->endElement(); // End root.
+    $xw->endElement(); // End grading-hints.
 
     $xw->endDocument();
     $gradinghints = $xw->outputMemory();
     return $gradinghints;
 }
 
+/**
+ * Creates the grading hints for all questions without grading hints.
+ */
 function initialise_proforma_gradinghints() {
     global $DB;
 
@@ -242,11 +255,11 @@ function initialise_proforma_gradinghints() {
             "WHERE gradinghints is null and taskstorage = 1");
     foreach ($questions as $question) {
         if (isset($question->gradinghints) && strlen(trim($question->gradinghints)) > 0) {
-            // grading hints are set => finished
+            // Grading hints are set => finished.
             continue;
         }
 
-        // grading hints are missing
+        // Grading hints are missing.
         $contextid = get_proforma_contextid($DB, $question->questionid);
         $gradinghints = extract_proformatask($contextid, $question->questionid, $question->taskfilename);
         if (isset($gradinghints)) {
@@ -258,11 +271,14 @@ function initialise_proforma_gradinghints() {
     }
 }
 
+/**
+ * Moves the instruction and library files of all questions to the download filearea.
+ */
 function update_proforma_download_filearea() {
     global $DB;
 
     $fs = get_file_storage();
-    // read questions
+    // Read questions.
     $questions = $DB->get_records('qtype_proforma_options');
     foreach ($questions as $question) {
         if (!isset($question->instructions) || strlen($question->instructions) == 0) {
@@ -272,7 +288,7 @@ function update_proforma_download_filearea() {
         }
         $itemid = $question->questionid;
         echo 'Q/C =' . $itemid;
-        // read contextid
+        // Read contextid.
         $contextid = get_proforma_contextid($DB, $itemid);
         echo '/' . $contextid . '<br>';
 
@@ -323,6 +339,8 @@ function update_proforma_download_filearea() {
 }
 
 /**
+ * Returns the context id of the files of a question.
+ *
  * @param moodle_database $DB
  * @param int $itemid
  * @return int contextid

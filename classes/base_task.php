@@ -165,7 +165,7 @@ abstract class qtype_proforma_base_task {
 
         $xw->startElement('task');
         $xw->create_attribute('xmlns', 'urn:proforma:v2.0');
-        $xw->create_attribute('lang', 'de'); // TODO: Or better use en?
+        $xw->create_attribute('lang', 'de'); // Still open: or better use en?
         $xw->create_attribute('uuid', self::uuid());
         // Override!
         $this->add_namespace_to_xml($xw);

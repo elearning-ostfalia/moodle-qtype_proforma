@@ -49,7 +49,7 @@ if (!$PAGE->requires->is_head_done()) {
     // Main Codemirror theme is defined in plugin styles.css to have the definitions
     // in the review history windows.
     // Otherwise the question history window looks a bit strange.
-    // $PAGE->requires->css('/question/type/proforma/amd/src/darcula.css');
+    /* $PAGE->requires->css('/question/type/proforma/amd/src/darcula.css'); */
 }
 
 /**
@@ -57,7 +57,7 @@ if (!$PAGE->requires->is_head_done()) {
  */
 abstract class qtype_proforma_format_renderer_base extends plugin_renderer_base {
 
-    // Hack.
+    /** @var string|null id of the CodeMirror editor (hack: feedback renderer does not know the format renderer instance) */
     public static $codemirrorid = null;
 
     /**
@@ -73,15 +73,47 @@ abstract class qtype_proforma_format_renderer_base extends plugin_renderer_base 
         parent::__construct($page, $target);
     }
 
-    abstract public function response_area_input($qa, $step, /*question_display_options*/ $options);
-    abstract protected function class_name();
-    abstract public function response_area_read_only($qa, $step, $options);
     /**
+     * Renders the response area for input.
+     *
+     * @param question_attempt $qa question attempt
+     * @param question_attempt_step $step question attempt step
+     * @param question_display_options $options display options
+     * @return string HTML fragment
+     */
+    abstract public function response_area_input($qa, $step, /*question_display_options*/ $options);
+
+    /**
+     * Returns the CSS class name of the response area.
+     *
+     * @return string class name
+     */
+    abstract protected function class_name();
+
+    /**
+     * Renders the response area in read-only mode.
+     *
+     * @param question_attempt $qa question attempt
+     * @param question_attempt_step $step question attempt step
+     * @param question_display_options $options display options
+     * @return string HTML fragment
+     */
+    abstract public function response_area_read_only($qa, $step, $options);
+
+    /**
+     * Checks whether the student submission can have attachments.
+     *
      * @return bool false: the student submission can have no attachments
      */
     public function can_have_attachments() {
         return false;
     }
+
+    /**
+     * Returns the name of the answer step field.
+     *
+     * @return string name of the answer step field
+     */
     abstract public function answerfieldname();
 }
 
@@ -98,7 +130,6 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
-        // return '';
         $files = $qa->get_last_qt_files('attachments', $options->context->id);
         $output = [];
 
@@ -126,9 +157,9 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
         $pickeroptions = new stdClass();
         $pickeroptions->mainfile = null;
         $pickeroptions->maxfiles = $question->attachments;
-        // $pickeroptions->areamaxbytes = $question->maxbytes;
+        /* $pickeroptions->areamaxbytes = $question->maxbytes; */
         $pickeroptions->maxbytes = $question->maxbytes;
-        // $pickeroptions->itemid = $qa->prepare_response_files_draft_itemid('attachments', $options->context->id);
+        /* $pickeroptions->itemid = $qa->prepare_response_files_draft_itemid('attachments', $options->context->id); */
         $pickeroptions->context = $options->context;
         $pickeroptions->accepted_types = $question->filetypes;
         $pickeroptions->return_types = FILE_INTERNAL | FILE_CONTROLLED_LINK;
@@ -141,24 +172,30 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
         return $filesrenderer->render($fm) . html_writer::empty_tag(
                 'input', ['type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
                 'value' => $pickeroptions->itemid]);
-
-        // return '';
     }
 
     /**
+     * Checks whether the student submission can have attachments.
+     *
      * @return bool true: the student submission can have attachments
      */
     public function can_have_attachments() {
         return true;
     }
 
-    /** @return string returns the class name */
+    /**
+     * Returns the CSS class name of the response area.
+     *
+     * @return string class name
+     */
     protected function class_name() {
         return 'qtype_proforma_filepicker';
     }
 
     /**
-     * @return string: returns the name of the answer step field
+     * Returns the name of the answer step field.
+     *
+     * @return string name of the answer step field
      */
     public function answerfieldname() {
         return ANSWER; // Attachments are not stored here.
@@ -213,7 +250,11 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
         return 'id_' . $qa->get_qt_field_name(ANSWER);
     }
 
-    /** @return string returns the class name */
+    /**
+     * Returns the CSS class name of the response area.
+     *
+     * @return string class name
+     */
     protected function class_name() {
         return 'qtype_proforma_editor';
     }
@@ -249,7 +290,9 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
     }
 
     /**
-     * @return string: returns the name of the answer step field
+     * Returns the name of the answer step field.
+     *
+     * @return string name of the answer step field
      */
     public function answerfieldname() {
         return ANSWER;
@@ -264,6 +307,7 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
  */
 class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_format_renderer_base {
 
+    /** @var string name of the answer step field */
     private $name = VCSINPUT;
 
     /**
@@ -291,7 +335,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
             throw new coding_exception('unexpected responseformat in qtype_proforma_format_versioncontrol_renderer');
         }
 
-        return ((strpos($question->vcsuritemplate, PHGROUP) !== false) or
+        return ((strpos($question->vcsuritemplate, PHGROUP) !== false) ||
             (strpos($question->vcsuritemplate, PHGROUPL) !== false));
     }
 
@@ -352,7 +396,7 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
             $attributes['class'] = $this->class_name() . ' qtype_proforma_response';
             $attributes['value'] = $groupname;
             if (qtype_proforma\lib\is_teacher()) {
-                // $attributes['readonly'] = 'true';
+                /* $attributes['readonly'] = 'true'; */
                 $attributes['type'] = 'text';
                 $attributes['size'] = 10;
                 $input = html_writer::tag('label', get_string('groupname', 'qtype_proforma') . ': ', ['for' => $inputname]);
@@ -386,7 +430,11 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
         return $input;
     }
 
-    /** @return string returns the class name */
+    /**
+     * Returns the CSS class name of the response area.
+     *
+     * @return string class name
+     */
     protected function class_name() {
         return 'qtype_proforma_versioncontrol';
     }
@@ -417,7 +465,9 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
     }
 
     /**
-     * @return string: returns the name of the answer step field
+     * Returns the name of the answer step field.
+     *
+     * @return string name of the answer step field
      */
     public function answerfieldname() {
         return $this->name;
@@ -439,20 +489,13 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
-        // debugging('---');
         $files = $qa->get_last_qt_files('attachments', $options->context->id);
         $itemid = null;
         $responsefiles = [];
         foreach ($files as $file) {
-            // debugging('file: ' . $file->get_filepath() . $file->get_filename());
-            // var_dump($file);
             $itemid = $file->get_itemid();
             $responsefiles[] = $file->get_filepath() . $file->get_filename();
         }
-
-        // debugging('itemid = ' . $itemid);
-        // debugging('context = ' . $options->context->id);
-        // DEBUGGING
 
         $clientid = uniqid();
 
@@ -466,8 +509,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $params->files = $responsefiles;
         $params->rootnode = get_string('rootsubmission', 'qtype_proforma');
 
-        global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
+        $this->page->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
             ['fileexplorer_' . $clientid, $params]);
 
         return html_writer::tag('div', '', ['id' => 'fileexplorer_' . $clientid]) .
@@ -487,7 +529,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
     public function response_area_input($qa, $step, /*question_display_options*/ $options) {
         $question = $qa->get_question();
 
-        // $draftid = file_get_unused_draft_itemid();
+        /* $draftid = file_get_unused_draft_itemid(); */
         /*
         $files = $qa->get_last_qt_files('attachments', $options->context->id);
         $itemid = null;
@@ -504,9 +546,7 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
 
         $itemid = $qa->prepare_response_files_draft_itemid('attachments', $options->context->id);
 
-        // $sql = 'select * from mdl_files where filearea="draft" and itemid=' . $itemid . ';';
-        // debugging('---');
-        // debugging($sql);
+        /* $sql = 'select * from mdl_files where filearea="draft" and itemid=' . $itemid . ';'; */
         $clientid = uniqid();
         $defaults = [
             'readonly' => false,
@@ -523,8 +563,6 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
 
         $context = $options->context;
 
-        // debugging('itemid = ' . $itemid);
-        // debugging('context = ' . $options->context->id);
         $repo = repository::get_instances(['type' => 'upload', 'currentcontext' => $context]);
         if (empty($repo)) {
             throw new moodle_exception('errornouploadrepo', 'moodle');
@@ -532,9 +570,9 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $repo = reset($repo); // Get the first (and only) upload repo.
 
         $fs = get_file_storage();
-        // initialise options, getting files in root path
+        // Initialise options, getting files in root path.
         $params = new stdClass();
-        // $params = file_get_drafarea_files($defaults['itemid'], '/');
+        /* $params = file_get_drafarea_files($defaults['itemid'], '/'); */
         $params->repo_id = $repo->id;
         foreach ($defaults as $name => $value) {
             $params->$name = $value;
@@ -543,13 +581,12 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $usercontext = context_user::instance($USER->id);
         $params->contextid = $usercontext->id;
         $params->explorerautosave = get_config('qtype_proforma', 'explorerautosave');
-        // debugging('usercontext = ' . $params->contextid);
 
-        // $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', true);
-        // $options->filecount = count($files);
-        // var_dump($options);
-        global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
+        /*
+        $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', true);
+        $options->filecount = count($files);
+        */
+        $this->page->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
             ['fileexplorer_' . $clientid, $params]);
 
         return html_writer::tag('div', '', ['id' => 'fileexplorer_' . $clientid]) .
@@ -559,19 +596,27 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
     }
 
     /**
+     * Checks whether the student submission can have attachments.
+     *
      * @return bool true: the student submission can have attachments
      */
     public function can_have_attachments() {
         return true;
     }
 
-    /** @return string returns the class name */
+    /**
+     * Returns the CSS class name of the response area.
+     *
+     * @return string class name
+     */
     protected function class_name() {
         return 'qtype_proforma_explorer';
     }
 
     /**
-     * @return string: returns the name of the answer step field
+     * Returns the name of the answer step field.
+     *
+     * @return string name of the answer step field
      */
     public function answerfieldname() {
         return ATTACHMENTS; // Attachments are not stored here.

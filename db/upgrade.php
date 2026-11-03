@@ -23,9 +23,6 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-
 /**
  * Upgrade code for the proforma question type.
  * @param int $oldversion the version we are upgrading from.
@@ -48,14 +45,14 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018010500) {
-        // rename taskfilename to responsefilename.
+        // Rename taskfilename to responsefilename.
         $field = new xmldb_field('taskfilename', XMLDB_TYPE_TEXT, null, null, null, null, null, 'taskpath');
 
         if ($dbman->field_exists($table, $field)) {
             $dbman->rename_field($table, $field, 'responsefilename');
         }
 
-        // add new fields taskfilename (with different meaning) and downloads.
+        // Add new fields taskfilename (with different meaning) and downloads.
         $field = new xmldb_field('taskfilename', XMLDB_TYPE_TEXT, null, null, null, null, null, 'programminglanguage');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -82,7 +79,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018011700) {
-        // rename taskfilename to responsefilename.
+        // Rename taskfilename to responsefilename.
         $field = new xmldb_field('taskfilename', XMLDB_TYPE_TEXT, null, null, null, null, null, 'taskpath');
 
         if ($dbman->field_exists($table, $field)) {
@@ -94,7 +91,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018012300) {
-        // split downloads into seperate fields.
+        // Split downloads into seperate fields.
         $field = new xmldb_field('downloads', XMLDB_TYPE_TEXT, null, null, null, null, null, 'programminglanguage');
 
         if ($dbman->field_exists($table, $field)) {
@@ -119,7 +116,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018041200) {
-        // split downloads into seperate fields.
+        // Split downloads into seperate fields.
         $field = new xmldb_field('modelsolfiles', XMLDB_TYPE_TEXT, null, null, null, null, null, 'libraries');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -135,9 +132,10 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018051100) {
+        // Changes:
         // - remove modelsolution
         // - add taskstorage
-        // - rename graderinfo -> comment
+        // - rename graderinfo -> comment.
         $field = new xmldb_field('modelsolution');
         if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field, 'modelsolution');
@@ -174,7 +172,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018121800) {
-        // grading hints
+        // Grading hints.
         $field = new xmldb_field('gradinghints', XMLDB_TYPE_TEXT, null, null, null, null, null, 'programminglanguage');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -185,7 +183,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018121901) {
-        // grading hints
+        // Grading hints.
         $field = new xmldb_field('downloads', XMLDB_TYPE_TEXT, null, null, null, null, null, 'taskstorage');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -195,7 +193,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // merge columns instructions and libraries to downloads.
+        // Merge columns instructions and libraries to downloads.
         $DB->execute('UPDATE {qtype_proforma_options} '.
                 'SET downloads = ' .
                 $DB->sql_concat(' instructions ', '","' , 'libraries') .
@@ -212,9 +210,9 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018122107) {
-        // proformaversion.
+        // Proformaversion.
 
-        // maybe default values are not set!!
+        // Maybe default values are not set!!
         $field = new xmldb_field('proformaversion', XMLDB_TYPE_TEXT, null, null, null, null, null, 'gradinghints');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -234,12 +232,14 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
 
     if ($oldversion < 2018122701) {
         require_once(__DIR__ . '/upgradelib.php');
-        // merge fileareas to download.
+        // Merge fileareas to download.
         update_proforma_download_filearea();
         // DO NOT DO THIS unless the hash for the files is converted!
-        // $DB->execute('UPDATE {files} '.
-        // 'SET filearea = "download" ' .
-        // 'WHERE (filearea = "library" or filearea = "instruction") and component ="qtype_proforma"');
+        /*
+        $DB->execute('UPDATE {files} '.
+        'SET filearea = "download" ' .
+        'WHERE (filearea = "library" or filearea = "instruction") and component ="qtype_proforma"');
+        */
 
         $field = new xmldb_field('instructions', XMLDB_TYPE_TEXT, null, null, null, null, null, 'templates');
         if ($dbman->field_exists($table, $field)) {
@@ -278,9 +278,9 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019111901, 'qtype', 'proforma');
     }
 
-    // Version control access
+    // Version control access.
     if ($oldversion < 2020021100) {
-        // version control fields.
+        // Version control fields.
         $field = new xmldb_field('vcsuritemplate', XMLDB_TYPE_TEXT, null, null, null, null, null, 'responsetemplate');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -343,7 +343,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2025041001) {
-        // Remove unused columns as they cause problems on restore
+        // Remove unused columns as they cause problems on restore.
         $field = new xmldb_field('displayfiles', XMLDB_TYPE_TEXT, null, null, null, null, null, 'downloads');
         if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field);

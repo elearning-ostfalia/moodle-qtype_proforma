@@ -84,8 +84,10 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
                 break;
         }
 
-        // $xw->createAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-        // $xw->createAttribute('xsi:schemaLocation', 'urn:proforma:v2.0 schema.xsd');
+        /*
+        $xw->createAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $xw->createAttribute('xsi:schemaLocation', 'urn:proforma:v2.0 schema.xsd');
+        */
 
         // Task as external task in http field.
         $xw->startElement('external-task');
@@ -247,8 +249,7 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
             $uri = $this->_uri;
         }
 
-        // debugging($uri);
-        // return array($this->set_dummy_result3(), 200); // Fake.
+        /* return array($this->set_dummy_result3(), 200); // Fake. */
 
         // Send task and submission to grader with Curl with a configured timeout.
         // Connection to Praktpomat is allowed to use 'localhost' and other potentially blocked hosts/ports.
@@ -317,7 +318,7 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
             }
         }
 
-        // ob_flush(); // results in error message in 5.1
+        // Calling ob_flush() here results in an error message in 5.1.
         flush();
     }
 
@@ -350,7 +351,7 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
         $this->responsestarted = false;
         // Get timeout.
         $options['CURLOPT_TIMEOUT'] = get_config('qtype_proforma', 'upload_timeout');
-        // $options['CURLOPT_SUPPRESS_CONNECT_HEADERS'] = True;
+        /* $options['CURLOPT_SUPPRESS_CONNECT_HEADERS'] = True; */
         $options['CURLOPT_WRITEFUNCTION'] = [&$this, 'curl_write_flush'];
 
         // Add task file.
@@ -364,7 +365,6 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
 
         // No debugging message here because the function might be called via ajax
         // which results in cancelling the whole action!
-        // debugging($uri);
 
         // Send task and submission to grader with Curl with a configured timeout.
         // Connection to Praktpomat is allowed to use 'localhost' and other potentially blocked hosts/ports.
@@ -428,11 +428,9 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
         $submission = $this->create_submission_xml(null, $files, null, null, null, $task);
         $postfields = ['submission.xml' => $submission];
         foreach ($files as $file) {
-            // debugging(print_r($file));
             $postfields[$file->get_filename()] = $file;
         }
 
-        // debugging($submission);
         // Send POST request to grader.
         return $this->post_to_grader($postfields, null, $task);
     }
@@ -470,19 +468,19 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
         $submission = $this->create_submission_xml(null, $files, null, null, null, $task);
         $postfields = ['submission.xml' => $submission];
         foreach ($files as $file) {
-            // debugging(print_r($file));
             $postfields[$file->get_filename()] = $file;
         }
 
         // Get URI.
-        // $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
-        // $path = trim(get_config('qtype_proforma', 'runtest_path'));
-        // $uri = $protocolhost . $path;
+        /*
+        $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
+        $path = trim(get_config('qtype_proforma', 'runtest_path'));
+        $uri = $protocolhost . $path;
+        */
         if (!isset($this->_uri)) {
             throw new moodle_exception('SSE uri is not set in grader');
         }
 
-        // debugging($submission);
         // Send POST request to grader.
         return $this->post_to_grader_and_stream_result($postfields, $task, $this->_uri);
     }
@@ -520,7 +518,7 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
      * @throws coding_exception
      */
     public function upload_task_to_grader($task) {
-        // $filename = $question->responsefilename;
+        /* $filename = $question->responsefilename; */
 
         $submissionxml = $this->create_submission_xml(
             'no source code available',
@@ -747,7 +745,7 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
         }
         if ($result === false) {
             // ERROR: no result
-            // TODO: improve error handling with returning array with multible values
+            // Still open: improve error handling with returning array with multible values
             // - return only error text and calling function must convert???
             // - or throw exception??
             // - or use if-else.
@@ -846,8 +844,7 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
         }
 
         if ($testswithinternalerror) {
-            // TODO: get language string on display not here.
-            // debugging('internaltesterror');
+            // Still open: get language string on display, not here.
             return [question_state::$needsgrading, null,
                     get_string('internaltesterror', 'qtype_proforma'), $result, $feedbackformat];
         }

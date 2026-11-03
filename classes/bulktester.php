@@ -55,7 +55,6 @@ class proforma_bulk_tester {
         ");
     }
 
-
     /**
      * get all teachers
      * @param int $courseid
@@ -65,7 +64,7 @@ class proforma_bulk_tester {
     public function get_teachers($courseid) {
         global $DB;
         $rolid = 3;
-        // only enroled users of courses that are still active
+        // Only enroled users of courses that are still active.
         $sql = 'select u.id, u.lastname, u.firstname
             from {course} ic
                 JOIN {context} con ON con.instanceid = ic.id
@@ -265,7 +264,13 @@ class proforma_bulk_tester {
                 get_string('back')));
     }
 
-
+    /**
+     * Loads the task file of a question.
+     *
+     * @param int $questionid question id
+     * @param int $contextid context id
+     * @return stored_file|null task file or null if there is no unique task file
+     */
     public static function load_proforma_file($questionid, $contextid) {
         $fs = get_file_storage();
         $taskfiles = $fs->get_area_files($contextid, 'qtype_proforma',
@@ -281,6 +286,13 @@ class proforma_bulk_tester {
         return null;
     }
 
+    /**
+     * Loads the model solution files of a question.
+     *
+     * @param int $questionid question id
+     * @param int $contextid context id
+     * @return stored_file[] model solution files
+     */
     public static function load_model_solution($questionid, $contextid) {
         $fs = get_file_storage();
         return $fs->get_area_files($contextid, 'qtype_proforma',

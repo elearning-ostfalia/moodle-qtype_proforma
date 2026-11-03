@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 
-// TODO: cleanup: LON-CAPA format is no longer needed!
+// Still open: cleanup, LON-CAPA format is no longer needed!
 
 /**
  * base class for graders (and this one is for LON-CAPA feedback)

@@ -53,7 +53,8 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @param bool $selected whether or not this choice was selected.
      * @return string HTML fragment.
      */
-    public function feedback_image($fraction, $selected = true) {
+    public function feedback_image($fraction, $selected = true) { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
+        // Only the visibility is changed (protected => public).
         return parent::feedback_image($fraction, $selected);
     }
 
@@ -123,7 +124,6 @@ class qtype_proforma_renderer extends qtype_renderer {
                 $files = $this->files_read_only($qa, $options);
             }
         }*/
-        // debugging('Achtung, class bei files und anwer unterscheiden');
 
         // Show question test atachments.
         $downloadtext = $this->question_downloads($question);
@@ -137,7 +137,7 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         $result .= html_writer::start_tag('div', ['class' => 'ablock']);
         $result .= html_writer::tag('div', $answer, ['class' => $renderer->answerfieldname()]);
-        // $result .= html_writer::tag('div', $files, array('class' => ATTACHMENTS));
+        /* $result .= html_writer::tag('div', $files, array('class' => ATTACHMENTS)); */
         $result .= html_writer::end_tag('div');
 
         return $result;
@@ -214,9 +214,9 @@ class qtype_proforma_renderer extends qtype_renderer {
         $pickeroptions = new stdClass();
         $pickeroptions->mainfile = null;
         $pickeroptions->maxfiles = $question->attachments;
-        // $pickeroptions->areamaxbytes = $question->maxbytes;
+        /* $pickeroptions->areamaxbytes = $question->maxbytes; */
         $pickeroptions->maxbytes = $question->maxbytes;
-        // $pickeroptions->itemid = $qa->prepare_response_files_draft_itemid('attachments', $options->context->id);
+        /* $pickeroptions->itemid = $qa->prepare_response_files_draft_itemid('attachments', $options->context->id); */
         $pickeroptions->context = $options->context;
         $pickeroptions->accepted_types = $question->filetypes;
         $pickeroptions->return_types = FILE_INTERNAL | FILE_CONTROLLED_LINK;

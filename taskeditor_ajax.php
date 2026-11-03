@@ -33,6 +33,9 @@ require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/externallib.php');
 require_once(__DIR__ . '/renderer.php');
 
+// The course context is validated below (external_api::validate_context).
+require_login(null, false, null, false, true);
+
 $err = new stdClass();
 
 $contextid = required_param('contextid', PARAM_INT); // Context ID.

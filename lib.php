@@ -101,7 +101,7 @@ function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $fo
     }
 
     $filename = implode('/', $args); // The $args array contains elements of the filepath.
-    // $filepath = '/';
+    /* $filepath = '/'; */
 
     // Retrieve the file from the Files API.
     $fs = get_file_storage();

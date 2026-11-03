@@ -191,7 +191,7 @@ class qtype_proforma_setlx_task extends qtype_proforma_base_task {
      */
     protected function extract_formdata_from_taskfile_test($question, $test, $files, &$index) {
         switch ($test['id']) {
-            case self::COMPILER: // TODO: Set flag???
+            case self::COMPILER: // Still open: set flag???
                 break;
             default:
                 parent::extract_formdata_from_taskfile_test($question, $test, $files, $index);

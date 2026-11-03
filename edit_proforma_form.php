@@ -275,7 +275,7 @@ class qtype_proforma_edit_form extends question_edit_form {
                 return true;
             }
             // Extension .py is not recognised => do not check extensions!
-            // TODO: check valid format: ; separated + . with extension.
+            // Still open: check valid format: ; separated + . with extension.
             return true;
         });
     }

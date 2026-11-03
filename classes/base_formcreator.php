@@ -140,8 +140,6 @@ abstract class base_form_creator {
      * @param array $files Validation argument
      * @param array $errors Array with error messages (so far)
      * @return array with error messages
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
         if ((!isset($fromform['taskeditor'])) || (!$fromform['taskeditor'])) {
@@ -380,7 +378,7 @@ abstract class base_form_creator {
         $mform->addElement('text', 'responsefilename', get_string('responsefilename', 'qtype_proforma'), ['size' => '60']);
         $mform->setType('responsefilename', PARAM_TEXT);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
-        // $mform->addRule('responsefilename', get_string('required'), 'required');
+        /* $mform->addRule('responsefilename', get_string('required'), 'required'); */
         // Hide label if not used. Done with JavaScript.
         /*global $PAGE;
         $PAGE->requires->js_call_amd('qtype_proforma/formhelper', 'requiredif', array('id_responsefilename',
@@ -470,7 +468,7 @@ abstract class base_form_creator {
         } else {
             $repeatarray[] = $mform->createElement("hidden", "testcodeformat", self::TESTCODE_FILES);
             $this->_form->setType('testcodeformat', PARAM_INT);
-            // $repeatoptions['testfiles']['rule'] = 'required';
+            /* $repeatoptions['testfiles']['rule'] = 'required'; */
         }
         if ($this->_testfiles) {
             // Add filemanager.
@@ -484,7 +482,7 @@ abstract class base_form_creator {
         } else {
             $repeatarray[] = $mform->createElement("hidden", "testcodeformat", self::TESTCODE_EDITOR);
             $this->_form->setType('testcodeformat', PARAM_INT);
-            // $repeatoptions['testcode']['rule'] = 'required';
+            /* $repeatoptions['testcode']['rule'] = 'required'; */
         }
 
         if ($this->_entrypoint) {
@@ -525,8 +523,6 @@ abstract class base_form_creator {
      * Modify testoptions in add_tests
      *
      * @param array $testoptions test options
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function adjust_test_testoptions(&$testoptions) {
     }
@@ -593,7 +589,7 @@ abstract class base_form_creator {
         // Autoincrement test identifier.
         $repeatoptions['testid']['default'] = '{no}';
         // Title is required.
-        // $repeatoptions['testtitle']['rule'] = 'required';
+        /* $repeatoptions['testtitle']['rule'] = 'required'; */
 
         // Derived class could modify array options.
         $this->adjust_test_repeatoptions($repeatoptions);
@@ -718,16 +714,15 @@ abstract class base_form_creator {
      *
      * @param stdClass $question question data
      * @param qtype_proforma $qtype question type
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function add_response_options($question, $qtype) {
         global $CFG, $COURSE;
         $mform = $this->_form;
 
-        // $defaultmaxsubmissionsizebytes = get_config('maxsubmissionsizebytes');
-        // $defaultfiletypes = (string)get_config('filetypeslist');
-        //
+        /*
+        $defaultmaxsubmissionsizebytes = get_config('maxsubmissionsizebytes');
+        $defaultfiletypes = (string)get_config('filetypeslist');
+        */
         // Header.
         $mform->addElement('header', 'responseoptions', get_string('responseoptions', 'qtype_proforma'));
         $mform->setExpanded('responseoptions');
@@ -902,9 +897,11 @@ abstract class base_form_creator {
                 "version" => ["3"],
             ];
         }
-        // if (get_config('qtype_proforma', 'setlx')) {
+        /*
+        if (get_config('qtype_proforma', 'setlx')) {
             // Currently no nore support for SetlX.
-        // }
+        }
+        */
 
         // Read max task size.
         $context["taskmaxbytes"] = get_config('qtype_proforma', 'taskmaxbytes');
@@ -1081,8 +1078,10 @@ abstract class base_form_creator {
         // $embedmessageoptions[] = $mform->createElement('advcheckbox', 'initiallyembedded',
         // get_string('initiallyembedded', 'qtype_proforma'), null, array(0, 1));
         // Disable initial state if feature is not used.
-        // $mform->disabledIf('initiallyembedded', 'inlinemessages', 'neq', '1');
-        // $mform->setDefault('initiallyembedded', get_config('qtype_proforma', 'initiallyembedded'));
+        /*
+        $mform->disabledIf('initiallyembedded', 'inlinemessages', 'neq', '1');
+        $mform->setDefault('initiallyembedded', get_config('qtype_proforma', 'initiallyembedded'));
+        */
 
         $mform->addElement('group', 'embed', get_string('inlinemessages', 'qtype_proforma'), $embedmessageoptions, null, false);
         $mform->addHelpButton('embed', 'inlinemessages', 'qtype_proforma');
@@ -1309,7 +1308,7 @@ abstract class base_form_creator {
         // also stored as file for download.
         // Otherwise a previously existing template file is deleted.
         // in order to support file download and editor template in student view.
-        // TODO: remove redundancy.
+        // Still open: remove redundancy.
         $templfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_TEMPLATE);
         if ($formdata->responseformat == qtype_proforma::RESPONSE_EDITOR) { // Editor.
             $options->templates = $formdata->templates = 'template.txt';
