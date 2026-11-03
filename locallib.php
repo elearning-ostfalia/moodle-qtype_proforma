@@ -227,14 +227,14 @@ function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = 
             // so this must be done explicitly in Javascript.
             $PAGE->requires->js_call_amd(
                 'qtype_proforma/codemirrorif',
-                'init_codemirror',
+                'initCodemirror',
                 [$textareaid, $readonly, $mode, $header, 1]
             );
         } else {
             // In 3.4 resizing must be prohibited because the window is too small.
             $PAGE->requires->js_call_amd(
                 'qtype_proforma/codemirrorif',
-                'init_codemirror',
+                'initCodemirror',
                 [$textareaid, $readonly, $mode, $header]
             );
         }

@@ -53,14 +53,14 @@
                 <input class="xml_framework" value="{{ framework }}" disabled="disabled" style='display: none'>
             {{/framework}}
              &nbsp;
-            {{#framework_version}}
+            {{#frameworkVersion}}
                 <!-- no label because of format -->
                 <!-- <label for="xml_framework_version">{{#str}} version, qtype_proforma {{/str}}<span class="red">*</span> </label> -->
                 {{#str}} version, qtype_proforma {{/str}}
                 <select class="xml_framework_version" id="{{uniqid}}-version">
                             <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
                 </select>
-            {{/framework_version}}
+            {{/frameworkVersion}}
             </span>
         </span>
 

@@ -35,7 +35,12 @@ import {javaParser} from "./java";
 import {FileReferenceList} from "./filereflist";
 import Templates from 'core/templates';
 import * as CodeMirror from '../codemirror';
-import {exception as displayException} from 'core/notification';
+import {
+    alert as displayAlert,
+    deleteCancelPromise,
+    exception as displayException,
+    saveCancelPromise
+} from 'core/notification';
 import '../clike';
 import '../python';
 import '../xml';
@@ -75,7 +80,7 @@ export class FileWrapper {
 
     static uploadFileWhenDropped(files, fileBox) {
         if (files.length > 1) {
-            alert('You have dragged more than one file. You must drop exactly one file!');
+            displayAlert('', 'You have dragged more than one file. You must drop exactly one file!');
             return;
         }
         const fileId = $(fileBox).find(".xml_file_id").val();
@@ -339,14 +344,21 @@ export class FileWrapper {
                 const expectedFilename = javaParser.getFilenameWithPackage(text, actualFilename);
                 if (expectedFilename !== actualFilename && expectedFilename !== ".java") {
                     // Ask user if filename shall really be changed
-                    return Str.get_string('changejavafilename', 'qtype_proforma', expectedFilename)
-                        .then(localtext => {
-                            if (confirm(localtext)) {
+                    return saveCancelPromise(
+                        Str.get_string('confirm', 'core'),
+                        Str.get_string('changejavafilename', 'qtype_proforma', expectedFilename),
+                        Str.get_string('yes', 'core')
+                    )
+                        // Rejection means the user has cancelled the dialog => keep filename.
+                        .then(() => true, () => false)
+                        .then(rename => {
+                            if (rename) {
                                 uiFile.filename = expectedFilename;
                             }
                             updateFilename();
                             // Update filenames in all file references
                             FileReferenceList.updateAllFilenameLists(changedId, uiFile.filename);
+                            return uiFile.filename;
                         });
                 }
             }
@@ -354,19 +366,13 @@ export class FileWrapper {
         }
         // Update filenames in all file references
         FileReferenceList.updateAllFilenameLists(changedId, uiFile.filename);
+        return Promise.resolve(uiFile.filename);
     }
 
 
     static doesFilenameExist(filename) {
-        let found = false;
-        $.each($(".xml_file_filename"), function(index, item) {
-            if (item.value === filename) {
-                found = true;
-                return false;
-            }
-        });
-
-        return found;
+        return Array.from(document.querySelectorAll(".xml_file_filename"))
+            .some(item => item.value === filename);
     }
 
 /*
@@ -393,22 +399,24 @@ export class FileWrapper {
             'id': uiFile.id,
             'filename': uiFile.filename
         };
-        if (FileReferenceList.getCountFileIdReferenced(uiFile.id)) {
-            // If true: cancel or remove all filenames/filerefs from model solution and test
-            Str.get_string('confirmdeletefile1', 'qtype_proforma', filedata)
-                .then(localtext => {
-                    if (window.confirm(localtext)) {
-                        uiFile.delete();
-                    }
-                });
-        } else {
-            Str.get_string('confirmdeletefile2', 'qtype_proforma', filedata)
-                .then(localtext => {
-                    if (window.confirm(localtext)) {
-                        uiFile.delete();
-                    }
-                });
-        }
+        // If the file is referenced: cancel or remove all filenames/filerefs from model solution and test.
+        const stringkey = FileReferenceList.getCountFileIdReferenced(uiFile.id) ? 'confirmdeletefile1' : 'confirmdeletefile2';
+        deleteCancelPromise(
+            Str.get_string('confirm', 'core'),
+            Str.get_string(stringkey, 'qtype_proforma', filedata),
+            Str.get_string('delete', 'core'),
+            {triggerElement: button[0]}
+        )
+            .then(() => {
+                uiFile.delete();
+                return true;
+            })
+            .catch((error) => {
+                // Rejection without an Error means the user cancelled the dialog.
+                if (error instanceof Error) {
+                    displayException(error);
+                }
+            });
     }
 
 
@@ -494,7 +502,7 @@ export class FileWrapper {
                     const text = uiFile.text;
 
                     if (!("TextEncoder" in window)) {
-                        alert("Sorry, this browser does not support TextEncoder...");
+                        displayAlert('', 'Sorry, this browser does not support TextEncoder...');
                     }
                     let enc = new TextEncoder("utf-8");
 

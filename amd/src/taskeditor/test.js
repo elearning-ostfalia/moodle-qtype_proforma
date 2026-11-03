@@ -31,7 +31,7 @@
 import $ from 'jquery';
 import {TestFileReference, FileReferenceList} from "./filereflist";
 import {setcounter} from "./helper";
-import {exception as displayException} from 'core/notification';
+import {exception as displayException, deleteCancelPromise} from 'core/notification';
 import Templates from 'core/templates';
 import * as Str from 'core/str';
 
@@ -128,12 +128,22 @@ export class TestWrapper {
     }
 
     static delete(button) {
-        Str.get_string('confirmdeletetest', 'qtype_proforma')
-            .then(localtext => {
-                if (window.confirm(localtext)) {
-                    let instance = TestWrapper.constructFromRoot(button.closest('.xml_test'));
-                    // Remove instance
-                    instance.delete();
+        deleteCancelPromise(
+            Str.get_string('confirm', 'core'),
+            Str.get_string('confirmdeletetest', 'qtype_proforma'),
+            Str.get_string('delete', 'core'),
+            {triggerElement: button[0]}
+        )
+            .then(() => {
+                let instance = TestWrapper.constructFromRoot(button.closest('.xml_test'));
+                // Remove instance
+                instance.delete();
+                return true;
+            })
+            .catch((error) => {
+                // Rejection without an Error means the user cancelled the dialog.
+                if (error instanceof Error) {
+                    displayException(error);
                 }
             });
     }
@@ -218,17 +228,13 @@ export class TestWrapper {
                 }
                 if (item) {
                     let counter = 0;
-
-                    item.filerefs.forEach(function(itemFileref) {
+                    const promises = item.filerefs.map(itemFileref => {
                         let filename = task.findFilenameForId(itemFileref.refid);
-                        let promiseFactories = [
-                            TestFileReference.getInstance().setFilenameOnCreation(test.root, counter++, filename)];
-                        Promise.all(promiseFactories)
-                            .then(() => {
-                                // ???
-                            });
+                        return TestFileReference.getInstance().setFilenameOnCreation(test.root, counter++, filename);
                     });
+                    return Promise.all(promises);
                 }
+                return true;
             })
             .catch((error) => {
                 displayException(error);

@@ -32,6 +32,7 @@ import $ from 'jquery';
 import * as zip from "../zip/zip";
 import {FileStorage, FileWrapper, fileStorages} from "./file";
 import {FileReferenceList} from "./filereflist";
+import {alert as displayAlert, exception as displayException} from 'core/notification';
 
 
 let unzippedFiles = {};
@@ -69,7 +70,7 @@ export function relinkFiles() {
                     // consistency check
                     console.error("internal error: file is already relinked! filename " + filename + " -> " +
                         fileid + " " + uiFile.type);
-                    alert('internal error: file ' + filename + ' is already relinked!');
+                    displayAlert('Internal error', 'File ' + filename + ' is already relinked!');
                 } else {
                     /* If (!unzippedFiles[filename])
                         console.error("unzippedFiles[ " + filename + "] is missing");
@@ -102,7 +103,7 @@ export function unzipme(blob, readyCallback) {
     /**
      * Called when all files are read: moves the files to the file storages.
      */
-    function onFilesRead(/*zipReader*/) {
+    function onFilesRead() {
         relinkFiles();
         // ZipReader.close();
     }
@@ -115,43 +116,48 @@ export function unzipme(blob, readyCallback) {
      * @param {Function} callbackForFile called with content and zip entry of each other file
      */
     function unzipBlob(blob, callbackForTaskXml, callbackForFile) {
-          try {
-              const zipFileReader = new zip.BlobReader(blob);
-              let zipReader = new zip.ZipReader(zipFileReader);
-              debugLog('unzip');
-              zipReader.getEntries()
-                  .then(entries => {
-                      filesToBeRead = entries.length;
-                      debugLog('filesToBeRead ' + filesToBeRead);
-                      entries.forEach(function(entry) {
-                          debugLog('filename: ' + entry.filename);
-                          if (entry.filename === 'task.xml') {
-                              const taskXmlWriter = new zip.TextWriter();
-                              entry.getData(taskXmlWriter)
-                                  .then(xmlContent => {
-                                        callbackForTaskXml(xmlContent);
-                                    });
-                          } else {
-                            // Handle attached files'
-                              // store file
-                              const blobWriter = new zip.BlobWriter();
-                              entry.getData(blobWriter)
-                                  .then(data => data.arrayBuffer())
-                                  .then(data => {
-                                      callbackForFile(data, entry);
-                                  });
-                          }
-                      });
-                  })
-                .catch(error => {
-                      console.error('error:', error);
-                      alert(error);
-                  });
-              zipReader.close();
+        /**
+         * Reads a single zip entry and calls the matching callback.
+         *
+         * @param {Object} entry zip entry
+         * @returns {Promise}
+         */
+        function readEntry(entry) {
+            debugLog('filename: ' + entry.filename);
+            if (entry.filename === 'task.xml') {
+                return entry.getData(new zip.TextWriter())
+                    .then(xmlContent => {
+                        callbackForTaskXml(xmlContent);
+                        return true;
+                    });
+            }
+            // Handle attached files.
+            return entry.getData(new zip.BlobWriter())
+                .then(data => data.arrayBuffer())
+                .then(data => {
+                    callbackForFile(data, entry);
+                    return true;
+                });
+        }
 
+        try {
+            const zipFileReader = new zip.BlobReader(blob);
+            let zipReader = new zip.ZipReader(zipFileReader);
+            debugLog('unzip');
+            zipReader.getEntries()
+                .then(entries => {
+                    filesToBeRead = entries.length;
+                    debugLog('filesToBeRead ' + filesToBeRead);
+                    return Promise.all(entries.map(readEntry));
+                })
+                .catch(error => {
+                    console.error('error:', error);
+                    displayException(error);
+                })
+                .finally(() => zipReader.close());
         } catch (e) {
-              console.error(e);
-          }
+            console.error(e);
+        }
     }
 
     unzipBlob(blob,
@@ -232,7 +238,7 @@ export function taskTitleToFilename() {
     let title = $("#id_name").val();
     title = camelize(title);
     // Only allow characters, numbers, '-' and '_'
-    title = title.replace(/[^a-z0-9_\-]/gi, "_");
+    title = title.replace(/[^a-z0-9_-]/gi, "_");
     title = title + '.zip';
     return title;
 
@@ -245,14 +251,14 @@ export function taskTitleToFilename() {
  * @param {string} TEXT_CONTENT content of task.xml
  * @param {boolean} startdownload true if the zip file shall be downloaded
  * @param {number} maxsize maximum size of the zip file in bytes (0: no limit)
- * @returns {Promise|undefined}
+ * @returns {Promise<Blob|undefined>} zipped task (undefined if there is no content)
  */
 export function zipme(TEXT_CONTENT, startdownload, maxsize) {
     // Get task.xml content from user interface
     // var TEXT_CONTENT = taskXml; // $("#output").val();
     if (!TEXT_CONTENT || TEXT_CONTENT.length === 0) {
         console.error("zipme called with empty output");
-        return;
+        return Promise.resolve();
     }
 
     const FILENAME = "task.xml";
@@ -318,14 +324,11 @@ export function zipme(TEXT_CONTENT, startdownload, maxsize) {
                 a.download = zipname;
                 a.href = url;
                 a.click();
-            } else {
-                if (maxsize > 0 && zippedBlob.size > maxsize) {
-                    return Promise.reject('Task size is ' + zippedBlob.size + ' and exceeds maximum size (' +
-                        maxsize + ' bytes).\n' +
-                        'Uploading to the Moodle server is blocked!');
-                } else {
-                    return zippedBlob;
-                }
+            } else if (maxsize > 0 && zippedBlob.size > maxsize) {
+                throw new Error('Task size is ' + zippedBlob.size + ' and exceeds maximum size (' +
+                    maxsize + ' bytes).\n' +
+                    'Uploading to the Moodle server is blocked!');
             }
-    });
+            return zippedBlob;
+        });
 }

@@ -363,7 +363,7 @@ abstract class base_form_creator {
             global $PAGE;
             $PAGE->requires->js_call_amd(
                 'qtype_proforma/codemirrorif',
-                'switch_mode',
+                'switchMode',
                 ['id_programminglanguage', 'id_responsetemplate']
             );
         }
@@ -404,7 +404,7 @@ abstract class base_form_creator {
             global $PAGE;
             $PAGE->requires->js_call_amd(
                 'qtype_proforma/codemirrorif',
-                'switch_mode',
+                'switchMode',
                 ['id_programminglanguage', 'id_modelsolution']
             );
         }

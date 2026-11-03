@@ -94,9 +94,7 @@ export const requiredif = (id, dependend) => {
     let element = document.getElementById(id);
     if (element) {
         let selectelem = document.getElementById(dependend);
-        if (selectelem) {
-
-        } else {
+        if (!selectelem) {
             console.error('cannot find element identified by ' + dependend);
         }
     } else {

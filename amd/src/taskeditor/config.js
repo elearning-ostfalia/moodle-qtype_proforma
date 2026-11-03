@@ -99,6 +99,7 @@ export function initStrings() {
                         testCComp,*/
                 testCheckStyle
             ];
+            return testInfos;
         });
 }
 
@@ -206,7 +207,7 @@ class GeneralUnitTest extends CustomTest {
             }
             const version = xmlReader.readSingleText("@version", unitNode);
             if (version && version !== 'undefined' && version.trim() !== '') {
-            context.framework_version = {
+            context.frameworkVersion = {
                     "selected": true,
                     "value": version,
                     "name": version
@@ -298,12 +299,12 @@ class JUnitTest extends GeneralUnitTest {
                 // todo: check version
                 let praktomatNode = xmlReader.readSingleNode("dns:test-meta-data", testConfigNode);
             context.warnings = xmlReader.readSingleText("praktomat:max-checkstyle-warnings", praktomatNode);
-            context.framework_version = xmlReader.readSingleText("praktomat:version", testConfigNode);
+            context.frameworkVersion = xmlReader.readSingleText("praktomat:version", testConfigNode);
             } else {
                 switch (csNode.namespaceURI) {
                     case checkstylens: {
                         const version = xmlReader.readSingleText("@version", csNode);
-                        context.framework_version = {
+                        context.frameworkVersion = {
                             "selected": true,
                             "value": version,
                             "name": version

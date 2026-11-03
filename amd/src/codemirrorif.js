@@ -35,7 +35,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror', 'qtype_proforma/debug
 
     // Maps the programming language value used in PHP to the CodeMirror mode and
         // the corresponding javascript file to load
-        let map_proglang_to_codemirror_mode = function(moodleMode) {
+        let mapProglangToCodemirrorMode = function(moodleMode) {
             switch (moodleMode) {
             case "java": return ["text/x-java", 'qtype_proforma/clike'];
                 case "python": return ["text/x-python", 'qtype_proforma/python'];
@@ -48,7 +48,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror', 'qtype_proforma/debug
             case "xml": return ["", null]; // Return ["application/xml", 'qtype_proforma/xml'];
             case "none": return ["", null];
                 default:
-                    console.error("unsupported mode " + moodleMode + " for map_proglang_to_codemirror_mode");
+                    console.error("unsupported mode " + moodleMode + " for mapProglangToCodemirrorMode");
                     return ["text/text", null];
             }
         };
@@ -58,12 +58,12 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror', 'qtype_proforma/debug
 
         // Function is called in edit_proforma_form. It triggers the CodeMirror mode switch
             // whenever the programming language changes
-            switch_mode: function(selectId, textareaId) {
+            switchMode: function(selectId, textareaId) {
 
             let changeMode = function(selectId, textareaId) {
                     var progLang = $("#" + selectId).val();
                 // Map programming language to CodeMirror mode
-                var newMode = map_proglang_to_codemirror_mode(progLang);
+                var newMode = mapProglangToCodemirrorMode(progLang);
                 // Change mode in CodeMirror
                     require([newMode[1]], function() {
                         $("#" + textareaId).next(".CodeMirror").get(0).CodeMirror.setOption("mode", newMode[0]);
@@ -75,7 +75,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror', 'qtype_proforma/debug
                         changeMode(selectId, textareaId);
                     });
             } catch (err) {
-                    console.error("Exception caught in codemirrorif.js function switch_mode\n " + err.toString());
+                    console.error("Exception caught in codemirrorif.js function switchMode\n " + err.toString());
                     return;
                 }
             },
@@ -88,13 +88,13 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror', 'qtype_proforma/debug
             // (means it is not visible if created) it must be refreshed
             // when the header is clicked to show the Codemirror window.
             // Otherwise the CodeMirror is not visible.
-            init_codemirror: function(textareaId, readonly, mode, headerId, enlargeWidth) {
-            // Alert("init_codemirror called for " + textareaId); //  + " Mimemodes " + cm.mimeModes);
+            initCodemirror: function(textareaId, readonly, mode, headerId, enlargeWidth) {
+            // Alert("initCodemirror called for " + textareaId); //  + " Mimemodes " + cm.mimeModes);
                 try {
                     const textarea = document.getElementById(textareaId);
                     if (textarea === null) {
                         // Ignore silently
-                        console.error('Invalid textarea id for init_codemirror: ' + textareaId + '. Element not found.');
+                        console.error('Invalid textarea id for initCodemirror: ' + textareaId + '. Element not found.');
                         return;
                     }
                     let editor = CodeMirror.fromTextArea(textarea, {
@@ -114,11 +114,11 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror', 'qtype_proforma/debug
 
                 // Mode is not set when fromTextArea is used (why???)
                     // So mode is set later
-                const newMode = map_proglang_to_codemirror_mode(mode);
+                const newMode = mapProglangToCodemirrorMode(mode);
                     require([newMode[1]], function() {
                         editor.setOption("mode", newMode[0]);
                     });
-                    Debug.debugLog("CodeMirror.map_proglang_to_codemirror_mode called");
+                    Debug.debugLog("CodeMirror.mapProglangToCodemirrorMode called");
 
 
                     if (enlargeWidth) {
@@ -217,7 +217,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror', 'qtype_proforma/debug
                     // }
 */
             } catch (err) {
-                    console.error("Exception caught in codemirrorif.js function init_codemirror\n " + err.toString());
+                    console.error("Exception caught in codemirrorif.js function initCodemirror\n " + err.toString());
                 }
             }
         };

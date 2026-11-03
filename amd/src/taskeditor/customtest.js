@@ -115,7 +115,7 @@ export class CustomTest {
             result.framework = this.framework;
         }
         if (this.frameworkRequired) {
-            result.framework_version = {
+            result.frameworkVersion = {
                 "selected": true,
                 "value": '',
                 "name": ''

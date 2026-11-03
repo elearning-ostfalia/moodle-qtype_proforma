@@ -121,7 +121,6 @@ function _start(nodename, options) {
             // return confirm('Are you sure you want to leave?');
             event.returnValue = null;
         };*/
-    } else {
     }
 
 
