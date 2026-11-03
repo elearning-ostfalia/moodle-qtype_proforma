@@ -47,7 +47,7 @@ class taskeditor extends \external_api {
      */
     public static function get_task_url($itemid) {
         $params = self::validate_parameters(self::get_task_url_parameters(), ['itemid' => $itemid]);
-        if (empty($params) or count($params) == 0) {
+        if (empty($params) || count($params) == 0) {
             throw new \invalid_parameter_exception('invalid item id');
         }
         $itemid = $params['itemid'];
@@ -56,8 +56,7 @@ class taskeditor extends \external_api {
         $usercontext = \context_user::instance($USER->id);
         $records = $DB->get_records('files', [
             'itemid' => $itemid, 'filearea' => 'draft', 'component' => 'user',
-                'contextid' => $usercontext->id]
-        );
+                'contextid' => $usercontext->id]);
         if ($records == false || count($records) == 0) {
             throw new \invalid_parameter_exception('invalid task itemid (no draft file)');
         }
@@ -66,7 +65,7 @@ class taskeditor extends \external_api {
         $filepath = '';
         foreach ($records as $record) {
             if ($record->filename == '.') {
-                // skip folder record
+                // Skip folder record.
                 continue;
             }
             $filepath = $record->filepath;
@@ -77,7 +76,7 @@ class taskeditor extends \external_api {
             throw new \invalid_parameter_exception('no valid file found');
         }
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        if ($ext != 'zip' and $ext != 'xml') {
+        if ($ext != 'zip' && $ext != 'xml') {
             throw new \invalid_parameter_exception('invalid file found: ' + $filename);
         }
         $fileurl = \moodle_url::make_draftfile_url($itemid, $filepath, $filename);
@@ -172,34 +171,58 @@ class taskeditor extends \external_api {
     }
 
     public static function get_junit_versions_returns() {
-        return new external_function_parameters (
+        return new external_function_parameters(
             [
                 'junitversions' => new external_multiple_structure(
-                    new external_value(PARAM_TEXT, 'JUnit version',
-                    VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
-                    'Array of JUnit versions', VALUE_DEFAULT, []),
+                    new external_value(
+                        PARAM_TEXT,
+                        'JUnit version',
+                        VALUE_REQUIRED,
+                        '',
+                        NULL_NOT_ALLOWED
+                    ),
+                    'Array of JUnit versions',
+                    VALUE_DEFAULT,
+                    []
+                ),
             ]
         );
     }
 
     public static function get_checkstyle_versions_returns() {
-        return new external_function_parameters (
+        return new external_function_parameters(
             [
                 'checkstyleversions' => new external_multiple_structure(
-                    new external_value(PARAM_TEXT, 'Checkstyle version',
-                        VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
-                    'Array of Checkstyle versions', VALUE_DEFAULT, []),
+                    new external_value(
+                        PARAM_TEXT,
+                        'Checkstyle version',
+                        VALUE_REQUIRED,
+                        '',
+                        NULL_NOT_ALLOWED
+                    ),
+                    'Array of Checkstyle versions',
+                    VALUE_DEFAULT,
+                    []
+                ),
             ]
         );
     }
 
     public static function get_java_versions_returns() {
-        return new external_function_parameters (
+        return new external_function_parameters(
             [
                 'javaversions' => new external_multiple_structure(
-                    new external_value(PARAM_TEXT, 'Java version',
-                        VALUE_REQUIRED, '', NULL_NOT_ALLOWED),
-                    'Array of Java versions', VALUE_DEFAULT, []),
+                    new external_value(
+                        PARAM_TEXT,
+                        'Java version',
+                        VALUE_REQUIRED,
+                        '',
+                        NULL_NOT_ALLOWED
+                    ),
+                    'Array of Java versions',
+                    VALUE_DEFAULT,
+                    []
+                ),
             ]
         );
     }

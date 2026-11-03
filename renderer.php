@@ -37,7 +37,6 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/feedback_renderer.
  * Generates the output for proforma questions.
  */
 class qtype_proforma_renderer extends qtype_renderer {
-
     /**
      * For creating a collapsible a unique identifier is needed.
      * Therefore a counter is used that is incremented
@@ -60,7 +59,7 @@ class qtype_proforma_renderer extends qtype_renderer {
 
     private function get_last_step_for_vcs($qa) {
         foreach ($qa->get_reverse_step_iterator() as $step) {
-            if ($step->has_qt_var(VCSINPUT) or $step->has_qt_var(VCSGROUP) or $step->has_qt_var(VCSUSERNAME)) {
+            if ($step->has_qt_var(VCSINPUT) || $step->has_qt_var(VCSGROUP) || $step->has_qt_var(VCSUSERNAME)) {
                 return $step;
             }
         }
@@ -74,8 +73,10 @@ class qtype_proforma_renderer extends qtype_renderer {
      * @param question_display_options $options
      * @return string outout as html fragment
      */
-    public function formulation_and_controls(question_attempt $qa,
-            question_display_options $options) {
+    public function formulation_and_controls(
+        question_attempt $qa,
+        question_display_options $options
+    ) {
 
         $question = $qa->get_question();
         $answer = '';
@@ -102,7 +103,7 @@ class qtype_proforma_renderer extends qtype_renderer {
             // => we cannot use default renderer from question settings
             // since the teacher could have changed it in the meantime!!
             // => try and figure out what renderer to use.
-            list($step, $renderer) = $this->determine_renderer($qa, $step, $renderer);
+            [$step, $renderer] = $this->determine_renderer($qa, $step, $renderer);
             $answer = $renderer->response_area_read_only($qa, $step, $options);
         }
 
@@ -122,8 +123,11 @@ class qtype_proforma_renderer extends qtype_renderer {
         $downloadtext = $this->question_downloads($question);
 
         $result = '';
-        $result .= html_writer::tag('div', $question->format_questiontext($qa) . $downloadtext,
-                ['class' => 'qtext']);
+        $result .= html_writer::tag(
+            'div',
+            $question->format_questiontext($qa) . $downloadtext,
+            ['class' => 'qtext']
+        );
 
         $result .= html_writer::start_tag('div', ['class' => 'ablock']);
         $result .= html_writer::tag('div', $answer, ['class' => $renderer->answerfieldname()]);
@@ -145,8 +149,14 @@ class qtype_proforma_renderer extends qtype_renderer {
             return '';
         }
         $filename = trim($filename);
-        $url = moodle_url::make_pluginfile_url($question->contextid, 'qtype_proforma',
-                $filearea, $question->id, '/', $filename);
+        $url = moodle_url::make_pluginfile_url(
+            $question->contextid,
+            'qtype_proforma',
+            $filearea,
+            $question->id,
+            '/',
+            $filename
+        );
         return '<a href="' . $url->out() . '">' . $filename . '</a> ';
     }
 
@@ -169,9 +179,11 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         // Prefix.
         if (!empty($result)) {
-            return html_writer::tag('p', html_writer::tag('div',
-                    get_string('attachments', 'qtype_proforma') . ' '. $result,
-                    ['class' => 'downloads']));
+            return html_writer::tag('p', html_writer::tag(
+                'div',
+                get_string('attachments', 'qtype_proforma') . ' ' . $result,
+                ['class' => 'downloads']
+            ));
         }
         return $result;
     }
@@ -185,8 +197,11 @@ class qtype_proforma_renderer extends qtype_renderer {
      *      not be displayed. Used to get the context.
      * @return string HTML fragment.
      */
-    protected function files_input(question_attempt $qa, qtype_proforma_question $question,
-            question_display_options $options) {
+    protected function files_input(
+        question_attempt $qa,
+        qtype_proforma_question $question,
+        question_display_options $options
+    ) {
         global $CFG;
         require_once($CFG->dirroot . '/lib/form/filemanager.php');
 
@@ -201,13 +216,17 @@ class qtype_proforma_renderer extends qtype_renderer {
         $pickeroptions->return_types = FILE_INTERNAL | FILE_CONTROLLED_LINK;
 
         $pickeroptions->itemid = $qa->prepare_response_files_draft_itemid(
-            'attachments', $options->context->id);
+            'attachments',
+            $options->context->id
+        );
 
         $fm = new form_filemanager($pickeroptions);
         $filesrenderer = $this->page->get_renderer('core', 'files');
         return $filesrenderer->render($fm) . html_writer::empty_tag(
-                'input', ['type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
-                'value' => $pickeroptions->itemid]);
+            'input',
+            ['type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
+            'value' => $pickeroptions->itemid]
+        );
     }
 
     /**
@@ -222,9 +241,15 @@ class qtype_proforma_renderer extends qtype_renderer {
         $output = [];
 
         foreach ($files as $file) {
-            $output[] = html_writer::tag('p', html_writer::link($qa->get_response_file_url($file),
-                    $this->output->pix_icon(file_file_icon($file), get_mimetype_description($file),
-                            'moodle', ['class' => 'icon']) . ' ' . s($file->get_filename())));
+            $output[] = html_writer::tag('p', html_writer::link(
+                $qa->get_response_file_url($file),
+                $this->output->pix_icon(
+                    file_file_icon($file),
+                    get_mimetype_description($file),
+                    'moodle',
+                    ['class' => 'icon']
+                ) . ' ' . s($file->get_filename())
+            ));
         }
         return implode($output);
     }
@@ -267,7 +292,6 @@ class qtype_proforma_renderer extends qtype_renderer {
                 // (deferred feedback still needs no feedback for students).
                 $options->feedback = true;
             }
-
         }
 
         $output .= parent::feedback($qa, $options);
@@ -286,7 +310,7 @@ class qtype_proforma_renderer extends qtype_renderer {
     public function specific_feedback(question_attempt $qa) {
         $result = '';
 
-        list($feedback, $errormsg, $feedbackformat) = $this->get_feedback_for_last_answer($qa);
+        [$feedback, $errormsg, $feedbackformat] = $this->get_feedback_for_last_answer($qa);
         switch ($feedbackformat) {
             case qtype_proforma_grader::FEEDBACK_FORMAT_ERROR: // No feedback.
             case qtype_proforma_grader::FEEDBACK_FORMAT_INVALID: // No feedback.
@@ -302,8 +326,11 @@ class qtype_proforma_renderer extends qtype_renderer {
                     return $result . '<no feedback, maybe internal error>';
                 }
 
-                return $result . $this->render_proforma2_message($feedback, $errormsg,
-                    $qa->get_question());
+                return $result . $this->render_proforma2_message(
+                    $feedback,
+                    $errormsg,
+                    $qa->get_question()
+                );
             default:
                 return $result . "INTERNAL ERROR: unsupported feedback format: " . $feedbackformat;
         }
@@ -369,8 +396,13 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         $question = $qa->get_question();
         return html_writer::nonempty_tag('div', $question->format_text(
-                $question->comment, $question->comment, $qa, 'qtype_proforma',
-                'comment', $question->id), ['class' => 'comment']);
+            $question->comment,
+            $question->comment,
+            $qa,
+            'qtype_proforma',
+            'comment',
+            $question->id
+        ), ['class' => 'comment']);
     }
 
     /**
@@ -389,9 +421,14 @@ class qtype_proforma_renderer extends qtype_renderer {
 
         $qaid = $this->create_collapsible_region_id();
 
-        $output = print_collapsible_region_start('', $qaid,
-                get_string('modelsolution', 'qtype_proforma'),
-                '', true, true);
+        $output = print_collapsible_region_start(
+            '',
+            $qaid,
+            get_string('modelsolution', 'qtype_proforma'),
+            '',
+            true,
+            true
+        );
 
         // Read model solution from file(s).
         foreach (explode(',', $question->modelsolfiles) as $ms) {
@@ -399,14 +436,21 @@ class qtype_proforma_renderer extends qtype_renderer {
             // avoid offering a download link for them.
             // Access rules for Downloads must ensure that the student cannot see the
             // model solution before he or she should see it!!! This can be difficult.
-            $output .= html_writer::tag('div',
-                    get_string('msfilename', 'qtype_proforma') . ': ' .$ms,
-                    ['class' => 'proforma_testlog_title']);
+            $output .= html_writer::tag(
+                'div',
+                get_string('msfilename', 'qtype_proforma') . ': ' . $ms,
+                ['class' => 'proforma_testlog_title']
+            );
 
             $msarea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
-            $output .= html_writer::tag('div', html_writer::tag('pre',
-                    s($msarea->read_file_content($question->contextid, $ms, $question->id))),
-                    ['class' => 'proforma_testlog']);
+            $output .= html_writer::tag(
+                'div',
+                html_writer::tag(
+                    'pre',
+                    s($msarea->read_file_content($question->contextid, $ms, $question->id))
+                ),
+                ['class' => 'proforma_testlog']
+            );
         }
 
         $output .= print_collapsible_region_end(true);
@@ -422,7 +466,7 @@ class qtype_proforma_renderer extends qtype_renderer {
      */
     protected function determine_renderer(question_attempt $qa, $externalstep, $externalrenderer) {
         foreach ($qa->get_reverse_step_iterator() as $step) {
-            if ($step->has_qt_var(VCSINPUT) or $step->has_qt_var(VCSGROUP) or $step->has_qt_var(VCSUSERNAME)) {
+            if ($step->has_qt_var(VCSINPUT) || $step->has_qt_var(VCSGROUP) || $step->has_qt_var(VCSUSERNAME)) {
                 return [$step, $this->page->get_renderer('qtype_proforma', 'format_versioncontrol')];
             }
             if ($step->has_qt_var(ATTACHMENTS)) {

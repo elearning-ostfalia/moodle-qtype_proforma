@@ -216,7 +216,7 @@ class qtype_proforma_java_task extends qtype_proforma_base_task {
      * @return bool
      */
     protected function set_formdata_from_gradinghints($question, $ref, $weight) {
-        switch($ref) {
+        switch ($ref) {
             case self::COMPILER:
                 $question->compileweight = $weight;
                 $question->compile = 1;

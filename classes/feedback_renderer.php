@@ -28,7 +28,6 @@ defined('MOODLE_INTERNAL') || die();
  * Define a custom exception class
  */
 class feedback_exception extends Exception {
-
     // Custom string representation of object.
     public function __toString() {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
@@ -76,8 +75,14 @@ class feedback_renderer {
      * @param bool $general
      * @return string
      */
-    private function render_single_feedback($feedback, $teacher = false, $subtest = false,
-            $printpassedinfo = false, $passed = false, $general = false) {
+    private function render_single_feedback(
+        $feedback,
+        $teacher = false,
+        $subtest = false,
+        $printpassedinfo = false,
+        $passed = false,
+        $general = false
+    ) {
 
         if ($teacher && !qtype_proforma\lib\is_teacher()) {
             return '';
@@ -162,8 +167,13 @@ class feedback_renderer {
         foreach ($testresult->{'feedback-list'} as $feedbacklist) {
             $count = 0;
             foreach ($feedbacklist->{'student-feedback'} as $feedback) {
-                $result .= $this->render_single_feedback($feedback, false, true,
-                        $count === 0, $passed);
+                $result .= $this->render_single_feedback(
+                    $feedback,
+                    false,
+                    true,
+                    $count === 0,
+                    $passed
+                );
                 $count++;
             }
             // Print further teacher feedback if any.
@@ -171,7 +181,6 @@ class feedback_renderer {
                 foreach ($feedbacklist->{'teacher-feedback'} as $feedback) {
                     $result .= $this->render_single_feedback($feedback, true, true);
                 }
-
             }
         }
 
@@ -300,11 +309,16 @@ class feedback_renderer {
                 debugging('invalid value for expandcollapse ' . $this->_question->expandcollapse);
                 break;
         }
-        $result .= print_collapsible_region_start('', $collid,
-                    $icon . ' ' . $testtitle . $visiblescore,
-                    '', !$expand, true);
+        $result .= print_collapsible_region_start(
+            '',
+            $collid,
+            $icon . ' ' . $testtitle . $visiblescore,
+            '',
+            !$expand,
+            true
+        );
 
-        if (!$internalerror and isset(qtype_proforma_format_renderer_base::$codemirrorid)) {
+        if (!$internalerror && isset(qtype_proforma_format_renderer_base::$codemirrorid)) {
             // Look for regular expression in test response.
             $regexp = $this->search_regexp($test);
 
@@ -324,19 +338,27 @@ class feedback_renderer {
             }
             if (isset($regexp) && $this->_question->responseformat == qtype_proforma::RESPONSE_EDITOR) {
                 // Add button for inline errors.
-                $this->_mainrenderer->get_page()->requires->js_call_amd('qtype_proforma/inlinemessages',
-                        'embedError', [qtype_proforma_format_renderer_base::$codemirrorid,
-                                $collid, $regexp, $this->_question->responsefilename]);
+                $this->_mainrenderer->get_page()->requires->js_call_amd(
+                    'qtype_proforma/inlinemessages',
+                    'embedError',
+                    [qtype_proforma_format_renderer_base::$codemirrorid,
+                    $collid,
+                    $regexp,
+                    $this->_question->responsefilename]
+                );
             }
         }
 
-        if (isset($ghtest->description) and strlen($ghtest->description) > 0) {
+        if (isset($ghtest->description) && strlen($ghtest->description) > 0) {
             $result .= html_writer::tag('span', $ghtest->description, ['class' => 'proforma_testlog_description']);
         }
 
         if ($internalerror) {
-            $result .= html_writer::tag('p', get_string('testinternalerror', 'qtype_proforma'),
-                ['class' => 'proforma_testlog_description']);
+            $result .= html_writer::tag(
+                'p',
+                get_string('testinternalerror', 'qtype_proforma'),
+                ['class' => 'proforma_testlog_description']
+            );
         }
     }
 
@@ -390,7 +412,7 @@ class feedback_renderer {
             }
         } else {
             // Handle tests with subtest results.
-            list($score, $internalerror) = qtype_proforma_grader_2::calc_score_for_test($testresponse);
+            [$score, $internalerror] = qtype_proforma_grader_2::calc_score_for_test($testresponse);
             if ($internalerror) {
                 $containsinternalerror = true;
             }
@@ -418,7 +440,7 @@ class feedback_renderer {
                         html_writer::tag('pre', s($message), ['class' => 'proforma_testlog proforma_raw']);
             }
         } catch (Exception $e) {
-            // No Xml message => output message
+            // No Xml message => output message.
             return $result .
                     html_writer::tag('pre', s($message), ['class' => 'proforma_testlog proforma_raw']);
         }
@@ -439,13 +461,25 @@ class feedback_renderer {
 
         // Create general feedback for student and teacher.
         foreach ($response->{'separate-test-feedback'}->{'submission-feedback-list'}->{'student-feedback'} as $feedback) {
-            $result .= html_writer::tag('p', $this->render_single_feedback($feedback, false,
-                    false, false, false, true));
+            $result .= html_writer::tag('p', $this->render_single_feedback(
+                $feedback,
+                false,
+                false,
+                false,
+                false,
+                true
+            ));
         }
         if (qtype_proforma\lib\is_teacher()) {
             foreach ($response->{'separate-test-feedback'}->{'submission-feedback-list'}->{'teacher-feedback'} as $feedback) {
-                $result .= html_writer::tag('p', $this->render_single_feedback($feedback, true,
-                        false, false, false, true));
+                $result .= html_writer::tag('p', $this->render_single_feedback(
+                    $feedback,
+                    true,
+                    false,
+                    false,
+                    false,
+                    true
+                ));
             }
         }
 
@@ -485,7 +519,7 @@ class feedback_renderer {
                 $result .= '<p><b>INTERNAL ERROR</b>: Result for Test "' . $testid . '" is missing</p>';
             } else {
                 // Render test output.
-                list($internalerror, $result, $correct) = $this->render_test_response($testresponse[0], $result);
+                [$internalerror, $result, $correct] = $this->render_test_response($testresponse[0], $result);
                 if ($internalerror) {
                     $containsinternalerror = true;
                 }
@@ -529,8 +563,14 @@ class feedback_renderer {
 
             // Debugging: show raw response.
             $qaid = $this->_mainrenderer->create_collapsible_region_id();
-            $result .= print_collapsible_region_start('', $qaid,
-                    'raw response', '', true, true);
+            $result .= print_collapsible_region_start(
+                '',
+                $qaid,
+                'raw response',
+                '',
+                true,
+                true
+            );
             $result .= html_writer::tag('pre', s($message), ['class' => 'proforma_testlog proforma_raw']);
             $result .= print_collapsible_region_end(true);
 
@@ -554,8 +594,14 @@ class feedback_renderer {
                         $qaid = $this->_mainrenderer->create_collapsible_region_id();
                         // $icon = $this->_mainrenderer->pix_icon('i/report', 'log');
 
-                        $result .= print_collapsible_region_start('', $qaid,
-                            '<code>Log</code>', '', true, true);
+                        $result .= print_collapsible_region_start(
+                            '',
+                            $qaid,
+                            '<code>Log</code>',
+                            '',
+                            true,
+                            true
+                        );
                         $content = html_writer::tag('pre', s((string) $log), ['class' => 'proforma_testlog proforma_raw']);
                         $result .= html_writer::tag('small', $content);
                         $result .= print_collapsible_region_end(true);

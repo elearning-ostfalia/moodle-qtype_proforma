@@ -31,8 +31,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.ph
 /**
  * interface class for the grader (Praktomat))
  */
-class qtype_proforma_grader_2 extends  qtype_proforma_grader {
-
+class qtype_proforma_grader_2 extends qtype_proforma_grader {
     /** @var programming|null programming language (for selecting grader) */
     protected $_uri = null;
 
@@ -110,7 +109,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         if (isset($uri)) {
             if (qtype_proforma::VCS_GIT == $question->vcssystem) {
-                if ($version == '2.1_old' or $version == '2.0') {
+                if ($version == '2.1_old' || $version == '2.0') {
                     throw new coding_exception('Version control system Git is not supported in ' .
                         'Proforma version ' . $version);
                 }
@@ -270,13 +269,13 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     private $data = '';
     private $response = '';
     private $responsestarted = false;
-    function write_data() {
+    public function write_data() {
         $this->data = $this->data . implode($this->chunks);
         $this->chunks = [];
 
         $lines = explode("\n\n", $this->data);
-        if (substr( $this->data, -2) === "\n\n") {
-            // Remove last element as is may be empty when last 2 characters are \n\n
+        if (substr($this->data, -2) === "\n\n") {
+            // Remove last element as is may be empty when last 2 characters are \n\n.
             $this->data = array_pop($lines);
         } else {
             $this->data = '';
@@ -284,7 +283,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
 
         foreach ($lines as $line) {
             // Ends with \n\n.
-            if (substr( $line, 0, strlen("data: RESPONSE START####")) === "data: RESPONSE START####") {
+            if (substr($line, 0, strlen("data: RESPONSE START####")) === "data: RESPONSE START####") {
                 // Response starts.
                 $this->responsestarted = true;
                 echo $line . "\n\n";
@@ -295,14 +294,14 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                 echo $line . "\n\n";
                 continue;
             }
-            if (substr( $line, 0, strlen("data: RESPONSE END####")) === "data: RESPONSE END####") {
-                // Response is complete => execute callback
+            if (substr($line, 0, strlen("data: RESPONSE END####")) === "data: RESPONSE END####") {
+                // Response is complete => execute callback.
                 if (isset($this->callback)) {
                     call_user_func($this->callback, $this->response, $this, $this->question, $this->gradinghints);
                 }
                 echo $line . "\n\n";
             } else {
-                $this->response .= substr( $line, strlen("data: ")) . "\n";
+                $this->response .= substr($line, strlen("data: ")) . "\n";
             }
         }
 
@@ -428,8 +427,13 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
      * @return array
      * @throws coding_exception
      */
-    public function send_files_with_task_to_grader_and_stream_result($files, $task,
-                                                                     $callback, $question, $gradinghints) {
+    public function send_files_with_task_to_grader_and_stream_result(
+        $files,
+        $task,
+        $callback,
+        $question,
+        $gradinghints
+    ) {
         $this->callback = $callback;
         $this->question = $question;
         $this->gradinghints = $gradinghints;
@@ -497,8 +501,14 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
     public function upload_task_to_grader($task) {
         // $filename = $question->responsefilename;
 
-        $submissionxml = $this->create_submission_xml('no source code available',
-            null, 'nofilenameneeded', null, null, $task);
+        $submissionxml = $this->create_submission_xml(
+            'no source code available',
+            null,
+            'nofilenameneeded',
+            null,
+            null,
+            $task
+        );
 
         $postfields = [
             'submission.xml' => $submissionxml,
@@ -635,7 +645,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                 $id = (string)$test['id'];
                 $ghtest = $gradingtests->xpath("//test-ref[@ref='" . $id . "']");
                 if (count($ghtest) == 0) {
-                    throw new moodle_exception('Cannot find appropriate grading hints for test "' . $id.'"');
+                    throw new moodle_exception('Cannot find appropriate grading hints for test "' . $id . '"');
                 }
 
                 $ghtest = $ghtest[0];
@@ -684,7 +694,7 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             }
             $score += floatval((string)$testresult->score);
             // Note: $testresult-score is 0.0 or 1.0.
-            $counttests ++;
+            $counttests++;
         }
 
         // Avoid division by zero.
@@ -774,10 +784,9 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
                     $score = floatval((string)$testresult->score);
 
                     $gradecalc = $this->update_grade($test, $score, $question, $totalweight, $gradingtests, $gradecalc);
-
                 } else {
                     // Handle test with subtest scores => calculate total score.
-                    list($score, $internalerror) = self::calc_score_for_test($test);
+                    [$score, $internalerror] = self::calc_score_for_test($test);
                     if ($internalerror) {
                         $testswithinternalerror = true;
                     }
@@ -813,7 +822,6 @@ class qtype_proforma_grader_2 extends  qtype_proforma_grader {
             // No test result could be evaluated, this is treated as an internal error.
             return [question_state::$needsgrading, null,
                 '' /*get_string('internaltesterror', 'qtype_proforma')*/, $result, $feedbackformat];
-
         }
 
         if ($testswithinternalerror) {

@@ -99,16 +99,15 @@ class c_form_creator extends base_form_creator {
      * @throws coding_exception
      */
     protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
-        list($errors, $valid) = parent::validate_unittest($editor, $fromform, $files, $i, $errors);
+        [$errors, $valid] = parent::validate_unittest($editor, $fromform, $files, $i, $errors);
         if ($valid) {
             $entrypoint = $fromform["testentrypoint"][$i];
             if (0 == strlen(trim($entrypoint))) {
                 // Entrypoint missing.
-                $errors['testentrypoint['.$i.']'] = get_string('executablerequired', 'qtype_proforma');
+                $errors['testentrypoint[' . $i . ']'] = get_string('executablerequired', 'qtype_proforma');
                 $valid = false;
             }
         }
         return [$errors, $valid];
     }
-
 }

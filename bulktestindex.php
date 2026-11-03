@@ -25,7 +25,7 @@
 
 define('NO_OUTPUT_BUFFERING', true);
 
-require_once(__DIR__.'/../../../config.php');
+require_once(__DIR__ . '/../../../config.php');
 
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/bulktester.php');
@@ -60,12 +60,14 @@ foreach ($bulktester->get_proforma_questions_by_context() as $record) {
     if (has_capability('qtype/proforma:runbulktest', $contextinst)) {
         // Print course name.
         $coursename = $contextinst->get_context_name(true, false);
-        if ($contextinst->get_course_context(false) !== false and isset($record->courseid)) {
-            $coursename = '<a href="'. new moodle_url('/course/view.php', ['id' => $record->courseid]) . '">'.$coursename.'</a>';
+        if ($contextinst->get_course_context(false) !== false && isset($record->courseid)) {
+            $coursename = '<a href="' . new moodle_url('/course/view.php', ['id' => $record->courseid]) . '">' .
+                $coursename . '</a>';
         }
         echo html_writer::tag('li', $coursename . html_writer::link(
-                new moodle_url('/question/type/proforma/bulktest.php', ['contextid' => $contextid]),
-                ' (' . $numproformaquestions . ')'));
+            new moodle_url('/question/type/proforma/bulktest.php', ['contextid' => $contextid]),
+            ' (' . $numproformaquestions . ')'
+        ));
         if ($contextinst->get_course_context(false) !== false) {
             $courseid = $record->courseid;
             foreach ($bulktester->get_teachers($courseid) as $teacher) {
@@ -77,8 +79,10 @@ foreach ($bulktester->get_proforma_questions_by_context() as $record) {
         // No access rights.
         if (has_capability('moodle/site:config', context_system::instance())) {
             // Print course context name only if user is admin.
-            echo html_writer::tag('li',
-                    $contextinst->get_context_name(true, false) . ' NOT ENOUGH CAP');
+            echo html_writer::tag(
+                'li',
+                $contextinst->get_context_name(true, false) . ' NOT ENOUGH CAP'
+            );
         }
     }
 }
@@ -87,7 +91,9 @@ echo html_writer::end_tag('ul');
 // Print link for all questions in the system.
 if (has_capability('moodle/site:config', context_system::instance())) {
     echo html_writer::tag('p', html_writer::link(
-            new moodle_url('/question/type/proforma/bulktestall.php'), get_string('bulktestrun', 'qtype_proforma')));
+        new moodle_url('/question/type/proforma/bulktestall.php'),
+        get_string('bulktestrun', 'qtype_proforma')
+    ));
 }
 
 echo $OUTPUT->footer();
