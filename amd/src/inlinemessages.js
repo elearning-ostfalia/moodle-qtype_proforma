@@ -18,7 +18,7 @@
 /**
  * Display error messages inline in Codemirror editor.
  *
- * @package    qtype_proforma
+ * @package
  * @copyright  2021 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
@@ -63,7 +63,7 @@ function _showMessages(editor, errors, widgets) {
                 case 'warn':
                 case 'warning':
                     icon = msg.appendChild(document.createElement("span"));
-                    // icon.innerHTML = "";
+                    // Icon.innerHTML = "";
                     icon.className = "proforma-warn-icon proforma-warning";
                     msg.className = "proforma-inline-warning";
                     break;
@@ -128,28 +128,28 @@ function _getErrorsFromLog(collapsregion, regexp, editorfilename) {
     let innertext = '';
     let re = new RegExp(regexp, "mg");
     for (let testlog of testlogs) {
-        let log = undefined;
+        let log;
         if (testlog.innerText.length === 0) {
             // HtmlPreElement
             log = testlog.textContent;
         } else {
             log = testlog.innerText;
         }
-        // only add log texts that contain messages.
+        // Only add log texts that contain messages.
         // This is added because the log could contain just a filename.
         if (log.match(re)) {
-            innertext = (innertext.length > 0)?(innertext + '\n' + log):log;
+            innertext = (innertext.length > 0) ? (innertext + '\n' + log) : log;
         }
     }
 
     // global match
     let results = innertext.matchAll(re);
-    // console.log('innertext: ' + innertext);
+    // Console.log('innertext: ' + innertext);
     // console.log('regexp: ' + regexp);
 
     for (let result of results) {
         let {msgtype, filename, line, text, symbol} = result.groups;
-        // console.log('text: ' + text);
+        // Console.log('text: ' + text);
         // console.log('filename: ' + filename);
         // console.log('symbol: \'' + symbol + '\'');
         if (filename !== undefined && editorfilename != undefined) {
@@ -244,18 +244,18 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename) {
 
     waitForElementById(collapsregion)
         .then((region) => {
-            // wait for collapsible region
+            // Wait for collapsible region
             return waitForElement(region, 'a');
         })
-        .then((a_element) => {
+        .then((aElement) => {
             // Get Messages
             let messages = _getErrorsFromLog(collapsregion, regexp, filename);
             if (messages.length == 0) {
-                // console.log('no messages found => ready');
+                // Console.log('no messages found => ready');
                 return;
             }
 
-            // not translated correctly by Babel:
+            // Not translated correctly by Babel:
             // const [errors, warnings, infos, somethingelse] = _countMessages(messages);
             const values = _countMessages(messages);
             const errors = values[0];
@@ -265,7 +265,7 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename) {
 
             // Create button label
             const errorLabel = errors + '<span class="proforma-dot-icon proforma-error-icon">x</span> ';
-            const warningLabel = warnings   + '<span class="proforma-warn-icon proforma-warning"/></span> ';
+            const warningLabel = warnings + '<span class="proforma-warn-icon proforma-warning"/></span> ';
             const infoLabel = infos + '<span class="proforma-dot-icon proforma-info-icon">i</span> ';
             const elseLabel = somethingelse + '<span class="proforma-dot-icon proforma-else-icon">?</span> ';
 
@@ -287,22 +287,22 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename) {
             let button = document.createElement("button");
             button.type = "button";
             button.className = "proforma-feedback-msg-btn";
-            button.innerHTML  = label;
-            a_element.insertAdjacentElement("afterend", button);
+            button.innerHTML = label;
+            aElement.insertAdjacentElement("afterend", button);
 
             let showMsg = false;
             button.addEventListener('click',
-                function () {
+                function() {
                     // The editor is evaluated here and not before in order to avoid
                     // racing situations.
                     let editor = _getCodeMirror('#' + cmid);
                     if (!showMsg) {
                         widgets = _showMessages(editor, messages, widgets);
-                        button.className ="proforma-feedback-msg-btn active";
+                        button.className = "proforma-feedback-msg-btn active";
                         showMsg = true;
                     } else {
                         widgets = _hideWidgets(widgets);
-                        button.className ="proforma-feedback-msg-btn";
+                        button.className = "proforma-feedback-msg-btn";
                         showMsg = false;
                     }
                 });
@@ -313,7 +313,7 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename) {
 }
 
 /**
- * embeds error messages found in log area using regexp
+ * Embeds error messages found in log area using regexp
  *
  * @param {type} cmid Codemirror identifier
  * @param {type} collapsregion collapsible region with error messages
@@ -331,7 +331,7 @@ export const embedError = (cmid, collapsregion, regexp, filename) => {
     // Otherwise Codemirror and other controls might not yet be available.
     // Note that Codemirror is created asynchronously after document ready.
     // So this is not enough when something has to be done with Codemirror.
-    if( document.readyState !== 'loading' ) {
+    if (document.readyState !== 'loading') {
         _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename);
     } else {
         document.addEventListener("DOMContentLoaded", function() {
@@ -339,6 +339,5 @@ export const embedError = (cmid, collapsregion, regexp, filename) => {
       });
     }
 };
-
 
 

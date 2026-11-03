@@ -18,7 +18,7 @@
 /**
  * Display explorer/multitab editor.
  *
- * @package    qtype_proforma
+ * @package
  * @copyright  2022 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
@@ -26,9 +26,9 @@
 
 /* eslint-disable no-unused-vars */
 
-import { Framework } from "./FileViewer";
-import { MoodleQuestionAttemptSyncer, MoodleSyncer } from "./MoodleSyncer";
-// import * as FormChangeChecker from 'core_form/changechecker';
+import {Framework} from "./FileViewer";
+import {MoodleQuestionAttemptSyncer, MoodleSyncer} from "./MoodleSyncer";
+// Import * as FormChangeChecker from 'core_form/changechecker';
 
 function _start(nodename, options) {
     console.log('start for ' + nodename);
@@ -36,8 +36,8 @@ function _start(nodename, options) {
 
     let framework = new Framework();
     framework.buildFramework(explorer);
-    // let submission = new RootNode('Submission', framework);
-    if (options['readonly']) {
+    // Let submission = new RootNode('Submission', framework);
+    if (options.readonly) {
         console.log('create readonly framework');
         let syncer = new MoodleQuestionAttemptSyncer(options);
         framework.init(explorer, syncer, true, options);
@@ -53,8 +53,8 @@ function _start(nodename, options) {
             // In student review there will be no button!
             submitbutton.onclick = (event) => {
                 console.log('save before check');
-                // alert('button submit');
-                framework.save(); // synchronous action!
+                // Alert('button submit');
+                framework.save(); // Synchronous action!
             };
         }
 
@@ -62,8 +62,8 @@ function _start(nodename, options) {
         let buttons = document.querySelectorAll('.submitbtns');
         buttons.forEach(button => button.onclick = (event) => {
             console.log('save before finish');
-            // alert('button finish');
-            framework.save(); // synchronous action!
+            // Alert('button finish');
+            framework.save(); // Synchronous action!
         });
     }
 
@@ -79,8 +79,7 @@ function _start(nodename, options) {
     }; */
 
 
-
-    if (!options['readonly']) {
+    if (!options.readonly) {
         // Mark form as dirty as there is no other change detection...
         // This does not work as disableAllChecks() is called somewhere else
         // which ignores all checks
@@ -115,9 +114,8 @@ function _start(nodename, options) {
             event.returnValue = null;
         };*/
     } else {
-        // console.log('NO onbeforeunload function');
+        // Console.log('NO onbeforeunload function');
     }
-
 
 
 /*
@@ -145,7 +143,7 @@ export const createExplorer = (nodename, options) => {
     // Otherwise Codemirror and other controls might not yet be available.
     // Note that Codemirror is created asynchronously after document ready.
     // So this is not enough when something has to be done with Codemirror.
-    if( document.readyState !== 'loading' ) {
+    if (document.readyState !== 'loading') {
         _start(nodename, options);
     } else {
         document.addEventListener("DOMContentLoaded", function() {

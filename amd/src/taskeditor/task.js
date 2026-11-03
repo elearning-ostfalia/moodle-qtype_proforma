@@ -15,10 +15,10 @@
 // along with ProFormA Question Type for Moodle.
 // If not, see <http://www.gnu.org/licenses/>.
 
- /**
+/**
  * Helper functions for reading and writen task
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -30,11 +30,11 @@ import {TaskClass, TaskFile, TaskModelSolution, TaskFileRef, TaskTest, T_VISIBLE
 import {testIDs} from "./test";
 import {setErrorMessage, clearErrorMessage, generateUUID} from "./helper";
 import {FileWrapper} from "./file";
-import {TestWrapper } from "./test";
-import {ModelSolutionWrapper } from "./modelsol";
+import {TestWrapper} from "./test";
+import {ModelSolutionWrapper} from "./modelsol";
 import * as taskeditorconfig from "./config";
 import {relinkFiles} from "./zipper";
-import {TestFileReference, FileReferenceList,ModelSolutionFileReference } from "./filereflist";
+import {TestFileReference, FileReferenceList, ModelSolutionFileReference} from "./filereflist";
 import * as Str from 'core/str';
 import Notification, {exception as displayException} from 'core/notification';
 
@@ -75,11 +75,11 @@ function isInputComplete() {
     console.log('check input');
 
     // Remove all previously set required hints
-    document.querySelectorAll(".proforma-taskeditor .is-invalid").forEach(item => {  // check whether filenames are provided
+    document.querySelectorAll(".proforma-taskeditor .is-invalid").forEach(item => { // Check whether filenames are provided
         item.classList.remove('is-invalid');
         item.classList.remove('form-control');
     });
-    document.querySelectorAll(".proforma-taskeditor .invalid-feedback").forEach(item => {  // check whether filenames are provided
+    document.querySelectorAll(".proforma-taskeditor .invalid-feedback").forEach(item => { // Check whether filenames are provided
         item.remove();
     });
 
@@ -102,7 +102,7 @@ function isInputComplete() {
     }
 
 /*
-    if ((typeof $("#proforma-model-solution-section .xml_file_id")[0] === "undefined") ||      //  check for missing form values
+    If ((typeof $("#proforma-model-solution-section .xml_file_id")[0] === "undefined") ||      //  check for missing form values
         ModelSolutionFileReference.getInstance().getCountFilerefs() === 0) {
         // (typeof $(".xml_model-solution_fileref")[0] === "undefined")) {
         setErrorMessage("Required elements are missing. " +
@@ -148,14 +148,14 @@ function isInputComplete() {
     }
 
 
-    document.querySelectorAll(".xml_file_filename").forEach(item => {  // check whether filenames are provided
+    document.querySelectorAll(".xml_file_filename").forEach(item => { // Check whether filenames are provided
         if (!item.value) {
             switchToTab('#proforma-files-section');
             addRequired(item);
             incomplete = true;
         }
     });
-    document.querySelectorAll(".xml_test_title").forEach(item => {  // check whether filenames are provided
+    document.querySelectorAll(".xml_test_title").forEach(item => { // Check whether filenames are provided
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
@@ -164,9 +164,8 @@ function isInputComplete() {
     });
 
 
-
     let query = "#proforma-model-solution-section .xml_fileref_filename";
-    document.querySelectorAll(query).forEach(item => {  // check whether referenced filenames exists
+    document.querySelectorAll(query).forEach(item => { // Check whether referenced filenames exists
         if (!item.value) {
             switchToTab('#proforma-model-solution-section');
             addRequired(item);
@@ -174,7 +173,8 @@ function isInputComplete() {
         }
     });
 
-    document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {  // check whether referenced filenames exists
+    // Check whether referenced filenames exists
+    document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
@@ -183,7 +183,7 @@ function isInputComplete() {
     });
 
     query = "#proforma-tests-section .xml_fileref_filename";
-    document.querySelectorAll(query).forEach(item => {   // check whether referenced filenames exists
+    document.querySelectorAll(query).forEach(item => { // Check whether referenced filenames exists
         if (!item.value) {
             let label = item.closest('tr').querySelector('label');
             if (label.querySelectorAll('.red').length !== 0) {
@@ -194,8 +194,8 @@ function isInputComplete() {
         }
     });
 
-    // todo: this should be part of the configuration
-    $.each($(".xml_entry_point"), function(index, item) {   // check whether main-class exists
+    // Todo: this should be part of the configuration
+    $.each($(".xml_entry_point"), function(index, item) { // Check whether main-class exists
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
@@ -203,7 +203,7 @@ function isInputComplete() {
         }
     });
     document.querySelectorAll(".xml_pr_CS_warnings").forEach(item => {
-        // console.log(item.value);
+        // Console.log(item.value);
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
@@ -211,12 +211,14 @@ function isInputComplete() {
         }
     });
 
-    if (incomplete)
+    if (incomplete) {
         return false;
+    }
 
     let sumweight = 0.0;
-    document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {  // check whether referenced filenames exists
-        // console.log(item.value);
+    // Check whether referenced filenames exists
+    document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {
+        // Console.log(item.value);
         sumweight += parseFloat(item.value);
     });
     console.log('sumweight = ' + sumweight);
@@ -229,19 +231,16 @@ function isInputComplete() {
         incomplete = true;
     }
 
-    // console.log('result');
+    // Console.log('result');
     // console.log(!incomplete);
 
     return (!incomplete);
 }
 
 
-// on document ready...:
+// On document ready...:
 
-///////////////////////////////////////////////////////// function: convertToXML
-
-
-
+// /////////////////////////////////////////////////////// function: convertToXML
 
 
 /**
@@ -253,16 +252,16 @@ export function convertToXML() {
     return promise.then(() => {
         const t0 = performance.now();
         clearErrorMessage();
-        let taskXml = undefined;
+        let taskXml;
 
-        // check input
+        // Check input
         if (!isInputComplete()) {
             // With Promise reject the special type of error is not detected in the catch clause.
             // So a normal throw without reject is used here.
             // return Promise.reject(new InputError('invalid input => cannot create task.xml'));
             console.log('input is incomplete => cannot create task.xml');
             throw new InputError('invalid input => cannot create task.xml');
-            // return null;
+            // Return null;
         }
         console.log('input is ok => create task.xml');
 
@@ -274,12 +273,12 @@ export function convertToXML() {
         task.description = $("#id_questiontext").val();
         task.proglang = $('#xml_programming-language').val();
         task.proglang = task.proglang.trim();
-        // console.log('READ FROM UI: ' + task.proglang);
+        // Console.log('READ FROM UI: ' + task.proglang);
         task.proglangVersion = $("#xml_programming-language-" + task.proglang).val();
-        // console.log('READ FROM UI VERSION: ' + task.proglangVersion);
+        // Console.log('READ FROM UI VERSION: ' + task.proglangVersion);
         task.parentuuid = null;
-        //task.uuid = $("#xml_uuid").val();
-        //if (!task.uuid)
+        // Task.uuid = $("#xml_uuid").val();
+        // if (!task.uuid)
         task.uuid = generateUUID();
         task.lang = 'en'; // $("#xml_lang").val();
         task.sizeSubmission = 0; // $("#xml_submission_size").val();
@@ -296,18 +295,18 @@ export function convertToXML() {
          */
 
         // write files
-        FileWrapper.doOnAllFiles(function(ui_file) {
+        FileWrapper.doOnAllFiles(function(uiFile) {
             let taskfile = new TaskFile();
-            taskfile.filename = ui_file.filename;
-            taskfile.fileclass = ui_file.class;
-            taskfile.id = ui_file.id;
-            taskfile.filetype = ui_file.type;
-            taskfile.comment = ui_file.comment;
-            taskfile.content = ui_file.text;
+            taskfile.filename = uiFile.filename;
+            taskfile.fileclass = uiFile.class;
+            taskfile.id = uiFile.id;
+            taskfile.filetype = uiFile.type;
+            taskfile.comment = uiFile.comment;
+            taskfile.content = uiFile.text;
             task.files[taskfile.id] = taskfile;
         });
 
-        // write model solutions
+        // Write model solutions
         ModelSolutionWrapper.doOnAll(function(ms) {
             let modelSolution = new TaskModelSolution();
             modelSolution.id = ms.id;
@@ -319,11 +318,11 @@ export function convertToXML() {
                 task.files[id].visible = T_VISIBLE.DELAYED;
             }, ms.root);
 
-            //readFileRefs(xmlReader, modelSolution, thisNode);
+            // ReadFileRefs(xmlReader, modelSolution, thisNode);
             task.modelsolutions[modelSolution.id] = modelSolution;
-        })
+        });
 
-        // write tests
+        // Write tests
         TestWrapper.doOnAll(function(uiTest, index) {
             let test = new TaskTest();
             test.id = uiTest.id;
@@ -340,7 +339,7 @@ export function convertToXML() {
             TestFileReference.getInstance().doOnAll(function(id) {
                 if (id) {
                     test.filerefs[counter++] = new TaskFileRef(id);
-                    // console.log("Test ID" + id);
+                    // Console.log("Test ID" + id);
                     task.files[id].usedByGrader = true;
                 }
             }, uiTest.root);
@@ -348,22 +347,22 @@ export function convertToXML() {
             console.log('*** look for test config');
             console.log(test);
             $.each(taskeditorconfig.testInfos, function(index, configItem) {
-                // search for appropriate configuration instance
+                // Search for appropriate configuration instance
                 if (!configItem.matches(test, task.proglang)) {
                     return;
                 }
 
-                // console.log('everything matches');
+                // Console.log('everything matches');
                 console.log(configItem);
                 if (test.configItem !== undefined && test.configItem !== configItem) {
-                    // configuration already found
+                    // Configuration already found
                     let params = {
                         'title': test.title,
                         'config': test.configItem.title
                     };
                     Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
                         .then(content => alert(content));
-/*                    console.log('Warning: test configuration for test "' + test.title + '" is not unique. \n' +
+                    /* Console.log('Warning: test configuration for test "' + test.title + '" is not unique. \n' +
                         'Assume ' + test.configItem.title + ',\n' +
                         'but ' + configItem.title + ' is also matching.');*/
                     return;
@@ -377,12 +376,12 @@ export function convertToXML() {
                 alert('cannot determine test configuration for test "' + test.title + '"');
             }
 
-            //readFileRefs(xmlReader, modelSolution, thisNode);
-            //console.log('convertToXML: create ' + test.title);
+            // ReadFileRefs(xmlReader, modelSolution, thisNode);
+            // console.log('convertToXML: create ' + test.title);
             // note that the test element is stored at the index position not at the test id position
             // (in order to keep the sort order from user interface)
             task.tests[index] = test;
-        })
+        });
 
         /*
             SubmissionFileList.doOnAll(function(filename, regexp, optional) {
@@ -407,7 +406,7 @@ export function convertToXML() {
 
         taskXml = task.writeXml();
         const t1 = performance.now();
-        console.log("Call to convertToXML took " + (t1 - t0) + " milliseconds.")
+        console.log("Call to convertToXML took " + (t1 - t0) + " milliseconds.");
         console.log('Size of task is ' + taskXml.length);
         return taskXml;
     });
@@ -415,7 +414,7 @@ export function convertToXML() {
 
 
 export async function readAndDisplayXml(taskXml) {
-    // console.log(taskXml);
+    // Console.log(taskXml);
     let task = new TaskClass();
 
     function createMs(item, index) {
@@ -423,40 +422,41 @@ export async function readAndDisplayXml(taskXml) {
     }
 
     function createFile(item, index) {
-        // let ui_file = FileWrapper.create(item.id);
+        // Let uiFile = FileWrapper.create(item.id);
         return FileWrapper.createFromTemplate(item.id)
-            .then(ui_file => {
-                // console.log('fileform ' + item.id + ' has been created');
-                ui_file.filename = item.filename;
-                ui_file.class = item.fileclass;
-                ui_file.type = item.filetype;
-                ui_file.comment = item.comment;
-                if (ui_file.type === 'embedded')
-                    ui_file.text = item.content;
+            .then(uiFile => {
+                // Console.log('fileform ' + item.id + ' has been created');
+                uiFile.filename = item.filename;
+                uiFile.class = item.fileclass;
+                uiFile.type = item.filetype;
+                uiFile.comment = item.comment;
+                if (uiFile.type === 'embedded') {
+                    uiFile.text = item.content;
+                }
                 if (item.id) {
                     relinkFiles();
                 }
-                return ui_file;
+                return uiFile;
             });
     }
 
     function createTest(item, index) {
         testIDs[item.id] = 1;
 
-        let ui_test;
-        let the_configitem;
+        let uiTest;
+        let theConfigitem;
         console.log('iterate through all configured test templates, look for ' + item.testtype);
         $.each(taskeditorconfig.testInfos, function(index, configItem) {
             if (!configItem.matches(item, task.proglang)) {
                 return;
             }
-            if (ui_test) {
+            if (uiTest) {
                 let params = {
                     'title': item.title,
-                    'config': the_configitem.title
+                    'config': theConfigitem.title
                 };
-/*                    console.log('Warning: test configuration for test "' + item.title + '" is not unique. \n' +
-                    'Assume ' + the_configitem.title + ',\n' +
+                /*                    Console.log('Warning: test configuration for test "' + item.title + '" is not unique. \n' +
+                    'Assume ' + theConfigitem.title + ',\n' +
                     'but ' + configItem.title + ' is also matching.');*/
                 Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
                     .then(content => alert(content));
@@ -464,32 +464,32 @@ export async function readAndDisplayXml(taskXml) {
             }
             console.log('found ' + configItem.title);
             let context = configItem.getTemplateContext();
-            context['testtitle'] = item.title;
+            context.testtitle = item.title;
             if (item.weight) {
-                context['weight'] = item.weight;
+                context.weight = item.weight;
             }
-            context['description'] = item.description;
-            context['comment'] = item.comment;
+            context.description = item.description;
+            context.comment = item.comment;
 
             task.readTestConfig(taskXml, item.id, configItem, context);
-            // console.log('context for test template ');
+            // Console.log('context for test template ');
             // console.log(context);
 
-            the_configitem = configItem;
-            ui_test = TestWrapper.createFromTemplate(item.id,
+            theConfigitem = configItem;
+            uiTest = TestWrapper.createFromTemplate(item.id,
                 configItem.getMustacheTemplate(), context, true, item, task);
         });
 
-        if (!ui_test) {
+        if (!uiTest) {
             setErrorMessage("Test '" + item.title + "' not imported, testtype and framework unsupported");
             testIDs[item.id] = 0;
             return null;
         } else {
-            return ui_test;
+            return uiTest;
         }
     }
 /*
-    function createFileRestriction(item, index) {
+    Function createFileRestriction(item, index) {
         if (index > 0) {
             // create new row
             SubmissionFileList.getInstance().appendRow();
@@ -525,7 +525,7 @@ export async function readAndDisplayXml(taskXml) {
     let proglangElement = $("#xml_programming-language");
     proglangElement.val(task.proglang.toLowerCase());
     proglangElement.trigger('change');
-    proglangElement.prop( "disabled", true );
+    proglangElement.prop("disabled", true);
     let versionElement = document.getElementById("xml_programming-language-" + task.proglang.toLowerCase());
     if (!versionElement) {
         console.error('cannot find element #xml_programming-language-' + task.proglang.toLowerCase());
@@ -569,7 +569,7 @@ export async function readAndDisplayXml(taskXml) {
                 refpromises.push(createMs(item))
             );
 
-            // fill filename lists in empty file refences
+            // Fill filename lists in empty file refences
             console.log('=> wait');
             return Promise.all(refpromises);
         })
@@ -607,12 +607,13 @@ export async function readAndDisplayXml(taskXml) {
                             indexTemplate++;
                             //$("#code_template").val('Hier kommt der Code rein');
                         } else
-                            DownloadableFileReference.getInstance().setFilenameOnCreation(downloadroot, indexDownload++, item.filename);
-//                            TemplateFileReference.getInstance().setFilenameOnCreation(templateroot, indexTemplate++, item.filename);
+                            DownloadableFileReference.getInstance().setFilenameOnCreation(
+                                downloadroot, indexDownload++, item.filename);
+// TemplateFileReference.getInstance().setFilenameOnCreation(templateroot, indexTemplate++, item.filename);
                         break;
                     case T_LMS_USAGE.DISPLAY:
                         // create as download file
-//                        MultimediaFileReference.getInstance().setFilenameOnCreation(multmediaroot, indexMultmedia++, item.filename);
+// MultimediaFileReference.getInstance().setFilenameOnCreation(multmediaroot, indexMultmedia++, item.filename);
 //                        break;
                     case T_LMS_USAGE.DOWNLOAD:
                         DownloadableFileReference.getInstance().setFilenameOnCreation(downloadroot, indexDownload++, item.filename);

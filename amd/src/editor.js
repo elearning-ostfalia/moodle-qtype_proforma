@@ -19,15 +19,15 @@
 Promise.all([
     import('./FileViewer.js'),
     import('./FakeSyncer.js')
-//    import('/amd/src/FileViewer.js') // inside Moodle
+//    Import('/amd/src/FileViewer.js') // inside Moodle
 ])
     .then(([fileviewer, fakesyncer]) => {
         console.log("editor.js script started");
 
         function docReady(fn) {
-            // see if DOM is already available
+            // See if DOM is already available
             if (document.readyState === "complete" || document.readyState === "interactive") {
-                // call on next available tick
+                // Call on next available tick
                 setTimeout(fn, 1);
             } else {
                 document.addEventListener("DOMContentLoaded", fn);
@@ -45,7 +45,7 @@ Promise.all([
             framework1.buildFramework(explorer1);
 
             let syncer1 = new fakesyncer.FakeSyncer(options1);
-//            let submission1 = new fileviewer.RootNode('Submission', framework1);
+            //            Let submission1 = new fileviewer.RootNode('Submission', framework1);
             framework1.init(explorer1, syncer1, false);
 
             // # 2
@@ -55,7 +55,7 @@ Promise.all([
             framework2.buildFramework(explorer2);
 
             let syncer2 = new fakesyncer.FakeSyncer(options2);
-//            let submission2 = new fileviewer.RootNode('Submission', framework2);
+            //            Let submission2 = new fileviewer.RootNode('Submission', framework2);
             framework2.init(explorer2, syncer2, true);
 
             console.log('change submit function');
@@ -66,7 +66,7 @@ Promise.all([
             try {
                 let wrappedSubmit = (e) => {
                     e.preventDefault();
-                    // e.preventDefault();
+                    // E.preventDefault();
                     // window.history.back();
                     // form.action = '/action_page3.php';
                     // console.log('wrappedSubmit');
@@ -79,11 +79,11 @@ Promise.all([
                     }, 2000);
                 };
                 form.onsubmit = wrappedSubmit;
-                // form.addEventListener('submit', wrappedSubmit);
-            } catch(e) {}
+                // Form.addEventListener('submit', wrappedSubmit);
+            } catch (e) {}
             console.log(form.submit);
 /*
-            let button = form.querySelector('input[type="submit"]');
+            Let button = form.querySelector('input[type="submit"]');
             console.log(button);
             console.log(button.click);
             button.onclick = () => {

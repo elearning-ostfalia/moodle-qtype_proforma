@@ -18,7 +18,7 @@
 // File for supporting modes in ES6 style.
 
 // Use this for Moodle
-import { CodeMirror } from "./codemirror";
+import {CodeMirror} from "./codemirror";
 
 // Use this for editortest.html
 // import CodeMirror from "./codemirror/src/codemirror.js";

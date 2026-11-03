@@ -15,10 +15,10 @@
 // along with ProFormA Question Type for Moodle.
 // If not, see <http://www.gnu.org/licenses/>.
 
- /**
+/**
  * Class for dealing with file references in tests or model solution
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -33,15 +33,14 @@ import {readAndCreateFileData} from "./helper";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import {FileWrapper} from "./file";
-import {DEBUG_MODE,handleFilenameChangeInTest} from "./helper";
+import {DEBUG_MODE, handleFilenameChangeInTest} from "./helper";
 import * as Str from 'core/str';
 import {TestWrapper} from "./test";
 
 
-
 let loadFileOption = "<open...>";
 let newFileOption = "<new file>";
-const emptyFileOption = " "; // must not be empty!!
+const emptyFileOption = " "; // Must not be empty!!
 
 let showEditorText = 'View'; // Str.get_string('taskeditorview', 'qtype_proforma'); // 'View';
 let hideEditorText = 'Hide'; // Str.get_string('taskeditorhide', 'qtype_proforma'); // 'Hide';
@@ -49,15 +48,15 @@ let hideEditorText = 'Hide'; // Str.get_string('taskeditorhide', 'qtype_proforma
 let filenameClassList = [];
 let filerefClassList = [];
 
-// abstract class for a filename reference input
+// Abstract class for a filename reference input
 export class FileReferenceList extends DynamicList {
 
     static getLocalisedStrings() {
         let strings = [
-            { key: 'taskeditorview', component: 'qtype_proforma' },
-            { key: 'taskeditorhide', component: 'qtype_proforma' },
-            { key: 'openfile', component: 'qtype_proforma' },
-            { key: 'newfile', component: 'qtype_proforma' }
+            {key: 'taskeditorview', component: 'qtype_proforma'},
+            {key: 'taskeditorhide', component: 'qtype_proforma'},
+            {key: 'openfile', component: 'qtype_proforma'},
+            {key: 'newfile', component: 'qtype_proforma'}
         ];
         return Str.get_strings(strings)
             .then(results => {
@@ -71,7 +70,7 @@ export class FileReferenceList extends DynamicList {
     constructor(classFilename, classFileref, jsClassName, label, help, mandatory) {
         super(classFilename, classFileref, jsClassName, label, help, mandatory, 'xml_fileref_table');
 
-        //this.table = this.table +
+        // This.table = this.table +
         //    "<span class='drop_zone_text drop_zone'>Drop Your File(s) Here!</span>";
 
         filenameClassList.push('.' + this.classFilename);
@@ -80,9 +79,10 @@ export class FileReferenceList extends DynamicList {
 
 
     doOnAll(callback, root) {
-        if (root)
+        if (root) {
             console.log('doOnAllIds ios deprecated, use static version instead');
-        let theRoot = root?root:this.root;
+        }
+        let theRoot = root ? root : this.root;
         $.each(theRoot.find(".fileref_fileref"), function(index, item) {
             const filerefId = item.value;
             return callback(filerefId);
@@ -92,8 +92,9 @@ export class FileReferenceList extends DynamicList {
     doOnNonEmpty(callback) {
         $.each(this.root.find(".fileref_fileref"), function(index, item) {
             const filerefId = item.value;
-            if (filerefId)
+            if (filerefId) {
                 return callback(filerefId);
+            }
         });
     }
 
@@ -110,10 +111,11 @@ export class FileReferenceList extends DynamicList {
         });
     }
 
-    // init table
+    // Init table
     init(root, DEBUG_MODE) {
-        if (!this.root)
+        if (!this.root) {
             this.root = root;
+        }
         FileReferenceList.updateFilenameList(root.find("." + this.classFilename).last());
         FileReferenceList.rowEnableEditorButton(root, false);
         if (!DEBUG_MODE) {
@@ -121,19 +123,19 @@ export class FileReferenceList extends DynamicList {
             root.find("label.fileref_fileref_label").hide();
         }
 
-        // register dragenter, dragover.
+        // Register dragenter, dragover.
         root.on({
             dragover: function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                //e.dataTransfer.dropEffect = 'copy';
+                // E.dataTransfer.dropEffect = 'copy';
             },
             dragenter: function(e) {
                 e.preventDefault();
                 e.stopPropagation();
             },
 /*
-            drop: function(e){
+            Drop: function(e){
                 if(e.originalEvent.dataTransfer){
                     if(e.originalEvent.dataTransfer.files.length) {
                         e.preventDefault();
@@ -146,11 +148,11 @@ export class FileReferenceList extends DynamicList {
         });
     }
 
-    // for creation by reading xml
-    setFilenameOnCreation(box, index, filename) { // index is 0-based
+    // For creation by reading xml
+    setFilenameOnCreation(box, index, filename) { // Index is 0-based
         // set filename
         if (index > 0) {
-            // create new fileref if index > 0
+            // Create new fileref if index > 0
             return this.addItem(box.find("." + this.classAddItem).first())
                 .then(() => {
                     let element = box.find("." + this.classFilename);
@@ -166,33 +168,34 @@ export class FileReferenceList extends DynamicList {
 
     getCountFilerefs(root) {
         let counter = 0;
-        this.doOnAll(function () {
+        this.doOnAll(function() {
             counter++;
         }, root);
         return counter;
     }
 
-    getNumberOfExtraColumns() { return 0;}
+    getNumberOfExtraColumns() {
+        return 0;
+    }
 
     toggleEditor(element) {
         let td = element.parent();
         let tr = td.parent();
         const fileid = tr.find('.fileref_fileref')[0].value;
-        let ui_file = FileWrapper.constructFromId(fileid);
+        let uiFile = FileWrapper.constructFromId(fileid);
 
         if (element.html() === hideEditorText) {
             element.html(showEditorText);
             tr.next().remove();
-        }
-        else {
+        } else {
             const numberOfColumns = 7 + this.getNumberOfExtraColumns();
-            if (ui_file && !ui_file.isBinary) {
+            if (uiFile && !uiFile.isBinary) {
                 element.html(hideEditorText);
-                $( "<tr>" +
+                $("<tr>" +
                     "   <td></td>" +
-                    "   <td colspan='"+ numberOfColumns + "'><textarea disabled cols='80' rows='10' class='fileref_viewer'>"+
-                    ui_file.text
-                    +"</textarea></td></tr>" ).insertAfter(tr);
+                    "   <td colspan='" + numberOfColumns + "'><textarea disabled cols='80' rows='10' class='fileref_viewer'>" +
+                    uiFile.text
+                    + "</textarea></td></tr>").insertAfter(tr);
             }
         }
     }
@@ -203,14 +206,16 @@ export class FileReferenceList extends DynamicList {
 
     static rowEnableEditorButton(row, enabled) {
         if (enabled) {
-            // check if file is binary and cannot be viewed
+            // Check if file is binary and cannot be viewed
             const fileid = FileReferenceList.rowGetFileId(row);
-            if (!fileid)
+            if (!fileid) {
                 return;
-            let ui_file = FileWrapper.constructFromId(fileid);
-            if (ui_file.isBinary)
+            }
+            let uiFile = FileWrapper.constructFromId(fileid);
+            if (uiFile.isBinary) {
                 enabled = false;
-            //console.log('enable view button in fileref for ' + ui_file.filename + ', enabled = ' + enabled);
+            }
+            // Console.log('enable view button in fileref for ' + uiFile.filename + ', enabled = ' + enabled);
         }
 
         row.find(".taskeditor-collapse").last().prop('disabled', !enabled);
@@ -219,39 +224,40 @@ export class FileReferenceList extends DynamicList {
     addItem(element) {
         let td = element.parent();
         let tr = td.parent();
-        let table_body = tr.parent();
+        let tableBody = tr.parent();
         return super.addItem(element)
             .then(newRow => {
                 FileReferenceList.rowEnableEditorButton(newRow, false);
-                // add filelist to new file option
-                FileReferenceList.updateFilenameList(table_body.find("." + this.classFilename).last());
+                // Add filelist to new file option
+                FileReferenceList.updateFilenameList(tableBody.find("." + this.classFilename).last());
 
                 if (!DEBUG_MODE) {
-                    // hide new fileref fields
-                    table_body.find(".fileref_fileref").hide();
-                    table_body.find("label.fileref_fileref_label").hide();
+                    // Hide new fileref fields
+                    tableBody.find(".fileref_fileref").hide();
+                    tableBody.find("label.fileref_fileref_label").hide();
                 }
                 FileReferenceList.addCallbacks(newRow[0]);
             });
     }
 
 
-    // override
-    getItemCount(table_body) {
+    // Override
+    getItemCount(tableBody) {
         let count = 0;
-        $.each(table_body.find("tr"), function(index, item) {
-            if ($(item).find("td").length > 2)
+        $.each(tableBody.find("tr"), function(index, item) {
+            if ($(item).find("td").length > 2) {
                 count++;
+            }
         });
         return count;
     }
 
-    // override
+    // Override
     getPreviousItem(tr) {
         let previousRow = tr.prev("tr");
 
         if (previousRow.find('td').length === 1) {
-            // only one column => editor visible go to previous row
+            // Only one column => editor visible go to previous row
             previousRow = previousRow.prev("tr");
         }
         return previousRow;
@@ -261,13 +267,13 @@ export class FileReferenceList extends DynamicList {
         let td = element.parent();
         let tr = td.parent();
 
-        // save associated fileid
-        const fileid = FileReferenceList.rowGetFileId(tr); // tr.find('.fileref_fileref')[0].value;
+        // Save associated fileid
+        const fileid = FileReferenceList.rowGetFileId(tr); // Tr.find('.fileref_fileref')[0].value;
 
         // remove editor
         const buttonText = td.prev().find('button').html();
         if (buttonText === hideEditorText) {
-            // remove editor
+            // Remove editor
             tr.next().remove();
         }
 
@@ -280,37 +286,38 @@ export class FileReferenceList extends DynamicList {
 
     // TODO move to file??
     static deleteFile(fileid) {
-        // check if there any references
-        let ui_file = FileWrapper.constructFromId(fileid);
+        // Check if there any references
+        let uiFile = FileWrapper.constructFromId(fileid);
         if (FileReferenceList.getCountFileIdReferenced(fileid) === 0) {
-            // no reference at all => delete file
-            // if (window.confirm(ui_file.filename + " is no longer referenced.\n" +
+            // No reference at all => delete file
+            // if (window.confirm(uiFile.filename + " is no longer referenced.\n" +
             //     "Shall it be removed from task?")) {
-                ui_file.delete();
+                uiFile.delete();
             // }
         }
     }
 
     static removeContent(filenameItem, removeItemIfPossible) {
-        $(filenameItem).val(emptyFileOption); // do not call change!
+        $(filenameItem).val(emptyFileOption); // Do not call change!
         let tr = $(filenameItem).closest('tr');
         tr.find('.fileref_fileref').first().val('');
         let button = tr.find('.taskeditor-collapse');
         if (button.html() === hideEditorText) {
-            // remove editor
+            // Remove editor
             button.html(showEditorText);
             tr.next().remove();
         }
-        // row has a
+        // Row has a
         if (removeItemIfPossible) {
             let removeButton = tr.find('.remove_item').first();
             const isHidden = removeButton.css("display") === "none";
-            if (!isHidden)
+            if (!isHidden) {
                 removeButton.click();
+            }
         }
     }
 
-    // checks if a given file id is used somewhere
+    // Checks if a given file id is used somewhere
     // (needed when file shall be deleted)
     static getCountFileIdReferenced(fileId) {
         let count = 0;
@@ -324,12 +331,12 @@ export class FileReferenceList extends DynamicList {
         return count;
     }
 
-    checkForExclusiveUse(ui_file, fileid, otherFileRefList, listname) {
-        // iterate through all file reference objects to find an 'old' one
+    checkForExclusiveUse(uiFile, fileid, otherFileRefList, listname) {
+        // Iterate through all file reference objects to find an 'old' one
         $.each(otherFileRefList.root.find(".fileref_fileref"), function(index, item) {
             if (item.value === fileid) {
-                alert("file class for file '" + ui_file.filename + "' will be no longer a " + listname + " file");
-                // file id matches
+                alert("file class for file '" + uiFile.filename + "' will be no longer a " + listname + " file");
+                // File id matches
                 // remove old fileref object
                 // remove actual numeric fileref value
                 FileReferenceList.removeContent(item, true);
@@ -337,12 +344,13 @@ export class FileReferenceList extends DynamicList {
         });
     }
     onFileUpload(filename, uploadBox) {
-        // select new filename in first empty filename
-        //console.log("uploadFiles: select " + filename + " in option list");
+        // Select new filename in first empty filename
+        // console.log("uploadFiles: select " + filename + " in option list");
         let done = false;
         $.each($(uploadBox).find("." + this.classFilename), function(index, element) {
-            if (done)
+            if (done) {
                 return false;
+            }
             const currentFilename = $(element).val();
             if (!currentFilename || 0 === currentFilename.length) {
                 $(element).val(filename).change();
@@ -351,27 +359,27 @@ export class FileReferenceList extends DynamicList {
             }
         });
 
-        if (!done) { // no empty select option is found
+        if (!done) { // No empty select option is found
             // append filename
             this.addItem($(uploadBox).find('.' + this.classAddItem).last())
                 .then(newRow => {
-                    // select filename
+                    // Select filename
                     $(uploadBox).find("." + this.classFilename).last().val(filename).change();
                     // FileReferenceList.rowEnableEditorButton(newRow, true);
                 });
         }
     }
 
-    onFilerefChanged(ui_file, fileid) {}
+    onFilerefChanged(uiFile, fileid) {}
 
-    onFileSelectionChanged (tempSelElem) {              // changing a filename in the drop-down
+    onFileSelectionChanged(tempSelElem) { // Changing a filename in the drop-down
 
         function isDuplicateId(fileid) {
             const filerefs = $(tempSelElem).closest('table').find(".fileref_fileref");
             let found = false;
             $.each(filerefs, function(index, item) {
                 if (item.value === fileid) {
-                    // fileref already in list!
+                    // Fileref already in list!
                     // alert('file ' + item.value + ' is already in this list!');
                     found = true;
                     return false;
@@ -380,9 +388,9 @@ export class FileReferenceList extends DynamicList {
             return found;
         }
 
-        // var found = false;
+        // Var found = false;
         const selectedFilename = $(tempSelElem).val();
-        // get old file id
+        // Get old file id
         const nextTd = $(tempSelElem).parent().next('td');
         const row = $(tempSelElem).closest('tr');
         const oldFileId = nextTd.find('.fileref_fileref')[0].value;
@@ -392,12 +400,12 @@ export class FileReferenceList extends DynamicList {
         switch (selectedFilename) {
             case newFileOption:
                 FileWrapper.createFromTemplate()
-                    .then(ui_file => {
+                    .then(uiFile => {
                         // Preset filename with a unique filename
-                        const newFilename = 'new file ' + ui_file.id;
-                        ui_file.filename = newFilename;
+                        const newFilename = 'new file ' + uiFile.id;
+                        uiFile.filename = newFilename;
                         if ($(tempSelElem)) {
-                            // select file as referenced file.
+                            // Select file as referenced file.
                             $(tempSelElem).val(newFilename).change();
                             FileReferenceList.rowEnableEditorButton(row, true);
                         }
@@ -410,14 +418,14 @@ export class FileReferenceList extends DynamicList {
                 }
                 break;
             case loadFileOption:
-                // read new file
+                // Read new file
                 // reset selection in case choosing a file fails
-                //$(tempSelElem).val(emptyFileOption); // do not call change!
+                // $(tempSelElem).val(emptyFileOption); // do not call change!
                 FileReferenceList.removeContent(tempSelElem, false);
-                // change callback
+                // Change callback
                 let dummybutton = $("#dummy_file_upload_button").first();
                 dummybutton.unbind("change");
-                dummybutton.change(function () {
+                dummybutton.change(function() {
                     let inputbutton = $("#dummy_file_upload_button")[0];
                     let filenew = inputbutton.files[0];
                     if (!filenew) {
@@ -425,71 +433,71 @@ export class FileReferenceList extends DynamicList {
                         return;
                     }
 
-                    readAndCreateFileData(filenew, undefined /*-1*/,
-                        function (newFilename, fileId) {
+                    readAndCreateFileData(filenew, undefined /* -1*/,
+                        function(newFilename, fileId) {
                             if ($(tempSelElem)) {
                                 $(tempSelElem).val(newFilename).change();
                                 FileReferenceList.rowEnableEditorButton(row, true);
                             }
-                            // set classname if file belongs to JUNIT
-                            //setJavaClassname(newFilename);
-                            //setJUnitDefaultTitle(newFilename);
+                            // Set classname if file belongs to JUNIT
+                            // setJavaClassname(newFilename);
+                            // setJUnitDefaultTitle(newFilename);
                         });
                 });
-                // perform dummy click
+                // Perform dummy click
                 dummybutton.click();
                 return;
             case emptyFileOption:
             case emptyFileOption.trim():
-                // delete fileref id
+                // Delete fileref id
                 nextTd.find('.fileref_fileref')[0].value = '';
                 break;
             default:
-                // find file id belonging to the filename
+                // Find file id belonging to the filename
                 if (selectedFilename && selectedFilename.trim().length) {
-                    let ui_file = FileWrapper.constructFromFilename(selectedFilename);
-                    if (ui_file) { // can be undefined when no filename is selected
-                        const fileid = ui_file.id;
+                    let uiFile = FileWrapper.constructFromFilename(selectedFilename);
+                    if (uiFile) { // Can be undefined when no filename is selected
+                        const fileid = uiFile.id;
                         if (isDuplicateId(fileid)) {
-                            Str.get_string('fileexists', 'qtype_proforma', ui_file.filename)
+                            Str.get_string('fileexists', 'qtype_proforma', uiFile.filename)
                                 .then(content => alert(content));
-                            // alert('file ' + ui_file.filename + ' is already in this list!');
+                            // Alert('file ' + uiFile.filename + ' is already in this list!');
                             // clean input field
-                            //$(tempSelElem).val(emptyFileOption).change();
+                            // $(tempSelElem).val(emptyFileOption).change();
                             FileReferenceList.removeContent(tempSelElem, false);
                             return;
                         }
 
-                        // set new file id
+                        // Set new file id
                         nextTd.find('.fileref_fileref')[0].value = fileid;
                         FileReferenceList.rowEnableEditorButton(row, true);
-                        if ($(tempSelElem).hasClass('xml_fileref_filename')) {   // is it a test or a model-solution
+                        if ($(tempSelElem).hasClass('xml_fileref_filename')) { // Is it a test or a model-solution
                             // call test specific configured handler
                             if (fileid) {
-                                // setJavaClassname(selectedFilename);
+                                // SetJavaClassname(selectedFilename);
                                 // setJUnitDefaultTitle(selectedFilename);
                                 handleFilenameChangeInTest(selectedFilename, tempSelElem);
                             }
                         } else {
-                            this.onFilerefChanged(ui_file, fileid);
+                            this.onFilerefChanged(uiFile, fileid);
                         }
                     }
                 }
         }
 
         if (oldFileId !== '') {
-            // delete old file
+            // Delete old file
             FileReferenceList.deleteFile(oldFileId);
         }
-    };
+    }
 
     static updateAllViews() {
         $.each($(".fileref_viewer"), function(index, item) {
-            let tr = $(item).closest('tr'); // parent().parent();
-            let trPrev = tr.prev(); // parent().parent();
+            let tr = $(item).closest('tr'); // Parent().parent();
+            let trPrev = tr.prev(); // Parent().parent();
             const fileid = trPrev.find('.fileref_fileref')[0].value;
-            let ui_file = FileWrapper.constructFromId(fileid);
-            $(item).val(ui_file.text);
+            let uiFile = FileWrapper.constructFromId(fileid);
+            $(item).val(uiFile.text);
        });
     }
 
@@ -504,32 +512,32 @@ export class FileReferenceList extends DynamicList {
     // - update selection index
     // - update selection text
     static updateAllFilenameLists(changedId, newFilename) {
-        //console.log('updateAllFilenameLists for ' + changedId + ', new filename: ' + newFilename);
+        // Console.log('updateAllFilenameLists for ' + changedId + ', new filename: ' + newFilename);
 
         $.each($(filenameClassList.join(',')), function(index, item) {
-            //console.log("update filelist in test ");
+            // Console.log("update filelist in test ");
             // store name of currently selected filename
             const text = $("option:selected", item).text();
-            //console.log("selected is " + text);
-            FileReferenceList.updateFilenameList(item); // update filename list in item
+            // Console.log("selected is " + text);
+            FileReferenceList.updateFilenameList(item); // Update filename list in item
 
             // is selected filename in item changed?
             const refid = $(item).closest('tr').find('.fileref_fileref').first().val();
             if (refid === changedId && changedId !== undefined) {
-                // yes =>
+                // Yes =>
                 if (newFilename !== undefined) {
-                    // update selected filename if not deleted
+                    // Update selected filename if not deleted
                     // console.log('change selection value');
                     $(item).val(newFilename);
                 } else {
-                    // file is deleted => remove content
+                    // File is deleted => remove content
                     FileReferenceList.removeContent(item, true);
                 }
             } else {
-                // no =>
+                // No =>
                 $(item).val(text);
 
-                // let indexFound = -1;
+                // Let indexFound = -1;
                 // if (text !== emptyFileOption) {
                 //
                 //     // check if previously selected filename is still in list
@@ -557,8 +565,8 @@ export class FileReferenceList extends DynamicList {
                 //                     let tr = td.parent();
                 //                     tr.find('.fileref_fileref').first().val('');
                 //                     // check if complete row can be deleted
-                //                     const table_body = tr.parent();
-                //                     if (table_body.find('tr').length > 1) {
+                //                     const tableBody = tr.parent();
+                //                     if (tableBody.find('tr').length > 1) {
                 //                         // more than one row => delete row
                 //                         modelSolutionFileRefSingleton.removeFileRef($(item));
                 //                     }
@@ -569,11 +577,11 @@ export class FileReferenceList extends DynamicList {
         });
     }
 
-    // create the drop-down with all possible filenames
+    // Create the drop-down with all possible filenames
     static updateFilenameList(tempSelElem) {
         $(tempSelElem).empty();
         let tempOption = $("<option>" + emptyFileOption + "</option>");
-        $(tempSelElem).append(tempOption); // empty string
+        $(tempSelElem).append(tempOption); // Empty string
         $.each($(".xml_file_filename"), function(index, item) {
             if (item.value.length > 0) {
                 tempOption = $("<option></option>");
@@ -581,7 +589,7 @@ export class FileReferenceList extends DynamicList {
                 $(tempSelElem).append(tempOption);
             }
         });
-        //tempSelElem.val(""); // preset no filename
+        // TempSelElem.val(""); // preset no filename
         tempOption = $("<option></option>");
         tempOption[0].textContent = loadFileOption;
         $(tempSelElem).append(tempOption);
@@ -593,13 +601,13 @@ export class FileReferenceList extends DynamicList {
 
 
     static uploadFiles(files, box, instance) {
-        /*if (files.length > 1) {
+        /* If (files.length > 1) {
             alert('You have dragged more than one file. You must drop exactly one file!');
             return;
         }
         */
         $.each(files, function(index, file) {
-            readAndCreateFileData(file, undefined/*-1*/, function(filename) {
+            readAndCreateFileData(file, undefined/* -1*/, function(filename) {
                 instance.onFileUpload(filename, box);
             });
         });
@@ -607,7 +615,7 @@ export class FileReferenceList extends DynamicList {
 
     static init(dropzoneSelector, sectionSelector, classname, dropZoneObject) {
         let root = dropZoneObject;
-/*        if (dropzoneSelector)
+        /*        If (dropzoneSelector)
             root = $(dropzoneSelector); // find approach that fits all classes
 
         if (sectionSelector) {
@@ -617,18 +625,18 @@ export class FileReferenceList extends DynamicList {
 */
         classname.getInstance().init(root, DEBUG_MODE);
         root.on({
-            drop: function(e){
+            drop: function(e) {
                 console.log('ondrop ');
                 console.log(e);
                 let data = e.originalEvent.dataTransfer.getData("text");
-                // console.log(data);
+                // Console.log(data);
                 if (data.startsWith('move_test ')) {
                     // Move test
                     let result = data.substring('move_test '.length);
-                    // console.log('move ' + result);
+                    // Console.log('move ' + result);
                     let test = TestWrapper.constructFromId(result);
                     let thiselement = e.target.closest('.xml_test');
-                    // console.log(thiselement.id);
+                    // Console.log(thiselement.id);
                     let otherelement = document.getElementById('test_' + result);
                     let nextSibling = thiselement.nextElementSibling;
                     if (nextSibling === otherelement) {
@@ -639,12 +647,12 @@ export class FileReferenceList extends DynamicList {
                     return;
                 }
 
-                // drop file.
-                if (e.originalEvent.dataTransfer){
-                    if(e.originalEvent.dataTransfer.files.length) {
+                // Drop file.
+                if (e.originalEvent.dataTransfer) {
+                    if (e.originalEvent.dataTransfer.files.length) {
                         e.preventDefault();
                         e.stopPropagation();
-                        //UPLOAD FILES HERE
+                        // UPLOAD FILES HERE
                         FileReferenceList.uploadFiles(e.originalEvent.dataTransfer.files, e.currentTarget,
                             classname.getInstance());
                     }
@@ -659,50 +667,50 @@ export class FileReferenceList extends DynamicList {
         // console.log(rootnode);
         // console.log('callback for + button');
         let subnode = rootnode.querySelector('.add_fileref');
-        if (!subnode)
+        if (!subnode) {
             console.error('could not find subnode .add_fileref');
-        else {
-            subnode.onclick = function (addevent) {
+        } else {
+            subnode.onclick = function(addevent) {
                 addevent.preventDefault();
                 // TODO: use static or global function!
                 TestFileReference.getInstance().addItem($(addevent.target));
-            }
+            };
         }
         // Add callback for onclick of 'x' button.
     //        rootnode.querySelector(".remove_item").onclick = function (removeevent) {
         // console.log('callback for x button');
 //        rootnode.querySelector("." + TestFileReference.getInstance().classRemoveItem).onclick = function (removeevent) {
         subnode = rootnode.querySelector('.remove_item');
-        if (!subnode)
+        if (!subnode) {
             console.error('could not find subnode .remove_item');
-        else {
-            subnode.onclick = function (removeevent) {
+        } else {
+            subnode.onclick = function(removeevent) {
                 removeevent.preventDefault();
                 TestFileReference.getInstance().removeItem($(removeevent.target));
-            }
+            };
         }
 
-        // console.log('callback for change selection');
+        // Console.log('callback for change selection');
         subnode = rootnode.querySelector('.fileref_filename');
-        if (!subnode)
+        if (!subnode) {
             console.error('could not find subnode .fileref_filename');
-        else {
-            subnode.onchange = function (changeevent) {
+        } else {
+            subnode.onchange = function(changeevent) {
                 changeevent.preventDefault();
                 TestFileReference.getInstance().onFileSelectionChanged($(changeevent.target));
-            }
+            };
         }
 
-        // console.log('callback for toggle editor');
+        // Console.log('callback for toggle editor');
         subnode = rootnode.querySelector('.taskeditor-collapse');
-        // console.error('TODO taskeditor-collapse');
-        if (!subnode)
+        // Console.error('TODO taskeditor-collapse');
+        if (!subnode) {
             console.error('could not find subnode .taskeditor-collapse');
-        else {
-            rootnode.querySelector(".taskeditor-collapse").onclick = function (toggleevent) {
+        } else {
+            rootnode.querySelector(".taskeditor-collapse").onclick = function(toggleevent) {
                 toggleevent.preventDefault();
                 TestFileReference.getInstance().toggleEditor($(toggleevent.target));
-            }
+            };
         }
     }
 }
@@ -715,15 +723,17 @@ export class TestFileReference extends FileReferenceList {
             'file containing test cases, test configuration, libraries etc.', true);
     }
 
-    static getInstance() {return testFileRefSingleton;}
+    static getInstance() {
+        return testFileRefSingleton;
+    }
 /*
-    onFileUpload(filename, uploadBox) {
+    OnFileUpload(filename, uploadBox) {
         super.onFileUpload(filename, uploadBox);
         // set classname if exactly one file is assigned
         // todo: this should be part of the configuration
-        // const ui_classname = $(uploadBox).find(".xml_entry_point");
-        // if (ui_classname.length === 1) {
-        //     $.each(ui_classname, function(index, element) {
+        // const uiClassname = $(uploadBox).find(".xml_entry_point");
+        // if (uiClassname.length === 1) {
+        //     $.each(uiClassname, function(index, element) {
         //         const currentFilename = $(element).val();
         //         if (currentFilename === "" && !readXmlActive) {
         //             $(element).val(javaParser.getFullClassnameFromFilename(filename)).change();
@@ -742,12 +752,10 @@ export class ModelSolutionFileReference extends FileReferenceList {
             'ModelSolutionFileReference', 'File',
             'file belonging to a model solution', true);
     }
-    static getInstance() {return modelSolutionFileRefSingleton;}
+    static getInstance() {
+        return modelSolutionFileRefSingleton;
+    }
 }
 let modelSolutionFileRefSingleton = new ModelSolutionFileReference();
-
-
-
-
 
 

@@ -18,7 +18,7 @@
 /**
  * The ProFormA Question CodeMirror support functions
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2022 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,13 +26,12 @@
  */
 
 
+/**
+ * NOTE:
+ * Currently creating subfolders is disabled, because the moodle question filesaver does not support it
+ */
 
-
-
-/** NOTE:
- * Currently creating subfolders is disabled, because the moodle question filesaver does not support it */
-
-let autosaveIntervall = -1; // in milliseconds
+let autosaveIntervall = -1; // In milliseconds
 
 /* eslint-disable no-unused-vars */
 
@@ -45,15 +44,15 @@ import CodeMirror from "./codemirror";
 
 import "./clike";
 import "./python";
-import "./javascriptmode"; // renamed from javascript
+import "./javascriptmode"; // Renamed from javascript
 import "./xml";
 import "./matchbrackets";
 import "./closebrackets";
 import "./active-line";
 
-// import Config from 'core/config';
+// Import Config from 'core/config';
 import * as Str from 'core/str';
-// import * as notification from 'core/notification';
+// Import * as notification from 'core/notification';
 // import {get_string as getString} from 'core/str';
 import ModalEvents from 'core/modal_events';
 import SaveCancelModal from 'core/modal_save_cancel';
@@ -135,7 +134,7 @@ function modalPrompt(titleId, labelId, defaultValue, callback) {
                 '<input type="text" name="promptname" value="' + defaultValue + '" size="40"></input>');
             modal.getRoot().on(ModalEvents.save, () => {
                 let result = document.querySelector("input[name='promptname']").value;
-                // console.log(result);
+                // Console.log(result);
                 modal.getRoot().remove();
                 callback(result);
             });
@@ -152,7 +151,7 @@ function modalPrompt(titleId, labelId, defaultValue, callback) {
                     }
                 });
         })
-        .catch( error => {
+        .catch(error => {
             console.error('error:', error);
             alert(error);
         });
@@ -177,9 +176,9 @@ function modalAlert(textId, param) {
         .then(([strings, modal]) => {
             modal.setTitle(strings[0]);
             modal.setBody(strings[1]);
-            modal.show()
+            modal.show();
         })
-        .catch( error => {
+        .catch(error => {
             console.error('error:', error);
             alert(error);
         });
@@ -210,7 +209,7 @@ function modalConfirm(titleId, textId, callback, param) {
             });
             modal.show();
         })
-        .catch( error => {
+        .catch(error => {
             console.error('error:', error);
             alert(error);
         });
@@ -223,46 +222,46 @@ class TreeNode {
     constructor(name) {
         this.name = name;
         this.element = undefined; // DOM element
-        this.parent = undefined; // parent Treenode
+        this.parent = undefined; // Parent Treenode
 
         this.boundHandleContextMenu = event => {
-            // console.log(event)
+            // Console.log(event)
             event.preventDefault();
-            event.stopPropagation(); // otherwise parent node handles event, too
+            event.stopPropagation(); // Otherwise parent node handles event, too
 
             this.setContextMenu()
                 .then(() => {
                     if (this.getFramework().menu === undefined) {
                         return;
                     }
-                    const showMenu = ({ top, left }) => {
+                    const showMenu = ({top, left}) => {
                         this.getFramework().menu.style.left = `${left}px`;
                         this.getFramework().menu.style.top = `${top}px`;
-                        // this.getFramework().menu.style.setProperty('--mouse-x', event.clientX + 'px');
+                        // This.getFramework().menu.style.setProperty('--mouse-x', event.clientX + 'px');
                         // this.getFramework().menu.style.setProperty('--mouse-y', event.clientY + 'px');
                         this.getFramework().toggleContextmenu('show');
                     };
 
-                    // console.log(`contextmenu: ${event}`);
+                    // Console.log(`contextmenu: ${event}`);
 
                     const origin = {
                         left: event.pageX,
                         top: event.pageY
                     };
-                    // console.log(`${event.pageX}px ${event.pageY}px`);
+                    // Console.log(`${event.pageX}px ${event.pageY}px`);
                     // console.log(event);
                     showMenu(origin);
                 });
         };
         this.handleDragStart = event => {
             if (event.dataTransfer.getData('treeitem').length == 0) {
-                // console.log('dragstart: ' + this.getPath());
+                // Console.log('dragstart: ' + this.getPath());
                 event.dataTransfer.setData('treeitem', this.getPath());
             }
         };
     }
     getPath() {
-        return this.parent === undefined? this.name : this.parent.getPath() + '/' + this.name ;
+        return this.parent === undefined ? this.name : this.parent.getPath() + '/' + this.name;
     }
     // Override
     setContextMenu() {
@@ -356,7 +355,7 @@ export class FileNode extends TreeNode {
                     const newpath = thecontext.getPath();
                     thecontext.mode = FileNode.getEditorModeFromFilename(thecontext.name);
                     thecontext.getFramework().syncer.renameFile(oldpath, newpath);
-                    // thecontext.element.tabIndex = 0;
+                    // Thecontext.element.tabIndex = 0;
                     // Update name in tab if open
                     thecontext.getFramework().editorstack.update(thecontext);
                 }
@@ -366,26 +365,26 @@ export class FileNode extends TreeNode {
             this.getFramework().toggleContextmenu("hide");
             this.getFramework().setFocusTo(this.element);
             event.stopPropagation();
-            // event.preventDefault();
+            // Event.preventDefault();
         };
         this.handleDoubleClick = event => {
             this.getFramework().toggleContextmenu("hide");
-            // document.getElementById('last_action').value = this.name;
+            // Document.getElementById('last_action').value = this.name;
             if (this.filecontent != undefined) {
                 this.getFramework().switchEditorTo(this);
             }
             this.getFramework().setFocusTo(this.element);
             event.stopPropagation();
-            // event.preventDefault();
+            // Event.preventDefault();
         };
     }
     getContent() {
         if (this.filecontent.length == 0) {
             const p1 = this.getFramework().syncer.download(this.getPath());
-            // console.log('Fileviewer promise result');
+            // Console.log('Fileviewer promise result');
             // console.log(p1);
             p1.then(result => {
-                // console.log('Downloaded text is: '+ result);
+                // Console.log('Downloaded text is: '+ result);
                 this.filecontent = result;
                 return result;
             });
@@ -407,13 +406,13 @@ export class FileNode extends TreeNode {
         li.addEventListener('dblclick', this.handleDoubleClick);
         li.addEventListener('click', this.boundHandleClick);
 
-//        li.addEventListener('mouseover', this.handleMouseOver);
+        //        Li.addEventListener('mouseover', this.handleMouseOver);
 //        li.addEventListener('mouseout', this.handleMouseOut);
     }
 
     setContextMenu() {
         console.log('FileNode setContextMenu');
-        // this is something from codemirror in promise done function???
+        // This is something from codemirror in promise done function???
         // so this is renamed
         let thecontext = this;
         return Str.get_strings([
@@ -424,8 +423,8 @@ export class FileNode extends TreeNode {
                 [strings[0] + '...', thecontext.handleDelete], // Delete
                 [strings[1] + '...', thecontext.boundHandleRename] // Rename
             ]);
-        }) /*.fail(notification.exception)*/
-            .fail(function (response) {
+        }) /* .fail(notification.exception)*/
+            .fail(function(response) {
                 console.error(response);
         });
     }
@@ -446,7 +445,7 @@ export class FolderNode extends TreeNode {
                 context.getFramework().syncer.deleteFileOrFolder(context.getPath() + '/.');
                 context.element.remove();
                 context.parent.folders = context.parent.folders.filter(item => item !== context);
-                // console.log(RootNode.projects);
+                // Console.log(RootNode.projects);
             }, this.getPath());
         };
         this.boundHandleNewFile = event => {
@@ -456,7 +455,7 @@ export class FolderNode extends TreeNode {
                 if (filename !== null && filename.length > 0) {
                     if (!thecontext.isNameChildUnique(filename)) {
                         thecontext.alreadyExists(filename);
-                        // alert(filename + ' already exists');
+                        // Alert(filename + ' already exists');
                         return;
                     }
                     let node = new FileNode(filename);
@@ -485,7 +484,7 @@ export class FolderNode extends TreeNode {
         this.handleDragOver = event => {
             event.preventDefault();
         };
-        this.handleDragEnter = () =>  {
+        this.handleDragEnter = () => {
             if (this.getFramework().readOnly) {
                 return;
             }
@@ -518,21 +517,21 @@ export class FolderNode extends TreeNode {
                     return;
                 }
                 if (node instanceof FolderNode) {
-                    // remove folder in old parent
+                    // Remove folder in old parent
                     const oldpath = node.getPath();
                     node.parent.folders = node.parent.folders.filter(item => item !== node);
-                    // add folder to this
+                    // Add folder to this
                     this.appendFolder(node);
                     this.element.querySelector('ul').appendChild(node.element);
-                    // node.displayInTreeview(this.element.querySelector('[role="group"]'));
+                    // Node.displayInTreeview(this.element.querySelector('[role="group"]'));
                     this.expand(true);
                     this.getFramework().syncer.renameFolder(oldpath, node.getPath());
                 } else if (node instanceof FileNode) {
                     const oldpath = node.getPath();
                     node.parent.files = node.parent.files.filter(item => item !== node);
-                    // add folder to this
+                    // Add folder to this
                     this.appendFile(node);
-                    // node.displayInTreeview(this.element.querySelector('[role="group"]'));
+                    // Node.displayInTreeview(this.element.querySelector('[role="group"]'));
                     this.element.querySelector('ul').appendChild(node.element);
                     this.expand(true);
                     this.getFramework().syncer.renameFile(oldpath, node.getPath());
@@ -544,8 +543,8 @@ export class FolderNode extends TreeNode {
                 // External file or folder
                 console.log('drop file/folder');
                 let items = event.dataTransfer.items;
-                for (let i=0; i<items.length; i++) {
-                    let item = items[i].webkitGetAsEntry();  //Might be renamed to GetAsEntry()
+                for (let i = 0; i < items.length; i++) {
+                    let item = items[i].webkitGetAsEntry(); // Might be renamed to GetAsEntry()
                     if (item) {
                         this._getFileTree(item);
                     }
@@ -559,7 +558,7 @@ export class FolderNode extends TreeNode {
                 if (foldername !== null && foldername.length > 0) {
                     if (!thecontext.isNameChildUnique(foldername)) {
                         thecontext.alreadyExists(foldername);
-                        // alert(foldername + ' already exists');
+                        // Alert(foldername + ' already exists');
                         return;
                     }
                     let node = new FolderNode(foldername);
@@ -626,9 +625,9 @@ export class FolderNode extends TreeNode {
         return undefined;
     }
     createPath(path) {
-        // console.log(path);
+        // Console.log(path);
         let first = path.shift();
-        // console.log('foldernode: create node for <' + first + '>');
+        // Console.log('foldernode: create node for <' + first + '>');
         if (first === undefined || first.length == 0) {
             if (path.lenghth > 0) {
                 console.error('Bug in creating path');
@@ -639,7 +638,7 @@ export class FolderNode extends TreeNode {
             if (this.folders[i].name === first) {
                 // Subpath exists
                 if (path.length == 0) {
-                    // full path exists => return folder object.
+                    // Full path exists => return folder object.
                     return this.folders[i];
                 } else {
                     return this.folders[i].createPath(path);
@@ -655,12 +654,12 @@ export class FolderNode extends TreeNode {
 
     isNameChildUnique(name) {
         for (let i = 0; i < this.files.length; i++) {
-            if (name.localeCompare(this.files[i].name) == 0 ) {
+            if (name.localeCompare(this.files[i].name) == 0) {
                 return false;
             }
         }
         for (let i = 0; i < this.folders.length; i++) {
-            if (name.localeCompare(this.folders[i].name) == 0 ) {
+            if (name.localeCompare(this.folders[i].name) == 0) {
                 return false;
             }
         }
@@ -677,7 +676,7 @@ export class FolderNode extends TreeNode {
                 this._addFileFromOs(file, recurseinit);
             });
         } else if (item.isDirectory) {
-/*******
+            /* ******
             // Create new folder
             let node = new FolderNode(item.name);
             this.appendFolder(node);
@@ -693,7 +692,7 @@ export class FolderNode extends TreeNode {
                     node._getFileTree(entries[i], path + item.name + "/");
                 }
             });
- */
+             */
         }
     }
 
@@ -704,9 +703,9 @@ export class FolderNode extends TreeNode {
         }
         let node = new FileNode(file.name);
         let reader = new FileReader();
-        reader.readAsText(file,'UTF-8');
+        reader.readAsText(file, 'UTF-8');
         reader.onload = readerEvent => {
-            let content = readerEvent.target.result; // this is the content!
+            let content = readerEvent.target.result; // This is the content!
             node.filecontent = content;
             if (show) {
                 this.getFramework().addEditor(node);
@@ -763,21 +762,25 @@ export class FolderNode extends TreeNode {
             {key: 'delete', component: 'qtype_proforma'}
         ]).done(function(strings) {
             thecontext.getFramework().createContextMenu([
-                [strings[0] + '...', thecontext.boundHandleNewFile], // newemptyfile
-                [strings[1] + '...', thecontext.boundHandleLoadFile], // loadfile
+                [strings[0] + '...', thecontext.boundHandleNewFile], // Newemptyfile
+                [strings[1] + '...', thecontext.boundHandleLoadFile], // Loadfile
 
-//***               [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
+                //* **               [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
                 [strings[3] + '...', thecontext.boundHandleRename], // Rename
-                [strings[4] + '...', thecontext.handleDelete], // delete
+                [strings[4] + '...', thecontext.handleDelete], // Delete
             ]);
-        }) //. fail(notification.exception)
-            .fail(function (response) {
+        }) // . fail(notification.exception)
+            .fail(function(response) {
                 console.error(response);
             });
     }
 
-    appendFile(node) { this.files.push(node); node.parent = this; }
-    appendFolder(node) { this.folders.push(node); node.parent = this; }
+    appendFile(node) {
+        this.files.push(node); node.parent = this;
+    }
+    appendFolder(node) {
+        this.folders.push(node); node.parent = this;
+    }
 }
 
 /**
@@ -805,12 +808,12 @@ export class RootNode extends FolderNode {
             {key: 'newfolder', component: 'qtype_proforma'}
         ]).done(function(strings) {
             thecontext.getFramework().createContextMenu([
-                [strings[0] + '...', thecontext.boundHandleNewFile], // newemptyfile
-                [strings[1] + '...', thecontext.boundHandleLoadFile], // loadfile
-//***                [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
+                [strings[0] + '...', thecontext.boundHandleNewFile], // Newemptyfile
+                [strings[1] + '...', thecontext.boundHandleLoadFile], // Loadfile
+                //* **                [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
             ]);
-        }) //. fail(notification.exception)
-            .fail(function (response) {
+        }) // . fail(notification.exception)
+            .fail(function(response) {
                 console.error(response);
             });
     }
@@ -829,14 +832,16 @@ class EditorItem {
             autoCloseBrackets: true,
             styleActiveLine: true,
             readOnly: readOnly,
-            extraKeys: {'Tab': function(){ this.editor.replaceSelection('    ' , 'end');}},
+            extraKeys: {'Tab': function() {
+                this.editor.replaceSelection('    ', 'end');
+            }},
             lineNumbers: true
-            //viewportMargin: Infinity
+            // ViewportMargin: Infinity
         });
         this.editor.setSize("100%", "100%");
         // RootNode.editor.setOption('theme', "blackboard");
         this.editor.setOption('theme', "darcula");
-        // this.editor.setOption('theme', "abcdef");
+        // This.editor.setOption('theme', "abcdef");
         this.tab = tabDomNode;
     }
 }
@@ -853,21 +858,23 @@ class EditorStack {
             autoCloseBrackets: true,
             styleActiveLine: true,
             readOnly: true,
-            extraKeys: {'Tab': function(){ this.editor.replaceSelection('    ' , 'end');}},
+            extraKeys: {'Tab': function() {
+                this.editor.replaceSelection('    ', 'end');
+            }},
             lineNumbers: true
-            //viewportMargin: Infinity
+            // ViewportMargin: Infinity
         });
         this.editor.setSize("100%", "100%");
         // RootNode.editor.setOption('theme', "blackboard");
         this.editor.setOption('theme', "darcula");
-        // this.editor.setOption('theme', "abcdef");
+        // This.editor.setOption('theme', "abcdef");
 
-        this.activeNode = undefined; // activeNode associated with Codemirror
+        this.activeNode = undefined; // ActiveNode associated with Codemirror
 
-        this.nodes = []; // all filenodes with open editor
+        this.nodes = []; // All filenodes with open editor
         // this.donNodeEditor = donNodeEditor;
         this.donNodeTabs = donNodeTabs;
-        this.focus = undefined; // the tab that has got the focus
+        this.focus = undefined; // The tab that has got the focus
         this.framework = framework;
 
     }
@@ -882,7 +889,7 @@ class EditorStack {
         this.saveCurrentEditor(true);
 
         if (index === undefined) {
-            // figure out value of i
+            // Figure out value of i
             for (index = 0; index < this.nodes.length; index++) {
                 if (this.nodes[index] === item) {
                     break;
@@ -891,7 +898,7 @@ class EditorStack {
         }
         console.log('item index is ' + index);
 
-        // move on top
+        // Move on top
         this.nodes.splice(index, 1);
         this.nodes.push(item);
 
@@ -926,7 +933,7 @@ class EditorStack {
                 // Delete Codemirror element (in order to avoid resource leak)
                 item.editor.getWrapperElement().remove();
                 if (this.nodes.length > 0) {
-                    this._switchTo(this.nodes[this.nodes.length-1], this.nodes.length-1);
+                    this._switchTo(this.nodes[this.nodes.length - 1], this.nodes.length - 1);
                 }
                 return;
             }
@@ -963,14 +970,14 @@ class EditorStack {
                 item.editor.setValue(text);
                 if (filenode.mode !== undefined) {
                     item.editor.setOption("mode", filenode.mode);
-                } // else {
+                } // Else {
                     // E.g. makefile has no extension and therefore no known mode.
                     // console.error('unknown file mode');
                 // }
                 // item.editor.setOption("readOnly", this.readOnly);
-                item.editor.refresh(); // for old version of Codemirror
+                item.editor.refresh(); // For old version of Codemirror
             })
-            .catch( error => {
+            .catch(error => {
                 console.error('error:', error);
                 alert(error);
             });
@@ -1003,10 +1010,10 @@ class EditorStack {
     update(filenode) {
         for (let i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i].fileNode === filenode) {
-                // filenode is in list
+                // Filenode is in list
                 // => update filename
                 this.nodes[i].tab.innerHTML = filenode.name;
-                // update filemode
+                // Update filemode
                 if (filenode.mode !== undefined) {
                     this.nodes[i].editor.setOption("mode", filenode.mode);
                 }
@@ -1018,7 +1025,7 @@ class EditorStack {
         // Check if filenode is already in stack
         for (let i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i].fileNode === filenode) {
-                // filenode is in list
+                // Filenode is in list
                 this._switchTo(this.nodes[i], i);
                 return;
             }
@@ -1040,12 +1047,12 @@ class EditorStack {
     saveCurrentEditor(async) {
         let currentNode = this._getCurrentNode();
         if (currentNode) {
-            // save content of current editor
+            // Save content of current editor
             const text = currentNode.editor.getValue();
             if (text.length > 0) {
                 currentNode.fileNode.updateContent(text, async);
             } else {
-                // currentNode.fileNode.updateContent(' ', true);
+                // CurrentNode.fileNode.updateContent(' ', true);
             }
         }
     }
@@ -1055,7 +1062,7 @@ class EditorStack {
             // Call refresh for current Codemirror
             // in order to update text window. Otherwise
             // text is cut off
-            return this.nodes[this.nodes.length-1];
+            return this.nodes[this.nodes.length - 1];
         }
         return null;
     }
@@ -1064,7 +1071,7 @@ class EditorStack {
             // Call refresh for current Codemirror
             // in order to update text window. Otherwise
             // text is cut off
-            this.nodes[this.nodes.length-1].editor.refresh();
+            this.nodes[this.nodes.length - 1].editor.refresh();
         }
     }
     save() {
@@ -1080,7 +1087,7 @@ class EditorStack {
         }
 
         /*
-        let promises = [];
+        Let promises = [];
         for (let i = 0; i < this.nodes.length; i++) {
             console.log('add promise to list ' + i.toString());
             promises.push(this.nodes[i].fileNode.updateContent(this.nodes[i].editor.getValue()));
@@ -1105,7 +1112,7 @@ class EditorStack {
         console.timeStamp('save');
         console.timeEnd('save');
     }
-/*    needssaving() {
+/*    Needssaving() {
         for (let i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i].fileNode.filecontent != this.nodes[i].editor.getValue()) {
                 return true;
@@ -1121,7 +1128,7 @@ class EditorStack {
 
 export class Framework {
     constructor() {
-        this.roots = []; // all root nodes
+        this.roots = []; // All root nodes
         this.syncer = undefined;
         this.editorstack = undefined;
         this.mainDomNode = undefined;
@@ -1192,14 +1199,14 @@ export class Framework {
 
     init(node, syncer, readOnly, options) {
         this.readOnly = readOnly;
-        this.rootnode = options['rootnode'];
-        if (options['explorerautosave'] !== undefined && options['explorerautosave'] > 0) {
-            autosaveIntervall = 1000 * options['explorerautosave'];
+        this.rootnode = options.rootnode;
+        if (options.explorerautosave !== undefined && options.explorerautosave > 0) {
+            autosaveIntervall = 1000 * options.explorerautosave;
         } else {
             autosaveIntervall = -1;
         }
-        const initSplit = resizer =>  {
-            // from https://htmldom.dev/create-resizable-split-views/
+        const initSplit = resizer => {
+            // From https://htmldom.dev/create-resizable-split-views/
             const before = resizer.previousElementSibling;
             const after = resizer.nextElementSibling;
 
@@ -1237,14 +1244,14 @@ export class Framework {
                 removeSelection();
             };
 
-            const mouseMoveHandler = e =>  {
+            const mouseMoveHandler = e => {
                 if (mousedown) {
                     // How far the mouse has been moved
                     const dx = e.clientX - x;
                     let newBasis = ((oldValue + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
-                    before.style.flexBasis =`${newBasis}%`;
+                    before.style.flexBasis = `${newBasis}%`;
                     if (after != undefined) {
-                        after.style.flexBasis =`${100-newBasis}%`;
+                        after.style.flexBasis = `${100 - newBasis}%`;
                     } else {
                         resizer.parentNode.getBoundingClientRect().width =
                             resizer.parentNode.getBoundingClientRect().width - dx;
@@ -1255,7 +1262,7 @@ export class Framework {
                 }
             };
 
-            const mouseUpHandler = function () {
+            const mouseUpHandler = function() {
                 removeSelection();
 
                 // Remove the handlers of `mousemove` and `mouseup`
@@ -1281,11 +1288,11 @@ export class Framework {
         fileviewer.appendChild(ul);
 
         this.syncer = syncer;
-        // build folder/file structure.
+        // Build folder/file structure.
         /* this.syncer.dir(); Da fehlen die Dateien */
-        this.createPath('/'); // needed when no files come from syncer.
+        this.createPath('/'); // Needed when no files come from syncer.
         this.syncer.list(this)
-            .then (() => {
+            .then(() => {
                 console.log('DISPLAY ROOTS');
                 console.log(this.roots);
                 for (let i = 0; i < this.roots.length; i++) {
@@ -1305,8 +1312,8 @@ export class Framework {
             this.editorstack.handleResize();
         });
         observer.observe(el);
-        initSplit(node.querySelector('.ide .body > .resize'),  'w');
-        // initSplit(node.querySelector('.ide .canvas > .resize'), 'w');
+        initSplit(node.querySelector('.ide .body > .resize'), 'w');
+        // InitSplit(node.querySelector('.ide .canvas > .resize'), 'w');
 
         // Read context menu strings in order to have them in
         // the browser cache and the menu can open immediately
@@ -1334,7 +1341,7 @@ export class Framework {
     }
     addEditor(filenode) {
         this.editorstack.switchEditorTo(filenode);
-        // this.editorstack.addEditor(filenode);
+        // This.editorstack.addEditor(filenode);
     }
     deleteEditor(filenode) {
         this.editorstack.deleteEditor(filenode);
@@ -1342,19 +1349,19 @@ export class Framework {
 
     findNodeByPath(path) {
         console.log('find <' + path + '>');
-        if (path.substr(0,1) != '/') {
+        if (path.substr(0, 1) != '/') {
             console.error('path does not start with /: ' + path);
             return undefined;
         }
 
         let pathsplit = path.split('/');
-        pathsplit.shift(); // first element is always empty
+        pathsplit.shift(); // First element is always empty
         // let first = pathsplit.shift();
         let root = this.roots[0];
         return root.findNodeByPath(pathsplit);
 
         /*
-        for (let i = 0; i < this.roots.length; i++) {
+        For (let i = 0; i < this.roots.length; i++) {
             if (this.roots[i].name === first) {
                 return this.roots[i].findNodeByPath(pathsplit);
             }
@@ -1369,7 +1376,7 @@ export class Framework {
             console.error('first char in path is not /: ' + path);
         }
         let pathsplit = path.split('/');
-        pathsplit.shift(); // first element in array is always empty
+        pathsplit.shift(); // First element in array is always empty
 
         let root;
         let context = this;
@@ -1377,7 +1384,7 @@ export class Framework {
             root = new RootNode(context.rootnode, context);
             return root.createPath(pathsplit);
 /*
-            getString('rootsubmission', 'qtype_proforma')
+            GetString('rootsubmission', 'qtype_proforma')
                 .done(function(string) {
                     root = new RootNode(string, context);
                     return root.createPath(pathsplit);
@@ -1396,10 +1403,10 @@ export class Framework {
             return;
         }
         console.log('createContextMenu ' + list.length);
-        // console.log(list);
+        // Console.log(list);
         // let ul = this.mainDomNode.querySelector(".contextmenu .menu-options");
         let ul = document.querySelector(".contextmenu .menu-options");
-        // console.log(ul);
+        // Console.log(ul);
         ul.innerHTML = ''; // Delete all children
         for (let i = 0; i < list.length; i++) {
             const li = document.createElement('li');
@@ -1437,7 +1444,7 @@ export class Framework {
         }
     }
 
-/*    needssaving() {
+    /*    Needssaving() {
         return this.editorstack.needssaving();
     }
     issaved() {
@@ -1447,7 +1454,7 @@ export class Framework {
         console.log(this);
         console.log(this.editorstack);
         return this.editorstack.save();
-        // alert('hallo');
+        // Alert('hallo');
         // setTimeout(() => { return p1; }, 60000);
     }
 }

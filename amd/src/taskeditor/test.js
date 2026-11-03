@@ -18,7 +18,7 @@
 /**
  * functions for representing a test in taskeditor.
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -45,11 +45,12 @@ export class TestWrapper {
 
 
     static constructFromId(id) {
-        // this._id = id;
+        // This._id = id;
         let test = new TestWrapper();
         test._root = $("#test_" + id);
-        if (test.root.length === 0)
-            return undefined; // no element with id found
+        if (test.root.length === 0) {
+            return undefined;
+        } // No element with id found
         return test;
     }
 
@@ -64,35 +65,59 @@ export class TestWrapper {
         return member.val();
     }
 
-    // getter
-    get root() { return this._root; }
-    get id() { return this.getValue(this._id,".xml_test_id" ); }
-    get title() { return this.getValue(this._id,".xml_test_title" ); }
-    get comment() { return this.getValue(this._comment,".xml_internal_description"); }
-    get description() { return this.getValue(this._description,".xml_description" ); }
-    get testtype() { return this.getValue(this._type,".xml_test_type" ); }
-    get weight() { return this.getValue(this._type,".xml_test_weight" ); }
-    get framework() { return this.getValue(this._type,".xml_framework" ); }
+    // Getter
+    get root() {
+        return this._root;
+    }
+    get id() {
+        return this.getValue(this._id, ".xml_test_id");
+    }
+    get title() {
+        return this.getValue(this._id, ".xml_test_title");
+    }
+    get comment() {
+        return this.getValue(this._comment, ".xml_internal_description");
+    }
+    get description() {
+        return this.getValue(this._description, ".xml_description");
+    }
+    get testtype() {
+        return this.getValue(this._type, ".xml_test_type");
+    }
+    get weight() {
+        return this.getValue(this._type, ".xml_test_weight");
+    }
+    get framework() {
+        return this.getValue(this._type, ".xml_framework");
+    }
 
-    // setter
-    set comment(newComment) { this._root.find(".xml_internal_description").val(newComment); }
-    set description(newDescription) { this._root.find(".xml_description").val(newDescription); }
-    set weight(newWeight) { this._root.find(".xml_test_weight").val(newWeight); }
-    set title(newTitle) { this._root.find(".xml_test_title").val(newTitle); }
+    // Setter
+    set comment(newComment) {
+        this._root.find(".xml_internal_description").val(newComment);
+    }
+    set description(newDescription) {
+        this._root.find(".xml_description").val(newDescription);
+    }
+    set weight(newWeight) {
+        this._root.find(".xml_test_weight").val(newWeight);
+    }
+    set title(newTitle) {
+        this._root.find(".xml_test_title").val(newTitle);
+    }
 
     static doOnAll(callback) {
-        // todo: iterate through all tests in variable
-        $.each($(".xml_test_id"), function (indexOpt, item) {
+        // Todo: iterate through all tests in variable
+        $.each($(".xml_test_id"), function(indexOpt, item) {
             let test = TestWrapper.constructFromId(item.value);
             callback(test, indexOpt);
         });
     }
 
     delete() {
-        // iterate through all referenced files and remove the references
+        // Iterate through all referenced files and remove the references
         // => checks whether the file can be removed
-        FileReferenceList.doOnAllElements(this.root, function(fileref_element) {
-            let row = $(fileref_element).closest('tr');
+        FileReferenceList.doOnAllElements(this.root, function(filerefElement) {
+            let row = $(filerefElement).closest('tr');
             row.find('.remove_item').first().click();
         });
 
@@ -103,9 +128,9 @@ export class TestWrapper {
     static delete(button) {
         Str.get_string('confirmdeletetest', 'qtype_proforma')
             .then(localtext => {
-                if (window.confirm(localtext)){
+                if (window.confirm(localtext)) {
                     let instance = TestWrapper.constructFromRoot(button.closest('.xml_test'));
-                    // remove instance
+                    // Remove instance
                     instance.delete();
                 }
             });
@@ -121,32 +146,33 @@ export class TestWrapper {
      */
     static createFromTemplate(id, template, context, withFileRef, item, task) {
         let testid = id;
-        if (!testid)
+        if (!testid) {
             testid = setcounter(testIDs);
-        context['testid'] = testid;
-        // console.log("context for rendering template " + template);
+        }
+        context.testid = testid;
+        // Console.log("context for rendering template " + template);
         // console.log(context);
-        let test = undefined;
+        let test;
 
         return Templates.renderForPromise(template, context)
             .then(({html, js}) => {
-                // console.log(html);
+                // Console.log(html);
                 Templates.appendNodeContents('#proforma-tests-section', html, js);
 
-                // hide fields that exist only for technical reasons
+                // Hide fields that exist only for technical reasons
                 const testroot = $("#test_" + testid);
 
                 test = TestWrapper.constructFromRoot(testroot);
 
                 let subnode = $(testroot)[0].querySelector('.test-header');
-                if (!subnode)
+                if (!subnode) {
                     console.error('could not find subnode .test-header');
-                else {
-                    subnode.ondragstart = function (event) {
-                        // event.preventDefault();
+                } else {
+                    subnode.ondragstart = function(event) {
+                        // Event.preventDefault();
                         // console.log('On drag start ' + testid);
-                        event.dataTransfer.setData("text", 'move_test '  + testid);
-                    }
+                        event.dataTransfer.setData("text", 'move_test ' + testid);
+                    };
                 }
 
                 FileReferenceList.init(null, null, TestFileReference, testroot);
@@ -169,12 +195,10 @@ export class TestWrapper {
                     testroot.find("label[for='xml_test_id']").hide();
                 }*/
                 if (!withFileRef) {
-                    // console.log('hide fileref fields');
+                    // Console.log('hide fileref fields');
                     testroot.find("table").hide();
                     testroot.find(".drop_zone").hide();
-                }
-                else
-                {
+                } else {
                     // TODO: disable drag & drop!
                     /*
                             testroot.on({
@@ -193,25 +217,28 @@ export class TestWrapper {
                     */
                 }
                 if (item) {
-                    // console.log('update filelist for test');
+                    // Console.log('update filelist for test');
                     let counter = 0;
-                    // console.log(item.filerefs);
+                    // Console.log(item.filerefs);
 
                     item.filerefs.forEach(function(itemFileref, indexFileref) {
-                        // console.log('id ' + itemFileref.refid);
+                        // Console.log('id ' + itemFileref.refid);
                         let filename = task.findFilenameForId(itemFileref.refid);
-                        // console.log('filename ' + filename);
-                        let promiseFactories = [TestFileReference.getInstance().setFilenameOnCreation(test.root, counter++, filename)];
+                        // Console.log('filename ' + filename);
+                        let promiseFactories = [
+                            TestFileReference.getInstance().setFilenameOnCreation(test.root, counter++, filename)];
                         Promise.all(promiseFactories)
                             .then(() => {
-                                // console.log("promise completed");
+                                // Console.log("promise completed");
                                 // ???
-                            })
+                            });
                     });
                 }
             })
-            .catch((error) => { displayException(error); });
-        // return test;
+            .catch((error) => {
+                displayException(error);
+            });
+        // Return test;
     }
 }
 

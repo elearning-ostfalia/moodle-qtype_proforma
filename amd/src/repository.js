@@ -18,7 +18,7 @@
 /**
  * Ajax functions for ProFormA question type.
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

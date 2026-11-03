@@ -18,41 +18,41 @@
 /**
  * Base class for configuration classes
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     eCULT-Team of Ostfalia University, Dr.U.Priss, K.Borm
  */
 
-//////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////
 // configuration support
-//////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////
 
 export class CustomTest {
 
     constructor(title, testType, template, proglang) {
         this.defaultTitle = title;
-        this.title = title; // title in html output
-        this.testType = testType; // test type in XML
-        this.helptext = undefined; // help text for this test
+        this.title = title; // Title in html output
+        this.testType = testType; // Test type in XML
+        this.helptext = undefined; // Help text for this test
         this.entrypointhelp = undefined;
         if (template) {
-            this.mustacheTemplate = template; // html extra input elements
+            this.mustacheTemplate = template; // Html extra input elements
         } else {
             this.mustacheTemplate = 'qtype_proforma/taskeditor_test';
         }
-        this.proglang = proglang; // array of programming languages that the test can be used with
+        this.proglang = proglang; // Array of programming languages that the test can be used with
 
-        this.withFileRef = true; // default: with test script(s)
+        this.withFileRef = true; // Default: with test script(s)
 
-        this.gradingWeight = 1; // default weight
+        this.gradingWeight = 1; // Default weight
 
         // this.fileRefLabel = 'File'; // default label
         this.manadatoryFile = true;
         this.alternativeTesttypes = [];
 
-        // derived member variables
+        // Derived member variables
         const compactName = title.replace(/ /g, "");
         this.xmlTemplateName = compactName;
         this.buttonJQueryId = "add" + compactName;
@@ -75,7 +75,7 @@ export class CustomTest {
         // Distinguish between CUnit and Google test with C++ by framework
         if (this.frameworks && item.framework) {
             if (!this.frameworks.includes(item.framework.toLowerCase())) {
-                // console.log(item.framework + ' is not in ')
+                // Console.log(item.framework + ' is not in ')
                 // console.log(configItem.frameworks);
                 // Framework does not match
                 return false;
@@ -83,16 +83,20 @@ export class CustomTest {
         }
         return true;
     }
-    // override
+    // Override
     onCreate(testId) {}
     onReadXml(test, xmlReader, testConfigNode, context) {}
     onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {}
-    getFramework() {return undefined;}
-    getMustacheTemplate() { return this.mustacheTemplate; }
+    getFramework() {
+        return undefined;
+    }
+    getMustacheTemplate() {
+        return this.mustacheTemplate;
+    }
 
     getTemplateContext() {
         let result = {
-            'testtitle' : this.title,
+            'testtitle': this.title,
             // 'filenamelabel' : this.fileRefLabel,
             'testtype': this.testType,
             'testheader': this.defaultTitle,
@@ -103,22 +107,22 @@ export class CustomTest {
             }*/
         };
         if (this.helptext) {
-            result['info'] = {
+            result.info = {
                 "text": this.helptext
             };
         }
         if (this.framework) {
-            result['framework'] = this.framework;
+            result.framework = this.framework;
         }
         if (this.frameworkRequired) {
-            result['framework_version'] = {
+            result.framework_version = {
                 "selected": true,
                 "value": '',
                 "name": ''
             };
         }
         if (this.entrypointhelp) {
-            result['entrypointinfo'] = {
+            result.entrypointinfo = {
                 "text": this.entrypointhelp
             };
         }

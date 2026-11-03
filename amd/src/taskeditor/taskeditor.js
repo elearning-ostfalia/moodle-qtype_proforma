@@ -18,7 +18,7 @@
 /**
  * main function for taskeditor
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,7 +29,7 @@
 import Notification, {exception as displayException} from 'core/notification';
 import Y from 'core/yui';
 import Templates from 'core/templates';
-import {TestWrapper } from "./test";
+import {TestWrapper} from "./test";
 import {downloadTask, getCheckstyleVersions, getJunitVersions} from "../repository";
 import {generateUUID, getExtension} from "./helper";
 import * as taskeditorconfig from "./config";
@@ -53,7 +53,7 @@ let taskmaxbytes;
 
 
 /**
- * edit task
+ * Edit task
  * @param buttonid id of button to trigger opening taskeditor
  * @param context programming language contexts
  * @param taskrepoparams parameters for interacting with draft tasks
@@ -68,11 +68,11 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
     console.log('Task max bytes: ' + taskmaxbytes);
 
     /**
-     * get localized string for cancel/close button
+     * Get localized string for cancel/close button
      * @returns {Promise<void>}
      */
     async function init() {
-        // closeString = await getString('close', 'editor');
+        // CloseString = await getString('close', 'editor');
     }
 
     function downloadTaskFromServer() {
@@ -105,7 +105,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         }
 
         const aggregationstrategy = document.querySelector('#id_aggregationstrategy');
-        // console.log('aggregationstrategy ' + aggregationstrategy.value);
+        // Console.log('aggregationstrategy ' + aggregationstrategy.value);
 
         // console.log(gradinghints.value);
         const count = document.querySelectorAll('.proforma-taskeditor .xml_test').length;
@@ -136,16 +136,16 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 continue;
             }
             const ref = testid.value;
-            let ui_test = TestWrapper.constructFromId(ref);
-            if (!ui_test) {
+            let uiTest = TestWrapper.constructFromId(ref);
+            if (!uiTest) {
                 alert('cannot create test ' + ref);
             } else {
-                ui_test.weight = testweight.value;
-                ui_test.title = testtitle.value;
-                ui_test.description = testdescription.value;
-                if (testtype.value !== ui_test.testtype) {
+                uiTest.weight = testweight.value;
+                uiTest.title = testtitle.value;
+                uiTest.description = testdescription.value;
+                if (testtype.value !== uiTest.testtype) {
                     alert('Task file does not match grading hints in Moodle:\n' +
-                        'Testtype for test ' + ui_test.id + ' does not match testtype from grading hints');
+                        'Testtype for test ' + uiTest.id + ' does not match testtype from grading hints');
                 }
             }
         }
@@ -156,13 +156,12 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
     function displayTaskdata(taskresponse) {
         const extension = getExtension(taskresponse.url);
-        switch (extension)
-        {
+        switch (extension) {
             case 'zip':
-                // console.log('task file is zipped! => extract');
+                // Console.log('task file is zipped! => extract');
                 return taskresponse.blob()
                     .then(blob => {
-                        // console.log('blob is');
+                        // Console.log('blob is');
                         // console.log(blob);
                         unzipme(blob, function(text) {
                             readXMLWithLock(text)
@@ -170,7 +169,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                         });
                     });
             case 'xml':
-                // console.log('task file is not zipped');
+                // Console.log('task file is not zipped');
                 return taskresponse.text()
                     .then(text => {
                         readXMLWithLock(text)
@@ -255,7 +254,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         document.getElementById(buttonid).style.display = 'none';
         // Hide grader options
         if (document.getElementById('id_graderoptions_header')) {
-            // document.getElementById('id_graderoptions_header').style.display = 'None';
+            // Document.getElementById('id_graderoptions_header').style.display = 'None';
         }
         // Hide model solution links
         if (document.getElementById('fitem_id_mslinks')) {
@@ -326,7 +325,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                         submitbutton.disabled = false;
                         submitbutton.onclick = realSubmitClick;
                         submitbutton.click();
-                        /*                    let uuid = document.querySelector("input[name='uuid']");
+                        /*                    Let uuid = document.querySelector("input[name='uuid']");
                                             uuid.disabled = false;*/
                     })
                     .catch(error => {
@@ -385,9 +384,9 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 head.parentNode.insertBefore(loadingElem, head);
                 // Hide task editor
                 document.querySelector('.proforma-taskeditor').style.display = 'None';
-                // loadingIcon.fadeIn(150);
+                // LoadingIcon.fadeIn(150);
                 return Promise.resolve(0);
-                // return new Promise(resolve => setTimeout(resolve, 105000));
+                // Return new Promise(resolve => setTimeout(resolve, 105000));
             })
             .then(() => {
                 return downloadTaskFromServer();
@@ -396,7 +395,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                 return displayTaskdata(taskresponse);
             })
             .then(() => {
-                // update environment
+                // Update environment
                 updateEnvironment();
                 loadingElem.remove();
                 // Show task editor
@@ -404,19 +403,19 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             })
             .catch((error) => {
                 loadingElem.remove();
-                Notification.exception
+                Notification.exception;
             });
     }
 
     const questionId = document.querySelector("input[name='id']").value;
-    // hide editor if hidden 'taskeditor' input field is set to 0 (default)
+    // Hide editor if hidden 'taskeditor' input field is set to 0 (default)
     const taskeditorRequested = document.querySelector("input[name='taskeditor']");
-    // console.log('Check if taskeditor shall be visible or not');
+    // Console.log('Check if taskeditor shall be visible or not');
     // console.log(taskeditorRequested);
 
     taskeditorconfig.initStrings()
         .then(() => {
-            if (questionId === "" || (taskeditorRequested && taskeditorRequested.value === '1') ) {
+            if (questionId === "" || (taskeditorRequested && taskeditorRequested.value === '1')) {
                 console.log('show editor');
                 // Hide details button.
                 document.getElementById(buttonid).style.display = 'none';
@@ -435,7 +434,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         });
 
     /*
-            let taskPromise = downloadTaskFromServer();
+            Let taskPromise = downloadTaskFromServer();
 
             let stringsPromise = getStrings([
                 {
@@ -548,29 +547,29 @@ function fillSelectOptions(id, selectArray, textForError) {
 }
 
 /**
- * get JUnit version from Moodle configuration and add to JUnit list
+ * Get JUnit version from Moodle configuration and add to JUnit list
  * @param id identifier of select element
  */
 export const setJunitVersions = (id) => {
     // TODO: kann man die JUnit version nicht besser über eine Core-Funktion holen??
     getJunitVersions()
         .then(response => {
-            fillSelectOptions(id, response['junitversions'], 'JUnit');
+            fillSelectOptions(id, response.junitversions, 'JUnit');
         })
         .fail(Notification.exception);
-}
+};
 
 /**
- * get Checkstyle version from Moodle server and add to select options
+ * Get Checkstyle version from Moodle server and add to select options
  * @param id identifier of select element
  */
 export const setCheckstyleVersions = (id) => {
     getCheckstyleVersions()
         .then(response => {
-            fillSelectOptions(id, response['checkstyleversions'], 'CheckStyle');
+            fillSelectOptions(id, response.checkstyleversions, 'CheckStyle');
         })
         .fail(Notification.exception);
-}
+};
 
 function createTestForm(testconfig) {
     TestWrapper.createFromTemplate(null,
@@ -580,47 +579,47 @@ function createTestForm(testconfig) {
 export const initproglang = (proglangdiv, buttondiv, langselect) => {
 
     function addButtonCallbacks() {
-        document.querySelector('#addJUnitTest').onclick = function (e) {
+        document.querySelector('#addJUnitTest').onclick = function(e) {
             e.preventDefault();
             createTestForm(taskeditorconfig.infoJavaJUnit);
-        }
+        };
 
-        document.querySelector('#addCheckStyleTest').onclick = function (e) {
+        document.querySelector('#addCheckStyleTest').onclick = function(e) {
             e.preventDefault();
             createTestForm(taskeditorconfig.infoCheckStyle);
-        }
+        };
 
-        document.querySelector('#addCompilerTest').onclick = function (e) {
+        document.querySelector('#addCompilerTest').onclick = function(e) {
             e.preventDefault();
             createTestForm(taskeditorconfig.infoJavaComp);
-        }
+        };
 
-        document.querySelector('#addGoogleTest').onclick = function (e) {
+        document.querySelector('#addGoogleTest').onclick = function(e) {
             e.preventDefault();
             createTestForm(taskeditorconfig.infoGoogleTest);
-        }
+        };
 
-        document.querySelector('#addCUnitTest').onclick = function (e) {
+        document.querySelector('#addCUnitTest').onclick = function(e) {
             e.preventDefault();
             createTestForm(taskeditorconfig.infoCUnit);
-        }
+        };
 
-        document.querySelector('#addPythonUnittest').onclick = function (e) {
+        document.querySelector('#addPythonUnittest').onclick = function(e) {
             e.preventDefault();
             createTestForm(taskeditorconfig.infoPythonUnittest);
-        }
+        };
 
-        document.querySelector('#addPythonDocTest').onclick = function (e) {
+        document.querySelector('#addPythonDocTest').onclick = function(e) {
             e.preventDefault();
             createTestForm(taskeditorconfig.infoPythonDoctest);
-        }
+        };
     }
 
     let langselectelem = document.getElementById(langselect);
     const lang = langselectelem.value;
-    // show versions
+    // Show versions
     document.querySelector('#xml_programming-language-' + lang).style.display = '';
-    // show buttons
+    // Show buttons
     document.querySelectorAll('#' + buttondiv + ' .' + lang).forEach(
         e => {
             e.style.display = '';
@@ -659,11 +658,11 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
     // Add button callbacks (depend on initialisation of config).
     taskeditorconfig.initStrings()
         .then(() => addButtonCallbacks());
-}
+};
 
 export const download = (buttonid) => {
     let button = document.getElementById(buttonid);
-    button.onclick = function (e) {
+    button.onclick = function(e) {
         e.preventDefault();
         convertToXML()
             .then((context) => {
@@ -674,17 +673,17 @@ export const download = (buttonid) => {
                     console.error(error);
                 }
             });
-    }
-}
+    };
+};
 
 export const downloadModelsolution = (buttonid) => {
     let button = document.getElementById(buttonid);
 
-    /*    let blob = new Blob([ TEXT_CONTENT ], {
+    /*    Let blob = new Blob([ TEXT_CONTENT ], {
             type : "application/zip"
         });
     */
-    button.onclick = async function (e) {
+    button.onclick = async function(e) {
         e.preventDefault();
         createModelSolutionZip()
             .then(zippedBlob => {
@@ -697,13 +696,13 @@ export const downloadModelsolution = (buttonid) => {
                 document.body.appendChild(b);
                 b.click();
             });
-    }
-}
+    };
+};
 
 export const toggleFullscreen = (buttonid) => {
     let button = document.getElementById(buttonid);
 
-    button.onclick = function (e) {
+    button.onclick = function(e) {
         e.preventDefault();
         let editor = document.querySelector('.proforma-taskeditor');
         if (document.fullscreenElement) {
@@ -712,34 +711,34 @@ export const toggleFullscreen = (buttonid) => {
             document.exitFullscreen();
             return;
         }
-        editor.requestFullscreen()
+        editor.requestFullscreen();
 /*            .then(() =>
                 editor.querySelector('.nav-tabs').classList.add('fullscreen')
             ) */
-    }
-}
+    };
+};
 
 
-function createGradingHints(temporary=false) {
+function createGradingHints(temporary = false) {
     let doc = document.implementation.createDocument(null, null, null);
     let gh = doc.createElement("grading-hints");
     let root = doc.createElement("root");
     root.setAttribute('function', 'sum');
     gh.appendChild(root);
 
-    TestWrapper.doOnAll(ui_test => {
+    TestWrapper.doOnAll(uiTest => {
         let test = doc.createElement("test-ref");
         root.appendChild(test);
-        test.setAttribute('ref', ui_test.id);
-        test.setAttribute('weight', ui_test.weight);
+        test.setAttribute('ref', uiTest.id);
+        test.setAttribute('weight', uiTest.weight);
         let title = doc.createElement("title");
-        title.innerHTML = ui_test.title;
+        title.innerHTML = uiTest.title;
         test.appendChild(title);
         let description = doc.createElement("description");
-        description.innerHTML = ui_test.description;
+        description.innerHTML = uiTest.description;
         test.appendChild(description);
         let testtype = doc.createElement("test-type");
-        testtype.innerHTML = ui_test.testtype;
+        testtype.innerHTML = uiTest.testtype;
         test.appendChild(testtype);
     });
 
@@ -750,11 +749,11 @@ function createGradingHints(temporary=false) {
         return;
     }
     let serializer = new XMLSerializer();
-    let result = serializer.serializeToString (gh);
+    let result = serializer.serializeToString(gh);
 
-    if ((result.substring(0, 5) !== "<?xml")){
+    if ((result.substring(0, 5) !== "<?xml")) {
         result = '<?xml version="1.0"?>' + result;
-        // result = "<?xml version='1.0' encoding='UTF-8'?>" + result;
+        // Result = "<?xml version='1.0' encoding='UTF-8'?>" + result;
     }
     console.log(result);
     if (!temporary) {
@@ -767,9 +766,9 @@ function createGradingHints(temporary=false) {
 function uploadModelSolutionToServer() {
     // Instead of using the current draftid and delete all files
     // we use a new unused draftid.
-    const draftitemid = modelsolrepositoryparams['newitemid'];
+    const draftitemid = modelsolrepositoryparams.newitemid;
 
-    // const draftitemid = document.querySelector("input[name='modelsol']").value;
+    // Const draftitemid = document.querySelector("input[name='modelsol']").value;
     console.log('draftid for model sol is ' + draftitemid);
 
     console.log('now let us model solution in Moodle server');
@@ -788,7 +787,7 @@ function uploadModelSolutionToServer() {
             } else {
                 console.log(request.response);
             }
-        } catch(err) { // instead of onerror
+        } catch (err) { // Instead of onerror
             alert("Request failed");
         }
         console.log('parse repsonse');
@@ -801,45 +800,45 @@ function uploadModelSolutionToServer() {
         }
     }
 
-    // write model solutions
+    // Write model solutions
     ModelSolutionWrapper.doOnAll(function(ms) {
         let modelSolution = new TaskModelSolution();
         modelSolution.id = ms.id;
         let counter = 0;
-        // console.log('MS id is ' + ms.id);
+        // Console.log('MS id is ' + ms.id);
         ModelSolutionFileReference.getInstance().doOnAll(function(id) {
             modelSolution.filerefs[counter++] = new TaskFileRef(id);
-            // console.log('MS Fileref is ' + id);
+            // Console.log('MS Fileref is ' + id);
             let file = FileWrapper.constructFromId(id);
-            // console.log('filename is ' + fileStorages[id].filename);
+            // Console.log('filename is ' + fileStorages[id].filename);
             const formData = new FormData();
             console.log(fileStorages);
             formData.append('sesskey', Config.sesskey);
-            formData.append('client_id', modelsolrepositoryparams['client_id']);
+            formData.append('client_id', modelsolrepositoryparams.client_id);
             formData.append('overwrite', true);
-            formData.append('repo_id', modelsolrepositoryparams['repo_id']);
+            formData.append('repo_id', modelsolrepositoryparams.repo_id);
             formData.append('itemid', draftitemid);
             let filename = fileStorages[id].filename.split("/").pop();
             let length = fileStorages[id].filename.length - filename.length;
             let filepath = fileStorages[id].filename.substring(0, length);
             formData.append('title', filename);
             if (fileStorages[id].isBinary) {
-                let blob = new Blob([fileStorages[id].content], { type : fileStorages[id].mimetype });
-                // console.log(blob);
+                let blob = new Blob([fileStorages[id].content], {type: fileStorages[id].mimetype});
+                // Console.log(blob);
                 formData.append('repo_upload_file', blob);
             } else {
                 let content = file.text;
-                // console.log('Content is ' + content);
-                formData.append('repo_upload_file', new Blob([content], { type : 'plain/text' }));
+                // Console.log('Content is ' + content);
+                formData.append('repo_upload_file', new Blob([content], {type: 'plain/text'}));
             }
             formData.append('filepath', '/');
             formData.append('savepath', filepath);
             console.log(formData);
             uploadFile(formData);
         }, ms.root);
-    })
+    });
 
-    // set draftitemid to new value
+    // Set draftitemid to new value
     document.querySelector("input[name='modelsol']").value = draftitemid;
 }
 
@@ -847,36 +846,36 @@ async function createModelSolutionZip() {
     const zipFileWriter = new zip.BlobWriter("application/zip");
     const zipWriter = new zip.ZipWriter(zipFileWriter);
 
-    // create zipfile with model solutions
+    // Create zipfile with model solutions
     ModelSolutionWrapper.doOnAll(function(ms) {
         let modelSolution = new TaskModelSolution();
         modelSolution.id = ms.id;
-        // console.log('MS id is ' + ms.id);
+        // Console.log('MS id is ' + ms.id);
         ModelSolutionFileReference.getInstance().doOnAll(async function(id) {
             const filename = fileStorages[id].filename;
-            // console.log('filename is ' + filename);
+            // Console.log('filename is ' + filename);
             let content = null;
             if (fileStorages[id].isBinary) {
-                // console.log('binary');
+                // Console.log('binary');
                 content = new Blob([fileStorages[id].content]);
             } else {
-                // console.log('non binary');
+                // Console.log('non binary');
                 let file = FileWrapper.constructFromId(id);
-                content = new Blob([file.text], { type : 'plain/text' });
-                // formData.append('repo_upload_file', new Blob([content], { type : 'plain/text' }));
+                content = new Blob([file.text], {type: 'plain/text'});
+                // FormData.append('repo_upload_file', new Blob([content], { type : 'plain/text' }));
             }
-            // console.log('Content is ' + content);
+            // Console.log('Content is ' + content);
             await zipWriter.add(filename, new zip.BlobReader(content));
         }, ms.root);
-    })
-    // console.log('wait for close');
+    });
+    // Console.log('wait for close');
     await zipWriter.close();
-    // console.log('return content');
+    // Console.log('return content');
     return zipFileWriter.getData();
 }
 
 /**
- * send task with model solution and grading hints to Moodle server in order let
+ * Send task with model solution and grading hints to Moodle server in order let
  * the task run on grader. The result is shown in extra div element.
  *
  * @param buttonid
@@ -913,16 +912,16 @@ export function checkModelsolution(buttonid, containerid) {
             });
     }
 
-    button.onclick = function (e) {
+    button.onclick = function(e) {
         e.preventDefault();
-        // clean old check feedback
+        // Clean old check feedback
         container.innerHTML = '';
         container.style.cursor = "wait";
         feedbackstarted = false;
         const aggstrategy = document.querySelector("select[name='aggregationstrategy']").value;
         button.disabled = true;
 
-        // create task zipfile
+        // Create task zipfile
         convertToXML()
             .then((taskxml) => {
                 // Zip task
@@ -933,7 +932,7 @@ export function checkModelsolution(buttonid, containerid) {
                 // (could be made in parallel but makes code a bit more complex
                 // so I do not do this)
                 console.log('task zip created ');
-                // blob is the zipped version of the whole task
+                // Blob is the zipped version of the whole task
                 blobtask = blob;
                 return createModelSolutionZip();
             })
@@ -948,17 +947,17 @@ export function checkModelsolution(buttonid, containerid) {
                 formData.append('sesskey', Config.sesskey);
                 formData.append('task', blobtask, 'task.zip');
                 formData.append('modelsolution', modelsolutionzip, 'modelsolution.zip');
-                formData.append('itemid', modelsolrepositoryparams['checkitemid']);
-                formData.append('contextid', modelsolrepositoryparams['contextid']);
-                // courseContextId is only required for security checks so that
+                formData.append('itemid', modelsolrepositoryparams.checkitemid);
+                formData.append('contextid', modelsolrepositoryparams.contextid);
+                // CourseContextId is only required for security checks so that
                 // not anybody can execute the function on the server.
                 formData.append('coursecontextid', Config.courseContextId);
-                // formData.append('questionid', questionId);
+                // FormData.append('questionid', questionId);
                 formData.append('gradinghints', gradinghints);
                 formData.append('proglang', proglang);
                 formData.append('aggregationstrategy', aggstrategy);
                 return fetch(url, {
-                    method : "POST",
+                    method: "POST",
                     body: formData,
                 });
             })
@@ -969,10 +968,10 @@ export function checkModelsolution(buttonid, containerid) {
                 }
                 // Moodle server has received task with model solution
                 // => convert to json
-                return response.json()
+                return response.json();
             })
             .then(json => {
-                // forward json to logmonitor.
+                // Forward json to logmonitor.
                 if (json.error) {
                     console.log(json);
                     return Promise.reject(json.error);
@@ -998,10 +997,10 @@ export function checkModelsolution(buttonid, containerid) {
                 }
             })
             .finally(() => {
-                // console.log('finally promise');
+                // Console.log('finally promise');
                 button.disabled = false;
             });
-    }
+    };
 }
 
 /**
@@ -1043,18 +1042,18 @@ function saveToServer() {
             formData.append('task', blobtask, taskTitleToFilename());
             // Use original itemid from task filemanager
             const itemid = document.querySelector("#id_task").value;
-            formData.append('itemid', itemid); // draftitemid);
-            formData.append('contextid', taskrepositoryparams['contextid']);
+            formData.append('itemid', itemid); // Draftitemid);
+            formData.append('contextid', taskrepositoryparams.contextid);
             formData.append('coursecontextid', Config.courseContextId);
 
             return fetch(url, {
                 method: "POST",
                 body: formData,
-            })
+            });
         })
         .then(response => {
             console.log(response);
-            return response.json()
+            return response.json();
         })
         .then(json => {
             console.log(json);
@@ -1069,7 +1068,7 @@ export function uploadTaskToGrader(buttonid) {
         return;
     }
 
-    button.onclick = function (e) {
+    button.onclick = function(e) {
         e.preventDefault();
         button.disabled = true;
         convertToXML()
@@ -1079,7 +1078,7 @@ export function uploadTaskToGrader(buttonid) {
             .then(blobtask => {
                 console.log('upload file to Moodle');
                 const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
-                // const questionId = document.querySelector("input[name='id']").value;
+                // Const questionId = document.querySelector("input[name='id']").value;
                 const formData = new FormData();
                 formData.append('sesskey', Config.sesskey);
                 formData.append('task', blobtask, 'task.zip');
@@ -1087,10 +1086,10 @@ export function uploadTaskToGrader(buttonid) {
                 // Modelsolution parameters contain new (unused) draftarea itemids.
                 // checkitemid is used for temporary files used for checks.
                 formData.append('coursecontextid', Config.courseContextId);
-                formData.append('itemid', modelsolrepositoryparams['checkitemid']);
+                formData.append('itemid', modelsolrepositoryparams.checkitemid);
                 // Context id is sent to Moodle in order to perform security checks:
-                formData.append('contextid', modelsolrepositoryparams['contextid']);
-                // formData.append('questionid', questionId);
+                formData.append('contextid', modelsolrepositoryparams.contextid);
+                // FormData.append('questionid', questionId);
 
                 return fetch(url, {
                     method: "POST",
@@ -1102,7 +1101,7 @@ export function uploadTaskToGrader(buttonid) {
                     console.error(response);
                     return Promise.reject(response.statusText);
                 }
-                return response.json()
+                return response.json();
             })
             .then(json => {
                 if (json.error) {
@@ -1120,7 +1119,7 @@ export function uploadTaskToGrader(buttonid) {
                         '&coursecontextid=' + Config.courseContextId;
                 }
                 logmonitor.show('uploadlog', url);
-                // taskupload.upload(null, json.itemid, json.contextid, json.filename);
+                // Taskupload.upload(null, json.itemid, json.contextid, json.filename);
             })
             .catch(error => {
                 if (!(error instanceof InputError)) {
@@ -1131,11 +1130,11 @@ export function uploadTaskToGrader(buttonid) {
             .finally(() => {
                 button.disabled = false;
             });
-    }
+    };
 }
 
 /*
-export const savetask = (buttonid) => {
+Export const savetask = (buttonid) => {
     let button = document.getElementById(buttonid);
     button.onclick = function (e) {
         e.preventDefault();

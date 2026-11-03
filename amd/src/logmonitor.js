@@ -18,7 +18,7 @@
 /**
  * function for displaying server sent events.
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,7 +31,7 @@ import {get_string as getString} from 'core/str';
 import Config from 'core/config';
 
 /**
- * shows a modal dialog with the server sent events
+ * Shows a modal dialog with the server sent events
  *
  * @param title string identifier for localised title
  * @param url SSE url
@@ -48,7 +48,7 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
     let titleString = title;
 
     /**
-     * get localized string for cancel/close button
+     * Get localized string for cancel/close button
      * @returns {Promise<void>}
      */
     async function init() {
@@ -57,11 +57,11 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
     }
 
     function fade(element, button) {
-        let op = 1;  // initial opacity
-        let timer = setInterval(function () {
-            if (op <= 0.1){
+        let op = 1; // Initial opacity
+        let timer = setInterval(function() {
+            if (op <= 0.1) {
                 clearInterval(timer);
-                let timer1 = setInterval(function () {
+                let timer1 = setInterval(function() {
                     button.click();
                     clearInterval(timer1);
                 }, 50);
@@ -92,7 +92,7 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
         }
     }
     /**
-     * opens connection and handles events
+     * Opens connection and handles events
      * @returns {Promise<void>}
      */
     async function requestEventSource() {
@@ -100,7 +100,7 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
         source = new EventSource(url);
         let feedbackstarted = false;
         source.onmessage = function(event) {
-            // console.log(event.data);
+            // Console.log(event.data);
             let dialog = document.querySelector("#proforma-modal-message");
             if (dialog != null) {
                 let message = event.data;
@@ -108,19 +108,19 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
                     message = message.trim();
                 }
 
-                // handle binary prefix (direct output from Popen)
+                // Handle binary prefix (direct output from Popen)
                 if (message.startsWith('RESPONSE START####')) {
                     feedbackstarted = true;
                     callbackstart();
                     return;
                 }
-                if (message.endsWith('RESPONSE END####')/* && !message.startsWith('####')*/) { // got line ending with special keys
+                if (message.endsWith('RESPONSE END####')/* && !message.startsWith('####')*/) { // Got line ending with special keys
                     console.log('end of response found => close connection');
                     callbackend();
                     closeSse();
                     return;
                 }
-                if (message.endsWith('####') && !message.startsWith('####')) { // got line ending with special keys
+                if (message.endsWith('####') && !message.startsWith('####')) { // Got line ending with special keys
                     closeSse();
                     return;
                 }
@@ -142,7 +142,7 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
     }
 
     /**
-     * shows dialog window
+     * Shows dialog window
      */
     function showDialog() {
         CancelModal.create({
@@ -156,11 +156,11 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
             title: titleString,
             body: '<span><code id ="proforma-modal-message"></code></span>',
             large: true */
-        }).then(function (modal) {
-            // close eventsource on cancel
+        }).then(function(modal) {
+            // Close eventsource on cancel
             modalroot = modal.getRoot();
             modalroot.css('min-width', '50%');
-            modalroot.on(ModalEvents.hidden, function () {
+            modalroot.on(ModalEvents.hidden, function() {
                 source.close();
                 source = null;
                 modalroot.remove();
@@ -181,7 +181,7 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
 
 
 /**
- * uploads the currently stored task for the currently 'open' question
+ * Uploads the currently stored task for the currently 'open' question
  * to the grader
  * (it is not previously recreated so it might not be up-to-date)
  *
@@ -190,7 +190,7 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
 export const uploadToGrader = (buttonid) => {
     const button = document.getElementById(buttonid);
     if (button) {
-        button.addEventListener('click', function (e) {
+        button.addEventListener('click', function(e) {
             // Create Moodle modal dialog.
             const questionId = document.querySelector("input[name='id']").value;
             let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
@@ -200,4 +200,4 @@ export const uploadToGrader = (buttonid) => {
     } else {
         console.error('could not find button ' + buttonid);
     }
-}
+};

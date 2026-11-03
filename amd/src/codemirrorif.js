@@ -18,7 +18,7 @@
 /**
  * The ProFormA Question CodeMirror support functions
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2017 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,22 +31,22 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
     ],
     function($, jqui, CodeMirror) {
 
-        // maps the programming language value used in PHP to the CodeMirror mode and
+    // Maps the programming language value used in PHP to the CodeMirror mode and
         // the corresponding javascript file to load
-        map_proglang_to_codemirror_mode = function(moodle_mode) {
-            switch (moodle_mode) {
-                case "java":   return ["text/x-java", 'qtype_proforma/clike'];
+        map_proglang_to_codemirror_mode = function(moodleMode) {
+            switch (moodleMode) {
+            case "java": return ["text/x-java", 'qtype_proforma/clike'];
                 case "python": return ["text/x-python", 'qtype_proforma/python'];
-                case "setlx":  return ["text/text", null];
-                case "c":      return ["text/x-csrc", 'qtype_proforma/clike'];
-                case "cpp":    return ["text/x-c++src", 'qtype_proforma/clike'];
-                // with the actual xml mode the behat tests fail (hang in some scenarios
+            case "setlx": return ["text/text", null];
+            case "c": return ["text/x-csrc", 'qtype_proforma/clike'];
+            case "cpp": return ["text/x-c++src", 'qtype_proforma/clike'];
+                // With the actual xml mode the behat tests fail (hang in some scenarios
                 // with an error message in the console output of the browser.
                 // That's why I do not use xml mode anymore :-(
-                case "xml":    return ["", null]; // return ["application/xml", 'qtype_proforma/xml'];
-                case "none":   return ["", null];
+            case "xml": return ["", null]; // Return ["application/xml", 'qtype_proforma/xml'];
+            case "none": return ["", null];
                 default:
-                    console.error("unsupported mode " + moodle_mode + " for map_proglang_to_codemirror_mode");
+                    console.error("unsupported mode " + moodleMode + " for map_proglang_to_codemirror_mode");
                     return ["text/text", null];
             }
         };
@@ -54,48 +54,48 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
 
         return {
 
-            // function is called in edit_proforma_form. It triggers the CodeMirror mode switch
+        // Function is called in edit_proforma_form. It triggers the CodeMirror mode switch
             // whenever the programming language changes
-            switch_mode: function(select_id, textarea_id) {
+            switch_mode: function(selectId, textareaId) {
 
-                changeMode = function (select_id, textarea_id) {
-                    var progLang = $("#" + select_id).val();
-                    // map programming language to CodeMirror mode
-                    var newMode =  map_proglang_to_codemirror_mode(progLang);
-                    // change mode in CodeMirror
+            changeMode = function(selectId, textareaId) {
+                    var progLang = $("#" + selectId).val();
+                // Map programming language to CodeMirror mode
+                var newMode = map_proglang_to_codemirror_mode(progLang);
+                // Change mode in CodeMirror
                     require([newMode[1]], function() {
-                        $("#" + textarea_id).next(".CodeMirror").get(0).CodeMirror.setOption("mode", newMode[0]);
+                        $("#" + textareaId).next(".CodeMirror").get(0).CodeMirror.setOption("mode", newMode[0]);
                     });
                 };
                 try {
-                    changeMode(select_id, textarea_id);
-                    $("#" + select_id).on("change", function(e) {
-                        changeMode(select_id, textarea_id);
+                    changeMode(selectId, textareaId);
+                    $("#" + selectId).on("change", function(e) {
+                        changeMode(selectId, textareaId);
                     });
-                } catch(err) {
+            } catch (err) {
                     console.error("Exception caught in codemirrorif.js function switch_mode\n " + err.toString());
                     return;
                 }
             },
 
-            // textarea_id: identifier of textarea element which shall
+        // Textarea_id: identifier of textarea element which shall
             // be converted to CodeMirror
             // readonly: readonly (1) or not (0)
             // mode: programming language
-            // header_id: optional. If codemirror is located under a 'header'
+            // headerId: optional. If codemirror is located under a 'header'
             // (means it is not visible if created) it must be refreshed
             // when the header is clicked to show the Codemirror window.
             // Otherwise the CodeMirror is not visible.
-            init_codemirror: function(textarea_id, readonly, mode, header_id, enlarge_width) {
-                //alert("init_codemirror called for " + textarea_id); //  + " Mimemodes " + cm.mimeModes);
+            init_codemirror: function(textareaId, readonly, mode, headerId, enlargeWidth) {
+            // Alert("init_codemirror called for " + textareaId); //  + " Mimemodes " + cm.mimeModes);
                 try {
-                    const textarea = document.getElementById(textarea_id);
+                    const textarea = document.getElementById(textareaId);
                     if (textarea == null) {
                         // Ignore silently
-                        console.error('Invalid textarea id for init_codemirror: ' + textarea_id + '. Element not found.');
+                        console.error('Invalid textarea id for init_codemirror: ' + textareaId + '. Element not found.');
                         return;
                     }
-                    console.log("init_codemirror called for " + textarea_id);
+                    console.log("init_codemirror called for " + textareaId);
                     console.log(textarea);
                     let editor = CodeMirror.fromTextArea(textarea, {
                         tabMode: "indent",
@@ -104,48 +104,50 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                         autoCloseBrackets: true,
                         styleActiveLine: true,
                         readOnly: readonly,
-                        extraKeys: {'Tab': function(){editor.replaceSelection('    ' , 'end');}},
+                    extraKeys: {'Tab': function() {
+                        editor.replaceSelection('    ', 'end');
+                    }},
                         lineNumbers: true
-                        //viewportMargin: Infinity
+                    // ViewportMargin: Infinity
                     });
                     console.log("CodeMirror.fromTextArea called");
 
-                    // mode is not set when fromTextArea is used (why???)
+                // Mode is not set when fromTextArea is used (why???)
                     // So mode is set later
-                    const newMode =  map_proglang_to_codemirror_mode(mode);
+                const newMode = map_proglang_to_codemirror_mode(mode);
                     require([newMode[1]], function() {
                         editor.setOption("mode", newMode[0]);
                     });
                     console.log("CodeMirror.map_proglang_to_codemirror_mode called");
 
 
-                    if (enlarge_width) {
+                    if (enlargeWidth) {
                         // Resize to fit parent window.
                         // Height will not be set. Otherwise window will shrink to fit text.
                         editor.setSize("100%", null);
                     }
 
                     editor.refresh();
-                    // refresh codemirror editors  -
+                // Refresh codemirror editors  -
                     // otherwise content is visible only after first click in window
-                    if (header_id) {
-                        $('#' + header_id).click(function (e) {
-                            // refresh codemirror editor  -
+                    if (headerId) {
+                    $('#' + headerId).click(function(e) {
+                        // Refresh codemirror editor  -
                             // otherwise content is visible only after first click in window
-                            setTimeout(function () {
+                        setTimeout(function() {
                                 editor.refresh();
                             }, 5);
                         });
                     }
 
                     $(editor.getWrapperElement()).resizable({
-                        handles: 's', // only resize in north-south-direction
-                        resize: function () {
+                    handles: 's', // Only resize in north-south-direction
+                    resize: function() {
                             editor.refresh();
                         }
                     });
 
-/*                    editor.classList.add("form-control");
+                /*                    Editor.classList.add("form-control");
                     editor.classList.add("custom-select");
                     editor.parent.classList.add("form-inline");
                     editor.parent.classList.add("felement");
@@ -187,7 +189,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                     } else { // (MutationObserver does not work properly)
 
                     if (window.MutationObserver) {
-                        var target = document.getElementById(textarea_id);
+                        var target = document.getElementById(textareaId);
                         var wrapper = editor.getWrapperElement().parentNode; // get DIV parent
                         wrapper.style.resize = "vertical"; // add resize handle to parent
                         wrapper.style.overflow = "hidden"; // do not show scrollbars in parent
@@ -215,7 +217,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                     }
                     // }
 */
-                } catch(err) {
+            } catch (err) {
                     console.error("Exception caught in codemirrorif.js function init_codemirror\n " + err.toString());
                 }
             }

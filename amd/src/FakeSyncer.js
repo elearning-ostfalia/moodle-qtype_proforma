@@ -15,7 +15,7 @@
 // along with ProFormA Question Type for Moodle.
 // If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable max-len */
+
 /* eslint-disable no-unused-vars */
 
 
@@ -25,11 +25,11 @@
 /* Syncer base class */
 export class Syncer {
     static splitFullname(path) {
-        const index = path.lastIndexOf('/', path.length-1);
+        const index = path.lastIndexOf('/', path.length - 1);
         if (index < 0) {
             return ['/', path];
         }
-        let pathname = path.substring(0, index+1);
+        let pathname = path.substring(0, index + 1);
         if (pathname.length > 1) {
             // Strip trailing /
             // if (path[pathname.length-1] == '/') {
@@ -37,7 +37,7 @@ export class Syncer {
             // }
         }
         return [pathname, path.substring(index + 1)];
-        // return [path.substring(0, index + 1), path.substring(index + 1)];
+        // Return [path.substring(0, index + 1), path.substring(index + 1)];
     }
     constructor(options) {
         if (new.target === Syncer) {
@@ -76,12 +76,10 @@ export class Syncer {
 }
 
 
-
-
 export class FakeSyncer extends Syncer {
     constructor(options) {
         super(options);
-        // this.options = options;
+        // This.options = options;
         // console.log(this.options);
     }
 }

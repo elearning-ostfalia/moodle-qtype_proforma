@@ -18,7 +18,7 @@
 /**
  * Helper functions for forms.
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2020 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -39,15 +39,15 @@ function showOrHide(id, dependend, needle, optionfield, option) {
                 remove = false;
             }
         }
-        document.getElementById('fitem_' + id).style.display = remove?'none':null;
-    } catch(e) {
+        document.getElementById('fitem_' + id).style.display = remove ? 'none' : null;
+    } catch (e) {
         console.log('error ' + e);
     }
 }
 
 
 /**
- * hide/show input field for label of version control input value
+ * Hide/show input field for label of version control input value
  *
  * @param {type} id: id of field to hide/show
  * @param {type} dependend: id of field with URI
@@ -61,13 +61,13 @@ export const showif = (id, dependend, needle, optionfield, option) => {
     showOrHide(id, dependend, needle, optionfield, option);
     // Check if key was pressed in URI text field.
     if (document.getElementById(dependend)) {
-        document.getElementById(dependend).addEventListener('keyup', function () {
+        document.getElementById(dependend).addEventListener('keyup', function() {
             showOrHide(id, dependend, needle, optionfield, option);
         });
     }
     // Check if response option is changed.
     if (document.getElementById(optionfield)) {
-        document.getElementById(optionfield).addEventListener('change', function () {
+        document.getElementById(optionfield).addEventListener('change', function() {
             showOrHide(id, dependend, needle, optionfield, option);
         });
     }
@@ -75,7 +75,7 @@ export const showif = (id, dependend, needle, optionfield, option) => {
 
 
 /**
- * removes required check
+ * Removes required check
  * @param id
  * @param dependend
  * @param option

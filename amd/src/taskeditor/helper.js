@@ -15,10 +15,10 @@
 // along with ProFormA Question Type for Moodle.
 // If not, see <http://www.gnu.org/licenses/>.
 
- /**
+/**
  * Helper functions
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -34,18 +34,18 @@ import {readAndDisplayXml} from "./task";
 import * as Str from 'core/str';
 
 
-export const DEBUG_MODE       = false;
-export const TEST_MODE        = false;
-export const SUBMISSION_TEST  = false;
-export const USE_VISIBLES     = false;
+export const DEBUG_MODE = false;
+export const TEST_MODE = false;
+export const SUBMISSION_TEST = false;
+export const USE_VISIBLES = false;
 
 export var readXmlActive = false;
 
-export const version094    = 'xsd/taskxml0.9.4.xsd';                // name of schema files
-export const version101    = 'xsd/taskxml1.0.1.xsd';
+export const version094 = 'xsd/taskxml0.9.4.xsd'; // Name of schema files
+export const version101 = 'xsd/taskxml1.0.1.xsd';
 
 
-export function setErrorMessage(errormess, exception) { // setting the error console
+export function setErrorMessage(errormess, exception) { // Setting the error console
     // console.log('setErrorMessage');
     console.log(errormess);
     console.log(exception);
@@ -56,54 +56,53 @@ export function clearErrorMessage() {
 
 }
 
-// without . (MyString.Java = java)
+// Without . (MyString.Java = java)
 // to lowercase
 export function getExtension(filename) {
     return filename.split('.').pop().toLowerCase();
 }
 
-// convert to mimetype that can be directely handeled by codemirror
+// Convert to mimetype that can be directely handeled by codemirror
 export function getMimeType(mimetype, filename) {
     const extension = filename.split('.').pop().toLowerCase();
     switch (extension) {
-        case 'h':    return 'text/x-chdr';
-        case 'c':    return 'text/x-csrc';
-        case 'cpp':  return 'text/x-c++src';
+        case 'h': return 'text/x-chdr';
+        case 'c': return 'text/x-csrc';
+        case 'cpp': return 'text/x-c++src';
         case 'java': return 'text/x-java';
-        case 'py':   return 'text/x-python';
-        case 'stlx': return 'text/x-setlx'; // no actual mode availble
-        case 'xml':  return 'application/xml';
-        case 'html':  return 'text/html';
+        case 'py': return 'text/x-python';
+        case 'stlx': return 'text/x-setlx'; // No actual mode availble
+        case 'xml': return 'application/xml';
+        case 'html': return 'text/html';
         default: return mimetype;
     }
 }
 
 
-
 let newUuid;
 /**
- * generetae new UUID. Note that this function always returns the same UUID
+ * Generetae new UUID. Note that this function always returns the same UUID
  * whenever it is called later on.
  *
  * @returns {string|*}
  */
-export function generateUUID(){
+export function generateUUID() {
     if (newUuid !== undefined) {
-        // console.log('newUuid is ' + newUuid + ' (do not change)');
+        // Console.log('newUuid is ' + newUuid + ' (do not change)');
         return newUuid;
     }
     let date = new Date().getTime();
-    newUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c_value) {
-        let rand = (date + Math.random()*16)%16 | 0;
-        date = Math.floor(date/16);
-        return (c_value === 'x' ? rand : (rand&0x3|0x8)).toString(16);
+    newUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(cValue) {
+        let rand = (date + Math.random() * 16) % 16 | 0;
+        date = Math.floor(date / 16);
+        return (cValue === 'x' ? rand : (rand & 0x3 | 0x8)).toString(16);
     });
     console.log('newUuid is ' + newUuid);
     return newUuid;
 }
 
 
-//////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////
 /* setcounter and deletecounter are only used for fileIDs, modelSolIDs, testIDs
  * setcounter finds the first available ID and returns it
  * setcounter should be called when a new item is created
@@ -111,7 +110,7 @@ export function generateUUID(){
  */
 export function setcounter(temphash) {
     let tempcnter = 1;
-    while (temphash.hasOwnProperty(tempcnter)) {         // if the counter is already used, take next one
+    while (temphash.hasOwnProperty(tempcnter)) { // If the counter is already used, take next one
         tempcnter++;
     }
     temphash[tempcnter] = 1;
@@ -123,14 +122,14 @@ export function handleFilenameChangeInTest(newFilename, tempSelElem) {
     function setJavaClassname(newFilename) {
         let testBox = tempSelElem.closest(".xml_test");
         if (testBox) {
-            const ui_classname = $(testBox).find(".xml_entry_point");
-            if (ui_classname.length === 1 && // test has entrypoint
-                ui_classname.first().val().trim() === '' && // and it is not yet set
-                getExtension(newFilename) === 'java') { // and filename is java => JUnit
+            const uiClassname = $(testBox).find(".xml_entry_point");
+            if (uiClassname.length === 1 && // Test has entrypoint
+                uiClassname.first().val().trim() === '' && // And it is not yet set
+                getExtension(newFilename) === 'java') { // And filename is java => JUnit
                     // set classname if file belongs to JUNIT and if exactly one file is assigned
-                    ui_classname.first().val(javaParser.getFullClassnameFromFilename(newFilename));
+                    uiClassname.first().val(javaParser.getFullClassnameFromFilename(newFilename));
 
-                // $.each(ui_classname, function(index, element) {
+                // $.each(uiClassname, function(index, element) {
                 //     //let currentFilename = $(element).val();
                 //     if (!readXmlActive)
                 //         $(element).val(javaParser.getFullClassnameFromFilename(newFilename)).change();
@@ -142,7 +141,7 @@ export function handleFilenameChangeInTest(newFilename, tempSelElem) {
     function setResponseFilename(newFilename) {
         let msBox = tempSelElem.closest(".xml_model-solution");
         if (msBox && msBox.length > 0) {
-            // console.log(msBox);
+            // Console.log(msBox);
             // Filename belongs to model solution
             // => get response filename in Moodle form
             let editorfilename = document.getElementById('id_responsefilename');
@@ -155,7 +154,7 @@ export function handleFilenameChangeInTest(newFilename, tempSelElem) {
         }
     }
     /*
-        function setJUnitDefaultTitle(newFilename) {
+        Function setJUnitDefaultTitle(newFilename) {
             // set description according to classname
             let testBox = $(tempSelElem).closest(".xml_test");
             const ui_title = $(testBox).find(".xml_test_title");
@@ -170,17 +169,17 @@ export function handleFilenameChangeInTest(newFilename, tempSelElem) {
     */
     setJavaClassname(newFilename);
     setResponseFilename(newFilename);
-    // setJUnitDefaultTitle(newFilename);
+    // SetJUnitDefaultTitle(newFilename);
 }
-
 
 
 function isBinaryFile(file, mimetype) {
     if (file.name.toLowerCase() === 'makefile') {
         return false;
     }
-    if (mimetype && mimetype.match(/(text\/)/i))  // mimetype is 'text/...'
+    if (mimetype && mimetype.match(/(text\/)/i)) { // Mimetype is 'text/...'
         return false;
+    }
 
     const extension = file.name.split('.').pop();
     switch (extension.toLowerCase()) {
@@ -207,60 +206,62 @@ function isBinaryFile(file, mimetype) {
 
 
 export function readAndCreateFileData(file, fileId, callback) {
-    if (!file)
+    if (!file) {
         return;
+    }
     let filename = file.name;
 
-    // check if a file with filename already is stored
+    // Check if a file with filename already is stored
     if (FileWrapper.doesFilenameExist(filename)) {
         Str.get_string('fileexists', 'qtype_proforma', filename)
             .then(content => alert(content));
         return;
     }
 
-    const size = file.size; //get file size
-    const mimetype = getMimeType(file.type, filename); //get mime type
+    const size = file.size; // Get file size
+    const mimetype = getMimeType(file.type, filename); // Get mime type
     // determine if we have a binary or non-binary file
     let isBinary = isBinaryFile(file, mimetype);
     let reader = new FileReader();
-    reader.onload = function (e) {
-        function finishFile(ui_file) {
-            // set filename
-            ui_file.filename = filename;
+    reader.onload = function(e) {
+        function finishFile(uiFile) {
+            // Set filename
+            uiFile.filename = filename;
 
-            /*        if (size > taskeditorconfig.maxSizeForEditor) {
+            /*        If (size > taskeditorconfig.maxSizeForEditor) {
                         //console.log('file '+ filename + ' is too large => no editor support');
                         //isBinary = true;
                     }*/
 
             if (isBinary) {
-                // binary file
+                // Binary file
                 // at first update fileStorages because
                 // it is needed for changing file type
                 let fileObject = new FileStorage(isBinary, mimetype, e.target.result, filename);
                 fileObject.setSize(size);
-                fileStorages[ui_file.id] = fileObject;
-                ui_file.type = 'file';
+                fileStorages[uiFile.id] = fileObject;
+                uiFile.type = 'file';
             } else {
-                // assume non binary file
+                // Assume non binary file
                 let fileObject = new FileStorage(isBinary, mimetype, 'text is in editor', filename);
-                fileStorages[ui_file.id] = fileObject;
-                ui_file.text = e.target.result;
-                ui_file.type = 'embedded';
+                fileStorages[uiFile.id] = fileObject;
+                uiFile.text = e.target.result;
+                uiFile.type = 'embedded';
             }
 
-            if (callback)
-                callback(filename, ui_file.id);
+            if (callback) {
+                callback(filename, uiFile.id);
+            }
         }
 
-        // special handling for JAVA: extract class name and package name and
+        // Special handling for JAVA: extract class name and package name and
         // recalc filename!
         if (getExtension(filename) === 'java') {
             const text = e.target.result;
             filename = javaParser.getFilenameWithPackage(text, filename);
         }
 
-        // recheck if a file with that filename already is stored
+        // Recheck if a file with that filename already is stored
         if (FileWrapper.doesFilenameExist(filename)) {
             Str.get_string('fileexists', 'qtype_proforma', filename)
                 .then(content => alert(content));
@@ -268,49 +269,49 @@ export function readAndCreateFileData(file, fileId, callback) {
         }
 
         if (!fileId) {
-            // create new file box
+            // Create new file box
             FileWrapper.createFromTemplate()
-                .then(ui_file => {
-                    finishFile(ui_file);
+                .then(uiFile => {
+                    finishFile(uiFile);
                 });
         } else {
-            // file box already exists
+            // File box already exists
             finishFile(FileWrapper.constructFromId(fileId));
         }
     };
 
-    //console.log("read file");
-    if (isBinary)
+    // Console.log("read file");
+    if (isBinary) {
         reader.readAsArrayBuffer(file);
-    else
+    } else {
         reader.readAsText(file);
+    }
 }
 
 function uploadFilesWhenDropped(files) {
-    $.each(files, function (index, file) {
-        readAndCreateFileData(file, undefined /*-1*/, function (filename) {
-            // nothing extra to be done
+    $.each(files, function(index, file) {
+        readAndCreateFileData(file, undefined /* -1*/, function(filename) {
+            // Nothing extra to be done
         });
     });
 }
 
 
-///////////////////////////////////////////////////////// function: readXML
+// /////////////////////////////////////////////////////// function: readXML
 
-export function readXMLWithLock (taskXmlText) {
-    readXmlActive = true; // lock automatic input field update
+export function readXMLWithLock(taskXmlText) {
+    readXmlActive = true; // Lock automatic input field update
     try {
         return readAndDisplayXml(taskXmlText);
     } catch (err) {
         setErrorMessage("uncaught exception", err);
-    }
-    finally {
+    } finally {
         readXmlActive = false;
     }
 }
 
 
-// disable (drag&)drop in whole application except
+// Disable (drag&)drop in whole application except
 // for the intended drop zones
 // (otherwise dropping a file in the browser leaves the editor site)
 
@@ -368,4 +369,4 @@ export function readXMLWithLock (taskXmlText) {
 
 */
 
-///////////////////////////////////////////////////////// end of document ready function
+// /////////////////////////////////////////////////////// end of document ready function

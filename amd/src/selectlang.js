@@ -18,7 +18,7 @@
 /**
  * Modal dialog for selecting a programming language.
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2020 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,19 +29,19 @@ import SaveCancelModal from 'core/modal_save_cancel';
 import * as ModalEvents from 'core/modal_events';
 
 export const select_lang = (title, proglangs, returnurl) => {
-    function create_body(proglangs) {
+    function createBody(proglangs) {
         let body = "<form>";
         body += '<fieldset>';
-        // console.log(proglangs);
+        // Console.log(proglangs);
         proglangs.forEach(function(item, index) {
             // We add a human readable identifier for testing access.
             let id = item[1].toLowerCase().split(' ')[0];
             body += '<p><input id="item_' + id + '" type="radio" name="lang" value="' + item[0] + '"';
             if (index == 0) {
                 // Check first element
-                body +=  'checked';
+                body += 'checked';
             }
-            body += '> ' +  item[1] +'</input></p>';
+            body += '> ' + item[1] + '</input></p>';
         });
 
         // Add extra item for selecting the task editor:
@@ -58,7 +58,7 @@ export const select_lang = (title, proglangs, returnurl) => {
     function doModal() {
         SaveCancelModal.create({
             title,
-            body: create_body(proglangs),
+            body: createBody(proglangs),
             large: false,
             buttons: {
                 save: 'Ok',
@@ -66,12 +66,12 @@ export const select_lang = (title, proglangs, returnurl) => {
             removeOnClose: true
         })
         .then(function(modal) {
-            // modal.setSaveButtonText('Ok');
+            // Modal.setSaveButtonText('Ok');
             modal.getRoot().on(ModalEvents.save, function() {
                 // Check which radio button is checked.
                 let radioButtons = modal.getRoot().find('input');
                 for (var i = 0; i < radioButtons.length; i++) {
-                    if(radioButtons[i].checked === true) {
+                        if (radioButtons[i].checked === true) {
                         let language = radioButtons[i].value;
                         // Preset task storage.
                         // document.getElementById("id_taskstorage").setAttribute('value', language);
@@ -93,7 +93,7 @@ export const select_lang = (title, proglangs, returnurl) => {
     }
     try {
         doModal();
-    } catch(err) {
+    } catch (err) {
         console.error("Exception caught in select-lang.js function select_lang\n " + err.toString());
     }
 };

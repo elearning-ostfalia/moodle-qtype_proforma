@@ -15,10 +15,10 @@
 // along with ProFormA Question Type for Moodle.
 // If not, see <http://www.gnu.org/licenses/>.
 
- /**
+/**
  * Helper functions for reading and writen task
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +28,7 @@
 
 import {setErrorMessage, getMimeType, generateUUID} from "./helper";
 import * as taskeditorconfig from "./config";
-import {FileStorage, fileStorages } from "./file";
+import {FileStorage, fileStorages} from "./file";
 
 export const T_LMS_USAGE = {
     DISPLAY: 'display',
@@ -48,21 +48,22 @@ export const T_FILERESTRICTION_FORMAT = {
 };
 
 
-
-// helper class
+// Helper class
 class XmlReader {
     constructor(xmlText) {
-        this.xmlDoc = new DOMParser().parseFromString(xmlText,'text/xml');
+        this.xmlDoc = new DOMParser().parseFromString(xmlText, 'text/xml');
         if (!this.xmlDoc.evaluate) {
             alert('XPATH not supported');
             return;
         }
 
         /*
-        var parser = new DOMParser();
+        Var parser = new DOMParser();
         [
             '<task xmlns="urn:proforma:v2.0" lang="en"/>',
-            '<task xmlns="urn:proforma:task:v1.0.1" lang="en" uuid="e7a50a36-e0b7-486f-be80-0f217e7bcb80" xmlns:jartest="urn:proforma:tests:jartest:v1" xmlns:praktomat="urn:proforma:praktomat:v0.2" xmlns:unit="urn:proforma:tests:unittest:v1"/>',
+            '<task xmlns="urn:proforma:task:v1.0.1" lang="en" uuid="e7a50a36-e0b7-486f-be80-0f217e7bcb80" ' +
+                'xmlns:jartest="urn:proforma:tests:jartest:v1" xmlns:praktomat="urn:proforma:praktomat:v0.2" ' +
+                'xmlns:unit="urn:proforma:tests:unittest:v1"/>',
             '<ns:root xmlns:ns="example.com/ns2"/>'
         ].forEach(function(item) {
             var doc = parser.parseFromString(item, "application/xml");
@@ -71,16 +72,16 @@ class XmlReader {
 
 */
         this.defaultns = this.xmlDoc.lookupNamespaceURI(null);
-        //alert('result of doc.lookupNamespaceURI(null): |' + doc.lookupNamespaceURI(null) + '|');
+        // Alert('result of doc.lookupNamespaceURI(null): |' + doc.lookupNamespaceURI(null) + '|');
 
         this.rootNode = this.xmlDoc;
 
         const defaultns = this.defaultns;
-        this.nsResolver = function (prefix) {
+        this.nsResolver = function(prefix) {
 
             switch (prefix) {
                 case 'dns': return defaultns; // 'urn:proforma:task:v1.0.1';
-                default:    return taskeditorconfig.resolveNamespace(prefix, defaultns);
+                default: return taskeditorconfig.resolveNamespace(prefix, defaultns);
             }
         };
     }
@@ -90,29 +91,32 @@ class XmlReader {
     }
 
     readSingleNode(xpath, node) {
-        let contextNode = node?node:this.rootNode;
+        let contextNode = node ? node : this.rootNode;
         if (!contextNode) {
             console.error('No node for ' + xpath);
             return null;
         }
         const nodes = this.xmlDoc.evaluate(xpath, contextNode, this.nsResolver,
-            XPathResult.UNORDERED_NODE_ITERATOR_TYPE /*FIRST_ORDERED_NODE_TYPE*/, null);
+            XPathResult.UNORDERED_NODE_ITERATOR_TYPE /* FIRST_ORDERED_NODE_TYPE*/, null);
         return nodes.iterateNext(); // .singleNodeValue;
     }
 
     readSingleText(xpath, node, defaultValue) {
-        const nodes = this.xmlDoc.evaluate(xpath, node?node:this.rootNode, this.nsResolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-        if (nodes.singleNodeValue)
+        const nodes = this.xmlDoc.evaluate(xpath, node ? node : this.rootNode, this.nsResolver,
+            XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+        if (nodes.singleNodeValue) {
             return nodes.singleNodeValue.textContent.trim();
-        else {
-            if (typeof defaultValue !== 'undefined')
+        } else {
+            if (typeof defaultValue !== 'undefined') {
                 return defaultValue;
+            }
             return null;
         }
     }
 
     readNodes(xpath, node) {
-        return this.xmlDoc.evaluate(xpath, node?node:this.rootNode, this.nsResolver, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
+        return this.xmlDoc.evaluate(xpath, node ? node : this.rootNode, this.nsResolver,
+            XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
     }
 }
 
@@ -124,20 +128,20 @@ class XmlWriter {
     }
 
     createCDataElement(node, tag, value, ns = undefined) {
-        let newTag = this.xmlDoc.createElementNS(ns?ns:this.ns, tag);
+        let newTag = this.xmlDoc.createElementNS(ns ? ns : this.ns, tag);
         newTag.appendChild(this.xmlDoc.createCDATASection(value));
         node.appendChild(newTag);
         return newTag;
     }
 
     createTextElement(node, tag, value, ns = undefined, cdata = false) {
-        let newTag = this.xmlDoc.createElementNS(ns?ns:this.ns, tag);
+        let newTag = this.xmlDoc.createElementNS(ns ? ns : this.ns, tag);
         if (cdata) {
             newTag.appendChild(this.xmlDoc.createCDATASection(value));
             throw new SyntaxError('cdata not supported, use createCDataElement');
-        }
-        else
+        } else {
             newTag.appendChild(this.xmlDoc.createTextNode(value));
+        }
         node.appendChild(newTag);
         return newTag;
     }
@@ -146,19 +150,21 @@ class XmlWriter {
         if (cdata) {
             throw new SyntaxError('cdata not supported, use createOptionalTextElement');
         }
-        if (value === '')
+        if (value === '') {
             return;
+        }
         return this.createTextElement(node, tag, value, ns, cdata);
     }
 
     createOptionalCDataElement(node, tag, value, ns = undefined) {
-        if (value === '')
+        if (value === '') {
             return;
+        }
         return this.createCDataElement(node, tag, value, ns);
     }
 }
 
-// task data structures
+// Task data structures
 export class TaskFileRef {
     constructor(id) {
         this.refid = id;
@@ -229,7 +235,7 @@ export class TaskClass {
 
         this.fileRestrictions = [];
         this.files = [];
-        // this.external-resources ;
+        // This.external-resources ;
         this.modelsolutions = [];
         this.tests = [];
         this.gradinghints = [];
@@ -237,7 +243,7 @@ export class TaskClass {
 
 
     findFilenameForId(id) {
-        let filename = undefined;
+        let filename;
         this.files.forEach(function(item) {
             if (item.id === id) {
                 filename = item.filename;
@@ -249,7 +255,7 @@ export class TaskClass {
     readTestConfig(xmlfile, testid, configItem, context) {
         try {
             let xmlReader = new XmlReader(xmlfile);
-            const textnode = xmlReader.readSingleNode('/dns:task/dns:tests/dns:test[@id="'+testid+'"]');
+            const textnode = xmlReader.readSingleNode('/dns:task/dns:tests/dns:test[@id="' + testid + '"]');
             if (!textnode) {
                 throw new Error('XML: Missing node for test "' + testid + '" under task/tests');
             }
@@ -259,18 +265,18 @@ export class TaskClass {
                 throw new Error('XML: Missing node for test-configuration under test "' + testid + '"');
             }
             configItem.onReadXml(this.tests[testid], xmlReader, configNodeNode, context);
-        } catch (err){
+        } catch (err) {
             console.error(err);
             const text = "Error while parsing test configuration in xml file:\n\n" + err;
-            alert (text);
-            // setErrorMessage("Error while parsing test configuration in xml file", err);
+            alert(text);
+            // SetErrorMessage("Error while parsing test configuration in xml file", err);
         }
     }
 
     readXmlVersion101(xmlfile) {
 
-        let template_id = null;
-        let template_referenced = false; // is template referenced in test or somewhere else?
+        let templateId = null;
+        let templateReferenced = false; // Is template referenced in test or somewhere else?
 
 
         function readFileRefs(xmlReader, element, thisNode, visibility, task) {
@@ -280,19 +286,20 @@ export class TaskClass {
             while (fileRefNode) {
                 let fileRef = new TaskFileRef();
                 fileRef.refid = xmlReader.readSingleText("@refid", fileRefNode);
-                if (template_id && (template_id === fileRef.refid)) {
-                    template_referenced = true;
+                if (templateId && (templateId === fileRef.refid)) {
+                    templateReferenced = true;
                 }
                 element.filerefs[counter++] = fileRef;
                 fileRefNode = fileRefIterator.iterateNext();
                 if (visibility != null) {
-                    // increase visibilty
+                    // Increase visibilty
                     switch (task.files[fileRef.refid].visible) {
-                        case T_VISIBLE.NO:  task.files[fileRef.refid].visible = visibility; break;
-                        case T_VISIBLE.YES:  break;
+                        case T_VISIBLE.NO: task.files[fileRef.refid].visible = visibility; break;
+                        case T_VISIBLE.YES: break;
                         case T_VISIBLE.DELAYED:
-                            if (visibility === T_VISIBLE.YES)
+                            if (visibility === T_VISIBLE.YES) {
                                 task.files[fileRef.refid].visible = visibility;
+                            }
                             break;
                     }
                 }
@@ -310,8 +317,9 @@ export class TaskClass {
             this.uuid = xmlReader.readSingleText("@uuid");
             this.lang = xmlReader.readSingleText("@lang");
             this.sizeSubmission = xmlReader.readSingleText("dns:submission-restrictions/dns:regexp-restriction/@max-size");
-            if (this.sizeSubmission !== '')
-                this.sizeSubmission = this.sizeSubmission * 1000; // convert to bytes (or *1024?)
+            if (this.sizeSubmission !== '') {
+                this.sizeSubmission = this.sizeSubmission * 1000;
+            } // Convert to bytes (or *1024?)
             // mimetype is unsupported
             // this.mimeTypeRegExpSubmission = xmlReader.readSingleText("dns:submission-restrictions/dns:regexp-restriction");
 
@@ -323,7 +331,7 @@ export class TaskClass {
                 let taskfile = new TaskFile();
                 taskfile.id = xmlReader.readSingleText("@id", thisNode);
                 const fileclass = xmlReader.readSingleText("@class", thisNode);
-                switch(fileclass) {
+                switch (fileclass) {
                     case 'internal':
                     case 'internal-library':
                         taskfile.usedByGrader = true;
@@ -332,15 +340,14 @@ export class TaskClass {
                         break;
                     case 'template':
                         if (this.codeskeleton === '') {
-                            template_id = taskfile.id;
+                            templateId = taskfile.id;
                             this.codeskeleton = thisNode.textContent;
                             taskfile.usedByGrader = false;
                             taskfile.usageInLms = T_LMS_USAGE.EDIT;
                             taskfile.visible = T_VISIBLE.YES;
-                        }
-                        else {
+                        } else {
                             taskfile.usedByGrader = false;
-                            //taskfile.usageInLms = T_LMS_USAGE.EDIT;
+                            // Taskfile.usageInLms = T_LMS_USAGE.EDIT;
                             taskfile.usageInLms = T_LMS_USAGE.DOWNLOAD;
                             taskfile.visible = T_VISIBLE.YES;
                         }
@@ -364,7 +371,7 @@ export class TaskClass {
                 thisNode = iterator.iterateNext();
             }
 
-            // read model solutions(s)
+            // Read model solutions(s)
             iterator = xmlReader.readNodes("dns:model-solutions/dns:model-solution");
             thisNode = iterator.iterateNext();
             while (thisNode) {
@@ -376,7 +383,7 @@ export class TaskClass {
                 thisNode = iterator.iterateNext();
             }
 
-            // read test(s)
+            // Read test(s)
             iterator = xmlReader.readNodes("dns:tests/dns:test");
             thisNode = iterator.iterateNext();
             let counter = 0;
@@ -395,13 +402,13 @@ export class TaskClass {
                 thisNode = iterator.iterateNext();
             }
 
-            // check if template is referenced somewhere. If not then the file can be deleted!
-            if (!template_referenced) {
-                delete this.files[template_id];
+            // Check if template is referenced somewhere. If not then the file can be deleted!
+            if (!templateReferenced) {
+                delete this.files[templateId];
             }
 
-        } catch (err){
-            //alert (err);
+        } catch (err) {
+            // Alert (err);
             setErrorMessage("Error while parsing the xml file. The file has not been imported.", err);
         }
     }
@@ -440,25 +447,25 @@ export class TaskClass {
             while (thisNode) {
                 const required =
                 this.fileRestrictions[editCounter++] = new TaskFileRestriction(thisNode.textContent,
-                    xmlReader.readSingleText("@required", thisNode, "true")==='true',
+                    xmlReader.readSingleText("@required", thisNode, "true") === 'true',
                     xmlReader.readSingleText("@pattern-format", thisNode));
                 thisNode = iterator.iterateNext();
             }
 
-            // read files
+            // Read files
             iterator = xmlReader.readNodes("dns:files/dns:file");
             thisNode = iterator.iterateNext();
             editCounter = 0;
             while (thisNode) {
                 let taskfile = new TaskFile();
                 taskfile.id = xmlReader.readSingleText("@id", thisNode);
-                //taskfile.fileclass = xmlReader.readSingleText("@class", thisNode);
-                taskfile.usedByGrader = (xmlReader.readSingleText("@used-by-grader", thisNode)==='yes');
+                // Taskfile.fileclass = xmlReader.readSingleText("@class", thisNode);
+                taskfile.usedByGrader = (xmlReader.readSingleText("@used-by-grader", thisNode) === 'yes');
                 taskfile.usageInLms = xmlReader.readSingleText("@usage-by-lms", thisNode);
                 taskfile.visible = xmlReader.readSingleText("@visible", thisNode);
-                // todo:
+                // Todo:
                 taskfile.comment = xmlReader.readSingleText("dns:internal-description", thisNode);
-                let content = xmlReader.readSingleNode('*', thisNode); // nodeValue
+                let content = xmlReader.readSingleNode('*', thisNode); // NodeValue
                 if (content) {
                     switch (content.nodeName) {
                         case "embedded-txt-file":
@@ -468,17 +475,17 @@ export class TaskClass {
                             taskfile.binary = false;
                             break;
                         case "embedded-bin-file":
-                            // taskfile.filetype = 'embedded';
+                            // Taskfile.filetype = 'embedded';
                             function b64DecodeUnicode(encoded) {
                                 return Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
                             }
                             taskfile.filetype = 'file';
                             taskfile.filename = xmlReader.readSingleText("@filename", content);
-                            const filecontent =  b64DecodeUnicode(content.textContent);
+                            const filecontent = b64DecodeUnicode(content.textContent);
                             taskfile.content = filecontent;
                             taskfile.binary = true;
-                            // console.log(filecontent.length);
-                            const mimetype = getMimeType('', taskfile.filename); //get mime type
+                            // Console.log(filecontent.length);
+                            const mimetype = getMimeType('', taskfile.filename); // Get mime type
                             let fileObject = new FileStorage(true, mimetype, filecontent, taskfile.filename);
                             fileObject.setSize(filecontent.length);
                             fileStorages[taskfile.id] = fileObject;
@@ -489,18 +496,18 @@ export class TaskClass {
                             taskfile.binary = true;
                             break;
                         default:
-                            setErrorMessage("Unknown file type for file #". taskfile.id);
+                            setErrorMessage("Unknown file type for file #".taskfile.id);
                     }
                 } else {
-                    setErrorMessage("No file content for file #". taskfile.id);
+                    setErrorMessage("No file content for file #".taskfile.id);
                 }
 
-                // post processing:
+                // Post processing:
                 // copy file content for editor in associated text area
                 const displaymode = xmlReader.readSingleText("@usage-by-lms", thisNode);
                 if (taskfile.usageInLms === T_LMS_USAGE.EDIT) {
                     if (editCounter === 0) {
-                        // do not store as file
+                        // Do not store as file
                         this.codeskeleton = taskfile.content;
                     } else {
                         this.files[taskfile.id] = taskfile;
@@ -512,7 +519,7 @@ export class TaskClass {
 
 
 /*
-                let embeddedTextFile = xmlReader.readSingleNode("embedded-txt-file");
+                Let embeddedTextFile = xmlReader.readSingleNode("embedded-txt-file");
                 if (embeddedTextFile) {
                     taskfile.filetype = 'embedded';
                     taskfile.filename = xmlReader.readSingleText("@filename", embeddedTextFile);
@@ -529,11 +536,10 @@ export class TaskClass {
 */
 
 
-
                 thisNode = iterator.iterateNext();
             }
 
-            // read model solutions(s)
+            // Read model solutions(s)
             iterator = xmlReader.readNodes("dns:model-solutions/dns:model-solution");
             thisNode = iterator.iterateNext();
             while (thisNode) {
@@ -546,7 +552,7 @@ export class TaskClass {
                 thisNode = iterator.iterateNext();
             }
 
-            // read test(s)
+            // Read test(s)
             iterator = xmlReader.readNodes("dns:tests/dns:test");
             thisNode = iterator.iterateNext();
             let counter = 0;
@@ -577,7 +583,7 @@ export class TaskClass {
                 thisNode = iterator.iterateNext();
             }
 
-            // read grading hints
+            // Read grading hints
             const gradingfunction = xmlReader.readSingleText("dns:grading-hints/dns:root/@function");
             if (gradingfunction && gradingfunction !== 'sum') {
                 setErrorMessage("Grading hints function " + gradingfunction + " is not supported");
@@ -587,14 +593,15 @@ export class TaskClass {
             while (thisNode) {
                 const id = xmlReader.readSingleText("@ref", thisNode);
                 this.tests.forEach(function(test) {
-                    if (test.id === id)
+                    if (test.id === id) {
                         test.weight = xmlReader.readSingleText("@weight", thisNode);
+                    }
                 });
                 thisNode = iterator.iterateNext();
             }
 
-       } catch (err){
-           //alert (err);
+        } catch (err) {
+            // Alert (err);
            setErrorMessage("Error while parsing the xml file. The file has not been imported.", err);
        }
     }
@@ -610,7 +617,7 @@ export class TaskClass {
     }
 
 
-    // todo: read data directly from user input instead of using TaskClass object
+    // Todo: read data directly from user input instead of using TaskClass object
     writeXml(topLevelDoc, rootNode) {
         console.log('*** TaskClass.writeXml');
 
@@ -648,7 +655,7 @@ export class TaskClass {
                 fileElem.setAttribute("usage-by-lms", T_LMS_USAGE.EDIT);
                 fileElem.setAttribute("visible", T_VISIBLE.YES);
 
-                // fileElem.setAttribute("comment", item.comment);
+                // FileElem.setAttribute("comment", item.comment);
                 files.appendChild(fileElem);
                 let fileContentElem = xmlDoc.createElementNS(xmlns, "embedded-txt-file");
                 fileContentElem.setAttribute("filename", 'code.txt');
@@ -661,13 +668,14 @@ export class TaskClass {
         function writeFile(item, index) {
             let fileElem = xmlDoc.createElementNS(xmlns, "file");
             fileElem.setAttribute("id", item.id);
-            //fileElem.setAttribute("class", item.fileclass);
+            // FileElem.setAttribute("class", item.fileclass);
             fileElem.setAttribute("used-by-grader", item.usedByGrader);
-            if (item.usageInLms) // optional
+            if (item.usageInLms) { // Optional
                 fileElem.setAttribute("usage-by-lms", item.usageInLms);
+            }
             fileElem.setAttribute("visible", item.visible);
 
-            // fileElem.setAttribute("comment", item.comment);
+            // FileElem.setAttribute("comment", item.comment);
             files.appendChild(fileElem);
             if (item.filetype === 'embedded') {
                 let fileContentElem = xmlDoc.createElementNS(xmlns, "embedded-txt-file");
@@ -689,13 +697,13 @@ export class TaskClass {
                 }
             }
             let msElem = xmlDoc.createElementNS(xmlns, "model-solution");
-            // msElem.setAttribute("description", item.comment); // alt
+            // MsElem.setAttribute("description", item.comment); // alt
             msElem.setAttribute("id", item.id);
             modelsolutions.appendChild(msElem);
             let filerefs = xmlDoc.createElementNS(xmlns, "filerefs");
             msElem.appendChild(filerefs);
             item.filerefs.forEach(writeFileref);
-            // remove filerefs is no fileref available
+            // Remove filerefs is no fileref available
             let childs = filerefs.getElementsByTagName('fileref');
             if (childs.length === 0) {
                 msElem.removeChild(filerefs);
@@ -714,7 +722,7 @@ export class TaskClass {
                     filerefs.appendChild(fileref);
                 }
             }
-            //console.log('writeXml: create ' + item.title);
+            // Console.log('writeXml: create ' + item.title);
 
             let testElem = xmlDoc.createElementNS(xmlns, "test");
             testElem.setAttribute("id", item.id);
@@ -727,7 +735,7 @@ export class TaskClass {
             let filerefs = xmlDoc.createElementNS(xmlns, "filerefs");
             config.appendChild(filerefs);
             item.filerefs.forEach(writeFileref);
-            // remove filerefs is no fileref available
+            // Remove filerefs is no fileref available
             let childs = filerefs.getElementsByTagName('fileref');
             if (childs.length === 0) {
                 config.removeChild(filerefs);
@@ -737,7 +745,7 @@ export class TaskClass {
             if (item.configItem) {
                 console.log('*** item.configItem.onWriteXml');
 
-                // alert('config write xml');
+                // Alert('config write xml');
                 item.configItem.onWriteXml(item, config, xmlDoc, xmlWriter, task);
             }
         }
@@ -750,26 +758,28 @@ export class TaskClass {
         }
 
         function writeFileRestriction(item, index) {
-            //let regexp = xmlWriter.createTextElement(submission, "regexp-restriction", this.filenameRegExpSubmission);
-            //submission.appendChild(regexp);
+            // Let regexp = xmlWriter.createTextElement(submission, "regexp-restriction", this.filenameRegExpSubmission);
+            // submission.appendChild(regexp);
             // regexp.setAttribute("mime-type-regexp", this.mimeTypeRegExpSubmission);
 
 
-            let fileElem = //xmlDoc.createElementNS(xmlns, "file-restriction");
+            let fileElem = // XmlDoc.createElementNS(xmlns, "file-restriction");
             xmlWriter.createOptionalTextElement(fileRestrictions, 'file-restriction', item.restriction, xmlns);
-            if (!item.required) // optional, defaults to true
+            if (!item.required) { // Optional, defaults to true
                 fileElem.setAttribute("required", item.required);
+            }
 
-            if (item.format) // optional, defaults to none
+            if (item.format) { // Optional, defaults to none
                 fileElem.setAttribute("pattern-format", item.format);
+            }
 
-            //fileRestrictions.appendChild(fileElem);
+            // FileRestrictions.appendChild(fileElem);
         }
 
 
         try {
 
-/*            if (topLevelDoc) {
+            /*            If (topLevelDoc) {
                 xmlDoc = topLevelDoc;
                 task = xmlDoc.createElementNS(xmlns, "task");
                 rootNode.appendChild(task);
@@ -777,12 +787,12 @@ export class TaskClass {
             else {*/
                 xmlDoc = document.implementation.createDocument(xmlns, "task", null);
                 task = xmlDoc.documentElement;
-            //}
+            // }
 
             task.setAttribute("lang", this.lang);
             task.setAttribute("uuid", this.uuid);
-            // task.setAttribute("uuid", generateUUID());// this.uuid);
-            //taskeditorconfig.writeNamespaces(task);
+            // Task.setAttribute("uuid", generateUUID());// this.uuid);
+            // taskeditorconfig.writeNamespaces(task);
 
             xmlWriter = new XmlWriter(xmlDoc, xmlns);
 
@@ -793,8 +803,9 @@ export class TaskClass {
             proglang.setAttribute("version", this.proglangVersion);
 
             fileRestrictions = xmlDoc.createElementNS(xmlns, "submission-restrictions");
-            if (this.sizeSubmission)
+            if (this.sizeSubmission) {
                 fileRestrictions.setAttribute("max-size", this.sizeSubmission);
+            }
             task.appendChild(fileRestrictions);
             this.fileRestrictions.forEach(writeFileRestriction);
 
@@ -812,7 +823,7 @@ export class TaskClass {
             const length = this.tests.length;
             this.tests.forEach(writeTest);
 
-            // grading-hints
+            // Grading-hints
             let gradinghints = xmlDoc.createElementNS(xmlns, "grading-hints");
             task.appendChild(gradinghints);
             gradingRoot = xmlDoc.createElementNS(xmlns, "root");
@@ -822,24 +833,24 @@ export class TaskClass {
 
             let metadata = xmlDoc.createElementNS(xmlns, "meta-data");
             task.appendChild(metadata);
-///            taskeditorconfig.writeXmlExtra(metadata, xmlDoc, xmlWriter);
-            //xmlWriter.createTextElement(metadata, 'praktomat:allowed-upload-filename-mimetypes', '(text/.*)');
+            // /            taskeditorconfig.writeXmlExtra(metadata, xmlDoc, xmlWriter);
+            // xmlWriter.createTextElement(metadata, 'praktomat:allowed-upload-filename-mimetypes', '(text/.*)');
 
             let serializer = new XMLSerializer();
-            let result = serializer.serializeToString (xmlDoc);
+            let result = serializer.serializeToString(xmlDoc);
 
-            if ((result.substring(0, 5) !== "<?xml")){
+            if ((result.substring(0, 5) !== "<?xml")) {
                 result = '<?xml version="1.0"?>' + result;
-                // result = "<?xml version='1.0' encoding='UTF-8'?>" + result;
+                // Result = "<?xml version='1.0' encoding='UTF-8'?>" + result;
             }
 
-            let xsds = [ 'xsd/proforma.xsd' ];
-            // do not add all xsds from configuration because not all of them may be used
+            let xsds = ['xsd/proforma.xsd'];
+            // Do not add all xsds from configuration because not all of them may be used
             // resulting in an error message
             xsds = xsds.concat(taskeditorconfig.xsds);
 
 /*
-            if (!topLevelDoc) { // do not validate for XML part
+            If (!topLevelDoc) { // do not validate for XML part
                 // validate output
                 xsds.forEach(function (xsd_file, index) {
                     $.get(xsd_file, function (data, textStatus, jqXHR) {      // read XSD schema
@@ -859,7 +870,7 @@ export class TaskClass {
             }
 */
             return result;
-        } catch (err){
+        } catch (err) {
             setErrorMessage("Error creating task xml file.", err);
             return '';
         }

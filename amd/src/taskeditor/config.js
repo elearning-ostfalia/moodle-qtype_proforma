@@ -15,10 +15,10 @@
 // along with ProFormA Question Type for Moodle.
 // If not, see <http://www.gnu.org/licenses/>.
 
- /**
+/**
  * Classes and functions for handling different test types
  *
- * @package    qtype
+ * @package
  * @subpackage proforma
  * @copyright  2023 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +28,7 @@
 import {CustomTest} from "./customtest";
 import * as Str from 'core/str';
 
-// const configXsdSchemaFile = version101;   // choose version for output
+// Const configXsdSchemaFile = version101;   // choose version for output
 /*
     version101:
         namespace = 'xmlns:'+pfix_unit+'="urn:proforma:tests:unittest:v1" xmlns:'+pfix_prak+'="urn:proforma:praktomat:v0.2" '
@@ -36,21 +36,21 @@ import * as Str from 'core/str';
 */
 
 
-export const useCodemirror = true;         // setting this to false turns Codemirror off
+export const useCodemirror = true; // Setting this to false turns Codemirror off
 
-const praktomatns     = "urn:proforma:praktomat:v0.2"; // for checkstyle in task 1.0.1
-//const jartestns       = "urn:proforma:tests:jartest:v1"; // for reading 1.0.1
-const unittestns_old  = "urn:proforma:tests:unittest:v1";
-const unittestns_new  = "urn:proforma:tests:unittest:v1.1";
-const checkstylens    = "urn:proforma:tests:java-checkstyle:v1.1";
+const praktomatns = "urn:proforma:praktomat:v0.2"; // For checkstyle in task 1.0.1
+// const jartestns       = "urn:proforma:tests:jartest:v1"; // for reading 1.0.1
+const unittestnsOld = "urn:proforma:tests:unittest:v1";
+const unittestnsNew = "urn:proforma:tests:unittest:v1.1";
+const checkstylens = "urn:proforma:tests:java-checkstyle:v1.1";
 
 // Localized strings
-let gtest_help;
-let cunittest_help;
-let makerun_help;
-let junit_help;
-let junitentry_help;
-let pythondoc_help;
+let gtestHelp;
+let cunittestHelp;
+let makerunHelp;
+let junitHelp;
+let junitentryHelp;
+let pythondocHelp;
 
 // -------------------------
 // TESTS
@@ -61,22 +61,22 @@ const weightStaticTest = 0.2;
 
 export function initStrings() {
     let strings = [
-        { key: 'gtest_help_short', component: 'qtype_proforma' },
-        { key: 'cunit_help_short', component: 'qtype_proforma' },
-        { key: 'makerun_help', component: 'qtype_proforma' },
-        { key: 'junit_help_short', component: 'qtype_proforma' },
-        { key: 'junitentry_help', component: 'qtype_proforma' },
-        { key: 'pythondoc_help', component: 'qtype_proforma' },
+        {key: 'gtest_help_short', component: 'qtype_proforma'},
+        {key: 'cunit_help_short', component: 'qtype_proforma'},
+        {key: 'makerun_help', component: 'qtype_proforma'},
+        {key: 'junit_help_short', component: 'qtype_proforma'},
+        {key: 'junitentry_help', component: 'qtype_proforma'},
+        {key: 'pythondoc_help', component: 'qtype_proforma'},
     ];
     return Str.get_strings(strings)
         .then(results => {
-            // console.log('config strings are initialised');
-            gtest_help = results[0];
-            cunittest_help = results[1];
-            makerun_help = results[2];
-            junit_help = results[3];
-            junitentry_help = results[4];
-            pythondoc_help = results[5];
+            // Console.log('config strings are initialised');
+            gtestHelp = results[0];
+            cunittestHelp = results[1];
+            makerunHelp = results[2];
+            junitHelp = results[3];
+            junitentryHelp = results[4];
+            pythondocHelp = results[5];
 
             infoGoogleTest = new GoogleTest();
             infoCUnit = new CUnitTest();
@@ -90,7 +90,7 @@ export function initStrings() {
                 infoCUnit,
                 testPython,
                 infoPythonDoctest,
-                /*        testSetlX, testSetlXSyntax,
+                /*        TestSetlX, testSetlXSyntax,
                         testCComp,*/
                 testCheckStyle
             ];
@@ -98,47 +98,46 @@ export function initStrings() {
 }
 
 export function resolveNamespace(prefix, defaultns) {
-    // todo: find better solution to figure out if namespace is supported
+    // Todo: find better solution to figure out if namespace is supported
     switch (defaultns) {
         case 'urn:proforma:task:v1.0.1':
             switch (prefix) {
-                case 'unit':      return unittestns_old;
-                //case 'jartest':   return jartestns;
-                case 'praktomat': return praktomatns; // for checkstyle
+                case 'unit': return unittestnsOld;
+                // Case 'jartest':   return jartestns;
+                case 'praktomat': return praktomatns; // For checkstyle
             }
             return '';
         case 'urn:proforma:v2.0':
             switch (prefix) {
                 case 'unit':
-                    //unitNs = xmldoc.lookupNamespaceURI('unit');
-                    //if (unitNs.toString() !== unittestns_new)
+                    // UnitNs = xmldoc.lookupNamespaceURI('unit');
+                    // if (unitNs.toString() !== unittestnsNew)
                     //    alert('unit namespace is not supported in ProFormA version 2.0: ' + xmldoc.lookupNamespaceURI('unit'));
-                    return unittestns_new;
+                    return unittestnsNew;
                 case 'cs': return checkstylens;
             }
             return '';
         default:
-            return 'unsupported namespace'
+            return 'unsupported namespace';
     }
 }
 
-//    function writeNamespaces(task) {
-        //task.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:jartest', jartestns);
-        //task.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:praktomat', praktomatns);
+//    Function writeNamespaces(task) {
+// task.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:jartest', jartestns);
+// task.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:praktomat', praktomatns);
 /*
-        task.setAttributeNS('http://www.w3.org/2000/xmlns/', "xmlns:unit", unittestns_new);
+        task.setAttributeNS('http://www.w3.org/2000/xmlns/', "xmlns:unit", unittestnsNew);
         task.setAttributeNS('http://www.w3.org/2000/xmlns/', "xmlns:cs", checkstylens);
 */
 //    }
 
 
-
     function writeXmlExtra(metaDataNode, xmlDoc, xmlWriter) {
-        //xmlWriter.createTextElement(metaDataNode, 'praktomat:allowed-upload-filename-mimetypes', '(text/.*)', praktomatns);
+    // XmlWriter.createTextElement(metaDataNode, 'praktomat:allowed-upload-filename-mimetypes', '(text/.*)', praktomatns);
     }
 
 /*
-    readXml(xmlfile) {
+    ReadXml(xmlfile) {
         let xmlReader = new XmlReader(xmlfile);
         switch (xmlReader.defaultns) {
             case 'urn:proforma:task:v1.0.1': return this.readXmlVersion101(xmlfile);
@@ -148,7 +147,6 @@ export function resolveNamespace(prefix, defaultns) {
         }
     }
 */
-
 
 
     // Test classes
@@ -166,7 +164,7 @@ export function resolveNamespace(prefix, defaultns) {
         }
     }
 
-    class GeneralUnitTest extends CustomTest  {
+class GeneralUnitTest extends CustomTest {
         withRunCommand = true;
         constructor(title, proglang, framework,
                     template = "qtype_proforma/taskeditor_unittest",
@@ -178,15 +176,17 @@ export function resolveNamespace(prefix, defaultns) {
 
         onReadXml(test, xmlReader, testConfigNode, context) {
             let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
-            if (!unitNode)
-                throw new Error('XML: Test "' + this.title + '": subelement unit:unittest not found in unittest or unittest namespace invalid');
+        if (!unitNode) {
+            throw new Error('XML: Test "' + this.title +
+                '": subelement unit:unittest not found in unittest or unittest namespace invalid');
+        }
 
-            if (unitNode.namespaceURI !== unittestns_new) {
+            if (unitNode.namespaceURI !== unittestnsNew) {
                 throw new Error('XML: Test "' + this.title + '": unsupported namespace ' + xmlReader.defaultns + ' in unit test');
             }
             if (this.withRunCommand) {
-                context['entrypoint'] = xmlReader.readSingleText("unit:entry-point", unitNode);
-                if (context['entrypoint'].trim() === '') {
+            context.entrypoint = xmlReader.readSingleText("unit:entry-point", unitNode);
+            if (context.entrypoint.trim() === '') {
                     throw new Error('XML: Test "' + this.title + '": run command is missing');
                 }
             }
@@ -198,25 +198,25 @@ export function resolveNamespace(prefix, defaultns) {
             }
             const version = xmlReader.readSingleText("@version", unitNode);
             if (version && version !== 'undefined' && version.trim() !== '') {
-                context['framework_version'] = {
+            context.framework_version = {
                     "selected": true,
                     "value": version,
                     "name": version
                 };
             }
-            context['framework'] = framework;
+        context.framework = framework;
         }
 
         onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {
             let root = test.uiElement.root;
-            task.setAttributeNS('http://www.w3.org/2000/xmlns/', "xmlns:unit", unittestns_new);
+            task.setAttributeNS('http://www.w3.org/2000/xmlns/', "xmlns:unit", unittestnsNew);
 
-            let unittestNode = xmlDoc.createElementNS(unittestns_new, "unit:unittest");
+            let unittestNode = xmlDoc.createElementNS(unittestnsNew, "unit:unittest");
             testConfigNode.appendChild(unittestNode);
 
             if (this.withRunCommand) {
                 xmlWriter.createTextElement(unittestNode, 'unit:entry-point',
-                    $(root).find(".xml_entry_point").val(), unittestns_new);
+                    $(root).find(".xml_entry_point").val(), unittestnsNew);
             }
             unittestNode.setAttribute("framework", this.framework);
             const versionelem = ($(root).find(".xml_framework_version"));
@@ -228,27 +228,28 @@ export function resolveNamespace(prefix, defaultns) {
         }
     }
 
-    class JUnitTest extends GeneralUnitTest  {
+class JUnitTest extends GeneralUnitTest {
         static DefaultTitle = "JUnit Test";
 
         constructor() {
             super(JUnitTest.DefaultTitle, ['java'], "JUnit", "qtype_proforma/taskeditor_junit");
-            this.helptext = junit_help;
-            this.entrypointhelp = junitentry_help;
+            this.helptext = junitHelp;
+            this.entrypointhelp = junitentryHelp;
             this.frameworkRequired = true;
         }
         onReadXml(test, xmlReader, testConfigNode, context) {
             super.onReadXml(test, xmlReader, testConfigNode, context);
             let unitNode = xmlReader.readSingleNode("unit:unittest", testConfigNode);
-            if (!unitNode)
-                throw new Error('element unit:unittest not found in unittest or unittest namespace invalid');
+        if (!unitNode) {
+            throw new Error('element unit:unittest not found in unittest or unittest namespace invalid');
+        }
 
             switch (unitNode.namespaceURI) {
-                case unittestns_old:
-                    context['entrypoint'] = xmlReader.readSingleText("unit:main-class", unitNode);
+                case unittestnsOld:
+                context.entrypoint = xmlReader.readSingleText("unit:main-class", unitNode);
                     break;
-                case unittestns_new:
-                    // default
+                case unittestnsNew:
+                // Default
                     break;
                 default:
                     throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in JUnitTest');
@@ -259,17 +260,17 @@ export function resolveNamespace(prefix, defaultns) {
     class GoogleTest extends GeneralUnitTest {
         constructor() {
             super("Google Test", ['c', 'cpp'], 'GoogleTest');
-            this.helptext = gtest_help;
-            this.entrypointhelp = makerun_help;
-            this.frameworks = ['googletest', 'google-test', 'google' , 'google test'];
+            this.helptext = gtestHelp;
+            this.entrypointhelp = makerunHelp;
+        this.frameworks = ['googletest', 'google-test', 'google', 'google test'];
         }
     }
 
     class CUnitTest extends GeneralUnitTest {
         constructor() {
             super("CUnit Test", ['c'], 'CUnit');
-            this.helptext = cunittest_help;
-            this.entrypointhelp = makerun_help;
+            this.helptext = cunittestHelp;
+            this.entrypointhelp = makerunHelp;
             this.frameworks = ['cunit', 'cunittest', 'cunit-test', 'cunit test'];
         }
     }
@@ -285,21 +286,21 @@ export function resolveNamespace(prefix, defaultns) {
         onReadXml(test, xmlReader, testConfigNode, context) {
             let csNode = xmlReader.readSingleNode("cs:java-checkstyle", testConfigNode);
             if (!csNode) {
-                // task version 1.0.1
+            // Task version 1.0.1
                 // todo: check version
                 let praktomatNode = xmlReader.readSingleNode("dns:test-meta-data", testConfigNode);
-                context['warnings'] = xmlReader.readSingleText("praktomat:max-checkstyle-warnings", praktomatNode);
-                context['framework_version'] = xmlReader.readSingleText("praktomat:version", testConfigNode);
+            context.warnings = xmlReader.readSingleText("praktomat:max-checkstyle-warnings", praktomatNode);
+            context.framework_version = xmlReader.readSingleText("praktomat:version", testConfigNode);
             } else {
                 switch (csNode.namespaceURI) {
                     case checkstylens:
                         const version = xmlReader.readSingleText("@version", csNode);
-                        context['framework_version'] = {
+                    context.framework_version = {
                             "selected": true,
                             "value": version,
                             "name": version
                         };
-                        context['warnings'] = xmlReader.readSingleText("cs:max-checkstyle-warnings", csNode);
+                    context.warnings = xmlReader.readSingleText("cs:max-checkstyle-warnings", csNode);
                         break;
                     default:
                         throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in JUnitTest');
@@ -314,7 +315,8 @@ export function resolveNamespace(prefix, defaultns) {
             let csNode = xmlDoc.createElementNS(checkstylens, "cs:java-checkstyle");
             testConfigNode.appendChild(csNode);
 
-            xmlWriter.createTextElement(csNode, 'cs:max-checkstyle-warnings', $(root).find(".xml_pr_CS_warnings").val(), checkstylens);
+            xmlWriter.createTextElement(csNode, 'cs:max-checkstyle-warnings',
+                $(root).find(".xml_pr_CS_warnings").val(), checkstylens);
             csNode.setAttribute("version", $(root).find(".xml_framework_version").val());
         }
     }
@@ -323,12 +325,12 @@ export function resolveNamespace(prefix, defaultns) {
         constructor() {
             super("Python DocTest", "python-doctest",
                 undefined, ['python']);
-            // this.alternativeTesttypes = ['python'];
-            this.helptext = pythondoc_help;
+        // This.alternativeTesttypes = ['python'];
+            this.helptext = pythondocHelp;
         }
     }
     /*
-    class setlXTest extends CustomTest {
+    Class setlXTest extends CustomTest {
         constructor() {
             super("SetlX Test", "setlx", '' );
             this.alternativeTesttypes = ['jartest'];
@@ -369,9 +371,9 @@ export function resolveNamespace(prefix, defaultns) {
 
 */
 
-const testJavaComp    = new JavaCompilerTest();
-const testCheckStyle  = new CheckstyleTest();
-const testPython      = new PythonUnittest();
+const testJavaComp = new JavaCompilerTest();
+const testCheckStyle = new CheckstyleTest();
+const testPython = new PythonUnittest();
 
 
 export let testInfos;
