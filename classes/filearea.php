@@ -23,19 +23,14 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
-
-defined('MOODLE_INTERNAL') || die();
-
-
 /**
  * Abstraction of a Moodle filearea in order to ease handling.
  */
 class qtype_proforma_filearea {
-
     /**
-     * @var null name of filearea
+     * @var string|null name of filearea
      */
-    private $_name = null;
+    private $name = null;
 
     /**
      * qtype_proforma_filearea constructor.
@@ -43,7 +38,7 @@ class qtype_proforma_filearea {
      * @param string $name name of qtype_proforma filearea
      */
     public function __construct($name) {
-        $this->_name = $name;
+        $this->name = $name;
     }
 
     /**
@@ -51,7 +46,7 @@ class qtype_proforma_filearea {
      * @return name|null
      */
     public function get_name() {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
@@ -61,7 +56,7 @@ class qtype_proforma_filearea {
      * @return array
      */
     public static function split_filename($filename) {
-        $pathparts = pathinfo('/'. $filename);
+        $pathparts = pathinfo('/' . $filename);
         $filepath = $pathparts['dirname'];
         $filename = $pathparts['basename'];
         if ($filepath[strlen($filepath) - 1] !== '/') {
@@ -77,19 +72,19 @@ class qtype_proforma_filearea {
      * @param stdClass $question
      */
     public function prepare_draft($contextid, &$question) {
-        $draftid = file_get_submitted_draft_itemid($this->_name);
-        /* if (!is_numeric($draftid)) {
-            throw new coding_exception('qtype_proforma_filearea: invalid draftid');
-        }
-        if (!is_numeric($contextid)) {
-            throw new coding_exception('qtype_proforma_filearea: invalid $contextid');
-        } */
+        $draftid = file_get_submitted_draft_itemid($this->name);
         // For new questions the question id is undefined.
         $questionid = isset($question->id) ? $question->id : null;
 
-        file_prepare_draft_area($draftid, $contextid, 'qtype_proforma', $this->_name,
-                $questionid, ['subdirs' => 1]);
-        $attribute = $this->_name;
+        file_prepare_draft_area(
+            $draftid,
+            $contextid,
+            'qtype_proforma',
+            $this->name,
+            $questionid,
+            ['subdirs' => 1]
+        );
+        $attribute = $this->name;
         $question->$attribute = $draftid;
     }
 
@@ -103,10 +98,10 @@ class qtype_proforma_filearea {
      */
     public function get_files($contextid, $questionid) {
         $fs = get_file_storage();
-        $proformafiles = $fs->get_area_files($contextid, 'qtype_proforma', $this->_name, $questionid);
+        $proformafiles = $fs->get_area_files($contextid, 'qtype_proforma', $this->name, $questionid);
         $files = [];
         foreach ($proformafiles as $file) {
-            if ($file->get_filename() != '.' and $file->get_filename() != '..') {
+            if ($file->get_filename() != '.' && $file->get_filename() != '..') {
                 $files[] = $file;
             }
         }
@@ -142,11 +137,11 @@ class qtype_proforma_filearea {
      */
     public function get_files_as_stringlist($contextid, $questionid) {
         $fs = get_file_storage();
-        $draftfiles = $fs->get_area_files($contextid, 'qtype_proforma', $this->_name, $questionid);
+        $draftfiles = $fs->get_area_files($contextid, 'qtype_proforma', $this->name, $questionid);
         $files = [];
         foreach ($draftfiles as $file) {
             $filename = $file->get_filename();
-            if ($filename != '.' and $filename != '..') {
+            if ($filename != '.' && $filename != '..') {
                 $files[] = self::get_visible_filename($file);
             }
         }
@@ -163,13 +158,19 @@ class qtype_proforma_filearea {
      */
     public function get_files_as_links($contextid, $questionid) {
         $fs = get_file_storage();
-        $files = $fs->get_area_files($contextid, 'qtype_proforma', $this->_name, $questionid);
+        $files = $fs->get_area_files($contextid, 'qtype_proforma', $this->name, $questionid);
         $links = [];
         foreach ($files as $file) {
-            if ($file->get_filename() != '.' and $file->get_filename() != '..') {
+            if ($file->get_filename() != '.' && $file->get_filename() != '..') {
                 $filename = self::get_visible_filename($file);
-                $url = moodle_url::make_pluginfile_url($contextid, 'qtype_proforma',
-                        $this->_name, $questionid, $file->get_filepath(), $file->get_filename());
+                $url = moodle_url::make_pluginfile_url(
+                    $contextid,
+                    'qtype_proforma',
+                    $this->name,
+                    $questionid,
+                    $file->get_filepath(),
+                    $file->get_filename()
+                );
                 $link = '<a href=' . $url->out() . '>' . $filename . '</a>';
                 $links[] = $link;
             }
@@ -187,27 +188,44 @@ class qtype_proforma_filearea {
      * @throws coding_exception
      */
     public function save_draft($formdata, &$options, $dbcolumn) {
-        $attribute = $this->_name;
+        $attribute = $this->name;
         if (isset($formdata->$attribute)) {
             // Save draft files in filearea.
             // 'subdirs' must be set to true because the Java (model solution)
             // files might be stored in subfolders (package path).
             $saveoptions = [];
             $saveoptions['subdirs'] = true;
-            file_save_draft_area_files($formdata->$attribute, $formdata->context->id,
-                    'qtype_proforma', $this->_name,  $formdata->id, $saveoptions);
+            file_save_draft_area_files(
+                $formdata->$attribute,
+                $formdata->context->id,
+                'qtype_proforma',
+                $this->name,
+                $formdata->id,
+                $saveoptions
+            );
             // Create list of filenames.
             if (isset($dbcolumn)) {
-                $options->$dbcolumn = $this->get_files_as_stringlist($formdata->context->id,
-                        $formdata->id);
+                $options->$dbcolumn = $this->get_files_as_stringlist(
+                    $formdata->context->id,
+                    $formdata->id
+                );
             }
         }
     }
 
+    /**
+     * Save text as file with given filename in a user draft area.
+     *
+     * @param int $contextid user context id
+     * @param int $itemid draft item id
+     * @param string $filename filename (may include path)
+     * @param string $content file content
+     * @return bool true if file was created
+     */
     public function save_text_to_draft($contextid, $itemid, string $filename, string $content) {
         $fs = get_file_storage();
         if (!empty($content)) {
-            list($filepath, $basename) = self::split_filename($filename);
+            [$filepath, $basename] = self::split_filename($filename);
             $filerecord = [
                     'contextid' => $contextid,
                     'component' => 'user',
@@ -232,7 +250,7 @@ class qtype_proforma_filearea {
      * @throws \coding_exception
      */
     public function save_textfile($contextid, $itemid, string $filename, string $content) {
-        $filearea = $this->_name;
+        $filearea = $this->name;
         $cleanfilearea = true;
         $fs = get_file_storage();
         // Delete old file (i.e. delete file in same filearea with same name).
@@ -253,7 +271,7 @@ class qtype_proforma_filearea {
         }
 
         if (!empty($content)) {
-            list($filepath, $basename) = self::split_filename($filename);
+            [$filepath, $basename] = self::split_filename($filename);
             $filerecord = [
                     'contextid' => $contextid,
                     'component' => 'qtype_proforma',
@@ -284,17 +302,19 @@ class qtype_proforma_filearea {
         return $file->get_content();
     }
 
-    /** returns the file with the given filename
+    /**
+     * Returns the file with the given filename.
+     *
      * @param int $contextid
      * @param string $filename
      * @param int $itemid
      * @return bool|stored_file
      */
     public function get_file($contextid, $filename, $itemid) {
-        $filearea = $this->_name;
+        $filearea = $this->name;
         $fs = get_file_storage();
 
-        list($filepath, $basename) = self::split_filename($filename);
+        [$filepath, $basename] = self::split_filename($filename);
         // Prepare file record object.
         $fileinfo = [
                 'contextid' => $contextid,
@@ -305,8 +325,14 @@ class qtype_proforma_filearea {
                 'filename' => $basename,
         ];
         // Get file.
-        $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
-                $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
+        $file = $fs->get_file(
+            $fileinfo['contextid'],
+            $fileinfo['component'],
+            $fileinfo['filearea'],
+            $fileinfo['itemid'],
+            $fileinfo['filepath'],
+            $fileinfo['filename']
+        );
         return $file;
     }
 }

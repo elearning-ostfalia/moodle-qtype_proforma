@@ -31,7 +31,6 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/proforma_task.php'
  * This class creates the edit form fields for imported ProFormA tasks.
  */
 class proforma_form_creator extends base_form_creator {
-
     /**
      * proforma_form_creator constructor.
      *
@@ -41,8 +40,6 @@ class proforma_form_creator extends base_form_creator {
         parent::__construct($form, new qtype_proforma_proforma_task());
         $this->_responseformats = qtype_proforma::response_formats();
         $this->_tasktype = qtype_proforma::PERSISTENT_TASKFILE;
-        // echo $this->_taskhandler->can_be_edited();
-        // $this->_unittestlabel = get_string('setlx', 'qtype_proforma');
         $this->_testcode = false;
         $this->_testfiles = false;
     }
@@ -58,28 +55,24 @@ class proforma_form_creator extends base_form_creator {
      */
     public function validation(qtype_proforma_edit_form &$editor, $fromform, $files, $errors) {
         $errors = parent::validation($editor, $fromform, $files, $errors);
-        /*
-        if ($fromform['aggregationstrategy'] == qtype_proforma::WEIGHTED_SUM) {
-            $repeats = count($fromform["testweight"]);
-            $sumweight = 0;
-            for ($i = 0; $i < $repeats; $i++) {
-                $sumweight += $fromform["testweight"][$i];
-            }
-            if ($repeats > 0 && $sumweight == 0) {
-                // Error message must be attached to testoptions group.
-                // Otherwise it is not visible.
-                $errors['testoptions[0]'] = get_string('sumweightzero', 'qtype_proforma');
-            }
-        }
-        */
 
-        if ((!isset($fromform['taskeditor'])) or (!$fromform['taskeditor'])) {
+        if ((!isset($fromform['taskeditor'])) || (!$fromform['taskeditor'])) {
             $errors = $this->validate_taskfile($editor, $fromform, $errors);
         }
 
         return $errors;
     }
 
+    /**
+     * Validate unit test fields (nothing to validate for imported tasks).
+     *
+     * @param qtype_proforma_edit_form $editor actual editor instance
+     * @param array $fromform form data
+     * @param array $files files
+     * @param int $i test index
+     * @param array $errors errors array
+     * @return array [errors, true]
+     */
     protected function validate_unittest(qtype_proforma_edit_form $editor, $fromform, $files, $i, $errors) {
         return [$errors, true];
     }
@@ -109,8 +102,14 @@ class proforma_form_creator extends base_form_creator {
 
         // Has taskfile changed (different content hash)?
         // Get old file.
-        $taskfiles = $fs->get_area_files($editor->context->id, 'qtype_proforma',
-            qtype_proforma::FILEAREA_TASK, $fromform['id'], false, false);
+        $taskfiles = $fs->get_area_files(
+            $editor->context->id,
+            'qtype_proforma',
+            qtype_proforma::FILEAREA_TASK,
+            $fromform['id'],
+            false,
+            false
+        );
         if (count($taskfiles) == 1) {
             // There is an old taskfile. Check if it is compatible.
             $taskfile = reset($taskfiles); // Get first item in array.
@@ -250,9 +249,11 @@ class proforma_form_creator extends base_form_creator {
             $taskfiles = [];
             $iterator = new DirectoryIterator($tempdir);
             foreach ($iterator as $fileinfo) {
-                if ($fileinfo->isFile() &&
-                    strtolower(pathinfo($fileinfo->getFilename(), PATHINFO_BASENAME)) == 'task.xml') {
-                        $taskfiles[] = $fileinfo->getFilename();
+                if (
+                    $fileinfo->isFile() &&
+                    strtolower(pathinfo($fileinfo->getFilename(), PATHINFO_BASENAME)) == 'task.xml'
+                ) {
+                    $taskfiles[] = $fileinfo->getFilename();
                 }
             }
 
@@ -290,8 +291,12 @@ class proforma_form_creator extends base_form_creator {
         $mform = $this->_form;
         parent::add_responsetemplate($question);
         // Further templates (there should be no other templates).
-        $this->add_static_text($question, 'furtherTemplates', get_string('templates', 'qtype_proforma'),
-                'templates');
+        $this->add_static_text(
+            $question,
+            'furtherTemplates',
+            get_string('templates', 'qtype_proforma'),
+            'templates'
+        );
         $mform->addHelpButton('furtherTemplates', 'templates_hint', 'qtype_proforma');
     }
 
@@ -304,17 +309,23 @@ class proforma_form_creator extends base_form_creator {
     public function add_grader_settings($question, $context) {
         // ProFormA fields.
         $mform = $this->_form;
-        $mform->addElement('header', 'graderoptions_header',
-            get_string('graderoptions_header', 'qtype_proforma'));
-        // $mform->setExpanded('graderoptions_header');
+        $mform->addElement(
+            'header',
+            'graderoptions_header',
+            get_string('graderoptions_header', 'qtype_proforma')
+        );
 
         // Task Filename.
         // Remove hidden element in base class.
         $tasksize = get_config('qtype_proforma', 'taskmaxbytes');
 
         $mform->removeElement(qtype_proforma::FILEAREA_TASK);
-        $mform->addElement('filemanager', qtype_proforma::FILEAREA_TASK,
-            get_string('taskfilename', 'qtype_proforma'), null, [
+        $mform->addElement(
+            'filemanager',
+            qtype_proforma::FILEAREA_TASK,
+            get_string('taskfilename', 'qtype_proforma'),
+            null,
+            [
                 'subdirs' => false,
                 'maxfiles' => 1,
                 'accepted_types' => ['.zip', '.xml'],
@@ -360,8 +371,6 @@ class proforma_form_creator extends base_form_creator {
      * Modify repeatarray in add_tests.
      *
      * @param array $repeatarray repeat array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function adjust_test_repeatarray(&$repeatarray) {
     }
@@ -376,12 +385,20 @@ class proforma_form_creator extends base_form_creator {
         return $this->add_test_fields($question, $questioneditform, 'unittest');
     }
 
+    /**
+     * Add test settings and the button for editing test details.
+     *
+     * @param stdClass $question question data
+     * @param qtype_proforma_edit_form $questioneditform question edit form
+     */
     public function add_test_settings($question, $questioneditform) {
         parent::add_test_settings($question, $questioneditform);
         $this->add_detail_edit_button();
     }
 
     /**
+     * Add test fields (only for existing questions).
+     *
      * @param stdClass $question question data
      * @param qtype_proforma_edit_form $questioneditform question edit form
      * @param string $testtype default test type
@@ -424,8 +441,10 @@ class proforma_form_creator extends base_form_creator {
         // Create links for model solution.
         $msfilearea = new qtype_proforma_filearea(qtype_proforma::FILEAREA_MODELSOL);
         if (isset($question->id)) {
-            $question->mslinks = $msfilearea->get_files_as_links($question->contextid,
-                $question->id);
+            $question->mslinks = $msfilearea->get_files_as_links(
+                $question->contextid,
+                $question->id
+            );
         } else {
             // Create new ProFormA question => no question available.
             $question->mslinks = '';
@@ -435,6 +454,13 @@ class proforma_form_creator extends base_form_creator {
         $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
     }
 
+    /**
+     * Preset form data (nothing to do for imported tasks).
+     *
+     * @param stdClass $question question data
+     * @param int $cat context id of category
+     * @param qtype_proforma_edit_form $editor question edit form
+     */
     protected function preset_formdata(&$question, $cat, qtype_proforma_edit_form $editor) {
     }
 
@@ -475,7 +501,7 @@ class proforma_form_creator extends base_form_creator {
                     $element->setSize(strlen($value));
                 }
             }
-            $i ++;
+            $i++;
         }
     }
 }

@@ -44,7 +44,6 @@ $functions = [
         'classpath'    => '',
         'description'  => 'read JUnit versions from Moodle',
         'type'         => 'read',
-        // 'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
     ],
 
@@ -54,7 +53,6 @@ $functions = [
         'classpath'    => '',
         'description'  => 'read Checkstyle versions from Moodle',
         'type'         => 'read',
-        // 'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
     ],
 
@@ -64,8 +62,6 @@ $functions = [
         'classpath'    => '',
         'description'  => 'read Java versions from Moodle',
         'type'         => 'read',
-        // 'capabilities' => 'moodle/question:editmine',
         'ajax'         => true,
     ],
 ];
-
