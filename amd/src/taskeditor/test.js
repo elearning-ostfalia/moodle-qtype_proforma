@@ -26,9 +26,11 @@
  * @author     Dr.U.Priss
  */
 
-import {TestFileReference, FileReferenceList, ModelSolutionFileReference} from "./filereflist";
-import {setcounter, DEBUG_MODE} from "./helper";
-import {TaskClass} from "./taskdata";
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
+import $ from 'jquery';
+import {TestFileReference, FileReferenceList} from "./filereflist";
+import {setcounter} from "./helper";
 import {exception as displayException} from 'core/notification';
 import Templates from 'core/templates';
 import * as Str from 'core/str';
@@ -137,12 +139,15 @@ export class TestWrapper {
     }
 
     /**
+     * Creates a test in the task editor from a mustache template.
      *
-     * @param id test identfier
-     * @param template mustache template name
-     * @param context context for mustache template
-     * @param withFileRef with file references
-     * @param item object to create from
+     * @param {string} id test identfier
+     * @param {string} template mustache template name
+     * @param {Object} context context for mustache template
+     * @param {boolean} withFileRef with file references
+     * @param {Object} item object to create from
+     * @param {Object} task task object
+     * @returns {Promise}
      */
     static createFromTemplate(id, template, context, withFileRef, item, task) {
         let testid = id;
@@ -150,13 +155,10 @@ export class TestWrapper {
             testid = setcounter(testIDs);
         }
         context.testid = testid;
-        // Console.log("context for rendering template " + template);
-        // console.log(context);
         let test;
 
         return Templates.renderForPromise(template, context)
             .then(({html, js}) => {
-                // Console.log(html);
                 Templates.appendNodeContents('#proforma-tests-section', html, js);
 
                 // Hide fields that exist only for technical reasons
@@ -170,7 +172,6 @@ export class TestWrapper {
                 } else {
                     subnode.ondragstart = function(event) {
                         // Event.preventDefault();
-                        // console.log('On drag start ' + testid);
                         event.dataTransfer.setData("text", 'move_test ' + testid);
                     };
                 }
@@ -195,7 +196,6 @@ export class TestWrapper {
                     testroot.find("label[for='xml_test_id']").hide();
                 }*/
                 if (!withFileRef) {
-                    // Console.log('hide fileref fields');
                     testroot.find("table").hide();
                     testroot.find(".drop_zone").hide();
                 } else {
@@ -217,19 +217,14 @@ export class TestWrapper {
                     */
                 }
                 if (item) {
-                    // Console.log('update filelist for test');
                     let counter = 0;
-                    // Console.log(item.filerefs);
 
-                    item.filerefs.forEach(function(itemFileref, indexFileref) {
-                        // Console.log('id ' + itemFileref.refid);
+                    item.filerefs.forEach(function(itemFileref) {
                         let filename = task.findFilenameForId(itemFileref.refid);
-                        // Console.log('filename ' + filename);
                         let promiseFactories = [
                             TestFileReference.getInstance().setFilenameOnCreation(test.root, counter++, filename)];
                         Promise.all(promiseFactories)
                             .then(() => {
-                                // Console.log("promise completed");
                                 // ???
                             });
                     });

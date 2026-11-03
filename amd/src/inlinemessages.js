@@ -24,6 +24,8 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
 // import './codemirror-global';
 // Moodle import:
 // import CodeMirror from "./codemirror";
@@ -31,8 +33,10 @@
 
 
 /**
- * removes all widgets
- * @param {*} editor
+ * Removes all widgets.
+ *
+ * @param {Array} widgets line widgets of the editor
+ * @returns {Array} empty widget list
  */
 function _hideWidgets(widgets) {
     for (let i = 0; i < widgets.length; ++i) {
@@ -43,6 +47,14 @@ function _hideWidgets(widgets) {
 }
 
 
+/**
+ * Shows the messages as line widgets in the editor.
+ *
+ * @param {Object} editor CodeMirror editor
+ * @param {Array} errors messages ({line, text, msgtype})
+ * @param {Array} widgets current line widgets
+ * @returns {Array} new line widgets
+ */
 function _showMessages(editor, errors, widgets) {
     widgets = _hideWidgets(widgets);
     for (let i = 0; i < errors.length; ++i) {
@@ -102,7 +114,12 @@ function _showMessages(editor, errors, widgets) {
 }
 
 
-// Retrieve a CodeMirror Instance.
+/**
+ * Retrieve a CodeMirror Instance.
+ *
+ * @param {string|Element} target selector or element (textarea or CodeMirror element)
+ * @returns {Object|null} CodeMirror instance
+ */
 function _getCodeMirror(target) {
     let _target = target;
     if (typeof _target === 'string') {
@@ -121,6 +138,14 @@ function _getCodeMirror(target) {
 }
 
 
+/**
+ * Extracts the messages for a file from the test logs.
+ *
+ * @param {string} collapsregion id of the region containing the test logs
+ * @param {string} regexp regular expression for a message (with named groups)
+ * @param {string} editorfilename name of the file shown in the editor
+ * @returns {Array} messages ({line, text, msgtype})
+ */
 function _getErrorsFromLog(collapsregion, regexp, editorfilename) {
     let messages = [];
     let region = document.getElementById(collapsregion);
@@ -144,19 +169,13 @@ function _getErrorsFromLog(collapsregion, regexp, editorfilename) {
 
     // global match
     let results = innertext.matchAll(re);
-    // Console.log('innertext: ' + innertext);
-    // console.log('regexp: ' + regexp);
 
     for (let result of results) {
         let {msgtype, filename, line, text, symbol} = result.groups;
-        // Console.log('text: ' + text);
-        // console.log('filename: ' + filename);
-        // console.log('symbol: \'' + symbol + '\'');
         if (filename !== undefined && editorfilename != undefined) {
             // Filename is in message.
             if (editorfilename.localeCompare(filename) !== 0) {
                 // Filename does not match name of file in editor.
-                // console.log('filename does not match');
                 continue;
             }
         }
@@ -174,6 +193,12 @@ function _getErrorsFromLog(collapsregion, regexp, editorfilename) {
 }
 
 
+/**
+ * Counts the messages per message type.
+ *
+ * @param {Array} messages
+ * @returns {Array} [errors, warnings, infos, others]
+ */
 function _countMessages(messages) {
     let errors = 0;
     let warnings = 0;
@@ -237,6 +262,14 @@ const waitForElement = (node, selector) =>
         wait();
     });
 
+/**
+ * Adds a button for showing the messages of the test logs in the editor.
+ *
+ * @param {string} cmid id of the CodeMirror textarea
+ * @param {string} collapsregion id of the region containing the test logs
+ * @param {string} regexp regular expression for a message (with named groups)
+ * @param {string} filename name of the file shown in the editor
+ */
 function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename) {
     var widgets = [];
     // Codemirror id must be escaped!
@@ -251,7 +284,6 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename) {
             // Get Messages
             let messages = _getErrorsFromLog(collapsregion, regexp, filename);
             if (messages.length == 0) {
-                // Console.log('no messages found => ready');
                 return;
             }
 

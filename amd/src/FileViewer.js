@@ -25,6 +25,8 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
 
 /**
  * NOTE:
@@ -37,6 +39,7 @@ let autosaveIntervall = -1; // In milliseconds
 
 // Use these imports for Moodle
 // -----------------------------
+import {debugLog} from './debug';
 import "./MoodleSyncer";
 
 import './codemirror-global';
@@ -61,6 +64,7 @@ import CancelModal from "core/modal_cancel";
 // Use this for editortest.html
 // -----------------------------
 /*
+import {debugLog} from './debug.js';
 import './codemirror-global.js';
 import "./FakeSyncer.js";
 
@@ -117,8 +121,15 @@ function getString(text) { return text; }
 // - Menu erstmal raus - außer zum Wechseln des Themes
 // - Andere Browser testen
 
-// replacement for prompt needed for behat tests.
-// Behat tests fail on prompt and alert.
+/**
+ * Replacement for prompt needed for behat tests.
+ * Behat tests fail on prompt and alert.
+ *
+ * @param {string} titleId string identifier of the title
+ * @param {string} labelId string identifier of the input label
+ * @param {string} defaultValue default value of the input field
+ * @param {Function} callback function called with the entered value
+ */
 function modalPrompt(titleId, labelId, defaultValue, callback) {
     let stringsPromise = Str.get_strings([
         {key: titleId, component: 'qtype_proforma'},
@@ -134,7 +145,6 @@ function modalPrompt(titleId, labelId, defaultValue, callback) {
                 '<input type="text" name="promptname" value="' + defaultValue + '" size="40"></input>');
             modal.getRoot().on(ModalEvents.save, () => {
                 let result = document.querySelector("input[name='promptname']").value;
-                // Console.log(result);
                 modal.getRoot().remove();
                 callback(result);
             });
@@ -158,6 +168,12 @@ function modalPrompt(titleId, labelId, defaultValue, callback) {
 }
 
 
+/**
+ * Shows an information dialog (replacement for alert).
+ *
+ * @param {string} textId string identifier of the text
+ * @param {*} param optional parameter for the string
+ */
 function modalAlert(textId, param) {
     let stringsPromise;
     if (param) {
@@ -184,6 +200,14 @@ function modalAlert(textId, param) {
         });
 }
 
+/**
+ * Shows a confirmation dialog (replacement for confirm).
+ *
+ * @param {string} titleId string identifier of the title
+ * @param {string} textId string identifier of the text
+ * @param {Function} callback function called if the user confirms
+ * @param {*} param optional parameter for the text string
+ */
 function modalConfirm(titleId, textId, callback, param) {
     let stringsPromise;
     if (param) {
@@ -225,7 +249,6 @@ class TreeNode {
         this.parent = undefined; // Parent Treenode
 
         this.boundHandleContextMenu = event => {
-            // Console.log(event)
             event.preventDefault();
             event.stopPropagation(); // Otherwise parent node handles event, too
 
@@ -242,20 +265,16 @@ class TreeNode {
                         this.getFramework().toggleContextmenu('show');
                     };
 
-                    // Console.log(`contextmenu: ${event}`);
 
                     const origin = {
                         left: event.pageX,
                         top: event.pageY
                     };
-                    // Console.log(`${event.pageX}px ${event.pageY}px`);
-                    // console.log(event);
                     showMenu(origin);
                 });
         };
         this.handleDragStart = event => {
             if (event.dataTransfer.getData('treeitem').length == 0) {
-                // Console.log('dragstart: ' + this.getPath());
                 event.dataTransfer.setData('treeitem', this.getPath());
             }
         };
@@ -381,10 +400,7 @@ export class FileNode extends TreeNode {
     getContent() {
         if (this.filecontent.length == 0) {
             const p1 = this.getFramework().syncer.download(this.getPath());
-            // Console.log('Fileviewer promise result');
-            // console.log(p1);
             p1.then(result => {
-                // Console.log('Downloaded text is: '+ result);
                 this.filecontent = result;
                 return result;
             });
@@ -395,7 +411,7 @@ export class FileNode extends TreeNode {
     }
     updateContent(newcontent, async) {
         this.filecontent = newcontent;
-        console.log('Update ' + this.getPath() + ' with ' + newcontent.substr(0, 20) + '...');
+        debugLog('Update ' + this.getPath() + ' with ' + newcontent.substr(0, 20) + '...');
         return this.getFramework().syncer.update(this.getPath(), newcontent, async);
     }
     displayInTreeview(domnode) {
@@ -411,7 +427,7 @@ export class FileNode extends TreeNode {
     }
 
     setContextMenu() {
-        console.log('FileNode setContextMenu');
+        debugLog('FileNode setContextMenu');
         // This is something from codemirror in promise done function???
         // so this is renamed
         let thecontext = this;
@@ -445,7 +461,6 @@ export class FolderNode extends TreeNode {
                 context.getFramework().syncer.deleteFileOrFolder(context.getPath() + '/.');
                 context.element.remove();
                 context.parent.folders = context.parent.folders.filter(item => item !== context);
-                // Console.log(RootNode.projects);
             }, this.getPath());
         };
         this.boundHandleNewFile = event => {
@@ -507,7 +522,7 @@ export class FolderNode extends TreeNode {
             this.element.querySelector('.name').classList.remove('dragover');
             const path = event.dataTransfer.getData('treeitem');
             if (path !== undefined && path.length > 0) {
-                console.log('drop ' + path + ' onto ' + this.getPath());
+                debugLog('drop ' + path + ' onto ' + this.getPath());
                 // Node element from tree
                 const node = this.getFramework().findNodeByPath(path);
                 if (node !== undefined && !this.isNameChildUnique(node.name)) {
@@ -537,11 +552,11 @@ export class FolderNode extends TreeNode {
                     this.getFramework().syncer.renameFile(oldpath, node.getPath());
                 } else {
                     console.error('node cannot be moved');
-                    console.log(node);
+                    debugLog(node);
                 }
             } else {
                 // External file or folder
-                console.log('drop file/folder');
+                debugLog('drop file/folder');
                 let items = event.dataTransfer.items;
                 for (let i = 0; i < items.length; i++) {
                     let item = items[i].webkitGetAsEntry(); // Might be renamed to GetAsEntry()
@@ -565,14 +580,14 @@ export class FolderNode extends TreeNode {
                     thecontext.appendFolder(node);
                     node.displayInTreeview(thecontext.element.querySelector('[role="group"]'));
                     thecontext.expand(true);
-                    console.log('create new folder ' + node.getPath());
+                    debugLog('create new folder ' + node.getPath());
                     thecontext.getFramework().syncer.mkdir(node.getPath());
                 }
             });
         };
 
         this.boundHandleClick = event => {
-            console.log('FolderNode click');
+            debugLog('FolderNode click');
             this.getFramework().toggleContextmenu("hide");
             // Problem: child nodes also get focus
             this.getFramework().setFocusTo(this.element);
@@ -625,9 +640,7 @@ export class FolderNode extends TreeNode {
         return undefined;
     }
     createPath(path) {
-        // Console.log(path);
         let first = path.shift();
-        // Console.log('foldernode: create node for <' + first + '>');
         if (first === undefined || first.length == 0) {
             if (path.lenghth > 0) {
                 console.error('Bug in creating path');
@@ -646,7 +659,6 @@ export class FolderNode extends TreeNode {
             }
         }
         // Path does not exist => create.
-        // console.log('create folder node for ' + first);
         let node = new FolderNode(first);
         this.appendFolder(node);
         return node.createPath(path);
@@ -685,7 +697,6 @@ export class FolderNode extends TreeNode {
             this.getFramework().syncer.mkdir(node.getPath());
 
             // Get folder contents
-            // console.log(item.fullPath);
             let dirReader = item.createReader();
             dirReader.readEntries(entries => {
                 for (let i=0; i < entries.length; i++) {
@@ -752,7 +763,7 @@ export class FolderNode extends TreeNode {
         return this.element.getAttribute('aria-expanded') === 'true';
     }
     setContextMenu() {
-        console.log('FolderNode setContextMenu');
+        debugLog('FolderNode setContextMenu');
         let thecontext = this; // This is changed to something codemirror in promise
         return Str.get_strings([
             {key: 'newemptyfile', component: 'qtype_proforma'},
@@ -789,7 +800,7 @@ export class FolderNode extends TreeNode {
 export class RootNode extends FolderNode {
     constructor(name, framework) {
         super(name);
-        console.log('CREATE root node ' + name);
+        debugLog('CREATE root node ' + name);
         this.framework = framework;
         framework.roots.push(this);
     }
@@ -800,7 +811,7 @@ export class RootNode extends FolderNode {
         return '';
     }
     setContextMenu() {
-        console.log('RootNode setContextMenu');
+        debugLog('RootNode setContextMenu');
         let thecontext = this; // This is changed to something codemirror in promise
         return Str.get_strings([
             {key: 'newemptyfile', component: 'qtype_proforma'},
@@ -822,7 +833,7 @@ export class RootNode extends FolderNode {
 
 class EditorItem {
     constructor(fileNode, textarea, tabDomNode, readOnly) {
-        console.log('Create Codemirror ' + readOnly);
+        debugLog('Create Codemirror ' + readOnly);
 
         this.fileNode = fileNode;
         this.editor = CodeMirror.fromTextArea(textarea, {
@@ -896,7 +907,7 @@ class EditorStack {
                 }
             }
         }
-        console.log('item index is ' + index);
+        debugLog('item index is ' + index);
 
         // Move on top
         this.nodes.splice(index, 1);
@@ -925,7 +936,7 @@ class EditorStack {
     _delete(item) {
         for (let i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i] === item) {
-                console.log('** Delete item from editor');
+                debugLog('** Delete item from editor');
                 // Read back (modified) content
                 this.nodes[i].fileNode.updateContent(this.nodes[i].editor.getValue());
 
@@ -1038,7 +1049,7 @@ class EditorStack {
         let that = this;
         if (autosaveIntervall > 0) {
             this.timer = setInterval(function() {
-                console.log('proforma editor autosave');
+                debugLog('proforma editor autosave');
                 that.saveCurrentEditor(true);
             }, autosaveIntervall);
         }
@@ -1078,9 +1089,11 @@ class EditorStack {
         // Save all
         // (we could save current if file is saved on switching)
         // this.issaved = false;
-        console.log('currently open editors ' + this.nodes.length.toString());
+        debugLog('currently open editors ' + this.nodes.length.toString());
+        /* eslint-disable no-console */
         console.timeStamp('save');
         console.time('save');
+        /* eslint-enable no-console */
 
         for (let i = 0; i < this.nodes.length; i++) {
             this.nodes[i].fileNode.updateContent(this.nodes[i].editor.getValue(), false);
@@ -1108,9 +1121,11 @@ class EditorStack {
                 console.error('error:', error);
                 alert(error);
             });*/
-        console.log('all files saved');
+        debugLog('all files saved');
+        /* eslint-disable no-console */
         console.timeStamp('save');
         console.timeEnd('save');
+        /* eslint-enable no-console */
     }
 /*    Needssaving() {
         for (let i = 0; i < this.nodes.length; i++) {
@@ -1140,7 +1155,7 @@ export class Framework {
     }
 
     buildFramework(domnode) {
-        console.log('buildFramework');
+        debugLog('buildFramework');
         domnode.innerHTML = `<div class="ide" style="display: flex;flex-direction: column; align-items: stretch;
     resize: vertical;
     overflow: hidden;
@@ -1293,8 +1308,8 @@ export class Framework {
         this.createPath('/'); // Needed when no files come from syncer.
         this.syncer.list(this)
             .then(() => {
-                console.log('DISPLAY ROOTS');
-                console.log(this.roots);
+                debugLog('DISPLAY ROOTS');
+                debugLog(this.roots);
                 for (let i = 0; i < this.roots.length; i++) {
                     let root = this.roots[i];
                     root.displayInTreeview(ul);
@@ -1348,7 +1363,7 @@ export class Framework {
     }
 
     findNodeByPath(path) {
-        console.log('find <' + path + '>');
+        debugLog('find <' + path + '>');
         if (path.substr(0, 1) != '/') {
             console.error('path does not start with /: ' + path);
             return undefined;
@@ -1370,7 +1385,7 @@ export class Framework {
     }
 
     createPath(path) {
-        console.log('Framework: create folder ' + path);
+        debugLog('Framework: create folder ' + path);
         // Assume first char is always /
         if (path[0] !== '/') {
             console.error('first char in path is not /: ' + path);
@@ -1402,18 +1417,16 @@ export class Framework {
         if (this.readOnly) {
             return;
         }
-        console.log('createContextMenu ' + list.length);
-        // Console.log(list);
-        // let ul = this.mainDomNode.querySelector(".contextmenu .menu-options");
+        debugLog('createContextMenu ' + list.length);
+        // Let ul = this.mainDomNode.querySelector(".contextmenu .menu-options");
         let ul = document.querySelector(".contextmenu .menu-options");
-        // Console.log(ul);
         ul.innerHTML = ''; // Delete all children
         for (let i = 0; i < list.length; i++) {
             const li = document.createElement('li');
             li.setAttribute('class', 'menu-option');
             li.innerHTML = list[i][0];
             li.addEventListener('click', list[i][1]);
-            console.log(list[i][0]);
+            debugLog(list[i][0]);
             ul.appendChild(li);
         }
 
@@ -1451,8 +1464,8 @@ export class Framework {
         return this.editorstack.issaved();
     } */
     save() {
-        console.log(this);
-        console.log(this.editorstack);
+        debugLog(this);
+        debugLog(this.editorstack);
         return this.editorstack.save();
         // Alert('hallo');
         // setTimeout(() => { return p1; }, 60000);

@@ -28,13 +28,14 @@
 // todo: replace table solution with something without table!
 
 
+import {debugLog} from '../debug';
 import $ from 'jquery';
 import Templates from 'core/templates';
 
 // Abstract class for a filename reference input
 export class DynamicList {
 
-    constructor(classFilename, cssClassname, jsClassName, label, help, mandatory, extraCssClass) {
+    constructor(classFilename, cssClassname, jsClassName, label, help, mandatory) {
         this.classFilename = 'xml_fileref_filename';
         this.classAddItem = 'add_fileref';
         this.classRemoveItem = 'remove_item';
@@ -56,7 +57,7 @@ export class DynamicList {
             'filenamelabel': '???'
         };
         return Templates.renderForPromise('qtype_proforma/taskeditor_fileref_table', context)
-            .then(({html, js}) => {
+            .then(({html}) => {
                 // The template contains a complete table => only use the content of its row.
                 this.rowTemplateHtml = $('<div>').html(html).find('tr').first().html();
                 return this.rowTemplateHtml;
@@ -115,28 +116,18 @@ export class DynamicList {
 
         if (hasNextTr.length === 0) {
             // If row to be deleted is last row then add +-button to last row
-            // let tds = previousRow.find("td");
-            // let td = tds.last();
-            // $(this.tdAddButton).insertBefore(previousRow.find("td").last());
-            console.log('row to be deleted is last row then add +-button to last row');
-
             previousRow.find("." + this.classAddItem).show();
         }
         if (hasPrevTr.length === 0) {
             // Row to be deleted is first row
             // => add filename label to first column
-            console.log('row to be deleted is first row => add filename label to first column');
             tableBody.find("label").first().show();
-            // Let firstCell = tableBody.find("td").first();
-            // firstCell.append(this.label); // without td
         }
 
-        // Check if previousRow is first row
-        let firstRow = tableBody.find("tr")[0];
         if (this.getItemCount(tableBody) === 1) {
             // Table has exactly one row left
             // => hide all remove file buttons
-            console.log('table has exactly one row left => hide all remove file buttons');
+            debugLog('table has exactly one row left => hide all remove file buttons');
             tableBody.find("." + this.classRemoveItem).hide();
         }
     }

@@ -26,44 +26,53 @@
 
 /* eslint-disable no-unused-vars */
 
+import {debugLog} from './debug';
 import {Framework} from "./FileViewer";
 import {MoodleQuestionAttemptSyncer, MoodleSyncer} from "./MoodleSyncer";
 // Import * as FormChangeChecker from 'core_form/changechecker';
 
+/**
+ * Creates and initialises the file explorer.
+ *
+ * @param {string} nodename id of the HTML element containing the explorer
+ * @param {Object} options explorer options (e.g. readonly)
+ */
 function _start(nodename, options) {
-    console.log('start for ' + nodename);
+    debugLog('start for ' + nodename);
     const explorer = document.getElementById(nodename);
 
     let framework = new Framework();
     framework.buildFramework(explorer);
     // Let submission = new RootNode('Submission', framework);
     if (options.readonly) {
-        console.log('create readonly framework');
+        debugLog('create readonly framework');
         let syncer = new MoodleQuestionAttemptSyncer(options);
         framework.init(explorer, syncer, true, options);
     } else {
-        console.log('create readwrite framework');
+        debugLog('create readwrite framework');
         let syncer = new MoodleSyncer(options);
         framework.init(explorer, syncer, false, options);
 
-        console.log('change submit function for check button');
+        debugLog('change submit function for check button');
         let parent = explorer.closest('.que');
         let submitbutton = parent.querySelector('[type="submit"]');
         if (submitbutton !== null) {
             // In student review there will be no button!
             submitbutton.onclick = (event) => {
-                console.log('save before check');
+                debugLog('save before check');
                 // Alert('button submit');
                 framework.save(); // Synchronous action!
             };
         }
 
-        console.log('change submit function for finish attempt');
+        debugLog('change submit function for finish attempt');
         let buttons = document.querySelectorAll('.submitbtns');
-        buttons.forEach(button => button.onclick = (event) => {
-            console.log('save before finish');
-            // Alert('button finish');
-            framework.save(); // Synchronous action!
+        buttons.forEach(button => {
+            button.onclick = (event) => {
+                debugLog('save before finish');
+                // Alert('button finish');
+                framework.save(); // Synchronous action!
+            };
         });
     }
 
@@ -74,7 +83,6 @@ function _start(nodename, options) {
     /* let form = explorer.closest('form');
     form.onsubmit = (event) => {
         // alert('form submit');
-        // console.log('save before submit');
         // framework.save(); // synchronous action!
     }; */
 
@@ -114,7 +122,6 @@ function _start(nodename, options) {
             event.returnValue = null;
         };*/
     } else {
-        // Console.log('NO onbeforeunload function');
     }
 
 
@@ -136,7 +143,7 @@ function _start(nodename, options) {
 }
 
 export const createExplorer = (nodename, options) => {
-    console.log('createExplorer called');
+    debugLog('createExplorer called');
 
 
     // We must wait for the document to be ready.

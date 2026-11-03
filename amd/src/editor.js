@@ -1,8 +1,7 @@
 
 
-/* global Treeitem */
+import {debugLog} from './debug.js';
 
-'use strict';
 
 /**
  * ARIA Treeview example
@@ -22,8 +21,13 @@ Promise.all([
 //    Import('/amd/src/FileViewer.js') // inside Moodle
 ])
     .then(([fileviewer, fakesyncer]) => {
-        console.log("editor.js script started");
+        debugLog("editor.js script started");
 
+        /**
+         * Calls the function as soon as the DOM is ready.
+         *
+         * @param {Function} fn function to be called
+         */
         function docReady(fn) {
             // See if DOM is already available
             if (document.readyState === "complete" || document.readyState === "interactive") {
@@ -34,8 +38,11 @@ Promise.all([
             }
         }
 
+        /**
+         * Creates the file explorers of the test page.
+         */
         function _open() {
-            console.log('initialise elements');
+            debugLog('initialise elements');
 
             // # 1
             const options1 = [];
@@ -58,18 +65,17 @@ Promise.all([
             //            Let submission2 = new fileviewer.RootNode('Submission', framework2);
             framework2.init(explorer2, syncer2, true);
 
-            console.log('change submit function');
+            debugLog('change submit function');
             let form = explorer1.closest('form');
-            console.log(form);
+            debugLog(form);
             let originalSubmit = form.submit;
-            console.log(form.submit);
+            debugLog(form.submit);
             try {
                 let wrappedSubmit = (e) => {
                     e.preventDefault();
                     // E.preventDefault();
                     // window.history.back();
                     // form.action = '/action_page3.php';
-                    // console.log('wrappedSubmit');
                     alert('save form');
                     setTimeout(() => {
                         alert('timeout expired');
@@ -81,7 +87,7 @@ Promise.all([
                 form.onsubmit = wrappedSubmit;
                 // Form.addEventListener('submit', wrappedSubmit);
             } catch (e) {}
-            console.log(form.submit);
+            debugLog(form.submit);
 /*
             Let button = form.querySelector('input[type="submit"]');
             console.log(button);
@@ -137,7 +143,7 @@ Promise.all([
         }
 
         docReady(function() {
-            console.log("doc ready");
+            debugLog("doc ready");
             _open();
         });
 });

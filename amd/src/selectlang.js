@@ -25,14 +25,22 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
 import SaveCancelModal from 'core/modal_save_cancel';
 import * as ModalEvents from 'core/modal_events';
+import Notification from 'core/notification';
 
 export const select_lang = (title, proglangs, returnurl) => {
+    /**
+     * Creates the HTML form with one radio button per programming language.
+     *
+     * @param {Array} proglangs list of [value, label] pairs
+     * @returns {string} HTML form
+     */
     function createBody(proglangs) {
         let body = "<form>";
         body += '<fieldset>';
-        // Console.log(proglangs);
         proglangs.forEach(function(item, index) {
             // We add a human readable identifier for testing access.
             let id = item[1].toLowerCase().split(' ')[0];
@@ -55,6 +63,9 @@ export const select_lang = (title, proglangs, returnurl) => {
         body += '</form>';
         return body;
     }
+    /**
+     * Shows the modal dialog for selecting the programming language.
+     */
     function doModal() {
         SaveCancelModal.create({
             title,

@@ -25,8 +25,11 @@
  * @author     K.Borm
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
 
-import Notification, {exception as displayException} from 'core/notification';
+
+import {debugLog} from '../debug';
+import Notification from 'core/notification';
 import Y from 'core/yui';
 import Templates from 'core/templates';
 import {TestWrapper} from "./test";
@@ -45,6 +48,7 @@ import * as zip from "../zip/zip";
 import * as logmonitor from "../logmonitor";
 
 var draftitemid = null;
+// eslint-disable-next-line no-unused-vars
 var draftfilename = null;
 var taskrepositoryparams = null;
 let modelsolrepositoryparams = null;
@@ -54,35 +58,32 @@ let taskmaxbytes;
 
 /**
  * Edit task
- * @param buttonid id of button to trigger opening taskeditor
- * @param context programming language contexts
- * @param taskrepoparams parameters for interacting with draft tasks
- * @param msrepoparams parameters for interacting with draft model solutions
- * @param inline
+ * @param {string} buttonid id of button to trigger opening taskeditor
+ * @param {Object} context programming language contexts
+ * @param {Object} taskrepoparams parameters for interacting with draft tasks
+ * @param {Object} msrepoparams parameters for interacting with draft model solutions
  * @returns {Promise<void>}
  */
-export async function edit(buttonid, context, taskrepoparams, msrepoparams, inline) {
+export async function edit(buttonid, context, taskrepoparams, msrepoparams) {
     taskrepositoryparams = taskrepoparams;
     modelsolrepositoryparams = msrepoparams;
     taskmaxbytes = context.taskmaxbytes;
-    console.log('Task max bytes: ' + taskmaxbytes);
+    debugLog('Task max bytes: ' + taskmaxbytes);
+
 
     /**
-     * Get localized string for cancel/close button
-     * @returns {Promise<void>}
+     * Downloads the task file of the draft area from the Moodle server.
+     *
+     * @returns {Promise}
      */
-    async function init() {
-        // CloseString = await getString('close', 'editor');
-    }
-
     function downloadTaskFromServer() {
-        console.log('download task ' + draftitemid);
+        debugLog('download task ' + draftitemid);
         const t0 = performance.now();
         return downloadTask(draftitemid)
             .then(response => {
                 const t1 = performance.now();
-                console.log("getting task url took " + (t1 - t0) + " milliseconds.");
-                console.log(response.fileurl);
+                debugLog("getting task url took " + (t1 - t0) + " milliseconds.");
+                debugLog(response.fileurl);
                 draftfilename = decodeURIComponent(response.fileurl.split('/').reverse()[0]);
                 if (!response.fileurl) {
                     return Promise.reject(new Error('invalid fileurl ' + response.fileurl));
@@ -104,10 +105,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             return;
         }
 
-        const aggregationstrategy = document.querySelector('#id_aggregationstrategy');
-        // Console.log('aggregationstrategy ' + aggregationstrategy.value);
-
-        // console.log(gradinghints.value);
         const count = document.querySelectorAll('.proforma-taskeditor .xml_test').length;
         for (let i = 0; i < count; i++) {
             const testid = document.getElementById('id_testid_' + i);
@@ -151,25 +148,27 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         }
 
         const t1 = performance.now();
-        console.log("expanding details took " + (t1 - t0) + " milliseconds.");
+        debugLog("expanding details took " + (t1 - t0) + " milliseconds.");
     }
 
+    /**
+     * Reads the downloaded task file (zip or xml) and displays it in the task editor.
+     *
+     * @param {Response} taskresponse fetch response with the task file
+     * @returns {Promise}
+     */
     function displayTaskdata(taskresponse) {
         const extension = getExtension(taskresponse.url);
         switch (extension) {
             case 'zip':
-                // Console.log('task file is zipped! => extract');
                 return taskresponse.blob()
                     .then(blob => {
-                        // Console.log('blob is');
-                        // console.log(blob);
                         unzipme(blob, function(text) {
                             readXMLWithLock(text)
                                 .then(() => mergeWithGradingHints());
                         });
                     });
             case 'xml':
-                // Console.log('task file is not zipped');
                 return taskresponse.text()
                     .then(text => {
                         readXMLWithLock(text)
@@ -184,6 +183,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
      * Some disabled input fields are enabled in order to submit
      * the values to moodle so that they will be stored in the database.
      */
+    // eslint-disable-next-line no-unused-vars
     function revertChangesForSubmission() {
         let uuid = document.querySelector("input[name='uuid']");
         if (!uuid) {
@@ -198,8 +198,11 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             proformaversion.disabled = true;
         }
     }
+    /**
+     * Adapts the Moodle form to the task editor (e.g. hides the original test input fields).
+     */
     function updateEnvironment() {
-        console.log('*** updateEnvironment');
+        debugLog('*** updateEnvironment');
         // Hide original test input fields:
         // (better use hide if ???)
         document.querySelectorAll('[id^="fgroup_id_testoptions_"]').forEach(item => {
@@ -213,7 +216,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         });
 
 
-        const questionId = document.querySelector("input[name='id']").value;
         // Since the editor was opened, a new uuid is generated immediately,
         // because changes are not tracked.
         // This means that when the task is saved, a new uuid is set.
@@ -289,18 +291,18 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             let realUpdateClick = updatebutton.onclick;
             updatebutton.onclick = (event) => {
                 event.preventDefault();
-                console.log('save before update');
+                debugLog('save before update');
                 updatebutton.disabled = true;
                 saveToServer()
                     .then(() => {
                         updatebutton.disabled = false;
-                        console.log('Task is uploaded to server');
+                        debugLog('Task is uploaded to server');
                         updatebutton.onclick = realUpdateClick;
                         updatebutton.click();
                     })
                    .catch(error => {
                        if (!(error instanceof InputError)) {
-                           console.log(error);
+                           debugLog(error);
                            alert(error);
                        }
                     })
@@ -317,11 +319,11 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             let realSubmitClick = submitbutton.onclick;
             submitbutton.onclick = (event) => {
                 event.preventDefault();
-                console.log('save before submit');
+                debugLog('save before submit');
                 submitbutton.disabled = true;
                 saveToServer()
                     .then(() => {
-                        console.log('Task is uploaded to server');
+                        debugLog('Task is uploaded to server');
                         submitbutton.disabled = false;
                         submitbutton.onclick = realSubmitClick;
                         submitbutton.click();
@@ -330,7 +332,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
                     })
                     .catch(error => {
                         if (!(error instanceof InputError)) {
-                            console.log(error);
+                            debugLog(error);
                             alert(error);
                         }
                     })
@@ -361,13 +363,16 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
         }
     }
 
+    /**
+     * Shows the task editor and loads the task of an existing question.
+     */
     function showTaskeditor() {
         t0 = performance.now();
         draftitemid = document.querySelector("#id_task").value;
         let questionId = document.querySelector("input[name='id']").value;
         if (questionId === "") {
             // New question => finished.
-            console.log('new task');
+            debugLog('new task');
             ModelSolutionWrapper.createFromTemplate();
             updateEnvironment();
             document.querySelector('.proforma-taskeditor').style.display = '';
@@ -403,30 +408,28 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
             })
             .catch((error) => {
                 loadingElem.remove();
-                Notification.exception;
+                Notification.exception(error);
             });
     }
 
     const questionId = document.querySelector("input[name='id']").value;
     // Hide editor if hidden 'taskeditor' input field is set to 0 (default)
     const taskeditorRequested = document.querySelector("input[name='taskeditor']");
-    // Console.log('Check if taskeditor shall be visible or not');
-    // console.log(taskeditorRequested);
 
     taskeditorconfig.initStrings()
         .then(() => {
             if (questionId === "" || (taskeditorRequested && taskeditorRequested.value === '1')) {
-                console.log('show editor');
+                debugLog('show editor');
                 // Hide details button.
                 document.getElementById(buttonid).style.display = 'none';
                 // Show and fill editor
                 showTaskeditor();
             } else {
-                console.log('hide editor');
+                debugLog('hide editor');
                 // Hide editor
                 document.querySelector('.proforma-taskeditor').style.display = 'none';
                 // Show editor on button click
-                document.getElementById(buttonid).addEventListener('click', e => {
+                document.getElementById(buttonid).addEventListener('click', () => {
                     document.getElementById(buttonid).disabled = true;
                     showTaskeditor();
                 });
@@ -456,8 +459,6 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
             $.when(stringsPromise, modalPromise, bodyPromise, taskPromise)
                 .then(function(strings, modal, {html, js}, taskresponse) {
-                    // console.log(html);
-                    // console.log(js);
 
                     modal.setTitle(strings[0]);
 
@@ -518,6 +519,13 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams, inli
 
 }
 
+/**
+ * Fills a select element with the given values.
+ *
+ * @param {string} id id of the select element
+ * @param {string[]} selectArray values
+ * @param {string} textForError name of the values used in error messages (e.g. JUnit)
+ */
 function fillSelectOptions(id, selectArray, textForError) {
     let selectElem = document.getElementById(id);
     if (!selectElem) {
@@ -548,7 +556,7 @@ function fillSelectOptions(id, selectArray, textForError) {
 
 /**
  * Get JUnit version from Moodle configuration and add to JUnit list
- * @param id identifier of select element
+ * @param {string} id identifier of select element
  */
 export const setJunitVersions = (id) => {
     // TODO: kann man die JUnit version nicht besser über eine Core-Funktion holen??
@@ -561,7 +569,7 @@ export const setJunitVersions = (id) => {
 
 /**
  * Get Checkstyle version from Moodle server and add to select options
- * @param id identifier of select element
+ * @param {string} id identifier of select element
  */
 export const setCheckstyleVersions = (id) => {
     getCheckstyleVersions()
@@ -571,6 +579,11 @@ export const setCheckstyleVersions = (id) => {
         .fail(Notification.exception);
 };
 
+/**
+ * Creates a new test in the task editor.
+ *
+ * @param {Object} testconfig test configuration
+ */
 function createTestForm(testconfig) {
     TestWrapper.createFromTemplate(null,
         testconfig.mustacheTemplate, testconfig.getTemplateContext(), testconfig.withFileRef);
@@ -578,6 +591,9 @@ function createTestForm(testconfig) {
 
 export const initproglang = (proglangdiv, buttondiv, langselect) => {
 
+    /**
+     * Adds the callbacks for the buttons creating new tests.
+     */
     function addButtonCallbacks() {
         document.querySelector('#addJUnitTest').onclick = function(e) {
             e.preventDefault();
@@ -643,15 +659,21 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
 
         // Show buttons for this language
         document.querySelectorAll('#' + buttondiv + ' .' + lang).forEach(
-            e => e.style.display = ''
+            e => {
+                e.style.display = '';
+            }
         );
         // Hide other versions
         document.querySelectorAll('#' + proglangdiv + ' select:not(#xml_programming-language-' + lang + ')').forEach(
-            e => e.style.display = 'None'
+            e => {
+                e.style.display = 'None';
+            }
         );
         // Hide other buttons
         document.querySelectorAll('#' + buttondiv + ' :not(.' + lang + ')').forEach(
-            e => e.style.display = 'None'
+            e => {
+                e.style.display = 'None';
+            }
         );
     };
 
@@ -687,7 +709,7 @@ export const downloadModelsolution = (buttonid) => {
         e.preventDefault();
         createModelSolutionZip()
             .then(zippedBlob => {
-                console.log(zippedBlob);
+                debugLog(zippedBlob);
                 const url = window.URL.createObjectURL(zippedBlob);
                 let b = document.createElement("a");
                 b.style = "display: none";
@@ -719,6 +741,12 @@ export const toggleFullscreen = (buttonid) => {
 };
 
 
+/**
+ * Creates the grading hints (test weights) from the tests in the task editor.
+ *
+ * @param {boolean} temporary true if the grading hints are not stored in the form
+ * @returns {string} URI encoded grading hints
+ */
 function createGradingHints(temporary = false) {
     let doc = document.implementation.createDocument(null, null, null);
     let gh = doc.createElement("grading-hints");
@@ -742,7 +770,7 @@ function createGradingHints(temporary = false) {
         test.appendChild(testtype);
     });
 
-    console.log('create new grading hints');
+    debugLog('create new grading hints');
     const gradinghints = document.querySelector('input[name="gradinghints"]');
     if (!gradinghints) {
         console.error('No gradinghints field found => ignore');
@@ -755,45 +783,53 @@ function createGradingHints(temporary = false) {
         result = '<?xml version="1.0"?>' + result;
         // Result = "<?xml version='1.0' encoding='UTF-8'?>" + result;
     }
-    console.log(result);
+    debugLog(result);
     if (!temporary) {
         gradinghints.value = encodeURIComponent(result);
     }
-    console.log('grading hints are finished');
+    debugLog('grading hints are finished');
     return encodeURIComponent(result);
 }
 
+/**
+ * Uploads the model solution files to a new draft area of the Moodle server.
+ */
 function uploadModelSolutionToServer() {
     // Instead of using the current draftid and delete all files
     // we use a new unused draftid.
     const draftitemid = modelsolrepositoryparams.newitemid;
 
     // Const draftitemid = document.querySelector("input[name='modelsol']").value;
-    console.log('draftid for model sol is ' + draftitemid);
+    debugLog('draftid for model sol is ' + draftitemid);
 
-    console.log('now let us model solution in Moodle server');
+    debugLog('now let us model solution in Moodle server');
 
+    /**
+     * Uploads a file synchronously to the Moodle repository.
+     *
+     * @param {FormData} formData upload data
+     */
     function uploadFile(formData) {
         const url = Config.wwwroot + '/repository/repository_ajax.php';
         const action = 'upload';
 
         let request = new XMLHttpRequest();
         request.open('POST', url + '?action=' + action, false);
-        console.log('send');
+        debugLog('send');
         try {
             request.send(formData);
             if (request.status !== 200) {
                 alert(`Error ${request.status}: ${request.statusText}`);
             } else {
-                console.log(request.response);
+                debugLog(request.response);
             }
         } catch (err) { // Instead of onerror
             alert("Request failed");
         }
-        console.log('parse repsonse');
+        debugLog('parse repsonse');
         const jsonResponse = JSON.parse(request.responseText);
-        console.log('response from Moodle');
-        console.log(jsonResponse);
+        debugLog('response from Moodle');
+        debugLog(jsonResponse);
         if (jsonResponse.error !== undefined) {
             console.error(request.responseText);
             alert(jsonResponse.error);
@@ -805,14 +841,11 @@ function uploadModelSolutionToServer() {
         let modelSolution = new TaskModelSolution();
         modelSolution.id = ms.id;
         let counter = 0;
-        // Console.log('MS id is ' + ms.id);
         ModelSolutionFileReference.getInstance().doOnAll(function(id) {
             modelSolution.filerefs[counter++] = new TaskFileRef(id);
-            // Console.log('MS Fileref is ' + id);
             let file = FileWrapper.constructFromId(id);
-            // Console.log('filename is ' + fileStorages[id].filename);
             const formData = new FormData();
-            console.log(fileStorages);
+            debugLog(fileStorages);
             formData.append('sesskey', Config.sesskey);
             formData.append('client_id', modelsolrepositoryparams.client_id);
             formData.append('overwrite', true);
@@ -824,16 +857,14 @@ function uploadModelSolutionToServer() {
             formData.append('title', filename);
             if (fileStorages[id].isBinary) {
                 let blob = new Blob([fileStorages[id].content], {type: fileStorages[id].mimetype});
-                // Console.log(blob);
                 formData.append('repo_upload_file', blob);
             } else {
                 let content = file.text;
-                // Console.log('Content is ' + content);
                 formData.append('repo_upload_file', new Blob([content], {type: 'plain/text'}));
             }
             formData.append('filepath', '/');
             formData.append('savepath', filepath);
-            console.log(formData);
+            debugLog(formData);
             uploadFile(formData);
         }, ms.root);
     });
@@ -842,6 +873,11 @@ function uploadModelSolutionToServer() {
     document.querySelector("input[name='modelsol']").value = draftitemid;
 }
 
+/**
+ * Creates a zip file containing all model solution files.
+ *
+ * @returns {Promise<Blob>} zip file
+ */
 async function createModelSolutionZip() {
     const zipFileWriter = new zip.BlobWriter("application/zip");
     const zipWriter = new zip.ZipWriter(zipFileWriter);
@@ -850,27 +886,20 @@ async function createModelSolutionZip() {
     ModelSolutionWrapper.doOnAll(function(ms) {
         let modelSolution = new TaskModelSolution();
         modelSolution.id = ms.id;
-        // Console.log('MS id is ' + ms.id);
         ModelSolutionFileReference.getInstance().doOnAll(async function(id) {
             const filename = fileStorages[id].filename;
-            // Console.log('filename is ' + filename);
             let content = null;
             if (fileStorages[id].isBinary) {
-                // Console.log('binary');
                 content = new Blob([fileStorages[id].content]);
             } else {
-                // Console.log('non binary');
                 let file = FileWrapper.constructFromId(id);
                 content = new Blob([file.text], {type: 'plain/text'});
                 // FormData.append('repo_upload_file', new Blob([content], { type : 'plain/text' }));
             }
-            // Console.log('Content is ' + content);
             await zipWriter.add(filename, new zip.BlobReader(content));
         }, ms.root);
     });
-    // Console.log('wait for close');
     await zipWriter.close();
-    // Console.log('return content');
     return zipFileWriter.getData();
 }
 
@@ -878,8 +907,8 @@ async function createModelSolutionZip() {
  * Send task with model solution and grading hints to Moodle server in order let
  * the task run on grader. The result is shown in extra div element.
  *
- * @param buttonid
- * @param containerid
+ * @param {string} buttonid id of the button starting the check
+ * @param {string} containerid id of the element showing the feedback
  */
 export function checkModelsolution(buttonid, containerid) {
     let button = document.getElementById(buttonid);
@@ -890,12 +919,20 @@ export function checkModelsolution(buttonid, containerid) {
     let htmlFeedback = '';
     let feedbackstarted = false;
 
+    /**
+     * Called when the feedback starts: resets the feedback.
+     */
     function onFeedbackStart() {
         container.style.display = '';
         container.style.cursor = defaultcursor;
         htmlFeedback = '';
         feedbackstarted = true;
     }
+    /**
+     * Called for each feedback line: collects the feedback.
+     *
+     * @param {string} text feedback line
+     */
     function onFeedbackData(text) {
         if (feedbackstarted) {
             htmlFeedback += text + '\n';
@@ -903,11 +940,14 @@ export function checkModelsolution(buttonid, containerid) {
             htmlFeedback += text + '<br>';
         }
     }
+    /**
+     * Called when the feedback is complete: displays the feedback.
+     */
     function onFeedbackEnd() {
         container.innerHTML = htmlFeedback;
         document.querySelectorAll('#check-feedback-id .collapsibleregion')
             .forEach(element => {
-                console.log('create collapsible region for ' + element.id);
+                debugLog('create collapsible region for ' + element.id);
                 M.util.init_collapsible_region(Y, element.id, '', 'EIN VERSUCH IST ES WERT');
             });
     }
@@ -931,7 +971,7 @@ export function checkModelsolution(buttonid, containerid) {
                 // Task is zipped => zip model solution
                 // (could be made in parallel but makes code a bit more complex
                 // so I do not do this)
-                console.log('task zip created ');
+                debugLog('task zip created ');
                 // Blob is the zipped version of the whole task
                 blobtask = blob;
                 return createModelSolutionZip();
@@ -940,9 +980,8 @@ export function checkModelsolution(buttonid, containerid) {
                 const gradinghints = createGradingHints(true);
                 const proglang = document.getElementById("xml_programming-language").value;
                 // Model solution is zipped => send to Moodle server
-                console.log('upload files to moodle');
+                debugLog('upload files to moodle');
                 const url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php';
-                const questionId = document.querySelector("input[name='id']").value;
                 const formData = new FormData();
                 formData.append('sesskey', Config.sesskey);
                 formData.append('task', blobtask, 'task.zip');
@@ -973,10 +1012,10 @@ export function checkModelsolution(buttonid, containerid) {
             .then(json => {
                 // Forward json to logmonitor.
                 if (json.error) {
-                    console.log(json);
+                    debugLog(json);
                     return Promise.reject(json.error);
                 }
-                console.log('run tests on grader and stream output');
+                debugLog('run tests on grader and stream output');
                 let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
                 url += '&sesskey=' + Config.sesskey +
                     //                        '&questionid=' + questionId +
@@ -992,12 +1031,11 @@ export function checkModelsolution(buttonid, containerid) {
             })
             .catch(error => {
                 if (!(error instanceof InputError)) {
-                    console.log(error);
+                    debugLog(error);
                     alert(error);
                 }
             })
             .finally(() => {
-                // Console.log('finally promise');
                 button.disabled = false;
             });
     };
@@ -1035,7 +1073,7 @@ function saveToServer() {
             return zipme(context, false, taskmaxbytes);
         })
         .then(blobtask => {
-            console.log('now let us update task in  Moodle server: ' + draftitemid);
+            debugLog('now let us update task in  Moodle server: ' + draftitemid);
             const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
             const formData = new FormData();
             formData.append('sesskey', Config.sesskey);
@@ -1052,15 +1090,20 @@ function saveToServer() {
             });
         })
         .then(response => {
-            console.log(response);
+            debugLog(response);
             return response.json();
         })
         .then(json => {
-            console.log(json);
+            debugLog(json);
         });
         // Do not catch here because error will not be detected in calling function!!
 }
 
+/**
+ * Creates the task file and uploads it to the grader when the button is clicked.
+ *
+ * @param {string} buttonid id of the upload button
+ */
 export function uploadTaskToGrader(buttonid) {
     let button = document.getElementById(buttonid);
     if (!button) {
@@ -1076,7 +1119,7 @@ export function uploadTaskToGrader(buttonid) {
                 return zipme(context, false, taskmaxbytes);
             })
             .then(blobtask => {
-                console.log('upload file to Moodle');
+                debugLog('upload file to Moodle');
                 const url = Config.wwwroot + '/question/type/proforma/taskeditor_ajax.php';
                 // Const questionId = document.querySelector("input[name='id']").value;
                 const formData = new FormData();
@@ -1105,10 +1148,10 @@ export function uploadTaskToGrader(buttonid) {
             })
             .then(json => {
                 if (json.error) {
-                    console.log(json);
+                    debugLog(json);
                     return Promise.reject(json.error);
                 }
-                console.log('upload file from Moodle to grader');
+                debugLog('upload file from Moodle to grader');
                 const questionId = document.querySelector("input[name='id']").value;
                 let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';
                 url += '?sesskey=' + Config.sesskey + '&id=' + questionId;
@@ -1123,7 +1166,7 @@ export function uploadTaskToGrader(buttonid) {
             })
             .catch(error => {
                 if (!(error instanceof InputError)) {
-                    console.log(error);
+                    debugLog(error);
                     alert(error);
                 }
             })

@@ -25,6 +25,17 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
+/**
+ * Hides or shows a form field depending on the content of another field.
+ *
+ * @param {string} id id of field to hide/show
+ * @param {string} dependend id of field with URI
+ * @param {string} needle text to search for in the URI field
+ * @param {string} optionfield id of response format field
+ * @param {string} option version control option
+ */
 function showOrHide(id, dependend, needle, optionfield, option) {
     try {
         // Get value in depended input.
@@ -41,7 +52,7 @@ function showOrHide(id, dependend, needle, optionfield, option) {
         }
         document.getElementById('fitem_' + id).style.display = remove ? 'none' : null;
     } catch (e) {
-        console.log('error ' + e);
+        console.error('error ' + e);
     }
 }
 
@@ -49,11 +60,11 @@ function showOrHide(id, dependend, needle, optionfield, option) {
 /**
  * Hide/show input field for label of version control input value
  *
- * @param {type} id: id of field to hide/show
- * @param {type} dependend: id of field with URI
- * @param {type} needle: '{input}'
- * @param {type} optionfield: if of response format field
- * @param {type} option: version control option
+ * @param {string} id id of field to hide/show
+ * @param {string} dependend id of field with URI
+ * @param {string} needle '{input}'
+ * @param {string} optionfield id of response format field
+ * @param {string} option version control option
  * @returns {undefined}
  */
 export const showif = (id, dependend, needle, optionfield, option) => {
@@ -76,11 +87,10 @@ export const showif = (id, dependend, needle, optionfield, option) => {
 
 /**
  * Removes required check
- * @param id
- * @param dependend
- * @param option
+ * @param {string} id id of the form element
+ * @param {string} dependend id of the select element it depends on
  */
-export const requiredif = (id, dependend, option) => {
+export const requiredif = (id, dependend) => {
     let element = document.getElementById(id);
     if (element) {
         let selectelem = document.getElementById(dependend);

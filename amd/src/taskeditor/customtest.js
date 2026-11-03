@@ -75,8 +75,6 @@ export class CustomTest {
         // Distinguish between CUnit and Google test with C++ by framework
         if (this.frameworks && item.framework) {
             if (!this.frameworks.includes(item.framework.toLowerCase())) {
-                // Console.log(item.framework + ' is not in ')
-                // console.log(configItem.frameworks);
                 // Framework does not match
                 return false;
             }
@@ -84,9 +82,11 @@ export class CustomTest {
         return true;
     }
     // Override
+    /* eslint-disable no-unused-vars */
     onCreate(testId) {}
     onReadXml(test, xmlReader, testConfigNode, context) {}
     onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {}
+    /* eslint-enable no-unused-vars */
     getFramework() {
         return undefined;
     }

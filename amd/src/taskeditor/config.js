@@ -25,6 +25,7 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm (Dr.U.Priss)
  */
 
+import $ from 'jquery';
 import {CustomTest} from "./customtest";
 import * as Str from 'core/str';
 
@@ -59,6 +60,11 @@ let pythondocHelp;
 const weightCompilation = 0;
 const weightStaticTest = 0.2;
 
+/**
+ * Loads the localised help strings and initialises the test configurations.
+ *
+ * @returns {Promise}
+ */
 export function initStrings() {
     let strings = [
         {key: 'gtest_help_short', component: 'qtype_proforma'},
@@ -70,7 +76,6 @@ export function initStrings() {
     ];
     return Str.get_strings(strings)
         .then(results => {
-            // Console.log('config strings are initialised');
             gtestHelp = results[0];
             cunittestHelp = results[1];
             makerunHelp = results[2];
@@ -97,6 +102,13 @@ export function initStrings() {
         });
 }
 
+/**
+ * Returns the namespace URI for a prefix depending on the ProFormA version.
+ *
+ * @param {string} prefix namespace prefix
+ * @param {string} defaultns default namespace of the task (ProFormA version)
+ * @returns {string} namespace URI (empty if unknown)
+ */
 export function resolveNamespace(prefix, defaultns) {
     // Todo: find better solution to figure out if namespace is supported
     switch (defaultns) {
@@ -131,10 +143,6 @@ export function resolveNamespace(prefix, defaultns) {
 */
 //    }
 
-
-    function writeXmlExtra(metaDataNode, xmlDoc, xmlWriter) {
-    // XmlWriter.createTextElement(metaDataNode, 'praktomat:allowed-upload-filename-mimetypes', '(text/.*)', praktomatns);
-    }
 
 /*
     ReadXml(xmlfile) {
@@ -293,15 +301,16 @@ class JUnitTest extends GeneralUnitTest {
             context.framework_version = xmlReader.readSingleText("praktomat:version", testConfigNode);
             } else {
                 switch (csNode.namespaceURI) {
-                    case checkstylens:
+                    case checkstylens: {
                         const version = xmlReader.readSingleText("@version", csNode);
-                    context.framework_version = {
+                        context.framework_version = {
                             "selected": true,
                             "value": version,
                             "name": version
                         };
-                    context.warnings = xmlReader.readSingleText("cs:max-checkstyle-warnings", csNode);
+                        context.warnings = xmlReader.readSingleText("cs:max-checkstyle-warnings", csNode);
                         break;
+                    }
                     default:
                         throw new Error('unsupported namespace ' + xmlReader.defaultns + ' in JUnitTest');
                 }

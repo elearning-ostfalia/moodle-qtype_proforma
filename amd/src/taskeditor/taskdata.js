@@ -25,8 +25,11 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
 
-import {setErrorMessage, getMimeType, generateUUID} from "./helper";
+
+import {debugLog} from '../debug';
+import {setErrorMessage, getMimeType} from "./helper";
 import * as taskeditorconfig from "./config";
 import {FileStorage, fileStorages} from "./file";
 
@@ -279,6 +282,15 @@ export class TaskClass {
         let templateReferenced = false; // Is template referenced in test or somewhere else?
 
 
+        /**
+         * Reads the file references of a node (ProFormA 1.0.1).
+         *
+         * @param {Object} xmlReader XML reader
+         * @param {Object} element object to which the file references are added
+         * @param {Node} thisNode XML node containing the file references
+         * @param {string} visibility visibility of the referenced files (optional)
+         * @param {Object} task task object (optional)
+         */
         function readFileRefs(xmlReader, element, thisNode, visibility, task) {
             let fileRefIterator = xmlReader.readNodes("dns:filerefs/dns:fileref", thisNode);
             let fileRefNode = fileRefIterator.iterateNext();
@@ -291,7 +303,7 @@ export class TaskClass {
                 }
                 element.filerefs[counter++] = fileRef;
                 fileRefNode = fileRefIterator.iterateNext();
-                if (visibility != null) {
+                if (visibility !== null) {
                     // Increase visibilty
                     switch (task.files[fileRef.refid].visible) {
                         case T_VISIBLE.NO: task.files[fileRef.refid].visible = visibility; break;
@@ -416,6 +428,13 @@ export class TaskClass {
 
     readXmlVersion2(xmlfile) {
 
+        /**
+         * Reads the file references of a node (ProFormA 2.0).
+         *
+         * @param {Object} xmlReader XML reader
+         * @param {Object} element object to which the file references are added
+         * @param {Node} thisNode XML node containing the file references
+         */
         function readFileRefs(xmlReader, element, thisNode) {
             let fileRefIterator = xmlReader.readNodes("dns:filerefs/dns:fileref", thisNode);
             let fileRefNode = fileRefIterator.iterateNext();
@@ -445,7 +464,7 @@ export class TaskClass {
             let thisNode = iterator.iterateNext();
             let editCounter = 0;
             while (thisNode) {
-                const required =
+                // const required =
                 this.fileRestrictions[editCounter++] = new TaskFileRestriction(thisNode.textContent,
                     xmlReader.readSingleText("@required", thisNode, "true") === 'true',
                     xmlReader.readSingleText("@pattern-format", thisNode));
@@ -474,22 +493,26 @@ export class TaskClass {
                             taskfile.content = content.textContent;
                             taskfile.binary = false;
                             break;
-                        case "embedded-bin-file":
+                        case "embedded-bin-file": {
                             // Taskfile.filetype = 'embedded';
-                            function b64DecodeUnicode(encoded) {
-                                return Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
-                            }
+                            /**
+                             * Decodes base64 encoded binary content.
+                             *
+                             * @param {string} encoded base64 encoded content
+                             * @returns {Uint8Array} decoded content
+                             */
+                            const b64DecodeUnicode = (encoded) => Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
                             taskfile.filetype = 'file';
                             taskfile.filename = xmlReader.readSingleText("@filename", content);
                             const filecontent = b64DecodeUnicode(content.textContent);
                             taskfile.content = filecontent;
                             taskfile.binary = true;
-                            // Console.log(filecontent.length);
                             const mimetype = getMimeType('', taskfile.filename); // Get mime type
                             let fileObject = new FileStorage(true, mimetype, filecontent, taskfile.filename);
                             fileObject.setSize(filecontent.length);
                             fileStorages[taskfile.id] = fileObject;
                             break;
+                        }
                         case "attached-bin-file":
                             taskfile.filetype = 'file';
                             taskfile.filename = content.textContent;
@@ -504,7 +527,6 @@ export class TaskClass {
 
                 // Post processing:
                 // copy file content for editor in associated text area
-                const displaymode = xmlReader.readSingleText("@usage-by-lms", thisNode);
                 if (taskfile.usageInLms === T_LMS_USAGE.EDIT) {
                     if (editCounter === 0) {
                         // Do not store as file
@@ -592,9 +614,10 @@ export class TaskClass {
             thisNode = iterator.iterateNext();
             while (thisNode) {
                 const id = xmlReader.readSingleText("@ref", thisNode);
+                const testRefNode = thisNode;
                 this.tests.forEach(function(test) {
                     if (test.id === id) {
-                        test.weight = xmlReader.readSingleText("@weight", thisNode);
+                        test.weight = xmlReader.readSingleText("@weight", testRefNode);
                     }
                 });
                 thisNode = iterator.iterateNext();
@@ -618,8 +641,8 @@ export class TaskClass {
 
 
     // Todo: read data directly from user input instead of using TaskClass object
-    writeXml(topLevelDoc, rootNode) {
-        console.log('*** TaskClass.writeXml');
+    writeXml() {
+        debugLog('*** TaskClass.writeXml');
 
         let xmlDoc = null;
         let files = null;
@@ -647,6 +670,12 @@ export class TaskClass {
 
         // version 2.0
 
+        /**
+         * Writes the code skeleton as file (if any).
+         *
+         * @param {Object} task task object
+         * @param {string} id file id for the code skeleton
+         */
         function writeCodeSkeleton(task, id) {
             if (task.codeskeleton) {
                 let fileElem = xmlDoc.createElementNS(xmlns, "file");
@@ -665,7 +694,12 @@ export class TaskClass {
             }
         }
 
-        function writeFile(item, index) {
+        /**
+         * Writes a file element.
+         *
+         * @param {Object} item task file
+         */
+        function writeFile(item) {
             let fileElem = xmlDoc.createElementNS(xmlns, "file");
             fileElem.setAttribute("id", item.id);
             // FileElem.setAttribute("class", item.fileclass);
@@ -688,8 +722,18 @@ export class TaskClass {
             xmlWriter.createOptionalTextElement(fileElem, 'internal-description', item.comment);
         }
 
-        function writeModelSolution(item, index) {
-            function writeFileref(file, index) {
+        /**
+         * Writes a model solution element.
+         *
+         * @param {Object} item model solution
+         */
+        function writeModelSolution(item) {
+            /**
+             * Writes a file reference.
+             *
+             * @param {Object} file file reference (refid)
+             */
+            function writeFileref(file) {
                 if (file.refid) {
                     let fileref = xmlDoc.createElementNS(xmlns, "fileref");
                     fileref.setAttribute("refid", file.refid);
@@ -712,17 +756,26 @@ export class TaskClass {
             xmlWriter.createOptionalTextElement(msElem, 'internal-description', item.comment);
         }
 
-        function writeTest(item, index) {
-            console.log('*** TaskClass.writeTest');
-            console.log(item);
-            function writeFileref(file, index) {
+        /**
+         * Writes a test element.
+         *
+         * @param {Object} item test
+         */
+        function writeTest(item) {
+            debugLog('*** TaskClass.writeTest');
+            debugLog(item);
+            /**
+             * Writes a file reference.
+             *
+             * @param {Object} file file reference (refid)
+             */
+            function writeFileref(file) {
                 if (file.refid) {
                     let fileref = xmlDoc.createElementNS(xmlns, "fileref");
                     fileref.setAttribute("refid", file.refid);
                     filerefs.appendChild(fileref);
                 }
             }
-            // Console.log('writeXml: create ' + item.title);
 
             let testElem = xmlDoc.createElementNS(xmlns, "test");
             testElem.setAttribute("id", item.id);
@@ -743,21 +796,31 @@ export class TaskClass {
 
             tests.appendChild(testElem);
             if (item.configItem) {
-                console.log('*** item.configItem.onWriteXml');
+                debugLog('*** item.configItem.onWriteXml');
 
                 // Alert('config write xml');
                 item.configItem.onWriteXml(item, config, xmlDoc, xmlWriter, task);
             }
         }
 
-        function writeGradingTest(item, index) {
+        /**
+         * Writes a test reference for the grading hints.
+         *
+         * @param {Object} item test
+         */
+        function writeGradingTest(item) {
             let testElem = xmlDoc.createElementNS(xmlns, "test-ref");
             testElem.setAttribute("weight", item.weight);
             testElem.setAttribute("ref", item.id);
             gradingRoot.appendChild(testElem);
         }
 
-        function writeFileRestriction(item, index) {
+        /**
+         * Writes a file restriction for the submission.
+         *
+         * @param {Object} item file restriction
+         */
+        function writeFileRestriction(item) {
             // Let regexp = xmlWriter.createTextElement(submission, "regexp-restriction", this.filenameRegExpSubmission);
             // submission.appendChild(regexp);
             // regexp.setAttribute("mime-type-regexp", this.mimeTypeRegExpSubmission);
@@ -820,7 +883,6 @@ export class TaskClass {
 
             tests = xmlDoc.createElementNS(xmlns, "tests");
             task.appendChild(tests);
-            const length = this.tests.length;
             this.tests.forEach(writeTest);
 
             // Grading-hints
@@ -844,10 +906,6 @@ export class TaskClass {
                 // Result = "<?xml version='1.0' encoding='UTF-8'?>" + result;
             }
 
-            let xsds = ['xsd/proforma.xsd'];
-            // Do not add all xsds from configuration because not all of them may be used
-            // resulting in an error message
-            xsds = xsds.concat(taskeditorconfig.xsds);
 
 /*
             If (!topLevelDoc) { // do not validate for XML part

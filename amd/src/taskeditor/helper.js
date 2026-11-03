@@ -27,6 +27,7 @@
 
 // Known bugs: search the code for the string "ToDo" below and check faq.html and installationFAQ.html
 
+import {debugLog} from '../debug';
 import $ from 'jquery';
 import {FileWrapper, FileStorage, fileStorages} from "./file";
 import {javaParser} from "./java";
@@ -45,24 +46,42 @@ export const version094 = 'xsd/taskxml0.9.4.xsd'; // Name of schema files
 export const version101 = 'xsd/taskxml1.0.1.xsd';
 
 
-export function setErrorMessage(errormess, exception) { // Setting the error console
-    // console.log('setErrorMessage');
-    console.log(errormess);
-    console.log(exception);
+/**
+ * Shows an error message (and logs the exception in debug mode).
+ *
+ * @param {string} errormess error message
+ * @param {*} exception exception (optional)
+ */
+export function setErrorMessage(errormess, exception) {
+    debugLog(errormess);
+    debugLog(exception);
     window.alert(errormess);
 }
 
+/**
+ * Clears the error message (currently nothing to do).
+ */
 export function clearErrorMessage() {
 
 }
 
-// Without . (MyString.Java = java)
-// to lowercase
+/**
+ * Returns the file extension without . in lowercase (MyString.Java => java).
+ *
+ * @param {string} filename
+ * @returns {string} extension
+ */
 export function getExtension(filename) {
     return filename.split('.').pop().toLowerCase();
 }
 
-// Convert to mimetype that can be directely handeled by codemirror
+/**
+ * Converts to a mimetype that can be directly handled by CodeMirror.
+ *
+ * @param {string} mimetype mimetype of the file
+ * @param {string} filename filename (the extension determines the mimetype)
+ * @returns {string} mimetype for CodeMirror
+ */
 export function getMimeType(mimetype, filename) {
     const extension = filename.split('.').pop().toLowerCase();
     switch (extension) {
@@ -88,25 +107,31 @@ let newUuid;
  */
 export function generateUUID() {
     if (newUuid !== undefined) {
-        // Console.log('newUuid is ' + newUuid + ' (do not change)');
         return newUuid;
     }
     let date = new Date().getTime();
     newUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(cValue) {
+        // eslint-disable-next-line no-bitwise
         let rand = (date + Math.random() * 16) % 16 | 0;
         date = Math.floor(date / 16);
+        // eslint-disable-next-line no-bitwise
         return (cValue === 'x' ? rand : (rand & 0x3 | 0x8)).toString(16);
     });
-    console.log('newUuid is ' + newUuid);
+    debugLog('newUuid is ' + newUuid);
     return newUuid;
 }
 
 
 // ////////////////////////////////////////////////////////////////////////////
-/* setcounter and deletecounter are only used for fileIDs, modelSolIDs, testIDs
- * setcounter finds the first available ID and returns it
- * setcounter should be called when a new item is created
- * deletecounter deletes an ID from the hash, to be used when deleting an item
+/**
+ * Finds the first available ID, marks it as used and returns it.
+ *
+ * Setcounter and deletecounter are only used for fileIDs, modelSolIDs, testIDs.
+ * Setcounter should be called when a new item is created,
+ * deletecounter deletes an ID from the hash, to be used when deleting an item.
+ *
+ * @param {Object} temphash hash with the IDs in use
+ * @returns {number} new ID
  */
 export function setcounter(temphash) {
     let tempcnter = 1;
@@ -118,7 +143,21 @@ export function setcounter(temphash) {
 }
 
 
+/**
+ * Updates dependent fields after a filename has been selected in a file reference.
+ *
+ * Sets the JUnit classname of a test resp. the response filename for a model solution
+ * if they are not yet set.
+ *
+ * @param {string} newFilename selected filename
+ * @param {HTMLElement} tempSelElem select element of the file reference
+ */
 export function handleFilenameChangeInTest(newFilename, tempSelElem) {
+    /**
+     * Sets the entrypoint (classname) of a JUnit test if not yet set.
+     *
+     * @param {string} newFilename
+     */
     function setJavaClassname(newFilename) {
         let testBox = tempSelElem.closest(".xml_test");
         if (testBox) {
@@ -138,10 +177,14 @@ export function handleFilenameChangeInTest(newFilename, tempSelElem) {
         }
     }
 
+    /**
+     * Sets the response filename of the Moodle form for a model solution if not yet set.
+     *
+     * @param {string} newFilename
+     */
     function setResponseFilename(newFilename) {
         let msBox = tempSelElem.closest(".xml_model-solution");
         if (msBox && msBox.length > 0) {
-            // Console.log(msBox);
             // Filename belongs to model solution
             // => get response filename in Moodle form
             let editorfilename = document.getElementById('id_responsefilename');
@@ -173,6 +216,13 @@ export function handleFilenameChangeInTest(newFilename, tempSelElem) {
 }
 
 
+/**
+ * Checks whether a file is a binary file (derived from mimetype and extension).
+ *
+ * @param {File} file
+ * @param {string} mimetype
+ * @returns {boolean} true for binary files
+ */
 function isBinaryFile(file, mimetype) {
     if (file.name.toLowerCase() === 'makefile') {
         return false;
@@ -205,6 +255,15 @@ function isBinaryFile(file, mimetype) {
 }
 
 
+/**
+ * Reads a file from the local file system and adds it to the task.
+ *
+ * Nothing is done if a file with the same name already exists.
+ *
+ * @param {File} file file to read
+ * @param {string|undefined} fileId id of an existing file object (undefined for a new file)
+ * @param {Function} callback function called with filename and file id when finished
+ */
 export function readAndCreateFileData(file, fileId, callback) {
     if (!file) {
         return;
@@ -224,12 +283,16 @@ export function readAndCreateFileData(file, fileId, callback) {
     let isBinary = isBinaryFile(file, mimetype);
     let reader = new FileReader();
     reader.onload = function(e) {
+        /**
+         * Stores the read content in the file object.
+         *
+         * @param {Object} uiFile file wrapper object
+         */
         function finishFile(uiFile) {
             // Set filename
             uiFile.filename = filename;
 
             /*        If (size > taskeditorconfig.maxSizeForEditor) {
-                        //console.log('file '+ filename + ' is too large => no editor support');
                         //isBinary = true;
                     }*/
 
@@ -280,7 +343,6 @@ export function readAndCreateFileData(file, fileId, callback) {
         }
     };
 
-    // Console.log("read file");
     if (isBinary) {
         reader.readAsArrayBuffer(file);
     } else {
@@ -288,9 +350,15 @@ export function readAndCreateFileData(file, fileId, callback) {
     }
 }
 
+/**
+ * Adds dropped files to the task.
+ *
+ * @param {FileList} files dropped files
+ */
+// eslint-disable-next-line no-unused-vars
 function uploadFilesWhenDropped(files) {
     $.each(files, function(index, file) {
-        readAndCreateFileData(file, undefined /* -1*/, function(filename) {
+        readAndCreateFileData(file, undefined /* -1*/, function() {
             // Nothing extra to be done
         });
     });
@@ -299,6 +367,12 @@ function uploadFilesWhenDropped(files) {
 
 // /////////////////////////////////////////////////////// function: readXML
 
+/**
+ * Reads the task XML and displays it while automatic input field updates are locked.
+ *
+ * @param {string} taskXmlText task.xml content
+ * @returns {*} result of readAndDisplayXml
+ */
 export function readXMLWithLock(taskXmlText) {
     readXmlActive = true; // Lock automatic input field update
     try {

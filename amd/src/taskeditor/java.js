@@ -38,17 +38,32 @@ export var javaParser = (function() {
 
     // All private
 
+    /**
+     * Removes all comments from the Java code.
+     *
+     * @param {string} code Java code
+     * @returns {string} code without comments
+     */
     function codeWithoutComment(code) {
         let newCode = code.replace(/\/\*[\s\S]*?\*\//gm, ""); // Comment with /* */
         return newCode.replace(/\/\/.*/g, ""); // Comment with //
     }
 
-    /*
-      Function searches given text string (source code) for the classname and
-      a package name. At first all comment lines are removed in order to avoid
-      delivering data written in comment.
+    /**
+     * Searches given text string (source code) for the classname and
+     * a package name. At first all comment lines are removed in order to avoid
+     * delivering data written in comment.
+     *
+     * @param {string} code Java code
+     * @returns {{class: string, package: string}} classname and package name
      */
     function getClassAndPackage(code) {
+        /**
+         * Returns the package name of the Java code.
+         *
+         * @param {string} code Java code without comments
+         * @returns {string} package name (empty if none)
+         */
         function getPackageName(code) {
             const javapackage = code.match(/package([\s\S]*?);/);
             if (!javapackage) {
@@ -61,6 +76,12 @@ export var javaParser = (function() {
             }
         }
 
+        /**
+         * Returns the classname of the Java code.
+         *
+         * @param {string} code Java code without comments
+         * @returns {string} classname (empty if none)
+         */
         function getClasseName(code) {
             // eslint-disable-next-line max-len
             // Const className = code.match("\\s*(public|private)\\s+class\\((s+)*?)(\\w+)\\s+((extends\\s+\\w+)|(implements\\s+\\w+( ,\\w+)*))?\\s*\\{");
@@ -87,6 +108,13 @@ export var javaParser = (function() {
     }
 
 
+    /**
+     * Derives the filename including the package path from the Java code.
+     *
+     * @param {string} code Java code
+     * @param {string} filename current filename (used if no classname is found)
+     * @returns {string} filename with package path (e.g. de/ostfalia/MyClass.java)
+     */
     function getFilenameWithPackage(code, filename) {
         let out = getClassAndPackage(code);
         // Const className = filename.match(/([\S]*?)(.java)/i);
@@ -94,7 +122,7 @@ export var javaParser = (function() {
         const javapackage = out.package.replace(/\./g, "/");
 
         if (out.class.length > 0) {
-            classname = out.class.trim();
+            let classname = out.class.trim();
             if (classname.endsWith('>')) {
                 classname = classname.substr(0, classname.indexOf('<'));
             }
@@ -115,6 +143,12 @@ export var javaParser = (function() {
         return newFilename;
     }
 
+    /**
+     * Returns the classname without package from the filename.
+     *
+     * @param {string} filename
+     * @returns {string} classname
+     */
     function getPureClassnameFromFilename(filename) {
         let newFilename = filename.replace(/.java/i, "");
         const index = newFilename.indexOf("/");
@@ -124,6 +158,12 @@ export var javaParser = (function() {
         return newFilename;
     }
 
+    /**
+     * Returns the full classname (with package) from the filename.
+     *
+     * @param {string} filename e.g. de/ostfalia/MyClass.java
+     * @returns {string} classname e.g. de.ostfalia.MyClass
+     */
     function getFullClassnameFromFilename(filename) {
         // Replace / by .
         let newFilename = filename.replace(/\//g, ".");

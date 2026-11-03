@@ -25,13 +25,14 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm, Dr. U.Priss
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
+import {debugLog} from '../debug';
+import $ from 'jquery';
 import * as zip from "../zip/zip";
 import {FileStorage, FileWrapper, fileStorages} from "./file";
 import {FileReferenceList} from "./filereflist";
 
-zip.workerScriptsPath = "./js/";
-
-const debugUnzip = false;
 
 let unzippedFiles = {};
 let taskfileRead = false;
@@ -49,11 +50,9 @@ export function relinkFiles() {
     if (!taskfileRead) {
         return;
     } // Wait and retry later
-    // if (debugUnzip) console.log("relinkFiles ");
 
     // store not-embedded files in correct location in fileStorages array
     FileWrapper.doOnAllFiles(function(uiFile) {
-        // If (debugUnzip) console.log("relink " + uiFile.filename + " type: " + uiFile.type);
 
         if (uiFile.type === 'file') {
             const fileid = uiFile.id; // Fileroot.find(".xml_file_id").val();
@@ -63,8 +62,7 @@ export function relinkFiles() {
                 // file is not yet relinked => link to fileStorage
                 fileStorages[fileid] = unzippedFiles[filename];
                 unzippedFiles[filename] = undefined;
-                // If (debugUnzip) console.log("relinkFiles " + filename + " -> " + fileid + " " + uiFile.type +
-                //     " size: " + uiFile.size);
+                // eslint-disable-next-line no-self-assign
                 uiFile.type = uiFile.type; // Needed...
             } else {
                 if (unzippedFiles[filename] && fileStorages[fileid].byZipper) { // FileStorages[fileid].filename.length) {
@@ -93,53 +91,53 @@ export function relinkFiles() {
  * - when everything is read then iterate through all fileIds and
  *   move stored files to fileStorages
  *
- * @param blob: zip file object
- * @param location: where to put the 'task.xml'
- * @param readyCallback: callback for 'task.xml' file
- * @returns {string}
+ * @param {Blob} blob zip file object
+ * @param {Function} readyCallback callback for 'task.xml' file
  */
 export function unzipme(blob, readyCallback) {
-    var unzippedText = "???";
     // Dictionary with files (name -> FileStorage)
     let filesRead = 0;
     let filesToBeRead;
 
-    function onFilesRead(zipReader) {
+    /**
+     * Called when all files are read: moves the files to the file storages.
+     */
+    function onFilesRead(/*zipReader*/) {
         relinkFiles();
         // ZipReader.close();
     }
 
+    /**
+     * Unzips the blob and calls the callbacks for task.xml and for each other file.
+     *
+     * @param {Blob} blob zip file
+     * @param {Function} callbackForTaskXml called with the content of task.xml
+     * @param {Function} callbackForFile called with content and zip entry of each other file
+     */
     function unzipBlob(blob, callbackForTaskXml, callbackForFile) {
           try {
               const zipFileReader = new zip.BlobReader(blob);
               let zipReader = new zip.ZipReader(zipFileReader);
-              console.log('unzip');
+              debugLog('unzip');
               zipReader.getEntries()
                   .then(entries => {
                       filesToBeRead = entries.length;
-                      console.log('filesToBeRead ' + filesToBeRead);
+                      debugLog('filesToBeRead ' + filesToBeRead);
                       entries.forEach(function(entry) {
-                        // Console.log(entry);
-                          console.log('filename: ' + entry.filename);
+                          debugLog('filename: ' + entry.filename);
                           if (entry.filename === 'task.xml') {
-                            // Console.log('unzip task.xml');
                               const taskXmlWriter = new zip.TextWriter();
                               entry.getData(taskXmlWriter)
                                   .then(xmlContent => {
-                                    // If (debugUnzip) console.log('call callback For task.xml');
                                         callbackForTaskXml(xmlContent);
                                     });
                           } else {
                             // Handle attached files'
-                              // console.log('unzip attached file ' + entry.filename);
                               // store file
                               const blobWriter = new zip.BlobWriter();
                               entry.getData(blobWriter)
                                   .then(data => data.arrayBuffer())
                                   .then(data => {
-                                    // Console.log(data);
-                                      // if (debugUnzip)
-                                      //     console.log('call callbackForFile ' + entry.filename);
                                       callbackForFile(data, entry);
                                   });
                           }
@@ -159,14 +157,9 @@ export function unzipme(blob, readyCallback) {
     unzipBlob(blob,
         // Callback for task.xml
         function(taskXmlContent) {
-            unzippedText = taskXmlContent;
             if (readyCallback) {
-                // If (debugUnzip)
-                //     console.log('call readyCallback');
                 readyCallback(taskXmlContent);
             }
-            // If (debugUnzip)
-            //     console.log('set taskfileRead = true');
             taskfileRead = true;
             filesRead++;
             if (filesRead === filesToBeRead) {
@@ -175,9 +168,7 @@ export function unzipme(blob, readyCallback) {
         },
         // Callback for attached files
         function(unzippedBlob, entry) {
-            // Console.log('attached file ' + entry.filename);
-            // console.log(unzippedBlob);
-            // read file header and derive mime type
+            // Read file header and derive mime type
             var arr = (new Uint8Array(unzippedBlob)).subarray(0, 4);
             var header = "";
             for (var i = 0; i < arr.length; i++) {
@@ -203,15 +194,13 @@ export function unzipme(blob, readyCallback) {
                     break;
             }
 
-            // If (debugUnzip) console.log(header + " => " + type);
 
-            // store file
+            // Store file
             unzippedFiles[entry.filename] =
                 new FileStorage(true, type, unzippedBlob, entry.filename);
             unzippedFiles[entry.filename].setZipperFlag();
             unzippedFiles[entry.filename].setSize(entry.uncompressedSize);
             filesRead++;
-            // If (debugUnzip) console.log('filesRead value: ' + filesRead + ' filesToBeRead=' + filesToBeRead);
             if (filesRead === filesToBeRead) {
                 onFilesRead();
             }
@@ -221,8 +210,19 @@ export function unzipme(blob, readyCallback) {
 }
 
 
+/**
+ * Derives the zip filename from the question title.
+ *
+ * @returns {string} filename
+ */
 export function taskTitleToFilename() {
 
+    /**
+     * Converts a string to camel case.
+     *
+     * @param {string} str
+     * @returns {string} camel case string
+     */
     function camelize(str) {
         // Code from https://stackoverflow.com/questions/2970525/converting-any-string-into-camel-case
         return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
@@ -241,6 +241,11 @@ export function taskTitleToFilename() {
 
 /**
  * Create zip file
+ *
+ * @param {string} TEXT_CONTENT content of task.xml
+ * @param {boolean} startdownload true if the zip file shall be downloaded
+ * @param {number} maxsize maximum size of the zip file in bytes (0: no limit)
+ * @returns {Promise|undefined}
  */
 export function zipme(TEXT_CONTENT, startdownload, maxsize) {
     // Get task.xml content from user interface
@@ -250,7 +255,6 @@ export function zipme(TEXT_CONTENT, startdownload, maxsize) {
         return;
     }
 
-    // Console.log(TEXT_CONTENT);
     const FILENAME = "task.xml";
     var blob;
     const zipname = taskTitleToFilename(); // Zipname.replace(/[^a-z0-9]/gi, "");
@@ -274,22 +278,28 @@ export function zipme(TEXT_CONTENT, startdownload, maxsize) {
         }
     });
 
+    /**
+     * Creates the zip file with task.xml and all attached files.
+     *
+     * @param {Blob} blob task.xml content
+     * @returns {Promise<Blob>} zip file
+     */
     async function zipBlob(blob) {
         const zipFileWriter = new zip.BlobWriter("application/zip");
         const zipWriter = new zip.ZipWriter(zipFileWriter);
 
-        console.log('fileStorages.length is ' + fileStorages.length);
+        debugLog('fileStorages.length is ' + fileStorages.length);
         let f = 0;
         while (f < fileStorages.length) {
             const uiFile = FileWrapper.constructFromId(f);
             if (uiFile && uiFile.storeAsFile) {
                 let fblob = new Blob([uiFile.content], {type: uiFile.mimetype});
-                console.log('add ' + uiFile.filename + ' to zip file');
+                debugLog('add ' + uiFile.filename + ' to zip file');
                 await zipWriter.add(uiFile.filename, new zip.BlobReader(fblob));
             }
             f++;
         }
-        console.log('add ' + FILENAME + ' to zip file');
+        debugLog('add ' + FILENAME + ' to zip file');
         await zipWriter.add(FILENAME, new zip.BlobReader(blob));
         await zipWriter.close();
         return await zipFileWriter.getData();

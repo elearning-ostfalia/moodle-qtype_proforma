@@ -25,17 +25,17 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
 // todo: replace table solution with something without table!
 
+import {debugLog} from '../debug';
 import {DynamicList} from "./dynamic-list";
 import $ from 'jquery';
 import {readAndCreateFileData} from "./helper";
-import {exception as displayException} from 'core/notification';
-import Templates from 'core/templates';
 import {FileWrapper} from "./file";
 import {DEBUG_MODE, handleFilenameChangeInTest} from "./helper";
 import * as Str from 'core/str';
-import {TestWrapper} from "./test";
 
 
 let loadFileOption = "<open...>";
@@ -80,7 +80,7 @@ export class FileReferenceList extends DynamicList {
 
     doOnAll(callback, root) {
         if (root) {
-            console.log('doOnAllIds ios deprecated, use static version instead');
+            debugLog('doOnAllIds ios deprecated, use static version instead');
         }
         let theRoot = root ? root : this.root;
         $.each(theRoot.find(".fileref_fileref"), function(index, item) {
@@ -215,7 +215,6 @@ export class FileReferenceList extends DynamicList {
             if (uiFile.isBinary) {
                 enabled = false;
             }
-            // Console.log('enable view button in fileref for ' + uiFile.filename + ', enabled = ' + enabled);
         }
 
         row.find(".taskeditor-collapse").last().prop('disabled', !enabled);
@@ -345,7 +344,6 @@ export class FileReferenceList extends DynamicList {
     }
     onFileUpload(filename, uploadBox) {
         // Select new filename in first empty filename
-        // console.log("uploadFiles: select " + filename + " in option list");
         let done = false;
         $.each($(uploadBox).find("." + this.classFilename), function(index, element) {
             if (done) {
@@ -362,7 +360,7 @@ export class FileReferenceList extends DynamicList {
         if (!done) { // No empty select option is found
             // append filename
             this.addItem($(uploadBox).find('.' + this.classAddItem).last())
-                .then(newRow => {
+                .then(() => {
                     // Select filename
                     $(uploadBox).find("." + this.classFilename).last().val(filename).change();
                     // FileReferenceList.rowEnableEditorButton(newRow, true);
@@ -370,10 +368,17 @@ export class FileReferenceList extends DynamicList {
         }
     }
 
+    // eslint-disable-next-line no-unused-vars
     onFilerefChanged(uiFile, fileid) {}
 
     onFileSelectionChanged(tempSelElem) { // Changing a filename in the drop-down
 
+        /**
+         * Checks whether the file is already referenced in the same list.
+         *
+         * @param {string} fileid
+         * @returns {boolean} true if the file is already in the list
+         */
         function isDuplicateId(fileid) {
             const filerefs = $(tempSelElem).closest('table').find(".fileref_fileref");
             let found = false;
@@ -398,7 +403,7 @@ export class FileReferenceList extends DynamicList {
         FileReferenceList.rowEnableEditorButton(row, false);
 
         switch (selectedFilename) {
-            case newFileOption:
+            case newFileOption: {
                 FileWrapper.createFromTemplate()
                     .then(uiFile => {
                         // Preset filename with a unique filename
@@ -417,7 +422,8 @@ export class FileReferenceList extends DynamicList {
                     tab.click();
                 }
                 break;
-            case loadFileOption:
+            }
+            case loadFileOption: {
                 // Read new file
                 // reset selection in case choosing a file fails
                 // $(tempSelElem).val(emptyFileOption); // do not call change!
@@ -429,12 +435,12 @@ export class FileReferenceList extends DynamicList {
                     let inputbutton = $("#dummy_file_upload_button")[0];
                     let filenew = inputbutton.files[0];
                     if (!filenew) {
-                        console.log("no file selected -> cancel");
+                        debugLog("no file selected -> cancel");
                         return;
                     }
 
                     readAndCreateFileData(filenew, undefined /* -1*/,
-                        function(newFilename, fileId) {
+                        function(newFilename) {
                             if ($(tempSelElem)) {
                                 $(tempSelElem).val(newFilename).change();
                                 FileReferenceList.rowEnableEditorButton(row, true);
@@ -447,6 +453,7 @@ export class FileReferenceList extends DynamicList {
                 // Perform dummy click
                 dummybutton.click();
                 return;
+            }
             case emptyFileOption:
             case emptyFileOption.trim():
                 // Delete fileref id
@@ -512,13 +519,10 @@ export class FileReferenceList extends DynamicList {
     // - update selection index
     // - update selection text
     static updateAllFilenameLists(changedId, newFilename) {
-        // Console.log('updateAllFilenameLists for ' + changedId + ', new filename: ' + newFilename);
 
         $.each($(filenameClassList.join(',')), function(index, item) {
-            // Console.log("update filelist in test ");
-            // store name of currently selected filename
+            // Store name of currently selected filename
             const text = $("option:selected", item).text();
-            // Console.log("selected is " + text);
             FileReferenceList.updateFilenameList(item); // Update filename list in item
 
             // is selected filename in item changed?
@@ -527,7 +531,6 @@ export class FileReferenceList extends DynamicList {
                 // Yes =>
                 if (newFilename !== undefined) {
                     // Update selected filename if not deleted
-                    // console.log('change selection value');
                     $(item).val(newFilename);
                 } else {
                     // File is deleted => remove content
@@ -550,7 +553,6 @@ export class FileReferenceList extends DynamicList {
                 // }
                 //
                 // if (indexFound >= 0) {
-                //     //console.log("selektiere " + indexFound);
                 //     item.selectedIndex = indexFound + 1; // +1:weil am Anfang noch ein Leerstring ist
                 // } else {
                 //     // previously seelected text is not in the list
@@ -626,17 +628,13 @@ export class FileReferenceList extends DynamicList {
         classname.getInstance().init(root, DEBUG_MODE);
         root.on({
             drop: function(e) {
-                console.log('ondrop ');
-                console.log(e);
+                debugLog('ondrop ');
+                debugLog(e);
                 let data = e.originalEvent.dataTransfer.getData("text");
-                // Console.log(data);
                 if (data.startsWith('move_test ')) {
                     // Move test
                     let result = data.substring('move_test '.length);
-                    // Console.log('move ' + result);
-                    let test = TestWrapper.constructFromId(result);
                     let thiselement = e.target.closest('.xml_test');
-                    // Console.log(thiselement.id);
                     let otherelement = document.getElementById('test_' + result);
                     let nextSibling = thiselement.nextElementSibling;
                     if (nextSibling === otherelement) {
@@ -663,9 +661,6 @@ export class FileReferenceList extends DynamicList {
 
     static addCallbacks(rootnode) {
         // Add callback for onclick of '+' button.
-        // console.log('Add callbacks for');
-        // console.log(rootnode);
-        // console.log('callback for + button');
         let subnode = rootnode.querySelector('.add_fileref');
         if (!subnode) {
             console.error('could not find subnode .add_fileref');
@@ -678,7 +673,6 @@ export class FileReferenceList extends DynamicList {
         }
         // Add callback for onclick of 'x' button.
     //        rootnode.querySelector(".remove_item").onclick = function (removeevent) {
-        // console.log('callback for x button');
 //        rootnode.querySelector("." + TestFileReference.getInstance().classRemoveItem).onclick = function (removeevent) {
         subnode = rootnode.querySelector('.remove_item');
         if (!subnode) {
@@ -690,7 +684,6 @@ export class FileReferenceList extends DynamicList {
             };
         }
 
-        // Console.log('callback for change selection');
         subnode = rootnode.querySelector('.fileref_filename');
         if (!subnode) {
             console.error('could not find subnode .fileref_filename');
@@ -701,7 +694,6 @@ export class FileReferenceList extends DynamicList {
             };
         }
 
-        // Console.log('callback for toggle editor');
         subnode = rootnode.querySelector('.taskeditor-collapse');
         // Console.error('TODO taskeditor-collapse');
         if (!subnode) {

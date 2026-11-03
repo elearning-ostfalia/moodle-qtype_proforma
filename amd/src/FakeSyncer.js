@@ -18,8 +18,10 @@
 
 /* eslint-disable no-unused-vars */
 
+import {debugLog} from './debug.js';
 
-// import Config from 'core/config';
+
+// Import Config from 'core/config';
 // import { FileNode } from "./FileViewer";
 
 /* Syncer base class */
@@ -44,7 +46,7 @@ export class Syncer {
             throw new TypeError("Cannot construct Syncer instances directly");
         }
         this.options = options;
-        console.log(this.options);
+        debugLog(this.options);
     }
     deleteFileOrFolder(path) {
         return Promise.resolve('fake implentation');
@@ -80,7 +82,6 @@ export class FakeSyncer extends Syncer {
     constructor(options) {
         super(options);
         // This.options = options;
-        // console.log(this.options);
     }
 }
 

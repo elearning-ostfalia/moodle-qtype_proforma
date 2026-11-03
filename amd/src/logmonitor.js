@@ -25,6 +25,9 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
+import {debugLog} from './debug';
 import CancelModal from 'core/modal_cancel';
 import ModalEvents from 'core/modal_events';
 import {get_string as getString} from 'core/str';
@@ -33,11 +36,11 @@ import Config from 'core/config';
 /**
  * Shows a modal dialog with the server sent events
  *
- * @param title string identifier for localised title
- * @param url SSE url
- * @param callbackstart callback for begin feedback (Proforma XML response after grading)
- * @param callbackdata callback for end feedback (Proforma XML response after grading)
- * @param callbackend callback for handling Proforma XML response after grading
+ * @param {string} title string identifier for localised title
+ * @param {string} url SSE url
+ * @param {Function} callbackstart callback for begin feedback (Proforma XML response after grading)
+ * @param {Function} callbackdata callback for end feedback (Proforma XML response after grading)
+ * @param {Function} callbackend callback for handling Proforma XML response after grading
  * @returns {Promise<void>}
  */
 export async function show(title, url, callbackstart, callbackdata, callbackend) {
@@ -56,6 +59,13 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
         titleString = await getString(title, 'qtype_proforma');
     }
 
+    /**
+     * Fades out the element and clicks the button afterwards.
+     *
+     * @param {HTMLElement} element element to fade out
+     * @param {Object} button button to click
+     */
+    /*
     function fade(element, button) {
         let op = 1; // Initial opacity
         let timer = setInterval(function() {
@@ -72,7 +82,10 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
             }
         }, 40);
     }
-
+*/
+    /**
+     * Closes the event source and changes the cancel button to a close button.
+     */
     function closeSse() {
         source.close();
         if (modalroot) {
@@ -100,9 +113,8 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
         source = new EventSource(url);
         let feedbackstarted = false;
         source.onmessage = function(event) {
-            // Console.log(event.data);
             let dialog = document.querySelector("#proforma-modal-message");
-            if (dialog != null) {
+            if (dialog !== null) {
                 let message = event.data;
                 if (!feedbackstarted) {
                     message = message.trim();
@@ -115,7 +127,7 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
                     return;
                 }
                 if (message.endsWith('RESPONSE END####')/* && !message.startsWith('####')*/) { // Got line ending with special keys
-                    console.log('end of response found => close connection');
+                    debugLog('end of response found => close connection');
                     callbackend();
                     closeSse();
                     return;
@@ -135,7 +147,7 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
                 dialog.innerHTML += message + "<br>";
             }
         };
-        source.onerror = function(event) {
+        source.onerror = function() {
             // Complete (with or without error)
             closeSse();
         };
@@ -185,12 +197,12 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
  * to the grader
  * (it is not previously recreated so it might not be up-to-date)
  *
- * @param buttonid identifier of button to click on
+ * @param {string} buttonid identifier of button to click on
  */
 export const uploadToGrader = (buttonid) => {
     const button = document.getElementById(buttonid);
     if (button) {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function() {
             // Create Moodle modal dialog.
             const questionId = document.querySelector("input[name='id']").value;
             let url = Config.wwwroot + '/question/type/proforma/upload_sse.php';

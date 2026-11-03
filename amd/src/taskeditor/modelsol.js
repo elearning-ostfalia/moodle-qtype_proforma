@@ -25,6 +25,7 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm, Dr.U.Priss
  */
 
+import $ from 'jquery';
 import {ModelSolutionFileReference, FileReferenceList} from './filereflist';
 import {DEBUG_MODE, setcounter} from "./helper";
 import Templates from 'core/templates';
@@ -145,18 +146,14 @@ export class ModelSolutionWrapper {
                 return Templates.renderForPromise('qtype_proforma/taskeditor_modelsol', context);
             })
             .then(({html, js}) => {
-                // Console.log('model sol template rendered');
                 Templates.appendNodeContents('#proforma-model-solution-section', html, js);
-                // Console.log('model sol template appended');
 
-                // hide fields that exist only for technical reasons
+                // Hide fields that exist only for technical reasons
                 const msroot = $("#modelsolution_" + modelsolid);
                 let ms = ModelSolutionWrapper.constructFromRoot(msroot);
 
                 FileReferenceList.init(null, null, ModelSolutionFileReference, msroot);
-                // Console.log('Add callbacks to fileref table in Modelsol ');
                 FileReferenceList.addCallbacks($(msroot)[0]);
-                // Console.log('callback delete ms button');
                 msroot.find('button').first().on("click",
                     function(event) {
                         event.preventDefault();
@@ -170,16 +167,13 @@ export class ModelSolutionWrapper {
                 }
 
                 if (item) {
-                    // Console.log('update filelist for model sol');
                     let counter = 0;
-                    // Console.log(item.filerefs);
-                    item.filerefs.forEach(function(itemFileref, indexFileref) {
+                    item.filerefs.forEach(function(itemFileref) {
                         let filename = task.findFilenameForId(itemFileref.refid);
                         let promiseFactories = [
                             ModelSolutionFileReference.getInstance().setFilenameOnCreation(ms.root, counter++, filename)];
                         Promise.all(promiseFactories)
                             .then(() => {
-                                // Console.log("promise completed");
                             });
                     });
                 }

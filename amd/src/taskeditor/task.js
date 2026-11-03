@@ -25,6 +25,9 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
+import {debugLog} from '../debug';
 import $ from 'jquery';
 import {TaskClass, TaskFile, TaskModelSolution, TaskFileRef, TaskTest, T_VISIBLE} from "./taskdata";
 import {testIDs} from "./test";
@@ -36,8 +39,6 @@ import * as taskeditorconfig from "./config";
 import {relinkFiles} from "./zipper";
 import {TestFileReference, FileReferenceList, ModelSolutionFileReference} from "./filereflist";
 import * as Str from 'core/str';
-import Notification, {exception as displayException} from 'core/notification';
-
 
 export class InputError extends Error {
     constructor(message) {
@@ -46,6 +47,11 @@ export class InputError extends Error {
     }
 }
 
+/**
+ * Switches to the tab with the given anchor.
+ *
+ * @param {string} hash anchor of the tab (e.g. #tab-tests)
+ */
 function switchToTab(hash) {
     const tab = document.querySelector('.nav-link[href="' + hash + '"]');
     if (tab) {
@@ -53,9 +59,14 @@ function switchToTab(hash) {
     }
 }
 
+/**
+ * Marks an input element as missing required input.
+ *
+ * @param {HTMLElement} elem input element
+ */
 function addRequired(elem) {
-    console.log('missing input for required element found');
-    console.log(elem);
+    debugLog('missing input for required element found');
+    debugLog(elem);
     elem.focus();
     elem.classList.add('is-invalid');
     elem.classList.add('form-control');
@@ -71,8 +82,15 @@ function addRequired(elem) {
         });
 }
 
+/**
+ * Checks whether all required input of the task editor is available.
+ *
+ * Missing input is marked in the form.
+ *
+ * @returns {boolean} true if input is complete
+ */
 function isInputComplete() {
-    console.log('check input');
+    debugLog('check input');
 
     // Remove all previously set required hints
     document.querySelectorAll(".proforma-taskeditor .is-invalid").forEach(item => { // Check whether filenames are provided
@@ -130,11 +148,11 @@ function isInputComplete() {
     // In this case the whole input is lost (TODO: autosave without checking).
     if (document.querySelector('#id_responseformat')) {
         const format = document.querySelector('#id_responseformat').value;
-        console.log(format);
+        debugLog(format);
         if (format === 'editor') {
             const filename = document.querySelector('#id_responsefilename');
             if (filename) {
-                console.log(filename.value);
+                debugLog(filename.value);
                 if (filename.value.trim() === '') {
                     addRequired(filename);
                     incomplete = true;
@@ -203,7 +221,6 @@ function isInputComplete() {
         }
     });
     document.querySelectorAll(".xml_pr_CS_warnings").forEach(item => {
-        // Console.log(item.value);
         if (!item.value) {
             switchToTab('#proforma-tests-section');
             addRequired(item);
@@ -218,10 +235,9 @@ function isInputComplete() {
     let sumweight = 0.0;
     // Check whether referenced filenames exists
     document.querySelectorAll('#proforma-tests-section .xml_test_weight').forEach(item => {
-        // Console.log(item.value);
         sumweight += parseFloat(item.value);
     });
-    console.log('sumweight = ' + sumweight);
+    debugLog('sumweight = ' + sumweight);
     if (sumweight <= 0) {
         Str.get_string('sumweightzero', 'qtype_proforma')
             .then(content => {
@@ -231,8 +247,6 @@ function isInputComplete() {
         incomplete = true;
     }
 
-    // Console.log('result');
-    // console.log(!incomplete);
 
     return (!incomplete);
 }
@@ -259,11 +273,11 @@ export function convertToXML() {
             // With Promise reject the special type of error is not detected in the catch clause.
             // So a normal throw without reject is used here.
             // return Promise.reject(new InputError('invalid input => cannot create task.xml'));
-            console.log('input is incomplete => cannot create task.xml');
+            debugLog('input is incomplete => cannot create task.xml');
             throw new InputError('invalid input => cannot create task.xml');
             // Return null;
         }
-        console.log('input is ok => create task.xml');
+        debugLog('input is ok => create task.xml');
 
         // PRE PROCESSING
         // copy data to task class
@@ -273,9 +287,7 @@ export function convertToXML() {
         task.description = $("#id_questiontext").val();
         task.proglang = $('#xml_programming-language').val();
         task.proglang = task.proglang.trim();
-        // Console.log('READ FROM UI: ' + task.proglang);
         task.proglangVersion = $("#xml_programming-language-" + task.proglang).val();
-        // Console.log('READ FROM UI VERSION: ' + task.proglangVersion);
         task.parentuuid = null;
         // Task.uuid = $("#xml_uuid").val();
         // if (!task.uuid)
@@ -339,21 +351,19 @@ export function convertToXML() {
             TestFileReference.getInstance().doOnAll(function(id) {
                 if (id) {
                     test.filerefs[counter++] = new TaskFileRef(id);
-                    // Console.log("Test ID" + id);
                     task.files[id].usedByGrader = true;
                 }
             }, uiTest.root);
 
-            console.log('*** look for test config');
-            console.log(test);
+            debugLog('*** look for test config');
+            debugLog(test);
             $.each(taskeditorconfig.testInfos, function(index, configItem) {
                 // Search for appropriate configuration instance
                 if (!configItem.matches(test, task.proglang)) {
                     return;
                 }
 
-                // Console.log('everything matches');
-                console.log(configItem);
+                debugLog(configItem);
                 if (test.configItem !== undefined && test.configItem !== configItem) {
                     // Configuration already found
                     let params = {
@@ -362,22 +372,18 @@ export function convertToXML() {
                     };
                     Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
                         .then(content => alert(content));
-                    /* Console.log('Warning: test configuration for test "' + test.title + '" is not unique. \n' +
-                        'Assume ' + test.configItem.title + ',\n' +
-                        'but ' + configItem.title + ' is also matching.');*/
                     return;
                 }
 
                 test.configItem = configItem;
                 test.uiElement = uiTest;
             });
-            console.log('*** config lookup complete');
+            debugLog('*** config lookup complete');
             if (test.configItem === undefined) {
                 alert('cannot determine test configuration for test "' + test.title + '"');
             }
 
             // ReadFileRefs(xmlReader, modelSolution, thisNode);
-            // console.log('convertToXML: create ' + test.title);
             // note that the test element is stored at the index position not at the test id position
             // (in order to keep the sort order from user interface)
             task.tests[index] = test;
@@ -406,26 +412,42 @@ export function convertToXML() {
 
         taskXml = task.writeXml();
         const t1 = performance.now();
-        console.log("Call to convertToXML took " + (t1 - t0) + " milliseconds.");
-        console.log('Size of task is ' + taskXml.length);
+        debugLog("Call to convertToXML took " + (t1 - t0) + " milliseconds.");
+        debugLog('Size of task is ' + taskXml.length);
         return taskXml;
     });
 }
 
 
+/**
+ * Reads the task XML and creates the task editor content.
+ *
+ * @param {string} taskXml task.xml content
+ * @returns {Promise}
+ */
 export async function readAndDisplayXml(taskXml) {
-    // Console.log(taskXml);
     let task = new TaskClass();
 
-    function createMs(item, index) {
+    /**
+     * Creates the model solution in the task editor.
+     *
+     * @param {Object} item model solution
+     * @returns {Promise}
+     */
+    function createMs(item) {
         return ModelSolutionWrapper.createFromTemplate(item.id, item.description, item.comment, item, task);
     }
 
-    function createFile(item, index) {
+    /**
+     * Creates the file in the task editor.
+     *
+     * @param {Object} item task file
+     * @returns {Promise}
+     */
+    function createFile(item) {
         // Let uiFile = FileWrapper.create(item.id);
         return FileWrapper.createFromTemplate(item.id)
             .then(uiFile => {
-                // Console.log('fileform ' + item.id + ' has been created');
                 uiFile.filename = item.filename;
                 uiFile.class = item.fileclass;
                 uiFile.type = item.filetype;
@@ -440,12 +462,18 @@ export async function readAndDisplayXml(taskXml) {
             });
     }
 
-    function createTest(item, index) {
+    /**
+     * Creates the test in the task editor (using the matching test configuration).
+     *
+     * @param {Object} item test
+     * @returns {Object|null} test wrapper resp. null if no configuration matches
+     */
+    function createTest(item) {
         testIDs[item.id] = 1;
 
         let uiTest;
         let theConfigitem;
-        console.log('iterate through all configured test templates, look for ' + item.testtype);
+        debugLog('iterate through all configured test templates, look for ' + item.testtype);
         $.each(taskeditorconfig.testInfos, function(index, configItem) {
             if (!configItem.matches(item, task.proglang)) {
                 return;
@@ -455,14 +483,11 @@ export async function readAndDisplayXml(taskXml) {
                     'title': item.title,
                     'config': theConfigitem.title
                 };
-                /*                    Console.log('Warning: test configuration for test "' + item.title + '" is not unique. \n' +
-                    'Assume ' + theConfigitem.title + ',\n' +
-                    'but ' + configItem.title + ' is also matching.');*/
                 Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
                     .then(content => alert(content));
                 return null;
             }
-            console.log('found ' + configItem.title);
+            debugLog('found ' + configItem.title);
             let context = configItem.getTemplateContext();
             context.testtitle = item.title;
             if (item.weight) {
@@ -472,8 +497,6 @@ export async function readAndDisplayXml(taskXml) {
             context.comment = item.comment;
 
             task.readTestConfig(taskXml, item.id, configItem, context);
-            // Console.log('context for test template ');
-            // console.log(context);
 
             theConfigitem = configItem;
             uiTest = TestWrapper.createFromTemplate(item.id,
@@ -504,11 +527,12 @@ export async function readAndDisplayXml(taskXml) {
         return;
     }
 
+    /*
     const templateroot = $("#templatedropzone");
     const multmediaroot = $("#multimediadropzone");
     const downloadroot = $("#downloaddropzone");
     const visibleroot = $("#visiblefiledropzone");
-
+*/
     // TODO: check version
     // TODO: validate??
     task.readXml(taskXml);
@@ -520,8 +544,6 @@ export async function readAndDisplayXml(taskXml) {
     $("#xml_restrict_filename").val(task.filenameRegExpSubmission);
  */
 
-    // console.log(task.proglang);
-    // console.log(task.proglangVersion);
     let proglangElement = $("#xml_programming-language");
     proglangElement.val(task.proglang.toLowerCase());
     proglangElement.trigger('change');
@@ -560,23 +582,23 @@ export async function readAndDisplayXml(taskXml) {
     });
     return Promise.all(filepromises)
         .then(() => {
-            console.log('** all files are created => create tests');
+            debugLog('** all files are created => create tests');
             task.tests.forEach(item =>
                 refpromises.push(createTest(item))
             );
-            console.log('=> create model solution(s)');
+            debugLog('=> create model solution(s)');
             task.modelsolutions.forEach(item =>
                 refpromises.push(createMs(item))
             );
 
             // Fill filename lists in empty file refences
-            console.log('=> wait');
+            debugLog('=> wait');
             return Promise.all(refpromises);
         })
         .then(() => {
-            console.log('** all tests and model sols are created => add referenced files');
+            debugLog('** all tests and model sols are created => add referenced files');
             FileReferenceList.updateAllFilenameLists();
-            console.log('=> finished');
+            debugLog('=> finished');
         });
 //        .fail(Notification.exception);
 

@@ -15,10 +15,13 @@
 // along with ProFormA Question Type for Moodle.
 // If not, see <http://www.gnu.org/licenses/>.
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
 
 /* eslint-disable no-unused-vars */
 
 
+import {debugLog} from './debug';
 import Config from 'core/config';
 import {FileNode} from "./FileViewer";
 
@@ -44,7 +47,6 @@ export class Syncer {
             throw new TypeError("Cannot construct Syncer instances directly");
         }
         this.options = options;
-        console.log(this.options);
     }
     deleteFileOrFolder(path) {
         return Promise.resolve('fake implentation');
@@ -81,8 +83,6 @@ export class MoodleQuestionAttemptSyncer extends Syncer {
         super(options);
     }
     list(framework) {
-        //        Console.log('Start listing question attempt files');
-//        console.log(this.options['files']);
         let firstFile;
         this.options.files.forEach(path => {
             let values = Syncer.splitFullname(path);
@@ -104,11 +104,9 @@ export class MoodleQuestionAttemptSyncer extends Syncer {
             this.options.slot + '/' +
             this.options.itemid + path;
         const url = Config.wwwroot + '/pluginfile.php/' + this.options.contextid + addon;
-        console.log('Download response file: ' + url);
         const promise = fetch(url, {method: 'GET'})
             .then(response => {
                 if (response.status != 200) {
-                    console.log(response);
                     throw new Error(response.statusText);
                 }
                 return response;
@@ -127,7 +125,6 @@ export class MoodleSyncer extends Syncer {
     constructor(options) {
         super(options);
         // This.options = options;
-        // console.log(this.options);
     }
     _sendRequest(action, options = undefined) {
         const url = Config.wwwroot + '/repository/draftfiles_ajax.php';
@@ -138,8 +135,7 @@ export class MoodleSyncer extends Syncer {
         if (options !== undefined) {
             params = Object.assign(params, options);
         }
-        console.log('action ' + action);
-        console.log(params);
+        debugLog(params);
         // Const promise =
         return fetch(
             url + '?action=' + action + '&' + window.build_querystring(params),
@@ -147,18 +143,15 @@ export class MoodleSyncer extends Syncer {
                 method: 'POST',
             }
         )
-            // .then( response => console.log(response))
             .then(response => response.json())
             .then(json => {
-                console.log('got response for requested action ' + action);
                 if (json.error) {
                     console.error(action + ' error:', json.error);
                     throw new Error(json.error);
                     //                    Alert(json.error);
                 }
-                console.log(json);
+                debugLog(json);
                 // Const text = JSON.stringify(json);
-                // console.log(text);
                 // if (callback != undefined) {
                 //    callback(json);
                 // }
@@ -173,21 +166,19 @@ export class MoodleSyncer extends Syncer {
     }
 
     deleteFileOrFolder(path) {
-        console.log('delete ' + path);
+        debugLog('delete ' + path);
         let params = {};
         let values = MoodleSyncer.splitFullname(path);
         params.filepath = values[0];
         params.filename = values[1];
-        console.log('delete ' + params.filepath + ' ' + params.filename);
+        debugLog('delete ' + params.filepath + ' ' + params.filename);
         return this._sendRequest('delete', params);
     }
     download(path) {
-        console.log('DOWNLOAD');
-        console.log(this.options);
         const contextid = this.options.contextid;
         const addon = '/user/draft/' + this.options.itemid + path;
         const url = Config.wwwroot + '/draftfile.php/' + contextid + addon;
-        console.log(url);
+        debugLog(url);
 
         const promise = fetch(url, {method: 'GET'})
             .then(response => response.text())
@@ -213,7 +204,7 @@ export class MoodleSyncer extends Syncer {
         }, params); */
     }
     renameFile(pathold, pathnew) {
-        console.log('rename ' + pathold + ' => ' + pathnew);
+        debugLog('rename ' + pathold + ' => ' + pathnew);
         let params = {};
         let values = MoodleSyncer.splitFullname(pathold);
         let newValue = MoodleSyncer.splitFullname(pathnew);
@@ -224,7 +215,7 @@ export class MoodleSyncer extends Syncer {
         return this._sendRequest('updatefile', params);
     }
     renameFolder(pathold, pathnew) {
-        console.log('rename ' + pathold + ' => ' + pathnew);
+        debugLog('rename ' + pathold + ' => ' + pathnew);
         let params = {};
         // Let values = MoodleSyncer.splitFullname(pathold);
         let newValue = MoodleSyncer.splitFullname(pathnew);
@@ -234,7 +225,7 @@ export class MoodleSyncer extends Syncer {
         return this._sendRequest('updatedir', params);
     }
     mkdir(path) {
-        console.log('mkdir ' + path);
+        debugLog('mkdir ' + path);
         const index = path.lastIndexOf('/', path.length - 1);
         let params = {};
         if (index < 0) {
@@ -247,9 +238,9 @@ export class MoodleSyncer extends Syncer {
             } */
             params.newdirname = path.substring(index + 1);
         }
-        console.log('path = ' + params.filepath);
-        console.log('dir = ' + params.newdirname);
-        console.log(params);
+        debugLog('path = ' + params.filepath);
+        debugLog('dir = ' + params.newdirname);
+        debugLog(params);
         return this._sendRequest('mkdir', params);
     }
     /*    Dir() {
@@ -261,7 +252,13 @@ export class MoodleSyncer extends Syncer {
         }, params);
     } */
     list(framework) {
-        console.log('Start list');
+        debugLog('Start list');
+        /**
+         * Removes a trailing slash from the path (except for the root path).
+         *
+         * @param {string} path
+         * @returns {string} path without trailing slash
+         */
         function stripSlashes(path) {
             if (path.length > 1 && path.substring(path.length - 1) === '/') { // Strip '/'
                 path = path.substring(0, path.length - 1);
@@ -275,16 +272,14 @@ export class MoodleSyncer extends Syncer {
                 .then(json => {
                     let firstFile;
                     json.list.forEach(item => {
-                        // Console.log('syncer List Response');
                         if (item.filename === '.') {
                             // Create Folder.
                             let path = stripSlashes(item.filepath);
-                            console.log('Syncer: create folder ' + path);
+                            debugLog('Syncer: create folder ' + path);
                             framework.createPath(path);
-                            // Console.log('** RECURSION FOR ' + path + ' => request');
                             resolve(listfolder(path));
                         } else {
-                            console.log('Syncer: create file ' + item.filename);
+                            debugLog('Syncer: create file ' + item.filename);
                             let folder = framework.createPath(stripSlashes(item.filepath));
                             let filenode = new FileNode(item.filename);
                             folder.appendFile(filenode);
@@ -302,16 +297,15 @@ export class MoodleSyncer extends Syncer {
         return listfolder('/');
     }
     update(filename, text, async = false) {
-        console.log('update file ' + filename);
+        debugLog('update file ' + filename);
         // Const tmp_filename = "/file" + Math.random().toString(16).slice(2) + '.txt';
-        // console.log('create tmp file ' + tmp_filename);
         const file = new File([text], filename, {
             type: "text/plain"
         });
         return this.upload(filename, file, true, async);
     }
     newfile(filename) {
-        console.log('create new empty file ' + filename);
+        debugLog('create new empty file ' + filename);
         let values = Syncer.splitFullname(filename);
         const file = new File([' '], values[1], {
             type: "text/plain"
@@ -321,11 +315,10 @@ export class MoodleSyncer extends Syncer {
     upload(filename, file, overwrite = false, async = true) {
         const url = Config.wwwroot + '/repository/repository_ajax.php';
         const action = 'upload';
-        console.log('upload ' + file.name + ' as ' + filename);
+        debugLog('upload ' + file.name + ' as ' + filename);
         // Alert('upload/overrite: ' + filename);
 
         // let values = MoodleSyncer.splitFullname(filename);
-        // console.log(values[0]);
 
         let formData = new FormData();
         formData.append('sesskey', Config.sesskey);
@@ -342,7 +335,6 @@ export class MoodleSyncer extends Syncer {
         formData.append('savepath', '/');
         formData.append('repo_id', this.options.repo_id);
         formData.append('itemid', this.options.itemid);
-        // Console.log(formData);
         if (async) {
             const promise = fetch(
                 url + '?action=' + action, //  + '&' + window.build_querystring(params),
@@ -353,11 +345,10 @@ export class MoodleSyncer extends Syncer {
             )
                 .then(response => response.json())
                 .then(json => {
-                    // Console.log(action);
                     if (json.error) {
                         throw new Error(json.error);
                     }
-                    console.log(json);
+                    debugLog(json);
                     let originalFilename = file.name;
                     if (originalFilename.substr(0, 1) != '/') {
                         originalFilename = '/' + originalFilename;
@@ -375,7 +366,7 @@ export class MoodleSyncer extends Syncer {
         } else {
             // Synchronous
             // In Chrome this is declared as dismissal.
-            console.log('SYNCHRONOUSE UPDATE!');
+            debugLog('SYNCHRONOUSE UPDATE!');
             let request = new XMLHttpRequest();
             request.open('POST', url + '?action=' + action, false);
             try {
@@ -384,7 +375,7 @@ export class MoodleSyncer extends Syncer {
                 // Chrome does not support sync. posts.
                 // So we try asynchronous post
                 console.error(e1);
-                console.log('sync post failed => try async');
+                debugLog('sync post failed => try async');
                 try {
                     request.open('POST', url + '?action=' + action, true);
                     request.send(formData);
@@ -393,9 +384,9 @@ export class MoodleSyncer extends Syncer {
                     return;
                 }
             }
-            console.log('sync/async post succeeded');
+            debugLog('sync/async post succeeded');
             const jsonResponse = JSON.parse(request.responseText);
-            console.log(jsonResponse);
+            debugLog(jsonResponse);
             if (jsonResponse.error !== undefined) {
                 console.error(request.responseText);
                 alert(jsonResponse.error);

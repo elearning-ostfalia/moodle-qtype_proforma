@@ -25,14 +25,17 @@
  * @author     eCULT-Team of Ostfalia University, K.Borm, Dr.U.Priss
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
+import {debugLog} from '../debug';
 import $ from 'jquery';
-import {setcounter, DEBUG_MODE, getExtension} from "./helper";
+import {setcounter, DEBUG_MODE, getExtension, readAndCreateFileData} from "./helper";
 import * as taskeditorconfig from "./config";
 import {javaParser} from "./java";
 import {FileReferenceList} from "./filereflist";
 import Templates from 'core/templates';
 import * as CodeMirror from '../codemirror';
-import Notification, {exception as displayException} from 'core/notification';
+import {exception as displayException} from 'core/notification';
 import '../clike';
 import '../python';
 import '../xml';
@@ -172,12 +175,6 @@ export class FileWrapper {
     set text(newText) {
         if (taskeditorconfig.useCodemirror) {
             codemirror[this.id].setValue(newText);
-            const fileObject = fileStorages[this.id];
-            //            Console.log('Codemirror modes and mimetypes');
-//            console.log(CodeMirror.modes);
-//            console.log(CodeMirror.mimeModes);
-
-//            console.log('Set CodeMirror-Mode: mimetype ' + fileObject.mimetype + ' => ' + this.getCodemirrorMode());
             codemirror[this.id].setOption("mode", this.getCodemirrorMode());
             //            Let editor = codemirror[this.id];
 //             editor.refresh();
@@ -196,7 +193,7 @@ export class FileWrapper {
         fileStorages[this.id].filename = name;
         if (taskeditorconfig.useCodemirror) {
             // Change mode depending on filename
-            console.log('change mode depending on new filename');
+            debugLog('change mode depending on new filename');
             codemirror[this.id].setOption("mode", this.getCodemirrorMode());
         }
         // FileWrapper.onFilenameChanged(); // this); // TODO check for endless recursion!!
@@ -218,7 +215,6 @@ export class FileWrapper {
     }
 
     set type(newType) {
-        const oldType = this.type;
         if (!this._type) {
             this._type = this.root.find(".xml_file_type").first();
         }
@@ -230,7 +226,7 @@ export class FileWrapper {
         }
 
         switch (newType) {
-            case 'file':
+            case 'file': {
                 this.root.find(".xml_file_binary").show(); // Show binary text
                 this.root.find(".xml_file_non_binary").hide(); // Hide editor
                 let xmlFileSize = this.root.find(".xml_file_size");
@@ -246,6 +242,7 @@ export class FileWrapper {
                 //                Xml_file_size.first().text('File size: ' + this.size.toLocaleString() + ", " +
 //                    'File type: ' + this.mimetype);
                 break;
+            }
             case 'embedded':
                 this.root.find(".xml_file_binary").hide(); // Hide binary text
                 this.root.find(".xml_file_non_binary").show(); // Show editor
@@ -271,7 +268,7 @@ export class FileWrapper {
     set isBinary(isBinary) {
         fileStorages[this.id].isBinary = isBinary;
         if (isBinary) {
-            console.log('set binary=true for ' + this.filename);
+            debugLog('set binary=true for ' + this.filename);
         }
     }
     //    Set isLibrary(isLib) {this.root.find(".file_library")[0].checked = isLib;}
@@ -313,16 +310,17 @@ export class FileWrapper {
     static onFilenameChanged(uiFile) {
         let changedId;
         // After change of filename update all filelists
-        // console.log('onFilenameChanged => ' + uiFile.filename);
 
+        /**
+         * Updates the internal data and the editor mode after a change of the filename.
+         */
         function updateFilename() {
-            // Console.log('update internal settings ' + uiFile.filename);
+            // eslint-disable-next-line no-self-assign
             uiFile.filename = uiFile.filename; // Needed in order to update internal data
             uiFile.filenameHeader = uiFile.filename;
             changedId = uiFile.id;
             if (taskeditorconfig.useCodemirror) {
                 // Change mode depending on filename
-                // console.log('change mode depending on new filename');
                 codemirror[uiFile.id].setOption("mode", uiFile.getCodemirrorMode());
             }
         }
@@ -388,11 +386,9 @@ export class FileWrapper {
 
 
     static removeFile(button) { // Ask before removing
-        // console.log('remove file');
         // let root = button.parent().parent().parent(); // arrgh!
         let uiFile = FileWrapper.constructFromRoot(button.closest('.xml_file')/* Root*/);
 
-        let ok = false;
         const filedata = {
             'id': uiFile.id,
             'filename': uiFile.filename
@@ -461,8 +457,6 @@ export class FileWrapper {
     static doOnAllFiles(callback) {
         // Todo: iterate through all files in variable
         $.each($(".xml_file_id"), function(indexOpt, item) {
-            // Console.log('.xml_file_id');
-            // console.log(item);
             let uifile = FileWrapper.constructFromId(item.value);
             callback(uifile);
         });
@@ -494,7 +488,7 @@ export class FileWrapper {
             let uiFile = FileWrapper.constructFromRoot($(selectfield).closest(".xml_file"));
             const newtype = uiFile.type;
             switch (newtype) { // Filetype ) {
-                case 'file':
+                case 'file': {
                     const fileId = uiFile.id;
                     const filename = uiFile.filename;
                     const text = uiFile.text;
@@ -520,6 +514,7 @@ export class FileWrapper {
                     fileobject.setSize(text.length);
                     // ShowBinaryFile(file.root /*fileroot*/, fileobject);
                     break;
+                }
                 case 'embedded':
                     // ShowTextFile(file.root);
                     break;
@@ -540,7 +535,6 @@ export class FileWrapper {
      */
     static addCodemirrorElement(cmID, langmode = "text/x-java") { // CmID is determined by setcounter(), starts at 1
         // let textareaElem = FileWrapper.constructFromId(cmID).root.find(".xml_file_text")[0];
-        // console.log(textareaElem);
         codemirror[cmID] = CodeMirror.fromTextArea(
             //            TextareaElem, {
             FileWrapper.constructFromId(cmID).root.find(".xml_file_text")[0], {
@@ -560,7 +554,7 @@ export class FileWrapper {
         });
         editor.on("drop", function(editor, e) {
             // UploadFileWhenDropped(e.originalEvent.dataTransfer.files, e.currentTarget);
-            console.log('codemirror drop: ' + e);
+            debugLog('codemirror drop: ' + e);
         });
     }
 
@@ -594,8 +588,7 @@ export class FileWrapper {
                     uiFile.root.find(".xml_file_class").hide();
                     uiFile.root.find("label[for='xml_file_class']").hide();
                 }
-                // Console.log('add file callbacks');
-                // add callbacks:
+                // Add callbacks:
                 uiFile.root.find('button').first().on("click",
                     function(event) {
                         event.preventDefault();

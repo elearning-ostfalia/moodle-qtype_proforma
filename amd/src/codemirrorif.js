@@ -25,15 +25,17 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
 
-define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
+
+define(['jquery', 'jqueryui', 'qtype_proforma/codemirror', 'qtype_proforma/debug',
         'qtype_proforma/closebrackets', 'qtype_proforma/matchbrackets', 'qtype_proforma/active-line'
     ],
-    function($, jqui, CodeMirror) {
+    function($, jqui, CodeMirror, Debug) {
 
     // Maps the programming language value used in PHP to the CodeMirror mode and
         // the corresponding javascript file to load
-        map_proglang_to_codemirror_mode = function(moodleMode) {
+        let map_proglang_to_codemirror_mode = function(moodleMode) {
             switch (moodleMode) {
             case "java": return ["text/x-java", 'qtype_proforma/clike'];
                 case "python": return ["text/x-python", 'qtype_proforma/python'];
@@ -58,7 +60,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
             // whenever the programming language changes
             switch_mode: function(selectId, textareaId) {
 
-            changeMode = function(selectId, textareaId) {
+            let changeMode = function(selectId, textareaId) {
                     var progLang = $("#" + selectId).val();
                 // Map programming language to CodeMirror mode
                 var newMode = map_proglang_to_codemirror_mode(progLang);
@@ -69,7 +71,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                 };
                 try {
                     changeMode(selectId, textareaId);
-                    $("#" + selectId).on("change", function(e) {
+                    $("#" + selectId).on("change", function() {
                         changeMode(selectId, textareaId);
                     });
             } catch (err) {
@@ -90,13 +92,11 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
             // Alert("init_codemirror called for " + textareaId); //  + " Mimemodes " + cm.mimeModes);
                 try {
                     const textarea = document.getElementById(textareaId);
-                    if (textarea == null) {
+                    if (textarea === null) {
                         // Ignore silently
                         console.error('Invalid textarea id for init_codemirror: ' + textareaId + '. Element not found.');
                         return;
                     }
-                    console.log("init_codemirror called for " + textareaId);
-                    console.log(textarea);
                     let editor = CodeMirror.fromTextArea(textarea, {
                         tabMode: "indent",
                         indentUnit: 4,
@@ -110,7 +110,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                         lineNumbers: true
                     // ViewportMargin: Infinity
                     });
-                    console.log("CodeMirror.fromTextArea called");
+                    Debug.debugLog("CodeMirror.fromTextArea called");
 
                 // Mode is not set when fromTextArea is used (why???)
                     // So mode is set later
@@ -118,7 +118,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                     require([newMode[1]], function() {
                         editor.setOption("mode", newMode[0]);
                     });
-                    console.log("CodeMirror.map_proglang_to_codemirror_mode called");
+                    Debug.debugLog("CodeMirror.map_proglang_to_codemirror_mode called");
 
 
                     if (enlargeWidth) {
@@ -131,7 +131,7 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                 // Refresh codemirror editors  -
                     // otherwise content is visible only after first click in window
                     if (headerId) {
-                    $('#' + headerId).click(function(e) {
+                    $('#' + headerId).click(function() {
                         // Refresh codemirror editor  -
                             // otherwise content is visible only after first click in window
                         setTimeout(function() {
@@ -202,7 +202,6 @@ define(['jquery', 'jqueryui', 'qtype_proforma/codemirror',
                             console.log('cm_resize');
                             //editor.disabled = target.disabled;
                             //mutations.forEach(function(mutation) {
-                            //    console.log('CM_disable ' + mutation.type);
                             //});
                             editor.setSize(wrapper.clientWidth-10, wrapper.clientHeight-1);
                             editor.refresh();
