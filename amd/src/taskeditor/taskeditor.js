@@ -86,7 +86,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams) {
                 debugLog(response.fileurl);
                 draftfilename = decodeURIComponent(response.fileurl.split('/').reverse()[0]);
                 if (!response.fileurl) {
-                    return Promise.reject(new Error('invalid fileurl ' + response.fileurl));
+                    throw new Error('invalid fileurl ' + response.fileurl);
                 }
                 return response.fileurl;
             })
@@ -135,13 +135,13 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams) {
             const ref = testid.value;
             let uiTest = TestWrapper.constructFromId(ref);
             if (!uiTest) {
-                alert('cannot create test ' + ref);
+                Notification.alert('', 'cannot create test ' + ref);
             } else {
                 uiTest.weight = testweight.value;
                 uiTest.title = testtitle.value;
                 uiTest.description = testdescription.value;
                 if (testtype.value !== uiTest.testtype) {
-                    alert('Task file does not match grading hints in Moodle:\n' +
+                    Notification.alert('', 'Task file does not match grading hints in Moodle:<br>' +
                         'Testtype for test ' + uiTest.id + ' does not match testtype from grading hints');
                 }
             }
@@ -149,6 +149,18 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams) {
 
         const t1 = performance.now();
         debugLog("expanding details took " + (t1 - t0) + " milliseconds.");
+    }
+
+    /**
+     * Reads the task.xml content into the task editor and merges it with the grading hints.
+     *
+     * @param {string} text content of task.xml
+     * @returns {Promise}
+     */
+    function readTaskXml(text) {
+        return readXMLWithLock(text)
+            .then(() => mergeWithGradingHints())
+            .catch(Notification.exception);
     }
 
     /**
@@ -163,17 +175,12 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams) {
             case 'zip':
                 return taskresponse.blob()
                     .then(blob => {
-                        unzipme(blob, function(text) {
-                            readXMLWithLock(text)
-                                .then(() => mergeWithGradingHints());
-                        });
+                        unzipme(blob, readTaskXml);
+                        return true;
                     });
             case 'xml':
                 return taskresponse.text()
-                    .then(text => {
-                        readXMLWithLock(text)
-                            .then(() => mergeWithGradingHints());
-                    });
+                    .then(text => readTaskXml(text));
             default:
                 return Promise.resolve('N/A');
         }
@@ -299,11 +306,12 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams) {
                         debugLog('Task is uploaded to server');
                         updatebutton.onclick = realUpdateClick;
                         updatebutton.click();
+                        return true;
                     })
                    .catch(error => {
                        if (!(error instanceof InputError)) {
                            debugLog(error);
-                           alert(error);
+                           Notification.exception(error);
                        }
                     })
                     .finally(() => {
@@ -329,11 +337,12 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams) {
                         submitbutton.click();
                         /*                    Let uuid = document.querySelector("input[name='uuid']");
                                             uuid.disabled = false;*/
+                        return true;
                     })
                     .catch(error => {
                         if (!(error instanceof InputError)) {
                             debugLog(error);
-                            alert(error);
+                            Notification.exception(error);
                         }
                     })
                     .finally(() => {
@@ -390,7 +399,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams) {
                 // Hide task editor
                 document.querySelector('.proforma-taskeditor').style.display = 'None';
                 // LoadingIcon.fadeIn(150);
-                return Promise.resolve(0);
+                return 0;
                 // Return new Promise(resolve => setTimeout(resolve, 105000));
             })
             .then(() => {
@@ -405,6 +414,7 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams) {
                 loadingElem.remove();
                 // Show task editor
                 document.querySelector('.proforma-taskeditor').style.display = '';
+                return true;
             })
             .catch((error) => {
                 loadingElem.remove();
@@ -434,7 +444,9 @@ export async function edit(buttonid, context, taskrepoparams, msrepoparams) {
                     showTaskeditor();
                 });
             }
-        });
+            return true;
+        })
+        .catch(Notification.exception);
 
     /*
             Let taskPromise = downloadTaskFromServer();
@@ -536,7 +548,7 @@ function fillSelectOptions(id, selectArray, textForError) {
         const selectedVersion = selectElem.options[0].value;
         if (!selectArray.includes(selectedVersion)) {
             if (selectedVersion.trim() !== '') {
-                alert('invalid ' + textForError + ' version ' + selectedVersion);
+                Notification.alert('', 'invalid ' + textForError + ' version ' + selectedVersion);
             }
             // Remove invalid option
             selectElem.remove(0);
@@ -563,6 +575,7 @@ export const setJunitVersions = (id) => {
     getJunitVersions()
         .then(response => {
             fillSelectOptions(id, response.junitversions, 'JUnit');
+            return true;
         })
         .fail(Notification.exception);
 };
@@ -575,6 +588,7 @@ export const setCheckstyleVersions = (id) => {
     getCheckstyleVersions()
         .then(response => {
             fillSelectOptions(id, response.checkstyleversions, 'CheckStyle');
+            return true;
         })
         .fail(Notification.exception);
 };
@@ -679,7 +693,8 @@ export const initproglang = (proglangdiv, buttondiv, langselect) => {
 
     // Add button callbacks (depend on initialisation of config).
     taskeditorconfig.initStrings()
-        .then(() => addButtonCallbacks());
+        .then(() => addButtonCallbacks())
+        .catch(Notification.exception);
 };
 
 export const download = (buttonid) => {
@@ -687,9 +702,7 @@ export const download = (buttonid) => {
     button.onclick = function(e) {
         e.preventDefault();
         convertToXML()
-            .then((context) => {
-                zipme(context, true, taskmaxbytes);
-            })
+            .then((context) => zipme(context, true, taskmaxbytes))
             .catch(error => {
                 if (!(error instanceof InputError)) {
                     console.error(error);
@@ -717,7 +730,9 @@ export const downloadModelsolution = (buttonid) => {
                 b.href = url;
                 document.body.appendChild(b);
                 b.click();
-            });
+                return true;
+            })
+            .catch(Notification.exception);
     };
 };
 
@@ -774,7 +789,7 @@ function createGradingHints(temporary = false) {
     const gradinghints = document.querySelector('input[name="gradinghints"]');
     if (!gradinghints) {
         console.error('No gradinghints field found => ignore');
-        return;
+        return undefined;
     }
     let serializer = new XMLSerializer();
     let result = serializer.serializeToString(gh);
@@ -819,12 +834,13 @@ function uploadModelSolutionToServer() {
         try {
             request.send(formData);
             if (request.status !== 200) {
-                alert(`Error ${request.status}: ${request.statusText}`);
+                Notification.alert('', `Error ${request.status}: ${request.statusText}`);
             } else {
                 debugLog(request.response);
             }
         } catch (err) { // Instead of onerror
-            alert("Request failed");
+            console.error(err);
+            Notification.alert('', "Request failed");
         }
         debugLog('parse repsonse');
         const jsonResponse = JSON.parse(request.responseText);
@@ -832,7 +848,7 @@ function uploadModelSolutionToServer() {
         debugLog(jsonResponse);
         if (jsonResponse.error !== undefined) {
             console.error(request.responseText);
-            alert(jsonResponse.error);
+            Notification.alert('', jsonResponse.error);
         }
     }
 
@@ -1003,7 +1019,7 @@ export function checkModelsolution(buttonid, containerid) {
             .then(response => {
                 if (!response.ok) {
                     console.error(response);
-                    return Promise.reject(response.statusText);
+                    throw new Error(response.statusText);
                 }
                 // Moodle server has received task with model solution
                 // => convert to json
@@ -1013,7 +1029,7 @@ export function checkModelsolution(buttonid, containerid) {
                 // Forward json to logmonitor.
                 if (json.error) {
                     debugLog(json);
-                    return Promise.reject(json.error);
+                    throw new Error(json.error);
                 }
                 debugLog('run tests on grader and stream output');
                 let url = Config.wwwroot + '/question/type/proforma/checksolution_ajax.php?runtest=1';
@@ -1028,11 +1044,12 @@ export function checkModelsolution(buttonid, containerid) {
                     '&modelsolutionfilename=' + json.modelsolutionfilename;
 
                 logmonitor.show('checkmodelsollog', url, onFeedbackStart, onFeedbackData, onFeedbackEnd);
+                return json;
             })
             .catch(error => {
                 if (!(error instanceof InputError)) {
                     debugLog(error);
-                    alert(error);
+                    Notification.exception(error);
                 }
             })
             .finally(() => {
@@ -1095,6 +1112,7 @@ function saveToServer() {
         })
         .then(json => {
             debugLog(json);
+            return json;
         });
         // Do not catch here because error will not be detected in calling function!!
 }
@@ -1142,14 +1160,14 @@ export function uploadTaskToGrader(buttonid) {
             .then(response => {
                 if (!response.ok) {
                     console.error(response);
-                    return Promise.reject(response.statusText);
+                    throw new Error(response.statusText);
                 }
                 return response.json();
             })
             .then(json => {
                 if (json.error) {
                     debugLog(json);
-                    return Promise.reject(json.error);
+                    throw new Error(json.error);
                 }
                 debugLog('upload file from Moodle to grader');
                 const questionId = document.querySelector("input[name='id']").value;
@@ -1163,11 +1181,12 @@ export function uploadTaskToGrader(buttonid) {
                 }
                 logmonitor.show('uploadlog', url);
                 // Taskupload.upload(null, json.itemid, json.contextid, json.filename);
+                return json;
             })
             .catch(error => {
                 if (!(error instanceof InputError)) {
                     debugLog(error);
-                    alert(error);
+                    Notification.exception(error);
                 }
             })
             .finally(() => {

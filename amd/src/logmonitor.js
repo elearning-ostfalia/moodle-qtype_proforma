@@ -32,6 +32,7 @@ import CancelModal from 'core/modal_cancel';
 import ModalEvents from 'core/modal_events';
 import {get_string as getString} from 'core/str';
 import Config from 'core/config';
+import Notification from 'core/notification';
 
 /**
  * Shows a modal dialog with the server sent events
@@ -182,7 +183,8 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
             // Hide button
             modalroot.find(".btn-secondary").hide();
             requestEventSource();
-        });
+            return modal;
+        }).catch(Notification.exception);
     }
 
     // Initialise.

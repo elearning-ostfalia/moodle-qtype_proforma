@@ -1,5 +1,7 @@
 
 
+/* eslint no-console: ["error", {"allow": ["error"]}] */
+
 import {debugLog} from './debug.js';
 
 
@@ -76,9 +78,9 @@ Promise.all([
                     // E.preventDefault();
                     // window.history.back();
                     // form.action = '/action_page3.php';
-                    alert('save form');
+                    debugLog('save form');
                     setTimeout(() => {
-                        alert('timeout expired');
+                        debugLog('timeout expired');
                         form.onsubmit = originalSubmit;
                         form.submit();
                         form.onsubmit = wrappedSubmit;
@@ -86,7 +88,9 @@ Promise.all([
                 };
                 form.onsubmit = wrappedSubmit;
                 // Form.addEventListener('submit', wrappedSubmit);
-            } catch (e) {}
+            } catch (e) {
+                console.error(e);
+            }
             debugLog(form.submit);
 /*
             Let button = form.querySelector('input[type="submit"]');
@@ -146,4 +150,8 @@ Promise.all([
             debugLog("doc ready");
             _open();
         });
-});
+        return true;
+    })
+    .catch(error => {
+        console.error(error);
+    });

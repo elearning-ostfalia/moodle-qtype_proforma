@@ -284,7 +284,7 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename) {
             // Get Messages
             let messages = _getErrorsFromLog(collapsregion, regexp, filename);
             if (messages.length == 0) {
-                return;
+                return false;
             }
 
             // Not translated correctly by Babel:
@@ -338,6 +338,7 @@ function _embedErrorWithDocumentLoaded(cmid, collapsregion, regexp, filename) {
                         showMsg = false;
                     }
                 });
+            return true;
         })
         .catch((error) => {
             console.error(error);

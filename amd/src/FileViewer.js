@@ -55,7 +55,7 @@ import "./active-line";
 
 // Import Config from 'core/config';
 import * as Str from 'core/str';
-// Import * as notification from 'core/notification';
+import Notification from 'core/notification';
 // import {get_string as getString} from 'core/str';
 import ModalEvents from 'core/modal_events';
 import SaveCancelModal from 'core/modal_save_cancel';
@@ -146,11 +146,11 @@ function modalPrompt(titleId, labelId, defaultValue, callback) {
             modal.getRoot().on(ModalEvents.save, () => {
                 let result = document.querySelector("input[name='promptname']").value;
                 modal.getRoot().remove();
+                // The callback is called from an event handler, not from the promise chain.
+                // eslint-disable-next-line promise/no-callback-in-promise
                 callback(result);
             });
-            modal.show()
-                // Set focus into input field.
-                .then(() => document.querySelector("input[name='promptname']").focus());
+            const shown = modal.show();
             // Add trigger for return to trigger default action.
             let defaultButton = modal.getRoot().find('.btn-primary');
             document.querySelector("input[name='promptname']")
@@ -160,10 +160,13 @@ function modalPrompt(titleId, labelId, defaultValue, callback) {
                         defaultButton.click();
                     }
                 });
+            return shown;
         })
+        // Set focus into input field.
+        .then(() => document.querySelector("input[name='promptname']").focus())
         .catch(error => {
             console.error('error:', error);
-            alert(error);
+            Notification.exception(error);
         });
 }
 
@@ -192,11 +195,11 @@ function modalAlert(textId, param) {
         .then(([strings, modal]) => {
             modal.setTitle(strings[0]);
             modal.setBody(strings[1]);
-            modal.show();
+            return modal.show();
         })
         .catch(error => {
             console.error('error:', error);
-            alert(error);
+            Notification.exception(error);
         });
 }
 
@@ -229,13 +232,15 @@ function modalConfirm(titleId, textId, callback, param) {
             modal.setBody(strings[1]);
             modal.getRoot().on(ModalEvents.save, () => {
                 modal.getRoot().remove();
+                // The callback is called from an event handler, not from the promise chain.
+                // eslint-disable-next-line promise/no-callback-in-promise
                 callback();
             });
-            modal.show();
+            return modal.show();
         })
         .catch(error => {
             console.error('error:', error);
-            alert(error);
+            Notification.exception(error);
         });
 }
 
@@ -271,7 +276,9 @@ class TreeNode {
                         top: event.pageY
                     };
                     showMenu(origin);
-                });
+                    return true;
+                })
+                .catch(Notification.exception);
         };
         this.handleDragStart = event => {
             if (event.dataTransfer.getData('treeitem').length == 0) {
@@ -342,6 +349,8 @@ export class FileNode extends TreeNode {
             case 'md':
             case 'csv':
                 return "text";
+            default:
+                return undefined;
         }
     }
 
@@ -399,12 +408,11 @@ export class FileNode extends TreeNode {
     }
     getContent() {
         if (this.filecontent.length == 0) {
-            const p1 = this.getFramework().syncer.download(this.getPath());
-            p1.then(result => {
-                this.filecontent = result;
-                return result;
-            });
-            return p1;
+            return this.getFramework().syncer.download(this.getPath())
+                .then(result => {
+                    this.filecontent = result;
+                    return result;
+                });
         } else {
             return Promise.resolve(this.filecontent);
         }
@@ -482,7 +490,9 @@ export class FolderNode extends TreeNode {
                             // Open editor with new empty file for input
                             thecontext.getFramework().addEditor(node);
                             thecontext.getFramework().setFocusTo(node.element);
-                        });
+                            return true;
+                        })
+                        .catch(Notification.exception);
                 }
             });
         };
@@ -964,7 +974,7 @@ class EditorStack {
     }
     addEditor(filenode) {
         if (EditorStack.maxEditors === this.nodes.length) {
-            alert('maximum number of editors reached');
+            Notification.alert('', 'maximum number of editors reached');
             return;
         }
         // Create tab
@@ -987,10 +997,11 @@ class EditorStack {
                 // }
                 // item.editor.setOption("readOnly", this.readOnly);
                 item.editor.refresh(); // For old version of Codemirror
+                return true;
             })
             .catch(error => {
                 console.error('error:', error);
-                alert(error);
+                Notification.exception(error);
             });
 
         tab.classList.add('tab');
@@ -1315,7 +1326,9 @@ export class Framework {
                     root.displayInTreeview(ul);
                     root.toggleExpand();
                 }
-            });
+                return true;
+            })
+            .catch(Notification.exception);
 
         // Hide context menu on every left click
         window.addEventListener("click", e => {

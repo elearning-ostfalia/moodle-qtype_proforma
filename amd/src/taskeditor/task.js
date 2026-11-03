@@ -39,6 +39,7 @@ import * as taskeditorconfig from "./config";
 import {relinkFiles} from "./zipper";
 import {TestFileReference, FileReferenceList, ModelSolutionFileReference} from "./filereflist";
 import * as Str from 'core/str';
+import Notification from 'core/notification';
 
 export class InputError extends Error {
     constructor(message) {
@@ -79,6 +80,7 @@ function addRequired(elem) {
     return Str.get_string('err_required', 'form')
         .then((string) => {
             sibling.innerHTML = string;
+            return string;
         });
 }
 
@@ -133,9 +135,8 @@ function isInputComplete() {
 
     if (document.querySelectorAll('.xml_test').length < 1) {
         Str.get_string('errmissingtest', 'qtype_proforma')
-            .then(localtext => {
-                alert(localtext);
-            });
+            .then(localtext => Notification.alert('', localtext))
+            .catch(Notification.exception);
 
         return false;
     }
@@ -242,8 +243,9 @@ function isInputComplete() {
         Str.get_string('sumweightzero', 'qtype_proforma')
             .then(content => {
                 switchToTab('#proforma-tests-section');
-                alert(content);
-            });
+                return Notification.alert('', content);
+            })
+            .catch(Notification.exception);
         incomplete = true;
     }
 
@@ -371,7 +373,8 @@ export function convertToXML() {
                         'config': test.configItem.title
                     };
                     Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
-                        .then(content => alert(content));
+                        .then(content => Notification.alert('', content))
+                        .catch(Notification.exception);
                     return;
                 }
 
@@ -380,7 +383,7 @@ export function convertToXML() {
             });
             debugLog('*** config lookup complete');
             if (test.configItem === undefined) {
-                alert('cannot determine test configuration for test "' + test.title + '"');
+                Notification.alert('', 'cannot determine test configuration for test "' + test.title + '"');
             }
 
             // ReadFileRefs(xmlReader, modelSolution, thisNode);
@@ -484,7 +487,8 @@ export async function readAndDisplayXml(taskXml) {
                     'config': theConfigitem.title
                 };
                 Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
-                    .then(content => alert(content));
+                    .then(content => Notification.alert('', content))
+                    .catch(Notification.exception);
                 return null;
             }
             debugLog('found ' + configItem.title);
@@ -524,11 +528,11 @@ export async function readAndDisplayXml(taskXml) {
 */
     if (taskXml.length === 0) {
         setErrorMessage("Task.xml is empty.");
-        return;
+        return undefined;
     }
 
     /*
-    const templateroot = $("#templatedropzone");
+    Const templateroot = $("#templatedropzone");
     const multmediaroot = $("#multimediadropzone");
     const downloadroot = $("#downloaddropzone");
     const visibleroot = $("#visiblefiledropzone");
@@ -551,27 +555,21 @@ export async function readAndDisplayXml(taskXml) {
     let versionElement = document.getElementById("xml_programming-language-" + task.proglang.toLowerCase());
     if (!versionElement) {
         console.error('cannot find element #xml_programming-language-' + task.proglang.toLowerCase());
-    } else {
-        if (versionElement.options.length > 0) {
-            // If version element contains options then check version
-            versionElement.value = task.proglangVersion;
-            if (versionElement.value !== task.proglangVersion) {
-                if (task.proglangVersion === undefined ||
-                    task.proglangVersion === null ||
-                    task.proglangVersion.trim() === ''
-                ) {
-                    switch (task.proglang.toLowerCase()) {
-                        case 'python':
-                            // Set programming version to 3
-                            task.proglangVersion = '3';
-                            break;
-                    }
-                }
-            }
-            if (versionElement.value !== task.proglangVersion) {
-                Str.get_string('invalidproglang', 'qtype_proforma')
-                    .then(content => alert(content + ' ' + task.proglangVersion));
-            }
+    } else if (versionElement.options.length > 0) {
+        // If version element contains options then check version
+        versionElement.value = task.proglangVersion;
+        const noVersion = task.proglangVersion === undefined ||
+            task.proglangVersion === null ||
+            task.proglangVersion.trim() === '';
+        if (versionElement.value !== task.proglangVersion && noVersion &&
+            task.proglang.toLowerCase() === 'python') {
+            // Set programming version to 3
+            task.proglangVersion = '3';
+        }
+        if (versionElement.value !== task.proglangVersion) {
+            Str.get_string('invalidproglang', 'qtype_proforma')
+                .then(content => Notification.alert('', content + ' ' + task.proglangVersion))
+                .catch(Notification.exception);
         }
     }
 
@@ -599,6 +597,7 @@ export async function readAndDisplayXml(taskXml) {
             debugLog('** all tests and model sols are created => add referenced files');
             FileReferenceList.updateAllFilenameLists();
             debugLog('=> finished');
+            return true;
         });
 //        .fail(Notification.exception);
 

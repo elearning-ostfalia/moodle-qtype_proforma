@@ -36,6 +36,7 @@ import {readAndCreateFileData} from "./helper";
 import {FileWrapper} from "./file";
 import {DEBUG_MODE, handleFilenameChangeInTest} from "./helper";
 import * as Str from 'core/str';
+import Notification from 'core/notification';
 
 
 let loadFileOption = "<open...>";
@@ -64,6 +65,7 @@ export class FileReferenceList extends DynamicList {
                 hideEditorText = results[1];
                 loadFileOption = results[2];
                 newFileOption = results[3];
+                return results;
             });
     }
 
@@ -334,7 +336,7 @@ export class FileReferenceList extends DynamicList {
         // Iterate through all file reference objects to find an 'old' one
         $.each(otherFileRefList.root.find(".fileref_fileref"), function(index, item) {
             if (item.value === fileid) {
-                alert("file class for file '" + uiFile.filename + "' will be no longer a " + listname + " file");
+                Notification.alert('', "file class for file '" + uiFile.filename + "' will be no longer a " + listname + " file");
                 // File id matches
                 // remove old fileref object
                 // remove actual numeric fileref value
@@ -467,7 +469,8 @@ export class FileReferenceList extends DynamicList {
                         const fileid = uiFile.id;
                         if (isDuplicateId(fileid)) {
                             Str.get_string('fileexists', 'qtype_proforma', uiFile.filename)
-                                .then(content => alert(content));
+                                .then(content => Notification.alert('', content))
+                                .catch(Notification.exception);
                             // Alert('file ' + uiFile.filename + ' is already in this list!');
                             // clean input field
                             // $(tempSelElem).val(emptyFileOption).change();

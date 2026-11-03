@@ -31,7 +31,7 @@ import SaveCancelModal from 'core/modal_save_cancel';
 import * as ModalEvents from 'core/modal_events';
 import Notification from 'core/notification';
 
-export const select_lang = (title, proglangs, returnurl) => {
+export const selectLang = (title, proglangs, returnurl) => {
     /**
      * Creates the HTML form with one radio button per programming language.
      *
@@ -100,12 +100,13 @@ export const select_lang = (title, proglangs, returnurl) => {
                 window.location.assign(returnurl);
             });
             modal.show();
+            return modal;
         }).catch(Notification.exception);
     }
     try {
         doModal();
     } catch (err) {
-        console.error("Exception caught in select-lang.js function select_lang\n " + err.toString());
+        console.error("Exception caught in select-lang.js function selectLang\n " + err.toString());
     }
 };
 

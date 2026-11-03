@@ -23,6 +23,7 @@
 
 import {debugLog} from './debug';
 import Config from 'core/config';
+import Notification from 'core/notification';
 import {FileNode} from "./FileViewer";
 
 /* Syncer base class */
@@ -114,7 +115,7 @@ export class MoodleQuestionAttemptSyncer extends Syncer {
             .then(response => response.text())
             .catch(error => {
                 console.error('error:', error);
-                alert(error);
+                Notification.exception(error);
             });
         return promise;
     }
@@ -130,6 +131,8 @@ export class MoodleSyncer extends Syncer {
         const url = Config.wwwroot + '/repository/draftfiles_ajax.php';
         let params = {};
         params.sesskey = Config.sesskey;
+        // Parameter name is defined by Moodle.
+        // eslint-disable-next-line camelcase
         params.client_id = this.options.client_id;
         params.itemid = this.options.itemid;
         if (options !== undefined) {
@@ -159,7 +162,7 @@ export class MoodleSyncer extends Syncer {
             })
             .catch(error => {
                 console.error('error on ' + action + ':', error);
-                alert(error);
+                Notification.exception(error);
             });
 
         // Return promise;
@@ -184,7 +187,7 @@ export class MoodleSyncer extends Syncer {
             .then(response => response.text())
             .catch(error => {
                     console.error('error:', error);
-                    alert(error);
+                    Notification.exception(error);
                 });
         return promise;
 
@@ -292,7 +295,9 @@ export class MoodleSyncer extends Syncer {
                         }
                     });
                     resolve();
-                });
+                    return json;
+                })
+                .catch(reject);
         });
         return listfolder('/');
     }
@@ -360,7 +365,7 @@ export class MoodleSyncer extends Syncer {
                 })
                 .catch(error => {
                     console.error('upload error:', error);
-                    alert(error);
+                    Notification.exception(error);
                 });
             return promise;
         } else {
@@ -381,16 +386,16 @@ export class MoodleSyncer extends Syncer {
                     request.send(formData);
                 } catch (e2) {
                     console.error(e2);
-                    return;
+                    return Promise.resolve();
                 }
             }
             debugLog('sync/async post succeeded');
             const jsonResponse = JSON.parse(request.responseText);
             debugLog(jsonResponse);
             if (jsonResponse.error !== undefined) {
-                console.error(request.responseText);
-                alert(jsonResponse.error);
+                Notification.alert('', jsonResponse.error);
             }
+            return Promise.resolve(jsonResponse);
         }
     }
 }

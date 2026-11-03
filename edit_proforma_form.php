@@ -81,7 +81,7 @@ class qtype_proforma_edit_form extends question_edit_form {
             $title = get_string('selectlangtitle', 'qtype_proforma');
             $PAGE->requires->js_call_amd(
                 'qtype_proforma/selectlang',
-                'select_lang',
+                'selectLang',
                 [$title, $proglangs, $originalreturnurl]
             );
 

@@ -83,9 +83,15 @@ export class CustomTest {
     }
     // Override
     /* eslint-disable no-unused-vars */
-    onCreate(testId) {}
-    onReadXml(test, xmlReader, testConfigNode, context) {}
-    onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {}
+    onCreate(testId) {
+        // Default: nothing to do.
+    }
+    onReadXml(test, xmlReader, testConfigNode, context) {
+        // Default: nothing to do.
+    }
+    onWriteXml(test, testConfigNode, xmlDoc, xmlWriter, task) {
+        // Default: nothing to do.
+    }
     /* eslint-enable no-unused-vars */
     getFramework() {
         return undefined;

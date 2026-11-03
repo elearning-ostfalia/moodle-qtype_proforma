@@ -31,6 +31,7 @@
 import {debugLog} from '../debug';
 import {setErrorMessage, getMimeType} from "./helper";
 import * as taskeditorconfig from "./config";
+import Notification from 'core/notification';
 import {FileStorage, fileStorages} from "./file";
 
 export const T_LMS_USAGE = {
@@ -56,7 +57,7 @@ class XmlReader {
     constructor(xmlText) {
         this.xmlDoc = new DOMParser().parseFromString(xmlText, 'text/xml');
         if (!this.xmlDoc.evaluate) {
-            alert('XPATH not supported');
+            Notification.alert('', 'XPATH not supported');
             return;
         }
 
@@ -154,14 +155,14 @@ class XmlWriter {
             throw new SyntaxError('cdata not supported, use createOptionalTextElement');
         }
         if (value === '') {
-            return;
+            return undefined;
         }
         return this.createTextElement(node, tag, value, ns, cdata);
     }
 
     createOptionalCDataElement(node, tag, value, ns = undefined) {
         if (value === '') {
-            return;
+            return undefined;
         }
         return this.createCDataElement(node, tag, value, ns);
     }
@@ -270,8 +271,7 @@ export class TaskClass {
             configItem.onReadXml(this.tests[testid], xmlReader, configNodeNode, context);
         } catch (err) {
             console.error(err);
-            const text = "Error while parsing test configuration in xml file:\n\n" + err;
-            alert(text);
+            Notification.alert('Error while parsing test configuration in xml file', err.toString());
             // SetErrorMessage("Error while parsing test configuration in xml file", err);
         }
     }
@@ -464,7 +464,7 @@ export class TaskClass {
             let thisNode = iterator.iterateNext();
             let editCounter = 0;
             while (thisNode) {
-                // const required =
+                // Const required =
                 this.fileRestrictions[editCounter++] = new TaskFileRestriction(thisNode.textContent,
                     xmlReader.readSingleText("@required", thisNode, "true") === 'true',
                     xmlReader.readSingleText("@pattern-format", thisNode));
@@ -590,11 +590,9 @@ export class TaskClass {
                 if (test.testtype.toLowerCase() === 'unittest') {
                     // Check for optional framework
                     let unitNode = xmlReader.readSingleNode("unit:unittest", configNode);
-                    if (unitNode) {
-                        let framework = xmlReader.readSingleText("@framework", unitNode);
-                        if (framework) {
-                            test.framework = framework;
-                        }
+                    let framework = unitNode ? xmlReader.readSingleText("@framework", unitNode) : undefined;
+                    if (framework) {
+                        test.framework = framework;
                     }
                 }
 
@@ -636,6 +634,7 @@ export class TaskClass {
             case 'urn:proforma:v2.0': return this.readXmlVersion2(xmlfile);
             default:
                 setErrorMessage("Unsupported ProFormA version " + xmlReader.defaultns);
+                return undefined;
         }
     }
 
