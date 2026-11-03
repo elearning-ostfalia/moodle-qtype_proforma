@@ -42,8 +42,8 @@
     </span>
 
     <p>
-        <label for="xml_model-solution_id" style="display: none;">ID: </label>
-        <input class="tinyinput xml_model-solution_id" value="{{ msid }}" readonly="" style="display: none;">
+        <label for="xml_model-solution_id_{{ msid }}" style="display: none;">ID: </label>
+        <input id="xml_model-solution_id_{{ msid }}" class="tinyinput xml_model-solution_id" value="{{ msid }}" readonly="" style="display: none;">
     </p>
     <p>
         <label>{{#str}} testdescription, qtype_proforma {{/str}}</label>
