@@ -889,9 +889,13 @@ Prüfung beendet.
         $expected = str_replace('{COLLAPSE_ID}', 'm-id-test-proforma-0000', $expected);
 
         // $dom->loadHTML($output);
-        $dom->loadHTML($output, LIBXML_NOERROR | LIBXML_NOXMLDECL | LIBXML_NOWARNING);
+        // DOMDocument::loadHTML assumes ISO-8859-1 unless told otherwise. The rendered
+        // feedback is UTF-8 (HTML feedback is cleaned by HTMLPurifier, which converts
+        // entities like &nbsp; into UTF-8 characters), so declare the encoding explicitly.
+        $utf8 = '<?xml encoding="UTF-8">';
+        $dom->loadHTML($utf8 . $output, LIBXML_NOERROR | LIBXML_NOXMLDECL | LIBXML_NOWARNING);
         $outputpretty = $dom->saveHTML();
-        $dom->loadHTML($expected, LIBXML_NOERROR | LIBXML_NOXMLDECL | LIBXML_NOWARNING);
+        $dom->loadHTML($utf8 . $expected, LIBXML_NOERROR | LIBXML_NOXMLDECL | LIBXML_NOWARNING);
         $expectedpretty = $dom->saveHTML();
 
         $this->assert_same_xml($expectedpretty, $outputpretty);
