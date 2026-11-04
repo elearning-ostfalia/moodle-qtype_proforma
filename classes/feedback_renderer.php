@@ -22,6 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
+
+// phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses,Squiz.PHP.CommentedOutCode.Found
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -46,18 +49,18 @@ class feedback_renderer {
      * reference to qtype_proforma_renderer (main renderer)
      * @var qtype_proforma_renderer|null
      */
-    private $_mainrenderer = null;
+    private $mainrenderer = null;
 
     /** @var int sum of all weights */
-    private $_totalweight = 0;
+    private $totalweight = 0;
 
     /**
      * @var null Grading hints of (Moodle not ProformA) question.
      */
-    private $_gradinghints = null;
+    private $gradinghints = null;
 
     /** @var qtype_proforma_question|null question to be rendered */
-    private $_question = null;
+    private $question = null;
 
     /**
      * feedback_renderer constructor.
@@ -66,8 +69,8 @@ class feedback_renderer {
      * @param qtype_proforma_question $question
      */
     public function __construct(qtype_proforma_renderer $renderer, $question) {
-        $this->_mainrenderer = $renderer;
-        $this->_question = $question;
+        $this->mainrenderer = $renderer;
+        $this->question = $question;
     }
 
     /**
@@ -110,8 +113,8 @@ class feedback_renderer {
             $csstitle = ['class' => 'proforma_subtest_title'];
             $csscontent = ['class' => 'proforma_subtest_testlog'];
             if ($printpassedinfo) {
-                $truefeedbackimg = $this->_mainrenderer->feedback_image((int) 1);
-                $falsefeedbackimg = $this->_mainrenderer->feedback_image((int) 0);
+                $truefeedbackimg = $this->mainrenderer->feedback_image((int) 1);
+                $falsefeedbackimg = $this->mainrenderer->feedback_image((int) 0);
                 $title = ($passed ? $truefeedbackimg : $falsefeedbackimg) . $title;
             } else {
                 // Adjust left space.
@@ -243,7 +246,7 @@ class feedback_renderer {
      */
     private function render_test_title($test, $score, $internalerror, &$result, &$allcorrect) {
         $id = (string) $test['id'];
-        $ghtest = $this->_gradinghints->xpath("//test-ref[@ref='" . $id . "']");
+        $ghtest = $this->gradinghints->xpath("//test-ref[@ref='" . $id . "']");
         if (count($ghtest) == 0) {
             throw new feedback_exception('cannot find appropriate grading hints for test "' . $id . '""');
         }
@@ -257,10 +260,10 @@ class feedback_renderer {
 
         // Create unique identifier for each region
         // since there can be multiple regions per page!
-        $collid = $this->_mainrenderer->create_collapsible_region_id();
+        $collid = $this->mainrenderer->create_collapsible_region_id();
         $visiblescore = '';
-        if ($this->_question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
-            $weight = floatval((string) $ghtest['weight']) / $this->_totalweight;
+        if ($this->question->aggregationstrategy == qtype_proforma::WEIGHTED_SUM) {
+            $weight = floatval((string) $ghtest['weight']) / $this->totalweight;
             if ($weight > 0.0) {
                 // Only display percentage if this test counts more than 0.
                 if (isset($score)) {
@@ -275,23 +278,23 @@ class feedback_renderer {
         $icon = '';
         if ($internalerror) {
             // Exclamation mark.
-            $icon = $this->_mainrenderer->pix_icon('i/caution', 'info');
+            $icon = $this->mainrenderer->pix_icon('i/caution', 'info');
             $allcorrect = false;
         } else if ($score === 1.0) {
             // Success.
-            $icon = $this->_mainrenderer->feedback_image((int) 1);
+            $icon = $this->mainrenderer->feedback_image((int) 1);
         } else if ($score === 0.0) {
             // Failing.
-            $icon = $this->_mainrenderer->feedback_image((int) 0);
+            $icon = $this->mainrenderer->feedback_image((int) 0);
             $allcorrect = false;
         } else {
             // Partial correct.
-            $icon = $this->_mainrenderer->feedback_image(0.1);
+            $icon = $this->mainrenderer->feedback_image(0.1);
             $allcorrect = false;
         }
 
         $expand = false;
-        switch ($this->_question->expandcollapse) {
+        switch ($this->question->expandcollapse) {
             case qtype_proforma::ALWAYS_COLLPASE:
                 break;
             case qtype_proforma::ALWAYS_EXPAND:
@@ -311,7 +314,7 @@ class feedback_renderer {
                 // Todo.
                 break;
             default:
-                debugging('invalid value for expandcollapse ' . $this->_question->expandcollapse);
+                debugging('invalid value for expandcollapse ' . $this->question->expandcollapse);
                 break;
         }
         $result .= print_collapsible_region_start(
@@ -342,15 +345,15 @@ class feedback_renderer {
                         break;
                 }
             }
-            if (isset($regexp) && $this->_question->responseformat == qtype_proforma::RESPONSE_EDITOR) {
+            if (isset($regexp) && $this->question->responseformat == qtype_proforma::RESPONSE_EDITOR) {
                 // Add button for inline errors.
-                $this->_mainrenderer->get_page()->requires->js_call_amd(
+                $this->mainrenderer->get_page()->requires->js_call_amd(
                     'qtype_proforma/inlinemessages',
                     'embedError',
                     [qtype_proforma_format_renderer_base::$codemirrorid,
                     $collid,
                     $regexp,
-                    $this->_question->responsefilename]
+                    $this->question->responsefilename]
                 );
             }
         }
@@ -462,13 +465,13 @@ class feedback_renderer {
         }
 
         // Preset member variables.
-        $gh = new SimpleXMLElement($this->_question->gradinghints);
-        $this->_gradinghints = $gh->root;
+        $gh = new SimpleXMLElement($this->question->gradinghints);
+        $this->gradinghints = $gh->root;
 
         // Calculate total weight.
-        $this->_totalweight = 0;
-        foreach ($this->_gradinghints->{'test-ref'} as $testresponse) {
-            $this->_totalweight += floatval((string) $testresponse['weight']);
+        $this->totalweight = 0;
+        foreach ($this->gradinghints->{'test-ref'} as $testresponse) {
+            $this->totalweight += floatval((string) $testresponse['weight']);
         }
 
         /*
@@ -516,7 +519,7 @@ class feedback_renderer {
         // iterating through all tests in the response.
         // This guarantees that we detect missing tests in the response and
         // we can reorder the result.
-        foreach ($this->_gradinghints->{'test-ref'} as $ghtest) {
+        foreach ($this->gradinghints->{'test-ref'} as $ghtest) {
             $testid = (string)$ghtest['ref'];
             // Look for test in message:
             // Using xpath is more elagant but requires registering the default namespace.
@@ -552,7 +555,7 @@ class feedback_renderer {
         // Render version control information.
         $result = $this->render_vcs_information($response, $result);
         // Render grading information.
-        $result = $this->render_grader_info($message, $response, $result, $this->_question->contextid);
+        $result = $this->render_grader_info($message, $response, $result, $this->question->contextid);
 
         return $result;
     }
@@ -580,7 +583,7 @@ class feedback_renderer {
             $result .= '<p></p>' . '[' . $gradertext . ']';
 
             // Debugging: show raw response.
-            $qaid = $this->_mainrenderer->create_collapsible_region_id();
+            $qaid = $this->mainrenderer->create_collapsible_region_id();
             $result .= print_collapsible_region_start(
                 '',
                 $qaid,
@@ -616,8 +619,8 @@ class feedback_renderer {
                     if ($testid == $id) {
                         $log = $testlog->{'log'}->{'content'};
 
-                        $qaid = $this->_mainrenderer->create_collapsible_region_id();
-                        /* $icon = $this->_mainrenderer->pix_icon('i/report', 'log'); */
+                        $qaid = $this->mainrenderer->create_collapsible_region_id();
+                        /* $icon = $this->mainrenderer->pix_icon('i/report', 'log'); */
 
                         $result .= print_collapsible_region_start(
                             '',

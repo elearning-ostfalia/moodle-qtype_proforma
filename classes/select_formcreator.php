@@ -39,7 +39,7 @@ class select_form_creator extends base_form_creator {
      */
     public function __construct($form, $newquestion = null) {
         parent::__construct($form, null);
-        $this->_tasktype = qtype_proforma::SELECT_TASKFILE;
+        $this->tasktype = qtype_proforma::SELECT_TASKFILE;
     }
 
     // Override.
@@ -50,7 +50,7 @@ class select_form_creator extends base_form_creator {
      */
     public function add_hidden_fields() {
         parent::add_hidden_fields();
-        $mform = $this->_form;
+        $mform = $this->form;
 
         // Add hidden default values for missing fields.
         $mform->addElement('hidden', 'responseformat', qtype_proforma::RESPONSE_EDITOR);
@@ -64,7 +64,7 @@ class select_form_creator extends base_form_creator {
      * Add something to select the programming language.
      */
     public function add_proglang_selection() {
-        $mform = $this->_form;
+        $mform = $this->form;
 
         $programminglangs = ['java' => 'Java', 'setlx' => 'SetlX'];
         $mform->addElement(

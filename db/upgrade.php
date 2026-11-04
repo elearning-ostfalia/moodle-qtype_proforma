@@ -23,6 +23,8 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+// phpcs:disable Squiz.PHP.CommentedOutCode.Found
+
 /**
  * Upgrade code for the proforma question type.
  * @param int $oldversion the version we are upgrading from.
@@ -30,7 +32,7 @@
 function xmldb_qtype_proforma_upgrade($oldversion) {
     global $DB;
 
-    $dbman = $DB->get_manager ();
+    $dbman = $DB->get_manager();
     $table = new xmldb_table('qtype_proforma_options');
 
     if ($oldversion < 2017122001) {
@@ -160,7 +162,6 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018051101) {
-
         // INTERNAL.
         $field = new xmldb_field('inputwithfile');
         if ($dbman->field_exists($table, $field)) {
@@ -194,14 +195,14 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         }
 
         // Merge columns instructions and libraries to downloads.
-        $DB->execute('UPDATE {qtype_proforma_options} '.
+        $DB->execute('UPDATE {qtype_proforma_options} ' .
                 'SET downloads = ' .
-                $DB->sql_concat(' instructions ', '","' , 'libraries') .
+                $DB->sql_concat(' instructions ', '","', 'libraries') .
                 ' WHERE libraries is not null and instructions is not null');
-        $DB->execute('UPDATE {qtype_proforma_options} '.
+        $DB->execute('UPDATE {qtype_proforma_options} ' .
                         'SET downloads = libraries ' .
                         'WHERE instructions is null or instructions = ""');
-        $DB->execute('UPDATE {qtype_proforma_options} '.
+        $DB->execute('UPDATE {qtype_proforma_options} ' .
                 'SET downloads = instructions ' .
                 'WHERE libraries is null or libraries = ""');
 
@@ -222,7 +223,7 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        $DB->execute('UPDATE {qtype_proforma_options} '.
+        $DB->execute('UPDATE {qtype_proforma_options} ' .
                 'SET proformaversion = "1.0.1" ' .
                 'WHERE proformaversion is null');
 
@@ -306,16 +307,16 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         require_once(__DIR__ . '/upgradelib.php');
 
         // Add fields for feedback options.
-        $field = new xmldb_field('expandcollapse', XMLDB_TYPE_INTEGER,  '4', null, XMLDB_NOTNULL, null, 0, 'proformaversion');
+        $field = new xmldb_field('expandcollapse', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 0, 'proformaversion');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        $field = new xmldb_field('inlinemessages', XMLDB_TYPE_INTEGER,  '4', null, XMLDB_NOTNULL, null, 1, 'expandcollapse');
+        $field = new xmldb_field('inlinemessages', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 1, 'expandcollapse');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
         /* For future use:
-        $field = new xmldb_field('initiallyinline', XMLDB_TYPE_INTEGER,  '4', null, XMLDB_NOTNULL, null, 0, 'inlinemessages');
+        $field = new xmldb_field('initiallyinline', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 0, 'inlinemessages');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -329,12 +330,12 @@ function xmldb_qtype_proforma_upgrade($oldversion) {
         require_once(__DIR__ . '/upgradelib.php');
 
         // Add fields for feedback options.
-        $field = new xmldb_field('vcssystem', XMLDB_TYPE_INTEGER,  '4', null, null, null, null, 'taskrepository');
+        $field = new xmldb_field('vcssystem', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'taskrepository');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        $DB->execute('UPDATE {qtype_proforma_options} '.
+        $DB->execute('UPDATE {qtype_proforma_options} ' .
             'SET vcssystem = "2" ' .
             'WHERE responseformat = :responseformat', ['responseformat' => 'versioncontrol']);
 

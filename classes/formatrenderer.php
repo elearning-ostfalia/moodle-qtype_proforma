@@ -25,6 +25,8 @@
  *             (The Open University for essay base)
  */
 
+// phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses,Squiz.PHP.CommentedOutCode.Found
+
 // Load JQuery for CodeMirror resizing. This cannot be done
 // inside a function.
 
@@ -56,7 +58,6 @@ if (!$PAGE->requires->is_head_done()) {
  * Abstract base class for all format renderer.
  */
 abstract class qtype_proforma_format_renderer_base extends plugin_renderer_base {
-
     /** @var string|null id of the CodeMirror editor (hack: feedback renderer does not know the format renderer instance) */
     public static $codemirrorid = null;
 
@@ -121,7 +122,6 @@ abstract class qtype_proforma_format_renderer_base extends plugin_renderer_base 
  * A renderer for questions where the student needs to upload files
  */
 class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_renderer_base {
-
     /**
      * returns the html fragment for the reponse area in readonly mode
      * @param question_attempt $qa
@@ -134,9 +134,16 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
         $output = [];
 
         foreach ($files as $file) {
-            $output[] = html_writer::tag('p', html_writer::link($qa->get_response_file_url($file),
-                $this->output->pix_icon(file_file_icon($file), get_mimetype_description($file),
-                    'moodle', ['class' => 'icon']) . ' ' . s($file->get_filename())));
+            $icon = $this->output->pix_icon(
+                file_file_icon($file),
+                get_mimetype_description($file),
+                'moodle',
+                ['class' => 'icon']
+            );
+            $output[] = html_writer::tag(
+                'p',
+                html_writer::link($qa->get_response_file_url($file), $icon . ' ' . s($file->get_filename()))
+            );
         }
         return implode($output);
     }
@@ -164,14 +171,15 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
         $pickeroptions->accepted_types = $question->filetypes;
         $pickeroptions->return_types = FILE_INTERNAL | FILE_CONTROLLED_LINK;
 
-        $pickeroptions->itemid = $qa->prepare_response_files_draft_itemid(
-            'attachments', $options->context->id);
+        $pickeroptions->itemid = $qa->prepare_response_files_draft_itemid('attachments', $options->context->id);
 
         $fm = new form_filemanager($pickeroptions);
         $filesrenderer = $this->page->get_renderer('core', 'files');
-        return $filesrenderer->render($fm) . html_writer::empty_tag(
-                'input', ['type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
-                'value' => $pickeroptions->itemid]);
+        return $filesrenderer->render($fm) . html_writer::empty_tag('input', [
+            'type' => 'hidden',
+            'name' => $qa->get_qt_field_name('attachments'),
+            'value' => $pickeroptions->itemid,
+        ]);
     }
 
     /**
@@ -206,7 +214,6 @@ class qtype_proforma_format_filepicker_renderer extends qtype_proforma_format_re
  * A renderer for questions where the student enters text into editor
  */
 class qtype_proforma_format_editor_renderer extends qtype_proforma_format_renderer_base {
-
     /**
      * returns the html fragment for the reponse area in input mode
      *
@@ -297,16 +304,12 @@ class qtype_proforma_format_editor_renderer extends qtype_proforma_format_render
     public function answerfieldname() {
         return ANSWER;
     }
-
 }
-
-
 
 /**
  * A renderer for questions where the student uses a version control system
  */
 class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_format_renderer_base {
-
     /** @var string name of the answer step field */
     private $name = VCSINPUT;
 
@@ -383,7 +386,6 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
             $input .= html_writer::tag('input', '' /*s($step->get_qt_var($name))*/, $attributes);
             $input .= html_writer::empty_tag('input', ['type' => 'hidden',
                     'name' => $inputname . 'format', 'value' => FORMAT_PLAIN]);
-
         } else if ($this->has_group_field($question)) {
             global $COURSE;
             $this->name = VCSGROUP;
@@ -424,7 +426,6 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
                     'name' => $inputname . 'format', 'value' => FORMAT_PLAIN]);
 
             return html_writer::tag('div', $input, ['class' => VCSGROUP]);
-
         }
 
         return $input;
@@ -448,17 +449,17 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
      * @return string
      */
     public function response_area_read_only($qa, $step, $options) {
-        if (is_a ($step, 'question_attempt_step_read_only')) {
+        if (is_a($step, 'question_attempt_step_read_only')) {
             return '';
         }
 
         if (null !== $step->get_qt_var(VCSINPUT)) {
             $question = $qa->get_question();
-            return $question->vcslabel . ' '. s($step->get_qt_var(VCSINPUT));
+            return $question->vcslabel . ' ' . s($step->get_qt_var(VCSINPUT));
         } else if (null !== $step->get_qt_var(VCSGROUP)) {
-            return get_string('groupname', 'qtype_proforma') . ': '. s($step->get_qt_var(VCSGROUP));
+            return get_string('groupname', 'qtype_proforma') . ': ' . s($step->get_qt_var(VCSGROUP));
         } else if (null !== $step->get_qt_var[VCSUSERNAME]) {
-            return 'User '. ': '. s($step->get_qt_var(VCSUSERNAME));
+            return 'User ' . ': ' . s($step->get_qt_var(VCSUSERNAME));
         }
 
         return '???';
@@ -480,7 +481,6 @@ class qtype_proforma_format_versioncontrol_renderer extends qtype_proforma_forma
  * that can be edited in a mixture of editor and explorer on client side.
  */
 class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_renderer_base {
-
     /**
      * returns the html fragment for the reponse area in readonly mode
      * @param question_attempt $qa
@@ -509,13 +509,14 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $params->files = $responsefiles;
         $params->rootnode = get_string('rootsubmission', 'qtype_proforma');
 
-        $this->page->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
-            ['fileexplorer_' . $clientid, $params]);
+        $this->page->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer', ['fileexplorer_' . $clientid, $params]);
 
         return html_writer::tag('div', '', ['id' => 'fileexplorer_' . $clientid]) .
-            html_writer::empty_tag(
-                'input', ['type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
-                'value' => $itemid]);
+            html_writer::empty_tag('input', [
+                'type' => 'hidden',
+                'name' => $qa->get_qt_field_name('attachments'),
+                'value' => $itemid,
+            ]);
     }
 
     /**
@@ -586,13 +587,14 @@ class qtype_proforma_format_explorer_renderer extends qtype_proforma_format_rend
         $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $options->itemid, 'id', true);
         $options->filecount = count($files);
         */
-        $this->page->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer',
-            ['fileexplorer_' . $clientid, $params]);
+        $this->page->requires->js_call_amd('qtype_proforma/explorer', 'createExplorer', ['fileexplorer_' . $clientid, $params]);
 
         return html_writer::tag('div', '', ['id' => 'fileexplorer_' . $clientid]) .
-        html_writer::empty_tag(
-                'input', ['type' => 'hidden', 'name' => $qa->get_qt_field_name('attachments'),
-                'value' => $itemid]);
+            html_writer::empty_tag('input', [
+                'type' => 'hidden',
+                'name' => $qa->get_qt_field_name('attachments'),
+                'value' => $itemid,
+            ]);
     }
 
     /**

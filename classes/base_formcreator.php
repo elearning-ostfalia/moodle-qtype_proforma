@@ -22,6 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
+
+// phpcs:disable Squiz.PHP.CommentedOutCode.Found
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
@@ -49,13 +52,13 @@ abstract class base_form_creator {
     /**
      * @var MoodleQuickForm The form object that must be filled with input fields.
      */
-    protected $_form = null;
+    protected $form = null;
 
     /**
      * class instance for doing the task related work.
      * @var qtype_proforma_base_task task
      */
-    protected $_taskhandler = null;
+    protected $taskhandler = null;
 
     /**
      * flag indicates if a new question is to be created. For new questions
@@ -63,34 +66,34 @@ abstract class base_form_creator {
      * For existing questions the old value is preselected.
      * @var type
      */
-    protected $_newquestion = false;
+    protected $newquestion = false;
 
     /**
      * response options
      * @var array|null
      */
-    protected $_responseformats = null;
+    protected $responseformats = null;
     /** @var bool input format for (unit) test code */
-    protected $_testcode = true;
+    protected $testcode = true;
     /** @var bool tests consist of test files */
-    protected $_testfiles = true;
+    protected $testfiles = true;
 
     /** @var string Syntax highlighting mode. */
-    protected $_syntaxhighlighting = 'java';
+    protected $syntaxhighlighting = 'java';
 
     /** @var string|null Programming language. */
-    protected $_proglang = null;
+    protected $proglang = null;
 
     /** @var bool (Unit) test has entrypoint. */
-    protected $_entrypoint = false;
+    protected $entrypoint = false;
     /** @var string|null Entrypoint label. */
-    protected $_entrypointlabel = null;
+    protected $entrypointlabel = null;
 
     /** @var null numberic identifier of task type */
-    protected $_tasktype = null;
+    protected $tasktype = null;
 
     /** @var string label for unit test */
-    protected $_unittestlabel = null;
+    protected $unittestlabel = null;
 
     /**
      * constructor
@@ -99,9 +102,9 @@ abstract class base_form_creator {
      * @param qtype_proforma_base_task|null $taskhandler task handler instance
      */
     protected function __construct($form, $taskhandler) {
-        $this->_form = $form;
-        $this->_taskhandler = $taskhandler;
-        $this->_unittestlabel = get_string('testlabel', 'qtype_proforma');
+        $this->form = $form;
+        $this->taskhandler = $taskhandler;
+        $this->unittestlabel = get_string('testlabel', 'qtype_proforma');
     }
 
     // Override.
@@ -111,7 +114,7 @@ abstract class base_form_creator {
      * values
      */
     public function definition_after_data() {
-        $mform = $this->_form;
+        $mform = $this->form;
         // Encode grading hints.
         $gradinghints = $mform->getElement('gradinghints');
         if ($gradinghints->getValue()) {
@@ -254,17 +257,17 @@ abstract class base_form_creator {
      * Add something to select the programming language.
      */
     public function add_proglang_selection() {
-        if (isset($this->_proglang)) {
-            $mform = $this->_form;
+        if (isset($this->proglang)) {
+            $mform = $this->form;
             $mform->addElement(
                 'text',
                 'proglang',
                 get_string('proglang', 'qtype_proforma'),
-                $this->_proglang
+                $this->proglang
             );
             $mform->disabledIf('proglang', 'responseformat', 'neq', 'alwaysdisabled');
             $mform->setType('proglang', PARAM_TEXT);
-            $mform->setDefault('proglang', $this->_proglang);
+            $mform->setDefault('proglang', $this->proglang);
         }
     }
 
@@ -276,7 +279,7 @@ abstract class base_form_creator {
       */
     public function add_grader_settings($question, $context) {
         // Grader/ProFormA fields.
-        $mform = $this->_form;
+        $mform = $this->form;
         $mform->addElement('header', 'graderoptions_header', get_string('graderoptions_header', 'qtype_proforma'));
         $mform->setExpanded('graderoptions_header', false);
 
@@ -298,7 +301,7 @@ abstract class base_form_creator {
      * @throws coding_exception
      */
     public function add_hidden_fields() {
-        $mform = $this->_form;
+        $mform = $this->form;
 
         // Add hidden fields for filearea draft ids (if any).
         foreach (array_keys(qtype_proforma::proforma_fileareas()) as $filearea) {
@@ -310,7 +313,7 @@ abstract class base_form_creator {
             $mform->setType($field, PARAM_RAW);
         }
 
-        $mform->addElement('hidden', 'taskstorage', $this->_tasktype);
+        $mform->addElement('hidden', 'taskstorage', $this->tasktype);
         $mform->setType('taskstorage', PARAM_RAW);
 
         $mform->addElement('hidden', 'gradinghints');
@@ -324,7 +327,7 @@ abstract class base_form_creator {
      * Add downloads for question text.
      */
     public function add_questiontext_attachments() {
-        $mform = $this->_form;
+        $mform = $this->form;
 
         // Add Filemanager for download links associated with question text.
         // Remove hidden element in base class.
@@ -345,7 +348,7 @@ abstract class base_form_creator {
      * @param stdClass $question question data
      */
     protected function add_responsetemplate($question) {
-        $mform = $this->_form;
+        $mform = $this->form;
         $mform->addElement(
             'textarea',
             'responsetemplate',
@@ -355,7 +358,7 @@ abstract class base_form_creator {
         if (get_config('qtype_proforma', 'usecodemirror')) {
             qtype_proforma\lib\as_codemirror(
                 'id_responsetemplate',
-                $this->_syntaxhighlighting,
+                $this->syntaxhighlighting,
                 'id_responsetemplateheader'
             );
             global $PAGE;
@@ -374,7 +377,7 @@ abstract class base_form_creator {
      * Add response filename (edit field)
      */
     protected function add_responsefilename() {
-        $mform = $this->_form;
+        $mform = $this->form;
         $mform->addElement('text', 'responsefilename', get_string('responsefilename', 'qtype_proforma'), ['size' => '60']);
         $mform->setType('responsefilename', PARAM_TEXT);
         $mform->addHelpButton('responsefilename', 'filename_hint', 'qtype_proforma');
@@ -394,11 +397,11 @@ abstract class base_form_creator {
      * as fielmanager for filepicker response format.
      */
     protected function add_modelsolution() {
-        $mform = $this->_form;
+        $mform = $this->form;
         // Model Solution files.
         $mform->addElement('textarea', 'modelsolution', get_string('modelsolution', 'qtype_proforma'), 'rows="10" cols="80"');
         if (get_config('qtype_proforma', 'usecodemirror')) {
-            qtype_proforma\lib\as_codemirror('id_modelsolution', $this->_syntaxhighlighting);
+            qtype_proforma\lib\as_codemirror('id_modelsolution', $this->syntaxhighlighting);
             global $PAGE;
             $PAGE->requires->js_call_amd(
                 'qtype_proforma/codemirrorif',
@@ -429,9 +432,9 @@ abstract class base_form_creator {
      * @param array $repeatarray repeat array
      */
     protected function adjust_test_repeatarray(&$repeatarray) {
-        $mform = $this->_form;
+        $mform = $this->form;
 
-        if ($this->_testcode && $this->_testfiles) {
+        if ($this->testcode && $this->testfiles) {
             // Add choice for test code input: editor or filemanager.
             $radioarray = [];
             $radioarray[] = $mform->createElement(
@@ -457,7 +460,7 @@ abstract class base_form_creator {
                 false
             );
         }
-        if ($this->_testcode) {
+        if ($this->testcode) {
             // Add textarea for unit test code.
             $repeatarray[] = $mform->createElement(
                 'textarea',
@@ -467,10 +470,10 @@ abstract class base_form_creator {
             );
         } else {
             $repeatarray[] = $mform->createElement("hidden", "testcodeformat", self::TESTCODE_FILES);
-            $this->_form->setType('testcodeformat', PARAM_INT);
+            $this->form->setType('testcodeformat', PARAM_INT);
             /* $repeatoptions['testfiles']['rule'] = 'required'; */
         }
-        if ($this->_testfiles) {
+        if ($this->testfiles) {
             // Add filemanager.
             $repeatarray[] = $mform->createElement(
                 'filemanager',
@@ -481,19 +484,19 @@ abstract class base_form_creator {
             );
         } else {
             $repeatarray[] = $mform->createElement("hidden", "testcodeformat", self::TESTCODE_EDITOR);
-            $this->_form->setType('testcodeformat', PARAM_INT);
+            $this->form->setType('testcodeformat', PARAM_INT);
             /* $repeatoptions['testcode']['rule'] = 'required'; */
         }
 
-        if ($this->_entrypoint) {
+        if ($this->entrypoint) {
             // Add Unit test entry point.
             $repeatarray[] = $mform->createElement(
                 'text',
                 'testentrypoint',
-                $this->_entrypointlabel,
+                $this->entrypointlabel,
                 ['size' => 80]
             );
-            $this->_form->setType('testentrypoint', PARAM_TEXT);
+            $this->form->setType('testentrypoint', PARAM_TEXT);
         }
     }
 
@@ -515,7 +518,7 @@ abstract class base_form_creator {
 
         // Note that setting the testcodeformat default ($repeatoptions['testcodeformat']['default'])
         // also applies to already existing questions. So this is not set here.
-        if ($this->_testcode && $this->_testfiles) {
+        if ($this->testcode && $this->testfiles) {
             $repeatoptions['testcodeformat']['default'] = self::TESTCODE_EDITOR;
         }
     }
@@ -535,7 +538,7 @@ abstract class base_form_creator {
      * @return int number of tests
      */
     protected function add_test_fields($question, $questioneditform, $testtype) {
-        $mform = $this->_form;
+        $mform = $this->form;
         // Retrieve number of tests (resp. unit tests).
         $repeats = $this->get_count_tests($question);
         if ($repeats == 0) {
@@ -561,7 +564,7 @@ abstract class base_form_creator {
         $this->add_test_weight_option($testoptions, 'test', '1', false);
 
         $repeatarray = [];
-        $label = get_string('testlabela', 'qtype_proforma', $this->_unittestlabel);
+        $label = get_string('testlabela', 'qtype_proforma', $this->unittestlabel);
         $repeatarray[] = $mform->createElement('group', 'testoptions', $label, $testoptions, null, false);
         // Title.
         $repeatarray[] = $mform->createElement(
@@ -600,7 +603,7 @@ abstract class base_form_creator {
         $mform->setType('testid', PARAM_RAW);
         $mform->setType('testtype', PARAM_RAW);
         // Add tests with button for adding tests.
-        $buttonlabel = get_string('addtest', 'qtype_proforma', $this->_unittestlabel);
+        $buttonlabel = get_string('addtest', 'qtype_proforma', $this->unittestlabel);
         $questioneditform->repeat_elements(
             $repeatarray,
             $repeats,
@@ -612,9 +615,9 @@ abstract class base_form_creator {
             true
         );
 
-        if ($this->_taskhandler->can_be_edited()) {
+        if ($this->taskhandler->can_be_edited()) {
             // Set CodeMirror for unit test code.
-            if ($this->_testcode) {
+            if ($this->testcode) {
                 for ($i = 0; $i < $repeats; $i++) {
                     qtype_proforma\lib\as_codemirror('id_testcode_' . $i);
                     /* Here you can add further element handling that cannot be done in
@@ -639,7 +642,7 @@ abstract class base_form_creator {
      * @param string $label label text
      */
     protected function add_compilation($label) {
-        $mform = $this->_form;
+        $mform = $this->form;
         $compilegroup = [];
         $compilegroup[] = & $mform->createElement('advcheckbox', 'compile', '', '');
         $this->add_test_weight_option($compilegroup, 'compile', '0');
@@ -661,7 +664,7 @@ abstract class base_form_creator {
         // Get number of unit tests from (lms) grading hints.
         // In case of an imported task this ist the number of all tests (not just unit tests).
         if (isset($question) && isset($question->options) && isset($question->options->gradinghints)) {
-            $repeats = $this->_taskhandler->get_count_unit_tests($question->options->gradinghints);
+            $repeats = $this->taskhandler->get_count_unit_tests($question->options->gradinghints);
         }
 
         // In case of manually added unit tests we need to know how many tests are actually present:
@@ -684,7 +687,7 @@ abstract class base_form_creator {
      * @param qtype_proforma $qtype question type
      */
     protected function add_editor_options($qtype) {
-        $mform = $this->_form;
+        $mform = $this->form;
         $mform->addElement(
             'select',
             'responsefieldlines',
@@ -702,7 +705,7 @@ abstract class base_form_creator {
             $qtype->get_proglang_options()
         );
         $mform->addHelpButton('programminglanguage', 'highlight_hint', 'qtype_proforma');
-        $mform->setDefault('programminglanguage', $this->_syntaxhighlighting);
+        $mform->setDefault('programminglanguage', $this->syntaxhighlighting);
         // Show only if response format is editor.
         $mform->hideIf('programminglanguage', 'responseformat', 'neq', 'editor');
         // Response filename.
@@ -717,7 +720,7 @@ abstract class base_form_creator {
      */
     public function add_response_options($question, $qtype) {
         global $CFG, $COURSE;
-        $mform = $this->_form;
+        $mform = $this->form;
 
         /*
         $defaultmaxsubmissionsizebytes = get_config('maxsubmissionsizebytes');
@@ -728,11 +731,11 @@ abstract class base_form_creator {
         $mform->setExpanded('responseoptions');
 
         // Create select if there is more than one format available.
-        switch (count($this->_responseformats)) {
+        switch (count($this->responseformats)) {
             case 0:
                 break;
             case 1:
-                $firstelement = reset($this->_responseformats);
+                $firstelement = reset($this->responseformats);
                 $mform->addElement('hidden', 'responseformat', $firstelement);
                 $mform->setType('responseformat', PARAM_RAW);
                 break;
@@ -741,29 +744,29 @@ abstract class base_form_creator {
                     'select',
                     'responseformat',
                     get_string('responseformat', 'qtype_proforma'),
-                    $this->_responseformats
+                    $this->responseformats
                 );
                 break;
         }
 
-        if (array_key_exists(qtype_proforma::RESPONSE_EXPLORER, $this->_responseformats)) {
+        if (array_key_exists(qtype_proforma::RESPONSE_EXPLORER, $this->responseformats)) {
             $mform->addElement('static', 'explorerinfo', '', '<small>' . get_string('infoexplorer', 'qtype_proforma') . '</small>');
             // Does not disappear...
             $mform->hideIf('explorerinfo', 'responseformat', 'neq', 'explorer');
         }
 
         // Editor options.
-        if (array_key_exists(qtype_proforma::RESPONSE_EDITOR, $this->_responseformats)) {
+        if (array_key_exists(qtype_proforma::RESPONSE_EDITOR, $this->responseformats)) {
             $mform->setDefault('responseformat', 'editor');
-            if ($this->_responseformats) {
+            if ($this->responseformats) {
                 $this->add_editor_options($qtype);
             }
         }
 
         // Filepicker options.
         if (
-            array_key_exists(qtype_proforma::RESPONSE_FILEPICKER, $this->_responseformats) ||
-            array_key_exists(qtype_proforma::RESPONSE_EXPLORER, $this->_responseformats)
+            array_key_exists(qtype_proforma::RESPONSE_FILEPICKER, $this->responseformats) ||
+            array_key_exists(qtype_proforma::RESPONSE_EXPLORER, $this->responseformats)
         ) {
             // Also for Explorer/IDE.
 
@@ -801,7 +804,7 @@ abstract class base_form_creator {
         }
 
         // Version control options.
-        if (array_key_exists(qtype_proforma::RESPONSE_VERSION_CONTROL, $this->_responseformats)) {
+        if (array_key_exists(qtype_proforma::RESPONSE_VERSION_CONTROL, $this->responseformats)) {
             $vcssystems = [
                 qtype_proforma::VCS_GIT => 'Git',
                 qtype_proforma::VCS_SVN => 'Subversion (SVN)',
@@ -857,7 +860,7 @@ abstract class base_form_creator {
             return;
         }
 
-        $mform = $this->_form;
+        $mform = $this->form;
         // Create context for mustache templates.
         $context = [
             "proglang" => [
@@ -981,7 +984,7 @@ abstract class base_form_creator {
      * @param qtype_proforma_edit_form $questioneditform question edit form
      */
     public function add_test_settings($question, $questioneditform) {
-        $mform = $this->_form;
+        $mform = $this->form;
 
         // Header.
         $mform->addElement('header', 'test_header', get_string('tests', 'qtype_proforma'));
@@ -1041,7 +1044,7 @@ abstract class base_form_creator {
      * @param qtype_proforma_edit_form $questioneditform question edit form
      */
     public function add_feedback_options($question, $questioneditform) {
-        $mform = $this->_form;
+        $mform = $this->form;
 
         // Header.
         $mform->addElement('header', 'feedbackoptions', get_string('feedbackoptions_heading', 'qtype_proforma'));
@@ -1169,11 +1172,11 @@ abstract class base_form_creator {
             // Preset data if question already exists.
             $form = $editor->get_form();
 
-            if ($question->taskstorage != $this->_tasktype) {
+            if ($question->taskstorage != $this->tasktype) {
                 throw new coding_exception('invalid taskstorage value ' . $question->taskstorage);
             }
-            $this->_taskhandler->extract_formdata_from_taskfile($cat, $question);
-            $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
+            $this->taskhandler->extract_formdata_from_taskfile($cat, $question);
+            $this->taskhandler->extract_formdata_from_gradinghints($question, $form);
 
             // Testcode format is set from default for existing questions.
             $count = count($question->testid);
@@ -1205,7 +1208,7 @@ abstract class base_form_creator {
      * @param int $size size
      */
     protected function add_static_field($question, $field, $label, $size) {
-        $mform = $this->_form;
+        $mform = $this->form;
         if (isset($this->question->options->$field)) {
             $size = $question->options->$field;
         } else if (isset($this->question->$field)) {
@@ -1224,7 +1227,7 @@ abstract class base_form_creator {
      * @param string $label labeltext
      */
     protected function add_static_text($question, $field, $label) {
-        $mform = $this->_form;
+        $mform = $this->form;
         if (isset($sizefield)) {
             if (isset($this->question->options->$sizefield)) {
                 $attributes = ['size' => strlen($question->options->$sizefield)];
@@ -1251,7 +1254,7 @@ abstract class base_form_creator {
      * @param bool $withtitle True: also create title field
      */
     protected function add_test_weight_option(&$testoptions, $prefix, $defaultweight, $withtitle = false) {
-        $mform = $this->_form;
+        $mform = $this->form;
         if ($withtitle) {
             // Title.
             $testoptions[] = $mform->createElement(
@@ -1280,7 +1283,7 @@ abstract class base_form_creator {
      * @param stdClass $options question options record
      */
     public function save_question_options(&$options) {
-        $formdata = $this->_form;
+        $formdata = $this->form;
         $context = $formdata->context;
         if (isset($formdata->taskeditor)) {
             if ($formdata->taskeditor) {
@@ -1328,20 +1331,20 @@ abstract class base_form_creator {
             $options->templates = $formdata->templates = '';
         }
 
-        if (!isset($this->_taskhandler)) {
+        if (!isset($this->taskhandler)) {
             throw new coding_exception('where is the taskhandler??');
         }
-        if (isset($this->_taskhandler)) {
+        if (isset($this->taskhandler)) {
             // Extract grading hints.
-            $options->gradinghints = $this->_taskhandler->create_lms_grading_hints($formdata);
-            if ($this->_taskhandler->can_be_edited()) {
+            $options->gradinghints = $this->taskhandler->create_lms_grading_hints($formdata);
+            if ($this->taskhandler->can_be_edited()) {
                 if (!isset($formdata->import_process) || !$formdata->import_process) {
                     // When importing a moodle xml question the preprocessing step is missing and
                     // we have no actual form data.
                     // So we must skip creating task because the task.xml already exists
                     // and some data needed to create task.xml does not.
                     // Otherwise we create the task.xml from the input data.
-                    $taskfile = $this->_taskhandler->create_task_file($formdata);
+                    $taskfile = $this->taskhandler->create_task_file($formdata);
                     $options->taskfilename = 'task.xml';
                     qtype_proforma_base_task::store_task_file(
                         $taskfile,

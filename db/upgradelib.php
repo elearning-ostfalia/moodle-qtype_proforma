@@ -23,13 +23,14 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+// phpcs:disable Squiz.PHP.CommentedOutCode.Found
+
 /**
  * Copy of SimpleXmlWriter class because other plugin code is not available during update.
  *
  * Renamed to UpgradeSimpleXmlWriter in order to avoid name clashes.
  */
 class UpgradeSimpleXmlWriter extends XMLWriter {
-
     /**
      * Creates an attribute with the given value.
      *
@@ -69,7 +70,7 @@ function update_filename($questionid, $filename, $filearea) {
     $count = 0;
     $filename = trim($filename);
     $oldfilename = trim(clean_param($filename, PARAM_FILE));
-    $pathparts = pathinfo('/'. $filename);
+    $pathparts = pathinfo('/' . $filename);
     $dirname = $pathparts['dirname'];
     $basename = $pathparts['basename'];
     if ($dirname[strlen($dirname) - 1] !== '/') {
@@ -77,12 +78,14 @@ function update_filename($questionid, $filename, $filearea) {
     }
 
     // Get associated file from {files} table.
-    $files  = $DB->get_recordset_sql("SELECT * " .
-            "FROM {files} " .
-            "WHERE itemid = :itemid " .
-            "AND filename = :filename " .
-            "AND filearea = :filearea ",
-            ['itemid' => $questionid, 'filearea' => $filearea, 'filename' => $oldfilename]);
+    $files = $DB->get_recordset_sql(
+        "SELECT * " .
+        "FROM {files} " .
+        "WHERE itemid = :itemid " .
+        "AND filename = :filename " .
+        "AND filearea = :filearea ",
+        ['itemid' => $questionid, 'filearea' => $filearea, 'filename' => $oldfilename]
+    );
 
     foreach ($files as $file) {
         $fs = get_file_storage();
@@ -99,13 +102,15 @@ function update_filename($questionid, $filename, $filearea) {
 
     if ($count == 0) {
         // Check for new format.
-        $files  = $DB->get_recordset_sql("SELECT * " .
-                "FROM {files} " .
-                "WHERE itemid = :itemid " .
-                "AND filename = :filename " .
-                "AND filepath = :filepath " .
-                "AND filearea = :filearea ",
-                ['itemid' => $questionid, 'filearea' => $filearea, 'filename' => $basename, 'filepath' => $dirname]);
+        $files = $DB->get_recordset_sql(
+            "SELECT * " .
+            "FROM {files} " .
+            "WHERE itemid = :itemid " .
+            "AND filename = :filename " .
+            "AND filepath = :filepath " .
+            "AND filearea = :filearea ",
+            ['itemid' => $questionid, 'filearea' => $filearea, 'filename' => $basename, 'filepath' => $dirname]
+        );
 
         foreach ($files as $file) {
             // Filename is already in new format => ignore.
@@ -115,7 +120,7 @@ function update_filename($questionid, $filename, $filearea) {
     }
 
     if ($count != 1) {
-        echo 'WARNING: number of files found for "' . $filename . '" ('. $oldfilename . ') in ('. $filearea . ') is ' . $count .
+        echo 'WARNING: number of files found for "' . $filename . '" (' . $oldfilename . ') in (' . $filearea . ') is ' . $count .
                 ' (Question id=' . $questionid . ')<br>';
     }
 }
@@ -176,8 +181,7 @@ function extract_proformatask($category, $questionid, $taskfilename) {
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
     echo 'Q/C/T=' . $questionid . ' / ' . $category . ' / ' . $taskfilename . '<br>';
-    $file = $fs->get_file($category, 'qtype_proforma', 'task',
-            $questionid, '/', $taskfilename);
+    $file = $fs->get_file($category, 'qtype_proforma', 'task', $questionid, '/', $taskfilename);
     if (!$file) {
         echo '<red><b>ERROR: could not find task file ' . $taskfilename . '</b></red><br>';
         return null;
@@ -203,7 +207,6 @@ function extract_proformatask($category, $questionid, $taskfilename) {
         }
 
         $contents = file_get_contents($tempdir . '/' . $filenames[0]);
-
     } catch (Exception $e) {
         fulldelete($tempdir);
         throw $e;
@@ -265,9 +268,11 @@ function initialise_proforma_gradinghints() {
         if (isset($gradinghints)) {
             echo '<pre>' . s($gradinghints) . '</pre><br>';
         }
-        $DB->execute('UPDATE {qtype_proforma_options} ' .
-                'SET gradinghints = ? WHERE gradinghints is null and questionid = ?',
-                [$gradinghints, $question->questionid]);
+        $DB->execute(
+            'UPDATE {qtype_proforma_options} ' .
+            'SET gradinghints = ? WHERE gradinghints is null and questionid = ?',
+            [$gradinghints, $question->questionid]
+        );
     }
 }
 
@@ -349,9 +354,11 @@ function update_proforma_download_filearea() {
 function get_proforma_contextid($DB, $itemid) {
 
     $contextids = $DB->get_recordset_sql(
-            "SELECT distinct(contextid) " .
-            "FROM {files} " .
-            "WHERE component = 'qtype_proforma' and itemid = ?", [$itemid]);
+        "SELECT distinct(contextid) " .
+        "FROM {files} " .
+        "WHERE component = 'qtype_proforma' and itemid = ?",
+        [$itemid]
+    );
 
     if (count($contextids) !== 1) {
         $contextids->close();
@@ -368,4 +375,3 @@ function get_proforma_contextid($DB, $itemid) {
     }
     return $contextid;
 }
-

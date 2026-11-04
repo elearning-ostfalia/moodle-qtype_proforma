@@ -23,6 +23,8 @@
  * @author     K. Borm <k.borm[at]ostfalia.de>
  */
 
+// phpcs:disable Squiz.PHP.CommentedOutCode.Found
+
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');
 require_once($CFG->dirroot . '/question/type/proforma/classes/grader.php');
@@ -33,7 +35,7 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/simplexmlwriter.ph
  */
 class qtype_proforma_grader_2 extends qtype_proforma_grader {
     /** @var programming|null programming language (for selecting grader) */
-    protected $_uri = null;
+    protected $uri = null;
 
     /**
      * qtype_proforma_grader_2 constructor.
@@ -42,7 +44,7 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
      */
     public function __construct($uri = null) {
         parent::__construct();
-        $this->_uri = $uri;
+        $this->uri = $uri;
     }
 
     /**
@@ -241,12 +243,12 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
         }
 
         // Get URI.
-        if (!isset($this->_uri)) {
+        if (!isset($this->uri)) {
             $protocolhost = trim(get_config('qtype_proforma', 'graderuri_host'));
             $path = trim(get_config('qtype_proforma', 'graderuri_path'));
             $uri = $protocolhost . $path;
         } else {
-            $uri = $this->_uri;
+            $uri = $this->uri;
         }
 
         /* return array($this->set_dummy_result3(), 200); // Fake. */
@@ -477,12 +479,12 @@ class qtype_proforma_grader_2 extends qtype_proforma_grader {
         $path = trim(get_config('qtype_proforma', 'runtest_path'));
         $uri = $protocolhost . $path;
         */
-        if (!isset($this->_uri)) {
+        if (!isset($this->uri)) {
             throw new moodle_exception('SSE uri is not set in grader');
         }
 
         // Send POST request to grader.
-        return $this->post_to_grader_and_stream_result($postfields, $task, $this->_uri);
+        return $this->post_to_grader_and_stream_result($postfields, $task, $this->uri);
     }
 
 

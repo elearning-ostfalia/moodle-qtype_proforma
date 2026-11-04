@@ -40,8 +40,8 @@ class c_form_creator extends base_form_creator {
     public function __construct($form, bool $newquestion = false) {
         parent::__construct($form, new qtype_proforma_c_task());
         // Set parent options.
-        $this->_syntaxhighlighting = 'c';
-        $this->_proglang = 'c';
+        $this->syntaxhighlighting = 'c';
+        $this->proglang = 'c';
         // Only allow editor and filepicker as reponse format.
         $ro = qtype_proforma::response_formats();
         $responseoptions = [
@@ -50,12 +50,12 @@ class c_form_creator extends base_form_creator {
                 qtype_proforma::RESPONSE_EXPLORER => $ro[qtype_proforma::RESPONSE_EXPLORER],
         ];
 
-        $this->_responseformats = $responseoptions;
-        $this->_entrypointlabel = get_string('executable', 'qtype_proforma');
-        $this->_entrypoint = true;
-        $this->_tasktype = qtype_proforma::C_TASKFILE;
-        $this->_unittestlabel = get_string('clang', 'qtype_proforma');
-        $this->_testcode = false;
+        $this->responseformats = $responseoptions;
+        $this->entrypointlabel = get_string('executable', 'qtype_proforma');
+        $this->entrypoint = true;
+        $this->tasktype = qtype_proforma::C_TASKFILE;
+        $this->unittestlabel = get_string('clang', 'qtype_proforma');
+        $this->testcode = false;
     }
 
     // Override.
@@ -68,7 +68,7 @@ class c_form_creator extends base_form_creator {
      * @return int number of tests
      */
     protected function add_tests($question, $questioneditform) {
-        $this->_form->addElement('html', get_string('cunit_help', 'qtype_proforma'));
+        $this->form->addElement('html', get_string('cunit_help', 'qtype_proforma'));
 
         // Add c tests.
         return $this->add_test_fields($question, $questioneditform, 'clang');
@@ -85,7 +85,7 @@ class c_form_creator extends base_form_creator {
         parent::add_test_settings($question, $questioneditform);
 
         // Set aggregation strategy to 'all-or-nothing'.
-        $this->_form->setDefault('aggregationstrategy', qtype_proforma::ALL_OR_NOTHING);
+        $this->form->setDefault('aggregationstrategy', qtype_proforma::ALL_OR_NOTHING);
     }
 
     /**

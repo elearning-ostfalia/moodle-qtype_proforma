@@ -38,10 +38,10 @@ class proforma_form_creator extends base_form_creator {
      */
     public function __construct($form) {
         parent::__construct($form, new qtype_proforma_proforma_task());
-        $this->_responseformats = qtype_proforma::response_formats();
-        $this->_tasktype = qtype_proforma::PERSISTENT_TASKFILE;
-        $this->_testcode = false;
-        $this->_testfiles = false;
+        $this->responseformats = qtype_proforma::response_formats();
+        $this->tasktype = qtype_proforma::PERSISTENT_TASKFILE;
+        $this->testcode = false;
+        $this->testfiles = false;
     }
 
     /**
@@ -276,7 +276,7 @@ class proforma_form_creator extends base_form_creator {
      * Create links for model solution files.
      */
     protected function add_modelsolution() {
-        $mform = $this->_form;
+        $mform = $this->form;
         // Model Solution files (instead of modelsollist we show links).
         $mform->addElement('static', 'mslinks', get_string('modelsolfiles', 'qtype_proforma'), '');
         $mform->addHelpButton('mslinks', 'modelsolfiles_hint', 'qtype_proforma');
@@ -288,7 +288,7 @@ class proforma_form_creator extends base_form_creator {
      * @param stdClass $question question data
      */
     protected function add_responsetemplate($question) {
-        $mform = $this->_form;
+        $mform = $this->form;
         parent::add_responsetemplate($question);
         // Further templates (there should be no other templates).
         $this->add_static_text(
@@ -308,7 +308,7 @@ class proforma_form_creator extends base_form_creator {
      */
     public function add_grader_settings($question, $context) {
         // ProFormA fields.
-        $mform = $this->_form;
+        $mform = $this->form;
         $mform->addElement(
             'header',
             'graderoptions_header',
@@ -451,7 +451,7 @@ class proforma_form_creator extends base_form_creator {
         }
 
         // Extract internal grading hints.
-        $this->_taskhandler->extract_formdata_from_gradinghints($question, $form);
+        $this->taskhandler->extract_formdata_from_gradinghints($question, $form);
     }
 
     /**
@@ -470,7 +470,7 @@ class proforma_form_creator extends base_form_creator {
      * @param stdClass $options question options record
      */
     public function save_question_options(&$options) {
-        $formdata = $this->_form;
+        $formdata = $this->form;
         if (isset($formdata->taskfiledraftid)) {
             // Special handling for proforma import (interim solution):
             // rename draftid property.
@@ -490,8 +490,8 @@ class proforma_form_creator extends base_form_creator {
         parent::definition_after_data();
         // Resize disabled fields to fit value.
         $i = 0;
-        while ($this->_form->elementExists('testoptions[' . $i . ']')) {
-            $group = $this->_form->getElement('testoptions[' . $i . ']');
+        while ($this->form->elementExists('testoptions[' . $i . ']')) {
+            $group = $this->form->getElement('testoptions[' . $i . ']');
             $elements = $group->getElements();
             // There seems to be no simple solution for finding a field.
             foreach ($elements as $element) {

@@ -40,16 +40,16 @@ class setlx_form_creator extends base_form_creator {
     public function __construct($form, bool $newquestion = false) {
         parent::__construct($form, new qtype_proforma_setlx_task());
         // Set parent options.
-        $this->_syntaxhighlighting = 'setlx';
-        $this->_proglang = 'SetlX';
+        $this->syntaxhighlighting = 'setlx';
+        $this->proglang = 'SetlX';
         // Only allow editor as reponse format.
         $ro = qtype_proforma::response_formats();
         $responseoptions = [qtype_proforma::RESPONSE_EDITOR => $ro[qtype_proforma::RESPONSE_EDITOR]];
-        $this->_responseformats = $responseoptions;
-        $this->_testfiles = false;
-        $this->_entrypoint = false;
-        $this->_tasktype = qtype_proforma::SETLX_TASKFILE;
-        $this->_unittestlabel = get_string('setlx', 'qtype_proforma');
+        $this->responseformats = $responseoptions;
+        $this->testfiles = false;
+        $this->entrypoint = false;
+        $this->tasktype = qtype_proforma::SETLX_TASKFILE;
+        $this->unittestlabel = get_string('setlx', 'qtype_proforma');
     }
 
     // Override.
@@ -59,7 +59,7 @@ class setlx_form_creator extends base_form_creator {
      * (does not depend on test or submission code)
      */
     protected function add_responsefilename() {
-        $mform = $this->_form;
+        $mform = $this->form;
         $mform->addElement('hidden', 'responsefilename', 'submission.stlx');
         $mform->setType('responsefilename', PARAM_RAW);
     }
@@ -88,7 +88,7 @@ class setlx_form_creator extends base_form_creator {
         parent::add_test_settings($question, $questioneditform);
 
         // Set aggregation strategy to 'all-or-nothing'.
-        $this->_form->setDefault('aggregationstrategy', qtype_proforma::ALL_OR_NOTHING);
+        $this->form->setDefault('aggregationstrategy', qtype_proforma::ALL_OR_NOTHING);
     }
 
     /**

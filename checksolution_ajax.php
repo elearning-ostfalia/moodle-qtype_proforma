@@ -24,6 +24,8 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+// phpcs:disable Squiz.PHP.CommentedOutCode.Found
+
 define('AJAX_SCRIPT', true);
 
 require_once(__DIR__ . '/../../../config.php');
@@ -137,7 +139,7 @@ function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
     $class = 'fail';
     $quiet = false;
 
-    list($state, $fraction, $error, $feedback1, $feedbackformat) =
+    [$state, $fraction, $error, $feedback1, $feedbackformat] =
         $grader->extract_grade($graderoutput, 200, $question);
     global $PAGE;
     $renderer = new qtype_proforma_renderer($PAGE, null);
@@ -148,8 +150,7 @@ function on_grader_response($graderoutput, $grader, $question, $gradinghints) {
         $message .= html_writer::tag('p', $graderoutput, ['class' => $class]);
     }
 
-    $output = html_writer::nonempty_tag('div', $feedback,
-        ['class' => 'specificfeedback']);
+    $output = html_writer::nonempty_tag('div', $feedback, ['class' => 'specificfeedback']);
 
     $lines = explode("\n", $output);
     foreach ($lines as $line) {
@@ -170,8 +171,7 @@ if (!$runtest) {
 
     // Check size of each uploaded file and scan for viruses.
     $maxsize = get_max_upload_file_size($CFG->maxbytes);
-    $maxbytes = get_user_max_upload_file_size($context, $maxsize,
-        get_config('qtype_proforma', 'taskmaxbytes'));
+    $maxbytes = get_user_max_upload_file_size($context, $maxsize, get_config('qtype_proforma', 'taskmaxbytes'));
     foreach ($_FILES as $uploadedfile) {
         $filename = clean_param($uploadedfile['name'], PARAM_FILE);
         if ($uploadedfile['size'] > $maxsize) {
@@ -211,8 +211,7 @@ if (!$runtest) {
         'proglang' => $proglang,
         'contextid' => $context->id,
     ];
-    echo json_encode( $data );
-
+    echo json_encode($data);
 } else {
     // STEP 2 (execute tests).
 
@@ -251,8 +250,13 @@ if (!$runtest) {
     $files = [];
     $files[$modelsolutionfilename] = $msfile;
 
-    list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader_and_stream_result($files,
-        $taskfile, 'on_grader_response', $question, $gh);
+    [$graderoutput, $httpcode] = $grader->send_files_with_task_to_grader_and_stream_result(
+        $files,
+        $taskfile,
+        'on_grader_response',
+        $question,
+        $gh
+    );
     if ($graderoutput === true) {
         $graderoutput = 'successfully started';
     }

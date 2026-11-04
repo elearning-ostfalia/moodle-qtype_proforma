@@ -25,6 +25,8 @@
  *             (The Open University for essay base)
  */
 
+// phpcs:disable Squiz.PHP.CommentedOutCode.Found
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/proforma/questiontype.php');

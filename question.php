@@ -24,6 +24,8 @@
                The Open University (for essay code base)
  */
 
+// phpcs:disable Squiz.PHP.CommentedOutCode.Found
+
 
 
 defined('MOODLE_INTERNAL') || die();

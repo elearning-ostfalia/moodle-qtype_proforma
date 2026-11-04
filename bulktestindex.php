@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// phpcs:disable Squiz.PHP.CommentedOutCode.Found
+
 define('NO_OUTPUT_BUFFERING', true);
 
 require_once(__DIR__ . '/../../../config.php');

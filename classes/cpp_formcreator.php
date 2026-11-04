@@ -40,12 +40,12 @@ class cpp_form_creator extends c_form_creator {
      */
     public function __construct($form, bool $newquestion = false) {
         parent::__construct($form, $newquestion);
-        $this->_taskhandler = new qtype_proforma_cpp_task();
-        $this->_syntaxhighlighting = 'cpp';
-        $this->_proglang = 'cpp';
+        $this->taskhandler = new qtype_proforma_cpp_task();
+        $this->syntaxhighlighting = 'cpp';
+        $this->proglang = 'cpp';
 
-        $this->_tasktype = qtype_proforma::CPP_TASKFILE;
-        $this->_unittestlabel = get_string('cppunittest', 'qtype_proforma');
+        $this->tasktype = qtype_proforma::CPP_TASKFILE;
+        $this->unittestlabel = get_string('cppunittest', 'qtype_proforma');
     }
 
     // Override.
@@ -58,7 +58,7 @@ class cpp_form_creator extends c_form_creator {
      * @return int number of tests
      */
     protected function add_tests($question, $questioneditform) {
-        $this->_form->addElement('html', get_string('gtest_help', 'qtype_proforma'));
+        $this->form->addElement('html', get_string('gtest_help', 'qtype_proforma'));
 
         // Add cpp tests.
         return $this->add_test_fields($question, $questioneditform, 'cpp');
@@ -74,6 +74,6 @@ class cpp_form_creator extends c_form_creator {
         parent::add_test_settings($question, $questioneditform);
 
         // Set aggregation strategy to 'all-or-nothing'.
-        $this->_form->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
+        $this->form->setDefault('aggregationstrategy', qtype_proforma::WEIGHTED_SUM);
     }
 }

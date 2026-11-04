@@ -40,14 +40,14 @@ class python_form_creator extends base_form_creator {
     public function __construct($form, bool $newquestion = false) {
         parent::__construct($form, new qtype_proforma_python_task());
         // Set parent options.
-        $this->_syntaxhighlighting = 'python';
-        $this->_proglang = 'python';
-        $this->_responseformats = qtype_proforma::response_formats();
-        $this->_entrypoint = false;
-        $this->_tasktype = qtype_proforma::PYTHON_TASKFILE;
-        $this->_unittestlabel = get_string('pythonunit', 'qtype_proforma');
+        $this->syntaxhighlighting = 'python';
+        $this->proglang = 'python';
+        $this->responseformats = qtype_proforma::response_formats();
+        $this->entrypoint = false;
+        $this->tasktype = qtype_proforma::PYTHON_TASKFILE;
+        $this->unittestlabel = get_string('pythonunit', 'qtype_proforma');
 
-        $this->_newquestion = $newquestion;
+        $this->newquestion = $newquestion;
     }
 
     // Override.
@@ -73,7 +73,7 @@ class python_form_creator extends base_form_creator {
      */
     public function add_grader_settings($question, $context) {
         parent::add_grader_settings($question, $context);
-        $mform = $this->_form;
+        $mform = $this->form;
         $mform->setExpanded('graderoptions_header');
     }
 }

@@ -24,6 +24,8 @@
  * @author     K.Borm <k.borm[at]ostfalia.de>
  */
 
+// phpcs:disable Squiz.PHP.CommentedOutCode.Found
+
 
 defined('MOODLE_INTERNAL') || die();
 

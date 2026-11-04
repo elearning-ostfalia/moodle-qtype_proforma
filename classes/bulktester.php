@@ -33,7 +33,6 @@ require_once($CFG->dirroot . '/question/type/proforma/renderer.php');
  * Runs bulk tests on all ProFormA questions.
  */
 class proforma_bulk_tester {
-
     /**
      * Get all the contexts that contain at least one ProFormA question, with a
      * count of the number of those questions.
@@ -112,11 +111,15 @@ class proforma_bulk_tester {
         $nomodelsolution = [];
 
         foreach ($categories as $key => $category) {
-            list($categoryid) = explode(',', $key);
-            echo $OUTPUT->heading(get_string('questioncategory', 'question'). ': ' . $category, 4);
+            [$categoryid] = explode(',', $key);
+            echo $OUTPUT->heading(get_string('questioncategory', 'question') . ': ' . $category, 4);
 
-            $questionids = $DB->get_records_menu('question',
-                    ['category' => $categoryid, 'qtype' => 'proforma'], 'name', 'id,name');
+            $questionids = $DB->get_records_menu(
+                'question',
+                ['category' => $categoryid, 'qtype' => 'proforma'],
+                'name',
+                'id,name'
+            );
             if (!$questionids) {
                 // No ProFormA questions found.
                 echo html_writer::tag('p', get_string('replacedollarscount', 'qtype_proforma', 0));
@@ -127,11 +130,12 @@ class proforma_bulk_tester {
             echo html_writer::tag('p', get_string('replacedollarscount', 'qtype_proforma', count($questionids)));
 
             foreach ($questionids as $questionid => $name) {
-
                 $question = question_bank::load_question($questionid);
                 $questionname = format_string($name);
-                $questionnamelink = html_writer::link(new moodle_url($questiontestsurl,
-                        ['id' => $questionid]), format_string($name));
+                $questionnamelink = html_writer::link(
+                    new moodle_url($questiontestsurl, ['id' => $questionid]),
+                    format_string($name)
+                );
 
                 $questionproblems = [];
                 // Load model solution.
@@ -158,7 +162,7 @@ class proforma_bulk_tester {
                     $questionnamelink = html_writer::link($previewurl, $questionname);
                     echo $OUTPUT->heading($questionnamelink, 5);
 
-                    list($ok, $message, $feedback) = $this->run_test_question($question, $proformafile, $modelsolution);
+                    [$ok, $message, $feedback] = $this->run_test_question($question, $proformafile, $modelsolution);
                     if (!$ok) {
                         $allpassed = false;
                         // Create text for summary.
@@ -200,14 +204,13 @@ class proforma_bulk_tester {
         $feedback = "";
         $class = 'fail';
         core_php_time_limit::raise(60); // Prevent PHP timeouts.
-        list($graderoutput, $httpcode) = $grader->send_files_with_task_to_grader(
-                $modelsolution, $proformafile);
+        [$graderoutput, $httpcode] = $grader->send_files_with_task_to_grader($modelsolution, $proformafile);
         if ($httpcode != 200) {
             $result = get_string('failed', 'qtype_proforma');
             $feedback .= html_writer::tag('p', 'HTTP-Code ' . $httpcode);
             $feedback .= html_writer::tag('small', html_writer::tag('pre', s($graderoutput)));
         } else {
-            list($state, $fraction, $error, $feedback, $feedbackformat) =
+            [$state, $fraction, $error, $feedback, $feedbackformat] =
                 $grader->extract_grade($graderoutput, $httpcode, $question);
             if ($fraction < 1) {
                 $result = get_string('failed', 'qtype_proforma');
@@ -242,11 +245,17 @@ class proforma_bulk_tester {
         global $OUTPUT;
         echo $OUTPUT->heading(get_string('overallresult', 'qtype_proforma'), 2);
         if ($allpassed) {
-            echo html_writer::tag('p', get_string('proformaInstall_testsuite_pass', 'qtype_proforma'),
-                    ['class' => 'overallresult pass']);
+            echo html_writer::tag(
+                'p',
+                get_string('proformaInstall_testsuite_pass', 'qtype_proforma'),
+                ['class' => 'overallresult pass']
+            );
         } else {
-            echo html_writer::tag('p', get_string('proformaInstall_testsuite_fail', 'qtype_proforma'),
-                    ['class' => 'overallresult fail']);
+            echo html_writer::tag(
+                'p',
+                get_string('proformaInstall_testsuite_fail', 'qtype_proforma'),
+                ['class' => 'overallresult fail']
+            );
         }
 
         foreach ($failing as $key => $failarray) {
@@ -260,8 +269,10 @@ class proforma_bulk_tester {
             }
         }
 
-        echo html_writer::tag('p', html_writer::link(new moodle_url('/question/type/proforma/bulktestindex.php'),
-                get_string('back')));
+        echo html_writer::tag(
+            'p',
+            html_writer::link(new moodle_url('/question/type/proforma/bulktestindex.php'), get_string('back'))
+        );
     }
 
     /**
@@ -273,8 +284,14 @@ class proforma_bulk_tester {
      */
     public static function load_proforma_file($questionid, $contextid) {
         $fs = get_file_storage();
-        $taskfiles = $fs->get_area_files($contextid, 'qtype_proforma',
-            qtype_proforma::FILEAREA_TASK, $questionid, false, false);
+        $taskfiles = $fs->get_area_files(
+            $contextid,
+            'qtype_proforma',
+            qtype_proforma::FILEAREA_TASK,
+            $questionid,
+            false,
+            false
+        );
         if (count($taskfiles) == 1) {
             return reset($taskfiles); // Get first item in array.
         } else {
@@ -295,7 +312,13 @@ class proforma_bulk_tester {
      */
     public static function load_model_solution($questionid, $contextid) {
         $fs = get_file_storage();
-        return $fs->get_area_files($contextid, 'qtype_proforma',
-            qtype_proforma::FILEAREA_MODELSOL, $questionid, false, false);
+        return $fs->get_area_files(
+            $contextid,
+            'qtype_proforma',
+            qtype_proforma::FILEAREA_MODELSOL,
+            $questionid,
+            false,
+            false
+        );
     }
 }

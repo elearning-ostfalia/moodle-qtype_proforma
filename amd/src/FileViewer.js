@@ -56,7 +56,7 @@ import "./active-line";
 // Import Config from 'core/config';
 import * as Str from 'core/str';
 import Notification from 'core/notification';
-/* import {get_string as getString} from 'core/str'; */
+// Import {get_string as getString} from 'core/str';
 import ModalEvents from 'core/modal_events';
 import SaveCancelModal from 'core/modal_save_cancel';
 import CancelModal from "core/modal_cancel";

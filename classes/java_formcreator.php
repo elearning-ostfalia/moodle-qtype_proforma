@@ -43,15 +43,15 @@ class java_form_creator extends base_form_creator {
     public function __construct($form, bool $newquestion = false) {
         parent::__construct($form, new qtype_proforma_java_task());
         // Set parent options.
-        $this->_syntaxhighlighting = 'java';
-        $this->_proglang = 'Java';
-        $this->_responseformats = qtype_proforma::response_formats();
-        $this->_entrypointlabel = get_string('entrypoint', 'qtype_proforma');
-        $this->_entrypoint = true;
-        $this->_tasktype = qtype_proforma::JAVA_TASKFILE;
-        $this->_unittestlabel = get_string('junit', 'qtype_proforma');
+        $this->syntaxhighlighting = 'java';
+        $this->proglang = 'Java';
+        $this->responseformats = qtype_proforma::response_formats();
+        $this->entrypointlabel = get_string('entrypoint', 'qtype_proforma');
+        $this->entrypoint = true;
+        $this->tasktype = qtype_proforma::JAVA_TASKFILE;
+        $this->unittestlabel = get_string('junit', 'qtype_proforma');
 
-        $this->_newquestion = $newquestion;
+        $this->newquestion = $newquestion;
     }
 
     // Override.
@@ -62,10 +62,10 @@ class java_form_creator extends base_form_creator {
     public function add_proglang_selection() {
         parent::add_proglang_selection();
 
-        $mform = $this->_form;
+        $mform = $this->form;
         $javaversions = get_config('qtype_proforma', 'javaversion');
         $proglangversions = [];
-        if (!$this->_newquestion) {
+        if (!$this->newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
             // In case no other value can be selected this is chosen by default.
             $proglangversions[self::CHOOSE_OPTION] = get_string('choose');
@@ -102,13 +102,13 @@ class java_form_creator extends base_form_creator {
      * @param array $testoptions test options
      */
     protected function adjust_test_testoptions(&$testoptions) {
-        $mform = $this->_form;
+        $mform = $this->form;
         $csversion = get_config('qtype_proforma', 'junitversion');
         $versions = [];
         // Force PHP to use strings as key even if the first key is an integer.
         $obj = new stdClass();
 
-        if (!$this->_newquestion) {
+        if (!$this->newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
             // In case no other value can be selected this is chosen by default.
             $obj->{self::CHOOSE_OPTION} = get_string('choose');
@@ -132,7 +132,7 @@ class java_form_creator extends base_form_creator {
      * Add Checkstyle options.
      */
     private function add_checkstyle() {
-        $mform = $this->_form;
+        $mform = $this->form;
         // Create a Checkstyle test (not part of the repeat group).
         $testoptions = [];
         // Add checkbox.
@@ -140,7 +140,7 @@ class java_form_creator extends base_form_creator {
         // Add Checkstyle versions.
         $csversion = get_config('qtype_proforma', 'checkstyleversion');
         $versions = [];
-        if (!$this->_newquestion) {
+        if (!$this->newquestion) {
             // In order to handle invalid values we add a new option with value 0 (= invalid) as the first one.
             // In case no other value can be selected this is chosen by default.
             $versions[self::CHOOSE_OPTION] = get_string('choose');
@@ -341,15 +341,15 @@ class java_form_creator extends base_form_creator {
     public function definition_after_data() {
         parent::definition_after_data();
         $i = 0;
-        while ($this->_form->elementExists('testcodearray[' . $i . ']')) {
-            $group = &$this->_form->getElement('testcodearray[' . $i . ']');
+        while ($this->form->elementExists('testcodearray[' . $i . ']')) {
+            $group = &$this->form->getElement('testcodearray[' . $i . ']');
             $elements = &$group->getElements();
             $i++;
         }
          // Try and remove 'Choose' option from JUnit version field.
         $i = 0;
-        while ($this->_form->elementExists('testoptions[' . $i . ']')) {
-            $group = &$this->_form->getElement('testoptions[' . $i . ']');
+        while ($this->form->elementExists('testoptions[' . $i . ']')) {
+            $group = &$this->form->getElement('testoptions[' . $i . ']');
             $elements = &$group->getElements();
             // Find element with version.
             // There seems to be no simple solution for finding a field.
