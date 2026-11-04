@@ -61,6 +61,17 @@ function switchToTab(hash) {
 }
 
 /**
+ * Shows a message that the test configuration is ambiguous.
+ *
+ * @param {Object} params placeholders for the string (title, config)
+ */
+function alertAmbiguousTestConfig(params) {
+    Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
+        .then(content => Notification.alert('', content))
+        .catch(Notification.exception);
+}
+
+/**
  * Marks an input element as missing required input.
  *
  * @param {HTMLElement} elem input element
@@ -372,9 +383,7 @@ export function convertToXML() {
                         'title': test.title,
                         'config': test.configItem.title
                     };
-                    Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
-                        .then(content => Notification.alert('', content))
-                        .catch(Notification.exception);
+                    alertAmbiguousTestConfig(params);
                     return;
                 }
 
@@ -486,10 +495,8 @@ export async function readAndDisplayXml(taskXml) {
                     'title': item.title,
                     'config': theConfigitem.title
                 };
-                Str.get_string('errtestconfigambiguous', 'qtype_proforma', params)
-                    .then(content => Notification.alert('', content))
-                    .catch(Notification.exception);
-                return null;
+                alertAmbiguousTestConfig(params);
+                return;
             }
             debugLog('found ' + configItem.title);
             let context = configItem.getTemplateContext();

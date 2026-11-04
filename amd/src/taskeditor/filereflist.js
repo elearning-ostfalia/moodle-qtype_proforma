@@ -97,6 +97,7 @@ export class FileReferenceList extends DynamicList {
             if (filerefId) {
                 return callback(filerefId);
             }
+            return true; // Continue with next item.
         });
     }
 
@@ -152,7 +153,7 @@ export class FileReferenceList extends DynamicList {
 
     // For creation by reading xml
     setFilenameOnCreation(box, index, filename) { // Index is 0-based
-        // set filename
+        // Set filename.
         if (index > 0) {
             // Create new fileref if index > 0
             return this.addItem(box.find("." + this.classAddItem).first())
@@ -160,11 +161,13 @@ export class FileReferenceList extends DynamicList {
                     let element = box.find("." + this.classFilename);
                     FileReferenceList.updateFilenameList(element.eq(index));
                     element.eq(index).val(filename).change();
+                    return element;
             });
         } else {
             let element = box.find("." + this.classFilename);
             FileReferenceList.updateFilenameList(element.eq(index));
             element.eq(index).val(filename).change();
+            return Promise.resolve(element);
         }
     }
 
@@ -238,6 +241,7 @@ export class FileReferenceList extends DynamicList {
                     tableBody.find("label.fileref_fileref_label").hide();
                 }
                 FileReferenceList.addCallbacks(newRow[0]);
+                return newRow;
             });
     }
 
@@ -357,6 +361,7 @@ export class FileReferenceList extends DynamicList {
                 // FileReferenceList.rowEnableEditorButton($(element).parent(), true);
                 done = true;
             }
+            return true; // Continue with next item.
         });
 
         if (!done) { // No empty select option is found
@@ -366,12 +371,16 @@ export class FileReferenceList extends DynamicList {
                     // Select filename
                     $(uploadBox).find("." + this.classFilename).last().val(filename).change();
                     // FileReferenceList.rowEnableEditorButton(newRow, true);
-                });
+                    return true;
+                })
+                .catch(Notification.exception);
         }
     }
 
     // eslint-disable-next-line no-unused-vars
-    onFilerefChanged(uiFile, fileid) {}
+    onFilerefChanged(uiFile, fileid) {
+        // Default: nothing to do.
+    }
 
     onFileSelectionChanged(tempSelElem) { // Changing a filename in the drop-down
 
@@ -391,6 +400,7 @@ export class FileReferenceList extends DynamicList {
                     found = true;
                     return false;
                 }
+                return true; // Continue with next item.
             });
             return found;
         }
@@ -416,7 +426,9 @@ export class FileReferenceList extends DynamicList {
                             $(tempSelElem).val(newFilename).change();
                             FileReferenceList.rowEnableEditorButton(row, true);
                         }
-                    });
+                        return uiFile;
+                    })
+                    .catch(Notification.exception);
                 // Open tab with files in order to create file input
                 const hash = '#proforma-files-section';
                 const tab = document.querySelector('.nav-link[href="' + hash + '"]');
@@ -481,15 +493,13 @@ export class FileReferenceList extends DynamicList {
                         // Set new file id
                         nextTd.find('.fileref_fileref')[0].value = fileid;
                         FileReferenceList.rowEnableEditorButton(row, true);
-                        if ($(tempSelElem).hasClass('xml_fileref_filename')) { // Is it a test or a model-solution
-                            // call test specific configured handler
-                            if (fileid) {
-                                // SetJavaClassname(selectedFilename);
-                                // setJUnitDefaultTitle(selectedFilename);
-                                handleFilenameChangeInTest(selectedFilename, tempSelElem);
-                            }
-                        } else {
+                        if (!$(tempSelElem).hasClass('xml_fileref_filename')) {
                             this.onFilerefChanged(uiFile, fileid);
+                        } else if (fileid) {
+                            // It is a test or a model-solution: call test specific configured handler.
+                            // SetJavaClassname(selectedFilename);
+                            // setJUnitDefaultTitle(selectedFilename);
+                            handleFilenameChangeInTest(selectedFilename, tempSelElem);
                         }
                     }
                 }

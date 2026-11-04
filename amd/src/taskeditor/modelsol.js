@@ -29,7 +29,7 @@ import $ from 'jquery';
 import {ModelSolutionFileReference, FileReferenceList} from './filereflist';
 import {DEBUG_MODE, setcounter} from "./helper";
 import Templates from 'core/templates';
-import {exception as displayException} from 'core/notification';
+import {exception as displayException, alert as displayAlert} from 'core/notification';
 import * as Str from 'core/str';
 
 export var modelSolIDs = {};
@@ -105,7 +105,7 @@ export class ModelSolutionWrapper {
 
     static delete(button) {
         if (document.querySelectorAll('.xml_model-solution').length == 1) {
-            window.alert('There must be at least one model solution');
+            displayAlert('', 'There must be at least one model solution');
             return;
         }
         let instance = ModelSolutionWrapper.constructFromRoot(button.closest('.xml_model-solution'));
@@ -166,17 +166,15 @@ export class ModelSolutionWrapper {
                     msroot.find("label[for='xml_model-solution_id']").hide();
                 }
 
-                if (item) {
-                    let counter = 0;
-                    item.filerefs.forEach(function(itemFileref) {
-                        let filename = task.findFilenameForId(itemFileref.refid);
-                        let promiseFactories = [
-                            ModelSolutionFileReference.getInstance().setFilenameOnCreation(ms.root, counter++, filename)];
-                        Promise.all(promiseFactories)
-                            .then(() => {
-                            });
-                    });
+                if (!item) {
+                    return ms;
                 }
+                let counter = 0;
+                const promises = item.filerefs.map(function(itemFileref) {
+                    let filename = task.findFilenameForId(itemFileref.refid);
+                    return ModelSolutionFileReference.getInstance().setFilenameOnCreation(ms.root, counter++, filename);
+                });
+                return Promise.all(promises);
             })
             .catch((error) => {
                 displayException(error);

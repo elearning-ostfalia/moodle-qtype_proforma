@@ -33,6 +33,7 @@ import {FileWrapper, FileStorage, fileStorages} from "./file";
 import {javaParser} from "./java";
 import {readAndDisplayXml} from "./task";
 import * as Str from 'core/str';
+import Notification from 'core/notification';
 
 
 export const DEBUG_MODE = false;
@@ -55,14 +56,14 @@ export const version101 = 'xsd/taskxml1.0.1.xsd';
 export function setErrorMessage(errormess, exception) {
     debugLog(errormess);
     debugLog(exception);
-    window.alert(errormess);
+    Notification.alert('', errormess);
 }
 
 /**
  * Clears the error message (currently nothing to do).
  */
 export function clearErrorMessage() {
-
+    // Currently nothing to do.
 }
 
 /**
@@ -273,7 +274,8 @@ export function readAndCreateFileData(file, fileId, callback) {
     // Check if a file with filename already is stored
     if (FileWrapper.doesFilenameExist(filename)) {
         Str.get_string('fileexists', 'qtype_proforma', filename)
-            .then(content => alert(content));
+            .then(content => Notification.alert('', content))
+            .catch(Notification.exception);
         return;
     }
 
@@ -327,7 +329,8 @@ export function readAndCreateFileData(file, fileId, callback) {
         // Recheck if a file with that filename already is stored
         if (FileWrapper.doesFilenameExist(filename)) {
             Str.get_string('fileexists', 'qtype_proforma', filename)
-                .then(content => alert(content));
+                .then(content => Notification.alert('', content))
+                .catch(Notification.exception);
             return;
         }
 
@@ -336,7 +339,9 @@ export function readAndCreateFileData(file, fileId, callback) {
             FileWrapper.createFromTemplate()
                 .then(uiFile => {
                     finishFile(uiFile);
-                });
+                    return uiFile;
+                })
+                .catch(Notification.exception);
         } else {
             // File box already exists
             finishFile(FileWrapper.constructFromId(fileId));
@@ -379,6 +384,7 @@ export function readXMLWithLock(taskXmlText) {
         return readAndDisplayXml(taskXmlText);
     } catch (err) {
         setErrorMessage("uncaught exception", err);
+        throw err;
     } finally {
         readXmlActive = false;
     }

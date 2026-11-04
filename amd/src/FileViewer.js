@@ -56,7 +56,7 @@ import "./active-line";
 // Import Config from 'core/config';
 import * as Str from 'core/str';
 import Notification from 'core/notification';
-// import {get_string as getString} from 'core/str';
+/* import {get_string as getString} from 'core/str'; */
 import ModalEvents from 'core/modal_events';
 import SaveCancelModal from 'core/modal_save_cancel';
 import CancelModal from "core/modal_cancel";
@@ -260,7 +260,7 @@ class TreeNode {
             this.setContextMenu()
                 .then(() => {
                     if (this.getFramework().menu === undefined) {
-                        return;
+                        return false;
                     }
                     const showMenu = ({top, left}) => {
                         this.getFramework().menu.style.left = `${left}px`;
