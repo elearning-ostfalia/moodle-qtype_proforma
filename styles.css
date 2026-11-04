@@ -1,7 +1,7 @@
 /* Styles for Task editor */
 
 :root {
-    --labelwith: 150px;
+    --labelwith: 11rem;
     --inputwidth: calc(98% - var(--labelwith));
 }
 
@@ -22,15 +22,18 @@
     resize: vertical; /* user can resize vertically, but width is fixed */
 }
 
-/* required icon: align right, flex is better... */
+/* required icon: directly behind the label text (as in Moodle forms) */
 .proforma-taskeditor .fa-exclamation-circle {
-    float: right;
-    /*vertical-align: middle;*/
-    /* display: inline;*/
+    float: none;
+    margin-left: 0.15rem;
+    font-size: 0.75em;
+    vertical-align: super;
 }
 
 .proforma-taskeditor .xml_fileref_table { /* stretch viewer */
     width: 100%;
+    border: 0;
+    background-color: transparent;
     /* background-color: yellow;*/
 }
 .proforma-taskeditor .fileref_viewer {
@@ -39,8 +42,16 @@
     background-color: #f7f7f7;
 }
 
-.proforma-taskeditor .form-control {
-    display: inline;
+.proforma-taskeditor .form-control,
+.proforma-taskeditor .form-select {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* selects with natural width (Bootstrap sets width: 100%) */
+.proforma-taskeditor .xml_framework_version,
+.proforma-taskeditor .xml_file_type {
+    width: auto;
 }
 
 /* first column should have label width */
@@ -49,10 +60,24 @@
     /*background-color: blue;*/
     width: var(--labelwith);
 }
+/* No grid lines from global table styles (theme or other plugins).
+   High specificity on purpose so that it wins against generic table rules. */
+.proforma-taskeditor table.xml_fileref_table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.proforma-taskeditor table.xml_fileref_table > tbody > tr,
+.proforma-taskeditor table.xml_fileref_table > tbody > tr > td {
+    border: 0 none;
+    box-shadow: none;
+    background-color: transparent;
+}
 .proforma-taskeditor .xml_fileref_table td {
     /*background-color: green;*/
     width: 1px;
-    padding: 0; /* replaces cellpadding="0" in template */
+    padding: 0.15rem 0.25rem 0.15rem 0; /* replaces cellpadding="0" in template */
+    vertical-align: middle;
+    white-space: nowrap;
 } /* min width, actually: this causes the width to fit the content */
 
 .proforma-taskeditor .xml_fileref_table td:last-child {
@@ -65,11 +90,20 @@
     /* display:flex; */
 }
 
-body .proforma-taskeditor .test-header {
-    display: block;
-    cursor: move;
+/* header line of a test/file/model solution box: title left, delete button right */
+body .proforma-taskeditor .test-header,
+body .proforma-taskeditor .file-header,
+body .proforma-taskeditor .modelsol-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     width: 100%;
-    /*background: red;*/
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.6rem;
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+body .proforma-taskeditor .test-header {
+    cursor: move;
 }
 body .proforma-taskeditor .test-header label {
     cursor: move;
@@ -97,7 +131,10 @@ should make tabs fixed in fullscreen mode, but does not work
 */
 
 body .proforma-taskeditor .box-typ {
-    display: inline-block;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
     /* width: var(--labelwith); */
     text-align: left;
     font-weight: 700;
@@ -105,14 +142,15 @@ body .proforma-taskeditor .box-typ {
     /* line-height: 1.5;*/
 }
 
+/* test/file/model solution boxes as cards */
 .proforma-taskeditor .xml_test,
 .proforma-taskeditor .xml_file,
 .proforma-taskeditor .xml_model-solution {
-    background: #e9ecef;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 15px;
-    margin-bottom: 1em;
+    background: var(--bs-light, #f8f9fa);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
 }
 
 .proforma-taskeditor .que {
@@ -121,6 +159,10 @@ body .proforma-taskeditor .box-typ {
 
 .proforma-taskeditor .que  .outcome {
     max-width: 100%;
+    /* .que is a flex container (Boost). Without this the check feedback is only as wide
+       as its titles because the log boxes do not report a minimum width (contain: inline-size). */
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 /* left side labels */
@@ -154,13 +196,24 @@ body .proforma-taskeditor .box-typ {
     vertical-align: top;
 }
 
-/* one row per field in a test with small uniform spacing */
+/* one row per field in a test: label column + input, small uniform spacing */
 .proforma-taskeditor .proforma-test-row {
-    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
 }
 
 .proforma-taskeditor .proforma-test-row > label {
+    flex: 0 0 var(--labelwith);
     margin-bottom: 0;
+    padding-top: 0.25rem;
+}
+
+.proforma-taskeditor .proforma-test-row > .xml_test_title,
+.proforma-taskeditor .proforma-test-row > .xml_description {
+    flex: 1 1 auto;
+    max-width: 48rem;
 }
 
 /* use bold font for unit test label */
@@ -196,18 +249,25 @@ body#page-question-type-proforma p[id^=file_][id*=label] {
     width: 10%;
 }
 .proforma-taskeditor .tinyinput {
-    width: 5%;
+    width: 5rem;
 }
 
 .proforma-taskeditor .rightButton {
-    float: right;
+    float: none;
+    margin-left: auto; /* push to the right end of the (flex) header */
+}
+
+.proforma-taskeditor .proforma-delete .icon {
+    margin: 0;
 }
 
 /* .proforma-taskeditor p { padding-left:0.3em;  } */
 
 .proforma-taskeditor .drop_zone_text {
-    float: right;
-    font-size: 65%;
+    display: block;
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color, #6c757d);
 }
 
 .proforma-taskeditor .xml_restrict_filename {

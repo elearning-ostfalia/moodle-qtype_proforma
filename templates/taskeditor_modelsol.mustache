@@ -38,7 +38,8 @@
 
 <div id="modelsolution_{{ msid }}" class="xml_model-solution">
     <span class='modelsol-header'><span class='box-typ'>{{#str}} modelsolution, qtype_proforma {{/str}} {{ msid }}</span>
-    <span class="rightButton"><button>x</button></span>
+    {{! Must stay the first button in the box (JS: find('button').first() deletes it). }}
+    <span class='rightButton'><button class="btn btn-sm btn-outline-danger proforma-delete" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}">{{# pix }} t/delete, core, {{/ pix }}</button></span>
     </span>
 
     <p>
@@ -47,7 +48,7 @@
     </p>
     <p>
         <label>{{#str}} testdescription, qtype_proforma {{/str}}</label>
-        <textarea rows="2" cols='80' class="xml_description">{{ description }}</textarea>
+        <textarea rows="2" cols='80' class="xml_description form-control form-control-sm">{{ description }}</textarea>
     </p>
 
     <p>
@@ -61,7 +62,7 @@
 
     {{> qtype_proforma/taskeditor_fileref_table }}
 
-    <span class="drop_zone_text drop_zone">Drop Your File(s) Here!</span>
+    <span class="drop_zone_text drop_zone">{{#str}} taskeditordropzone, qtype_proforma {{/str}}</span>
     <p>
     </p>
 </div>

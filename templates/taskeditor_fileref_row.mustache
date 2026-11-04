@@ -49,7 +49,7 @@
         </label>
     </td>
     <td>
-        <select class="mediuminput fileref_filename xml_fileref_filename">
+        <select class="mediuminput fileref_filename xml_fileref_filename form-select form-select-sm">
             <option value=" " label=" "> </option>
             {{! cleanstr because the strings contain '<' and '>' (e.g. '<New file>'). }}
             <option>{{#cleanstr}} openfile, qtype_proforma {{/cleanstr}}</option>
@@ -62,13 +62,13 @@
         </label>
     </td>
     <td>
-        <button class="taskeditor-collapse" disabled="">{{#str}} taskeditorview, qtype_proforma {{/str}}</button>
+        <button class="taskeditor-collapse btn btn-sm btn-outline-secondary" disabled="">{{#str}} taskeditorview, qtype_proforma {{/str}}</button>
     </td>
     <td>
-        <button class="remove_item"  style="display: none;">x</button>
+        <button class="remove_item btn btn-sm btn-outline-secondary" style="display: none;" title="{{#str}} delete {{/str}}">&times;</button>
     </td>
     <td>
-         <button class="add_fileref">+</button>
+         <button class="add_fileref btn btn-sm btn-outline-secondary" title="{{#str}} add {{/str}}">+</button>
          <br>
     </td>
     <td>

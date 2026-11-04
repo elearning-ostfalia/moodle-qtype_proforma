@@ -45,18 +45,19 @@
 
 <span class='file-header'><span class='box-typ'>{{#str}} taskeditorfile, qtype_proforma {{/str}} {{ fileid }}</span>
     <span class ='xml_filename_header'></span>
-    <span class='rightButton'><button>x</button></span>
+    {{! Must stay the first button in the box (JS: find('button').first() deletes it). }}
+    <span class='rightButton'><button class="btn btn-sm btn-outline-danger proforma-delete" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}">{{# pix }} t/delete, core, {{/ pix }}</button></span>
 </span>
 
 <p>
     <label for='xml_file_filename_{{ fileid }}'>{{#str}} filename, qtype_proforma {{/str}}<span class='red'>*</span> </label>
-    <input id='xml_file_filename_{{ fileid }}' class='mediuminput xml_file_filename'>
+    <input id='xml_file_filename_{{ fileid }}' class='mediuminput xml_file_filename form-control form-control-sm'>
 
     <label for='xml_file_id_{{ fileid }}'>ID: </label>
     <input id='xml_file_id_{{ fileid }}' class='tinyinput xml_file_id' value='{{ fileid }}'>
 
     <label for='xml_file_type_{{ fileid }}'>{{#str}} taskeditorstore, qtype_proforma {{/str}} </label>
-    <select id='xml_file_type_{{ fileid }}' class='xml_file_type'>
+    <select id='xml_file_type_{{ fileid }}' class='xml_file_type form-select form-select-sm'>
         <option value = 'embedded' selected='selected'>{{#str}} taskeditorembedded, qtype_proforma {{/str}}</option>
         <option value = 'file'>{{#str}} taskeditorattached, qtype_proforma {{/str}}</option>
     </select>
@@ -74,8 +75,8 @@
         class='xml_file_size'>{{#str}} taskeditorfilesize, qtype_proforma {{/str}}: {{ filesize }}</span></span>
 
     <span class='xml_file_non_binary'>
-        <button class='xml_file_edit'>{{#str}} taskeditoredit, qtype_proforma {{/str}}</button>
-        <button class='xml_file_editor_close'>{{#str}} taskeditorhide, qtype_proforma {{/str}}</button>
+        <button class='xml_file_edit btn btn-sm btn-outline-secondary'>{{#str}} taskeditoredit, qtype_proforma {{/str}}</button>
+        <button class='xml_file_editor_close btn btn-sm btn-outline-secondary'>{{#str}} taskeditorhide, qtype_proforma {{/str}}</button>
         <span>
             <textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>
         </span>

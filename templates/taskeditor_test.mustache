@@ -57,7 +57,7 @@
                 <!-- no label because of format -->
                 <!-- <label for="xml_framework_version">{{#str}} version, qtype_proforma {{/str}}<span class="red">*</span> </label> -->
                 {{#str}} version, qtype_proforma {{/str}}
-                <select class="xml_framework_version" id="{{uniqid}}-version">
+                <select class="xml_framework_version form-select form-select-sm" id="{{uniqid}}-version">
                             <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
                 </select>
             {{/frameworkVersion}}
@@ -66,22 +66,23 @@
 
         <input class='xml_test_id' type="text" style='display: none' value="{{ testid }}" size="2" disabled="disabled">
 
-        <span class='rightButton'><button>x</button></span>
+        {{! Must stay the first button in the test box (JS: find('button').first() deletes the test). }}
+        <span class='rightButton'><button class="btn btn-sm btn-outline-danger proforma-delete" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}">{{# pix }} t/delete, core, {{/ pix }}</button></span>
     </span>
 
 <div class="proforma-test-row">
     <label>{{#str}} testtitle, qtype_proforma {{/str}} <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}"></i> </label>
-    <input class='xml_test_title' size="80" value='{{ testtitle }}'>
+    <input class='xml_test_title form-control form-control-sm' size="80" value='{{ testtitle }}'>
 </div>
 <div class="proforma-test-row">
     <label>{{#str}} testdescription, qtype_proforma {{/str}} </label>
-    <textarea rows='2' cols='80' class='xml_description'>{{ description }}</textarea>
+    <textarea rows='2' cols='80' class='xml_description form-control form-control-sm'>{{ description }}</textarea>
 </div>
 <div class="proforma-test-row">
     <label>{{#str}} weight, qtype_proforma {{/str}}
         <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
     </label>
-    <input class='tinyinput xml_test_weight' value='{{ weight }}' size='3'>
+    <input class='tinyinput xml_test_weight form-control form-control-sm' value='{{ weight }}' size='3'>
 </div>
 <div class="proforma-test-row">
     <label class='leftlabel' style='display: none'>Internal Description</label>
