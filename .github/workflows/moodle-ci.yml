@@ -128,6 +128,14 @@ jobs:
                  <(tr ';,' '\n\n' < public/question/type/proforma/amd/build/$f) | head -60
           done
 
+      # TEMPORARY: provide the AMD build created by CI for download. Remove when solved.
+      - name: Upload AMD build from CI
+        if: ${{ failure() && matrix.moodle-branch == 'MOODLE_501_STABLE' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: amd-build-moodle501
+          path: moodle/public/question/type/proforma/amd/build/
+
       - name: PHPUnit tests
         if: ${{ always() }}
         run: moodle-plugin-ci phpunit --fail-on-warning

@@ -120,6 +120,9 @@ try {
         $graderoutput = 'successfully started';
     }
 } catch (Exception $ex) {
-    // Send error message as event data.
-    echo "data: $ex\n\n";
+    // Send only the error message as event data (no stack trace with server paths).
+    // The full exception is written to the server error log.
+    error_log('qtype_proforma upload_sse: ' . $ex);
+    // Line breaks would end the event data => replace them.
+    echo 'data: ' . str_replace(["\r", "\n"], ' ', $ex->getMessage()) . "\n\n";
 }

@@ -98,7 +98,8 @@ class feedback_renderer {
 
         // Extract properties.
         $level = (string) $feedback['level'];
-        $title = (string) $feedback->title;
+        // The title is grader output (it may contain data controlled by the student) => escape it.
+        $title = s((string) $feedback->title);
         // Escaped character sequence is replaced by non-escaped character.
         $content = (string) $feedback->content;
         $format = (string) $feedback->content['format'];
@@ -153,7 +154,9 @@ class feedback_renderer {
                     break;
                 case 'html':
                     $csscontent['class'] .= ' proforma_html';
-                    $result .= html_writer::tag('p', $content, $csscontent);
+                    // The content is grader output and may contain data controlled by the student
+                    // (e.g. program output) => remove scripts and other dangerous markup.
+                    $result .= html_writer::tag('p', clean_text($content, FORMAT_HTML), $csscontent);
                     break;
                 default:
                     debugging('missing or invalid format for feedback (student/teacher):' . $format);
@@ -427,7 +430,7 @@ class feedback_renderer {
                 $containsinternalerror = true;
                 $allcorrect = false;
                 $this->render_test_title($testresponse, null, true, $result, $allcorrect);
-                $result .= html_writer::tag('pre', $ex->getMessage(), ['class' => 'proforma_testlog']);
+                $result .= html_writer::tag('pre', s($ex->getMessage()), ['class' => 'proforma_testlog']);
             }
         } else {
             // Handle tests with subtest results.
@@ -659,8 +662,10 @@ class feedback_renderer {
             if (isset($vcs) && count($vcs) > 0) {
                 $attrib = $vcs->attributes();
                 // Todo: create style in css.
-                $vcstext = $attrib['name'] . ': <span style="font-family: monospace;">' . $attrib['submission-uri'] . '</span>' .
-                    ' Revision: ' . $attrib['submission-revision'];
+                // The attributes are grader output (the URI may contain student input) => escape them.
+                $vcstext = s((string) $attrib['name']) . ': <span style="font-family: monospace;">' .
+                    s((string) $attrib['submission-uri']) . '</span>' .
+                    ' Revision: ' . s((string) $attrib['submission-revision']);
             } else {
                 $vcstext = null;
             }

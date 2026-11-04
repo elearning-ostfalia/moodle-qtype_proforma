@@ -141,11 +141,16 @@ export async function show(title, url, callbackstart, callbackdata, callbackend)
                     callbackdata(message);
                     return;
                 }
-                // Default handling: append new message
+                // Default handling: append new message.
+                // The message is inserted as text (not as HTML) in order to avoid code injection.
                 if (message.startsWith("b'") || message.startsWith("b\"")) {
-                    message = '<b>' + message.substring(2, message.length - 3) + '</b>';
+                    let bold = document.createElement('b');
+                    bold.textContent = message.substring(2, message.length - 3);
+                    dialog.appendChild(bold);
+                } else {
+                    dialog.appendChild(document.createTextNode(message));
                 }
-                dialog.innerHTML += message + "<br>";
+                dialog.appendChild(document.createElement('br'));
             }
         };
         source.onerror = function() {

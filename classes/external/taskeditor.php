@@ -77,7 +77,7 @@ class taskeditor extends \external_api {
         }
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         if ($ext != 'zip' && $ext != 'xml') {
-            throw new \invalid_parameter_exception('invalid file found: ' + $filename);
+            throw new \invalid_parameter_exception('invalid file found: ' . $filename);
         }
         $fileurl = \moodle_url::make_draftfile_url($itemid, $filepath, $filename);
         $fileurl = $fileurl->out();
