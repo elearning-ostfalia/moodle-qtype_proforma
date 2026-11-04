@@ -37,6 +37,7 @@ import {FileWrapper} from "./file";
 import {DEBUG_MODE, handleFilenameChangeInTest} from "./helper";
 import * as Str from 'core/str';
 import Notification from 'core/notification';
+import Templates from 'core/templates';
 
 
 let loadFileOption = "<open...>";
@@ -196,11 +197,17 @@ export class FileReferenceList extends DynamicList {
             const numberOfColumns = 7 + this.getNumberOfExtraColumns();
             if (uiFile && !uiFile.isBinary) {
                 element.html(hideEditorText);
-                $("<tr>" +
-                    "   <td></td>" +
-                    "   <td colspan='" + numberOfColumns + "'><textarea disabled cols='80' rows='10' class='fileref_viewer'>" +
-                    uiFile.text
-                    + "</textarea></td></tr>").insertAfter(tr);
+                // The file content is escaped by the template (it may contain e.g. '</textarea>').
+                Templates.renderForPromise('qtype_proforma/taskeditor_fileref_viewer', {
+                    colspan: numberOfColumns,
+                    text: uiFile.text,
+                })
+                    .then(({html}) => {
+                        // Trim: jQuery only parses strings starting with '<' as HTML.
+                        $(html.trim()).insertAfter(tr);
+                        return true;
+                    })
+                    .catch(Notification.exception);
             }
         }
     }

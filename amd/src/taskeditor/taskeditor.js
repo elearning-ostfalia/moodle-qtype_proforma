@@ -774,14 +774,16 @@ function createGradingHints(temporary = false) {
         root.appendChild(test);
         test.setAttribute('ref', uiTest.id);
         test.setAttribute('weight', uiTest.weight);
+        // Use textContent (not innerHTML): the values are plain text and may contain
+        // characters like '&' or '<' which must be escaped in XML.
         let title = doc.createElement("title");
-        title.innerHTML = uiTest.title;
+        title.textContent = uiTest.title;
         test.appendChild(title);
         let description = doc.createElement("description");
-        description.innerHTML = uiTest.description;
+        description.textContent = uiTest.description;
         test.appendChild(description);
         let testtype = doc.createElement("test-type");
-        testtype.innerHTML = uiTest.testtype;
+        testtype.textContent = uiTest.testtype;
         test.appendChild(testtype);
     });
 

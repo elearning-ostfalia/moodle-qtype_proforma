@@ -933,13 +933,11 @@ class EditorStack {
         item.editor.focus();
 
         // Switch focus
+        // The close button is only visible for the focused tab (see styles.css).
         if (this.focus !== undefined) {
             this.focus.classList.remove('focus');
-            let focusClose = this.focus.querySelector('.close');
-            focusClose.style.display = 'none';
         }
         item.tab.classList.add('focus');
-        item.tab.querySelector('.close').style.display = 'inline';
         this.focus = item.tab;
     }
 
@@ -1014,7 +1012,11 @@ class EditorStack {
             this._delete(item);
             close.parentElement.remove();
         });
-        tab.innerHTML = filenode.name;
+        // Separate element for the name so that renaming does not remove the close button.
+        let tabname = document.createElement('span');
+        tabname.classList.add('tab-name');
+        tabname.textContent = filenode.name;
+        tab.append(tabname);
         tab.append(close);
         tab.addEventListener('click', event => {
             event.preventDefault();
@@ -1034,7 +1036,7 @@ class EditorStack {
             if (this.nodes[i].fileNode === filenode) {
                 // Filenode is in list
                 // => update filename
-                this.nodes[i].tab.innerHTML = filenode.name;
+                this.nodes[i].tab.querySelector('.tab-name').textContent = filenode.name;
                 // Update filemode
                 if (filenode.mode !== undefined) {
                     this.nodes[i].editor.setOption("mode", filenode.mode);
@@ -1175,10 +1177,12 @@ export class Framework {
 
     <div class="body" style="display: flex; flex-direction: row; flex: 1 1 0; min-height: 0">
         <!--<div class="fake" style="min-width: 100px; flex: 1 0 0; overflow: auto;">Fake element</div> -->
-        <div class="explorer" style="min-width: 20px; flex: 1 0 0; overflow: auto;">
+        <!-- Only the explorer has a width (changed by the splitter), the canvas takes the rest. -->
+        <div class="explorer" style="min-width: 20px; flex: 0 0 25%; overflow: auto;">
+            <div class="explorer-header"></div>
         </div>
         <div class="resize"></div>
-        <div class="canvas" style="min-width: 20px;  flex: 0 0 75%; display: flex; flex-direction: row;">
+        <div class="canvas" style="min-width: 20px; flex: 1 1 0; display: flex; flex-direction: row;">
             <!-- set flex-basis = 50% for 2 two columns and 100%V for one column -->
             <div class="canvascol" style="display: flex; flex-direction: column; flex: 1 1 50%; overflow: hidden;">
                 <div class="tabs" style="flex: none; ">
@@ -1242,21 +1246,34 @@ export class Framework {
             let oldValue = 0;
             let mousedown = false;
 
+            // Limits for the width of the explorer (in percent of the available width).
+            const minBasis = 10;
+            const maxBasis = 70;
+
+            // While dragging, text selection and mouse events in the panes are disabled
+            // (otherwise the editor selects text and swallows mouse events).
+            const disableSelection = () => {
+                document.body.style.cursor = 'col-resize';
+                [before, after].forEach(element => {
+                    if (element) {
+                        element.style.userSelect = 'none';
+                        element.style.pointerEvents = 'none';
+                    }
+                });
+            };
             const removeSelection = () => {
-                resizer.style.removeProperty('cursor');
                 document.body.style.removeProperty('cursor');
-
-                before.style.removeProperty('user-select');
-                before.style.removeProperty('pointer-events');
-
-                if (after != undefined) {
-                    after.style.removeProperty('user-select');
-                    after.style.removeProperty('pointer-events');
-                }
+                [before, after].forEach(element => {
+                    if (element) {
+                        element.style.removeProperty('user-select');
+                        element.style.removeProperty('pointer-events');
+                    }
+                });
             };
             // Handle the mousedown event
             // that's triggered when user drags the resizer
             const mouseDownHandler = e => {
+                e.preventDefault();
                 // Get the current mouse position
                 x = e.clientX;
 
@@ -1267,33 +1284,32 @@ export class Framework {
                 document.addEventListener('mousemove', mouseMoveHandler);
                 document.addEventListener('mouseup', mouseUpHandler);
 
-                removeSelection();
+                disableSelection();
             };
 
             const mouseMoveHandler = e => {
-                if (mousedown) {
-                    // How far the mouse has been moved
-                    const dx = e.clientX - x;
-                    let newBasis = ((oldValue + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
-                    before.style.flexBasis = `${newBasis}%`;
-                    if (after != undefined) {
-                        after.style.flexBasis = `${100 - newBasis}%`;
-                    } else {
-                        resizer.parentNode.getBoundingClientRect().width =
-                            resizer.parentNode.getBoundingClientRect().width - dx;
-                    }
-                    removeSelection();
-                } else {
+                if (!mousedown) {
                     mouseUpHandler();
+                    return;
                 }
+                // How far the mouse has been moved
+                const dx = e.clientX - x;
+                const parentWidth = resizer.parentNode.getBoundingClientRect().width;
+                let newBasis = ((oldValue + dx) * 100) / parentWidth;
+                newBasis = Math.min(Math.max(newBasis, minBasis), maxBasis);
+                // Only the explorer gets a new width, the canvas fills the remaining space.
+                before.style.flexBasis = `${newBasis}%`;
             };
 
-            const mouseUpHandler = function() {
+            const mouseUpHandler = () => {
+                mousedown = false;
                 removeSelection();
 
                 // Remove the handlers of `mousemove` and `mouseup`
                 document.removeEventListener('mousemove', mouseMoveHandler);
                 document.removeEventListener('mouseup', mouseUpHandler);
+                // The editor width has changed => let CodeMirror re-measure.
+                this.editorstack.handleResize();
             };
             // Attach the handler
             resizer.addEventListener('mousedown', mouseDownHandler);

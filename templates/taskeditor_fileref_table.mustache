@@ -18,7 +18,7 @@
     @template qtype_proforma/taskeditor_fileref_table
 
     The purpose of this template is to render a table with one file reference row in ProFormA task editor.
-    Further rows are created in JS by copying the row of this template.
+    The row itself is defined in taskeditor_fileref_row which is also used in JS for further rows.
 
     Classes required for JS:
     * none
@@ -37,42 +37,6 @@
 
 <table class="dynamic_table xml_fileref_table">
 <tbody>
-<tr>
-    <td>
-        <label>{{#str}} taskeditorfiles, qtype_proforma {{/str}}
-{{#info}}
-    {{>core/help_icon}}
-{{/info}}
-        {{ #filemandatory }}
-            <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
-            <!-- <span class="red">*</span> -->
-        {{ /filemandatory }}
-        </label>
-    </td>
-    <td>
-        <select class="mediuminput fileref_filename xml_fileref_filename">
-            <option value=" " label=" "> </option>
-            <option>&lt;open...&gt;</option>
-            <option>&lt;new file&gt;</option>
-        </select>
-    </td>
-    <td>
-        <label class="fileref_fileref_label" style="display: none;">Fileref:
-            <input class="tinyinput fileref_fileref" readonly="" style="display: none;">
-        </label>
-    </td>
-    <td>
-        <button class="taskeditor-collapse" disabled="">{{#str}} taskeditorview, qtype_proforma {{/str}}</button>
-    </td>
-    <td>
-        <button class="remove_item"  style="display: none;">x</button>
-    </td>
-    <td>
-         <button class="add_fileref">+</button>
-         <br>
-    </td>
-    <td>
-    </td>
-</tr>
+{{> qtype_proforma/taskeditor_fileref_row }}
 </tbody>
 </table>
