@@ -114,28 +114,6 @@ jobs:
         if: ${{ always() }}
         run: moodle-plugin-ci grunt
 
-      # TEMPORARY: show why the AMD build is reported as stale. Remove when solved.
-      - name: Debug stale AMD build
-        if: ${{ failure() && matrix.moodle-branch == 'MOODLE_501_STABLE' }}
-        run: |
-          cd moodle
-          source "$NVM_DIR/nvm.sh" && nvm use
-          node -v
-          npx grunt amd --root=public/question/type/proforma
-          for f in taskeditor/config.min.js FileViewer.min.js; do
-            echo "===== $f"
-            diff <(tr ';,' '\n\n' < ../plugin/amd/build/$f) \
-                 <(tr ';,' '\n\n' < public/question/type/proforma/amd/build/$f) | head -60
-          done
-
-      # TEMPORARY: provide the AMD build created by CI for download. Remove when solved.
-      - name: Upload AMD build from CI
-        if: ${{ failure() && matrix.moodle-branch == 'MOODLE_501_STABLE' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: amd-build-moodle501
-          path: moodle/public/question/type/proforma/amd/build/
-
       - name: PHPUnit tests
         if: ${{ always() }}
         run: moodle-plugin-ci phpunit --fail-on-warning
