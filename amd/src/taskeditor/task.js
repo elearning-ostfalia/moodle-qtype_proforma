@@ -272,10 +272,23 @@ function isInputComplete() {
 // /////////////////////////////////////////////////////// function: convertToXML
 
 
+// Functions called before the task is converted (e.g. the explorer writes back its open editors).
+const beforeConvertHooks = [];
+
+/**
+ * Registers a function that is called before the task is converted to XML.
+ *
+ * @param {Function} hook function without parameters
+ */
+export function addBeforeConvertHook(hook) {
+    beforeConvertHooks.push(hook);
+}
+
 /**
  * writes data from UI elements to xml string
  */
 export function convertToXML() {
+    beforeConvertHooks.forEach(hook => hook());
     // Fake promise in order to be used in chain
     const promise = Promise.resolve(0);
     return promise.then(() => {

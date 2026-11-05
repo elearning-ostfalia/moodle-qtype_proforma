@@ -951,7 +951,11 @@ abstract class base_form_creator {
         $params2 = (object) $msrepoparams;
         $params2->repo_id = $repo2->id;
 
-        global $OUTPUT;
+        global $OUTPUT, $PAGE;
+        if (!$PAGE->requires->is_head_done()) {
+            // Context menu of the explorer (file view in the task editor).
+            $PAGE->requires->css('/question/type/proforma/amd/src/editor.css');
+        }
         $taskeditor = $OUTPUT->render_from_template('qtype_proforma/taskeditor', $context);
         $mform->addElement('html', $taskeditor);
 

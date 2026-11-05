@@ -275,6 +275,7 @@ Das bedeutet: <br>
 $string['taskeditor'] = 'Aufgabe bearbeiten';
 $string['taskeditorattached'] = 'Binärdatei';
 $string['taskeditorbinary'] = 'Binärdatei';
+$string['taskeditorbinaryfile'] = 'Binärdatei - kann hier nicht bearbeitet werden.';
 $string['taskeditordropzone'] = 'Drop zone';
 $string['taskeditoredit'] = 'Bearbeiten';
 $string['taskeditorembedded'] = 'Textdatei';
@@ -293,6 +294,8 @@ $string['taskeditornewpythonunit'] = 'Neuer Python Unittest';
 $string['taskeditorstore'] = '';
 $string['taskeditortests'] = 'Tests';
 $string['taskeditorview'] = 'Ansehen';
+$string['taskeditorviewlist'] = 'Liste';
+$string['taskeditorviewtree'] = 'Baum';
 $string['taskfilename'] = 'ProFormA-Aufgabendatei';
 $string['taskfilename_hint'] = 'ProFormA-Aufgabendatei';
 $string['taskfilename_hint_help'] = 'Zugehörige ProFormA-Aufgabendatei';

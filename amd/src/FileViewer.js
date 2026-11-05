@@ -782,14 +782,17 @@ export class FolderNode extends TreeNode {
             {key: 'rename', component: 'qtype_proforma'},
             {key: 'delete', component: 'qtype_proforma'}
         ]).done(function(strings) {
-            thecontext.getFramework().createContextMenu([
+            let menu = [
                 [strings[0] + '...', thecontext.boundHandleNewFile], // Newemptyfile
                 [strings[1] + '...', thecontext.boundHandleLoadFile], // Loadfile
-
-                //* **               [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
-                [strings[3] + '...', thecontext.boundHandleRename], // Rename
-                [strings[4] + '...', thecontext.handleDelete], // Delete
-            ]);
+            ];
+            // Folders are only supported if the syncer can store them (e.g. task editor).
+            if (thecontext.getFramework().allowFolders) {
+                menu.push([strings[2] + '...', thecontext.boundHandleNewFolder]); // Newfolder
+            }
+            menu.push([strings[3] + '...', thecontext.boundHandleRename]); // Rename
+            menu.push([strings[4] + '...', thecontext.handleDelete]); // Delete
+            thecontext.getFramework().createContextMenu(menu);
         }) // . fail(notification.exception)
             .fail(function(response) {
                 console.error(response);
@@ -828,11 +831,15 @@ export class RootNode extends FolderNode {
             {key: 'loadfile', component: 'qtype_proforma'},
             {key: 'newfolder', component: 'qtype_proforma'}
         ]).done(function(strings) {
-            thecontext.getFramework().createContextMenu([
+            let menu = [
                 [strings[0] + '...', thecontext.boundHandleNewFile], // Newemptyfile
                 [strings[1] + '...', thecontext.boundHandleLoadFile], // Loadfile
-                //* **                [strings[2] + '...', thecontext.boundHandleNewFolder], // newfolder
-            ]);
+            ];
+            // Folders are only supported if the syncer can store them (e.g. task editor).
+            if (thecontext.getFramework().allowFolders) {
+                menu.push([strings[2] + '...', thecontext.boundHandleNewFolder]); // Newfolder
+            }
+            thecontext.getFramework().createContextMenu(menu);
         }) // . fail(notification.exception)
             .fail(function(response) {
                 console.error(response);
@@ -1165,6 +1172,7 @@ export class Framework {
         this.focus = undefined;
         this.readOnly = false;
         this.rootnode = 'Submission';
+        this.allowFolders = false;
     }
 
     buildFramework(domnode) {
@@ -1217,10 +1225,14 @@ export class Framework {
         <li class="menu-option">Delete...</li>
     </ul>
 </div>`;
-        const menu = document.createElement('div');
-        menu.innerHTML = contextmenu;
-        let body = document.querySelector('body');
-        body.appendChild(menu);
+        // The menu is shared by all frameworks on the page (e.g. when the explorer in the
+        // task editor is rebuilt) => create it only once.
+        if (!document.getElementById('context-menu')) {
+            const menu = document.createElement('div');
+            menu.innerHTML = contextmenu;
+            let body = document.querySelector('body');
+            body.appendChild(menu);
+        }
 
         this.mainDomNode = domnode;
         this.editorstack = new EditorStack(domnode.querySelector('.editor'),
@@ -1230,6 +1242,7 @@ export class Framework {
     init(node, syncer, readOnly, options) {
         this.readOnly = readOnly;
         this.rootnode = options.rootnode;
+        this.allowFolders = !!options.allowfolders;
         if (options.explorerautosave !== undefined && options.explorerautosave > 0) {
             autosaveIntervall = 1000 * options.explorerautosave;
         } else {
@@ -1347,15 +1360,16 @@ export class Framework {
             .catch(Notification.exception);
 
         // Hide context menu on every left click
-        window.addEventListener("click", e => {
+        this.boundWindowClick = () => {
             this.handleClick();
-        });
+        };
+        window.addEventListener("click", this.boundWindowClick);
 
         let el = this.mainDomNode.querySelector('.ide');
-        const observer = new ResizeObserver(() => {
+        this.resizeObserver = new ResizeObserver(() => {
             this.editorstack.handleResize();
         });
-        observer.observe(el);
+        this.resizeObserver.observe(el);
         initSplit(node.querySelector('.ide .body > .resize'), 'w');
         // InitSplit(node.querySelector('.ide .canvas > .resize'), 'w');
 
@@ -1378,6 +1392,21 @@ export class Framework {
         /*
         RootNode.syncer.sendRequest('mkdir', 'newproformafolder');
         RootNode.syncer.sendRequest('dir'); */
+    }
+
+    /**
+     * Removes global listeners and timers (needed when the framework is rebuilt,
+     * e.g. in the task editor). The DOM is not touched.
+     */
+    destroy() {
+        if (this.boundWindowClick) {
+            window.removeEventListener("click", this.boundWindowClick);
+        }
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+        }
+        this.toggleContextmenu("hide");
+        this.editorstack.cleanup();
     }
 
     switchEditorTo(filenode) {

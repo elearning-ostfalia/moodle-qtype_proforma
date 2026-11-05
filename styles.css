@@ -129,6 +129,17 @@ body .proforma-taskeditor .test-header label {
     cursor: move;
 }
 
+/* files tab: explorer view instead of the file boxes (class set by JS) */
+.proforma-taskeditor .proforma-files-explorer {
+    display: none;
+}
+.proforma-taskeditor .proforma-files-explorer-mode .proforma-files-explorer {
+    display: block;
+}
+.proforma-taskeditor .proforma-files-explorer-mode > .xml_file {
+    display: none;
+}
+
 /* fullscreen: the card fills the screen, only the body scrolls (header with tabs and footer stay visible) */
 body .proforma-taskeditor:fullscreen {
     height: 100%;
@@ -309,21 +320,25 @@ body#page-question-type-proforma p[id^=file_][id*=label] {
 /* Styles for explorer */
 
 /* In order to have those Styles in the question history review
-they need to be defined in the global proforma style settings
+they need to be defined in the global proforma style settings.
+The explorer is also used in the task editor (file view), hence .proforma-taskeditor.
  */
 
-.que.proforma ul[role="tree"] {
+.que.proforma ul[role="tree"],
+.proforma-taskeditor ul[role="tree"] {
     margin: 0;
     padding: 0.25rem 0;
     list-style: none;
     font-size: 0.875rem;
 }
 
-.que.proforma ul[role="group"] {
+.que.proforma ul[role="group"],
+.proforma-taskeditor ul[role="group"] {
     padding-left: 20px;
 }
 
-.que.proforma [role="treeitem"].doc::before {
+.que.proforma [role="treeitem"].doc::before,
+.proforma-taskeditor [role="treeitem"].doc::before {
     /* document icon from https://css.gg/file-document (MIT license)
     Copyright 2019-2020 css.gg */
     content: url([[pix:qtype_proforma|explorer_doc]]);
@@ -334,15 +349,18 @@ they need to be defined in the global proforma style settings
     vertical-align: middle;
 }
 
-.que.proforma [role="treeitem"][aria-expanded="false"] > ul {
+.que.proforma [role="treeitem"][aria-expanded="false"] > ul,
+.proforma-taskeditor [role="treeitem"][aria-expanded="false"] > ul {
     display: none;
 }
 
-.que.proforma [role="treeitem"][aria-expanded="true"] > ul {
+.que.proforma [role="treeitem"][aria-expanded="true"] > ul,
+.proforma-taskeditor [role="treeitem"][aria-expanded="true"] > ul {
     display: block;
 }
 
-.que.proforma [role="treeitem"][aria-expanded="false"] > .name::before {
+.que.proforma [role="treeitem"][aria-expanded="false"] > .name::before,
+.proforma-taskeditor [role="treeitem"][aria-expanded="false"] > .name::before {
     /* COLLECTION: Akar Interface Icons
     LICENSE: MIT License
     AUTHOR: artcoholic
@@ -352,7 +370,8 @@ they need to be defined in the global proforma style settings
     padding-right: 3px;
     vertical-align: middle;
 }
-.que.proforma [role="treeitem"][aria-expanded="true"] > .name::before {
+.que.proforma [role="treeitem"][aria-expanded="true"] > .name::before,
+.proforma-taskeditor [role="treeitem"][aria-expanded="true"] > .name::before {
     /* COLLECTION: Fluent Ui Icons Outlined
     LICENSE: MIT License
     AUTHOR: Microsoft
@@ -364,7 +383,9 @@ they need to be defined in the global proforma style settings
 }
 
 .que.proforma [role="treeitem"] span,
-.que.proforma [role="treeitem"] {
+.que.proforma [role="treeitem"],
+.proforma-taskeditor [role="treeitem"] span,
+.proforma-taskeditor [role="treeitem"] {
     min-width: fit-content;
     margin: 0;
     padding: 0; /* Vertical distance between items */
@@ -375,32 +396,41 @@ they need to be defined in the global proforma style settings
 
 /* Indent for all treeitems but first level */
 /* Default indentation is much too large */
-.que.proforma [role="treeitem"] [role="treeitem"] {
+.que.proforma [role="treeitem"] [role="treeitem"],
+.proforma-taskeditor [role="treeitem"] [role="treeitem"] {
     /* editortest:    margin-left: -20px; */
     margin-left: 0;
 }
 
 /* disable default keyboard focus styling for treeitems
    Keyboard focus is styled with the following CSS */
-.que.proforma [role="treeitem"]:focus {
+.que.proforma [role="treeitem"]:focus,
+.proforma-taskeditor [role="treeitem"]:focus {
     outline: 0;
     box-shadow: 0 0 0 0;
 }
 
 .que.proforma [role="treeitem"].doc,
-.que.proforma [role="treeitem"] > .name {
+.que.proforma [role="treeitem"] > .name,
+.proforma-taskeditor [role="treeitem"].doc,
+.proforma-taskeditor [role="treeitem"] > .name {
     cursor: pointer;
     padding: 0.1rem 0.25rem;
 }
 
 .que.proforma [role="treeitem"].doc:hover,
-.que.proforma [role="treeitem"] > .name:hover {
+.que.proforma [role="treeitem"] > .name:hover,
+.proforma-taskeditor [role="treeitem"].doc:hover,
+.proforma-taskeditor [role="treeitem"] > .name:hover {
     background-color: var(--proforma-ide-hover);
 }
 
 .que.proforma [role="treeitem"].focus.doc,
 .que.proforma [role="treeitem"].focus > .name,
-.que.proforma [role="treeitem"].focus > span {
+.que.proforma [role="treeitem"].focus > span,
+.proforma-taskeditor [role="treeitem"].focus.doc,
+.proforma-taskeditor [role="treeitem"].focus > .name,
+.proforma-taskeditor [role="treeitem"].focus > span {
     background-color: var(--proforma-ide-selection);
     border: 0;
     box-shadow: 0 0 0 0;
@@ -435,7 +465,8 @@ they need to be defined in the global proforma style settings
 
 
 /* Colours from Codemirror theme darcula (editor background #2B2B2B). */
-.que.proforma .ide {
+.que.proforma .ide,
+.proforma-taskeditor .ide {
     --proforma-ide-bg: #2b2b2b;
     --proforma-ide-bar: #3c3f41;
     --proforma-ide-hover: #353739;
@@ -453,13 +484,15 @@ they need to be defined in the global proforma style settings
     contain: inline-size;
 }
 
-.que.proforma .ide .explorer {
+.que.proforma .ide .explorer,
+.proforma-taskeditor .ide .explorer {
     background-color: var(--proforma-ide-bg);
     color: var(--proforma-ide-text);
 }
 
 /* Bar above the file tree, aligned with the tab bar above the editor. */
-.que.proforma .ide .explorer-header {
+.que.proforma .ide .explorer-header,
+.proforma-taskeditor .ide .explorer-header {
     position: sticky;
     top: 0;
     z-index: 1;
@@ -468,7 +501,8 @@ they need to be defined in the global proforma style settings
 }
 
 /* Splitter between file tree and editor */
-.que.proforma .ide .resize {
+.que.proforma .ide .resize,
+.proforma-taskeditor .ide .resize {
     flex-grow: 0;
     flex-shrink: 0;
     width: 4px;
@@ -478,16 +512,19 @@ they need to be defined in the global proforma style settings
     transition: background-color 0.15s;
 }
 
-.que.proforma .ide .resize:hover {
+.que.proforma .ide .resize:hover,
+.proforma-taskeditor .ide .resize:hover {
     background-color: var(--proforma-ide-accent);
 }
 
-.que.proforma .ide .CodeMirror {
+.que.proforma .ide .CodeMirror,
+.proforma-taskeditor .ide .CodeMirror {
     font-size: 90%;
 }
 
 /* Editor tabs */
-.que.proforma .ide .tabs {
+.que.proforma .ide .tabs,
+.proforma-taskeditor .ide .tabs {
     display: flex;
     align-items: stretch;
     height: var(--proforma-ide-bar-height);
@@ -496,7 +533,8 @@ they need to be defined in the global proforma style settings
     background-color: var(--proforma-ide-bar);
 }
 
-.que.proforma .ide .tab {
+.que.proforma .ide .tab,
+.proforma-taskeditor .ide .tab {
     display: inline-flex;
     align-items: center;
     white-space: nowrap;
@@ -509,24 +547,28 @@ they need to be defined in the global proforma style settings
     border-radius: 0;
 }
 
-.que.proforma .ide .tab:hover {
+.que.proforma .ide .tab:hover,
+.proforma-taskeditor .ide .tab:hover {
     color: var(--proforma-ide-text);
     background-color: var(--proforma-ide-hover);
 }
 
-.que.proforma .ide .tab.focus {
+.que.proforma .ide .tab.focus,
+.proforma-taskeditor .ide .tab.focus {
     color: #fff;
     background-color: var(--proforma-ide-bg);
     border-top-color: var(--proforma-ide-accent);
 }
 
-.que.proforma .ide .tab:focus-visible {
+.que.proforma .ide .tab:focus-visible,
+.proforma-taskeditor .ide .tab:focus-visible {
     outline: 1px solid var(--proforma-ide-accent);
     outline-offset: -1px;
 }
 
 /* close button: only visible for the focused tab and on hover */
-.que.proforma .ide .tab .close {
+.que.proforma .ide .tab .close,
+.proforma-taskeditor .ide .tab .close {
     display: none;
     font-size: 80%;
     line-height: 1;
@@ -539,11 +581,14 @@ they need to be defined in the global proforma style settings
 }
 
 .que.proforma .ide .tab.focus .close,
-.que.proforma .ide .tab:hover .close {
+.que.proforma .ide .tab:hover .close,
+.proforma-taskeditor .ide .tab.focus .close,
+.proforma-taskeditor .ide .tab:hover .close {
     display: inline-block;
 }
 
-.que.proforma .ide .tab .close:hover {
+.que.proforma .ide .tab .close:hover,
+.proforma-taskeditor .ide .tab .close:hover {
     background-color: rgba(255, 255, 255, 0.15);
     opacity: 1;
 }

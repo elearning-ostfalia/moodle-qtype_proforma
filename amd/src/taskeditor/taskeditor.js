@@ -38,7 +38,8 @@ import {generateUUID, getExtension} from "./helper";
 import * as taskeditorconfig from "./config";
 import {unzipme, zipme, taskTitleToFilename} from "./zipper";
 import {readXMLWithLock} from "./helper";
-import {convertToXML, InputError} from "./task";
+import {addBeforeConvertHook, convertToXML, InputError} from "./task";
+import {TaskeditorExplorer} from "./explorersyncer";
 import Config from 'core/config';
 import {ModelSolutionWrapper} from "./modelsol";
 import {TaskFileRef, TaskModelSolution} from "./taskdata";
@@ -734,6 +735,65 @@ export const downloadModelsolution = (buttonid) => {
             })
             .catch(Notification.exception);
     };
+};
+
+/**
+ * Initialises the view switch in the files tab (file boxes or explorer).
+ * Both views work on the same file boxes, the explorer is rebuilt each time it is shown.
+ */
+export const initFilesView = () => {
+    const section = document.getElementById('proforma-files-section');
+    if (!section) {
+        return;
+    }
+    const explorer = new TaskeditorExplorer(section.querySelector('.proforma-files-explorer'));
+    const buttons = section.querySelectorAll('.proforma-files-viewswitch [data-view]');
+    const isExplorerMode = () => section.classList.contains('proforma-files-explorer-mode');
+
+    // The explorer holds the text of the open editors => write back before the task is converted.
+    addBeforeConvertHook(() => {
+        if (isExplorerMode()) {
+            explorer.save();
+        }
+    });
+
+    const switchTo = view => {
+        buttons.forEach(button => {
+            const active = button.dataset.view === view;
+            button.classList.toggle('active', active);
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        if (view === 'explorer') {
+            section.classList.add('proforma-files-explorer-mode');
+            explorer.show();
+        } else {
+            // Write back the open editors and show the (updated) file boxes.
+            explorer.destroy();
+            section.classList.remove('proforma-files-explorer-mode');
+        }
+    };
+    buttons.forEach(button => {
+        button.addEventListener('click', event => {
+            event.preventDefault();
+            switchTo(button.dataset.view);
+        });
+    });
+
+    // Files may have been created or renamed in other tabs (e.g. tests) => rebuild the explorer
+    // when the files tab is shown again.
+    const tablink = document.querySelector('.proforma-taskeditor a[href="#proforma-files-section"]');
+    if (tablink) {
+        tablink.addEventListener('hide.bs.tab', () => {
+            if (isExplorerMode()) {
+                explorer.save();
+            }
+        });
+        tablink.addEventListener('shown.bs.tab', () => {
+            if (isExplorerMode()) {
+                explorer.show();
+            }
+        });
+    }
 };
 
 export const toggleFullscreen = (buttonid) => {

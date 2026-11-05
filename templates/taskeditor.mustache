@@ -90,6 +90,20 @@
                     role="tabpanel"
                     data-region="files-container">
 
+                    {{! View switch: file boxes (list) or tree (explorer). The file boxes are appended
+                        to this section by JS and hidden in explorer mode (CSS). }}
+                    <div class="d-flex mb-2 proforma-files-viewswitch">
+                        <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="{{#str}} taskeditorfiles, qtype_proforma {{/str}}">
+                            <button type="button" class="btn btn-outline-secondary active" data-view="list" aria-pressed="true">
+                                {{#str}} taskeditorviewlist, qtype_proforma {{/str}}
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" data-view="explorer" aria-pressed="false">
+                                {{#str}} taskeditorviewtree, qtype_proforma {{/str}}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="proforma-files-explorer mb-2"></div>
+
                     {{{ files }}}
 
                 </div>
@@ -129,6 +143,7 @@
         editor.downloadModelsolution("download-modelsol-{{uniqid}}");
         editor.uploadTaskToGrader("upload_task-{{uniqid}}");
         editor.toggleFullscreen("toggle-fullscreen-{{uniqid}}");
+        editor.initFilesView();
     });
 {{/js}}
 
