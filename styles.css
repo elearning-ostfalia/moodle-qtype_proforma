@@ -273,6 +273,40 @@ body#page-question-type-proforma p[id^=file_][id*=label] {
 }
 
 
+/* file box: filename, store, edit buttons and drop hint in one wrapping row */
+.proforma-taskeditor .proforma-file-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+    margin-bottom: 0.25rem;
+}
+.proforma-taskeditor .proforma-file-row > label {
+    margin: 0;
+}
+.proforma-taskeditor .proforma-file-row > .xml_file_filename {
+    flex: 1 1 12rem;
+    width: auto;
+    max-width: 30rem;
+}
+.proforma-taskeditor .proforma-file-row > .drop_zone_text {
+    margin-left: auto;
+}
+/* file content editor below the row, aligned with the fields */
+.proforma-taskeditor .proforma-file-editor {
+    margin-left: calc(var(--labelwith) + 0.5rem);
+    margin-bottom: 0.25rem;
+}
+.proforma-taskeditor .proforma-file-editor .xml_file_text + .CodeMirror {
+    display: block;
+    width: 100%;
+}
+@media (max-width: 767.98px) {
+    .proforma-taskeditor .proforma-file-editor {
+        margin-left: 0;
+    }
+}
+
 /* dummy position needed in order to position close button */
 .proforma-taskeditor .xml_file_non_binary {
     position: relative;
@@ -324,10 +358,12 @@ body#page-question-type-proforma p[id^=file_][id*=label] {
 /* On wide screens the drop zone hint sits in the bottom right corner of the box,
    next to the (short) file list, so that it does not need a line of its own. */
 @media (min-width: 992px) {
-    .proforma-taskeditor .xml_test {
+    .proforma-taskeditor .xml_test,
+    .proforma-taskeditor .xml_model-solution {
         position: relative;
     }
-    .proforma-taskeditor .xml_test .drop_zone_text {
+    .proforma-taskeditor .xml_test .drop_zone_text,
+    .proforma-taskeditor .xml_model-solution .drop_zone_text {
         position: absolute;
         right: 0.75rem;
         bottom: 0.4rem;

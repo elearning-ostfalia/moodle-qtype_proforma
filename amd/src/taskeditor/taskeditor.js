@@ -966,7 +966,7 @@ export function checkModelsolution(buttonid, containerid) {
         document.querySelectorAll('#check-feedback-id .collapsibleregion')
             .forEach(element => {
                 debugLog('create collapsible region for ' + element.id);
-                M.util.init_collapsible_region(Y, element.id, '', 'EIN VERSUCH IST ES WERT');
+                M.util.init_collapsible_region(Y, element.id, '', 'collapse');
             });
     }
 

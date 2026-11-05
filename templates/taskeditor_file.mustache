@@ -49,8 +49,15 @@
     <span class='rightButton'><button class="btn btn-sm btn-outline-secondary proforma-delete" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}">{{# pix }} t/delete, core, {{/ pix }}</button></span>
 </span>
 
-<p>
-    <label for='xml_file_filename_{{ fileid }}'>{{#str}} filename, qtype_proforma {{/str}}<span class='red'>*</span> </label>
+{{! One compact row: filename, store, binary info or edit buttons, drop hint.
+    Filename and file id must stay siblings (JS: FileWrapper.constructFromFilename uses the parent). }}
+<div class='proforma-file-row'>
+    <label for='xml_file_filename_{{ fileid }}' class='proforma-label'>
+        <span class='proforma-label-text'>{{#str}} filename, qtype_proforma {{/str}}</span>
+        <span class='form-label-addon'>
+            <span class='text-danger' title='{{#str}} required {{/str}}'>{{#pix}} req, core {{/pix}}</span>
+        </span>
+    </label>
     <input id='xml_file_filename_{{ fileid }}' class='mediuminput xml_file_filename form-control form-control-sm'>
 
     <label for='xml_file_id_{{ fileid }}'>ID: </label>
@@ -62,25 +69,25 @@
         <option value = 'file'>{{#str}} taskeditorattached, qtype_proforma {{/str}}</option>
     </select>
 
-    <span class='drop_zone_text'>{{#str}} taskeditordropzone, qtype_proforma {{/str}}</span>
-</p>
-
-<p style='display: none'>
-    <label for='xml_internal_description_{{ fileid }}'>Internal Description</label>
-    <textarea id='xml_internal_description_{{ fileid }}' rows='1' class='xml_internal_description'></textarea>
-</p>
-
-<p>
     <span class='xml_file_binary'>({{#str}} taskeditorbinary, qtype_proforma {{/str}}) <span
         class='xml_file_size'>{{#str}} taskeditorfilesize, qtype_proforma {{/str}}: {{ filesize }}</span></span>
 
+    {{! Class xml_file_non_binary: shown/hidden by JS together with the editor below. }}
     <span class='xml_file_non_binary'>
         <button class='xml_file_edit btn btn-sm btn-outline-secondary'>{{#str}} taskeditoredit, qtype_proforma {{/str}}</button>
         <button class='xml_file_editor_close btn btn-sm btn-outline-secondary'>{{#str}} taskeditorhide, qtype_proforma {{/str}}</button>
-        <span>
-            <textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>
-        </span>
     </span>
-</p>
+
+    <span class='drop_zone_text'>{{#str}} taskeditordropzone, qtype_proforma {{/str}}</span>
+</div>
+
+<div style='display: none'>
+    <label for='xml_internal_description_{{ fileid }}'>Internal Description</label>
+    <textarea id='xml_internal_description_{{ fileid }}' rows='1' class='xml_internal_description'></textarea>
+</div>
+
+<div class='xml_file_non_binary proforma-file-editor'>
+    <textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>
+</div>
 </div>
 

@@ -42,27 +42,22 @@
     <span class='rightButton'><button class="btn btn-sm btn-outline-secondary proforma-delete" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}">{{# pix }} t/delete, core, {{/ pix }}</button></span>
     </span>
 
-    <p>
+    <div style="display: none;">
         <label for="xml_model-solution_id_{{ msid }}" style="display: none;">ID: </label>
         <input id="xml_model-solution_id_{{ msid }}" class="tinyinput xml_model-solution_id" value="{{ msid }}" readonly="" style="display: none;">
-    </p>
-    <p>
-        <label>{{#str}} testdescription, qtype_proforma {{/str}}</label>
-        <textarea rows="2" cols='80' class="xml_description form-control form-control-sm">{{ description }}</textarea>
-    </p>
-
-    <p>
         <label class="leftlabel" style='display: none'>Internal Description:</label>
         <textarea rows="2" cols='80' class="xml_internal_description" style='display: none'></textarea>
-    </p>
-
-    <p>
-    </p>
-
+    </div>
+    <div class="proforma-test-row">
+        <label class="proforma-label">
+            <span class="proforma-label-text">{{#str}} testdescription, qtype_proforma {{/str}}</span>
+        </label>
+        <div class="proforma-field">
+            <textarea rows="2" cols='80' class="xml_description form-control form-control-sm">{{ description }}</textarea>
+        </div>
+    </div>
 
     {{> qtype_proforma/taskeditor_fileref_table }}
 
     <span class="drop_zone_text drop_zone">{{#str}} taskeditordropzone, qtype_proforma {{/str}}</span>
-    <p>
-    </p>
 </div>
