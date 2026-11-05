@@ -48,16 +48,18 @@
         <label class="leftlabel" style='display: none'>Internal Description:</label>
         <textarea rows="2" cols='80' class="xml_internal_description" style='display: none'></textarea>
     </div>
-    <div class="proforma-test-row">
-        <label class="proforma-label">
-            <span class="proforma-label-text">{{#str}} testdescription, qtype_proforma {{/str}}</span>
-        </label>
-        <div class="proforma-field">
-            <textarea rows="2" cols='80' class="xml_description form-control form-control-sm">{{ description }}</textarea>
+    <div class="row mb-2 fitem proforma-fitem">
+        <div class="col-md-3 col-form-label d-flex pb-0 pe-md-0">
+            <label class="d-inline word-break mb-0" for="modelsolution_{{ msid }}_description">{{#str}} testdescription, qtype_proforma {{/str}}</label>
+            <div class="form-label-addon d-flex align-items-center align-self-start">
+            </div>
+        </div>
+        <div class="col-md-9 d-flex flex-wrap align-items-start felement">
+            <textarea id="modelsolution_{{ msid }}_description" rows="2" cols='80' class="xml_description form-control">{{ description }}</textarea>
         </div>
     </div>
 
-    {{> qtype_proforma/taskeditor_fileref_table }}
+    {{> qtype_proforma/taskeditor_fileref_field }}
 
     <span class="drop_zone_text drop_zone">{{#str}} taskeditordropzone, qtype_proforma {{/str}}</span>
 </div>

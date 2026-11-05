@@ -71,47 +71,50 @@
     </span>
 
 {{! Field rows are built like Moodle form elements (core_form/element-template):
-    label column (text left, required/help icons right), then the field. }}
-<div class="proforma-test-row">
-    <label class="proforma-label">
-        <span class="proforma-label-text">{{#str}} testtitle, qtype_proforma {{/str}}</span>
-        <span class="form-label-addon">
-            <span class="text-danger" title="{{#str}} required {{/str}}">{{#pix}} req, core {{/pix}}</span>
-        </span>
-    </label>
-    <div class="proforma-field">
-        <input class='xml_test_title form-control form-control-sm' size="80" value='{{ testtitle }}'>
+    Bootstrap grid with label column (col-md-3, required/help icons right) and field column (col-md-9).
+    Below md the label is placed above the field. }}
+<div class="row mb-2 fitem proforma-fitem">
+    <div class="col-md-3 col-form-label d-flex pb-0 pe-md-0">
+        <label class="d-inline word-break mb-0" for="test_{{ testid }}_title">{{#str}} testtitle, qtype_proforma {{/str}}</label>
+        <div class="form-label-addon d-flex align-items-center align-self-start">
+            <div class="text-danger" title="{{#str}} required {{/str}}" aria-hidden="true">{{#pix}} req, core {{/pix}}</div>
+        </div>
+    </div>
+    <div class="col-md-9 d-flex flex-wrap align-items-start felement">
+        <input id='test_{{ testid }}_title' class='xml_test_title form-control' size="80" value='{{ testtitle }}'>
     </div>
 </div>
-<div class="proforma-test-row">
-    <label class="proforma-label">
-        <span class="proforma-label-text">{{#str}} testdescription, qtype_proforma {{/str}}</span>
-    </label>
-    <div class="proforma-field">
-        <textarea rows='2' cols='80' class='xml_description form-control form-control-sm'>{{ description }}</textarea>
+<div class="row mb-2 fitem proforma-fitem">
+    <div class="col-md-3 col-form-label d-flex pb-0 pe-md-0">
+        <label class="d-inline word-break mb-0" for="test_{{ testid }}_description">{{#str}} testdescription, qtype_proforma {{/str}}</label>
+        <div class="form-label-addon d-flex align-items-center align-self-start">
+        </div>
+    </div>
+    <div class="col-md-9 d-flex flex-wrap align-items-start felement">
+        <textarea id='test_{{ testid }}_description' rows='2' cols='80' class='xml_description form-control'>{{ description }}</textarea>
     </div>
 </div>
-<div class="proforma-test-row">
-    <label class="proforma-label">
-        <span class="proforma-label-text">{{#str}} weight, qtype_proforma {{/str}}</span>
-        <span class="form-label-addon">
-            <span class="text-danger" title="{{#str}} required {{/str}}">{{#pix}} req, core {{/pix}}</span>
-        </span>
-    </label>
-    <div class="proforma-field">
-        <input class='tinyinput xml_test_weight form-control form-control-sm' value='{{ weight }}' size='3'>
+<div class="row mb-2 fitem proforma-fitem">
+    <div class="col-md-3 col-form-label d-flex pb-0 pe-md-0">
+        <label class="d-inline word-break mb-0" for="test_{{ testid }}_weight">{{#str}} weight, qtype_proforma {{/str}}</label>
+        <div class="form-label-addon d-flex align-items-center align-self-start">
+            <div class="text-danger" title="{{#str}} required {{/str}}" aria-hidden="true">{{#pix}} req, core {{/pix}}</div>
+        </div>
+    </div>
+    <div class="col-md-9 d-flex flex-wrap align-items-start felement">
+        <input id='test_{{ testid }}_weight' class='tinyinput xml_test_weight form-control' value='{{ weight }}' size='3'>
     </div>
 </div>
-{{! hidden row (internal description is never shown), must not take any space }}
-<div class="proforma-test-row" style="display: none">
+{{! hidden (internal description is never shown), must not take any space }}
+<div style="display: none">
     <label class='leftlabel' style='display: none'>Internal Description</label>
     <textarea rows='2' class='xml_internal_description' title='Internal description (not visible for students)'
         style='display: none'>{{ comment }}</textarea>
 </div>
 {{$testspecific}}{{/testspecific}}
 
-{{! create table for referenced files }}
-{{> qtype_proforma/taskeditor_fileref_table }}
+{{! table for referenced files }}
+{{> qtype_proforma/taskeditor_fileref_field }}
 <span class='drop_zone_text'>{{#str}} taskeditordropzone, qtype_proforma {{/str}}</span>
 
 

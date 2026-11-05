@@ -39,8 +39,9 @@
 }}
 <tr>
     <td>
-        {{! Same label structure as the other fields (.proforma-label). JS copies the label's
-            inner HTML into further rows and hides it there. }}
+        {{! First column is hidden by CSS (the visible label is in taskeditor_fileref_field).
+            The label is still needed by JS: it is copied into further rows and task.js
+            checks for .proforma-required to detect mandatory file lists. }}
         <label class="proforma-label">
             <span class="proforma-label-text">{{#str}} taskeditorfiles, qtype_proforma {{/str}}</span>
             <span class="form-label-addon">
@@ -55,7 +56,7 @@
         </label>
     </td>
     <td>
-        <select class="mediuminput fileref_filename xml_fileref_filename form-select form-select-sm">
+        <select class="mediuminput fileref_filename xml_fileref_filename form-select">
             <option value=" " label=" "> </option>
             {{! cleanstr because the strings contain '<' and '>' (e.g. '<New file>'). }}
             <option>{{#cleanstr}} openfile, qtype_proforma {{/cleanstr}}</option>
@@ -68,13 +69,13 @@
         </label>
     </td>
     <td>
-        <button class="taskeditor-collapse btn btn-sm btn-outline-secondary" disabled="">{{#str}} taskeditorview, qtype_proforma {{/str}}</button>
+        <button class="taskeditor-collapse btn btn-outline-secondary" disabled="">{{#str}} taskeditorview, qtype_proforma {{/str}}</button>
     </td>
     <td>
-        <button class="remove_item btn btn-sm btn-outline-secondary proforma-delete" style="display: none;" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}">{{# pix }} t/delete, core, {{/ pix }}</button>
+        <button class="remove_item btn btn-outline-secondary proforma-delete" style="display: none;" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}">{{# pix }} t/delete, core, {{/ pix }}</button>
     </td>
     <td>
-         <button class="add_fileref btn btn-sm btn-outline-secondary" title="{{#str}} add {{/str}}">+</button>
+         <button class="add_fileref btn btn-outline-secondary" title="{{#str}} add {{/str}}">+</button>
     </td>
     <td>
     </td>

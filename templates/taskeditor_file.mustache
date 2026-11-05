@@ -49,36 +49,38 @@
     <span class='rightButton'><button class="btn btn-sm btn-outline-secondary proforma-delete" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}">{{# pix }} t/delete, core, {{/ pix }}</button></span>
 </span>
 
-{{! One compact row: filename, store, binary info or edit buttons, drop hint.
+{{! Moodle-like form element (core_form/element-template): label column + field column.
     Filename and file id must stay siblings (JS: FileWrapper.constructFromFilename uses the parent). }}
-<div class='proforma-file-row'>
-    <label for='xml_file_filename_{{ fileid }}' class='proforma-label'>
-        <span class='proforma-label-text'>{{#str}} filename, qtype_proforma {{/str}}</span>
-        <span class='form-label-addon'>
-            <span class='text-danger' title='{{#str}} required {{/str}}'>{{#pix}} req, core {{/pix}}</span>
+<div class="row mb-2 fitem proforma-fitem">
+    <div class="col-md-3 col-form-label d-flex pb-0 pe-md-0">
+        <label class="d-inline word-break mb-0" for='xml_file_filename_{{ fileid }}'>{{#str}} filename, qtype_proforma {{/str}}</label>
+        <div class="form-label-addon d-flex align-items-center align-self-start">
+            <div class="text-danger" title="{{#str}} required {{/str}}" aria-hidden="true">{{#pix}} req, core {{/pix}}</div>
+        </div>
+    </div>
+    <div class="col-md-9 d-flex flex-wrap align-items-center felement proforma-file-row">
+        <input id='xml_file_filename_{{ fileid }}' class='xml_file_filename form-control' size="40">
+
+        <label for='xml_file_id_{{ fileid }}'>ID: </label>
+        <input id='xml_file_id_{{ fileid }}' class='tinyinput xml_file_id' value='{{ fileid }}'>
+
+        <label for='xml_file_type_{{ fileid }}'>{{#str}} taskeditorstore, qtype_proforma {{/str}} </label>
+        <select id='xml_file_type_{{ fileid }}' class='xml_file_type form-select'>
+            <option value = 'embedded' selected='selected'>{{#str}} taskeditorembedded, qtype_proforma {{/str}}</option>
+            <option value = 'file'>{{#str}} taskeditorattached, qtype_proforma {{/str}}</option>
+        </select>
+
+        <span class='xml_file_binary'>({{#str}} taskeditorbinary, qtype_proforma {{/str}}) <span
+            class='xml_file_size'>{{#str}} taskeditorfilesize, qtype_proforma {{/str}}: {{ filesize }}</span></span>
+
+        {{! Class xml_file_non_binary: shown/hidden by JS together with the editor below. }}
+        <span class='xml_file_non_binary'>
+            <button class='xml_file_edit btn btn-outline-secondary'>{{#str}} taskeditoredit, qtype_proforma {{/str}}</button>
+            <button class='xml_file_editor_close btn btn-outline-secondary'>{{#str}} taskeditorhide, qtype_proforma {{/str}}</button>
         </span>
-    </label>
-    <input id='xml_file_filename_{{ fileid }}' class='mediuminput xml_file_filename form-control form-control-sm'>
 
-    <label for='xml_file_id_{{ fileid }}'>ID: </label>
-    <input id='xml_file_id_{{ fileid }}' class='tinyinput xml_file_id' value='{{ fileid }}'>
-
-    <label for='xml_file_type_{{ fileid }}'>{{#str}} taskeditorstore, qtype_proforma {{/str}} </label>
-    <select id='xml_file_type_{{ fileid }}' class='xml_file_type form-select form-select-sm'>
-        <option value = 'embedded' selected='selected'>{{#str}} taskeditorembedded, qtype_proforma {{/str}}</option>
-        <option value = 'file'>{{#str}} taskeditorattached, qtype_proforma {{/str}}</option>
-    </select>
-
-    <span class='xml_file_binary'>({{#str}} taskeditorbinary, qtype_proforma {{/str}}) <span
-        class='xml_file_size'>{{#str}} taskeditorfilesize, qtype_proforma {{/str}}: {{ filesize }}</span></span>
-
-    {{! Class xml_file_non_binary: shown/hidden by JS together with the editor below. }}
-    <span class='xml_file_non_binary'>
-        <button class='xml_file_edit btn btn-sm btn-outline-secondary'>{{#str}} taskeditoredit, qtype_proforma {{/str}}</button>
-        <button class='xml_file_editor_close btn btn-sm btn-outline-secondary'>{{#str}} taskeditorhide, qtype_proforma {{/str}}</button>
-    </span>
-
-    <span class='drop_zone_text'>{{#str}} taskeditordropzone, qtype_proforma {{/str}}</span>
+        <span class='drop_zone_text'>{{#str}} taskeditordropzone, qtype_proforma {{/str}}</span>
+    </div>
 </div>
 
 <div style='display: none'>
@@ -86,8 +88,11 @@
     <textarea id='xml_internal_description_{{ fileid }}' rows='1' class='xml_internal_description'></textarea>
 </div>
 
-<div class='xml_file_non_binary proforma-file-editor'>
-    <textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>
+{{! file content editor, aligned with the field column }}
+<div class="row">
+    <div class='col-md-9 offset-md-3 mb-2 xml_file_non_binary proforma-file-editor'>
+        <textarea rows='3' cols='80' class='xml_file_text' onfocus='this.rows=10;' onmouseout='this.rows=6;'></textarea>
+    </div>
 </div>
 </div>
 

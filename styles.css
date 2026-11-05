@@ -13,12 +13,10 @@
     /* background-color: orangered;*/
 }
 
-/* Codemirror file editor */
+/* Codemirror file editor (fills the field column) */
 .proforma-taskeditor .xml_file_text + .CodeMirror {
-    vertical-align: top;
-    display: inline-block;
-    width: var(--inputwidth);
-    /*background-color: green;*/
+    display: block;
+    width: 100%;
     resize: vertical; /* user can resize vertically, but width is fixed */
 }
 
@@ -46,12 +44,6 @@
     width: auto;
 }
 
-/* first column should have label width */
-.proforma-taskeditor .xml_fileref_table td:first-child,
-.dynamic_table td:first-child {
-    /*background-color: blue;*/
-    width: var(--labelwith);
-}
 /* No grid lines from global table styles (theme or other plugins).
    High specificity on purpose so that it wins against generic table rules. */
 .proforma-taskeditor table.xml_fileref_table {
@@ -64,29 +56,32 @@
     box-shadow: none;
     background-color: transparent;
 }
-/* Align the file list with the other fields (.proforma-test-row):
-   label column = --labelwith, then the same 0.5rem gap as the flex rows, no extra indentation. */
+/* The file list table sits in the field column of a form element (taskeditor_fileref_field).
+   Its first column only holds a hidden copy of the label (needed by JS). */
 .proforma-taskeditor table.xml_fileref_table > tbody > tr > td:first-child {
-    width: calc(var(--labelwith) + 0.5rem);
-    padding-left: 0;
-    padding-right: 0.5rem;
+    display: none;
 }
-.proforma-taskeditor table.xml_fileref_table > tbody > tr > td:first-child > label {
-    width: var(--labelwith); /* nowrap content keeps the column from shrinking */
-}
-.proforma-taskeditor table.xml_fileref_table > tbody > tr > td:nth-child(2) {
-    padding-left: 0;
-}
-.proforma-taskeditor .xml_fileref_table td {
-    /*background-color: green;*/
-    width: 1px;
-    padding: 0.15rem 0.25rem 0.15rem 0; /* replaces cellpadding="0" in template */
+.proforma-taskeditor table.xml_fileref_table > tbody > tr > td {
+    width: 1px; /* buttons: as narrow as their content */
+    padding: 0 0.25rem 0.25rem 0;
     vertical-align: middle;
     white-space: nowrap;
-} /* min width, actually: this causes the width to fit the content */
-
-.proforma-taskeditor .xml_fileref_table td:last-child {
-    width: var(--inputwidth);
+}
+/* the file select grows with the window; the empty last column keeps space on the right
+   (for the drop zone hint) so that the buttons stay next to the select */
+.proforma-taskeditor table.xml_fileref_table > tbody > tr > td:nth-child(2) {
+    width: auto;
+}
+.proforma-taskeditor table.xml_fileref_table > tbody > tr > td:last-child:not([colspan]) {
+    width: 35%;
+}
+.proforma-taskeditor .xml_fileref_table .fileref_filename {
+    width: 100%;
+    min-width: 12rem;
+}
+/* tests without file references: JS hides the table, so hide the whole form element */
+.proforma-taskeditor .proforma-fileref-fitem:has(table.xml_fileref_table[style*="none"]) {
+    display: none;
 }
 
 
@@ -181,85 +176,23 @@ body .proforma-taskeditor .box-typ {
     min-width: 0;
 }
 
-/* left side labels */
-.proforma-taskeditor p label:first-child,
-.proforma-taskeditor br + label,
-.proforma-taskeditor .xml_file_non_binary label {
-    /*background-color: red;*/
-    /* display: inline-block;
-    width: var(--labelwith);
-    text-align: left;*/
+
+/* Fields are Moodle form elements (Bootstrap grid as in core_form/element-template):
+   label column col-md-3, field column col-md-9, label above the field below md. */
+
+/* The task editor lives in a collapsible fieldset of the question form, where Moodle indents
+   the labels by 2.5rem. Use the normal column padding instead. */
+body .proforma-taskeditor .proforma-fitem.fitem > .col-md-3.col-form-label {
+    padding-left: calc(var(--bs-gutter-x, 1.5rem) * 0.5);
 }
 
-
-.proforma-taskeditor .xml_fileref_table td,
-.proforma-taskeditor .dynamic_table td {
-    padding-left: 0.1em;
-}
-
-/* first column should have label width and be more indented  */
-.proforma-taskeditor p label:first-child,
-.proforma-taskeditor br + label,
-.proforma-taskeditor .xml_file_non_binary label,
-.proforma-taskeditor .test-header label,
-.proforma-taskeditor .xml_fileref_table td:first-child,
-.proforma-taskeditor .dynamic_table td:first-child {
-    /* background-color: lightskyblue; */
-    width: var(--labelwith);
-    /*padding-left: 0.3em;*/
-    text-align: left;
-    vertical-align: top;
-}
-
-/* One row per field in a test, built like a Moodle form element (core_form/element-template):
-   label column (text left, required/help icons right, vertically centred to a one-line field)
-   and the field column. On narrow screens the label goes above the field (as in Moodle). */
-.proforma-taskeditor .proforma-test-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    column-gap: 0.5rem;
-    margin-bottom: 0.25rem;
-}
-
-.proforma-taskeditor .proforma-label {
-    display: flex;
-    align-items: center;
-    flex: 0 0 var(--labelwith);
-    min-height: calc(1.5em + 0.5rem + 2px); /* height of .form-control-sm */
-    margin: 0;
-    white-space: normal;
-}
-.proforma-taskeditor .proforma-label .form-label-addon {
-    display: flex;
-    align-items: center;
-    margin-left: auto; /* icons directly in front of the field */
-}
-
-.proforma-taskeditor .proforma-field {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    flex: 1 1 0;
-    min-width: 0;
-    max-width: 48rem;
-}
-.proforma-taskeditor .proforma-field > .form-control:not(.tinyinput) {
+/* text fields use the whole field column so that they grow with the window
+   (Moodle sets width: auto for form controls in .d-flex) */
+.proforma-taskeditor .proforma-fitem .felement > .form-control:not(.tinyinput) {
     width: 100%;
 }
-.proforma-taskeditor .proforma-field > .invalid-feedback {
+.proforma-taskeditor .proforma-fitem .felement > .invalid-feedback {
     flex-basis: 100%;
-}
-
-@media (max-width: 767.98px) {
-    .proforma-taskeditor .proforma-test-row > .proforma-label,
-    .proforma-taskeditor .proforma-test-row > .proforma-field {
-        flex-basis: 100%;
-        max-width: 100%;
-    }
-    .proforma-taskeditor .proforma-test-row > .proforma-label .form-label-addon {
-        margin-left: 0.25rem; /* label above the field: icons directly behind the text */
-    }
 }
 
 /* use bold font for unit test label */
@@ -273,38 +206,19 @@ body#page-question-type-proforma p[id^=file_][id*=label] {
 }
 
 
-/* file box: filename, store, edit buttons and drop hint in one wrapping row */
+/* file box: filename, store, edit buttons and drop hint in the field column (wrapping) */
 .proforma-taskeditor .proforma-file-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
     gap: 0.25rem 0.5rem;
-    margin-bottom: 0.25rem;
 }
 .proforma-taskeditor .proforma-file-row > label {
     margin: 0;
 }
-.proforma-taskeditor .proforma-file-row > .xml_file_filename {
-    flex: 1 1 12rem;
+.proforma-taskeditor .proforma-fitem .proforma-file-row > .xml_file_filename {
+    flex: 1 1 15rem;
     width: auto;
-    max-width: 30rem;
 }
 .proforma-taskeditor .proforma-file-row > .drop_zone_text {
     margin-left: auto;
-}
-/* file content editor below the row, aligned with the fields */
-.proforma-taskeditor .proforma-file-editor {
-    margin-left: calc(var(--labelwith) + 0.5rem);
-    margin-bottom: 0.25rem;
-}
-.proforma-taskeditor .proforma-file-editor .xml_file_text + .CodeMirror {
-    display: block;
-    width: 100%;
-}
-@media (max-width: 767.98px) {
-    .proforma-taskeditor .proforma-file-editor {
-        margin-left: 0;
-    }
 }
 
 /* dummy position needed in order to position close button */
@@ -374,9 +288,6 @@ body#page-question-type-proforma p[id^=file_][id*=label] {
     width: 400px;
 }
 
-.proforma-taskeditor .fileref_filename {
-    width: 400px;
-}
 .proforma-taskeditor .fileref_fileref {
     width: 50px;
 }
