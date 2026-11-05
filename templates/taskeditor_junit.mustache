@@ -37,14 +37,18 @@
 {{< qtype_proforma/taskeditor_test }}
 {{$testspecific}}
 <div class="proforma-test-row">
-    <label>{{#str}} entrypoint, qtype_proforma {{/str}}
-    <!--<span class='red'>*</span>-->
-    {{#entrypointinfo}}
-    {{>core/help_icon}}
-    {{/entrypointinfo}}
-    <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+    <label class="proforma-label">
+        <span class="proforma-label-text">{{#str}} entrypoint, qtype_proforma {{/str}}</span>
+        <span class="form-label-addon">
+            <span class="text-danger" title="{{#str}} required {{/str}}">{{#pix}} req, core {{/pix}}</span>
+            {{#entrypointinfo}}
+            {{>core/help_icon}}
+            {{/entrypointinfo}}
+        </span>
     </label>
-    <input class='mediuminput xml_entry_point form-control form-control-sm' value='{{ entrypoint }}' size="80">
+    <div class="proforma-field">
+        <input class='mediuminput xml_entry_point form-control form-control-sm' value='{{ entrypoint }}' size="80">
+    </div>
 </div>
 {{/testspecific}}
 {{/ qtype_proforma/taskeditor_test }}

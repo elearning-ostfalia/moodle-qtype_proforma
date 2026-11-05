@@ -215,8 +215,10 @@ function isInputComplete() {
     query = "#proforma-tests-section .xml_fileref_filename";
     document.querySelectorAll(query).forEach(item => { // Check whether referenced filenames exists
         if (!item.value) {
+            // Only mandatory file lists (required icon in the label, see taskeditor_fileref_row).
+            // Further rows contain a hidden copy of the label of the first row.
             let label = item.closest('tr').querySelector('label');
-            if (label.querySelectorAll('.red').length !== 0) {
+            if (label && label.querySelector('.proforma-required')) {
                 switchToTab('#proforma-tests-section');
                 addRequired(item);
                 incomplete = true;

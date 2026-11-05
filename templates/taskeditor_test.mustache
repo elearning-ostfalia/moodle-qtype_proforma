@@ -67,24 +67,43 @@
         <input class='xml_test_id' type="text" style='display: none' value="{{ testid }}" size="2" disabled="disabled">
 
         {{! Must stay the first button in the test box (JS: find('button').first() deletes the test). }}
-        <span class='rightButton'><button class="btn btn-sm btn-outline-danger proforma-delete" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}">{{# pix }} t/delete, core, {{/ pix }}</button></span>
+        <span class='rightButton'><button class="btn btn-sm btn-outline-secondary proforma-delete" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}">{{# pix }} t/delete, core, {{/ pix }}</button></span>
     </span>
 
+{{! Field rows are built like Moodle form elements (core_form/element-template):
+    label column (text left, required/help icons right), then the field. }}
 <div class="proforma-test-row">
-    <label>{{#str}} testtitle, qtype_proforma {{/str}} <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}"></i> </label>
-    <input class='xml_test_title form-control form-control-sm' size="80" value='{{ testtitle }}'>
-</div>
-<div class="proforma-test-row">
-    <label>{{#str}} testdescription, qtype_proforma {{/str}} </label>
-    <textarea rows='2' cols='80' class='xml_description form-control form-control-sm'>{{ description }}</textarea>
-</div>
-<div class="proforma-test-row">
-    <label>{{#str}} weight, qtype_proforma {{/str}}
-        <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+    <label class="proforma-label">
+        <span class="proforma-label-text">{{#str}} testtitle, qtype_proforma {{/str}}</span>
+        <span class="form-label-addon">
+            <span class="text-danger" title="{{#str}} required {{/str}}">{{#pix}} req, core {{/pix}}</span>
+        </span>
     </label>
-    <input class='tinyinput xml_test_weight form-control form-control-sm' value='{{ weight }}' size='3'>
+    <div class="proforma-field">
+        <input class='xml_test_title form-control form-control-sm' size="80" value='{{ testtitle }}'>
+    </div>
 </div>
 <div class="proforma-test-row">
+    <label class="proforma-label">
+        <span class="proforma-label-text">{{#str}} testdescription, qtype_proforma {{/str}}</span>
+    </label>
+    <div class="proforma-field">
+        <textarea rows='2' cols='80' class='xml_description form-control form-control-sm'>{{ description }}</textarea>
+    </div>
+</div>
+<div class="proforma-test-row">
+    <label class="proforma-label">
+        <span class="proforma-label-text">{{#str}} weight, qtype_proforma {{/str}}</span>
+        <span class="form-label-addon">
+            <span class="text-danger" title="{{#str}} required {{/str}}">{{#pix}} req, core {{/pix}}</span>
+        </span>
+    </label>
+    <div class="proforma-field">
+        <input class='tinyinput xml_test_weight form-control form-control-sm' value='{{ weight }}' size='3'>
+    </div>
+</div>
+{{! hidden row (internal description is never shown), must not take any space }}
+<div class="proforma-test-row" style="display: none">
     <label class='leftlabel' style='display: none'>Internal Description</label>
     <textarea rows='2' class='xml_internal_description' title='Internal description (not visible for students)'
         style='display: none'>{{ comment }}</textarea>

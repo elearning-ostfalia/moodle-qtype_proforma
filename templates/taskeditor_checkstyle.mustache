@@ -37,11 +37,15 @@
 {{< qtype_proforma/taskeditor_test }}
 {{$testspecific}}
 <div class="proforma-test-row">
-    <label>{{#str}} checkstylewarnings, qtype_proforma {{/str}}
-    <!--<span class="red">*</span>-->
-    <i class="icon fa fa-exclamation-circle text-danger fa-fw" title="{{# str }} required {{/ str }}" ></i>
+    <label class="proforma-label">
+        <span class="proforma-label-text">{{#str}} checkstylewarnings, qtype_proforma {{/str}}</span>
+        <span class="form-label-addon">
+            <span class="text-danger" title="{{#str}} required {{/str}}">{{#pix}} req, core {{/pix}}</span>
+        </span>
     </label>
-    <input class="tinyinput xml_pr_CS_warnings form-control form-control-sm" value="{{ warnings }}">
+    <div class="proforma-field">
+        <input class="tinyinput xml_pr_CS_warnings form-control form-control-sm" value="{{ warnings }}">
+    </div>
 </div>
 {{/testspecific}}
 {{/ qtype_proforma/taskeditor_test }}
