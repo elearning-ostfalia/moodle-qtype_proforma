@@ -85,9 +85,29 @@
 }
 
 
-.taskeditor-buttons .fullscreen i {
+.proforma-taskeditor .fullscreen .icon {
     margin-right: 0;
-    /* display:flex; */
+}
+
+/* Task editor as a dialog card (taskeditor.mustache):
+   header in a light theme colour with title, fullscreen button and tabs, footer with the actions. */
+.proforma-taskeditor {
+    margin: 1rem 0 1.5rem;
+}
+.proforma-taskeditor-card {
+    border-color: var(--bs-primary-border-subtle, #b6d4fe);
+}
+.proforma-taskeditor-header {
+    background-color: var(--bs-primary-bg-subtle, #e7f1ff);
+    border-bottom-color: var(--bs-primary-border-subtle, #b6d4fe);
+}
+/* active tab merges into the card body */
+.proforma-taskeditor-header .nav-tabs .nav-link.active {
+    background-color: var(--bs-card-bg, var(--bs-body-bg, #fff));
+    border-bottom-color: var(--bs-card-bg, var(--bs-body-bg, #fff));
+}
+.proforma-taskeditor-card > .card-footer {
+    background-color: var(--bs-tertiary-bg, #f8f9fa);
 }
 
 /* header line of a test/file/model solution box: title left, delete button right */
@@ -109,26 +129,20 @@ body .proforma-taskeditor .test-header label {
     cursor: move;
 }
 
-/* enable scrolling in taskeditor with fullscreen */
+/* fullscreen: the card fills the screen, only the body scrolls (header with tabs and footer stay visible) */
 body .proforma-taskeditor:fullscreen {
     height: 100%;
-    overflow: auto;
+    margin: 0;
+    padding: 1rem;
     /* set background colour otherwise it will be set to dark in dark mode */
     background-color: white;
-    margin: 2rem;
-    padding: 3rem;
 }
-
-/*
-should make tabs fixed in fullscreen mode, but does not work
-.proforma-taskeditor .nav-tabs .fullscreen {
-    position:fixed;
-    top:0;
-    right:0;
-    left:0;
-    z-index:1030
+body .proforma-taskeditor:fullscreen .proforma-taskeditor-card {
+    height: 100%;
 }
-*/
+body .proforma-taskeditor:fullscreen .proforma-taskeditor-card > .card-body {
+    overflow: auto;
+}
 
 body .proforma-taskeditor .box-typ {
     display: inline-flex;

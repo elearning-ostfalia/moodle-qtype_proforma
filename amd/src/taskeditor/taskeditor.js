@@ -968,6 +968,9 @@ export function checkModelsolution(buttonid, containerid) {
                 debugLog('create collapsible region for ' + element.id);
                 M.util.init_collapsible_region(Y, element.id, '', 'collapse');
             });
+        // Make sure the result is visible (e.g. in fullscreen mode only the card body scrolls
+        // and the feedback is below the tests). Scrolls the nearest scrollable ancestor.
+        container.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
 
     button.onclick = function(e) {

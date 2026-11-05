@@ -36,66 +36,76 @@
 }}
 
 <div class="proforma-taskeditor" style="display: None">
-    <div class="border border-3 rounded p-1">
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active"
-                    data-bs-toggle="tab"
-                    href="#proforma-tests-section"
-                    role="tab">
-                    {{#str}} taskeditortests, qtype_proforma {{/str}}
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link"
-                    data-bs-toggle="tab"
-                    href="#proforma-model-solution-section"
-                    role="tab">
-                    {{#str}} modelsolution, qtype_proforma {{/str}}
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link"
-                    data-bs-toggle="tab"
-                    href="#proforma-files-section"
-                    role="tab">
-                    {{#str}} taskeditorfiles, qtype_proforma {{/str}}
-                </a>
-            </li>
-        </ul>
-
-        <div class="tab-content" data-region="tab-content">
-            <div class="tab-pane active pt-3"
-                id="proforma-tests-section"
-                role="tabpanel"
-                data-region="tests-container">
-
-                {{> qtype_proforma/taskeditor_tests }}
-
-                {{{ tests }}}
-
+    {{! The task editor is shown as a dialog card: header (title, fullscreen, tabs), body, footer (actions).
+        All element ids are used in JS and must not be changed. }}
+    <div class="card shadow-sm proforma-taskeditor-card">
+        <div class="card-header proforma-taskeditor-header pb-0">
+            <div class="d-flex align-items-center mb-2">
+                <h3 class="h5 mb-0">{{# pix }} i/edit, core {{/ pix }}{{#str}} taskeditor, qtype_proforma {{/str}}</h3>
+                <button id="toggle-fullscreen-{{uniqid}}" class="btn btn-sm btn-outline-secondary fullscreen ms-auto"
+                    title="{{#str}} fullscreen_help, qtype_proforma {{/str}}">{{# pix }}e/fullscreen,core,{{/ pix }}</button>
             </div>
-            <div class="tab-pane pt-3"
-                id="proforma-files-section"
-                role="tabpanel"
-                data-region="files-container">
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active"
+                        data-bs-toggle="tab"
+                        href="#proforma-tests-section"
+                        role="tab">
+                        {{#str}} taskeditortests, qtype_proforma {{/str}}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                        data-bs-toggle="tab"
+                        href="#proforma-model-solution-section"
+                        role="tab">
+                        {{#str}} modelsolution, qtype_proforma {{/str}}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                        data-bs-toggle="tab"
+                        href="#proforma-files-section"
+                        role="tab">
+                        {{#str}} taskeditorfiles, qtype_proforma {{/str}}
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-                {{{ files }}}
+        <div class="card-body">
+            <div class="tab-content" data-region="tab-content">
+                <div class="tab-pane active"
+                    id="proforma-tests-section"
+                    role="tabpanel"
+                    data-region="tests-container">
 
+                    {{> qtype_proforma/taskeditor_tests }}
+
+                    {{{ tests }}}
+
+                </div>
+                <div class="tab-pane"
+                    id="proforma-files-section"
+                    role="tabpanel"
+                    data-region="files-container">
+
+                    {{{ files }}}
+
+                </div>
+                <div class="tab-pane"
+                    id="proforma-model-solution-section"
+                    role="tabpanel"
+                    data-region="model-solution-container">
+                </div>
             </div>
-            <div class="tab-pane pt-3"
-                id="proforma-model-solution-section"
-                role="tabpanel"
-                data-region="model-solution-container">
+
+            <div class="que">
+                <div id="check-feedback-id" class="outcome" style='display: none'>Feedback</div>
             </div>
         </div>
 
-    <div class="que">
-        <div id="check-feedback-id" class="outcome" style='display: none'>Feedback</div>
-    </div>
-
-    <div class="taskeditor-buttons d-grid gap-2 d-md-flex justify-content-md-center">
-        <span class=" ">
+        <div class="card-footer taskeditor-buttons d-grid gap-2 d-md-flex justify-content-md-end">
             <button id="check-modelsolution-{{uniqid}}" class="btn btn-secondary" title="{{#str}} checkmodelsol_help, qtype_proforma {{/str}}">
                 {{# pix }} t/check, core, {{/ pix }}{{#str}} checkmodelsol, qtype_proforma {{/str}}
             </button>
@@ -108,13 +118,7 @@
             <button id="download-modelsol-{{uniqid}}" class="btn btn-secondary">
                 {{# pix }} t/download, core, {{/ pix }}{{#str}} downloadmodelsolution, qtype_proforma {{/str}}
             </button>
-        </span>
-
-        <!-- <button id="save_task_-{{uniqid}}" class="btn btn-secondary">Save task</button> -->
-
-        <button id="toggle-fullscreen-{{uniqid}}" class="btn btn-secondary fullscreen"  title="{{#str}} fullscreen_help, qtype_proforma {{/str}}">{{# pix }}e/fullscreen,core,{{/ pix }}</button>
-    </div>
-
+        </div>
     </div>
 </div>
 
