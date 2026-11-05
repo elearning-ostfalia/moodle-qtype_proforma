@@ -34,9 +34,13 @@ import {debugLog} from '../debug';
 import Notification from 'core/notification';
 import * as Str from 'core/str';
 import {Syncer} from '../MoodleSyncer';
-import {Framework, FileNode} from '../FileViewer';
+import {Framework, FileNode, LinkNode, ViewRootNode} from '../FileViewer';
+import $ from 'jquery';
 import {FileWrapper} from './file';
 import {getExtension, readAndCreateFileData} from './helper';
+import {FileReferenceList, TestFileReference} from './filereflist';
+import {TestWrapper} from './test';
+import {ModelSolutionWrapper} from './modelsol';
 
 /**
  * Converts an explorer path ('/src/Foo.java') into a task filename ('src/Foo.java').
@@ -77,6 +81,123 @@ const doOnAllNamedFiles = callback => {
 };
 
 /**
+ * Returns all tests and model solutions that can reference files.
+ *
+ * @param {Object} strings localised strings (modelsolution)
+ * @returns {Array} list of {kind ('test' or 'modelsolution'), short, text, root}
+ */
+const getFileUsers = strings => {
+    let users = [];
+    TestWrapper.doOnAll(test => {
+        if (!test) {
+            return;
+        }
+        // Tests without file references: the table is hidden (see TestWrapper.createFromTemplate).
+        const table = test.root.find('table.xml_fileref_table');
+        if (table.length === 0 || table.css('display') === 'none') {
+            return;
+        }
+        const title = test.title ? ': ' + test.title : '';
+        users.push({kind: 'test', short: 'T' + test.id, text: 'Test ' + test.id + title, root: test.root});
+    });
+    ModelSolutionWrapper.doOnAll(ms => {
+        if (!ms) {
+            return true;
+        }
+        users.push({kind: 'modelsolution', short: 'M' + ms.id, text: strings.modelsolution + ' ' + ms.id, root: ms.root});
+        return true;
+    });
+    return users;
+};
+
+/**
+ * Checks whether the file is referenced in a test or model solution.
+ *
+ * @param {Object} root jQuery root of the test or model solution
+ * @param {string} fileid file id
+ * @returns {boolean}
+ */
+const isReferenced = (root, fileid) =>
+    root.find('.fileref_fileref').toArray().some(item => item.value === fileid);
+
+/**
+ * Adds a file reference to a test or model solution (in the first empty row or in a new row).
+ *
+ * @param {Object} root jQuery root of the test or model solution
+ * @param {string} filename filename
+ * @returns {Promise}
+ */
+const addReference = (root, filename) => {
+    // The handlers of the file reference rows of tests and model solutions are those of
+    // TestFileReference (see FileReferenceList.addCallbacks).
+    const list = TestFileReference.getInstance();
+    const empty = root.find('.xml_fileref_filename').filter((index, element) => {
+        const value = $(element).val();
+        return !value || value.trim().length === 0;
+    }).first();
+    let promise;
+    if (empty.length > 0) {
+        promise = Promise.resolve(empty);
+    } else {
+        promise = list.addItem(root.find('.add_fileref').last())
+            .then(() => root.find('.xml_fileref_filename').last());
+    }
+    return promise.then(select => {
+        FileReferenceList.updateFilenameList(select);
+        // Change handler sets the file id (FileReferenceList.onFileSelectionChanged).
+        select.val(filename).change();
+        return select;
+    });
+};
+
+/**
+ * Removes all references to a file from a test or model solution.
+ * The file itself is kept (unlike removing the row with the remove button which deletes
+ * files that are no longer referenced).
+ *
+ * @param {Object} root jQuery root of the test or model solution
+ * @param {string} fileid file id
+ */
+const removeReference = (root, fileid) => {
+    root.find('.fileref_fileref').toArray()
+        .filter(item => item.value === fileid)
+        .forEach(item => {
+            const select = $(item).closest('tr').find('.xml_fileref_filename').first();
+            // Clears the file id before the row is removed => the file is not deleted.
+            FileReferenceList.removeContent(select, true);
+        });
+};
+
+/**
+ * Builds a read-only tree view: one node per test (or model solution) with its files.
+ *
+ * @param {Framework} framework explorer
+ * @param {Object} strings localised strings
+ * @param {string} kind 'test' or 'modelsolution'
+ * @returns {Array} list of ViewRootNode
+ */
+const buildUsersView = (framework, strings, kind) =>
+    getFileUsers(strings)
+        .filter(user => user.kind === kind)
+        .map(user => {
+            const root = new ViewRootNode(user.text, framework);
+            user.root.find('.fileref_fileref').toArray()
+                .map(item => item.value)
+                .filter(fileid => fileid)
+                .forEach(fileid => {
+                    const uiFile = FileWrapper.constructFromId(fileid);
+                    if (!uiFile || !uiFile.filename) {
+                        return;
+                    }
+                    const [folder, name] = Syncer.splitFullname('/' + uiFile.filename);
+                    let pathsplit = folder.split('/');
+                    pathsplit.shift(); // First element is always empty.
+                    root.createPath(pathsplit).appendFile(new LinkNode(name, '/' + uiFile.filename));
+                });
+            return root;
+        });
+
+/**
  * Syncer for the explorer in the task editor.
  */
 export class TaskeditorSyncer extends Syncer {
@@ -90,6 +211,51 @@ export class TaskeditorSyncer extends Syncer {
         super(options);
         this.onFilesChanged = onFilesChanged;
         this.binaryText = options.binarytext;
+        this.strings = options.strings;
+    }
+
+    /**
+     * Labels for a file in the tree: which tests and model solutions use the file.
+     *
+     * @param {string} path explorer path
+     * @returns {Array} list of {text, title}
+     */
+    getFileLabels(path) {
+        const uiFile = TaskeditorSyncer.findFile(path);
+        if (!uiFile) {
+            return [];
+        }
+        return getFileUsers(this.strings)
+            .filter(user => isReferenced(user.root, uiFile.id))
+            .map(user => ({text: user.short, title: user.text}));
+    }
+
+    /**
+     * Additional context menu entries for a file: assign the file to tests and model solutions.
+     *
+     * @param {string} path explorer path
+     * @param {FileNode} node tree node (its label is updated)
+     * @returns {Array} list of [text, handler]
+     */
+    getContextMenuEntries(path, node) {
+        const uiFile = TaskeditorSyncer.findFile(path);
+        if (!uiFile) {
+            return [];
+        }
+        return getFileUsers(this.strings).map(user => {
+            const used = isReferenced(user.root, uiFile.id);
+            const text = (used ? '\u2611 ' : '\u2610 ') + user.text;
+            return [text, () => {
+                if (used) {
+                    removeReference(user.root, uiFile.id);
+                    node.updateLabel();
+                } else {
+                    addReference(user.root, uiFile.filename)
+                        .then(() => node.updateLabel())
+                        .catch(Notification.exception);
+                }
+            }];
+        });
     }
 
     /**
@@ -221,6 +387,7 @@ export class TaskeditorExplorer {
         this.container = container;
         this.framework = undefined;
         this.strings = undefined;
+        this.state = undefined; // Display state of the last explorer (see _saveState).
     }
 
     /**
@@ -230,18 +397,30 @@ export class TaskeditorExplorer {
      */
     show() {
         return this._getStrings()
-            .then(([rootname, binarytext]) => {
+            .then(([rootname, binarytext, modelsolution, tests]) => {
                 this.destroy();
+                const strings = {modelsolution: modelsolution};
                 const options = {
                     rootnode: rootname,
                     allowfolders: true,
                     binarytext: binarytext,
+                    strings: strings,
+                    // Read-only views (tabs above the tree).
+                    treeviews: [
+                        {title: tests, build: framework => buildUsersView(framework, strings, 'test')},
+                        {title: modelsolution, build: framework => buildUsersView(framework, strings, 'modelsolution')},
+                    ],
                 };
-                this.framework = new Framework();
-                this.framework.buildFramework(this.container);
+                const state = this.state;
+                const framework = new Framework();
+                this.framework = framework;
+                framework.buildFramework(this.container);
                 const syncer = new TaskeditorSyncer(options, () => this.show());
-                this.framework.init(this.container, syncer, false, options);
-                return this.framework;
+                framework.init(this.container, syncer, false, options);
+                return framework.ready.then(() => {
+                    this._restoreState(framework, state);
+                    return framework;
+                });
             })
             .catch(Notification.exception);
     }
@@ -260,11 +439,67 @@ export class TaskeditorExplorer {
      */
     destroy() {
         if (this.framework) {
+            this.state = this._saveState(this.framework);
             this.framework.save();
             this.framework.destroy();
             this.framework = undefined;
         }
         this.container.innerHTML = '';
+    }
+
+    /**
+     * Returns the display state: expanded folders, open editors and scroll position of the tree.
+     *
+     * @param {Framework} framework explorer
+     * @returns {Object}
+     */
+    _saveState(framework) {
+        let expanded = [];
+        const collect = folder => {
+            if (folder.element && folder.isExpanded()) {
+                expanded.push(folder.getPath());
+            }
+            folder.folders.forEach(collect);
+        };
+        if (framework.roots.length > 0) {
+            framework.roots[0].folders.forEach(collect);
+        }
+        const tree = this.container.querySelector('.explorer');
+        return {
+            expanded: expanded,
+            // The last editor is the active one.
+            editors: framework.editorstack.nodes.map(item => item.fileNode.getPath()),
+            scrollTop: tree ? tree.scrollTop : 0,
+        };
+    }
+
+    /**
+     * Restores the display state after the explorer has been rebuilt.
+     *
+     * @param {Framework} framework explorer
+     * @param {Object} state display state (see _saveState)
+     */
+    _restoreState(framework, state) {
+        if (!state || framework.roots.length === 0) {
+            return;
+        }
+        const expanded = new Set(state.expanded);
+        const restore = folder => {
+            folder.expand(expanded.has(folder.getPath()));
+            folder.folders.forEach(restore);
+        };
+        framework.roots[0].folders.forEach(restore);
+        state.editors.forEach(path => {
+            // Files may have been renamed or deleted in the meantime.
+            const node = framework.findNodeByPath(path);
+            if (node instanceof FileNode) {
+                framework.switchEditorTo(node);
+            }
+        });
+        const tree = this.container.querySelector('.explorer');
+        if (tree) {
+            tree.scrollTop = state.scrollTop;
+        }
     }
 
     _getStrings() {
@@ -274,6 +509,8 @@ export class TaskeditorExplorer {
         return Str.get_strings([
             {key: 'taskeditorfiles', component: 'qtype_proforma'},
             {key: 'taskeditorbinaryfile', component: 'qtype_proforma'},
+            {key: 'modelsolution', component: 'qtype_proforma'},
+            {key: 'taskeditortests', component: 'qtype_proforma'},
         ])
             .then(strings => {
                 this.strings = strings;

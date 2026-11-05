@@ -22,6 +22,11 @@
     cursor: pointer;
 }
 
+.contextmenu .menu-options .menu-separator {
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    margin: 3px 0;
+}
+
 .contextmenu .menu-options .menu-option:hover {
      background: rgba(0, 0, 0, 0.2);
 }

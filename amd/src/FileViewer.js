@@ -122,6 +122,26 @@ function getString(text) { return text; }
 // - Andere Browser testen
 
 /**
+ * Element for overlays (context menu, dialogs): in fullscreen mode only the fullscreen element
+ * (e.g. the task editor) is visible.
+ *
+ * @returns {HTMLElement}
+ */
+const getOverlayParent = () => document.fullscreenElement || document.body;
+
+/**
+ * Moves a shown modal into the fullscreen element (Moodle appends modals to the body).
+ *
+ * @param {Object} modal Moodle modal
+ */
+const moveModalToFullscreen = modal => {
+    const fullscreen = document.fullscreenElement;
+    if (fullscreen) {
+        fullscreen.appendChild(modal.getRoot()[0]);
+    }
+};
+
+/**
  * Replacement for prompt needed for behat tests.
  * Behat tests fail on prompt and alert.
  *
@@ -160,7 +180,7 @@ function modalPrompt(titleId, labelId, defaultValue, callback) {
                         defaultButton.click();
                     }
                 });
-            return shown;
+            return shown.then(() => moveModalToFullscreen(modal));
         })
         // Set focus into input field.
         .then(() => document.querySelector("input[name='promptname']").focus())
@@ -195,7 +215,7 @@ function modalAlert(textId, param) {
         .then(([strings, modal]) => {
             modal.setTitle(strings[0]);
             modal.setBody(strings[1]);
-            return modal.show();
+            return modal.show().then(() => moveModalToFullscreen(modal));
         })
         .catch(error => {
             console.error('error:', error);
@@ -236,7 +256,7 @@ function modalConfirm(titleId, textId, callback, param) {
                 // eslint-disable-next-line promise/no-callback-in-promise
                 callback();
             });
-            return modal.show();
+            return modal.show().then(() => moveModalToFullscreen(modal));
         })
         .catch(error => {
             console.error('error:', error);
@@ -271,10 +291,16 @@ class TreeNode {
                     };
 
 
-                    const origin = {
-                        left: event.pageX,
-                        top: event.pageY
-                    };
+                    let origin;
+                    if (document.fullscreenElement) {
+                        // In fullscreen mode the menu is moved into the fullscreen element
+                        // (see toggleContextmenu) and positioned relative to the viewport.
+                        this.getFramework().menu.style.position = 'fixed';
+                        origin = {left: event.clientX, top: event.clientY};
+                    } else {
+                        this.getFramework().menu.style.position = '';
+                        origin = {left: event.pageX, top: event.pageY};
+                    }
                     showMenu(origin);
                     return true;
                 })
@@ -379,10 +405,10 @@ export class FileNode extends TreeNode {
                     }
                     const oldpath = thecontext.getPath();
                     thecontext.name = name;
-                    thecontext.element.innerHTML = name;
                     const newpath = thecontext.getPath();
                     thecontext.mode = FileNode.getEditorModeFromFilename(thecontext.name);
                     thecontext.getFramework().syncer.renameFile(oldpath, newpath);
+                    thecontext.updateLabel();
                     // Thecontext.element.tabIndex = 0;
                     // Update name in tab if open
                     thecontext.getFramework().editorstack.update(thecontext);
@@ -422,9 +448,25 @@ export class FileNode extends TreeNode {
         debugLog('Update ' + this.getPath() + ' with ' + newcontent.substr(0, 20) + '...');
         return this.getFramework().syncer.update(this.getPath(), newcontent, async);
     }
+    /**
+     * Displays the name and optional labels from the syncer (e.g. which tests use the file).
+     */
+    updateLabel() {
+        this.element.textContent = this.name;
+        const syncer = this.getFramework().syncer;
+        if (syncer && typeof syncer.getFileLabels === 'function') {
+            syncer.getFileLabels(this.getPath()).forEach(label => {
+                const span = document.createElement('span');
+                span.classList.add('proforma-fileusage');
+                span.textContent = label.text;
+                span.title = label.title;
+                this.element.appendChild(span);
+            });
+        }
+    }
     displayInTreeview(domnode) {
         const li = super.displayInTreeview(domnode);
-        li.innerHTML = this.name;
+        this.updateLabel();
         li.classList.add('doc');
 
         li.addEventListener('dblclick', this.handleDoubleClick);
@@ -443,10 +485,25 @@ export class FileNode extends TreeNode {
             {key: 'delete', component: 'qtype_proforma'},
             {key: 'rename', component: 'qtype_proforma'}
         ]).done(function(strings) {
-            thecontext.getFramework().createContextMenu([
+            let menu = [
                 [strings[0] + '...', thecontext.handleDelete], // Delete
                 [strings[1] + '...', thecontext.boundHandleRename] // Rename
-            ]);
+            ];
+            // Additional entries from the syncer (e.g. assign the file to tests in the task editor).
+            const syncer = thecontext.getFramework().syncer;
+            if (typeof syncer.getContextMenuEntries === 'function') {
+                const entries = syncer.getContextMenuEntries(thecontext.getPath(), thecontext);
+                if (entries.length > 0) {
+                    menu.push(null); // Separator
+                    entries.forEach(([text, handler]) => {
+                        menu.push([text, event => {
+                            thecontext.getFramework().handleClick(event);
+                            handler(event);
+                        }]);
+                    });
+                }
+            }
+            thecontext.getFramework().createContextMenu(menu);
         }) /* .fail(notification.exception)*/
             .fail(function(response) {
                 console.error(response);
@@ -622,7 +679,17 @@ export class FolderNode extends TreeNode {
             });
         };
         this.toggleExpand = () => {
-            this.element.setAttribute('aria-expanded', !this.isExpanded());
+            const expand = !this.isExpanded();
+            this.element.setAttribute('aria-expanded', expand);
+            if (expand) {
+                // Folders without files and with exactly one subfolder (e.g. Java packages
+                // like src/de/hsh): open the subfolders, too.
+                let folder = this;
+                while (folder.files.length === 0 && folder.folders.length === 1) {
+                    folder = folder.folders[0];
+                    folder.expand(true);
+                }
+            }
         };
         this.handleMouseOver = event => {
             event.currentTarget.classList.add('hover');
@@ -669,9 +736,19 @@ export class FolderNode extends TreeNode {
             }
         }
         // Path does not exist => create.
-        let node = new FolderNode(first);
+        let node = this.createFolderNode(first);
         this.appendFolder(node);
         return node.createPath(path);
+    }
+
+    /**
+     * Creates a subfolder node (overridden for read-only trees).
+     *
+     * @param {string} name folder name
+     * @returns {FolderNode}
+     */
+    createFolderNode(name) {
+        return new FolderNode(name);
     }
 
     isNameChildUnique(name) {
@@ -846,6 +923,96 @@ export class RootNode extends FolderNode {
             });
     }
 
+}
+
+/**
+ * Ignores an event in read-only tree views (no context menu, no drag and drop).
+ *
+ * @param {TreeNode} node tree node
+ * @returns {Function} event handler
+ */
+const ignoreEventIn = node => event => {
+    event.preventDefault();
+    event.stopPropagation();
+    node.getFramework().toggleContextmenu("hide");
+};
+
+/**
+ * Read-only folder for additional tree views (e.g. the tests in the task editor).
+ */
+export class ReadOnlyFolderNode extends FolderNode {
+    constructor(name) {
+        super(name);
+        this.boundHandleContextMenu = ignoreEventIn(this);
+        this.handleDrop = ignoreEventIn(this);
+        this.handleDragStart = event => event.preventDefault();
+        this.handleDragEnter = () => null;
+        this.handleDragLeave = () => null;
+    }
+    createFolderNode(name) {
+        return new ReadOnlyFolderNode(name);
+    }
+    expandAll() {
+        this.expand(true);
+        this.folders.forEach(folder => folder.expandAll());
+    }
+    displayInTreeview(domnode) {
+        super.displayInTreeview(domnode);
+        this.element.setAttribute('draggable', 'false');
+    }
+}
+
+/**
+ * Top level node of a read-only tree view.
+ */
+export class ViewRootNode extends ReadOnlyFolderNode {
+    constructor(name, framework) {
+        super(name);
+        this.framework = framework;
+    }
+    getFramework() {
+        return this.framework;
+    }
+    getPath() {
+        return '';
+    }
+}
+
+/**
+ * Read-only link to a file of the main tree. A double click opens the linked file in the editor.
+ */
+export class LinkNode extends FileNode {
+    /**
+     * Constructor.
+     *
+     * @param {string} name displayed name
+     * @param {string} targetPath path of the file in the main tree (e.g. '/src/Foo.java')
+     */
+    constructor(name, targetPath) {
+        super(name);
+        this.targetPath = targetPath;
+        this.boundHandleContextMenu = ignoreEventIn(this);
+        this.handleDragStart = event => event.preventDefault();
+        this.handleDoubleClick = event => {
+            const framework = this.getFramework();
+            framework.toggleContextmenu("hide");
+            // Open the file node of the main tree => only one editor per file.
+            const target = framework.findNodeByPath(this.targetPath);
+            if (target !== undefined) {
+                framework.switchEditorTo(target);
+            }
+            framework.setFocusTo(this.element);
+            event.stopPropagation();
+        };
+    }
+    updateLabel() {
+        this.element.textContent = this.name;
+        this.element.title = this.targetPath.substring(1);
+    }
+    displayInTreeview(domnode) {
+        super.displayInTreeview(domnode);
+        this.element.setAttribute('draggable', 'false');
+    }
 }
 
 class EditorItem {
@@ -1336,17 +1503,36 @@ export class Framework {
         fileviewer.addEventListener('dragover', event => {
             event.preventDefault();
         });
+        // Mouse wheel over the tree scrolls the tree, never the page (the browser does not
+        // always choose the tree, e.g. Moodle scrolls the page in its own container).
+        fileviewer.addEventListener('wheel', event => {
+            const canScrollY = fileviewer.scrollHeight > fileviewer.clientHeight;
+            const canScrollX = fileviewer.scrollWidth > fileviewer.clientWidth;
+            if (event.ctrlKey || (!canScrollY && !canScrollX)) {
+                return; // Zoom or nothing to scroll => default behaviour.
+            }
+            event.preventDefault();
+            // DeltaMode: 0 = pixel, 1 = line, 2 = page.
+            const factor = event.deltaMode === 1 ? 16 : (event.deltaMode === 2 ? fileviewer.clientHeight : 1);
+            fileviewer.scrollTop += event.deltaY * factor;
+            fileviewer.scrollLeft += event.deltaX * factor;
+        }, {passive: false});
 
         let ul = document.createElement("ul");
         ul.setAttribute('role', 'tree');
         ul.setAttribute('aria-labelledby', 'fileviewer');
         fileviewer.appendChild(ul);
 
+        if (options.treeviews && options.treeviews.length > 0) {
+            this._initTreeViews(fileviewer, ul, options);
+        }
+
         this.syncer = syncer;
         // Build folder/file structure.
         /* this.syncer.dir(); Da fehlen die Dateien */
         this.createPath('/'); // Needed when no files come from syncer.
-        this.syncer.list(this)
+        // Promise for the displayed tree (e.g. to restore a previous display state).
+        this.ready = this.syncer.list(this)
             .then(() => {
                 debugLog('DISPLAY ROOTS');
                 debugLog(this.roots);
@@ -1392,6 +1578,53 @@ export class Framework {
         /*
         RootNode.syncer.sendRequest('mkdir', 'newproformafolder');
         RootNode.syncer.sendRequest('dir'); */
+    }
+
+    /**
+     * Adds tabs above the tree: the main tree and additional read-only tree views.
+     * Each view is built anew when its tab is selected.
+     *
+     * @param {HTMLElement} fileviewer explorer element
+     * @param {HTMLElement} mainUl list element of the main tree
+     * @param {Object} options options.treeviews: list of {title, build(framework) => [ViewRootNode]}
+     */
+    _initTreeViews(fileviewer, mainUl, options) {
+        const header = fileviewer.querySelector('.explorer-header');
+        header.classList.add('explorer-views');
+        const viewUl = document.createElement('ul');
+        viewUl.setAttribute('role', 'tree');
+        viewUl.style.display = 'none';
+        fileviewer.appendChild(viewUl);
+
+        const views = [{title: options.rootnode, build: undefined}].concat(options.treeviews);
+        let buttons = [];
+        views.forEach(view => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.classList.add('tab');
+            button.textContent = view.title;
+            button.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.toggleContextmenu("hide");
+                buttons.forEach(other => other.classList.toggle('focus', other === button));
+                if (view.build === undefined) {
+                    mainUl.style.display = '';
+                    viewUl.style.display = 'none';
+                } else {
+                    viewUl.innerHTML = '';
+                    view.build(this).forEach(root => {
+                        root.displayInTreeview(viewUl);
+                        root.expandAll();
+                    });
+                    mainUl.style.display = 'none';
+                    viewUl.style.display = '';
+                }
+            });
+            header.appendChild(button);
+            buttons.push(button);
+        });
+        buttons[0].classList.add('focus');
     }
 
     /**
@@ -1481,8 +1714,15 @@ export class Framework {
         ul.innerHTML = ''; // Delete all children
         for (let i = 0; i < list.length; i++) {
             const li = document.createElement('li');
+            if (list[i] === null) {
+                // Separator
+                li.setAttribute('class', 'menu-separator');
+                ul.appendChild(li);
+                continue;
+            }
             li.setAttribute('class', 'menu-option');
-            li.innerHTML = list[i][0];
+            // Text only: entries may contain user input (e.g. test titles).
+            li.textContent = list[i][0];
             li.addEventListener('click', list[i][1]);
             debugLog(list[i][0]);
             ul.appendChild(li);
@@ -1494,6 +1734,14 @@ export class Framework {
     toggleContextmenu = command => {
         if (this.menu === undefined) {
             return;
+        }
+        if (command === "show") {
+            // Only the fullscreen element (e.g. the task editor) is visible in fullscreen mode
+            // => the menu must be inside it. Otherwise it belongs to the body.
+            const parent = getOverlayParent();
+            if (this.menu.parentElement !== parent) {
+                parent.appendChild(this.menu);
+            }
         }
         this.menu.style.display = command === "show" ? "block" : "none";
         this.menuVisible = (command === "show");

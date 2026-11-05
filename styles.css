@@ -154,6 +154,11 @@ body .proforma-taskeditor:fullscreen .proforma-taskeditor-card {
 body .proforma-taskeditor:fullscreen .proforma-taskeditor-card > .card-body {
     overflow: auto;
 }
+/* fullscreen: the explorer (tree view of the files) uses the available height
+   (screen minus card header with tabs, view switch, card footer and paddings) */
+body .proforma-taskeditor:fullscreen .ide {
+    height: calc(100vh - 16rem);
+}
 
 body .proforma-taskeditor .box-typ {
     display: inline-flex;
@@ -591,6 +596,48 @@ The explorer is also used in the task editor (file view), hence .proforma-tasked
 .proforma-taskeditor .ide .tab .close:hover {
     background-color: rgba(255, 255, 255, 0.15);
     opacity: 1;
+}
+
+/* Task editor: the explorer has a fixed height (resizable by the user, see FileViewer.js),
+   otherwise it grows with a long tree and the browser window scrolls instead of the tree. */
+.proforma-taskeditor .ide {
+    height: 60vh;
+}
+/* Scrolling at the end of the tree must not scroll the page. */
+.proforma-taskeditor .ide .explorer {
+    overscroll-behavior: contain;
+}
+
+/* Task editor: tabs above the tree (files, tests, model solution).
+   If the tree is too narrow the tabs wrap into a second line and the bar grows. */
+.proforma-taskeditor .ide .explorer-header.explorer-views {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    height: auto;
+    min-height: var(--proforma-ide-bar-height);
+}
+.proforma-taskeditor .ide .explorer-header.explorer-views .tab {
+    min-height: var(--proforma-ide-bar-height);
+}
+
+/* Task editor tree: top level nodes ("Dateien", tests, model solutions) in bold */
+.proforma-taskeditor ul[role="tree"] > [role="treeitem"] > .name {
+    font-weight: bold;
+}
+
+/* Task editor tree: which tests (T1, T2, ...) and model solutions (M1) use a file */
+.proforma-taskeditor [role="treeitem"] span.proforma-fileusage {
+    display: inline-block;
+    min-width: 0;
+    margin: 0 0 0 0.35rem;
+    padding: 0 0.3rem;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+    line-height: 1.3;
+    vertical-align: middle;
+    color: var(--proforma-ide-text, #a9b7c6);
+    background-color: var(--proforma-ide-hover, rgba(255, 255, 255, 0.12));
 }
 
 /* Styles for feedback messages */
