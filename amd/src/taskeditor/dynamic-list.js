@@ -53,13 +53,13 @@ export class DynamicList {
             return Promise.resolve(this.rowTemplateHtml);
         }
 
-        return Templates.renderForPromise('qtype_proforma/taskeditor_fileref_row', {})
+        return Templates.renderForPromise('qtype_proforma/taskeditor_fileref_table', {})
             .then(({html}) => {
-                // Only the content of the row is needed (the <tr> element is created by addItem).
-                // Note: a <tr> must be parsed inside a <tbody>, otherwise the browser drops it.
-                const tbody = document.createElement('tbody');
-                tbody.innerHTML = html;
-                this.rowTemplateHtml = tbody.querySelector('tr').innerHTML;
+                // The template renders a complete table. Only the content of the row is needed
+                // (the <tr> element is created by addItem).
+                const container = document.createElement('div');
+                container.innerHTML = html;
+                this.rowTemplateHtml = container.querySelector('tr').innerHTML;
                 return this.rowTemplateHtml;
             });
     }

@@ -130,6 +130,40 @@ function getString(text) { return text; }
 const getOverlayParent = () => document.fullscreenElement || document.body;
 
 /**
+ * Colour theme of the explorer ('dark' or 'light'). The choice is a per-browser preference
+ * (localStorage) and applies to all explorers on the page.
+ */
+const themeStorageKey = 'qtype_proforma_ide_theme';
+const themeChangedEvent = 'qtype_proforma_ide_theme_changed';
+let ideTheme = (() => {
+    try {
+        return window.localStorage.getItem(themeStorageKey) === 'light' ? 'light' : 'dark';
+    } catch (e) {
+        return 'dark';
+    }
+})();
+
+/**
+ * @returns {string} CodeMirror theme for the current explorer theme
+ */
+const getCodemirrorTheme = () => (ideTheme === 'light' ? 'default' : 'darcula');
+
+/**
+ * Changes the explorer theme of all explorers on the page and remembers it.
+ *
+ * @param {string} theme 'dark' or 'light'
+ */
+const setIdeTheme = theme => {
+    ideTheme = theme;
+    try {
+        window.localStorage.setItem(themeStorageKey, theme);
+    } catch (e) {
+        // Storage not available (e.g. private mode) => theme only for this page.
+    }
+    window.dispatchEvent(new CustomEvent(themeChangedEvent));
+};
+
+/**
  * Moves a shown modal into the fullscreen element (Moodle appends modals to the body).
  *
  * @param {Object} modal Moodle modal
@@ -1027,16 +1061,11 @@ class EditorItem {
             autoCloseBrackets: true,
             styleActiveLine: true,
             readOnly: readOnly,
-            extraKeys: {'Tab': function() {
-                this.editor.replaceSelection('    ', 'end');
-            }},
             lineNumbers: true
             // ViewportMargin: Infinity
         });
         this.editor.setSize("100%", "100%");
-        // RootNode.editor.setOption('theme', "blackboard");
-        this.editor.setOption('theme', "darcula");
-        // This.editor.setOption('theme', "abcdef");
+        this.editor.setOption('theme', getCodemirrorTheme());
         this.tab = tabDomNode;
     }
 }
@@ -1053,16 +1082,11 @@ class EditorStack {
             autoCloseBrackets: true,
             styleActiveLine: true,
             readOnly: true,
-            extraKeys: {'Tab': function() {
-                this.editor.replaceSelection('    ', 'end');
-            }},
             lineNumbers: true
             // ViewportMargin: Infinity
         });
         this.editor.setSize("100%", "100%");
-        // RootNode.editor.setOption('theme', "blackboard");
-        this.editor.setOption('theme', "darcula");
-        // This.editor.setOption('theme', "abcdef");
+        this.editor.setOption('theme', getCodemirrorTheme());
 
         this.activeNode = undefined; // ActiveNode associated with Codemirror
 
@@ -1072,6 +1096,16 @@ class EditorStack {
         this.focus = undefined; // The tab that has got the focus
         this.framework = framework;
 
+    }
+
+    /**
+     * Sets the CodeMirror theme of all editors.
+     *
+     * @param {string} theme CodeMirror theme
+     */
+    setTheme(theme) {
+        this.editor.setOption('theme', theme);
+        this.nodes.forEach(item => item.editor.setOption('theme', theme));
     }
 
     cleanup() {
@@ -1360,7 +1394,10 @@ export class Framework {
         <div class="canvas" style="min-width: 20px; flex: 1 1 0; display: flex; flex-direction: row;">
             <!-- set flex-basis = 50% for 2 two columns and 100%V for one column -->
             <div class="canvascol" style="display: flex; flex-direction: column; flex: 1 1 50%; overflow: hidden;">
-                <div class="tabs" style="flex: none; ">
+                <div class="tabbar" style="flex: none; display: flex;">
+                    <div class="tabs" style="flex: 1 1 auto; min-width: 0;">
+                    </div>
+                    <button type="button" class="themetoggle"></button>
                 </div>
                 <div class="editor" style="flex: 1 1 0; overflow: hidden;">
                     <textarea></textarea>
@@ -1404,6 +1441,35 @@ export class Framework {
         this.mainDomNode = domnode;
         this.editorstack = new EditorStack(domnode.querySelector('.editor'),
             domnode.querySelector('.tabs'), this);
+
+        // Switch between dark and light theme.
+        this.themeToggle = domnode.querySelector('.themetoggle');
+        this.themeToggle.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            setIdeTheme(ideTheme === 'light' ? 'dark' : 'light');
+        });
+        this.boundThemeChanged = () => this.applyTheme();
+        window.addEventListener(themeChangedEvent, this.boundThemeChanged);
+        this.applyTheme();
+    }
+
+    /**
+     * Applies the current theme (dark or light) to the explorer.
+     */
+    applyTheme() {
+        const light = ideTheme === 'light';
+        this.mainDomNode.querySelector('.ide').classList.toggle('ide-light', light);
+        this.editorstack.setTheme(getCodemirrorTheme());
+        // Symbol and title show the theme the button switches to.
+        this.themeToggle.textContent = light ? '\u263E' : '\u2600';
+        Str.get_string(light ? 'explorerdarkmode' : 'explorerlightmode', 'qtype_proforma')
+            .then(text => {
+                this.themeToggle.title = text;
+                this.themeToggle.setAttribute('aria-label', text);
+                return true;
+            })
+            .catch(Notification.exception);
     }
 
     init(node, syncer, readOnly, options) {
@@ -1637,6 +1703,9 @@ export class Framework {
         }
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();
+        }
+        if (this.boundThemeChanged) {
+            window.removeEventListener(themeChangedEvent, this.boundThemeChanged);
         }
         this.toggleContextmenu("hide");
         this.editorstack.cleanup();

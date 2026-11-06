@@ -18,7 +18,8 @@
     @template qtype_proforma/taskeditor_fileref_viewer
 
     Read-only viewer row for the content of a referenced file in the ProFormA task editor.
-    The row is inserted below the file reference row when the user clicks 'View'.
+    The row is inserted below the file reference row when the user clicks 'View'
+    (only the row is used, the table is needed for valid HTML).
 
     Classes required for JS:
     * fileref_viewer
@@ -36,7 +37,11 @@
         "text": "public class Foo {\n}"
     }
 }}
+<table>
+<tbody>
 <tr>
     <td></td>
     <td colspan="{{colspan}}"><textarea disabled cols="80" rows="10" class="fileref_viewer">{{text}}</textarea></td>
 </tr>
+</tbody>
+</table>

@@ -126,6 +126,8 @@ $string['expand_teacher'] = 'expand for teachers';
 $string['explorerautosave'] = 'Autosave interval in explorer input [sec]';
 $string['explorerautosave_desc'] = 'In the Response format "explorer", the editor input is regularly saved back to the server.
 This value specifies the time interval in seconds. If no value is specified, then the input is not saved.';
+$string['explorerdarkmode'] = 'Switch to dark mode';
+$string['explorerlightmode'] = 'Switch to light mode';
 $string['failed'] = 'failed';
 $string['feedbackoptions_heading'] = 'Feedback Options';
 $string['fileexists'] = 'A file named "{$a}" already exists.';

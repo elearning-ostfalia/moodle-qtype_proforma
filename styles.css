@@ -28,6 +28,8 @@
 }
 .proforma-taskeditor .fileref_viewer {
     width: 99% /* var(--inputwidth)*/;
+    /* same tab width as in the CodeMirror editors (file boxes, explorer) */
+    tab-size: 4;
     /* float: right;*/
     background-color: #f7f7f7;
 }
@@ -439,7 +441,7 @@ The explorer is also used in the task editor (file view), hence .proforma-tasked
     background-color: var(--proforma-ide-selection);
     border: 0;
     box-shadow: 0 0 0 0;
-    color: #fff;
+    color: var(--proforma-ide-selection-text);
 }
 
 /*
@@ -479,6 +481,10 @@ The explorer is also used in the task editor (file view), hence .proforma-tasked
     --proforma-ide-accent: #4a88c7;
     --proforma-ide-text: #a9b7c6;
     --proforma-ide-text-muted: #8a9199;
+    --proforma-ide-text-strong: #fff;
+    --proforma-ide-selection-text: #fff;
+    --proforma-ide-close-hover: rgba(255, 255, 255, 0.15);
+    --proforma-ide-icon-filter: none;
     --proforma-ide-bar-height: 2.125rem;
     background-color: var(--proforma-ide-bg);
     border: 1px solid var(--proforma-ide-bar);
@@ -505,6 +511,30 @@ The explorer is also used in the task editor (file view), hence .proforma-tasked
     background-color: var(--proforma-ide-bar);
 }
 
+/* Light theme (switched by the button in the tab bar, CodeMirror uses its default theme) */
+.que.proforma .ide.ide-light,
+.proforma-taskeditor .ide.ide-light {
+    --proforma-ide-bg: #fff;
+    --proforma-ide-bar: #ececec;
+    --proforma-ide-hover: #e2e6ea;
+    --proforma-ide-selection: #2f6fc4;
+    --proforma-ide-accent: #2f6fc4;
+    --proforma-ide-text: #212529;
+    --proforma-ide-text-muted: #5f6368;
+    --proforma-ide-text-strong: #000;
+    --proforma-ide-close-hover: rgba(0, 0, 0, 0.1);
+    /* the tree icons are light grey (for the dark theme) => darken them */
+    --proforma-ide-icon-filter: brightness(0.45);
+    border-color: #dee2e6;
+}
+
+.que.proforma .ide [role="treeitem"].doc::before,
+.que.proforma .ide [role="treeitem"] > .name::before,
+.proforma-taskeditor .ide [role="treeitem"].doc::before,
+.proforma-taskeditor .ide [role="treeitem"] > .name::before {
+    filter: var(--proforma-ide-icon-filter);
+}
+
 /* Splitter between file tree and editor */
 .que.proforma .ide .resize,
 .proforma-taskeditor .ide .resize {
@@ -527,7 +557,37 @@ The explorer is also used in the task editor (file view), hence .proforma-tasked
     font-size: 90%;
 }
 
-/* Editor tabs */
+/* Editor tabs (with the theme button on the right) */
+.que.proforma .ide .tabbar,
+.proforma-taskeditor .ide .tabbar {
+    background-color: var(--proforma-ide-bar);
+}
+
+.que.proforma .ide .themetoggle,
+.proforma-taskeditor .ide .themetoggle {
+    flex: none;
+    width: var(--proforma-ide-bar-height);
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--proforma-ide-text-muted);
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+.que.proforma .ide .themetoggle:hover,
+.proforma-taskeditor .ide .themetoggle:hover {
+    color: var(--proforma-ide-text);
+    background-color: var(--proforma-ide-hover);
+}
+
+.que.proforma .ide .themetoggle:focus-visible,
+.proforma-taskeditor .ide .themetoggle:focus-visible {
+    outline: 1px solid var(--proforma-ide-accent);
+    outline-offset: -1px;
+}
+
 .que.proforma .ide .tabs,
 .proforma-taskeditor .ide .tabs {
     display: flex;
@@ -560,7 +620,7 @@ The explorer is also used in the task editor (file view), hence .proforma-tasked
 
 .que.proforma .ide .tab.focus,
 .proforma-taskeditor .ide .tab.focus {
-    color: #fff;
+    color: var(--proforma-ide-text-strong);
     background-color: var(--proforma-ide-bg);
     border-top-color: var(--proforma-ide-accent);
 }
@@ -594,7 +654,7 @@ The explorer is also used in the task editor (file view), hence .proforma-tasked
 
 .que.proforma .ide .tab .close:hover,
 .proforma-taskeditor .ide .tab .close:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: var(--proforma-ide-close-hover);
     opacity: 1;
 }
 

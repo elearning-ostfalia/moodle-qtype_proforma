@@ -128,6 +128,8 @@ $string['explorerautosave'] = 'Autosave-Intervall bei Explorer-Eingabe';
 $string['explorerautosave_desc'] = 'In der Eingabeform "Explorer" werden die Eingaben im Editor regelmäßig zum
 Server zurückgesichert. Dieser Wert gibt das Zeitintervall in Sekunden an.
 Wenn kein Wert angegeben wird, dann werden keine Eingaben gesichert.';
+$string['explorerdarkmode'] = 'Zum dunklen Modus wechseln';
+$string['explorerlightmode'] = 'Zum hellen Modus wechseln';
 $string['failed'] = 'Fehler';
 $string['feedbackoptions_heading'] = 'Feedback';
 $string['fileexists'] = 'Datei "{$a}" existiert bereits.';

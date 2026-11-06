@@ -203,8 +203,9 @@ export class FileReferenceList extends DynamicList {
                     text: uiFile.text,
                 })
                     .then(({html}) => {
+                        // The template renders a complete table, only the row is needed.
                         // Trim: jQuery only parses strings starting with '<' as HTML.
-                        $(html.trim()).insertAfter(tr);
+                        $(html.trim()).find('tr').first().insertAfter(tr);
                         return true;
                     })
                     .catch(Notification.exception);
