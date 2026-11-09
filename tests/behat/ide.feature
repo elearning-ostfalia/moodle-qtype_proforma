@@ -179,6 +179,10 @@ public class PalindromTest {
     And I press "Attempt quiz"
     And I should see "Solution"
 
+    # download link for students
+    And I should see "questiondownload.txt"
+    And following "questiondownload.txt" should download file with between "65" and "67" bytes
+
     And I click on "New file..." in "Solution" contextmenu
     And I set the field with xpath "//input[@name='promptname']" to "MyString.java"
     And I press "Ok"
