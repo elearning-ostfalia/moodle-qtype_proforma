@@ -135,13 +135,15 @@ const getOverlayParent = () => document.fullscreenElement || document.body;
  */
 const themeStorageKey = 'qtype_proforma_ide_theme';
 const themeChangedEvent = 'qtype_proforma_ide_theme_changed';
-let ideTheme = (() => {
+const storedIdeTheme = (() => {
     try {
-        return window.localStorage.getItem(themeStorageKey) === 'light' ? 'light' : 'dark';
+        const theme = window.localStorage.getItem(themeStorageKey);
+        return (theme === 'light' || theme === 'dark') ? theme : null;
     } catch (e) {
-        return 'dark';
+        return null;
     }
 })();
+let ideTheme = storedIdeTheme || 'dark';
 
 /**
  * @returns {string} CodeMirror theme for the current explorer theme
@@ -1476,6 +1478,11 @@ export class Framework {
         this.readOnly = readOnly;
         this.rootnode = options.rootnode;
         this.allowFolders = !!options.allowfolders;
+        // Theme used as long as the user has not chosen one (stored preference wins).
+        if (!storedIdeTheme && (options.defaulttheme === 'light' || options.defaulttheme === 'dark')) {
+            ideTheme = options.defaulttheme;
+            this.applyTheme();
+        }
         if (options.explorerautosave !== undefined && options.explorerautosave > 0) {
             autosaveIntervall = 1000 * options.explorerautosave;
         } else {

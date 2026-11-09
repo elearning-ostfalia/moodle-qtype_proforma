@@ -403,6 +403,7 @@ export class TaskeditorExplorer {
                 const options = {
                     rootnode: rootname,
                     allowfolders: true,
+                    defaulttheme: 'light',
                     binarytext: binarytext,
                     strings: strings,
                     // Read-only views (tabs above the tree).

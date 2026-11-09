@@ -31,9 +31,13 @@
     * colspan - number of table columns the viewer spans
     * text - file content (escaped by Mustache)
 
+    The example uses colspan 1: the standalone table has no other rows, so a larger
+    value would be an HTML table model error. At runtime the row is inserted into the
+    file table, where all columns exist.
+
     Example context (json):
     {
-        "colspan": 7,
+        "colspan": 1,
         "text": "public class Foo {\n}"
     }
 }}
