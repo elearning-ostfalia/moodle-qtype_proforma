@@ -36,6 +36,13 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
 /**
  * Checks file access for proforma questions.
  *
+ * Files belonging to a question attempt (or preview) are served via the standard
+ * question_pluginfile() mechanism. Access is then checked by the module that owns the
+ * question usage (e.g. quiz) and by qtype_proforma_question::check_file_access().
+ *
+ * Exception: task file and model solution files are only linked in the question edit form
+ * (no question usage available). They are served to users who can view the question.
+ *
  * @package  qtype_proforma
  * @category files
  * @param stdClass $course course object
@@ -48,78 +55,55 @@ require_once($CFG->dirroot . '/question/type/proforma/classes/filearea.php');
  * @return bool
  */
 function qtype_proforma_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
-    // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
-    switch ($context->contextlevel) {
-        case CONTEXT_COURSE:
-        case CONTEXT_COURSECAT:
-        case CONTEXT_MODULE:
-            break;
-        default:
-            return false;
+    global $CFG;
+    require_once($CFG->libdir . '/questionlib.php');
+
+    if ($filearea === qtype_proforma::FILEAREA_TASK || $filearea === qtype_proforma::FILEAREA_MODELSOL) {
+        qtype_proforma_send_question_file($course, $cm, $context, $filearea, $args, $options);
+        send_file_not_found();
     }
 
-    // Make sure the user is logged in and has access to the module
-    // (plugins that are not course modules should leave out the 'cm' part).
-    require_login($course, false);
+    question_pluginfile($course, $context, 'qtype_proforma', $filearea, $args, $forcedownload, $options);
+}
 
-    // Make sure the filearea is one of those used by the plugin and:
-    // Check the relevant capabilities - these vary depending on the filearea being accessed.
-    switch ($filearea) {
-        case qtype_proforma::FILEAREA_MODELSOL:
-        case qtype_proforma::FILEAREA_TASK:
-            if (!has_capability('moodle/question:editmine', $context)) {
-                return false;
-            }
-            break;
-        default:
-            $pass = false;
-            foreach (qtype_proforma::fileareas_for_studentfiles() as $proformafilearea => $value) {
-                if ($proformafilearea === $filearea) {
-                    if (!has_capability('moodle/question:flag', $context)) {
-                        return false;
-                    } else {
-                        $pass = true;
-                    }
-                }
-            }
+/**
+ * Sends a file that is linked outside a question attempt (edit form).
+ * The user must be allowed to view the question.
+ *
+ * URL format: pluginfile.php/<contextid>/qtype_proforma/<filearea>/<questionid>/<filepath+filename>
+ *
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param array $options additional options affecting the file serving
+ * @return void (does not return if the file is sent)
+ */
+function qtype_proforma_send_question_file($course, $cm, $context, $filearea, $args, array $options) {
+    require_login($course, false, $cm);
 
-            if (!$pass) {
-                return false;
-            }
+    $questionid = (int)array_shift($args);
+    if (!$questionid || !$args) {
+        return;
     }
+    question_require_capability_on($questionid, 'view');
 
-    // Leave this line out if you set the itemid to null in make_pluginfile_url (set $itemid to 0 instead).
-    $itemid = array_shift($args); // The first item in the $args array.
-
-    // Use the itemid to retrieve any relevant data records and perform any security checks to see if the
-    // user really does have access to the file in question.
-
-    // Extract the filename / filepath from the $args array.
-    // $filename = array_pop($args); // The last item in the $args array.
-
-    if (!$args) {
-        // No file given.
-        return false;
-    }
-
-    $filename = implode('/', $args); // The $args array contains elements of the filepath.
-    /* $filepath = '/'; */
-
-    // Retrieve the file from the Files API.
+    $filename = implode('/', $args);
     $fs = get_file_storage();
     // For historical reasons we use two approaches for retrieving the file
     // (I want to avoid updating database values to fit the new model).
     // New approach:
     // Properly split filename into path and basename.
     [$filepath, $basename] = qtype_proforma_filearea::split_filename($filename);
-    $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $itemid, $filepath, $basename);
+    $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $questionid, $filepath, $basename);
     if (!$file) {
         // Old approach:
         // Filename also contains path part.
-        $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $itemid, '/', $filename);
+        $file = $fs->get_file($context->id, 'qtype_proforma', $filearea, $questionid, '/', $filename);
     }
-    if (!$file) {
-        return false; // The file does not exist.
+    if (!$file || $file->is_directory()) {
+        return;
     }
 
     // We can now send the file back to the browser.

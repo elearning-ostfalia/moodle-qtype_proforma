@@ -128,7 +128,7 @@ class qtype_proforma_renderer extends qtype_renderer {
         }*/
 
         // Show question test atachments.
-        $downloadtext = $this->question_downloads($question);
+        $downloadtext = $this->question_downloads($qa, $question);
 
         $result = '';
         $result .= html_writer::tag(
@@ -147,12 +147,17 @@ class qtype_proforma_renderer extends qtype_renderer {
 
     /**
      * returns the download URI for a given file (identfied by filename and filearea)
+     *
+     * The URL contains question usage id and slot so that access is checked by
+     * question_pluginfile() and qtype_proforma_question::check_file_access().
+     *
+     * @param question_attempt $qa the question attempt
      * @param qtype_proforma_question $question the question
      * @param string $filearea the file area
      * @param string $filename the file name
      * @return string
      */
-    private function get_download_uri($question, $filearea, $filename) {
+    private function get_download_uri(question_attempt $qa, $question, $filearea, $filename) {
         if (empty($filename)) {
             return '';
         }
@@ -161,26 +166,28 @@ class qtype_proforma_renderer extends qtype_renderer {
             $question->contextid,
             'qtype_proforma',
             $filearea,
-            $question->id,
+            $qa->get_usage_id() . '/' . $qa->get_slot() . '/' . $question->id,
             '/',
-            $filename
+            $filename,
+            true // Force download - security!
         );
         return '<a href="' . $url->out() . '">' . $filename . '</a> ';
     }
 
     /**
      * returns the html fragment for download links
+     * @param question_attempt $qa the question attempt
      * @param qtype_proforma_question $question the question
      * @return string
      */
-    protected function question_downloads($question) {
+    protected function question_downloads(question_attempt $qa, $question) {
         $result = '';
 
         foreach (qtype_proforma::fileareas_for_studentfiles() as $filearea => $value) { // WITHOUT model solution!!!
             $property = $value['dbcolumn'];
             if ($question->$property) {
                 foreach (explode(',', $question->$property) as $download) {
-                    $result = $result . $this->get_download_uri($question, $filearea, $download);
+                    $result = $result . $this->get_download_uri($qa, $question, $filearea, $download);
                 }
             }
         }

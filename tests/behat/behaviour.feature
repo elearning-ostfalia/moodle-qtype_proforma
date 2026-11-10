@@ -464,6 +464,11 @@ def is_palindrome(text):
     When I am on the "Quiz 1" "quiz activity" page logged in as student1
     And I press "Attempt quiz"
 
+    # template file: shown in editor and offered as download link for students
+    And I should see "//text in responsetemplate"
+    And I should see "template.txt"
+    And following "template.txt" should download file with between "26" and "29" bytes
+
     When I press "Finish attempt"
     And I should see "<noanswer2>" in the "2" "table_row"
     And I should see "<noanswer1>" in the "1" "table_row"
