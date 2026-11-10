@@ -183,7 +183,8 @@ class qtype_proforma_renderer extends qtype_renderer {
     protected function question_downloads(question_attempt $qa, $question) {
         $result = '';
 
-        foreach (qtype_proforma::fileareas_for_studentfiles() as $filearea => $value) { // WITHOUT model solution!!!
+        // WITHOUT model solution!!!
+        foreach (qtype_proforma::fileareas_for_studentfiles() as $filearea => $value) {
             $property = $value['dbcolumn'];
             if ($question->$property) {
                 foreach (explode(',', $question->$property) as $download) {

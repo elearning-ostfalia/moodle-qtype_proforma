@@ -61,7 +61,6 @@ echo $OUTPUT->heading($title, 1);
 foreach ($bulktester->get_proforma_questions_by_context() as $record) {
     $numproformaquestions = $record->numproformaquestions;
     $contextid = $record->id;
-    $courseid = $record->courseid;
 
     if ($skipping && $contextid != $startfromcontextid) {
         continue;

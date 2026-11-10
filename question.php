@@ -605,8 +605,7 @@ class qtype_proforma_question extends question_graded_automatically {
             return $this->attachments != 0;
         } else if ($component == 'qtype_proforma' && $filearea == qtype_proforma::FILEAREA_COMMENT) {
             return $options->manualcomment && $args[0] == $this->id;
-        } else if ($component == 'qtype_proforma' &&
-                array_key_exists($filearea, qtype_proforma::fileareas_for_studentfiles())) {
+        } else if ($component == 'qtype_proforma' && array_key_exists($filearea, qtype_proforma::fileareas_for_studentfiles())) {
             // Template and download files are visible to everyone who can see the attempt.
             return $args[0] == $this->id;
         } else {

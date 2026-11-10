@@ -35,23 +35,50 @@ require_once($CFG->dirroot . '/question/type/proforma/renderer.php');
 class proforma_bulk_tester {
     /**
      * Get all the contexts that contain at least one ProFormA question, with a
-     * count of the number of those questions.
+     * count of the number of those questions (only the latest version of each question is counted).
      *
-     * @return array context id => number of ProFormA questions.
+     * @return array context id => record with fields id and numproformaquestions.
      */
     public function get_proforma_questions_by_context() {
         global $DB;
 
         return $DB->get_records_sql("
-            SELECT ctx.id, COUNT(q.id) AS numproformaquestions, c.id as courseid
+            SELECT ctx.id, COUNT(qbe.id) AS numproformaquestions
               FROM {context} ctx
               JOIN {question_categories} qc ON qc.contextid = ctx.id
-              JOIN {question} q ON q.category = qc.id
-        LEFT  JOIN {course} c ON ctx.contextlevel = 50 and c.id = ctx.instanceid
+              JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+              JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+              JOIN {question} q ON q.id = qv.questionid
              WHERE q.qtype = 'proforma'
+               AND qv.version = (SELECT MAX(v.version)
+                                   FROM {question_versions} v
+                                  WHERE v.questionbankentryid = qbe.id)
           GROUP BY ctx.id, ctx.path
           ORDER BY ctx.path
         ");
+    }
+
+    /**
+     * Get the latest version of all ProFormA questions in a question category.
+     *
+     * @param int $categoryid question category id
+     * @return array question id => question name
+     */
+    public function get_proforma_questions_in_category($categoryid) {
+        global $DB;
+
+        return $DB->get_records_sql_menu("
+            SELECT q.id, q.name
+              FROM {question} q
+              JOIN {question_versions} qv ON qv.questionid = q.id
+              JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+             WHERE qbe.questioncategoryid = :categoryid
+               AND q.qtype = 'proforma'
+               AND qv.version = (SELECT MAX(v.version)
+                                   FROM {question_versions} v
+                                  WHERE v.questionbankentryid = qbe.id)
+          ORDER BY q.name
+        ", ['categoryid' => $categoryid]);
     }
 
     /**
@@ -88,38 +115,22 @@ class proforma_bulk_tester {
      *              array of messages relating to the questions with failures.
      */
     public function run_all_tests_for_context(context $context) {
-        global $DB, $OUTPUT;
+        global $OUTPUT;
 
         // Load the necessary data.
-        $categories = question_category_options([$context]);
+        $categories = \qbank_managecategories\helper::question_category_options([$context]);
         $categories = reset($categories);
-        $questiontestsurl = new moodle_url('/question/question.php');
-        switch ($context->contextlevel) {
-            case CONTEXT_COURSE:
-            case CONTEXT_COURSECAT:
-                $questiontestsurl->param('courseid', $context->instanceid);
-                break;
-            case CONTEXT_MODULE:
-                $questiontestsurl->param('cmid', $context->instanceid);
-                break;
-            default:
-                debugging('unexpected contextlevel: ' . $context->contextlevel);
-        }
         $allpassed = true;
         $failingtests = [];
         $notaskfile = [];
         $nomodelsolution = [];
+        $loaderror = [];
 
         foreach ($categories as $key => $category) {
             [$categoryid] = explode(',', $key);
             echo $OUTPUT->heading(get_string('questioncategory', 'question') . ': ' . $category, 4);
 
-            $questionids = $DB->get_records_menu(
-                'question',
-                ['category' => $categoryid, 'qtype' => 'proforma'],
-                'name',
-                'id,name'
-            );
+            $questionids = $this->get_proforma_questions_in_category($categoryid);
             if (!$questionids) {
                 // No ProFormA questions found.
                 echo html_writer::tag('p', get_string('replacedollarscount', 'qtype_proforma', 0));
@@ -130,12 +141,25 @@ class proforma_bulk_tester {
             echo html_writer::tag('p', get_string('replacedollarscount', 'qtype_proforma', count($questionids)));
 
             foreach ($questionids as $questionid => $name) {
-                $question = question_bank::load_question($questionid);
                 $questionname = format_string($name);
-                $questionnamelink = html_writer::link(
-                    new moodle_url($questiontestsurl, ['id' => $questionid]),
-                    format_string($name)
+                $previewurl = \qbank_previewquestion\helper::question_preview_url(
+                    $questionid,
+                    context: $context
                 );
+                $questionnamelink = html_writer::link($previewurl, $questionname);
+
+                // Question data can be inconsistent (e.g. missing record in qtype_proforma_options
+                // after a failed import or restore). Report the question and continue with the next one.
+                try {
+                    $question = question_bank::load_question($questionid);
+                } catch (\Throwable $e) {
+                    $allpassed = false;
+                    $message = get_string('bulktestloaderror', 'qtype_proforma') . ' ' . s($e->getMessage());
+                    $loaderror[] = $questionname . ' (id ' . $questionid . '): ' . s($e->getMessage());
+                    echo $OUTPUT->heading($questionname . ' (id ' . $questionid . ')', 5);
+                    echo html_writer::tag('ul', html_writer::tag('li', $message));
+                    continue;
+                }
 
                 $questionproblems = [];
                 // Load model solution.
@@ -158,8 +182,6 @@ class proforma_bulk_tester {
                     echo html_writer::tag('ul', implode("\n", $questionproblems));
                 } else {
                     // Run tests.
-                    $previewurl = new moodle_url($questiontestsurl, ['id' => $questionid]);
-                    $questionnamelink = html_writer::link($previewurl, $questionname);
                     echo $OUTPUT->heading($questionnamelink, 5);
 
                     [$ok, $message, $feedback] = $this->run_test_question($question, $proformafile, $modelsolution);
@@ -180,7 +202,8 @@ class proforma_bulk_tester {
         $failing = [
             'failingtests'      => $failingtests,
             'notests'           => $notaskfile,
-            'nomodelsolution'   => $nomodelsolution];
+            'nomodelsolution'   => $nomodelsolution,
+            'loaderror'         => $loaderror];
         return [$allpassed, $failing];
     }
 

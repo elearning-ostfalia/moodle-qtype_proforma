@@ -60,18 +60,21 @@ foreach ($bulktester->get_proforma_questions_by_context() as $record) {
     $contextinst = context::instance_by_id($contextid);
     if (has_capability('qtype/proforma:runbulktest', $contextinst)) {
         // Print course name.
+        // Since Moodle 5.0 question banks live in module contexts (mod_qbank or quiz).
+        $coursecontext = $contextinst->get_course_context(false);
         $coursename = $contextinst->get_context_name(true, false);
-        if ($contextinst->get_course_context(false) !== false && isset($record->courseid)) {
-            $coursename = '<a href="' . new moodle_url('/course/view.php', ['id' => $record->courseid]) . '">' .
-                $coursename . '</a>';
+        if ($coursecontext) {
+            $coursename = html_writer::link(
+                new moodle_url('/course/view.php', ['id' => $coursecontext->instanceid]),
+                $coursename
+            );
         }
         echo html_writer::tag('li', $coursename . html_writer::link(
             new moodle_url('/question/type/proforma/bulktest.php', ['contextid' => $contextid]),
             ' (' . $numproformaquestions . ')'
         ));
-        if ($contextinst->get_course_context(false) !== false) {
-            $courseid = $record->courseid;
-            foreach ($bulktester->get_teachers($courseid) as $teacher) {
+        if ($coursecontext) {
+            foreach ($bulktester->get_teachers($coursecontext->instanceid) as $teacher) {
                 echo html_writer::tag('small', $teacher->firstname . ' ' . $teacher->lastname . '<br>');
             }
         }
