@@ -17,8 +17,7 @@
 /**
  * This file contains unit tests for class qtype_proforma_question
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2019 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @copyright  2009 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

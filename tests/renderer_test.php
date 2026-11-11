@@ -18,8 +18,7 @@
  * This file contains unit tests for class qtype_proforma_renderer
  * (most of all for rendering specific feedback i.e. grader feedback)
  *
- * @package    qtype
- * @subpackage proforma
+ * @package    qtype_proforma
  * @copyright  2020 Ostfalia Hochschule fuer angewandte Wissenschaften
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
