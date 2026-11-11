@@ -173,6 +173,7 @@ $string['inlinemessages'] = 'Meldungen in Editor anzeigen';
 $string['inlinemessages_desc'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können direkt in den Editor eingeblendet werden. Erfordert die Nutzung von CodeMirror.';
 $string['inlinemessages_help'] = 'Meldungen von z.B. Compiler oder statischen Analysewerkzeugen können direkt in den Editor eingeblendet werden. Dies ist u.U. nicht für alle Werkzeuge verfügbar.';
 $string['internaltesterror'] = 'Während des Testlaufs wurde ein interner Fehler festgestellt.';
+$string['invalidgroupname'] = 'Der Gruppenname ist ungültig: Er stimmt nicht mit Ihrer Gruppe überein.';
 $string['invalidproglang'] = 'Version der Programmiersprache ungültig:';
 $string['javasettings_header'] = 'Einstellungen für Java-Fragen, die mit Moodle erzeugt werden';
 $string['javaversion'] = 'Java Version';

@@ -124,6 +124,12 @@ class qtype_proforma_question extends question_graded_automatically {
     public $vcslabel;
     /** @var int what kind of version control system? 1=git, 2=SVN */
     public $vcssystem;
+    /** @var int|null id of the user the current attempt belongs to (null: not in an attempt) */
+    protected $attemptuserid = null;
+    /** @var int|null id of the first step of the current attempt (null: not stored in the database yet) */
+    protected $attemptstepid = null;
+    /** @var context|false|null context the current attempt belongs to (false: unknown, null: not determined yet) */
+    protected $attemptcontext = null;
     /** @var int feedback option for collapsible regions */
     public $expandcollapse;
 
@@ -232,7 +238,123 @@ class qtype_proforma_question extends question_graded_automatically {
         if ($this->is_complete_response($response)) {
             return '';
         }
+        if (
+            $this->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL
+            && array_key_exists(VCSGROUP, $response)
+            && !array_key_exists(VCSINPUT, $response)
+        ) {
+            return get_string('invalidgroupname', 'qtype_proforma');
+        }
         return "TODO: get_validation_error";
+    }
+
+    /**
+     * Start a new attempt at this question: remembers the user the attempt belongs to.
+     *
+     * @param question_attempt_step $step the step of the {@see question_attempt} being started.
+     * @param int $variant which variant of this question to start.
+     */
+    public function start_attempt(question_attempt_step $step, $variant) {
+        parent::start_attempt($step, $variant);
+        $this->attemptuserid = $step->get_user_id();
+        $this->attemptstepid = null;
+        $this->attemptcontext = null;
+    }
+
+    /**
+     * An attempt is re-loaded from the database: remembers the user the attempt belongs to.
+     *
+     * @param question_attempt_step $step the first step of the {@see question_attempt} being loaded.
+     */
+    public function apply_attempt_state(question_attempt_step $step) {
+        parent::apply_attempt_state($step);
+        $this->attemptuserid = $step->get_user_id();
+        $this->attemptstepid = $step->get_id();
+        $this->attemptcontext = null;
+    }
+
+    /**
+     * Returns the context the current attempt belongs to
+     * (= context of the activity, e.g. quiz, that owns the question usage).
+     *
+     * @return context|false context or false if the context cannot be determined
+     */
+    protected function get_attempt_context() {
+        global $DB, $PAGE;
+
+        if ($this->attemptcontext !== null) {
+            return $this->attemptcontext;
+        }
+
+        $this->attemptcontext = false;
+        if (!empty($this->attemptstepid)) {
+            // The question usage knows the context of the activity.
+            $sql = "SELECT qu.contextid
+                      FROM {question_attempt_steps} qas
+                      JOIN {question_attempts} qa ON qa.id = qas.questionattemptid
+                      JOIN {question_usages} qu ON qu.id = qa.questionusageid
+                     WHERE qas.id = :stepid";
+            $contextid = $DB->get_field_sql($sql, ['stepid' => $this->attemptstepid]);
+            if ($contextid) {
+                $this->attemptcontext = context::instance_by_id($contextid, IGNORE_MISSING);
+            }
+        } else {
+            // The attempt is not stored yet: use the activity of the current page.
+            // Note: $PAGE->cm is a magic property, so empty() or isset() cannot be used.
+            $cm = $PAGE->cm;
+            if ($cm) {
+                $this->attemptcontext = context_module::instance($cm->id, IGNORE_MISSING);
+            }
+        }
+        return $this->attemptcontext;
+    }
+
+    /**
+     * Checks if the group name of a version control response may be used by the user
+     * the attempt belongs to.
+     *
+     * The group name is sent by the browser (hidden field for students), so it must not be
+     * trusted: otherwise a student could get the repository of another group graded.
+     * Therefore the group name of the student is determined once again (in the same way as
+     * for the preset value of the input field) and must be equal to the name in the response.
+     * Teachers may enter any group name (in order to test the question).
+     *
+     * @param string $groupname group name from the response
+     * @return bool true if the group name is accepted
+     */
+    protected function is_allowed_groupname($groupname) {
+        global $CFG, $USER;
+        require_once($CFG->dirroot . '/question/type/proforma/locallib.php');
+
+        $userid = $this->attemptuserid ?? $USER->id;
+        $attemptcontext = $this->get_attempt_context();
+
+        // Teachers may enter any group name.
+        if ($attemptcontext && has_capability('moodle/grade:viewhidden', $attemptcontext, $userid)) {
+            return true;
+        }
+        if (!empty($this->contextid)) {
+            $context = context::instance_by_id($this->contextid, IGNORE_MISSING);
+            if ($context && has_capability('moodle/grade:viewhidden', $context, $userid)) {
+                return true;
+            }
+        }
+        if ($userid == $USER->id && (qtype_proforma\lib\is_teacher() || qtype_proforma\lib\is_admin())) {
+            return true;
+        }
+
+        if (!$attemptcontext || $attemptcontext->contextlevel != CONTEXT_MODULE) {
+            // No activity => no group.
+            return false;
+        }
+
+        // Determine the group once again: it must be unique and equal to the group name of the response.
+        [, $cm] = get_course_and_cm_from_cmid($attemptcontext->instanceid);
+        $groups = qtype_proforma\lib\get_user_groups($cm, $userid);
+        if (count($groups) != 1) {
+            return false;
+        }
+        return trim((string)$groupname) === trim(reset($groups)->name);
     }
 
     /**
@@ -435,6 +557,9 @@ class qtype_proforma_question extends question_graded_automatically {
                 // Determine if the given response has online text and attachments.
                 if (array_key_exists(VCSINPUT, $response)) {
                     $meetsconentreq = (trim($response[VCSINPUT]) !== '');
+                } else if (array_key_exists(VCSGROUP, $response)) {
+                    // The group name comes from the browser => check it.
+                    $meetsconentreq = $this->is_allowed_groupname($response[VCSGROUP]);
                 } else {
                     $meetsconentreq = true;
                 }

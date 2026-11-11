@@ -351,4 +351,80 @@ class question_test extends advanced_testcase {
 
     }
 
+    /**
+     * The group name of a version control response must not be trusted:
+     * a student may only use a group he or she is a member of.
+     *
+     * @covers \qtype_proforma_question::is_complete_response
+     */
+    public function test_is_complete_response_vcs_group(): void {
+        $this->resetAfterTest(true);
+
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course();
+        $student = $generator->create_and_enrol($course, 'student');
+        $teacher = $generator->create_and_enrol($course, 'editingteacher');
+        $group1 = $generator->create_group(['courseid' => $course->id, 'name' => 'G1']);
+        $generator->create_group(['courseid' => $course->id, 'name' => 'G2']);
+        $generator->create_group_member(['groupid' => $group1->id, 'userid' => $student->id]);
+        $context = context_course::instance($course->id);
+        // The student is also member of a group in another course.
+        $othercourse = $generator->create_course();
+        $generator->enrol_user($student->id, $othercourse->id, 'student');
+        $group3 = $generator->create_group(['courseid' => $othercourse->id, 'name' => 'G3']);
+        $generator->create_group_member(['groupid' => $group3->id, 'userid' => $student->id]);
+
+        // A second student is member of two groups of the course (not unique).
+        $student2 = $generator->create_and_enrol($course, 'student');
+        $group4 = $generator->create_group(['courseid' => $course->id, 'name' => 'G4']);
+        $generator->create_group_member(['groupid' => $group1->id, 'userid' => $student2->id]);
+        $generator->create_group_member(['groupid' => $group4->id, 'userid' => $student2->id]);
+
+        // Attempt of the student in a quiz of the first course.
+        global $PAGE;
+        $quiz = $generator->create_module('quiz', ['course' => $course->id]);
+        // Enrolling users has already initialised the theme of the page (welcome message) => use a new page.
+        $PAGE = new moodle_page();
+        $PAGE->set_cm(get_coursemodule_from_instance('quiz', $quiz->id));
+        $this->setUser($student);
+        $proforma = test_question_maker::make_question('proforma', 'vcs_git');
+        $proforma->vcsuritemplate = 'https://git.uri.org/{group}';
+        $proforma->contextid = $context->id;
+        $proforma->start_attempt(new question_attempt_step(), 1);
+
+        $this->assertTrue($proforma->is_complete_response(['vcsgroup' => 'G1']));
+        $this->assertSame('', $proforma->get_validation_error(['vcsgroup' => 'G1']));
+        // Group of other students, no group or no group name.
+        $this->assertFalse($proforma->is_complete_response(['vcsgroup' => 'G2']));
+        $this->assertFalse($proforma->is_complete_response(['vcsgroup' => 'N/A']));
+        // Own group, but in another course.
+        $this->assertFalse($proforma->is_complete_response(['vcsgroup' => 'G3']));
+        $this->assertFalse($proforma->is_complete_response(['vcsgroup' => '']));
+        $this->assertSame(
+            get_string('invalidgroupname', 'qtype_proforma'),
+            $proforma->get_validation_error(['vcsgroup' => 'G2'])
+        );
+
+        // The attempt still belongs to the student if a teacher triggers the grading (e.g. regrade).
+        $this->setUser($teacher);
+        $this->assertTrue($proforma->is_complete_response(['vcsgroup' => 'G1']));
+        $this->assertFalse($proforma->is_complete_response(['vcsgroup' => 'G2']));
+
+        // Group is not unique: no group name is accepted.
+        $this->setUser($student2);
+        $proforma = test_question_maker::make_question('proforma', 'vcs_git');
+        $proforma->vcsuritemplate = 'https://git.uri.org/{group}';
+        $proforma->contextid = $context->id;
+        $proforma->start_attempt(new question_attempt_step(), 1);
+        $this->assertFalse($proforma->is_complete_response(['vcsgroup' => 'G1']));
+        $this->assertFalse($proforma->is_complete_response(['vcsgroup' => 'G4']));
+
+        // Attempt of the teacher: any group name is accepted.
+        $this->setUser($teacher);
+        $proforma = test_question_maker::make_question('proforma', 'vcs_git');
+        $proforma->vcsuritemplate = 'https://git.uri.org/{group}';
+        $proforma->contextid = $context->id;
+        $proforma->start_attempt(new question_attempt_step(), 1);
+        $this->assertTrue($proforma->is_complete_response(['vcsgroup' => 'G2']));
+    }
 }

@@ -174,6 +174,7 @@ $string['inlinemessages'] = 'Show messages in editor';
 $string['inlinemessages_desc'] = 'Show Compiler messages or messages from static code analysis tools inline in editor. Requires CodeMirror. ';
 $string['inlinemessages_help'] = 'Show Compiler messages or messages from static code analysis tools inline in editor. May not be possible for all messages.';
 $string['internaltesterror'] = 'Internal error in a test';
+$string['invalidgroupname'] = 'The group name is not valid: it does not match your group.';
 $string['invalidproglang'] = 'Check programming language version:';
 $string['javasettings_header'] = 'Java Settings for Java questions created with Moodle';
 $string['javaversion'] = 'Java version';

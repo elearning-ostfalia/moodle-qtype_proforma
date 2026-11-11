@@ -142,6 +142,19 @@ class qtype_proforma_renderer extends qtype_renderer {
         /* $result .= html_writer::tag('div', $files, array('class' => ATTACHMENTS)); */
         $result .= html_writer::end_tag('div');
 
+        if (
+            $question->responseformat == qtype_proforma::RESPONSE_VERSION_CONTROL
+            && $qa->get_state() == question_state::$invalid
+            && $step->has_qt_var(VCSGROUP)
+        ) {
+            // The group name of the response was rejected.
+            $result .= html_writer::nonempty_tag(
+                'div',
+                $question->get_validation_error($step->get_qt_data()),
+                ['class' => 'validationerror']
+            );
+        }
+
         return $result;
     }
 

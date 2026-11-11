@@ -100,14 +100,7 @@ function get_groupname($context) {
 
     global $USER;
     [$course, $cm] = get_course_and_cm_from_cmid($context->instanceid, 'quiz');
-    // Get the groups the user belongs to (restricted to the grouping of the quiz, if any).
-    // Note: groups_get_activity_allowed_groups() is not used because it returns all groups
-    // in 'visible groups' mode or for users with 'moodle/site:accessallgroups'.
-    $groups = groups_get_all_groups($course->id, $USER->id, $cm->groupingid);
-    if (count($groups) > 1) {
-        // Not unique => try to restrict by the access restrictions (availability) of the quiz.
-        $groups = filter_groups_by_availability($cm, $groups);
-    }
+    $groups = get_user_groups($cm, $USER->id);
 
     // Count groups and fetch name.
     $groupname = '???';
@@ -132,6 +125,29 @@ function get_groupname($context) {
     }
 
     return $groupname;
+}
+
+/**
+ * Returns the groups of a user that are relevant for an activity: the groups of the course the
+ * user belongs to, restricted to the grouping and the access restrictions of the activity.
+ *
+ * The result is used for the preset group name and for checking the group name of a response,
+ * so both are always determined in the same way.
+ *
+ * @param \cm_info $cm course module
+ * @param int $userid user id
+ * @return array groups (indexed by group id)
+ */
+function get_user_groups($cm, $userid) {
+    // Get the groups the user belongs to (restricted to the grouping of the activity, if any).
+    // Note: groups_get_activity_allowed_groups() is not used because it returns all groups
+    // in 'visible groups' mode or for users with 'moodle/site:accessallgroups'.
+    $groups = groups_get_all_groups($cm->course, $userid, $cm->groupingid);
+    if (count($groups) > 1) {
+        // Not unique => try to restrict by the access restrictions (availability) of the activity.
+        $groups = filter_groups_by_availability($cm, $groups);
+    }
+    return $groups;
 }
 
 /**
