@@ -212,7 +212,7 @@ function collect_availability_groupids($node, $courseid, array &$groupids) {
  */
 function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = false, $loadjquery = true) {
     if (get_config('qtype_proforma', 'usecodemirror')) {
-        global $PAGE, $CFG;
+        global $PAGE;
         if ($loadjquery) {
             $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin('ui');
@@ -220,24 +220,13 @@ function as_codemirror($textareaid, $mode = 'java', $header = null, $readonly = 
             $PAGE->requires->jquery_plugin('ui-css');
         }
 
-        // Different handling for different moodle versions.
-        $moodleversion = $CFG->version;
-        if ($moodleversion > 2018051700) {
-            // Starting from Moodle 3.5 the Codemirror editor width is not resized to parent container.
-            // so this must be done explicitly in Javascript.
-            $PAGE->requires->js_call_amd(
-                'qtype_proforma/codemirrorif',
-                'initCodemirror',
-                [$textareaid, $readonly, $mode, $header, 1]
-            );
-        } else {
-            // In 3.4 resizing must be prohibited because the window is too small.
-            $PAGE->requires->js_call_amd(
-                'qtype_proforma/codemirrorif',
-                'initCodemirror',
-                [$textareaid, $readonly, $mode, $header]
-            );
-        }
+        // The Codemirror editor width is not resized to parent container.
+        // so this must be done explicitly in Javascript.
+        $PAGE->requires->js_call_amd(
+            'qtype_proforma/codemirrorif',
+            'initCodemirror',
+            [$textareaid, $readonly, $mode, $header, 1]
+        );
     }
 }
 

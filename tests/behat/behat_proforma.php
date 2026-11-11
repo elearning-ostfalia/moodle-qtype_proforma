@@ -563,19 +563,6 @@ class behat_proforma extends behat_base {
      * @param string $questionname the question name.
      */
     public function i_open_preview_for_the_question($questionname) {
-        /*        global $CFG;
-        $moodleversion = $CFG->version;
-        if ($moodleversion > 2022112800) {
-            // Moodle 4.1
-            // echo 'Moodle 4.1 ';
-        } elseif ($moodleversion > 2022041900) { // 4.0.0
-            // Moodle 4.0
-            // echo 'Moodle 4 ';
-        } else {
-            // Moodle 3
-            // echo 'Moodle 3 ';
-        }
-        */
         // Open Question bank context
         // echo '0';
         try {

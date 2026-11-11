@@ -97,13 +97,7 @@ class questiontype_test extends walkthrough_test_base {
         $export1 = $exporter->writequestion($question);
         // var_dump($export1);
 
-        global $CFG;
-        $moodleversion = $CFG->version;
-        if ($moodleversion > 2025100603) { // Moodle 5.1
-            $xmldata = (new \core\xml_parser())->parse($export1);
-        } else {
-            $xmldata = xmlize($export1);
-        }
+        $xmldata = (new \core\xml_parser())->parse($export1);
         // var_dump($xmldata);
 
         // Re-import.
@@ -501,13 +495,7 @@ class questiontype_test extends walkthrough_test_base {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
-        global $CFG;
-        $moodleversion = $CFG->version;
-        if ($moodleversion > 2025100603) { // Moodle 5.1
-            $xmldata = (new \core\xml_parser())->parse($xml);
-        } else {
-            $xmldata = xmlize($xml);
-        }
+        $xmldata = (new \core\xml_parser())->parse($xml);
 
         $importer = new qformat_xml();
         $importedq = $importer->try_importing_using_qtypes(
@@ -658,13 +646,7 @@ class questiontype_test extends walkthrough_test_base {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
-        global $CFG;
-        $moodleversion = $CFG->version;
-        if ($moodleversion > 2025100603) { // Moodle 5.1
-            $xmldata = (new \core\xml_parser())->parse($xml);
-        } else {
-            $xmldata = xmlize($xml);
-        }
+        $xmldata = (new \core\xml_parser())->parse($xml);
 
         $importer = new qformat_xml();
         $importedq = $importer->try_importing_using_qtypes(
@@ -805,13 +787,7 @@ class questiontype_test extends walkthrough_test_base {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
-        global $CFG;
-        $moodleversion = $CFG->version;
-        if ($moodleversion > 2025100603) { // Moodle 5.1
-            $xmldata = (new \core\xml_parser())->parse($xml);
-        } else {
-            $xmldata = xmlize($xml);
-        }
+        $xmldata = (new \core\xml_parser())->parse($xml);
 
         $importer = new qformat_xml();
         $importedq = $importer->try_importing_using_qtypes(

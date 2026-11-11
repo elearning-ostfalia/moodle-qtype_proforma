@@ -54,12 +54,7 @@ if (!confirm_sesskey()) {
     die(json_encode($err));
 }
 
-$moodleversion = $CFG->version;
-if ($moodleversion > 2025100600) {
-    \core\ajax::capture_output();
-} else {
-    ajax_capture_output();
-}
+\core\ajax::capture_output();
 
 if (!isloggedin()) {
     throw new Exception('user is not logged in');
@@ -134,12 +129,7 @@ $result = [
 ];
 
 
-$moodleversion = $CFG->version;
-if ($moodleversion > 2025100600) {
-    \core\ajax::check_captured_output();
-} else {
-    ajax_check_captured_output();
-}
+\core\ajax::check_captured_output();
 
 echo json_encode($result);
 die();

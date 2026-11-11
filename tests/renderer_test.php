@@ -641,22 +641,16 @@ Prüfung beendet.
 
     private function moodle_4_5_converter($text) {
         $text = str_replace( 'aria-label=', 'role="img" aria-label=', $text);
-        global $CFG;
-        $moodleversion = $CFG->version;
         $text = str_replace( 'fa fa-check', 'fa-regular fa-circle-check', $text);
         $text = str_replace( 'fa fa-exclamation', 'fa fa-warning', $text);
         $text = str_replace( 'fa fa-remove', 'fa-regular fa-circle-xmark', $text);
-        if ($moodleversion > 2025041406) { // Moodle 5.0
-            $text1 = str_replace( 'fa-regular fa-circle-check-square fa-fw ', '', $text);
-            if ($text1 != $text) {
-                $text1 = str_replace( 'title="Partially correct" role="img"', 'alt="Partially correct" title="Partially correct"', $text1);
-                $text1 = str_replace( 'aria-label="Partially correct"', 'src="https://www.example.com/moodle/theme/image.php/boost/core/1/i/grade_partiallycorrect"', $text1);
-                $text1 = str_replace( '<i', '<img', $text1);
-                $text1 = str_replace( '</i', '</img', $text1);
-                $text = $text1;
-            }
-        } else {
-            $text = str_replace( 'fa-regular fa-circle-check-square', 'fa fa-circle-half-stroke text-warning', $text);
+        $text1 = str_replace( 'fa-regular fa-circle-check-square fa-fw ', '', $text);
+        if ($text1 != $text) {
+            $text1 = str_replace( 'title="Partially correct" role="img"', 'alt="Partially correct" title="Partially correct"', $text1);
+            $text1 = str_replace( 'aria-label="Partially correct"', 'src="https://www.example.com/moodle/theme/image.php/boost/core/1/i/grade_partiallycorrect"', $text1);
+            $text1 = str_replace( '<i', '<img', $text1);
+            $text1 = str_replace( '</i', '</img', $text1);
+            $text = $text1;
         }
         return $text;
     }
